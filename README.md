@@ -83,7 +83,9 @@ python run_research.py --minutes 20 --workers 16 --budget 2.00
 python run_research.py --hours 1    --workers 44 --budget 5.00 --set budget.cumulative_usd.deepseek=10
 ```
 
-`--workers` sets LLM worker slots; `--cpu-slots` (default: number of cores) caps
+Experiments fork from a warm server process and reuse cached feature blocks within a run
+(see "CPU efficiency" in `docs/ARCHITECTURE.md`); set `--set experiment.executor="subprocess"`
+to use a fresh interpreter per experiment instead. `--workers` sets LLM worker slots; `--cpu-slots` (default: number of cores) caps
 simultaneous CPU experiments independently, so 44 workers on an 8-core machine queue
 politely for CPU while the others are writing code. Raise `budget.cumulative_usd.deepseek`
 deliberately when you want to spend beyond the $0.25 development cap.

@@ -50,6 +50,29 @@
 * Sweeps, combinations, ablations, evaluation, duplicate detection, scheduling and
   reporting never call an LLM.
 
+## CPU efficiency
+
+Measured on the example run, 96% of experiment CPU time was starting Python and importing
+numpy/scipy/sklearn, not feature computation or fitting. Two mechanisms remove it:
+
+* **Warm fork server** (`genemila/forkserver.py`, `experiment.executor = "forkserver"`): one
+  single-threaded process per run imports the numeric stack and loads the public data, then
+  forks a child per experiment or smoke test. Children keep their own session, rlimits, working
+  directory and logs, so timeouts, kills and isolation are unchanged. If the server cannot start
+  or dies, the executor falls back to fresh subprocesses.
+* **Feature cache** (`experiment.feature_cache = true`): every computed feature block is stored
+  under `runs/<id>/cache/features/`, keyed by the feature's source hash, version, parameters,
+  dataset split and perturbation list; shared matrices (gene correlation) under `cache/shared/`.
+  An experiment that adds one feature to a model computes only that feature.
+
+Both are bit-identical to the plain path (tested). On the mock benchmark, CPU per experiment fell
+from 1.42 s to 0.07 s. The remaining per-experiment overhead is git worktree creation and commits
+(~0.5 s wall), which is negligible next to LLM latency.
+
+Further options not yet built: solving ridge for all alphas from one X^T X factorisation,
+screening new features on a gene subset before the full evaluation (for Adamson-size data), and
+skipping fits whose new feature block is numerically identical to an existing feature.
+
 ## Failure handling
 
 | Failure | Outcome |
