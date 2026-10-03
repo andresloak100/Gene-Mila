@@ -1,0 +1,28 @@
+name: README check
+
+on:
+  pull_request:
+    paths:
+      - README.md
+      - docs/**
+      - .github/repo-profile.toml
+      - tools/readme_check.py
+      - run_research.py
+      - configs/default.toml
+  push:
+    paths:
+      - README.md
+      - docs/**
+      - .github/repo-profile.toml
+      - tools/readme_check.py
+
+jobs:
+  readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check README, figures and About profile
+        run: python tools/readme_check.py
