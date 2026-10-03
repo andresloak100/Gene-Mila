@@ -59,11 +59,37 @@ class Lab:
         self.genes = [str(g) for g in z["genes"]]
         self.limits = {k: float(cfg["experiment"][k]) for k in ("cpu_limit_s", "ram_limit_mb", "timeout_s")}
         self._register_builtins()
+        self._executor = None
+        self._exec_lock = threading.Lock()
         if not self.db.query("SELECT 1 FROM runs WHERE run_id=?", (self.run_id,)):
             self.db.execute("INSERT INTO runs (run_id, started_at, dataset, split_id, base_commit, config_json, "
                             "workers) VALUES (?,?,?,?,?,?,?)",
                             (self.run_id, time.time(), self.dataset, self.split_id, self.base_commit,
                              json.dumps(cfg), int(cfg["run"]["workers"])))
+
+    # ----------------------------------------------------------------- executor
+    @property
+    def executor(self):
+        """Runs experiment and smoke-test processes (warm fork server by default)."""
+        from .sandbox import Executor
+        with self._exec_lock:
+            if self._executor is None:
+                ecfg = self.cfg["experiment"]
+                mode = ecfg.get("executor", "forkserver")
+                cache = self.run_dir / "cache" if ecfg.get("feature_cache", True) else None
+                server_cwd = self.worktrees.create("_server") if mode == "forkserver" else None
+                self._executor = Executor(mode, server_cwd, self.public_dir, cache)
+            return self._executor
+
+    def close(self) -> None:
+        if self._executor is not None:
+            self._executor.close()
+            if self._executor._args[0] is not None:
+                try:
+                    self.worktrees.remove(Path(self._executor._args[0]))
+                except Exception:
+                    pass
+            self._executor = None
 
     # ----------------------------------------------------------------- features
     def _register_builtins(self) -> None:

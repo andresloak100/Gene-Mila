@@ -63,3 +63,4 @@ def lab_factory(tmp_path, dataset, code_repo):
     for lab in made:
         lab.stop_event.set()
         lab.kill_event.set()
+        lab.close()

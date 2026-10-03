@@ -16,6 +16,8 @@ ctx.train_delta(exclude=p). For row p it MUST exclude p itself, which is what
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from functools import cached_property
 from pathlib import Path
 from typing import Any, ClassVar
@@ -57,8 +59,11 @@ def register(cls: type[Feature]) -> type[Feature]:
 class FeatureContext:
     """Read-only view of the public data. Validation labels are never loaded."""
 
-    def __init__(self, public_dir: str | Path):
+    _preloaded: dict[str, "FeatureContext"] = {}
+
+    def __init__(self, public_dir: str | Path, cache_dir: str | Path | None = None):
         self.public_dir = Path(public_dir)
+        self.cache_dir = Path(cache_dir) if cache_dir else None
         z = np.load(self.public_dir / "public.npz", allow_pickle=False)
         self.genes: list[str] = [str(g) for g in z["genes"]]
         self.gene_index: dict[str, int] = {g: i for i, g in enumerate(self.genes)}
@@ -99,14 +104,39 @@ class FeatureContext:
         return sorted(p.stem for p in (self.public_dir / "knowledge").glob("*.json"))
 
     # ---- shared helpers ------------------------------------------------------------
+    @classmethod
+    def shared(cls, public_dir: str | Path, cache_dir: str | Path | None = None) -> "FeatureContext":
+        """A context loaded once per process. In the fork server it is loaded before forking, so
+        each experiment starts with the data already in memory (copy-on-write)."""
+        key = str(Path(public_dir).resolve())
+        ctx = cls._preloaded.get(key)
+        if ctx is None:
+            ctx = cls._preloaded[key] = cls(public_dir, cache_dir)
+        elif cache_dir and ctx.cache_dir is None:
+            ctx.cache_dir = Path(cache_dir)
+        return ctx
+
+    def _disk_cached(self, name: str, compute) -> np.ndarray:
+        """Shared matrices are computed once per run and reused by every experiment."""
+        if self.cache_dir is None:
+            return compute()
+        path = self.cache_dir / f"{name}.npy"
+        if path.exists():
+            return np.load(path, allow_pickle=False)
+        arr = compute()
+        _atomic_save(path, arr)
+        return arr
+
     @cached_property
     def gene_corr(self) -> np.ndarray:
         """Pearson correlation between genes across control cells (n_genes x n_genes)."""
-        x = self.control_cells - self.control_mean
-        sd = np.where(self.control_std > 0, self.control_std, 1.0)
-        c = (x.T @ x) / (len(x) * np.outer(sd, sd))
-        np.fill_diagonal(c, 1.0)
-        return np.nan_to_num(c)
+        def compute():
+            x = self.control_cells - self.control_mean
+            sd = np.where(self.control_std > 0, self.control_std, 1.0)
+            c = (x.T @ x) / (len(x) * np.outer(sd, sd))
+            np.fill_diagonal(c, 1.0)
+            return np.nan_to_num(c)
+        return self._disk_cached("gene_corr", compute)
 
     def feature(self, name: str, perts: list[str], params: dict | None = None) -> np.ndarray:
         """Compute another registered feature (for composition)."""
@@ -116,3 +146,11 @@ class FeatureContext:
             merged = {**cls.params, **(params or {})}
             self._feature_cache[key] = cls().compute(self, perts, merged)
         return self._feature_cache[key]
+
+
+def _atomic_save(path: Path, arr: np.ndarray) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp.npy")
+    with os.fdopen(fd, "wb") as fh:
+        np.save(fh, arr, allow_pickle=False)
+    os.replace(tmp, path)

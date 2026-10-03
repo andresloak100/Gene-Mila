@@ -97,7 +97,10 @@ class Planner:
 
     def to_specs(self, hypotheses: list[dict], proposer: str) -> list[ExperimentSpec]:
         ecfg = self.cfg["experiment"]
-        best = self.lab.best()
+        # the analytic baselines have no feature set, so they cannot be parents of a feature experiment
+        modelled = self.lab.db.query("SELECT * FROM experiments WHERE status='completed' AND model_type!='none' "
+                                     "AND primary_score IS NOT NULL ORDER BY primary_score DESC LIMIT 1")
+        best = modelled[0] if modelled else None
         prio = self._priorities()
         known = self.lab.known_features()
         specs = []
@@ -105,7 +108,7 @@ class Planner:
             if not isinstance(h, dict):
                 continue
             parent = self.lab.db.get_experiment(h["parent"]) if h.get("parent") else None
-            if parent is None or parent.get("status") != "completed":
+            if parent is None or parent.get("status") != "completed" or not parent.get("feature_set_json"):
                 parent = best
             base_set = list((parent or {}).get("feature_set_json") or ["control_mean", "mean_response", "is_target"])
             category = h.get("category") if h.get("category") in ("explore", "exploit", "risky") else "explore"

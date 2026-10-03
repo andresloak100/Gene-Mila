@@ -13,6 +13,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import inspect
 import json
 import pickle
 import sys
@@ -23,17 +25,48 @@ from pathlib import Path
 import numpy as np
 
 from .features import registry
-from .features.api import FeatureContext
+from .features.api import FeatureContext, _atomic_save
+
+
+_SOURCE_HASH: dict[str, str] = {}
+
+
+def _source_hash(cls) -> str:
+    path = inspect.getsourcefile(cls)
+    if path not in _SOURCE_HASH:
+        with open(path, "rb") as fh:
+            _SOURCE_HASH[path] = hashlib.sha256(fh.read()).hexdigest()
+    return _SOURCE_HASH[path]
+
+
+def feature_cache_key(ctx: FeatureContext, cls, params: dict, perts: list[str]) -> str:
+    """Identifies a computed feature block: same code, parameters, data and perturbations."""
+    manifest = json.loads((ctx.public_dir / "manifest.json").read_text())
+    deps = sorted((d, _source_hash(registry.get(d))) for d in cls.dependencies if d in registry.REGISTRY)
+    payload = json.dumps([cls.name, cls.version, _source_hash(cls), params, deps, manifest.get("name"),
+                          manifest.get("split_id"), list(perts)], sort_keys=True, default=str)
+    return hashlib.sha256(payload.encode()).hexdigest()[:32]
 
 
 def build_matrix(ctx: FeatureContext, feature_set: list[str], feature_params: dict, perts: list[str],
-                 timings: dict) -> tuple[np.ndarray, list[str]]:
+                 timings: dict, cache_dir: Path | None = None, cache_log: dict | None = None,
+                 ) -> tuple[np.ndarray, list[str]]:
     blocks, columns = [], []
     for name in feature_set:
         cls = registry.get(name)
         params = {**cls.params, **feature_params.get(name, {})}
         t0 = time.process_time()
-        arr = np.asarray(cls().compute(ctx, perts, params), dtype=np.float64)
+        path = cache_dir / f"{name}__{feature_cache_key(ctx, cls, params, perts)}.npy" if cache_dir else None
+        if path is not None and path.exists():
+            arr = np.load(path, allow_pickle=False)
+            if cache_log is not None:
+                cache_log.setdefault("hits", []).append(name)
+        else:
+            arr = np.asarray(cls().compute(ctx, perts, params), dtype=np.float64)
+            if path is not None and np.all(np.isfinite(arr)):
+                _atomic_save(path, arr)
+                if cache_log is not None:
+                    cache_log.setdefault("misses", []).append(name)
         timings[name] = timings.get(name, 0.0) + time.process_time() - t0
         if arr.ndim == 2:
             arr = arr[:, :, None]
@@ -60,12 +93,14 @@ def make_model(model_type: str, alpha: float, seed: int):
     raise ValueError(f"unsupported model_type {model_type!r} (allowed: ridge, lasso, elasticnet, ols)")
 
 
-def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path) -> dict:
+def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir: Path | None = None) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     seed = int(spec.get("seed", 0))
     np.random.seed(seed)
     registry.load_plugins(plugin_dir)
-    ctx = FeatureContext(public_dir)
+    feature_cache = Path(cache_dir) / "features" if cache_dir else None
+    ctx = FeatureContext.shared(public_dir, Path(cache_dir) / "shared" if cache_dir else None)
+    cache_log: dict = {}
     feature_set = spec["feature_set"]
     feature_params = spec.get("feature_params", {})
     hp = spec.get("hyperparameters", {})
@@ -76,8 +111,8 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path) -> dict:
     evals = [p for p in ctx.perts if p not in set(train)]
     timings: dict = {}
     t0 = time.process_time()
-    X_tr, columns = build_matrix(ctx, feature_set, feature_params, train, timings)
-    X_ev, _ = build_matrix(ctx, feature_set, feature_params, evals, timings)
+    X_tr, columns = build_matrix(ctx, feature_set, feature_params, train, timings, feature_cache, cache_log)
+    X_ev, _ = build_matrix(ctx, feature_set, feature_params, evals, timings, feature_cache, cache_log)
     feat_time = time.process_time() - t0
     _, d_train = ctx.train_delta()
     y = d_train.reshape(-1)
@@ -121,18 +156,21 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path) -> dict:
             "train_cpu_s": train_time, "inference_cpu_s": infer_time,
         },
         "model_size_bytes": int((out_dir / "models.pkl").stat().st_size),
+        "feature_cache": {"hits": sorted(set(cache_log.get("hits", []))),
+                          "misses": sorted(set(cache_log.get("misses", [])))},
     }
     (out_dir / "result.json").write_text(json.dumps(result, indent=1))
     return result
 
 
-def smoke(feature: str, public_dir: Path, plugin_dir: Path, out_dir: Path) -> dict:
+def smoke(feature: str, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir: Path | None = None) -> dict:
     """Fast correctness test for a new feature: shape, finiteness, determinism, leakage."""
     out_dir.mkdir(parents=True, exist_ok=True)
     registry.load_plugins(plugin_dir)
     cls = registry.get(feature)
     meta = cls.metadata()
-    ctx = FeatureContext(public_dir)
+    shared = Path(cache_dir) / "shared" if cache_dir else None
+    ctx = FeatureContext(public_dir, shared)
     evals = [p for p in ctx.perts if p not in set(ctx.train_perts)]
     perts = ctx.train_perts[:2] + evals[:2]
     t = time.process_time()
@@ -150,14 +188,14 @@ def smoke(feature: str, public_dir: Path, plugin_dir: Path, out_dir: Path) -> di
     if not problems:
         if np.allclose(a.std(axis=(0, 1)), 0):
             problems.append("feature is constant across all rows (no information)")
-        b = np.asarray(cls().compute(FeatureContext(public_dir), perts, dict(cls.params)), dtype=np.float64)
+        b = np.asarray(cls().compute(FeatureContext(public_dir, shared), perts, dict(cls.params)), dtype=np.float64)
         if b.ndim == 2:
             b = b[:, :, None]
         if not np.allclose(a, b):
             problems.append("non-deterministic output")
         # Leakage: replace p0's own training label with noise; p0's features must not change.
         p0 = ctx.train_perts[0]
-        leak_ctx = FeatureContext(public_dir)
+        leak_ctx = FeatureContext(public_dir, shared)
         rng = np.random.default_rng(0)
         leak_ctx._train_delta[leak_ctx._train_pos[p0]] = rng.normal(0, 5, size=leak_ctx.n_genes)
         c = np.asarray(cls().compute(leak_ctx, [p0], dict(cls.params)), dtype=np.float64)
@@ -181,13 +219,16 @@ def main(argv=None) -> int:
     ap.add_argument("--public", required=True)
     ap.add_argument("--plugins", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--cache", help="run-level cache for computed features and shared matrices")
     args = ap.parse_args(argv)
     out = Path(args.out)
     try:
         if args.mode == "run":
-            run(json.loads(Path(args.spec).read_text()), Path(args.public), Path(args.plugins), out)
+            run(json.loads(Path(args.spec).read_text()), Path(args.public), Path(args.plugins), out,
+                Path(args.cache) if args.cache else None)
         else:
-            r = smoke(args.feature, Path(args.public), Path(args.plugins), out)
+            r = smoke(args.feature, Path(args.public), Path(args.plugins), out,
+                      Path(args.cache) if args.cache else None)
             return 0 if r["status"] == "ok" else 3
         return 0
     except Exception as exc:  # report, never hang

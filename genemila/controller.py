@@ -221,6 +221,7 @@ class Controller:
                             "WHERE status='queued'")
         self.lab.db.execute("DELETE FROM experiments WHERE status='reserved'")
         self._log(self.status_line())
+        self.lab.close()
         summary = finalize(self.lab, wall_s=time.time() - self.started, workers=self.n_workers)
         self._log(f"summary written to {self.lab.run_dir / 'summary.md'}")
         return summary

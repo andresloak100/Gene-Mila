@@ -23,7 +23,6 @@ from .isolation import sha256_text
 from .lab import Lab
 from .llm import BudgetExceeded, TokenLimitExceeded
 from .providers.base import AgentProvider, ProviderError, extract_code
-from .sandbox import run_limited
 from .spec import PLUGIN_DIR, ExperimentSpec
 
 
@@ -204,9 +203,9 @@ class Worker:
 
     def _smoke(self, name: str, wt: Path, art: Path, attempt: int) -> str | None:
         out = art / f"smoke_{attempt}"
-        proc = run_limited(
-            [sys.executable, "-m", "genemila.pipeline", "smoke", "--feature", name, "--public",
-             str(self.lab.public_dir), "--plugins", str(wt / PLUGIN_DIR), "--out", str(out)],
+        proc = self.lab.executor.run(
+            ["smoke", "--feature", name, "--public", str(self.lab.public_dir), "--plugins", str(wt / PLUGIN_DIR),
+             "--out", str(out)],
             cwd=wt, log_dir=out, timeout_s=min(90.0, self.lab.limits["timeout_s"]),
             ram_mb=self.lab.limits["ram_limit_mb"], cpu_s=self.lab.limits["cpu_limit_s"],
             env={"PYTHONPATH": str(wt)}, kill_event=self.lab.kill_event, name="smoke")
@@ -231,9 +230,9 @@ class Worker:
             if self.lab.kill_event.is_set():
                 raise ExperimentFailure("killed", "deadline reached while waiting for a CPU slot")
         try:
-            proc = run_limited(
-                [sys.executable, "-m", "genemila.pipeline", "run", "--spec", str(art / "run_spec.json"),
-                 "--public", str(self.lab.public_dir), "--plugins", str(wt / PLUGIN_DIR), "--out", str(art)],
+            proc = self.lab.executor.run(
+                ["run", "--spec", str(art / "run_spec.json"), "--public", str(self.lab.public_dir),
+                 "--plugins", str(wt / PLUGIN_DIR), "--out", str(art)],
                 cwd=wt, log_dir=art, timeout_s=spec.timeout_s, ram_mb=spec.ram_limit_mb, cpu_s=spec.cpu_limit_s,
                 env={"PYTHONPATH": str(wt)}, kill_event=self.lab.kill_event, name="experiment")
         finally:

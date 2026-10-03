@@ -16,6 +16,8 @@ ram_limit_mb = 4096            # RLIMIT_AS for the experiment subprocess
 cpu_limit_s = 600              # RLIMIT_CPU for the experiment subprocess
 max_attempts = 2               # infrastructure retries (never scientific retries)
 max_new_features = 1           # one controlled change per experiment
+executor = "forkserver"        # forkserver (warm, fast start) | subprocess (fresh interpreter each time)
+feature_cache = true           # reuse computed feature blocks and shared matrices within a run
 default_model = "ridge"
 default_alpha_grid = [0.01, 0.1, 1.0, 10.0, 100.0]
 
