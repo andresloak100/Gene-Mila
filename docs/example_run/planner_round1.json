@@ -1,0 +1,84 @@
+{
+ "synthesis": "All three linear baselines tie at 0.6054, so the model family doesn't matter. The gain over the mean-response baseline (0.4755) comes almost entirely from a rescaled mean response plus a target indicator. Predictions are shrunk to about half the true delta scale (ratio 0.506), and the worst perturbations probably have target-specific responses that the global mean cannot capture. The obvious next lever is perturbation-specific signal: what links the target gene to gene g, through co-expression, the prior network, gene modules, or similar training perturbations.",
+ "hypotheses": [
+  {
+   "title": "Target-gene co-expression in controls",
+   "hypothesis": "Adding the control-cell correlation between the target gene and gene g will raise pearson_delta above 0.6054.",
+   "rationale": "Knocking out a regulator should shift the genes that co-vary with it in unperturbed cells. The sign and size of their correlation should predict the direction and size of the response. This gives a signal specific to each perturbation, which mean_response lacks.",
+   "category": "explore",
+   "action": "new_feature",
+   "parent": null,
+   "new_feature": {
+    "name": "target_coexpression",
+    "description": "Pearson correlation across control cells between expression of p's target gene and gene g, multiplied by -1 to reflect a KO (0 if the target is not measured)",
+    "implementation_hint": "Compute the gene-gene correlation matrix C from control cells (optionally log1p first). For row (p,g): feature = -C[target(p), g]. Set the diagonal to 0.",
+    "params": {
+     "transform": "log1p"
+    }
+   },
+   "add_features": [],
+   "remove_features": [],
+   "model_type": "ridge",
+   "replicates": 2
+  },
+  {
+   "title": "Nearest-neighbour perturbation response transfer",
+   "hypothesis": "A weighted average of training deltas from the perturbations whose targets are most co-expressed with p's target will predict delta better than the global mean response.",
+   "rationale": "Perturbing genes in the same program should give similar responses. Transferring leave-one-out responses from similar targets gives a prediction tailored to each perturbation.",
+   "category": "explore",
+   "action": "new_feature",
+   "parent": null,
+   "new_feature": {
+    "name": "knn_response_transfer",
+    "description": "For (p,g): weighted mean of delta[q,g] over the k training perturbations q != p whose targets are most similar to p's target, by absolute control co-expression",
+    "implementation_hint": "Similarity between target genes = |corr| of control expression (or cosine on the gene's correlation profile). Take the top-k training perturbations, excluding p, and weight their deltas by similarity. Fall back to mean_response if all weights are 0.",
+    "params": {
+     "k": 5
+    }
+   },
+   "add_features": [],
+   "remove_features": [],
+   "model_type": "ridge",
+   "replicates": 2
+  },
+  {
+   "title": "Prior-network signed downstream effect",
+   "hypothesis": "A diffusion score from the target through the prior regulatory network will add signal on top of the baseline features.",
+   "rationale": "In a synthetic GRN, a KO propagates mostly along the true edges. The prior network (252 edges) probably overlaps them, so the signed propagation from the target should predict which genes move.",
+   "category": "explore",
+   "action": "new_feature",
+   "parent": null,
+   "new_feature": {
+    "name": "network_diffusion_effect",
+    "description": "Signed propagated effect on gene g of setting p's target to -1, using the prior network adjacency (sum over paths up to length L with decay)",
+    "implementation_hint": "Build a directed signed adjacency A[src,dst]=weight. Start with x0 = -e_target. Compute effect = sum_{l=1..L} beta^(l-1) * (A^T)^l x0, with L=3 and beta=0.5. Feature = effect[g]. Optionally also report the undirected version.",
+    "params": {
+     "max_len": 3,
+     "decay": 0.5
+    }
+   },
+   "add_features": [],
+   "remove_features": [],
+   "model_type": "ridge",
+   "replicates": 1
+  },
+  {
+   "title": "Interaction of mean response with target co-module membership",
+   "hypothesis": "Interacting mean_response with whether g shares a gene-set module with p's target will capture module-specific amplification and help the worst perturbations.",
+   "rationale": "Untested and high-variance. Responses may be strongly concentrated in the target's module, and a gated mean response could also fix the shrinkage of the delta scale.",
+   "category": "risky",
+   "action": "new_feature",
+   "parent": null,
+   "new_feature": {
+    "name": "same_module_x_mean_response",
+    "description": "mean_response[g] multiplied by 1 if g and p's target share any gene_sets module, else 0; also include the raw same_module indicator",
+    "implementation_hint": "Map each gene to its set of modules. same = len(mod[g] & mod[target]) > 0. Output two columns: same_module and same_module*mean_response (mean_response leave-one-out as existing).",
+    "params": {}
+   },
+   "add_features": [],
+   "remove_features": [],
+   "model_type": "ridge",
+   "replicates": 1
+  }
+ ]
+}

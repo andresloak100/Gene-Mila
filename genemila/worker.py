@@ -74,6 +74,8 @@ class Worker:
             if spec.kind == "new_feature":
                 self._set(eid, status="implementing")
                 self._implement(spec, wt, art)
+            else:
+                self._set(eid, provider="python", model="deterministic")
             files = check_diff(wt, self.lab.base_commit, spec.allowed_files, list(installed))
             for rel, digest in installed.items():
                 if sha256_text((wt / rel).read_text()) != digest:

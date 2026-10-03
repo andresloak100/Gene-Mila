@@ -81,3 +81,9 @@ output = 0.0
 [final]
 top_k = 3                      # visible-validation winners evaluated on the query-only set
 max_queries = 5                # hard cap on query-only evaluations per run
+
+# Extra settings per provider kind, e.g. an OpenAI-compatible endpoint:
+# [providers.openai_compat]
+# base_url = "https://api.x.ai/v1"      # Grok; or https://api.openai.com/v1, http://localhost:11434/v1 ...
+# api_key_env = "XAI_API_KEY"
+# name = "grok"

@@ -1,0 +1,60 @@
+## DATASET
+synthetic: 300 genes, 1000 control cells, 48 training perturbations (single-gene targets); predict unseen perturbations.
+## PRIMARY METRIC
+pearson_delta (higher is better): mean over held-out perturbations of the Pearson correlation between predicted and true expression change
+## KNOWLEDGE AVAILABLE
+gene_sets: dict of 10 entries, e.g. 'MODULE_00': ['G0005', 'G0007', 'G0010', 'G0021', 'G0023', 'G0032', 'G003; prior_network: list of 252, e.g. ['G0000', 'G0060', 1.0]; targets: dict of 80 entries, e.g. 'G0172_KO': ['G0172']; transcription_factors: list of 40, e.g. G0000
+## BASELINES
+- {"id": "EXP_0001", "what": "Perturbations do not change expression (predict control mea\u2026", "score": 0.0}
+- {"id": "EXP_0002", "what": "Every perturbation produces the average training response.", "score": 0.4755}
+- {"id": "EXP_0003", "what": "OLS on baseline features (control mean, mean response, targ\u2026", "score": 0.6054}
+- {"id": "EXP_0004", "what": "RIDGE on baseline features (control mean, mean response, ta\u2026", "score": 0.6054}
+- {"id": "EXP_0005", "what": "LASSO on baseline features (control mean, mean response, ta\u2026", "score": 0.6054}
+## CURRENT BEST
+{"id":"EXP_0007","score":0.7633,"features":["control_mean","mean_response","is_target","target_coexpression_e7"],"model":"ridge","alpha":0.01,"gain_over_best_baseline":0.1579,"coefficients":{"control_mean":-0.00089,"mean_response":0.10488,"is_target":-0.06997,"target_coexpression_e7":0.07944},"diagnostics":{"worst_perturbations":[{"pert":"G0223_KO","pearson_delta":0.547},{"pert":"G0293_KO","pearson_delta":0.588},{"pert":"G0045_KO","pearson_delta":0.711},{"pert":"G0251_KO","pearson_delta":0.713},{"pert":"G0292_KO","pearson_delta":0.739}],"best_perturbations":[{"pert":"G0161_KO","pearson_delta":0.922},{"pert":"G0111_KO","pearson_delta":0.886},{"pert":"G0274_KO","pearson_delta":0.872}],"rmse_by_control_expression_quartile":[0.1279,0.207,0.1959,0.3171],"mean_abs_true_delta":0.1328,"mean_abs_pred_delta":0.0872,"delta_scale_ratio":0.657}}
+## FEATURE REGISTRY
+- control_mean: Mean expression of gene g in control cells.
+- mean_response: Average delta of gene g across training perturbations, leaving p out.
+- is_target: 1 if gene g is the gene targeted by perturbation p, else 0.
+- target_coexpression_e7: Pearson correlation across control cells between expression of p's ta…
+- target_coexpression_e6: Pearson correlation between target gene and gene g in control cells, …
+- knn_response_transfer_e8: Weighted mean of delta from k most similar training perturbations by …
+## FEATURES THAT HELP
+- {"feature": "target_coexpression_e6", "experiment": "EXP_0006", "delta": 0.15788387868283604, "score": 0.7632928725687107, "description": "Pearson correlation between target gene and gene g in control cells, negated fo\u2026"}
+- {"feature": "target_coexpression_e7", "experiment": "EXP_0007", "delta": 0.15788387868283604, "score": 0.7632928725687107, "description": "Pearson correlation across control cells between expression of p's target gene \u2026"}
+- {"feature": "knn_response_transfer_e8", "experiment": "EXP_0008", "delta": 0.12402845617284886, "score": 0.7294374500587235, "description": "Weighted mean of delta from k most similar training perturbations by target co-\u2026"}
+## FEATURES THAT DO NOT HELP
+- (none)
+## HELPFUL FEATURES MISSING FROM BEST
+- target_coexpression_e6
+- knn_response_transfer_e8
+## POSSIBLE INTERACTIONS UNTESTED
+- target_coexpression_e6 + target_coexpression_e7
+- target_coexpression_e6 + knn_response_transfer_e8
+- target_coexpression_e7 + knn_response_transfer_e8
+## FAILED DIRECTIONS
+- (none)
+## UNEXPLORED IDEA AREAS
+- PCA / latent programs of control cells
+- gene expression level transforms (log, rank, dropout rate)
+## IN FLIGHT
+- A weighted average of training deltas from the perturbations whose ta…
+- A diffusion score from the target through the prior regulatory networ…
+- Interacting mean_response with whether g shares a gene-set module wit…
+- A control-cell regression slope of gene g on target t, multiplied by …
+- A control-cell regression slope of gene g on target t, multiplied by …
+- Genes with high control-cell variance or dispersion show larger pertu…
+- Sparse partial correlations between target t and gene g, from a graph…
+## RECENT EXPERIMENTS
+- {"id": "EXP_0004", "status": "completed", "kind": "baseline", "cat": "baseline", "idea": "RIDGE on baseline features (control mean, mean response, target indic\u2026", "score": 0.6054, "delta": null}
+- {"id": "EXP_0007", "status": "completed", "kind": "new_feature", "cat": "explore", "idea": "Adding the control-cell correlation between the target gene and gene \u2026", "score": 0.7633, "delta": 0.1579}
+- {"id": "EXP_0006", "status": "completed", "kind": "new_feature", "cat": "explore", "idea": "Adding the control-cell correlation between the target gene and gene \u2026", "score": 0.7633, "delta": 0.1579}
+- {"id": "EXP_0015", "status": "completed", "kind": "config", "cat": "exploit", "idea": "Ridge alpha = 100 shrinks the coefficients too much (scale ratio 0.5)\u2026", "score": 0.6054, "delta": -0.0}
+- {"id": "EXP_0016", "status": "completed", "kind": "config", "cat": "exploit", "idea": "Ridge alpha = 100 shrinks the coefficients too much (scale ratio 0.5)\u2026", "score": 0.6054, "delta": -0.0}
+- {"id": "EXP_0017", "status": "completed", "kind": "config", "cat": "exploit", "idea": "Ridge alpha = 100 shrinks the coefficients too much (scale ratio 0.5)\u2026", "score": 0.6054, "delta": -0.0}
+- {"id": "EXP_0018", "status": "completed", "kind": "config", "cat": "exploit", "idea": "Ridge alpha = 100 shrinks the coefficients too much (scale ratio 0.5)\u2026", "score": 0.6054, "delta": -0.0}
+- {"id": "EXP_0019", "status": "completed", "kind": "config", "cat": "exploit", "idea": "Ridge alpha = 100 shrinks the coefficients too much (scale ratio 0.5)\u2026", "score": 0.6054, "delta": 0.0}
+- {"id": "EXP_0020", "status": "completed", "kind": "config", "cat": "exploit", "idea": "Ridge alpha = 100 shrinks the coefficients too much (scale ratio 0.5)\u2026", "score": 0.6054, "delta": 0.0}
+- {"id": "EXP_0008", "status": "completed", "kind": "new_feature", "cat": "explore", "idea": "A weighted average of training deltas from the perturbations whose ta\u2026", "score": 0.7294, "delta": 0.124}
+## COMPUTE
+{"completed":14,"failed":0,"mean_cpu_s":1.15,"llm_calls":5,"llm_cost_usd":0.2848}
