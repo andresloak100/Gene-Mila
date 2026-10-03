@@ -66,7 +66,7 @@ def generate(
         rng.choice(tfs, size=n_tf_perts, replace=False),
         rng.choice(non_tf, size=n_perts - n_tf_perts, replace=False),
     ])
-    pert_means, pert_ncells, targets = {}, {}, {}
+    pert_means, pert_ncells, targets, cells_by_pert = {}, {}, {}, {}
     for t in pert_targets:
         kd = 0.85 * mu[t]
         delta = np.zeros(n_genes)
@@ -78,6 +78,7 @@ def generate(
         name = f"{genes[t]}_KO"
         cells = sample_cells(cells_per_pert, delta)
         pert_means[name] = cells.mean(axis=0)
+        cells_by_pert[name] = cells.astype(np.float32)
         pert_ncells[name] = cells_per_pert
         targets[name] = [genes[t]]
 
@@ -97,6 +98,9 @@ def generate(
 
     splits = make_splits(list(pert_means), seed=split_seed)
     sub = control[rng.choice(n_control, size=min(n_control, 1000), replace=False)]
+    held_out = set(splits["val1"]) | set(splits["val2"])
+    eval_cells = {p: c for p, c in cells_by_pert.items() if p in held_out}
+    eval_cells["control"] = control[rng.choice(n_control, size=min(n_control, 300), replace=False)]
     return write_bundle(
         Path(out_dir), "synthetic", genes, sub, pert_means, pert_ncells, targets, splits,
         knowledge={
@@ -106,4 +110,5 @@ def generate(
         },
         extra_meta={"generator": "genemila.data.synthetic", "seed": seed,
                     "description": "Synthetic knockout screen with module structure and a regulatory network."},
+        eval_cells=eval_cells,
     )

@@ -98,8 +98,10 @@ skipping fits whose new feature block is numerically identical to an existing fe
 * The model family is one shared linear model over (p, g) rows. Per-gene models or
   perturbation-level embeddings would need a second feature kind.
 * Real datasets could not be downloaded in the build environment (network policy);
-  the `.h5ad` ingestor is written for the GEARS layout but has not been exercised on
-  Adamson yet.
-* `cell-eval` compatibility: metrics are computed in-house on pseudobulk profiles;
-  exporting predictions to cell-eval's AnnData format is the next step.
+  the `.h5ad` ingestor (scPerturb and GEARS layouts) is tested on a simulated screen but
+  has not been exercised on Adamson yet.
+* `cell-eval`: the search optimises in-house pseudobulk metrics; cell-eval scores only the
+  finalists at the end. Predictions are perturbation means, so cell-eval's distribution
+  metrics see a point mass per perturbation. Cell-level predictions would need a noise or
+  sampling model on top of the linear mean model.
 * Prices are configuration, not fetched; Claude CLI calls report their own cost.

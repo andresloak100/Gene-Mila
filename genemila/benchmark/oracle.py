@@ -36,7 +36,8 @@ class QueryOracle:
     def perts(self) -> list[str]:
         return LabelSet.load(self._labels_path).perts
 
-    def query(self, experiment_id: str, pred: np.ndarray, pert_order: list[str], control_mean: np.ndarray) -> dict:
+    def query(self, experiment_id: str, pred: np.ndarray, pert_order: list[str], control_mean: np.ndarray,
+              celleval_profile: str | None = None, genes: list[str] | None = None) -> dict:
         with self._lock:
             if len(self.queries) >= self.max_queries:
                 raise QueryBudgetExceeded(f"query-only budget of {self.max_queries} exhausted")
@@ -47,5 +48,15 @@ class QueryOracle:
             pred = np.stack([pred[idx[p]] for p in labels.perts])
             result = evaluate(pred, labels.means, control_mean, labels.perts)
             out = {"experiment_id": experiment_id, "metrics": result["metrics"]}
+            cells = self._labels_path.parent / "val2_cells.npz"
+            if celleval_profile and genes is not None and cells.exists():
+                from . import celleval
+                if celleval.available():
+                    try:
+                        X, lab = celleval.load_real_cells(self._labels_path.parent.parent, "val2")
+                        out["cell_eval"] = celleval.score(dict(zip(labels.perts, pred - control_mean)), X, lab,
+                                                          genes, profile=celleval_profile)
+                    except Exception as exc:  # report, never lose the oracle query
+                        out["cell_eval_error"] = f"{type(exc).__name__}: {exc}"[:300]
             self.queries.append(out)
             return out

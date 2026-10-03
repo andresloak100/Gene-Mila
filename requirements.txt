@@ -7,3 +7,5 @@ requests>=2.31
 pytest>=7.4
 # optional, only needed to ingest real .h5ad datasets
 anndata>=0.10
+# optional, scores finalists with Arc Institute's cell-eval (needs Python >= 3.10)
+cell-eval>=0.8

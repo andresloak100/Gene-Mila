@@ -40,10 +40,21 @@ def run_query_only(lab, top_k: int) -> list[dict]:
         except Exception as exc:  # never lose the report over one candidate
             db.event("query_only_error", str(exc), c["experiment_id"], "warning")
             continue
-        out.append({"experiment_id": c["experiment_id"], "kind": c["kind"],
-                    "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
-                    "gap": c["primary_score"] - q["metrics"]["primary"]})
+        row = {"experiment_id": c["experiment_id"], "kind": c["kind"],
+               "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
+               "gap": c["primary_score"] - q["metrics"]["primary"]}
+        try:
+            v1 = lab.celleval_val1(c["experiment_id"])
+        except Exception as exc:  # cell-eval is a report extra; never lose the report over it
+            db.event("celleval_error", f"{type(exc).__name__}: {exc}"[:300], c["experiment_id"], "warning")
+            v1 = None
+        if v1 is not None:
+            row["cell_eval"] = {"val1": v1, "val2": lab.celleval_val2(c["experiment_id"])}
+        out.append(row)
     return out
+
+
+CELLEVAL_SHOWN = ("pearson_delta", "mse", "discrimination_score_l1", "overlap_at_N", "de_direction_match")
 
 
 def build_summary(lab, wall_s: float | None, workers: int | None, generalization: list[dict] | None) -> dict:
@@ -167,6 +178,16 @@ def render_markdown(s: dict) -> str:
           "|---|---|---|---|---|"]
     L += [f"| {g['experiment_id']} | {g['kind']} | {g['visible_score']:.4f} | {g['query_only_score']:.4f} | "
           f"{g['gap']:+.4f} |" for g in s["generalization_query_only"]]
+    rows = [g for g in s["generalization_query_only"] if g.get("cell_eval")]
+    if rows:
+        L += ["", "## CELL-EVAL (visible / query-only)",
+              "Predicted means repeated per cell, anchored on held-out control cells; full metrics in summary.json "
+              "and runs/<run>/celleval/.", "",
+              "| experiment | " + " | ".join(CELLEVAL_SHOWN) + " |", "|---|" + "---|" * len(CELLEVAL_SHOWN)]
+        for g in rows:
+            v1, v2 = g["cell_eval"]["val1"] or {}, g["cell_eval"]["val2"] or {}
+            L.append(f"| {g['experiment_id']} | " + " | ".join(f"{_fmt(v1.get(m), 3)} / {_fmt(v2.get(m), 3)}"
+                                                                for m in CELLEVAL_SHOWN) + " |")
     ce = s["compute_efficiency"]
     L += ["", "## COMPUTE EFFICIENCY", f"- Experiments/hour: {ce['experiments_per_hour']}",
           f"- Mean CPU s/experiment: {ce['mean_cpu_s_per_experiment']}",
