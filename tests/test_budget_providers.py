@@ -39,7 +39,8 @@ def test_cost_tracking(tmp_path):
     gw, db = gateway(tmp_path)
     resp = gw.call(FixedProvider(), "complete", role="worker", max_tokens=500, est_input_tokens=1000,
                    experiment_id=None, system="s", user="u")
-    expected = (200 * 0.028 + 800 * 0.28 + 500 * 0.42) / 1e6
+    pr = gw.pricing["deepseek-chat"]
+    expected = (200 * pr["input_cache_hit"] + 800 * pr["input_cache_miss"] + 500 * pr["output"]) / 1e6
     assert gw.cost("deepseek-chat", resp.usage) == pytest.approx(expected)
     t = db.llm_totals()
     assert (t["input_tokens"], t["output_tokens"], t["cached_tokens"]) == (1000, 500, 200)
@@ -165,3 +166,27 @@ def test_planner_json_parsing():
     assert parse_json('Here: {"hypotheses": []}') == {"hypotheses": []}
     with pytest.raises(ValueError):
         parse_json("no json here")
+
+
+class AliasProvider(FixedProvider):
+    """API that reports serving a different model name than requested (deepseek-chat -> deepseek-flash)."""
+
+    def complete(self, system, user, max_tokens):
+        r = super().complete(system, user, max_tokens)
+        r.model = "deepseek-flash"
+        return r
+
+
+def test_served_model_alias_is_priced_consistently(tmp_path):
+    gw, _ = gateway(tmp_path, cumulative_usd={"deepseek": 0.01})
+    p = AliasProvider()
+    spent = 0.0
+    with pytest.raises(BudgetExceeded):
+        for _ in range(1000):
+            r = gw.call(p, "complete", role="worker", max_tokens=500, est_input_tokens=1000, system="s", user="u")
+            spent += gw.cost("deepseek-flash", r.usage)
+    assert gw.served_as == {"deepseek-chat": "deepseek-flash"}
+    assert gw.ledger.total("deepseek") <= 0.01 + 1e-12  # cumulative cap never overshoots
+    flash = gw.pricing["deepseek-flash"]
+    assert gw.cost("deepseek-flash", Usage(1000, 500, 200)) == pytest.approx(
+        (200 * flash["input_cache_hit"] + 800 * flash["input_cache_miss"] + 500 * flash["output"]) / 1e6)

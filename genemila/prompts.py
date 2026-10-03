@@ -105,17 +105,19 @@ class MeanResponse(Feature):
 
 
 def worker_implement(task: dict) -> str:
+    # Static reference material first, task-specific text last: providers with prefix caching
+    # (DeepSeek, OpenAI, Anthropic) then bill the shared prefix at the cache-hit rate.
     nf = task["new_feature"]
     return (
+        f"API:\n{FEATURE_API_DOC}\n\nEXAMPLE PLUGIN:\n```python\n{EXAMPLE_FEATURE}```\n\n"
+        f"DATA: {task['data_summary']}\n"
+        f"Prior knowledge files: {task['knowledge_summary']}\n\n"
         f"EXPERIMENT {task['experiment_id']}\n"
-        f"Hypothesis: {task['hypothesis']}\nRationale: {task['rationale']}\n\n"
+        f"Hypothesis: {task['hypothesis']}\nRationale: {task['rationale']}\n"
+        f"Other features in this model (do not duplicate them): {task['existing_features']}\n\n"
         f"Implement feature `{nf['name']}`: {nf.get('description', '')}\n"
         f"Implementation hint: {nf.get('implementation_hint', '')}\n"
-        f"Suggested params: {json.dumps(nf.get('params', {}))}\n\n"
-        f"DATA: {task['data_summary']}\n"
-        f"Prior knowledge files: {task['knowledge_summary']}\n"
-        f"Other features in this model (do not duplicate them): {task['existing_features']}\n\n"
-        f"API:\n{FEATURE_API_DOC}\n\nEXAMPLE PLUGIN:\n```python\n{EXAMPLE_FEATURE}```\n"
+        f"Suggested params: {json.dumps(nf.get('params', {}))}\n"
         f"Write the file genemila/features/plugins/{nf['name']}.py."
     )
 
@@ -123,10 +125,11 @@ def worker_implement(task: dict) -> str:
 def worker_diagnose(task: dict, code: str, error: str) -> str:
     nf = task["new_feature"]
     return (
-        f"Your plugin for feature `{nf['name']}` failed validation.\nERROR:\n{error[-1500:]}\n\n"
-        f"YOUR CODE:\n```python\n{code}```\n\n"
+        f"API:\n{FEATURE_API_DOC}\n\n"
         f"Hypothesis being tested: {task['hypothesis']}\n"
-        f"API reminder:\n{FEATURE_API_DOC}\n\nReturn the complete corrected file in one python code block."
+        f"YOUR CODE for feature `{nf['name']}`:\n```python\n{code}```\n\n"
+        f"It failed validation with this ERROR:\n{error[-1500:]}\n\n"
+        "Return the complete corrected file in one python code block."
     )
 
 

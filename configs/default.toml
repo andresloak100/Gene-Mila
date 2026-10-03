@@ -25,7 +25,8 @@ default_alpha_grid = [0.01, 0.1, 1.0, 10.0, 100.0]
 explore = 0.65
 exploit = 0.25
 risky = 0.10
-queue_low_water = 0            # refill when queued < this; 0 = number of workers
+queue_low_water = 0            # refill when queued < this; 0 = 2 x workers (keeps workers busy while the planner thinks)
+planner_batch = 0              # hypotheses requested per planner round; 0 = 2 x workers, capped at 20
 planner_min_interval_s = 60
 max_planner_calls = 20
 replicates_max = 3             # same hypothesis to independent workers
@@ -38,7 +39,7 @@ timeout_s = 300
 
 [worker]
 provider = "deepseek"          # deepseek | claude_cli | mock | openai_compat
-model = "deepseek-chat"
+model = "deepseek-flash"
 escalation_provider = ""       # e.g. "claude_cli" with escalation_model = "sonnet"
 escalation_model = ""
 llm_retries = 1                # implementation retries before escalation
@@ -58,16 +59,23 @@ max_tokens_per_worker = 200000
 [budget.cumulative_usd]
 deepseek = 0.25
 
-# USD per million tokens. Check https://api-docs.deepseek.com/quick_start/pricing
-[pricing."deepseek-chat"]
-input_cache_hit = 0.028
-input_cache_miss = 0.28
-output = 0.42
+# USD per million tokens, from https://api-docs.deepseek.com/quick_start/pricing (checked 2026-10-03).
+# DeepSeek bills peak (01-04 and 06-10 UTC, Mon-Fri) at twice off-peak; the PEAK rates are used here so
+# estimates never undercount. The API serves the legacy name "deepseek-chat" with deepseek-flash.
+[pricing."deepseek-flash"]
+input_cache_hit = 0.006
+input_cache_miss = 0.30
+output = 1.20
 
-[pricing."deepseek-reasoner"]
-input_cache_hit = 0.028
-input_cache_miss = 0.28
-output = 0.42
+[pricing."deepseek-chat"]
+input_cache_hit = 0.006
+input_cache_miss = 0.30
+output = 1.20
+
+[pricing."deepseek-v4-pro"]
+input_cache_hit = 0.044
+input_cache_miss = 1.32
+output = 3.96
 
 # Used when a model has no entry here and the provider reports no cost (deliberately pessimistic).
 [pricing.default]

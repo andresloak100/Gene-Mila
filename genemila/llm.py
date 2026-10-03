@@ -76,12 +76,22 @@ class LLMGateway:
         self.tokens_by_experiment: dict[str, int] = {}
         self.consecutive_failures: dict[str, int] = {}
         self.halted: dict[str, str] = {}  # role or provider -> reason
+        self.served_as: dict[str, str] = {}  # requested model -> model the API reports serving
         self._ledger_base = {p: (ledger.total(p) if ledger else 0.0) for p in self.cumulative_caps}
 
     # ----------------------------------------------------------------- pricing
     def price(self, model: str) -> dict:
+        model = self.served_as.get(model, model)
         return self.pricing.get(model) or self.pricing.get("default") or {
             "input_cache_hit": 3.0, "input_cache_miss": 3.0, "output": 15.0}
+
+    def price_key(self, requested: str, served: str | None) -> str:
+        """Price by the model actually served when it is in the price table, else by the requested one.
+        Remembering the mapping keeps later reservations consistent with what calls are billed at."""
+        if served and served != requested and served in self.pricing:
+            self.served_as[requested] = served
+            return served
+        return requested
 
     def cost(self, model: str, usage: Usage) -> float:
         if usage.cost_usd is not None:
@@ -165,7 +175,7 @@ class LLMGateway:
             except Exception:
                 self._settle(role, pname, wc, 0.0, 0, worker_id, experiment_id)
                 raise
-            cost = self.cost(resp.model or provider.model, resp.usage)
+            cost = self.cost(self.price_key(provider.model, resp.model), resp.usage)
             tokens = resp.usage.input_tokens + resp.usage.output_tokens
             self._settle(role, pname, wc, cost, tokens, worker_id, experiment_id)
             with self._lock:

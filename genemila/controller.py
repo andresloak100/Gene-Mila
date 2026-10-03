@@ -92,7 +92,7 @@ class Controller:
             return
         if self.planner.rounds >= self.max_planner_calls:
             return
-        low = int(self.cfg["schedule"]["queue_low_water"]) or self.n_workers
+        low = int(self.cfg["schedule"]["queue_low_water"]) or 2 * self.n_workers
         queued = self.lab.db.count_by_status().get("queued", 0)
         if queued >= low:
             return
@@ -100,7 +100,7 @@ class Controller:
         if self.planner.last_queued == 0 and self.planner.rounds > 0 and \
                 time.time() - self.planner.last_call < float(self.cfg["schedule"]["planner_min_interval_s"]):
             return
-        n = max(self.n_workers, 4)
+        n = int(self.cfg["schedule"].get("planner_batch", 0)) or min(20, max(6, 2 * self.n_workers))
 
         def run():
             try:
