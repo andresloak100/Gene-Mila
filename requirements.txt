@@ -1,0 +1,9 @@
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+pandas>=2.0
+psutil>=5.9
+requests>=2.31
+pytest>=7.4
+# optional, only needed to ingest real .h5ad datasets
+anndata>=0.10

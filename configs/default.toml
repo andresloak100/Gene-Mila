@@ -1,0 +1,83 @@
+# Gene-Mila autonomous laboratory configuration.
+# Everything here is controller-side; agents never read or modify it.
+
+[run]
+dataset = "synthetic"          # name of a prepared dataset under data/
+minutes = 20.0                 # wall-clock budget (overridden by --minutes/--hours)
+workers = 4                    # asynchronous research worker slots
+cpu_slots = 0                  # concurrent CPU experiments; 0 = number of cores
+shutdown_grace_s = 30          # how long running experiments may finish after the deadline
+status_interval_s = 10
+seed = 0
+
+[experiment]
+timeout_s = 300                # per-experiment CPU-run timeout
+ram_limit_mb = 4096            # RLIMIT_AS for the experiment subprocess
+cpu_limit_s = 600              # RLIMIT_CPU for the experiment subprocess
+max_attempts = 2               # infrastructure retries (never scientific retries)
+max_new_features = 1           # one controlled change per experiment
+default_model = "ridge"
+default_alpha_grid = [0.01, 0.1, 1.0, 10.0, 100.0]
+
+[schedule]
+explore = 0.65
+exploit = 0.25
+risky = 0.10
+queue_low_water = 0            # refill when queued < this; 0 = number of workers
+planner_min_interval_s = 60
+max_planner_calls = 20
+replicates_max = 3             # same hypothesis to independent workers
+
+[planner]
+provider = "claude_cli"        # claude_cli | anthropic | scripted
+model = "opus"
+max_output_tokens = 6000
+timeout_s = 300
+
+[worker]
+provider = "deepseek"          # deepseek | claude_cli | mock | openai_compat
+model = "deepseek-chat"
+escalation_provider = ""       # e.g. "claude_cli" with escalation_model = "sonnet"
+escalation_model = ""
+llm_retries = 1                # implementation retries before escalation
+max_output_tokens = 3000
+timeout_s = 120
+
+[budget]
+max_total_usd = 0.25           # hard cap on worker-LLM spend in one run; new calls are refused beyond it
+max_planner_usd = 5.0          # separate cap for the planner in one run
+api_retries = 1                # retries of a retryable API error (429/5xx/network), never more
+circuit_breaker_failures = 5   # consecutive API failures before all calls to that provider stop
+ledger = "runs/spend_ledger.sqlite"   # cumulative spend across runs
+max_tokens_per_experiment = 30000
+max_tokens_per_worker = 200000
+
+# Cumulative caps across ALL runs that share the ledger (development budget).
+[budget.cumulative_usd]
+deepseek = 0.25
+
+# USD per million tokens. Check https://api-docs.deepseek.com/quick_start/pricing
+[pricing."deepseek-chat"]
+input_cache_hit = 0.028
+input_cache_miss = 0.28
+output = 0.42
+
+[pricing."deepseek-reasoner"]
+input_cache_hit = 0.028
+input_cache_miss = 0.28
+output = 0.42
+
+# Used when a model has no entry here and the provider reports no cost (deliberately pessimistic).
+[pricing.default]
+input_cache_hit = 3.0
+input_cache_miss = 3.0
+output = 15.0
+
+[pricing.mock]
+input_cache_hit = 0.0
+input_cache_miss = 0.0
+output = 0.0
+
+[final]
+top_k = 3                      # visible-validation winners evaluated on the query-only set
+max_queries = 5                # hard cap on query-only evaluations per run
