@@ -97,25 +97,43 @@ biology (gene modules → co-expression, a sparse regulatory network, a shared s
 response) plus noisy prior knowledge (`gene_sets`, `prior_network`,
 `transcription_factors`). It is the fixture used for tests and development.
 
-Real data (CellForge datasets): download the GEARS-processed Adamson set
-(`https://dataverse.harvard.edu/api/access/datafile/6154417`, ~70 MB), extract
-`adamson/perturb_processed.h5ad`, then:
+Real data. The ingestor reads both layouts CellForge uses: scPerturb files (raw counts,
+`obs['perturbation']`, e.g. `AdamsonWeissman2016_GSM2406681_10X010.h5ad` from
+https://zenodo.org/records/13350497) and GEARS files (`perturb_processed.h5ad`,
+`obs['condition']` with `GENE+ctrl`). It normalises raw counts (counts per 10k, log1p),
+parses target genes out of labels (guides for the same gene are merged; `GENEA+GENEB`
+doubles are kept), keeps highly variable genes plus every target gene, and splits by
+perturbation. `--splits` takes an external split (train/val1/val2 or train/val/test lists),
+e.g. CellForge's, instead of ours.
 
 ```bash
-pip install anndata
-python prepare_data.py h5ad --name adamson --h5ad adamson/perturb_processed.h5ad --hvg 2000
+pip install anndata cell-eval
+python prepare_data.py describe AdamsonWeissman2016_GSM2406681_10X010.h5ad
+python prepare_data.py h5ad --name adamson --h5ad AdamsonWeissman2016_GSM2406681_10X010.h5ad --hvg 2000
 python run_research.py --dataset adamson --minutes 20 --workers 4
 ```
 
-The same ingestor handles Norman (combinatorial `GENEA+GENEB` targets are supported).
+### cell-eval
+
+Each bundle also keeps, privately, the cells of held-out perturbations and a separate
+sample of control cells. At the end of a run the finalists (and the best baseline) are
+scored with Arc Institute's [cell-eval](https://github.com/ArcInstitute/cell-eval) on the
+visible validation set, and on the query-only set as part of the same capped oracle query.
+A prediction becomes (held-out control mean + predicted delta) repeated for each real
+cell, as cell-eval's own mean baseline does, so pseudobulk metrics (pearson_delta, mse,
+DE overlap/precision, discrimination score) are comparable with other methods while
+distribution metrics treat the prediction as a point mass. Results land in
+`summary.md` / `summary.json` and `runs/<run>/celleval/`. Turn it off with
+`--set final.celleval=false`; `final.celleval_profile` picks the metric set.
 
 ## Configuration
 
 `configs/default.toml` holds every knob (workers, CPU slots, timeouts, RAM, retries,
 exploration mix, providers and models, budgets, prices). Override with `--config my.toml`
-or `--set section.key=value`. DeepSeek prices default to the published
-`deepseek-chat` rates (cache hit $0.028, miss $0.28, output $0.42 per million tokens);
-update `[pricing."deepseek-chat"]` if they change.
+or `--set section.key=value`. DeepSeek prices are set to the
+published peak-hour rates for `deepseek-flash` (what the API serves for `deepseek-chat`)
+and `deepseek-v4-pro`; update `[pricing.*]` if they change, and run
+`python reprice_ledger.py --apply` to recompute the spend ledger with new prices.
 
 ## Providers
 

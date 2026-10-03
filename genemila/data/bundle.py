@@ -66,7 +66,11 @@ def write_bundle(
     splits: dict,
     knowledge: dict | None = None,
     extra_meta: dict | None = None,
+    eval_cells: dict | None = None,
 ) -> Path:
+    """eval_cells (optional): {"control": matrix, "<pert>": matrix of cells} with cells x genes in
+    log-normalised space. Cells of validation perturbations (and a control sample) are stored
+    privately so held-out predictions can be scored with cell-eval."""
     out_dir = Path(out_dir)
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -92,6 +96,18 @@ def write_bundle(
             perts=np.array(splits[part]),
             means=stack(splits[part]),
         )
+    if eval_cells:
+        import scipy.sparse as sp
+        for part in ("val1", "val2"):
+            perts = [p for p in splits[part] if p in eval_cells]
+            blocks = [eval_cells["control"]] + [eval_cells[p] for p in perts]
+            labels = ["control"] * eval_cells["control"].shape[0]
+            for p in perts:
+                labels += [p] * eval_cells[p].shape[0]
+            X = sp.vstack([sp.csr_matrix(np.asarray(b, dtype=np.float32)) if not sp.issparse(b)
+                           else b.astype(np.float32) for b in blocks]).tocsr()
+            sp.save_npz(out_dir / "private" / f"{part}_cells.npz", X)
+            np.save(out_dir / "private" / f"{part}_cells_labels.npy", np.array(labels))
     with open(out_dir / "splits.json", "w") as fh:
         json.dump(splits, fh, indent=1)
     with open(out_dir / "knowledge" / "targets.json", "w") as fh:

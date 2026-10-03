@@ -40,6 +40,7 @@ def make_cfg(tmp_path, **over):
     cfg["planner"].update(provider="scripted", model="scripted")
     cfg["schedule"].update(planner_min_interval_s=0.5, max_planner_calls=6)
     cfg["budget"]["ledger"] = str(tmp_path / "ledger.sqlite")
+    cfg["final"]["celleval"] = False  # slow; covered by test_real_data_celleval.py
     for k, v in over.items():
         sect, key = k.split("__")
         cfg[sect][key] = v

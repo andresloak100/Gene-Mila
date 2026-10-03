@@ -189,25 +189,66 @@ class Lab:
         return {"alpha_index": k, "best_alpha": float(z["alphas"][k]), "metrics": res["metrics"],
                 "diagnostics": res["diagnostics"], "alpha_scores": scores}
 
+    def _predict(self, rec: dict, perts: list[str]) -> tuple[np.ndarray, list[str]]:
+        """Absolute predicted expression of an experiment (or analytic baseline) for the given perturbations."""
+        if rec["kind"] == "baseline" and not rec.get("artifact_dir"):
+            return self._analytic_baseline(rec["hypothesis_group"], perts), list(perts)
+        z = np.load(Path(rec["artifact_dir"]) / "predictions.npz", allow_pickle=False)
+        have = [str(p) for p in z["perts"]]
+        alphas = list(map(float, z["alphas"]))
+        k = alphas.index(rec["best_alpha"]) if rec["best_alpha"] in alphas else 0
+        pred = z["delta"][k].astype(np.float64) + self.control_mean
+        keep = [i for i, p in enumerate(have) if p in set(perts)]
+        return pred[keep], [have[i] for i in keep]
+
+    @property
+    def celleval_profile(self) -> str | None:
+        """cell-eval profile for final scoring, or None when disabled, not installed, or no held-out cells."""
+        f = self.cfg.get("final", {})
+        if not f.get("celleval", True) or not (self.data_dir / "private" / "val1_cells.npz").exists():
+            return None
+        from .benchmark import celleval
+        return f.get("celleval_profile", "full") if celleval.available() else None
+
+    def _celleval_path(self, experiment_id: str, part: str) -> Path:
+        d = self.run_dir / "celleval"
+        d.mkdir(exist_ok=True)
+        return d / f"{experiment_id}_{part}.json"
+
+    def celleval_val1(self, experiment_id: str) -> dict | None:
+        """cell-eval metrics on the visible validation set (cached on disk). None when unavailable."""
+        profile = self.celleval_profile
+        rec = self.db.get_experiment(experiment_id)
+        if not profile or not rec:
+            return None
+        path = self._celleval_path(experiment_id, "val1")
+        if path.exists():
+            return json.loads(path.read_text())
+        from .benchmark import celleval
+        pred, perts = self._predict(rec, self._val1.perts)
+        X, labels = celleval.load_real_cells(self.data_dir, "val1")
+        out = celleval.score(dict(zip(perts, pred - self.control_mean)), X, labels, self.genes, profile=profile)
+        path.write_text(json.dumps(out, indent=1))
+        return out
+
     def query_only(self, experiment_id: str) -> dict | None:
         rec = self.db.get_experiment(experiment_id)
         if not rec:
             return None
-        if rec["kind"] == "baseline" and not rec.get("artifact_dir"):
-            pred = self._analytic_baseline(rec["hypothesis_group"], self.oracle.perts)
-            perts = self.oracle.perts
-        else:
-            z = np.load(Path(rec["artifact_dir"]) / "predictions.npz", allow_pickle=False)
-            perts = [str(p) for p in z["perts"]]
-            alphas = list(map(float, z["alphas"]))
-            k = alphas.index(rec["best_alpha"]) if rec["best_alpha"] in alphas else 0
-            pred = z["delta"][k].astype(np.float64) + self.control_mean
-            keep = [i for i, p in enumerate(perts) if p in set(self.oracle.perts)]
-            pred, perts = pred[keep], [perts[i] for i in keep]
-        out = self.oracle.query(experiment_id, pred, perts, self.control_mean)
+        pred, perts = self._predict(rec, self.oracle.perts)
+        out = self.oracle.query(experiment_id, pred, perts, self.control_mean,
+                                celleval_profile=self.celleval_profile, genes=self.genes)
         self.db.update_experiment(experiment_id, query_metrics_json=out["metrics"])
+        if "cell_eval" in out:
+            self._celleval_path(experiment_id, "val2").write_text(json.dumps(out["cell_eval"], indent=1))
+        elif "cell_eval_error" in out:
+            self.db.event("celleval_error", out["cell_eval_error"], experiment_id, "warning")
         self.db.event("query_only", f"query-only evaluation of {experiment_id}", experiment_id)
         return out
+
+    def celleval_val2(self, experiment_id: str) -> dict | None:
+        path = self._celleval_path(experiment_id, "val2")
+        return json.loads(path.read_text()) if path.exists() else None
 
     # ---------------------------------------------------------------- baselines
     def _analytic_baseline(self, which: str, perts: list[str]) -> np.ndarray:
