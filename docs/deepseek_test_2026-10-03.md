@@ -8,7 +8,7 @@ that name. `deepseek-flash` was missing from the price table, so the runs priced
 pessimistic fallback ($3 in / $15 out per million tokens). The figures below are recomputed
 from the recorded tokens at DeepSeek's published **peak** flash rates ($0.30 input, $0.006
 cached input, $1.20 output per million). Off-peak is half of that. This is fixed in commit
-`<next>`.
+`7787cb7`.
 
 ## 1. Did the 4 workers operate independently?
 
