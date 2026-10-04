@@ -68,7 +68,7 @@ python status.py                     # live state (add --watch 5)
 python leaderboard.py                # ranked experiments; --all includes failures
 python leaderboard.py --lineage EXP_0012
 python summarize.py --state          # the compressed research state the planner sees
-python summarize.py                  # regenerate the run summary
+python summarize.py                  # regenerate the run summary (keeps stored query-only scores)
 python reproduce.py --experiment EXP_0012
 python analyze_run.py                # worker independence, tokens, cost, bottlenecks, projections
 ```

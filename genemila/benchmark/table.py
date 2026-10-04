@@ -55,9 +55,13 @@ def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
         return {c: comp.get(f"cellforge_{c}") for c in COLUMNS + DESET_COLUMNS}
 
     cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
+    planner = cfg.get("planner", {}).get("provider", "")
+    worker = cfg.get("worker", {}).get("provider", "")
+    arm = "scripted control (no LLM)" if planner == "scripted" or worker in ("mock", "") else \
+        f"{planner}:{cfg.get('planner', {}).get('model', '')} planner, {worker}:{cfg.get('worker', {}).get('model', '')} workers"
     return {"run_id": s.get("run_id", run_dir.name), "dataset": s.get("dataset"), "split_id": s.get("split_id"),
             "workers": s.get("workers") or cfg.get("run", {}).get("workers"), "duration_s": s.get("duration_s"),
-            "data_dir": cfg.get("run", {}).get("data_dir"),
+            "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm,
             "best": None if best is None else {"experiment_id": best["experiment_id"],
                                                "features": (s.get("best") or {}).get("features"),
                                                "model": (s.get("best") or {}).get("model"),
@@ -171,12 +175,12 @@ def build(run_dirs: list[Path], paper_json: Path | None, dataset_key: str | None
     runs = [r for r in (run_rows(Path(d), part) for d in run_dirs) if r]
     groups: dict[tuple, list[dict]] = {}
     for r in runs:
-        groups.setdefault((r["dataset"], r["split_id"], r["workers"]), []).append(r)
+        groups.setdefault((r["dataset"], r["split_id"], r["arm"], r["workers"]), []).append(r)
     blocks = []
-    for (dataset, split_id, workers), rs in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][2] or 0)):
+    for (dataset, split_id, arm, workers), rs in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][2], kv[0][3] or 0)):
         best = aggregate([r["best"]["metrics"] for r in rs if r["best"] and r["best"]["metrics"]])
         start = aggregate([r["start"]["metrics"] for r in rs if r["start"] and r["start"]["metrics"]])
-        blocks.append({"dataset": dataset, "split_id": split_id, "workers": workers, "n_runs": len(rs),
+        blocks.append({"dataset": dataset, "split_id": split_id, "arm": arm, "workers": workers, "n_runs": len(rs),
                        "run_ids": [r["run_id"] for r in rs], "data_dir": next((r["data_dir"] for r in rs), None),
                        "best": best, "start": start,
                        "best_primary": [r["best"]["primary"] for r in rs if r["best"]],
@@ -227,13 +231,17 @@ def render(t: dict) -> str:
             if start_name not in rows and any(b["start"].get(c) for c in COLUMNS):
                 rows[start_name] = b["start"]
                 sources[start_name] = "ours"
-            name = f"{t['label']}, {b['workers']} workers (n={b['n_runs']})"
+            name = f"{t['label']}, {b['arm']}, {b['workers']} workers (n={b['n_runs']})"
             rows[name] = b["best"]
             sources[name] = "ours"
         title = (pd or {}).get("title") or dataset
         L += render_block(title, rows, sources)
         notes = [f"Lab runs: " + "; ".join(
-            f"{b['workers']} workers: {', '.join(b['run_ids'])} (split {b['split_id']})" for b in blocks)]
+            f"{b['arm']}, {b['workers']} workers: {', '.join(b['run_ids'])} (split {b['split_id']})" for b in blocks)]
+        if not any("scripted control" in b["arm"] for b in blocks):
+            notes.append("No scripted no-LLM control run on this split yet: the agents' gain is measured over the "
+                         "starting model only. Run the same time budget with `--planner-provider scripted "
+                         "--worker-provider mock` to add that row.")
         if blocks[0].get("start_description"):
             notes.append(f"Starting model: {blocks[0]['start_description']}")
         if pd:
