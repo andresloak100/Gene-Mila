@@ -1,0 +1,46 @@
+# The repository's public face beyond README.md. GitHub's About box and social preview are
+# repository settings, not files, so this is their source of truth:
+#   python tools/readme_check.py               validates it with the README
+#   python tools/readme_check.py --gh-command  prints the `gh repo edit` command that applies it
+# The social preview image is uploaded by hand under Settings > General > Social preview.
+# The readme-designer agent (.claude/agents/readme-designer.md) keeps this in sync with the README.
+
+[about]
+description = "An autonomous lab for single-cell perturbation prediction under a hard deadline: Claude plans, worker LLMs write one feature per experiment, and only a linear model may use them, so every gain is a feature you can read."
+homepage = ""
+topics = [
+  "perturb-seq",
+  "single-cell",
+  "perturbation-prediction",
+  "crispr-screens",
+  "gene-expression",
+  "computational-biology",
+  "llm-agents",
+  "ai-scientist",
+  "autonomous-research",
+  "feature-engineering",
+  "interpretable-ml",
+  "ridge-regression",
+  "claude",
+  "deepseek",
+]
+social_preview = "docs/assets/social-preview.png"
+
+[readme]
+path = "README.md"
+# Until a real dataset has been scored, every section or figure that shows a score must say this.
+results_label = "synthetic"
+# Headings contributors and the build scripts rely on; rename them here first if they move.
+required_headings = [
+  "What one run looks like",
+  "How it works",
+  "Limitations",
+  "Where this is going",
+  "Quick start",
+  "Data",
+  "cell-eval",
+  "Configuration",
+  "Providers",
+  "Outputs of a run",
+]
+max_badges = 3
