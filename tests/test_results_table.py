@@ -119,3 +119,16 @@ def test_handoff_state_flags_stale_clones_and_ledger_bypass(tmp_path):
     assert not rows["free_control"]["paid"] and rows["free_control"]["ledger_ok"] is None
     g = hs.git_state(hs.REPO_ROOT)
     assert g["integration_branch"] == hs.INTEGRATION_BRANCH and ("behind" in g)
+
+
+def test_run_config_honours_an_explicit_data_dir(tmp_path):
+    """`--set run.data_dir=<path>` points a run at a bundle outside the checkout (a clone can read the main
+    checkout's data without copying it); without it the dataset name resolves under data/."""
+    import run_research as rr
+    from genemila import REPO_ROOT
+    cfg = rr.build_config(rr.parse_args(["--dataset", "adamson_cf", "--planner-provider", "scripted",
+                                         "--worker-provider", "mock", "--set", f"run.data_dir={tmp_path}/bundle"]))
+    assert cfg["run"]["data_dir"] == str((tmp_path / "bundle").resolve())
+    cfg = rr.build_config(rr.parse_args(["--dataset", "adamson_cf", "--planner-provider", "scripted",
+                                         "--worker-provider", "mock"]))
+    assert cfg["run"]["data_dir"] == str(REPO_ROOT / "data" / "adamson_cf")

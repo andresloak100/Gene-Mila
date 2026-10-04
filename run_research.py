@@ -73,7 +73,12 @@ def build_config(args) -> dict:
         except json.JSONDecodeError:
             pass
         set_dotted(cfg, k, v)
-    cfg["run"]["data_dir"] = str(REPO_ROOT / "data" / cfg["run"]["dataset"])
+    if any(item.split("=", 1)[0] == "run.data_dir" for item in args.set):
+        # a bundle outside this checkout (e.g. a clone reading the main checkout's data read-only;
+        # runs write only into their own run directory)
+        cfg["run"]["data_dir"] = str(Path(cfg["run"]["data_dir"]).expanduser().resolve())
+    else:
+        cfg["run"]["data_dir"] = str(REPO_ROOT / "data" / cfg["run"]["dataset"])
     if args.continue_from:
         prev = Path(args.continue_from).resolve()
         if not (prev / "lab.db").exists():
