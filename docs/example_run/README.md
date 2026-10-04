@@ -19,12 +19,12 @@ Every pearson_delta here is a mean over 16 perturbations.
 * `research_state_round3.txt`: the compressed state the planner received in round 3
 * `tf_gated_coexpression_e26.py`: the feature written by a worker in the best model
 * `control_scripted_summary.md`: a control on the same split with no LLM at all, the offline
-  dry run from the main README (`--worker-provider mock --planner-provider scripted`,
-  2 minutes, $0). A scripted planner proposes seven fixed hypotheses, mock workers paste
+  dry run from the main README (`--worker-provider mock --planner-provider scripted`, 2
+  minutes, $0). A scripted planner proposes seven fixed hypotheses, mock workers paste
   hand-written template features (`genemila/providers/mock.py`), and Python combines the ones
-  that helped and sweeps alpha. Best 0.7702 pearson_delta on visible validation, 0.7776
-  query-only. Run on later code (`dee5bb55b0`); the same command gave the same numbers at
-  commit `4ace15e` and once more after the lab's results-table merge. A second rerun after that
-  merge stopped one step earlier, at 0.7683 and 0.7744 (the `EXP_0016` row of the summary),
-  because the scripted planner combines only finished results and a 2-minute run is
-  timing-sensitive.
+  that helped, sweeps alpha and tries one lasso fit. Best 0.7702 pearson_delta on visible
+  validation, 0.7776 query-only. Run on later code (`dee5bb55b0`); the same command gave the
+  same numbers at commit `4ace15e` and once more after the lab's results-table merge. A second
+  rerun after that merge stopped one step earlier, at 0.7683 and 0.7744 (the `EXP_0016` row of
+  the summary), because the scripted planner combines only finished results and a 2-minute run
+  is timing-sensitive.

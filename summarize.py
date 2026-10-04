@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """(Re)generate the research summary for a run.
 
-    python summarize.py [--run DIR]             # visible-validation summary only
-    python summarize.py --query-only            # also evaluate winners on the query-only set (capped)
+    python summarize.py [--run DIR]             # regenerate the summary (keeps stored query-only scores)
+    python summarize.py --query-only            # also evaluate new winners on the query-only set (capped)
     python summarize.py --state                 # print the compressed research state the planner sees
 """
 

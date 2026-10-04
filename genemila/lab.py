@@ -352,8 +352,13 @@ class Lab:
 
     def data_summary(self) -> str:
         m = self.manifest
+        targets = json.loads((self.public_dir / "knowledge" / "targets.json").read_text())
+        sizes = [len(v) for v in targets.values()] or [1]
+        multi = sum(1 for n in sizes if n > 1)
+        kind = "single-gene targets" if not multi else (
+            f"targets of 1 to {max(sizes)} genes; {multi} of {len(sizes)} perturbations hit more than one gene")
         return (f"{m['name']}: {m['n_genes']} genes, {m['n_control_cells']} control cells, "
-                f"{m['n_train']} training perturbations (single-gene targets); predict unseen perturbations.")
+                f"{m['n_train']} training perturbations ({kind}); predict unseen perturbations.")
 
     def knowledge_summary(self) -> str:
         parts = []

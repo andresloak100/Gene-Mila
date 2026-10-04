@@ -41,7 +41,9 @@ def test_table_from_run_summary(tmp_path, dataset):
                    {"experiment_id": "EXP_0003", "kind": "baseline", "query_only_score": 0.4,
                     "comparable": {"val1": base, "val2": base}}]}
     (run / "summary.json").write_text(json.dumps(summary))
-    (run / "config.json").write_text(json.dumps({"run": {"workers": 4, "data_dir": str(dataset)}}))
+    (run / "config.json").write_text(json.dumps({"run": {"workers": 4, "data_dir": str(dataset)},
+                                                 "planner": {"provider": "claude_cli", "model": "opus"},
+                                                 "worker": {"provider": "deepseek", "model": "deepseek-flash"}}))
     paper = tmp_path / "paper.json"
     paper.write_text(json.dumps({"source": "test", "notes": ["n1"], "datasets": {"adamson": {
         "title": "Adamson", "rows": {"Unperturbed": [0.98, 0.0, -0.01, 3.8, 0.0, -4.2],
@@ -51,5 +53,7 @@ def test_table_from_run_summary(tmp_path, dataset):
     assert t["blocks"][0]["best"]["mse"]["mean"] == 0.01 and t["blocks"][0]["n_runs"] == 1
     md = table.render(t)
     assert "| CPA | reported |" in md and "Unperturbed (rerun) | rerun |" in md
-    assert "| CPA | reported | **0.0067**¹" in md and "Gene-Mila, 4 workers (n=1) | ours | 0.0100²" in md
+    assert "| CPA | reported | **0.0067**¹" in md
+    assert "Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers, 4 workers (n=1) | ours | 0.0100²" in md
+    assert "No scripted no-LLM control run" in md
     assert "Gene-Mila starting model | ours |" in md and "documented DE set" in md

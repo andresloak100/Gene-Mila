@@ -63,3 +63,11 @@ def test_every_experiment_and_report_get_comparable_metrics(lab_factory):
     assert "cellforge_mse" in row["comparable"]["val2"] and "vcworld_dir_f1" in row["comparable"]["val1"]
     md = (lab.run_dir / "summary.md").read_text()
     assert "## CELLFORGE METRICS" in md and "## VCWORLD METRICS" in md
+    # a plain re-summary keeps the sealed-set rows from stored scores without a new oracle query
+    n_queries = len(lab.oracle.queries)
+    s2 = finalize(lab, query=False)
+    assert [r["experiment_id"] for r in s2["generalization_query_only"]] == \
+        [r["experiment_id"] for r in s["generalization_query_only"]]
+    assert len(lab.oracle.queries) == n_queries
+    assert "## CELLFORGE METRICS" in (lab.run_dir / "summary.md").read_text()
+    assert "single-gene targets" in lab.data_summary()

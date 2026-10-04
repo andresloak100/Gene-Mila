@@ -54,16 +54,16 @@ on 16 perturbations. Summary, planner batch, research state and analysis are in
 
 The same split, run with no LLM at all, does as well. The offline dry run in [Quick
 start](#quick-start) uses a scripted planner (seven fixed hypotheses, then combinations of
-those that helped and an alpha sweep) and hand-written template features from
+those that helped, an alpha sweep and one lasso fit) and hand-written template features from
 `genemila/providers/mock.py`. In 2 minutes and for $0 it reached 0.7702 on visible validation
 and 0.7776 on the sealed set ([summary](docs/example_run/control_scripted_summary.md)), against
 the agents' 0.7775 and 0.7764 for about $1.25 of recorded API cost. The control is
 timing-sensitive, because its planner combines only results that have finished: three of four
-runs on this and earlier code gave these numbers, and one stopped a step earlier at 0.7683 and
+runs of the same command gave 0.7702 and 0.7776, and one stopped a step earlier at 0.7683 and
 0.7744. The agents, who never saw the templates, re-derived them: target co-expression adds
-+0.1579 in both runs. So this run shows that the machinery works and that the agents reach a
-hand-written reference; it does not show what agents add beyond one. That is the first question
-for real screens.
++0.1579 in the agent run and in the control. So this run shows that the machinery works and
+that the agents reach a hand-written reference; it does not show what agents add beyond one.
+That is the first question for real screens.
 
 ### A feature a worker wrote
 
@@ -267,18 +267,21 @@ The paper this lab is built for asks three questions:
 Gene-Mila stays a separate lab rather than a fork of CellForge or VCWorld, built to be compared
 with both:
 
-1. **Real screens on CellForge's splits.** Adamson (CRISPRi knockdown) first, then Norman
-   (CRISPRa activation, single and double targets). The ingestor, CellForge-style train/test
-   splits (`--splits`) and curated prior knowledge (`prepare_data.py knowledge`) exist. Before
-   Norman, the planner has to be told the modality and that a target can be a gene pair: today
-   it is told "single-gene targets", and the features that won here model loss of function.
+1. **Real screens on CellForge's splits.** Adamson (CRISPRi knockdown) first, then Norman (CRISPRa
+   activation, single and double targets). The ingestor, CellForge-style train/test splits
+   (`--splits`) and curated prior knowledge (`prepare_data.py knowledge`) exist, and the planner
+   is told how many perturbations target more than one gene. Before Norman it also has to be
+   told the modality: the features that won here model loss of function, and CRISPRa is a gain
+   of function.
 2. **The same game.** `results_table.py` lays results out like CellForge's Table 1: Unperturbed,
    Random Forest and Linear Regression refitted on the same split, the published rows quoted from
    the paper (`docs/results/cellforge_table1.json`), and Gene-Mila's best model next to its
-   starting model. Because the paper does not state its expression scale, it also checks which
-   metric definition reproduces the paper's simple-baseline rows. No real-data run has filled the
-   table yet. VCWorld's benchmark is drug perturbations only, so until Gene-Mila has drug features
-   the VCWorld comparison uses its DE and direction metrics on Adamson and Norman, not its data.
+   starting model, one row per arm and worker count, so a scripted no-LLM control on the same
+   split gets its own row. Because the paper does not state its expression scale, it also checks
+   which metric definition reproduces the paper's simple-baseline rows. No real-data run has
+   filled the table yet. VCWorld's benchmark is drug perturbations only, so until Gene-Mila has
+   drug features the VCWorld comparison uses its DE and direction metrics on Adamson and Norman,
+   not its data.
 
 Drug perturbations (Srivatsan in CellForge's set, and all of VCWorld's GeneTAK) wait on drug
 metadata: every feature today assumes a gene target, and the ingestor drops labels that name no
@@ -321,14 +324,14 @@ python status.py                     # live state (add --watch 5)
 python leaderboard.py                # ranked experiments; --all includes failures
 python leaderboard.py --lineage EXP_0012
 python summarize.py --state          # the compressed research state the planner sees
-python summarize.py --query-only     # rebuild summary.md with the sealed-set tables
+python summarize.py                  # regenerate the run summary (keeps stored query-only scores)
 python reproduce.py --experiment EXP_0012
 python analyze_run.py                # worker independence, tokens, cost, bottlenecks, projections
 ```
 
 Every command defaults to the most recent run under `runs/`; pass `--run runs/<id>` to pick one.
-`summarize.py --query-only` reuses the sealed-set scores a finished run already stored; plain
-`summarize.py` rewrites the summary without them.
+`summarize.py` keeps the sealed-set scores a finished run already stored and makes no new
+query; `--query-only` also scores any top candidate that has no stored sealed-set score yet.
 
 ### Scaling (only after the 4-worker test is reviewed)
 

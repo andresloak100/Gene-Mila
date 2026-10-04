@@ -13,10 +13,15 @@ def _fmt(x, nd=4):
     return "n/a" if x is None else (f"{x:.{nd}f}" if isinstance(x, float) else str(x))
 
 
-def run_query_only(lab, top_k: int) -> list[dict]:
+def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
+    """Query-only (sealed-set) rows for the top-k visible winners plus the best baseline. With allow_new=False
+    no new oracle query is made: only experiments already scored on the sealed set are reported, so a
+    re-generated summary keeps its tables without spending query budget."""
     db = lab.db
     cands = db.query("SELECT * FROM experiments WHERE status='completed' AND kind!='baseline' "
                      "ORDER BY primary_score DESC")
+    if not allow_new:
+        cands = [c for c in cands if c.get("query_metrics_json")]
     seen, picked = set(), []
     for c in cands:
         key = json.dumps(sorted(c.get("feature_set_json") or [])) + c["model_type"]
@@ -26,7 +31,7 @@ def run_query_only(lab, top_k: int) -> list[dict]:
         if len(picked) >= top_k:
             break
     base = lab.best_baseline()
-    if base:
+    if base and (allow_new or base.get("query_metrics_json")):
         picked.append(base)
     out = []
     for c in picked:
@@ -221,7 +226,8 @@ def render_markdown(s: dict) -> str:
 
 
 def finalize(lab, wall_s: float | None = None, workers: int | None = None, query: bool = True) -> dict:
-    gen = run_query_only(lab, int(lab.cfg.get("final", {}).get("top_k", 3))) if query else None
+    """query=True evaluates the winners on the sealed set (capped); query=False only reuses stored scores."""
+    gen = run_query_only(lab, int(lab.cfg.get("final", {}).get("top_k", 3)), allow_new=query)
     s = build_summary(lab, wall_s, workers, gen)
     # a later summarize.py must not move the run's end (throughput and cost rates are measured against it)
     lab.db.execute("UPDATE runs SET finished_at=COALESCE(finished_at, ?), summary_json=? WHERE run_id=?",
