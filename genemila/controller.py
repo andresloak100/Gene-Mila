@@ -50,8 +50,31 @@ def build_providers(cfg: dict):
                             {**w, **cfg.get("providers", {}).get(w["escalation_provider"], {})})
     p = cfg["planner"]
     planner = make_provider(p["provider"], p["model"], p)
-    fallback = make_provider("scripted", "scripted") if p.get("fallback", "scripted") == "scripted" else None
-    return worker, esc, planner, fallback
+    return worker, esc, planner, planner_fallbacks(cfg)
+
+
+def planner_fallbacks(cfg: dict) -> list:
+    """The planner fallback chain from `planner.fallback`: a list (or comma-separated string) of
+    "provider:model" entries tried in order when the planner before them fails, e.g.
+    ["deepseek:deepseek-v4-pro"]; "scripted" names the deterministic planner. Empty by default, so an
+    LLM arm never degrades silently: the run goes on without a planner and says so."""
+    p = cfg["planner"]
+    raw = p.get("fallback") or []
+    if isinstance(raw, str):
+        raw = [x.strip() for x in raw.split(",")]
+    out = []
+    for item in raw:
+        item = str(item).strip()
+        if not item or item == "none":
+            continue
+        kind, _, model = item.partition(":")
+        if kind == "scripted":
+            out.append(make_provider("scripted", "scripted"))
+            continue
+        if not model:
+            raise ValueError(f"planner.fallback entry {item!r} must be provider:model (or 'scripted')")
+        out.append(make_provider(kind, model, {**p, **cfg.get("providers", {}).get(kind, {})}))
+    return out
 
 
 class Controller:
@@ -173,10 +196,16 @@ class Controller:
         queued = self.lab.db.count_by_status().get("queued", 0)
         if queued >= self.n_workers:
             return
-        n_queued = 0
-        for spec in exploit.propose(self.lab, self.n_workers - queued):
-            _, status = self.lab.queue(spec)
-            n_queued += status == "queued"
+        n_queued, want = 0, self.n_workers - queued
+        for _ in range(20):  # a candidate the guardrail rejects or that is a duplicate is replaced by the next one
+            batch = exploit.propose(self.lab, want - n_queued)
+            if not batch:
+                break
+            for spec in batch:
+                _, status = self.lab.queue(spec)
+                n_queued += status == "queued"
+            if n_queued >= want:
+                break
         if n_queued:
             self.lab.db.event("python_exploit", f"queued {n_queued} deterministic follow-ups around the best model")
             self._log(f"exploit: queued {n_queued} follow-ups around the best model (no LLM)")
@@ -291,15 +320,19 @@ class Controller:
             capped = self.max_planner_calls and self.planner.rounds >= self.max_planner_calls
             if not capped and not self.planner.dry():
                 return False
-        c = self.lab.db.count_by_status()
-        if c.get("queued", 0) or any(w.current for w in self.workers):
+        if self._in_flight() or any(w.current for w in self.workers):
             return False
         if self.python_exploit:  # the throttle must not end a run while follow-ups remain
             self._next_exploit = 0.0
             self._maybe_exploit()
-            if self.lab.db.count_by_status().get("queued", 0):
+            if self._in_flight():
                 return False
         return True
+
+    def _in_flight(self) -> int:
+        """Experiments queued or being worked on (a just-claimed one is no longer 'queued' but is still work)."""
+        c = self.lab.db.count_by_status()
+        return sum(c.get(s, 0) for s in ("queued", "claimed", "implementing", "testing", "running"))
 
     def shutdown(self) -> dict:
         self.lab.stop_event.set()

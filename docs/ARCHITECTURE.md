@@ -48,7 +48,11 @@
   Candidates carry the best model's feature parameters and seed, are hashed like any queued
   experiment (a guardrail rejection keeps its hash too) and are never re-proposed, so the engine
   runs dry instead of looping; a run ends as exhausted only after one last exploit pass found
-  nothing. It exists because the planner, not CPU, bounds throughput. Summaries count completed
+  nothing. `schedule.exploit_depth` adds two deeper tiers once the first is dry: every known
+  feature and the best pairs added to the best model, a wider penalty range and follow-ups around
+  the next-best distinct models (tier 2), then an exhaustive pass over small feature subsets (tier
+  3), so a no-LLM run keeps searching for its whole time budget. It exists because the planner,
+  not CPU, bounds throughput. Summaries count completed
   experiments by proposer (`completed_by_proposer`, `experiments_completed_planner`), so the
   scaling report can compare worker counts on planner-proposed work alone.
 * **Ensemble finalist** (`genemila/report.py: ensemble_finalist`, `final.ensemble`): the average
@@ -100,6 +104,17 @@
   length) and returns a batch of hypotheses; it is called only when the queue runs low.
 * Sweeps, combinations, ablations, evaluation, duplicate detection, scheduling and
   reporting never call an LLM.
+* Planner failover: `planner.fallback` is an ordered chain of `provider:model` entries
+  (`--set planner.fallback=deepseek:deepseek-v4-pro`). When the planner fails (a usage
+  limit, an API error, a budget halt, or three unparseable plans in a row) the run switches
+  to the next entry for good, logs a `planner_switch` event, and its summary (`planner`:
+  configured, used, switches, failed rounds) and the results tables label it a
+  mixed-planner arm named after the planners that actually produced its plans, never pooled
+  with the clean runs. With the chain exhausted (the default: the chain is empty) the run
+  goes on without a planner, draining its queue and the exploit follow-ups, under a
+  `planner_exhausted` event and a "(lost its planner)" label. An LLM arm never degrades
+  silently to the scripted planner; `run_research.py` refuses to start when no planner in
+  the chain is usable.
 
 ## CPU efficiency
 

@@ -36,16 +36,27 @@ RF_SEEDS = (0, 1, 2)
 
 
 # ------------------------------------------------------------------ lab rows
-def run_arm(cfg: dict) -> str:
+def run_arm(cfg: dict, summary: dict | None = None) -> str:
     """Which arm a run belongs to, from its config: the LLM planner/worker pair, or the scripted no-LLM
-    control (fixed hypotheses implemented by hand-written template features)."""
+    control (fixed hypotheses implemented by hand-written template features). With the run's summary, a run
+    whose planner was replaced by a fallback during the run is its own arm, named by the planners that
+    actually produced its plans ("claude_cli:opus -> deepseek:deepseek-v4-pro planner"), and one that lost
+    every planner says so; neither is pooled with the clean runs of its configured arm."""
     p, w = cfg.get("planner", {}), cfg.get("worker", {})
     cont = " (continued campaign)" if cfg.get("run", {}).get("continue_from") else ""
     if "python_exploit" in cfg.get("schedule", {}) and not cfg["schedule"]["python_exploit"]:
         cont += " (no exploit)"
     if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
         return "scripted control (no LLM)" + cont
-    return f"{p.get('provider', '?')}:{p.get('model', '')} planner, {w.get('provider', '?')}:{w.get('model', '')} workers" + cont
+    planner = f"{p.get('provider', '?')}:{p.get('model', '')}"
+    ph = (summary or {}).get("planner") or {}
+    if ph.get("mixed"):
+        used = ph.get("used") or []
+        chain = [ph.get("configured") or planner] + [u for u in used if u != (ph.get("configured") or planner)]
+        planner = " -> ".join(chain)
+        if ph.get("exhausted_at_min") is not None:
+            cont += " (lost its planner)"
+    return f"{planner} planner, {w.get('provider', '?')}:{w.get('model', '')} workers" + cont
 
 
 def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
@@ -67,10 +78,10 @@ def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
         return {c: comp.get(f"cellforge_{c}") for c in COLUMNS + DESET_COLUMNS}
 
     cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
-    arm = run_arm(cfg)
+    arm = run_arm(cfg, s)
     return {"run_id": s.get("run_id", run_dir.name), "dataset": s.get("dataset"), "split_id": s.get("split_id"),
             "workers": s.get("workers") or cfg.get("run", {}).get("workers"), "duration_s": s.get("duration_s"),
-            "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm,
+            "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm, "code": (s.get("base_commit") or "")[:7],
             "best": None if best is None else {"experiment_id": best["experiment_id"],
                                                "features": ((s.get("ensemble") or {}).get("features") if best.get("kind") == "ensemble"
                                                             else (s.get("best") or {}).get("features")),
@@ -184,6 +195,9 @@ def build(run_dirs: list[Path], paper_json: Path | None, dataset_key: str | None
           label: str = "Gene-Mila") -> dict:
     """Collect everything the table needs. Lab runs are grouped by (dataset, split, workers)."""
     runs = [r for r in (run_rows(Path(d), part) for d in run_dirs) if r]
+    if len({r["code"] for r in runs if r.get("code")}) > 1:  # runs on different code are different arms
+        for r in runs:
+            r["arm"] = f"{r['arm']} @ {r['code'] or 'unknown code'}"
     groups: dict[tuple, list[dict]] = {}
     for r in runs:
         groups.setdefault((r["dataset"], r["split_id"], r["arm"], r["workers"]), []).append(r)

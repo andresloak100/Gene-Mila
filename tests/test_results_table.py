@@ -95,4 +95,6 @@ def test_scaling_report_handles_a_deterministic_short_control(tmp_path):
     dirs.append(_run_dir(tmp_path, "newcode_control_r0", 4, "scripted", "mock", 0.05, 1200, commit="def5678"))
     runs = sr.load_runs(dirs)
     assert {r["arm"] for r in runs if r["dir"].startswith("newcode")} == {"scripted control (no LLM) @ def5678"}
-    assert sr.render(runs).count("No-LLM control (") == 2
+    bullets = [l for l in sr.render(runs).splitlines() if l.startswith("- scripted control (no LLM) @")]
+    assert sum(l.startswith("- scripted control (no LLM) @ abc1234, 4 workers (3 runs)") for l in bullets) == 1
+    assert sum(l.startswith("- scripted control (no LLM) @ def5678, 4 workers (1 run,") for l in bullets) == 1

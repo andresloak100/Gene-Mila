@@ -20,8 +20,9 @@ from genemila import REPO_ROOT
 from genemila.benchmark.table import run_arm
 
 MEASURES = [  # key, label, how to read it from (summary, analysis)
-    ("best_visible", "best visible", lambda s, a: _visible(s, "best")),
-    ("best_visible_single", "best visible (single model)", lambda s, a: (s.get("best") or {}).get("score")),
+    ("best_visible", "best visible (selection score)", lambda s, a: _visible(s, "best")),
+    ("best_visible_single", "best visible (single model, selection score)", lambda s, a: (s.get("best") or {}).get("score")),
+    ("best_val1", "best visible (validation set only)", lambda s, a: ((s.get("best") or {}).get("metrics") or {}).get("pearson_delta")),
     ("best_sealed", "best sealed", lambda s, a: _sealed(s, "best")),
     ("best_sealed_single", "best sealed (single model)", lambda s, a: _sealed(s, "single")),
     ("gain_visible", "gain over start (visible)", lambda s, a: s.get("improvement_over_baseline")),
@@ -109,7 +110,7 @@ def load_runs(dirs):
         s = json.loads((d / "summary.json").read_text())
         a = json.loads((d / "analysis.json").read_text()) if (d / "analysis.json").exists() else None
         cfg = json.loads((d / "config.json").read_text()) if (d / "config.json").exists() else {}
-        runs.append({"dir": d.name, "arm": run_arm(cfg), "workers": s.get("workers") or cfg.get("run", {}).get("workers"),
+        runs.append({"dir": d.name, "arm": run_arm(cfg, s), "workers": s.get("workers") or cfg.get("run", {}).get("workers"),
                      "code": (s.get("base_commit") or "")[:7], "values": {k: f(s, a) for k, _, f in MEASURES}})
     # runs on different code versions are different arms, however alike their configs
     if len({r["code"] for r in runs if r["code"]}) > 1:
@@ -156,7 +157,10 @@ def render(runs):
          "Gain is best model minus the starting model (best linear model on built-in features); "
          "sealed = query-only held-out perturbations. Planner dollars are the Claude CLI's usage estimate. "
          "'best' rows take the headline finalist (an ensemble when one was kept); 'single model' rows the best "
-         "single model. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
+         "single model. The selection score is what each run optimised: on code with cross-validated selection it "
+         "averages the validation set and out-of-fold training perturbations, so it is lower than, and not "
+         "comparable with, the validation-only score of earlier code; 'validation set only' is comparable across "
+         "code versions. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
          "which run without an LLM whenever workers would otherwise idle (their share is listed).", "",
          "| measure | " + " | ".join(f"{k[0]}, {k[1]} workers (n={len(groups[k])})" for k in keys) + " |",
          "|---|" + "---|" * len(keys)]
@@ -178,18 +182,23 @@ def render(runs):
         if not st:
             continue
         short = wall and llm_wall and wall["mean"] < 0.5 * llm_wall["mean"]
+        name = f"{k[0]}, {k[1]} workers"
         if st["n"] > 1 and st["sd"] < 1e-9 and (stv is None or stv["sd"] < 1e-9):  # identical to rounding
-            L.append(f"- No-LLM control ({st['n']} runs): identical results every time, sealed gain {st['mean']:.4f}, "
-                     f"visible gain {stv['mean']:.4f}. The scripted recipe is deterministic on this dataset, so the "
-                     "control is a fixed-recipe reference, not a noise reference; run-to-run noise is estimated from "
-                     "the agent arms' repeats below.")
+            L.append(f"- {name} ({st['n']} run{'' if st['n'] == 1 else 's'}): identical results every time, sealed gain {st['mean']:.4f}, "
+                     f"visible gain {stv['mean']:.4f}. The scripted recipe is deterministic on this dataset, so this "
+                     "control is a fixed-recipe reference, not a noise reference.")
+        elif short:
+            L.append(f"- {name} ({st['n']} run{'' if st['n'] == 1 else 's'}, the same scripted hypotheses every time; what varies is timing, "
+                     f"scheduling order and the exploit follow-ups that order produces): sealed gain {fmt(st, 4)}, "
+                     f"visible gain {fmt(stv, 4)}. Its spread bounds the timing noise of a short deterministic run, "
+                     "not that of the agent arms, whose own repeats are the yardstick below.")
         else:
-            L.append(f"- No-LLM control ({st['n']} runs, the same scripted hypotheses every time; what varies is "
-                     f"timing, scheduling order and the exploit follow-ups that order produces): sealed gain "
-                     f"{fmt(st, 4)}, visible gain {fmt(stv, 4)}. Differences between worker counts smaller than about "
-                     f"2 x this sd ({2 * st['sd']:.4f}) are within that noise.")
+            L.append(f"- {name} ({st['n']} run{'' if st['n'] == 1 else 's'}, the same scripted hypotheses every time; what varies is timing, "
+                     f"scheduling order and the exploit follow-ups that order produces): sealed gain {fmt(st, 4)}, "
+                     f"visible gain {fmt(stv, 4)}. This is the equal-time no-LLM reference: the agents' gain over it "
+                     "is what the LLMs add to the search.")
         if short:
-            L.append(f"- The control ended after {wall['mean']:.1f} min on average (its hypotheses ran out) against "
+            L.append(f"- {name} ended after {wall['mean']:.1f} min on average (its hypotheses ran out) against "
                      f"{llm_wall['mean']:.1f} min for the agent arms, so it is not an equal-time arm: it shows what "
                      "the fixed template features give, not what a no-LLM search of the same length gives.")
     for i, ka in enumerate(llm):

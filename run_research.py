@@ -88,17 +88,24 @@ def child(args) -> int:
     from genemila.report import render_markdown
 
     cfg = json.loads((Path(args.run_dir) / "config.json").read_text())
-    worker, esc, planner, fallback = build_providers(cfg)
+    worker, esc, planner, fallbacks = build_providers(cfg)
     if hasattr(worker, "available") and not worker.available():
         print(f"ERROR: worker provider {worker.name} is not usable here "
               f"(missing {getattr(worker, 'api_key_env', 'credentials')}).", file=sys.stderr)
         return 2
-    if hasattr(planner, "available") and not planner.available():
-        print(f"warning: planner {planner.name} unavailable; using the scripted planner", file=sys.stderr)
-        planner = fallback
+    usable = [p for p in [planner, *fallbacks] if not hasattr(p, "available") or p.available()]
+    if not usable:
+        print(f"ERROR: planner {planner.name}:{planner.model} is not usable here and no fallback in "
+              f"planner.fallback is either. Pass --planner-provider scripted for a no-LLM run, or set "
+              f"--set planner.fallback=provider:model (the controller never falls back to the scripted "
+              f"planner on its own).", file=sys.stderr)
+        return 2
+    if usable[0] is not planner:
+        print(f"warning: planner {planner.name}:{planner.model} is not usable here; starting on the fallback "
+              f"{usable[0].name}:{usable[0].model} (recorded as a planner switch)", file=sys.stderr)
     lab = Lab(cfg, Path(args.run_dir), Path(cfg["run"]["data_dir"]))
     ctl = Controller(lab, int(cfg["run"]["workers"]), float(cfg["run"]["minutes"]) * 60, worker, esc,
-                     planner, fallback, quiet=args.quiet)
+                     planner, fallbacks, quiet=args.quiet)
     summary = ctl.run()
     print("\n" + render_markdown(summary))
     sys.stdout.flush()
