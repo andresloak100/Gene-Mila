@@ -1,16 +1,16 @@
 # Gene-Mila progress summary
 
-*2026-10-04. A one-page summary for collaborating labs. Every number here is generated from the run outputs committed under `docs/results/`, except the planner-check figures, whose runs are still being added; the shareable copy is a Claude Doc kept in step with this file.*
+*2026-10-04. A one-page summary for collaborating labs. Every number here is generated from the run outputs committed under `docs/results/`; the shareable copy is a Claude Doc kept in step with this file.*
 
 ## What we built
 
 Gene-Mila is an autonomous research lab that predicts a cell's expression response to a genetic perturbation. A planner model (Claude Opus) proposes biological hypotheses. Cheap worker models (DeepSeek) implement each one as a Python feature. A controller tests every feature under a hard time limit, scores it, and keeps the result with its lineage; the planner reads the scores and proposes the next round.
 
-The predictors are simple CPU models (ridge regression on agent-built features). The intelligence is in the features the agents find, and numbers alone decide which model wins. About 3,900 experiments have completed on the Adamson 2016 Perturb-seq screen (2,433 in the committed comparison and control runs, 1,434 in the planner check so far), with the held-out perturbations' labels hidden from every agent.
+The predictors are simple CPU models (ridge regression on agent-built features). The intelligence is in the features the agents find, and numbers alone decide which model wins. About 4,700 experiments have completed on the Adamson 2016 Perturb-seq screen across 25 runs (2,380 in the eight worker-count comparison runs, 1,993 in the four planner-check runs, 316 in thirteen no-LLM control runs), with the held-out perturbations' labels hidden from every agent.
 
 ## Headline result on Adamson
 
-On CellForge's 21 held-out perturbations, every agent arm beats every baseline refit on the same split on the three DE columns below (pearson_delta is not computed for the baselines), and beats the no-LLM control on every column. Run by run, the one exception is a single 1-worker run at pearson_delta 0.544, below the control's 0.554.
+On CellForge's 21 held-out perturbations, every agent arm beats every baseline refit on the same split on the three DE columns below (pearson_delta is not computed for the baselines), and beats the no-LLM control on every column. Run by run, the exceptions are one 1-worker run (pearson_delta 0.544) and one DeepSeek-planned run (0.538), both below the control's 0.554.
 
 | Model | pearson_delta ↑ | MSE, top-20 DE genes ↓ | PCC, top-20 DE genes ↑ | R², top-20 DE genes ↑ |
 |---|---|---|---|---|
@@ -23,8 +23,10 @@ On CellForge's 21 held-out perturbations, every agent arm beats every baseline r
 | Agents, 4 workers (2 runs) | 0.602 ± 0.002 | 0.117 ± 0.002 | 0.955 ± 0.001 | 0.803 ± 0.003 |
 | Agents, 8 workers (2 runs) | 0.584 ± 0.001 | 0.119 ± 0.003 | 0.954 ± 0.001 | 0.802 ± 0.001 |
 | Agents, 16 workers (2 runs) | 0.577 ± 0.022 | 0.111 ± 0.009 | 0.958 ± 0.004 | 0.816 ± 0.020 |
+| Agents, 4 workers, new selection code, Opus planner (2 runs) | 0.594 ± 0.009 | 0.124 ± 0.008 | 0.953 ± 0.003 | 0.791 ± 0.017 |
+| Agents, 4 workers, new selection code, DeepSeek V4 Pro planner (2 runs) | 0.570 ± 0.044 | 0.133 ± 0.022 | 0.946 ± 0.010 | 0.776 ± 0.038 |
 
-pearson_delta is the lab's primary metric: the Pearson correlation between the predicted and the true change from control, per perturbation, averaged; it is not computed for the refit baselines. The DE columns use each perturbation's top-20 DE genes by |log fold change|, CellForge's definition. Values are mean ± sd over runs.
+pearson_delta is the lab's primary metric: the Pearson correlation between the predicted and the true change from control, per perturbation, averaged; it is not computed for the refit baselines. The DE columns use each perturbation's top-20 DE genes by |log fold change|, CellForge's definition. Values are mean ± sd over runs. The first four agent rows and the control ran the original selection code; the last two rows ran the cross-validated selection described in the last section.
 
 All-gene MSE, PCC and R² are left out on purpose: every model in the table scores an all-gene PCC between 0.979 (the unperturbed refit) and 0.987 (16 workers), plain OLS at 0.985, so those columns say nothing about quality. The features the agents found are readable biology, mostly transfer of responses from perturbations whose targets share gene sets or protein-interaction neighbours with the new target. Each 20-minute run cost $0.17 to $1.38 of DeepSeek worker calls plus an estimated $1.7 to $10.1 of Claude Opus planner usage (the Claude CLI's estimate; drawn from a subscription, not billed per run), and ran on CPU only.
 
@@ -56,7 +58,9 @@ From 4 to 16 workers the visible and held-out scores diverge (mean visible-minus
 - Agents: Claude Opus plans (hypotheses with a biological rationale), DeepSeek workers implement; 20 minutes per run; 1, 4, 8 and 16 workers, two repeats each. The no-LLM control is the same controller fed a fixed, scripted list of 10 feature hypotheses instead of a planner's proposals, under the same time limit; it is deterministic (six runs gave identical scores, so its ± 0 is not a noise estimate) and finishes its list in about two minutes.
 - Code and tables: this repository, branch `claude/autonomous-research-system-3k435s`, with [results_table.md](results_table.md) (CellForge's Table 1 layout; it also shows CellForge's reported rows, marked as reported and not comparable, and a second DE definition, Wilcoxon BH p < 0.05 and |log2FC| > 0.5; its rank markers run across all rows and are not the comparison caveat 1 withholds) and [scaling.md](scaling.md) (the efficiency report), both generated from the run outputs.
 
-## Running now and next
+## Planner check, complete, and what comes next
 
-- Planner check on the new selection code, which averages the selection score by cross-validation over all 67 perturbations whose labels the agents can see (50 training plus 17 validation) instead of the 17 validation perturbations alone: the two Opus-planned 4-worker runs (same 20-minute budget) finished at held-out 0.601 and 0.587, within repeat noise of the old code's 0.601 and 0.604, and the selection score now tracks the held-out score within 0.01, where the old code overestimated it by 0.005 to 0.086. The first of two runs planned by DeepSeek V4 Pro instead of Opus came in at held-out 0.538, below the no-LLM control; the second is in progress, and both rows are added here when it finishes.
-- Next: the same protocol on Norman et al. 2019 (combinatorial knockouts) and Srivatsan et al. 2020 (sci-Plex drug perturbations), then the CellForge comparison once a metric definition reproduces their baseline rows or their evaluation code is available. With selection now honest, longer runs are the next lever on the model itself.
+- Planner check, complete (new selection code, 4 workers, 20 minutes, two runs per planner). The selection score, now cross-validated over all 67 perturbations whose labels the agents can see (50 training plus 17 validation), tracks the held-out score within 0.03, where the old code overestimated it by 0.005 to 0.086. Held-out pearson_delta did not improve: Opus-planned 0.601 and 0.587 against the old code's 0.601 and 0.604. DeepSeek V4 Pro as planner, at about $1.20 of DeepSeek per run and no Claude usage, matched Opus in one run (0.601) and fell below the no-LLM control in the other (0.538).
+- Why the two DeepSeek runs differ: both planners received the same prompt and knowledge files, and the score tracks one idea, transferring responses between perturbations whose targets are similar. Opus proposed it in both runs within its first plan (107 and 101 such hypotheses); DeepSeek proposed it in one run (155) and almost never in the other (3 of 379). Two runs per planner, so this is a reading, not a measurement.
+- A regression to fix before the new code becomes the default: on the top-20 DE columns it is worse than the old code for the agents (MSE_DE 0.124 against 0.117, R²_DE 0.791 against 0.803) and for the control (MSE_DE 0.163 against 0.145), because the cross-validated selection favours much heavier regularisation (ridge alpha 300 to 30,000 against 0.001 to 100 before), which shrinks the predicted changes on the strongest DE genes.
+- Next: a selection rule that also scores the DE genes; then longer runs or a second feature family on Adamson, since every good configuration plateaus near 0.60 held-out pearson_delta and the whole gain is one feature family; then the same protocol on Norman et al. 2019 (combinatorial knockouts) and Srivatsan et al. 2020 (sci-Plex drug perturbations), and the CellForge comparison once a metric definition reproduces their baseline rows or their evaluation code is available.
