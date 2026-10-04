@@ -27,12 +27,19 @@ class QueryBudgetExceeded(RuntimeError):
 
 
 class QueryOracle:
-    def __init__(self, data_dir: Path, max_queries: int = 5):
+    def __init__(self, data_dir: Path, max_queries: int = 5, used: "callable | None" = None):
+        """`used` returns how many queries the run has already made (persisted by the lab in its database),
+        so the cap holds per run, across processes and re-summaries, not per process."""
         self._labels_path = Path(data_dir) / "private" / "val2.npz"
         self.max_queries = max_queries
         self.queries: list[dict] = []
+        self._used = used
         self._lock = threading.Lock()
         self._ref = False  # DE reference for comparable metrics, loaded on first query
+
+    @property
+    def used(self) -> int:
+        return max(len(self.queries), int(self._used()) if self._used is not None else 0)
 
     @property
     def perts(self) -> list[str]:
@@ -41,7 +48,7 @@ class QueryOracle:
     def query(self, experiment_id: str, pred: np.ndarray, pert_order: list[str], control_mean: np.ndarray,
               celleval_profile: str | None = None, genes: list[str] | None = None) -> dict:
         with self._lock:
-            if len(self.queries) >= self.max_queries:
+            if self.used >= self.max_queries:
                 raise QueryBudgetExceeded(f"query-only budget of {self.max_queries} exhausted")
             labels = LabelSet.load(self._labels_path)
             idx = {p: i for i, p in enumerate(pert_order)}

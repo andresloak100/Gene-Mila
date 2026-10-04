@@ -54,7 +54,9 @@ class Lab:
         if not ledger_path.is_absolute():
             ledger_path = self.repo / ledger_path
         self.gateway = LLMGateway(self.db, cfg, self.run_id, SpendLedger(ledger_path))
-        self.oracle = QueryOracle(self.data_dir, max_queries=int(cfg.get("final", {}).get("max_queries", 5)))
+        # the query-only cap is per run: queries already recorded in lab.db count, whichever process asks
+        self.oracle = QueryOracle(self.data_dir, max_queries=int(cfg.get("final", {}).get("max_queries", 5)),
+                                  used=lambda: self.db.query("SELECT COUNT(*) AS n FROM events WHERE kind='query_only'")[0]["n"])
         self.stop_event = threading.Event()   # no new experiments / LLM calls
         self.kill_event = threading.Event()   # terminate running subprocesses
         self.gateway.stop_event = self.stop_event  # waits inside the gateway end at the deadline

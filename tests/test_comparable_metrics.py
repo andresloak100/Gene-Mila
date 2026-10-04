@@ -71,3 +71,22 @@ def test_every_experiment_and_report_get_comparable_metrics(lab_factory):
     assert len(lab.oracle.queries) == n_queries
     assert "## CELLFORGE METRICS" in (lab.run_dir / "summary.md").read_text()
     assert "single-gene targets" in lab.data_summary()
+
+
+def test_query_only_cap_is_per_run_not_per_process(lab_factory):
+    """Queries recorded in lab.db count against final.max_queries, so a re-opened run (summarize.py in a new
+    process) cannot score the sealed set another max_queries times."""
+    from genemila.benchmark.oracle import QueryBudgetExceeded, QueryOracle
+    import pytest
+    lab = lab_factory(final__max_queries=2)
+    lab.record_analytic_baselines()
+    base = lab.best_baseline()
+    lab.query_only(base["experiment_id"])
+    lab.query_only(base["experiment_id"])
+    with pytest.raises(QueryBudgetExceeded):
+        lab.query_only(base["experiment_id"])
+    fresh = QueryOracle(lab.data_dir, max_queries=2,
+                        used=lambda: lab.db.query("SELECT COUNT(*) AS n FROM events WHERE kind='query_only'")[0]["n"])
+    assert fresh.used == 2 and not fresh.queries
+    with pytest.raises(QueryBudgetExceeded):
+        fresh.query("x", lab._analytic_baseline("baseline_unchanged", fresh.perts), fresh.perts, lab.control_mean)
