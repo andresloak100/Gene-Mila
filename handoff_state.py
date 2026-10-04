@@ -7,7 +7,8 @@ the comparison driver, read from disk rather than from anyone's memory.
 Prints, as Markdown (or JSON with --json): the git state; every run directory with its arm, code commit
 and state (finished with a summary, in progress, killed before its summary, contaminated or interrupted)
 and its headline numbers; spend per provider from the shared ledger; whether a lab run or driver process
-is alive; and the tail of the driver's progress file when a log directory is given or found.
+is alive; and the tail of the driver's progress file plus the head of STATE.md (the state whoever runs something on
+the machine writes there) when a log directory is given or found.
 """
 
 import argparse
@@ -124,6 +125,8 @@ def main():
              "git": git_state(REPO_ROOT), "runs": runs, "ledger": ledger_totals(ledger), "ledger_path": str(ledger),
              "processes": processes(),
              "progress_tail": (logs / "progress.md").read_text().splitlines()[-15:] if logs and (logs / "progress.md").exists() else [],
+             "state_file": str(logs / "STATE.md") if logs and (logs / "STATE.md").exists() else None,
+             "state_head": (logs / "STATE.md").read_text().splitlines()[:40] if logs and (logs / "STATE.md").exists() else [],
              "stop_file": bool(logs and (logs / "STOP").exists())}
     if args.json:
         print(json.dumps(state, indent=1, default=str))
@@ -150,6 +153,8 @@ def main():
         L.append("- a STOP file is present: the driver halts after its current step")
     if state["progress_tail"]:
         L += ["", "## Driver progress (tail)", ""] + state["progress_tail"]
+    if state["state_head"]:
+        L += ["", f"## State written on the machine (`{state['state_file']}`, first 40 lines)", ""] + state["state_head"]
     print("\n".join(L))
 
 
