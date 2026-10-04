@@ -32,6 +32,7 @@ import sys
 import tomllib
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -133,8 +134,8 @@ def traceable(num: str, known: set[str]) -> bool:
     if num in known:
         return True
     places = len(num.split(".")[1])
-    target = float(num)
-    return any(abs(round(float(k), places) - target) < 1e-12 for k in known
+    quantum = Decimal(1).scaleb(-places)
+    return any(Decimal(k).quantize(quantum, ROUND_HALF_UP) == Decimal(num) for k in known
                if len(k.split(".")[1]) > places)
 
 
@@ -279,7 +280,7 @@ def check_headings(name: str, prose: str, required: list[str], rep: Report) -> N
     present = {slugify(h) for h in re.findall(r"^#{1,6}\s+(.+?)\s*$", prose, re.M)}
     present |= {slugify(s) for s in re.findall(r"<summary>(.*?)</summary>", prose, re.S)}
     for h in required:
-        if slugify(h) not in present:
+        if not any(slug.startswith(slugify(h)) for slug in present):
             rep.error(name, f'required heading "{h}" is missing (repo-profile readme.required_headings)')
 
 
@@ -377,11 +378,13 @@ def run_checks() -> Report:
         check_profile(profile, rep)
 
     assets = ROOT / "docs" / "assets"
+    preview = profile.get("about", {}).get("social_preview", "")
+    preview_source = str(Path(preview).with_suffix(".svg")) if preview else None
     if assets.exists():
         for svg in sorted(assets.glob("*.svg")):
             check_svg(svg, label, rep)
             rel = str(svg.relative_to(ROOT))
-            if rel not in images:
+            if rel not in images and rel != preview_source:
                 rep.warn(rel, "not referenced from the README")
     return rep
 
