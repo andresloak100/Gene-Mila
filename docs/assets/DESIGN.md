@@ -31,6 +31,12 @@ python tools/readme_check.py
 7. **Layout is checked when drawing.** A missing glyph, a legend that runs into the footer, or
    text that overflows a panel stops the script with an error instead of producing a broken
    figure. Look at every changed figure rendered in light and dark before committing it.
+8. **Readable on a phone.** GitHub scales README images to the column, so a 960-wide plate's
+   12 px labels become about 4 px on a phone. Each README figure therefore has a 400-wide
+   `*-narrow.svg` with the same numbers, colours and labels, laid out for one column with type no
+   smaller than 12, and the README serves it with
+   `<picture><source media="(max-width: 600px)" srcset="...-narrow.svg"><img src="....svg"></picture>`.
+   A change to a figure changes both variants.
 
 ## Palette
 

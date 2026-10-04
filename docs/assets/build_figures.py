@@ -580,6 +580,283 @@ def hero_figure() -> Path:
     return c.save("hero.svg")
 
 
+# ---------------------------------------------------------------- phone-width variants
+# GitHub shows README images at the column width. On a phone (about 343 px) the 960-wide plates
+# shrink their 12 px labels to about 4 px, so each figure also has a 400-wide variant with the
+# same numbers and colours, served by <picture> under 600 px. Type here is never below 12.
+
+NW = 400  # narrow plate width
+
+
+def plate_to(c: Canvas, height: float) -> None:
+    """Fix the canvas height once the layout is known and put the plate behind everything."""
+    c.h = int(round(height))
+    c.body.insert(0, f'<rect class="f-paper s-rule" x=".5" y=".5" width="{c.w - 1}" height="{c.h - 1}" '
+                     f'rx="14" stroke-width="1"/>')
+
+
+def lines(c: Canvas, text: str, x: float, y: float, width: float, size: float, font: str = "sans",
+          colour: str = "soft", leading: float | None = None) -> float:
+    """Wrap and set a paragraph; returns the baseline of the last line."""
+    leading = leading or size * 1.35
+    for i, line in enumerate(wrap(c, text, width, size, font)):
+        c.text(line, x, y + i * leading, size, font, colour)
+    return y + i * leading
+
+
+def hero_narrow_figure() -> Path:
+    run = example_run()
+    readme = (DOCS / "example_run" / "README.md").read_text()
+    budget = int(re.search(r"--minutes (\d+)", readme).group(1))
+    planner = re.search(r"--planner-model (\w+)", readme).group(1).capitalize()
+    worker = re.search(r"--worker-model (\w+)", readme).group(1).capitalize()
+    base = next(b for b in run["baselines"] if b["id"] == "EXP_0004")["score"]
+    best_id, best = run["lineage"][-1]["id"], run["lineage"][-1]["score"]
+    sealed = run["query_only"][best_id][1]
+    base_sealed = run["query_only"]["EXP_0004"][1]
+    n_vis = run["split"]["visible"]
+    outcome = outcome_text(run["outcome"])
+
+    c = Canvas(NW, 0, "Gene-Mila",
+               "Gene-Mila: agents write the features, only a linear model may use them, and the clock stops "
+               f"everyone. Example run on synthetic data: {run['minutes']} of {budget} minutes used, "
+               f"{len(run['experiments'])} experiments, {outcome}. pearson_delta, visible then sealed: linear "
+               f"baseline {fmt(base)} and {fmt(base_sealed)}, best model {fmt(best)} and {fmt(sealed)}.",
+               "docs/example_run/README.md and docs/example_run/summary.md")
+    x = 24
+    kicker(c, "Autonomous lab", x, 42)
+    kicker(c, "Single-cell perturbation prediction", x, 60)
+    c.text("Gene-Mila", x - 2, 124, 58, "display")
+    c.text("Agents write the features.", x, 164, 18, "italic", "soft")
+    c.text("Only a linear model may use them.", x, 189, 18, "italic", "soft")
+    c.text("The clock stops everyone.", x, 214, 18, "italic", "clock")
+
+    y, w = 240, NW - 2 * x
+    right, col, inner = x + w - 18, 70, x + 18
+    rows_top = y + 30
+    c.add(f'<rect class="f-panel" x="{x}" y="{y}" width="{w}" height="238" rx="12"/>')
+    kicker(c, "Example run", inner, rows_top, "ink")
+    c.text("synthetic data", right, rows_top, 12, "mono-medium", "clock", anchor="end")
+    for i, (label, value) in enumerate([("models", f"Claude {planner} / {worker}"),
+                                        ("budget", f"{run['minutes']} of {budget} min"),
+                                        ("experiments", f"{len(run['experiments'])}, {outcome}")]):
+        ry = rows_top + 30 + i * 24
+        c.text(label, inner, ry, 13, "mono", "soft")
+        c.text(value, right, ry, 13, "mono-medium", "ink", anchor="end")
+    c.add(f'<line class="s-rule" x1="{inner}" x2="{right}" y1="{rows_top + 95}" y2="{rows_top + 95}" stroke-width="1"/>')
+    c.text(f"pearson_delta, n = {n_vis}", inner, rows_top + 116, 12, "mono", "soft")
+    c.text("visible", right - col, rows_top + 116, 12, "mono", "faint", anchor="end")
+    c.text("sealed", right, rows_top + 116, 12, "mono", "faint", anchor="end")
+    for i, (label, vis, seal, colour) in enumerate([("baseline", base, base_sealed, "base"),
+                                                    ("best model", best, sealed, "gain")]):
+        ry = rows_top + 141 + i * 24
+        c.text(label, inner, ry, 13, "mono", "soft")
+        c.text(fmt(vis), right - col, ry, 13, "mono-medium", colour, anchor="end")
+        c.text(fmt(seal), right, ry, 13, "mono-medium", colour, anchor="end")
+    c.text("source  docs/example_run/", inner, y + 238 - 16, 12, "mono", "soft")
+    plate_to(c, y + 238 + 24)
+    return c.save("hero-narrow.svg")
+
+
+def example_run_narrow_figure() -> Path:
+    run = example_run()
+    exps = run["experiments"]
+    base = next(b for b in run["baselines"] if b["id"] == "EXP_0004")["score"]
+    steps = run["lineage"][1:]
+    best_id = run["lineage"][-1]["id"]
+    visible, sealed = run["query_only"][best_id]
+    base_sealed = run["query_only"]["EXP_0004"][1]
+    ctrl = run["control"]
+    n_vis, n_sealed = run["split"]["visible"], run["split"]["sealed"]
+
+    c = Canvas(NW, 0, "Every experiment of the synthetic example run",
+               f"{len(exps)} experiments in queue order, pearson_delta on {n_vis} visible-validation perturbations, "
+               f"against the linear baseline at {fmt(base)}. The winning lineage adds one feature per step to "
+               f"{fmt(steps[-1]['score'])}. On {n_sealed} query-only perturbations: best model {fmt(sealed)}, "
+               f"scripted control with no LLM {fmt(ctrl['sealed'])}, baseline {fmt(base_sealed)}.",
+               "docs/example_run/analysis.md, summary.md, README.md and control_scripted_summary.md")
+    x = 24
+    kicker(c, f"Example run  /  synthetic  /  {run['minutes']} min", x, 42)
+    c.text("Agents propose features.", x, 76, 22, "display")
+    c.text("The numbers decide which stay.", x, 102, 22, "display")
+    last = lines(c, f"{len(exps)} experiments in queue order, scored by pearson_delta on {n_vis} "
+                    "visible-validation perturbations.", x, 128, NW - 2 * x, 13)
+
+    x0, x1, y0, y1 = 58, NW - 20, last + 34, last + 34 + 230
+    lo, hi = 0.58, 0.80
+
+    def sy(v: float) -> float:
+        return y1 - (v - lo) / (hi - lo) * (y1 - y0)
+
+    def sx(i: int) -> float:
+        return x0 + 8 + i * (x1 - x0 - 16) / (len(exps) - 1)
+
+    for v in (0.60, 0.65, 0.70, 0.75, 0.80):
+        c.add(f'<line class="s-grid" x1="{x0}" x2="{x1}" y1="{sy(v):.1f}" y2="{sy(v):.1f}" stroke-width="1"/>')
+        c.text(f"{v:.2f}", x0 - 8, sy(v) + 4, 12, "mono", "faint", anchor="end")
+    yb = sy(base)
+    c.add(f'<line class="s-base" x1="{x0}" x2="{x1}" y1="{yb:.1f}" y2="{yb:.1f}" stroke-width="1.5" stroke-dasharray="5 4"/>')
+    c.text(f"baseline {fmt(base)}", x1, yb + 18, 12, "mono", "faint", anchor="end")
+    d, running = [f"M{x0} {yb:.1f}"], base
+    for i, e in enumerate(exps):
+        if e["score"] is not None and e["score"] > running:
+            running = e["score"]
+            d.append(f"H{sx(i):.1f}V{sy(running):.1f}")
+    d.append(f"H{x1}")
+    c.add(f'<path class="s-gain" fill="none" stroke-width="2" stroke-linejoin="round" d="{"".join(d)}"/>')
+    for i, e in enumerate(exps):
+        px = sx(i)
+        if e["score"] is None:
+            py = y1 + 26
+            c.add(f'<path class="s-clock" stroke-width="2.2" stroke-linecap="round" '
+                  f'd="M{px - 4.5:.1f} {py - 4.5:.1f}L{px + 4.5:.1f} {py + 4.5:.1f}M{px + 4.5:.1f} {py - 4.5:.1f}L{px - 4.5:.1f} {py + 4.5:.1f}"/>')
+            c.text(f"{e['id']} {e['status']}: leaked the label", px - 10, py + 4.5, 12, "mono", "clock", anchor="end")
+        elif e["kind"] == "feature":
+            c.add(f'<circle class="f-worker s-paper" cx="{px:.1f}" cy="{sy(e["score"]):.1f}" r="4.6" stroke-width="1.2"/>')
+        elif e["kind"] == "combine":
+            py = sy(e["score"])
+            c.add(f'<path class="f-paper s-soft" stroke-width="1.3" d="M{px:.1f} {py - 4.6:.1f}L{px + 4.6:.1f} {py:.1f}'
+                  f'L{px:.1f} {py + 4.6:.1f}L{px - 4.6:.1f} {py:.1f}Z"/>')
+        else:
+            c.add(f'<circle class="f-paper s-soft" cx="{px:.1f}" cy="{sy(e["score"]):.1f}" r="3.1" stroke-width="1.2"/>')
+    index = {e["id"]: i for i, e in enumerate(exps)}
+    for n, step in enumerate(steps, 1):
+        px, py = sx(index[step["id"]]), sy(step["score"])
+        c.add(f'<line class="s-gain" x1="{px:.1f}" x2="{px:.1f}" y1="{py - 11:.1f}" y2="{py - 5:.1f}" stroke-width="1.2"/>')
+        c.add(f'<circle class="f-gain" cx="{px:.1f}" cy="{py - 18:.1f}" r="7.5"/>')
+        c.text(str(n), px, py - 13.8, 12, "mono-medium", "paper", anchor="middle")
+
+    # lineage key
+    ky = y1 + 64
+    kicker(c, "Winning lineage, one feature per step", x, ky, "gain")
+    for n, step in enumerate(steps, 1):
+        row = ky + 26 + 24 * (n - 1)
+        c.add(f'<circle class="f-gain" cx="{x + 7}" cy="{row - 4.5:.1f}" r="7.5"/>')
+        c.text(str(n), x + 7, row - 0.3, 12, "mono-medium", "paper", anchor="middle")
+        c.text(re.sub(r"_e\d+$", "", step["label"]), x + 22, row, 12.5, "mono", "ink")
+        c.text(step["delta"], NW - x - 58, row, 12, "mono", "soft", anchor="end")
+        c.text(fmt(step["score"]), NW - x, row, 12.5, "mono-medium", "gain", anchor="end")
+
+    # sealed set: three numbers side by side
+    sy0 = ky + 26 + 24 * len(steps) + 4
+    c.add(f'<rect class="f-panel" x="{x}" y="{sy0}" width="{NW - 2 * x}" height="128" rx="10"/>')
+    kicker(c, "Sealed set", x + 16, sy0 + 26, "ink")
+    c.text(f"{n_sealed} query-only perturbations, after the run", x + 16, sy0 + 45, 12, "sans", "soft")
+    cw = (NW - 2 * x - 32) / 3
+    for j, (label, score, vis, colour) in enumerate([("best model", sealed, visible, "gain"),
+                                                     ("scripted, no LLM", ctrl["sealed"], ctrl["visible"], "ink"),
+                                                     ("baseline", base_sealed, base, "base")]):
+        cx = x + 16 + j * cw
+        c.text(label, cx, sy0 + 72, 12, "sans", "soft")
+        c.text(fmt(score), cx, sy0 + 98, 21, "display", colour)
+        c.text(f"vis. {fmt(vis)}", cx, sy0 + 116, 12, "mono", "faint")
+
+    ly = sy0 + 128 + 30
+    lx = x + 6
+    c.add(f'<circle class="f-worker" cx="{lx}" cy="{ly - 4}" r="4.6"/>')
+    lx += 12 + c.text("worker feature", lx + 12, ly, 12, "sans", "soft") + 22
+    c.add(f'<circle class="f-paper s-soft" cx="{lx}" cy="{ly - 4}" r="3.1" stroke-width="1.2"/>')
+    lx += 12 + c.text("alpha sweep", lx + 12, ly, 12, "sans", "soft") + 22
+    c.add(f'<path class="f-paper s-soft" stroke-width="1.3" d="M{lx} {ly - 8.6}L{lx + 4.6} {ly - 4}L{lx} {ly + 0.6}'
+          f'L{lx - 4.6} {ly - 4}Z"/>')
+    lx += 12 + c.text("combination", lx + 12, ly, 12, "sans", "soft")
+    assert lx < NW - x, "narrow legend overflows"
+    ly2 = ly + 22
+    c.add(f'<path class="s-gain" stroke-width="2" d="M{x} {ly2 - 4}h14"/>')
+    c.text("best so far", x + 20, ly2, 12, "sans", "soft")
+    c.text("synthetic  /  docs/example_run/", NW - x, ly2, 12, "mono", "soft", anchor="end")
+    plate_to(c, ly2 + 26)
+    return c.save("example-run-narrow.svg")
+
+
+def loop_narrow_figure() -> Path:
+    c = Canvas(NW, 0, "How one experiment moves through the lab",
+               "Planner, controller, worker LLM, guards, linear fit, score and research memory in a loop inside "
+               "the deadline; code that fails a guard goes back to the worker for a fix and, if it still fails, "
+               "is recorded as failed or rejected. After the deadline, fits are stopped, the top candidates and "
+               "the best baseline are scored once each on the sealed set, finalists get cell-eval, and a "
+               "watchdog kills anything that overruns.",
+               "genemila/ (controller.py, planner.py, worker.py, guard.py, pipeline.py, report.py)")
+    x = 24
+    kicker(c, "One experiment, end to end", x, 42)
+    c.text("LLMs propose and write code.", x, 76, 22, "display")
+    c.text("Python fits, scores and keeps time.", x, 102, 22, "display")
+
+    fx0, fy0, fx1 = x, 132, NW - x
+    sx0, sw = x + 44, NW - 2 * x - 88       # stations sit between the two return paths
+    stations = [("Claude", "Planner", "reads the research memory, proposes hypotheses", "pi"),
+                ("Python", "Controller", "queues them, adds sweeps and replicates", "ink"),
+                ("Worker LLM", "One feature", "writes one plugin file in its own worktree", "worker"),
+                ("Python", "Guards", "AST rules, leakage test, one-file diff; still failing after the fixes: "
+                 "recorded as failed or rejected", "clock"),
+                ("CPU", "Linear fit", "ridge, lasso, elastic net or OLS", "ink"),
+                ("Python", "Score", "pearson_delta on visible validation", "gain"),
+                ("SQLite", "Research memory", "every result and failure, compressed", "ink")]
+    y, boxes = fy0 + 30, []
+    for role, name, detail, colour in stations:
+        wrapped = wrap(c, detail, sw - 26, 12.5)
+        h = 50 + 17 * len(wrapped)
+        c.add(f'<rect class="f-paper s-rule" x="{sx0}" y="{y}" width="{sw}" height="{h}" rx="9" stroke-width="1.2"/>')
+        c.add(f'<rect class="f-{colour}" x="{sx0}" y="{y + 12}" width="3.5" height="{h - 24}" rx="1.75"/>')
+        kicker(c, role, sx0 + 14, y + 21, "ink")
+        c.text(name, sx0 + 14, y + 40, 14.5, "sans-medium", "ink")
+        for i, line in enumerate(wrapped):
+            c.text(line, sx0 + 14, y + 58 + 17 * i, 12.5, "sans", "soft")
+        boxes.append((y, h))
+        y += h + 20
+    for (ya, ha), (yb, _) in zip(boxes, boxes[1:]):
+        cx = sx0 + sw / 2
+        arrow(c, f"M{cx} {ya + ha + 3}V{yb - 4}")
+        head(c, cx, yb - 3, "down")
+    # memory back to the planner, up the left gutter
+    gx = sx0 - 20
+    (pt, ph), (mt, mh) = boxes[0], boxes[-1]
+    arrow(c, f"M{sx0 - 3} {mt + mh / 2}H{gx + 8}Q{gx} {mt + mh / 2} {gx} {mt + mh / 2 - 8}V{pt + ph / 2 + 8}"
+             f"Q{gx} {pt + ph / 2} {gx + 8} {pt + ph / 2}H{sx0 - 5}", "pi")
+    head(c, sx0 - 3, pt + ph / 2, "right", "pi")
+    c.add(f'<g transform="translate({gx - 6} {(pt + mt + mh) / 2 + 40}) rotate(-90)">')
+    c.text("next round", 0, 0, 12, "mono", "pi")
+    c.add("</g>")
+    # a guard failure goes back to the worker, up the right gutter
+    (wt, wh), (gt, gh) = boxes[2], boxes[3]
+    rx = sx0 + sw + 20
+    arrow(c, f"M{sx0 + sw + 3} {gt + gh / 2}H{rx - 8}Q{rx} {gt + gh / 2} {rx} {gt + gh / 2 - 8}V{wt + wh / 2 + 8}"
+             f"Q{rx} {wt + wh / 2} {rx - 8} {wt + wh / 2}H{sx0 + sw + 5}", "clock", dashed=True, width=1.4)
+    head(c, sx0 + sw + 3, wt + wh / 2, "left", "clock")
+    c.add(f'<g transform="translate({rx + 6} {wt + wh / 2 + 4}) rotate(90)">')
+    c.text("fails: fix", 0, 0, 12, "mono", "clock")
+    c.add("</g>")
+
+    fy1 = y - 20 + 18
+    c.add(f'<rect class="s-clock" fill="none" x="{fx0}" y="{fy0}" width="{fx1 - fx0}" height="{fy1 - fy0}" '
+          f'rx="12" stroke-width="1.5" stroke-dasharray="7 5"/>')
+    tag = "Inside the deadline"
+    tw = c.measure(tag.upper(), 11.5, "mono-medium", 0.08)
+    c.add(f'<rect class="f-paper" x="{fx0 + 14}" y="{fy0 - 9}" width="{tw + 16}" height="18"/>')
+    kicker(c, tag, fx0 + 22, fy0 + 4, "clock")
+
+    py0 = fy1 + 22
+    items = [("Stop", "running fits get 30 s, then are killed"),
+             ("Sealed set", "top 3 and the best baseline, one query each"),
+             ("cell-eval", "finalists, when held-out cells exist"),
+             ("Watchdog", "kills the process group if anything overruns")]
+    colw = (NW - 2 * x - 48) / 2
+    heights = []
+    for name, detail in items:
+        heights.append(19 + 16 * len(wrap(c, detail, colw, 12.5)))
+    rowh = [max(heights[0], heights[1]) + 18, max(heights[2], heights[3])]
+    ph = 46 + sum(rowh) + 14
+    c.add(f'<rect class="f-panel" x="{x}" y="{py0}" width="{NW - 2 * x}" height="{ph}" rx="12"/>')
+    kicker(c, "After the deadline", x + 16, py0 + 26, "ink")
+    for k, (name, detail) in enumerate(items):
+        ix = x + 16 + (k % 2) * (colw + 16)
+        iy = py0 + 52 + (rowh[0] if k >= 2 else 0)
+        c.text(name, ix, iy, 13.5, "sans-medium", "ink")
+        lines(c, detail, ix, iy + 18, colw, 12.5, leading=16)
+    plate_to(c, py0 + ph + 24)
+    return c.save("loop-narrow.svg")
+
+
 def social_preview_figure() -> Path:
     """1280x640 card for the repository's social preview (Settings > Social preview).
     Render it to social-preview.png with any browser at that size."""
@@ -600,5 +877,6 @@ def social_preview_figure() -> Path:
 
 
 if __name__ == "__main__":
-    for build in (hero_figure, example_run_figure, loop_figure, social_preview_figure):
+    for build in (hero_figure, example_run_figure, loop_figure, social_preview_figure,
+                  hero_narrow_figure, example_run_narrow_figure, loop_narrow_figure):
         print(build().relative_to(DOCS.parent))

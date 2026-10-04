@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/assets/hero.svg" width="100%" alt="Gene-Mila. Agents write the features. Only a linear model may use them. The clock stops everyone. Example run on synthetic data: Claude Opus planner and Claude Haiku workers, 5.6 of 10 minutes used, 29 experiments, 1 of which failed the label-leakage test. pearson_delta on 16 visible-validation and 16 sealed query-only perturbations: linear baseline 0.6054 and 0.5942, best model 0.7775 and 0.7764.">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/assets/hero-narrow.svg">
+    <img src="docs/assets/hero.svg" width="100%" alt="Gene-Mila. Agents write the features. Only a linear model may use them. The clock stops everyone. Example run on synthetic data: Claude Opus planner and Claude Haiku workers, 5.6 of 10 minutes used, 29 experiments, 1 of which failed the label-leakage test. pearson_delta on 16 visible-validation and 16 sealed query-only perturbations: linear baseline 0.6054 and 0.5942, best model 0.7775 and 0.7764.">
+  </picture>
 </p>
 
 Gene-Mila is a research lab run by LLM agents against a wall clock. Give it a single-cell
@@ -26,7 +29,10 @@ biology in the features, where it can be read.
 ## What one run looks like
 
 <p align="center">
-  <img src="docs/assets/example-run.svg" width="100%" alt="Every experiment of the synthetic example run, plotted in queue order by pearson_delta on 16 visible-validation perturbations. Worker-written features range from 0.6053 to 0.7775. Twelve alpha sweeps sit on the 0.6054 linear baseline or the 0.7633 plateau, and one planner-proposed combination briefly held the best score at 0.7683. The winning lineage adds one feature per step: target_coexpression +0.1579 to 0.7633, target_knockdown_scaled +0.0136 to 0.7769, tf_gated_coexpression +0.0007 to 0.7775. EXP_0027 failed because its feature leaked the label. On 16 sealed query-only perturbations the best model scored 0.7764, a scripted control with no LLM 0.7776, and the linear baseline 0.5942.">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/assets/example-run-narrow.svg">
+    <img src="docs/assets/example-run.svg" width="100%" alt="Every experiment of the synthetic example run, plotted in queue order by pearson_delta on 16 visible-validation perturbations. Worker-written features range from 0.6053 to 0.7775. Twelve alpha sweeps sit on the 0.6054 linear baseline or the 0.7633 plateau, and one planner-proposed combination briefly held the best score at 0.7683. The winning lineage adds one feature per step: target_coexpression +0.1579 to 0.7633, target_knockdown_scaled +0.0136 to 0.7769, tf_gated_coexpression +0.0007 to 0.7775. EXP_0027 failed because its feature leaked the label. On 16 sealed query-only perturbations the best model scored 0.7764, a scripted control with no LLM 0.7776, and the linear baseline 0.5942.">
+  </picture>
 </p>
 
 Claude Opus planned and four Claude Haiku workers wrote code against a synthetic knockout
@@ -137,7 +143,10 @@ been changed to run several planner rounds at once as the worker count grows
 ## How it works
 
 <p align="center">
-  <img src="docs/assets/loop.svg" width="100%" alt="How one experiment moves through the lab, inside a dashed deadline frame. Claude, as planner, reads the research memory and proposes hypotheses as JSON. The Python controller queues them and adds sweeps and replicates. A worker LLM writes a single plugin file in its own git worktree. Python guards check it: AST rules, a smoke and label-leakage test, and a diff limited to that file. Code that fails goes back to the worker for a fix; if it still fails it is recorded as failed, or as rejected when forbidden code remains or the edit reaches outside its file. A ridge, lasso, elastic net or OLS model is fitted on CPU in a limited subprocess, the controller scores it by pearson_delta on visible validation, and the result goes into the research memory the planner reads next round. After the deadline: running fits get 30 seconds and are killed, the top 3 candidates and the best baseline are scored once each on the query-only set, finalists are scored with Arc's cell-eval when held-out cells exist, and a watchdog kills the process group if anything overruns.">
+  <picture>
+    <source media="(max-width: 600px)" srcset="docs/assets/loop-narrow.svg">
+    <img src="docs/assets/loop.svg" width="100%" alt="How one experiment moves through the lab, inside a dashed deadline frame. Claude, as planner, reads the research memory and proposes hypotheses as JSON. The Python controller queues them and adds sweeps and replicates. A worker LLM writes a single plugin file in its own git worktree. Python guards check it: AST rules, a smoke and label-leakage test, and a diff limited to that file. Code that fails goes back to the worker for a fix; if it still fails it is recorded as failed, or as rejected when forbidden code remains or the edit reaches outside its file. A ridge, lasso, elastic net or OLS model is fitted on CPU in a limited subprocess, the controller scores it by pearson_delta on visible validation, and the result goes into the research memory the planner reads next round. After the deadline: running fits get 30 seconds and are killed, the top 3 candidates and the best baseline are scored once each on the query-only set, finalists are scored with Arc's cell-eval when held-out cells exist, and a watchdog kills the process group if anything overruns.">
+  </picture>
 </p>
 
 | Role | Who | Sees |
