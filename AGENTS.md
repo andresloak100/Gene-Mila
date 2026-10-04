@@ -148,8 +148,9 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 ## How to coordinate (every agent, every session)
 
 1. **When you start, read the state.** `HANDOFF.md` section 1 on the integration branch,
-   `python handoff_state.py` (one command: git state, every run with its state, the ledger, live
-   processes, the tail of `progress.md`), open `Claim:` issues, open pull requests and recent
+   `python handoff_state.py --fetch` (one command: how far your clone is behind the integration
+   branch, every run with its state, the ledger and any paid run that bypasses it, live processes,
+   `STATE.md` and the tail of `progress.md`), open `Claim:` issues, open pull requests and recent
    commits. Don't redo or collide with work someone else holds.
 2. **Claim the task.** Open a GitHub issue titled `Claim: <task>` naming the agent, the branch and
    the files you will touch, before you start. If another owner's files are on the list, say so

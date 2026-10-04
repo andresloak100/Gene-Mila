@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-04 18:25, by Claude ("Agent handoff" session), from the lab-code owner's
-reports at 17:40, 17:50 (its read of the Mac's checkout) and 18:10.
+**Last updated:** 2026-10-04 18:30, by Claude ("Agent handoff" session), from the lab-code owner's
+reports at 17:40, 17:50 (its read of the Mac's checkout), 18:10 and 18:15.
 
 **Active agents**
 
@@ -39,7 +39,8 @@ which resets roughly five hours after its first use (resets observed at 05:00 an
 2026-10-04). When it is exhausted, Opus-planned runs wait for the reset; everything else moves to
 the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**Code:** integration branch head `9044ece`: the planner failover chain `planner.fallback` (AGENTS.md,
+**Code:** integration branch head `537344f` (`9044ece` plus `handoff_state.py`'s clone distance, ledger-bypass
+warning and STATE.md): the planner failover chain `planner.fallback` (AGENTS.md,
 "Money and usage"), deeper deterministic search tiers `schedule.exploit_depth` so the no-LLM control
 fills its 20 minutes, `handoff_state.py` (below), and the results table and scaling report labelling
 mixed-planner runs and code versions as their own arms. Every Claude-planned run on this code carries
@@ -72,7 +73,7 @@ benchmark, split and guard code.
 
 | Question | Live source |
 |---|---|
-| Everything below in one command | `python handoff_state.py [--runs DIR] [--ledger FILE] [--logs DIR] [--json]`: git state, every run directory with arm, workers, seed, code and state (finished; in progress with minutes to its deadline; killed before its summary; excluded `_contaminated` / `_interrupted`; planner changed or lost) and headline numbers, ledger totals per provider and role, live `run_research.py` processes, the STOP file, the tail of `progress.md`. From your own clone on the Mac, read-only: `python handoff_state.py --runs ~/Documents/Loak-documents/gene-mila/runs` |
+| Everything below in one command | `python handoff_state.py --runs ~/Documents/Loak-documents/gene-mila/runs --logs ~/Documents/Loak-documents/genemila_scale_logs` from any clone at the integration branch head (read-only; `--fetch` compares against the remote first, `--json` for machines; `--ledger FILE` if the shared ledger is elsewhere). Prints how far your clone is ahead of or behind the integration branch; every run directory with arm, workers, seed, code and state (finished; in progress with minutes to its deadline; killed before its summary; excluded `_contaminated` / `_interrupted`; planner changed or lost) and headline numbers; ledger totals per provider and role; a WARNING listing paid runs whose `budget.ledger` is not the shared ledger (their spend does not count toward the cap); live `run_research.py` processes; the STOP file; the head of `STATE.md` and the tail of `progress.md` |
 | What is running on the Mac, and what comes next there? | `~/Documents/Loak-documents/genemila_scale_logs/STATE.md` (what is running, every run directory and its status, open decisions, exact next commands; written on the Mac by whoever runs there), `tail -n 30 .../progress.md` (the driver's step log), `pgrep -fl run_research.py` |
 | How much DeepSeek money is spent? | `sqlite3 ~/Documents/Loak-documents/gene-mila/runs/spend_ledger.sqlite "SELECT provider, ROUND(SUM(cost_usd),2) FROM spend GROUP BY provider"` |
 | What did a run find? | `runs/<run>/summary.md` and `summary.json` (`best`, `generalization_query_only`, `llm_usage`, `completed_by_proposer`, `split_id`) |
