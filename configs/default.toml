@@ -88,6 +88,11 @@ input_cache_hit = 0.0
 input_cache_miss = 0.0
 output = 0.0
 
+[pricing.loadtest]
+input_cache_hit = 0.0
+input_cache_miss = 0.0
+output = 0.0
+
 [final]
 top_k = 3                      # visible-validation winners evaluated on the query-only set
 max_queries = 5                # hard cap on query-only evaluations per run

@@ -22,7 +22,11 @@ def make_provider(kind: str, model: str, cfg: dict | None = None) -> AgentProvid
         return AnthropicProvider(model=model, timeout_s=cfg.get("timeout_s", 300))
     if kind == "mock":
         from .mock import MockProvider
-        return MockProvider(model=model or "mock", **{k: v for k, v in cfg.items() if k in ("fail_rate", "seed")})
+        return MockProvider(model=model or "mock", **{k: v for k, v in cfg.items()
+                                                      if k in ("fail_rate", "seed", "latency_s", "latency_jitter_s")})
+    if kind == "loadtest":
+        from .mock import LoadTestPlanner
+        return LoadTestPlanner(**{k: v for k, v in cfg.items() if k in ("latency_s", "replicates")})
     if kind == "scripted":
         from .mock import ScriptedPlanner
         return ScriptedPlanner()

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import random
+import threading
 import time
 
 from .base import AgentProvider, LLMResponse, Usage
@@ -239,12 +240,21 @@ def _pick_template(text: str) -> str:
 class MockProvider(AgentProvider):
     name = "mock"
 
-    def __init__(self, model: str = "mock", fail_rate: float = 0.0, seed: int = 0, latency_s: float = 0.0):
+    def __init__(self, model: str = "mock", fail_rate: float = 0.0, seed: int = 0, latency_s: float = 0.0,
+                 latency_jitter_s: float = 0.0):
         super().__init__(model)
         self.fail_rate = fail_rate
         self.rng = random.Random(seed)
         self.latency_s = latency_s
+        self.latency_jitter_s = latency_jitter_s  # simulated LLM latency: latency_s + U(0, jitter), for load tests
         self.calls = 0
+        self._lock = threading.Lock()
+
+    def _sleep(self) -> None:
+        if self.latency_s or self.latency_jitter_s:
+            with self._lock:
+                extra = self.rng.random() * self.latency_jitter_s
+            time.sleep(self.latency_s + extra)
 
     def _usage(self, prompt: str, out: str) -> Usage:
         return Usage(input_tokens=len(prompt) // 4, output_tokens=len(out) // 4, cached_tokens=0,
@@ -256,8 +266,7 @@ class MockProvider(AgentProvider):
 
     def implement(self, task: dict, max_tokens: int) -> LLMResponse:
         self.calls += 1
-        if self.latency_s:
-            time.sleep(self.latency_s)
+        self._sleep()
         nf = task["new_feature"]
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
         if "MOCK_CRASH" in hint:
@@ -276,6 +285,7 @@ class MockProvider(AgentProvider):
         return LLMResponse(text=text, usage=self._usage(json.dumps(task), text), provider=self.name, model=self.model)
 
     def diagnose(self, task: dict, code: str, error: str, max_tokens: int) -> LLMResponse:
+        self._sleep()
         nf = task["new_feature"]
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
         if any(m in hint for m in ("MOCK_LEAK", "MOCK_CHEAT", "MOCK_SLOW", "MOCK_CRASH")):
@@ -352,6 +362,42 @@ class ScriptedPlanner(AgentProvider):
         text = json.dumps({"synthesis": "Scripted planner: fixed hypothesis list, then greedy combination.",
                            "hypotheses": hyps})
         return LLMResponse(text=text, usage=Usage(), provider=self.name, model=self.model)
+
+
+class LoadTestPlanner(AgentProvider):
+    """Planner for load tests: an endless stream of distinct feature hypotheses after a simulated delay.
+
+    Lets the controller, workers, database, git isolation and executor be exercised at 8/16/44 workers
+    without paying for LLM calls (pair it with MockProvider and latency_s/latency_jitter_s)."""
+    name = "loadtest"
+
+    def __init__(self, model: str = "loadtest", latency_s: float = 0.0, replicates: int = 1):
+        super().__init__(model)
+        self.latency_s = latency_s
+        self.replicates = replicates
+        self.counter = 0
+
+    def complete(self, system: str, user: str, max_tokens: int) -> LLMResponse:
+        return LLMResponse(text="{}", provider=self.name, model=self.model)
+
+    def propose(self, research_state: str, n: int, mix: dict, max_tokens: int) -> LLMResponse:
+        if self.latency_s:
+            time.sleep(self.latency_s)
+        hyps = []
+        cats = ["explore"] * 13 + ["exploit"] * 5 + ["risky"] * 2
+        for _ in range(n):
+            title, cat, name, desc, why = SCRIPTED_HYPOTHESES[self.counter % len(SCRIPTED_HYPOTHESES)]
+            self.counter += 1
+            hyps.append({"title": f"{title} #{self.counter}", "category": cats[self.counter % len(cats)],
+                         "hypothesis": f"Variant {self.counter}: adding {desc} improves prediction.",
+                         "rationale": why, "action": "new_feature", "parent": None,
+                         "new_feature": {"name": f"{name}_v{self.counter}", "description": desc,
+                                         "implementation_hint": desc, "params": {}},
+                         "model_type": "ridge", "replicates": self.replicates})
+        text = json.dumps({"synthesis": "Load-test planner.", "hypotheses": hyps})
+        return LLMResponse(text=text, usage=Usage(input_tokens=len(research_state) // 4,
+                                                  output_tokens=len(text) // 4), provider=self.name,
+                           model=self.model)
 
 
 def _section(text: str, title: str) -> list[str]:
