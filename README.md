@@ -144,8 +144,10 @@ $$
 A feature $f$ maps $(p, g)$ to one or a few numbers (`genemila/features/api.py`), so each
 coefficient is the weight of one named signal for every perturbation and gene. The primary
 metric is `pearson_delta`: for each held-out perturbation, the Pearson correlation between
-predicted and true change across genes, averaged. RMSE, MAE, top-20 DE Pearson and direction
-accuracy are recorded alongside. Baselines run first: no change, the mean training response,
+predicted and true change across genes, averaged. So that the numbers can sit next to published
+ones, every experiment is also scored with CellForge's metrics (MSE, PCC and R² on mean
+expression, over all genes and over the top-20 DE genes) and VCWorld's DE and direction
+classification metrics (`genemila/benchmark/comparable.py`). Baselines run first: no change, the mean training response,
 and OLS, ridge and lasso on control mean, leave-one-out mean response and a target indicator.
 
 | Role | Who | Sees |
@@ -159,9 +161,10 @@ and OLS, ridge and lasso on control mean, leave-one-out mean response and a targ
 - **Synthetic data only, so far.** The `.h5ad` ingestor reads the scPerturb and GEARS layouts
   CellForge uses and is tested on a simulated screen, but it has not been run on Adamson:
   downloads were blocked in the build environment.
-- **cell-eval sees the finalists only.** The search optimises in-house pseudobulk metrics;
-  cell-eval scores the finalists and the best baseline at the end of a run on real data. No run
-  documented here has cell-eval numbers yet.
+- **Comparable metrics, not comparable runs yet.** CellForge's and VCWorld's metrics are
+  reimplemented from their papers (`genemila/benchmark/comparable.py`), not run from their code,
+  and cell-eval scores only the finalists. The search itself optimises `pearson_delta`. No run
+  documented here has real-data, cell-eval or comparable-metric numbers yet.
 - **Means, not cells.** The lab predicts each perturbation's mean expression change, so
   cell-eval's distribution metrics see a point mass per perturbation. Cell-level predictions
   would need a noise or sampling model on top of the linear mean model.
@@ -190,8 +193,9 @@ the three directly comparable:
 
 1. **Real screens on CellForge's splits.** Adamson first, then Norman. The ingestor and
    `--splits` already exist; the runs are next.
-2. **Their scoring, after every experiment.** CellForge's and VCWorld's own evaluation, plus
-   cell-eval, after every experiment and every run. Today cell-eval scores finalists only.
+2. **Their scoring, after every experiment.** In place: every experiment is scored with
+   CellForge's and VCWorld's published metrics, and the finalists with cell-eval. They have
+   not yet been run on a real screen.
 3. **The same game.** CellForge, VCWorld and Gene-Mila on the same datasets, the same splits and
    the same scoring.
 
