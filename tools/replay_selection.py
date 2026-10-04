@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Replay model-selection rules over finished runs: offline and free (no LLM, no API, no new experiment).
+"""Replay model-selection rules over finished runs on visible data only: offline and free (no LLM, no API,
+no new experiment, and the sealed labels are never read).
 
-For every completed experiment that kept its artifact (predictions.npz with the chosen alpha; cv.npz when the
-run cross-validated), the visible selection score is recomputed under each rule in benchmark.SELECTION_RULES
-exactly as the lab computes it, and the sealed metrics come from the bundle's private labels. Per rule the
-report shows the single model the rule would have made the run's best, with that model's sealed metrics, next
-to the model the run actually picked and its starting model.
+The question is whether a selection rule picks models that do better on perturbations the rule did not
+select on. Comparing rules by their sealed (query-only) outcome would tune the rule on the test set, so this
+tool never opens the sealed labels. Every run that cross-validated (experiment.cv_folds) has two disjoint
+visible parts instead: the visible validation set (val1, which also has a DE reference) and the out-of-fold
+predictions of the training perturbations (cv.npz, which never saw their own labels). Each rule picks the
+run's best experiment on one part, and that pick is scored on the other, in both directions:
 
-It reads the sealed labels directly, so it is an analysis of finished runs and never part of one: no oracle
-query is logged and nothing feeds back into a run. The alpha grid inside one experiment cannot be replayed
-(only the chosen alpha's predictions are kept), so this answers "which experiment would the rule have picked",
-not "which alpha"; alpha variants the exploit engine queued as experiments of their own are covered.
+    select on out-of-fold training -> score on val1 (pearson_delta, r2_top, mse_top, CellForge's DE metrics)
+    select on val1                 -> score on out-of-fold training (pearson_delta, r2_top, mse_top)
+
+Only the chosen alpha of each experiment survives on disk, so the rule is replayed across experiments, not
+inside one alpha grid; alpha variants the exploit engine queued as experiments of their own are covered.
+Runs without cv.npz have a single visible part and are skipped.
 
     python tools/replay_selection.py --runs runs/a runs/b --out docs/results/selection_replay.md
 """
@@ -32,8 +36,11 @@ from genemila.benchmark.table import run_arm  # noqa: E402
 from genemila.data.bundle import LabelSet  # noqa: E402
 from genemila.db import Database  # noqa: E402
 
-SEALED = ["pearson_delta", "r2_top", "mse_top", "cellforge_mse_de", "cellforge_pcc_de", "cellforge_r2_de"]
-HEAD = ["sealed pearson_delta", "sealed R²_top", "sealed MSE_top", "MSE_DE", "PCC_DE", "R²_DE"]
+SCORED = ["pearson_delta", "r2_top", "mse_top", "cellforge_mse_de", "cellforge_pcc_de", "cellforge_r2_de"]
+HEAD = ["pearson_delta", "R²_top", "MSE_top", "MSE_DE", "PCC_DE", "R²_DE"]
+LOWER_IS_BETTER = {"mse_top", "cellforge_mse_de"}
+DIRECTIONS = [("select on out-of-fold training, score on validation", "train_oof", "val1"),
+              ("select on validation, score on out-of-fold training", "val1", "train_oof")]
 
 
 def _bundle(run_dir: Path, cfg: dict) -> dict:
@@ -44,9 +51,8 @@ def _bundle(run_dir: Path, cfg: dict) -> dict:
     z = np.load(pub, allow_pickle=False)
     return {"control_mean": z["control_cells"].astype(np.float64).mean(axis=0),
             "train": LabelSet([str(p) for p in z["train_perts"]], z["train_means"].astype(np.float64)),
-            "val1": LabelSet.load(data_dir / "private" / "val1.npz"),
-            "val2": LabelSet.load(data_dir / "private" / "val2.npz"),
-            "ref2": reference.load(data_dir, "val2")}
+            "val1": LabelSet.load(data_dir / "private" / "val1.npz"),  # the visible validation set
+            "ref1": reference.load(data_dir, "val1")}
 
 
 def _chosen(path: Path, best_alpha) -> tuple[np.ndarray, list[str]]:
@@ -64,61 +70,51 @@ def replay_run(run_dir: Path, rules: list[str] | None = None) -> dict:
     exps = Database(run_dir / "lab.db").query(
         "SELECT * FROM experiments WHERE status='completed' AND artifact_dir IS NOT NULL "
         "AND COALESCE(kind, '') NOT IN ('baseline', 'ensemble') ORDER BY experiment_id")
-    n1, nt = len(d["val1"].perts), len(d["train"].perts)
-    cands, skipped = [], []
+    cm = d["control_mean"]
+    cands, skipped = [], {"no_artifact": 0, "no_oof": 0}
     for e in exps:
         art = Path(e["artifact_dir"])
         if not (art / "predictions.npz").exists():
-            skipped.append(e["experiment_id"])
+            skipped["no_artifact"] += 1
             continue
         delta, perts = _chosen(art / "predictions.npz", e.get("best_alpha"))
         idx = {p: i for i, p in enumerate(perts)}
-        if any(p not in idx for p in d["val1"].perts + d["val2"].perts):
-            skipped.append(e["experiment_id"])
+        if any(p not in idx for p in d["val1"].perts):
+            skipped["no_artifact"] += 1
             continue
-        pred1 = delta[[idx[p] for p in d["val1"].perts]] + d["control_mean"]
-        m1 = evaluate(pred1, d["val1"].means, d["control_mean"], d["val1"].perts)["metrics"]
-        m_cv = None
-        if (art / "cv.npz").exists():
-            cdelta, cperts = _chosen(art / "cv.npz", e.get("best_alpha"))
-            if cperts == d["train"].perts:
-                m_cv = evaluate(cdelta + d["control_mean"], d["train"].means, d["control_mean"],
-                                d["train"].perts)["metrics"]
-        visible = {}
-        for rule in rules:
-            comb = {m: (m1[m] if m_cv is None else (n1 * m1[m] + nt * m_cv[m]) / (n1 + nt))
-                    for m in SELECTION_RULES[rule]}
-            visible[rule] = selection_score(comb, rule)
-        pred2 = delta[[idx[p] for p in d["val2"].perts]] + d["control_mean"]
-        m2 = evaluate(pred2, d["val2"].means, d["control_mean"], d["val2"].perts)["metrics"]
-        m2.update(comparable.score(pred2, d["val2"].means, d["val2"].perts, d["ref2"], d["control_mean"]))
+        if not (art / "cv.npz").exists():
+            skipped["no_oof"] += 1
+            continue
+        cdelta, cperts = _chosen(art / "cv.npz", e.get("best_alpha"))
+        if cperts != d["train"].perts:
+            skipped["no_oof"] += 1
+            continue
+        pred1 = delta[[idx[p] for p in d["val1"].perts]] + cm
+        m1 = evaluate(pred1, d["val1"].means, cm, d["val1"].perts)["metrics"]
+        m1.update(comparable.score(pred1, d["val1"].means, d["val1"].perts, d["ref1"], cm))
+        m_oof = evaluate(cdelta + cm, d["train"].means, cm, d["train"].perts)["metrics"]
+        parts = {"val1": m1, "train_oof": m_oof}
         cands.append({"experiment_id": e["experiment_id"], "features": e.get("feature_set_json") or [],
                       "model": e.get("model_type"), "best_alpha": e.get("best_alpha"),
-                      "recorded_visible": e.get("primary_score"), "cross_validated": m_cv is not None,
-                      "visible": visible, "sealed": {k: m2.get(k) for k in SEALED}})
+                      "parts": {part: {k: m.get(k) for k in SCORED if k in m} for part, m in parts.items()},
+                      "scores": {rule: {part: selection_score(m, rule) for part, m in parts.items()} for rule in rules}})
     picks = {}
-    for rule in rules:
-        best = max(cands, key=lambda c: c["visible"][rule], default=None)
-        picks[rule] = None if best is None else {**best, "visible_score": best["visible"][rule]}
+    for label, sel, score in DIRECTIONS:
+        picks[label] = {}
+        for rule in rules:
+            best = max(cands, key=lambda c: c["scores"][rule][sel], default=None)
+            picks[label][rule] = None if best is None else {
+                "experiment_id": best["experiment_id"], "features": best["features"], "model": best["model"],
+                "best_alpha": best["best_alpha"], "selection_score": best["scores"][rule][sel],
+                "scored_on": score, "scored": best["parts"][score]}
     summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
-    actual = {}
-    for g in summary.get("generalization_query_only") or []:
-        key = "start" if g.get("kind") == "baseline" else "best"
-        if key in actual:
-            continue
-        comp = (g.get("comparable") or {}).get("val2") or {}
-        actual[key] = {"experiment_id": g.get("experiment_id"), "kind": g.get("kind"),
-                       "visible_score": g.get("visible_score"),
-                       "sealed": {"pearson_delta": g.get("query_only_pearson_delta", g.get("query_only_score")),
-                                  **{k: comp.get(k) for k in SEALED if k.startswith("cellforge_")}}}
     return {"run_id": summary.get("run_id", run_dir.name), "dir": run_dir.name, "arm": run_arm(cfg, summary),
             "workers": summary.get("workers") or cfg.get("run", {}).get("workers"),
-            "code": (summary.get("base_commit") or "")[:7], "rule_used": summary.get("selection", {}).get("rule")
-            or cfg.get("experiment", {}).get("selection") or "pearson_delta",
-            "n_candidates": len(cands), "skipped": skipped,
-            "cross_validated": bool(cands) and all(c["cross_validated"] for c in cands),
-            "rules": picks, "actual": actual,
-            "top": {rule: sorted(cands, key=lambda c: -c["visible"][rule])[:5] for rule in rules}}
+            "code": (summary.get("base_commit") or "")[:7],
+            "rule_used": (summary.get("selection") or {}).get("rule") or cfg.get("experiment", {}).get("selection")
+            or "pearson_delta",
+            "n_candidates": len(cands), "skipped": skipped, "n_val1": len(d["val1"].perts),
+            "n_train": len(d["train"].perts), "picks": picks}
 
 
 def _f(x, nd=4):
@@ -138,58 +134,64 @@ def _ms(st, nd=4):
 
 
 def render(reports: list[dict]) -> str:
-    rules = list(next(iter(reports))["rules"]) if reports else list(SELECTION_RULES)
-    L = ["# Selection-rule replay over finished runs", "",
-         "Offline and free: for every completed experiment that kept its predictions, the visible selection score "
-         "is recomputed under each rule exactly as the lab computes it (validation set plus out-of-fold training "
-         "perturbations where the run cross-validated), and the sealed metrics come from the private labels. "
-         "Each rule's row is the single model it would have made the run's best; 'run's pick' is the finalist the "
-         "run reported (an ensemble when one was kept), and 'start' its starting model. Only the chosen alpha of "
-         "each experiment survives on disk, so the rule is replayed across experiments, not inside one alpha "
-         "grid. No oracle query is made or logged.", ""]
+    rules = list(next(iter(reports))["picks"][DIRECTIONS[0][0]]) if reports else list(SELECTION_RULES)
+    L = ["# Selection-rule replay on visible data", "",
+         "Offline and free, and the sealed (query-only) labels are never read: comparing rules by their sealed "
+         "outcome would tune the rule on the test set. Each run that cross-validated has two disjoint visible "
+         "parts, the visible validation set and the out-of-fold predictions of the training perturbations; a rule "
+         "picks the run's best experiment on one part and the pick is scored on the other, both ways. Scores on "
+         "the validation part include CellForge's top-20 DE metrics (its DE reference exists there); the "
+         "out-of-fold part has pearson_delta, R² and MSE on each perturbation's 20 most changed genes. Only the "
+         "chosen alpha of each experiment survives on disk, so a rule is replayed across experiments, not inside "
+         "one alpha grid. Runs without out-of-fold predictions are skipped.", ""]
+    usable = [r for r in reports if r["n_candidates"]]
     for r in reports:
-        note = "" if r["cross_validated"] else " (no out-of-fold predictions: visible = validation set only)"
-        L += [f"## {r['dir']}: {r['arm']}, {r['workers']} workers, code {r['code'] or '?'}", "",
-              f"{r['n_candidates']} candidate experiments{note}; the run itself selected by {r['rule_used']}"
-              + (f"; {len(r['skipped'])} skipped (artifact missing or incomplete)" if r["skipped"] else "") + ".", "",
-              "| rule | picked | model | visible score | " + " | ".join(HEAD) + " |",
-              "|---|---|---|---|" + "---|" * len(HEAD)]
-        for rule in rules:
-            p = r["rules"].get(rule)
-            if p is None:
-                L.append(f"| {rule} | – | | | " + " | ".join("–" for _ in HEAD) + " |")
-                continue
-            feats = ", ".join(p["features"][:6]) + (", …" if len(p["features"]) > 6 else "")
-            L.append(f"| {rule} | {p['experiment_id']} | {p['model']} on {feats} | {_f(p['visible_score'])} | "
-                     + " | ".join(_f(p["sealed"].get(k)) for k in SEALED) + " |")
-        for key, label in (("best", "run's pick"), ("start", "start")):
-            a = r["actual"].get(key)
-            if a:
-                L.append(f"| {label} ({a['kind']}) | {a['experiment_id']} | | {_f(a.get('visible_score'))} | "
-                         + " | ".join(_f(a["sealed"].get(k)) for k in SEALED) + " |")
+        sk = r["skipped"]
+        L += [f"## {r['dir']}: {r['arm']}, {r['workers']} workers, code {r['code'] or '?'}", ""]
+        if not r["n_candidates"]:
+            L += [f"Skipped: no experiment with out-of-fold predictions ({sk['no_oof']} without cv.npz, "
+                  f"{sk['no_artifact']} without an artifact).", ""]
+            continue
+        L += [f"{r['n_candidates']} candidate experiments ({r['n_val1']} validation and {r['n_train']} out-of-fold "
+              f"training perturbations); the run itself selected by {r['rule_used']} on both parts together"
+              + (f"; skipped {sk['no_oof']} without out-of-fold predictions and {sk['no_artifact']} without an artifact"
+                 if sk["no_oof"] or sk["no_artifact"] else "") + ".", "",
+              "| direction | rule | picked | model | selection score | " + " | ".join(HEAD) + " |",
+              "|---|---|---|---|---|" + "---|" * len(HEAD)]
+        for label, sel, score in DIRECTIONS:
+            for rule in rules:
+                p = r["picks"][label].get(rule)
+                if p is None:
+                    continue
+                feats = ", ".join(p["features"][:6]) + (", …" if len(p["features"]) > 6 else "")
+                L.append(f"| {label} | {rule} | {p['experiment_id']} | {p['model']} on {feats} | "
+                         f"{_f(p['selection_score'])} | " + " | ".join(_f(p["scored"].get(k)) for k in SCORED) + " |")
         L.append("")
-    if len(reports) > 1:
+    if len(usable) > 1:
         base = rules[0]
-        L += ["## Across runs", "", "| rule | pick differs from the first rule in | " + " | ".join(HEAD) + " |",
-              "|---|---|" + "---|" * len(HEAD)]
-        for rule in rules:
-            picks = [r["rules"].get(rule) for r in reports]
-            diff = sum(1 for r, p in zip(reports, picks)
-                       if p and r["rules"].get(base) and p["experiment_id"] != r["rules"][base]["experiment_id"])
-            L.append(f"| {rule} | {diff} of {len(reports)} runs | "
-                     + " | ".join(_ms(_stats([p["sealed"].get(k) for p in picks if p])) for k in SEALED) + " |")
-        L.append("")
-        for rule in rules[1:]:
-            pairs = [(r["rules"][rule]["sealed"], r["rules"][base]["sealed"]) for r in reports
-                     if r["rules"].get(rule) and r["rules"].get(base)]
-            for k, h in (("pearson_delta", "sealed pearson_delta"), ("cellforge_r2_de", "R²_DE"), ("cellforge_mse_de", "MSE_DE")):
-                ds = [a[k] - b[k] for a, b in pairs if a.get(k) is not None and b.get(k) is not None]
-                if ds:
+        L += [f"## Across the {len(usable)} usable runs", ""]
+        for label, sel, score in DIRECTIONS:
+            L += [f"**{label}**", "", "| rule | pick differs from {} in | ".format(base) + " | ".join(HEAD) + " |",
+                  "|---|---|" + "---|" * len(HEAD)]
+            for rule in rules:
+                ps = [r["picks"][label][rule] for r in usable]
+                diff = sum(1 for r, p in zip(usable, ps) if p and p["experiment_id"] != r["picks"][label][base]["experiment_id"])
+                L.append(f"| {rule} | {diff} of {len(ps)} runs | "
+                         + " | ".join(_ms(_stats([p["scored"].get(k) for p in ps if p])) for k in SCORED) + " |")
+            L.append("")
+            for rule in rules[1:]:
+                for k, h in zip(SCORED, HEAD):
+                    ds = [r["picks"][label][rule]["scored"][k] - r["picks"][label][base]["scored"][k] for r in usable
+                          if r["picks"][label][rule]["scored"].get(k) is not None
+                          and r["picks"][label][base]["scored"].get(k) is not None]
+                    if not ds:
+                        continue
                     st = _stats(ds)
-                    better = sum(1 for x in ds if (x < 0 if k == "cellforge_mse_de" else x > 0))
-                    L.append(f"- {rule} minus {base}, {h}: {st['mean']:+.4f}" + (f" ± {st['sd']:.4f}" if st["n"] > 1 else "")
+                    better = sum(1 for x in ds if (x < 0 if k in LOWER_IS_BETTER else x > 0))
+                    L.append(f"- {rule} minus {base}, {h}: {st['mean']:+.4f}"
+                             + (f" ± {st['sd']:.4f}" if st["n"] > 1 else "")
                              + f" over {st['n']} runs; better in {better} of {st['n']}.")
-        L.append("")
+            L.append("")
     return "\n".join(L)
 
 

@@ -18,7 +18,8 @@
   the expression on each perturbation's twenty most changed genes, every term averaged the same
   way), because correlation alone cannot see that a heavily regularised model shrinks every
   change; the oracle scores the sealed set under the same rule and reports `pearson_delta` by
-  name next to it, and `tools/replay_selection.py` replays the rules over finished runs. Fold views are enforced,
+  name next to it, and `tools/replay_selection.py` replays the rules over finished runs on visible
+  data only (select on one visible part, score on the other; the sealed labels are never read). Fold views are enforced,
   not trusted: the guard refuses plugin code that constructs its own `FeatureContext`, reaches
   a class through `type()`, `__init__` or `__file__`, or routes around the view; plugin modules
   are re-executed before every fold (and between the smoke test's checks), so a module-level

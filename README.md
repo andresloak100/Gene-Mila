@@ -144,7 +144,8 @@ validation set, so the search signal rests on 60-70 perturbations instead of 15-
 `experiment.selection` names the selection score: `pearson_delta` (the default: correlation of the
 predicted change, blind to its size) or `pearson_delta+r2_top`, which adds R² on each perturbation's
 twenty most changed genes so a model that shrinks every change loses; `tools/replay_selection.py`
-replays both rules over finished runs for free. While the
+replays both rules over finished runs for free, on visible data only (select on one visible part,
+score on the other), never on the sealed set. While the
 planner thinks, `schedule.python_exploit` queues deterministic follow-ups around the best model
 (add a helpful feature, ablate, refine alpha, swap the model family) so workers never idle; and
 `final.ensemble` tries the average of the finalists as one more candidate for the sealed set, kept
