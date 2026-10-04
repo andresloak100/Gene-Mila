@@ -5,7 +5,7 @@
   {
    "dataset": "adamson_cf",
    "split_id": "split_450515be1a0d8d2e",
-   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11",
    "workers": 1,
    "n_runs": 2,
    "run_ids": [
@@ -116,7 +116,7 @@
   {
    "dataset": "adamson_cf",
    "split_id": "split_450515be1a0d8d2e",
-   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11",
    "workers": 4,
    "n_runs": 2,
    "run_ids": [
@@ -227,7 +227,7 @@
   {
    "dataset": "adamson_cf",
    "split_id": "split_450515be1a0d8d2e",
-   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11",
    "workers": 8,
    "n_runs": 2,
    "run_ids": [
@@ -338,7 +338,7 @@
   {
    "dataset": "adamson_cf",
    "split_id": "split_450515be1a0d8d2e",
-   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11",
    "workers": 16,
    "n_runs": 2,
    "run_ids": [
@@ -449,7 +449,229 @@
   {
    "dataset": "adamson_cf",
    "split_id": "split_450515be1a0d8d2e",
-   "arm": "scripted control (no LLM)",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers @ 537344f",
+   "workers": 4,
+   "n_runs": 2,
+   "run_ids": [
+    "newcode_opus_w4_r0",
+    "newcode_opus_w4_r1"
+   ],
+   "data_dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/data/adamson_cf",
+   "best": {
+    "mse": {
+     "mean": 0.006329806009437145,
+     "std": 9.522196210369779e-05,
+     "n": 2
+    },
+    "pcc": {
+     "mean": 0.9863081566533737,
+     "std": 0.0001355487795161245,
+     "n": 2
+    },
+    "r2": {
+     "mean": 0.9696706204760926,
+     "std": 0.0004669721671511474,
+     "n": 2
+    },
+    "mse_de": {
+     "mean": 0.12357556406263716,
+     "std": 0.00810816191357767,
+     "n": 2
+    },
+    "pcc_de": {
+     "mean": 0.9526762900892021,
+     "std": 0.0033328579602882164,
+     "n": 2
+    },
+    "r2_de": {
+     "mean": 0.7905197882645387,
+     "std": 0.0167128614479431,
+     "n": 2
+    },
+    "mse_deset": {
+     "mean": 0.03385155018024951,
+     "std": 0.006293789550625849,
+     "n": 2
+    },
+    "pcc_deset": {
+     "mean": 0.9662161932679725,
+     "std": 0.0026903062001458686,
+     "n": 2
+    },
+    "r2_deset": {
+     "mean": 0.8916616005926301,
+     "std": 0.022739749202167654,
+     "n": 2
+    }
+   },
+   "start": {
+    "mse": {
+     "mean": 0.007039087039889803,
+     "std": 0.0,
+     "n": 2
+    },
+    "pcc": {
+     "mean": 0.9846084168233286,
+     "std": 0.0,
+     "n": 2
+    },
+    "r2": {
+     "mean": 0.966319990734692,
+     "std": 0.0,
+     "n": 2
+    },
+    "mse_de": {
+     "mean": 0.15355345347474497,
+     "std": 0.0,
+     "n": 2
+    },
+    "pcc_de": {
+     "mean": 0.9318245289901906,
+     "std": 0.0,
+     "n": 2
+    },
+    "r2_de": {
+     "mean": 0.73408650246828,
+     "std": 0.0,
+     "n": 2
+    },
+    "mse_deset": {
+     "mean": 0.09157736929506922,
+     "std": 0.0,
+     "n": 2
+    },
+    "pcc_deset": {
+     "mean": 0.9020659486249205,
+     "std": 0.0,
+     "n": 2
+    },
+    "r2_deset": {
+     "mean": 0.7240086015640083,
+     "std": 0.0,
+     "n": 2
+    }
+   },
+   "best_primary": [
+    0.6006567774966923,
+    0.5872806494354817
+   ],
+   "start_description": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "dataset": "adamson_cf",
+   "split_id": "split_450515be1a0d8d2e",
+   "arm": "deepseek:deepseek-v4-pro planner, deepseek:deepseek-flash workers @ 537344f",
+   "workers": 4,
+   "n_runs": 2,
+   "run_ids": [
+    "newcode_ds_w4_r0",
+    "newcode_ds_w4_r1"
+   ],
+   "data_dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/data/adamson_cf",
+   "best": {
+    "mse": {
+     "mean": 0.006371482755712287,
+     "std": 0.0009724458545851261,
+     "n": 2
+    },
+    "pcc": {
+     "mean": 0.9862226455997434,
+     "std": 0.0020724653167456444,
+     "n": 2
+    },
+    "r2": {
+     "mean": 0.9694806189850876,
+     "std": 0.004722435180733618,
+     "n": 2
+    },
+    "mse_de": {
+     "mean": 0.1325368435775381,
+     "std": 0.022113940797454795,
+     "n": 2
+    },
+    "pcc_de": {
+     "mean": 0.9461298326250549,
+     "std": 0.010089144664361093,
+     "n": 2
+    },
+    "r2_de": {
+     "mean": 0.775885895048082,
+     "std": 0.03841055812460651,
+     "n": 2
+    },
+    "mse_deset": {
+     "mean": 0.05284787019236086,
+     "std": 0.011882297608778873,
+     "n": 2
+    },
+    "pcc_deset": {
+     "mean": 0.9494994182128553,
+     "std": 0.008059327732969149,
+     "n": 2
+    },
+    "r2_deset": {
+     "mean": 0.8372483205077179,
+     "std": 0.0479679476772388,
+     "n": 2
+    }
+   },
+   "start": {
+    "mse": {
+     "mean": 0.007039087039889803,
+     "std": 0.0,
+     "n": 2
+    },
+    "pcc": {
+     "mean": 0.9846084168233286,
+     "std": 0.0,
+     "n": 2
+    },
+    "r2": {
+     "mean": 0.966319990734692,
+     "std": 0.0,
+     "n": 2
+    },
+    "mse_de": {
+     "mean": 0.15355345347474497,
+     "std": 0.0,
+     "n": 2
+    },
+    "pcc_de": {
+     "mean": 0.9318245289901906,
+     "std": 0.0,
+     "n": 2
+    },
+    "r2_de": {
+     "mean": 0.73408650246828,
+     "std": 0.0,
+     "n": 2
+    },
+    "mse_deset": {
+     "mean": 0.09157736929506922,
+     "std": 0.0,
+     "n": 2
+    },
+    "pcc_deset": {
+     "mean": 0.9020659486249205,
+     "std": 0.0,
+     "n": 2
+    },
+    "r2_deset": {
+     "mean": 0.7240086015640083,
+     "std": 0.0,
+     "n": 2
+    }
+   },
+   "best_primary": [
+    0.5383327602377617,
+    0.6006941796507019
+   ],
+   "start_description": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "dataset": "adamson_cf",
+   "split_id": "split_450515be1a0d8d2e",
+   "arm": "scripted control (no LLM) @ 2492e11",
    "workers": 4,
    "n_runs": 6,
    "run_ids": [
@@ -562,6 +784,234 @@
     0.5537178335086044,
     0.5537178335086044,
     0.5537178335086044
+   ],
+   "start_description": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "dataset": "adamson_cf",
+   "split_id": "split_450515be1a0d8d2e",
+   "arm": "scripted control (no LLM) @ 537344f",
+   "workers": 4,
+   "n_runs": 1,
+   "run_ids": [
+    "newcode2_control_r0"
+   ],
+   "data_dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/data/adamson_cf",
+   "best": {
+    "mse": {
+     "mean": 0.007336581823282594,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc": {
+     "mean": 0.9839075957767973,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2": {
+     "mean": 0.9648757834324093,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_de": {
+     "mean": 0.1627521333776769,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_de": {
+     "mean": 0.93552526290687,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_de": {
+     "mean": 0.7259045527069612,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_deset": {
+     "mean": 0.05676455497044444,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_deset": {
+     "mean": 0.9425892534240429,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_deset": {
+     "mean": 0.8139479153494766,
+     "std": 0.0,
+     "n": 1
+    }
+   },
+   "start": {
+    "mse": {
+     "mean": 0.007039087039889803,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc": {
+     "mean": 0.9846084168233286,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2": {
+     "mean": 0.966319990734692,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_de": {
+     "mean": 0.15355345347474497,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_de": {
+     "mean": 0.9318245289901906,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_de": {
+     "mean": 0.73408650246828,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_deset": {
+     "mean": 0.09157736929506922,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_deset": {
+     "mean": 0.9020659486249205,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_deset": {
+     "mean": 0.7240086015640083,
+     "std": 0.0,
+     "n": 1
+    }
+   },
+   "best_primary": [
+    0.5527329730321616
+   ],
+   "start_description": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "dataset": "adamson_cf",
+   "split_id": "split_450515be1a0d8d2e",
+   "arm": "scripted control (no LLM) @ 72a53c5",
+   "workers": 4,
+   "n_runs": 6,
+   "run_ids": [
+    "newcode_control_r0",
+    "newcode_control_r1",
+    "newcode_control_r2",
+    "newcode_control_r3",
+    "newcode_control_r4",
+    "newcode_control_r5"
+   ],
+   "data_dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/data/adamson_cf",
+   "best": {
+    "mse": {
+     "mean": 0.007511399412232136,
+     "std": 0.00013541312212514157,
+     "n": 6
+    },
+    "pcc": {
+     "mean": 0.983495793031781,
+     "std": 0.0003189810346741448,
+     "n": 6
+    },
+    "r2": {
+     "mean": 0.9640362047857095,
+     "std": 0.0006503348232998034,
+     "n": 6
+    },
+    "mse_de": {
+     "mean": 0.16879964620204854,
+     "std": 0.004684383290953428,
+     "n": 6
+    },
+    "pcc_de": {
+     "mean": 0.9326466758176721,
+     "std": 0.0022297439714142556,
+     "n": 6
+    },
+    "r2_de": {
+     "mean": 0.7153155851256949,
+     "std": 0.008202179019154893,
+     "n": 6
+    },
+    "mse_deset": {
+     "mean": 0.0635952522141354,
+     "std": 0.005291035333559993,
+     "n": 6
+    },
+    "pcc_deset": {
+     "mean": 0.934025935208954,
+     "std": 0.006633117767062727,
+     "n": 6
+    },
+    "r2_deset": {
+     "mean": 0.7958837283872743,
+     "std": 0.013992459053477402,
+     "n": 6
+    }
+   },
+   "start": {
+    "mse": {
+     "mean": 0.007039087039889802,
+     "std": 9.501471788262683e-19,
+     "n": 6
+    },
+    "pcc": {
+     "mean": 0.9846084168233286,
+     "std": 0.0,
+     "n": 6
+    },
+    "r2": {
+     "mean": 0.966319990734692,
+     "std": 0.0,
+     "n": 6
+    },
+    "mse_de": {
+     "mean": 0.15355345347474494,
+     "std": 3.0404709722440586e-17,
+     "n": 6
+    },
+    "pcc_de": {
+     "mean": 0.9318245289901906,
+     "std": 0.0,
+     "n": 6
+    },
+    "r2_de": {
+     "mean": 0.73408650246828,
+     "std": 0.0,
+     "n": 6
+    },
+    "mse_deset": {
+     "mean": 0.09157736929506922,
+     "std": 0.0,
+     "n": 6
+    },
+    "pcc_deset": {
+     "mean": 0.9020659486249204,
+     "std": 1.2161883888976234e-16,
+     "n": 6
+    },
+    "r2_deset": {
+     "mean": 0.7240086015640083,
+     "std": 0.0,
+     "n": 6
+    }
+   },
+   "best_primary": [
+    0.5527329730321616,
+    0.5530292982771724,
+    0.5527329730321616,
+    0.5530292982771724,
+    0.5530292982771724,
+    0.5530292982771724
    ],
    "start_description": "OLS on baseline features (control mean, mean response, target indicator)."
   }
