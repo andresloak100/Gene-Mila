@@ -54,16 +54,22 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   A paid run needs Andres's approval in his own words, with an amount. Runs with
   `--planner-provider scripted --worker-provider mock` cost nothing and need no approval.
 - Always pass `--planner-provider` explicitly. The default planner is the Claude CLI (Opus),
-  which uses Andres's Claude subscription; if the Claude CLI is unavailable, the lab falls back
-  to the scripted planner with only a warning, so the run would be mislabelled.
+  which uses Andres's Claude subscription. Since `9044ece` the lab never falls back to the
+  scripted planner on its own: a run whose planner is unusable, with no usable entry in
+  `planner.fallback`, refuses to start (exit 2).
   - Astra and other non-Claude agents never use the Claude CLI planner.
-  - Claude sessions use it only for runs whose arm needs it (the comparison's Opus-planned runs).
+  - Claude sessions use it only for runs whose arm needs it (the comparison's Opus-planned runs),
+    and every Claude-planned run on the current code carries
+    `--set planner.fallback=deepseek:deepseek-v4-pro`.
   - Once Claude usage is out, everyone uses the DeepSeek planner:
     `--planner-provider deepseek --planner-model deepseek-v4-pro`.
-  - The lab-code owner is adding `planner.fallback`, an ordered list of LLM planners (such as
-    `["deepseek:deepseek-v4-pro"]`) that the controller switches to on a usage limit or API
-    failure, so an LLM arm never degrades to the scripted planner. Set it on every Claude-planned
-    run once it is on the integration branch.
+  - `planner.fallback` is an ordered chain of `provider:model` entries, empty by default:
+    `--set planner.fallback=deepseek:deepseek-v4-pro`, or
+    `--set 'planner.fallback=["deepseek:deepseek-v4-pro","scripted"]'` (`scripted` only when written
+    out). On a usage limit, an API error, a budget halt or three unparseable plans in a row, the
+    run switches to the next entry for the rest of the run and logs a `planner_switch` event; when
+    the chain is exhausted it continues without a planner (the queue drains, the exploit engine
+    keeps proposing) and logs `planner_exhausted`.
 - Every paid run points at the shared ledger and carries its own caps:
   `--set budget.ledger=<absolute path to the shared ledger> --set budget.cumulative_usd.deepseek=<cap>
   --set budget.max_total_usd=<worker cap> --set budget.max_planner_usd=<planner cap>`.
@@ -74,8 +80,9 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 ### Andres's Mac (the only machine with the real data and the key)
 
 - The worker-scaling comparison runs there, when it runs, as a detached driver
-  (`pgrep -fl run_research.py` and `progress.md` under `~/Documents/Loak-documents/genemila_scale_logs/`
-  say whether one is going; HANDOFF.md section 1 says what is planned). Don't kill it, don't
+  (`python handoff_state.py`, or `pgrep -fl run_research.py` and `progress.md` under
+  `~/Documents/Loak-documents/genemila_scale_logs/`, say whether one is going; HANDOFF.md section 1
+  says what is planned). Don't kill it, don't
   create its `STOP` file, and don't touch `runs/scale_*`, `runs/newcode_*` or that log directory
   (read them, nothing more) unless Andres asks.
 - Never edit files, commit, pull, check out or switch branches in the main checkout
@@ -112,11 +119,14 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   reported number into a test-set-tuned one.
 - Compare runs only within the same bundle and split (`split_id` in `summary.json`). Warm starts
   (`--continue-from`) only on the same split.
-- A run whose planner changed part-way is its own arm in every table, never pooled with
-  single-planner runs. Today that happens when the Claude CLI hits its usage window and the lab
-  falls back to the scripted planner (such a run is renamed `_contaminated`); once the in-lab
-  failover lands (`planner.fallback`, a `planner_switch` event in the run), such a run is labelled
-  a mixed-planner arm, for example "opus→deepseek planner".
+- A run whose planner changed part-way is its own arm in every table, never pooled with the
+  clean runs of its configured arm. `summary.json["planner"]` records it (`configured`,
+  `fallback`, `used`, `switches`, `mixed`), `summary.md` prints "PLANNER CHANGED DURING THE RUN",
+  and the results table, the scaling report and `handoff_state.py` label it by the planners that
+  produced its plans, spelled with `->`, for example
+  `claude_cli:opus -> deepseek:deepseek-v4-pro planner`; a run that lost every planner gets the
+  suffix `(lost its planner)`. Runs on the old code `2492e11` have no failover: one whose Claude
+  planner fell back to the scripted planner is renamed `_contaminated` and left out.
 - Report each arm as mean ± sd over its repeats, never one lucky run, and claim no difference
   that sits inside run-to-run noise. Numbers decide, never an LLM's judgement.
 - Every number you report comes from a run with a `summary.json`; cite the run directory. Never
@@ -127,9 +137,10 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 
 ## How to coordinate (every agent, every session)
 
-1. **When you start, read the state.** `HANDOFF.md` section 1 on the integration branch, open
-   `Claim:` issues, open pull requests, recent commits, and `progress.md` on the Mac. Don't
-   redo or collide with work someone else holds.
+1. **When you start, read the state.** `HANDOFF.md` section 1 on the integration branch,
+   `python handoff_state.py` (one command: git state, every run with its state, the ledger, live
+   processes, the tail of `progress.md`), open `Claim:` issues, open pull requests and recent
+   commits. Don't redo or collide with work someone else holds.
 2. **Claim the task.** Open a GitHub issue titled `Claim: <task>` naming the agent, the branch and
    the files you will touch, before you start. If another owner's files are on the list, say so
    there. Taking over a stalled task: comment on its claim issue that you are taking it over.
