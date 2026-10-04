@@ -273,3 +273,45 @@ def test_deepseek_thinking_switch_and_truncation(monkeypatch):
     sent.clear()
     p3.complete("sys", "user", 50)
     assert "thinking" not in sent  # API default
+
+
+def test_deepseek_can_be_the_planner(lab_factory, monkeypatch):
+    """A DeepSeek planner round goes through the gateway like the Claude one: the plan is parsed, experiments
+    are queued, thinking is off, and the spend lands under the planner role for the deepseek provider."""
+    import json as _json
+    from genemila.planner import Planner
+    from genemila.providers import make_provider
+    sent = {}
+    plan = {"synthesis": "x", "hypotheses": [
+        {"title": "coexpr", "hypothesis": "Co-expression of the target with each gene predicts its change.",
+         "rationale": "Correlated genes respond together.", "category": "explore", "action": "new_feature",
+         "new_feature": {"name": "target_coexpr", "description": "correlation between the target gene and g in control cells",
+                         "implementation_hint": "use ctx.gene_corr", "params": {}}, "model_type": "ridge"}]}
+
+    class R:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"model": "deepseek-v4-pro", "choices": [{"message": {"content": "```json\n" + _json.dumps(plan) + "\n```"},
+                                                             "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 4000, "completion_tokens": 600, "prompt_cache_hit_tokens": 0}}
+
+    def post(url, json=None, **kw):
+        sent.update(json)
+        return R()
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-not-a-key")
+    monkeypatch.setattr("genemila.providers.openai_compat.requests.post", post)
+    lab = lab_factory()
+    lab.record_analytic_baselines()
+    lab.queue_model_baselines()
+    provider = make_provider("deepseek", "deepseek-v4-pro", lab.cfg["planner"])
+    assert provider.name == "deepseek"
+    ids = Planner(lab, provider).refill(1)
+    assert len(ids) == 1, lab.db.query("SELECT * FROM events ORDER BY ts DESC LIMIT 3")
+    assert not lab.db.query("SELECT 1 FROM events WHERE kind='planner_error'")
+    assert sent["thinking"] == {"type": "disabled"} and sent["model"] == "deepseek-v4-pro"
+    rows = lab.db.query("SELECT role, provider, model, cost_usd FROM llm_calls")
+    assert rows and rows[-1]["role"] == "planner" and rows[-1]["provider"] == "deepseek" and rows[-1]["cost_usd"] > 0
+    assert lab.gateway.spent["planner"] > 0

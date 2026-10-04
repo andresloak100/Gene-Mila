@@ -122,7 +122,7 @@ def test_unlabelled_cells_and_several_control_labels(tmp_path):
     from genemila.data.real import ingest_h5ad
     path = fake_screen(tmp_path)
     a = ad.read_h5ad(path)
-    lab = a.obs["perturbation"].astype(object).to_numpy()
+    lab = a.obs["perturbation"].astype(object).to_numpy().copy()  # a writable copy (pandas may hand out a read-only view)
     ctrl = (lab == "control").nonzero()[0]
     lab[ctrl[:250]] = "63(mod)_pBA580"                                 # Adamson-style control guide names
     lab[ctrl[250:]] = "Gal4-4(mod)_pBA582"

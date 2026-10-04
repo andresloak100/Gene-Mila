@@ -40,10 +40,12 @@ python_exploit = true          # queue deterministic follow-ups around the best 
                                # ablate, refine alpha, swap model family) whenever fewer are queued than workers
 
 [planner]
-provider = "claude_cli"        # claude_cli | anthropic | scripted
-model = "opus"
+provider = "claude_cli"        # claude_cli | anthropic | deepseek | openai_compat | scripted
+model = "opus"                 # with provider = "deepseek": e.g. "deepseek-v4-pro" (API spend, no subscription limit)
 max_output_tokens = 6000
 timeout_s = 300
+thinking = "disabled"          # DeepSeek planner: keep the output limit for the plan (see worker.thinking)
+reasoning_effort = ""
 
 [worker]
 provider = "deepseek"          # deepseek | claude_cli | mock | openai_compat
