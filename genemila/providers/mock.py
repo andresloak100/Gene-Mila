@@ -271,6 +271,11 @@ class MockProvider(AgentProvider):
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
         if "MOCK_CRASH" in hint:
             raise RuntimeError("simulated worker crash")
+        if "MOCK_TRUNCATE" in hint:  # a reasoning model that spends the whole output limit thinking
+            u = self._usage(json.dumps(task), "")
+            u.output_tokens = max_tokens
+            return LLMResponse(text="", usage=u, provider=self.name, model=self.model, finish_reason="length",
+                               reasoning_tokens=max_tokens)
         if "MOCK_LEAK" in hint:
             code = LEAKY.format(name=nf["name"])
         elif "MOCK_CHEAT" in hint:
@@ -288,7 +293,7 @@ class MockProvider(AgentProvider):
         self._sleep()
         nf = task["new_feature"]
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
-        if any(m in hint for m in ("MOCK_LEAK", "MOCK_CHEAT", "MOCK_SLOW", "MOCK_CRASH")):
+        if any(m in hint for m in ("MOCK_LEAK", "MOCK_CHEAT", "MOCK_SLOW", "MOCK_CRASH", "MOCK_TRUNCATE")):
             return self.implement(task, max_tokens)  # a model that repeats its mistake
         if "MOCK_BREAK_ALWAYS" in hint:
             code = "still broken(\n"

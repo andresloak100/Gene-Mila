@@ -44,7 +44,9 @@ model = "deepseek-flash"
 escalation_provider = ""       # e.g. "claude_cli" with escalation_model = "sonnet"
 escalation_model = ""
 llm_retries = 1                # implementation retries before escalation
-max_output_tokens = 3000
+max_output_tokens = 8000       # hidden reasoning counts against this limit
+thinking = "disabled"          # DeepSeek: "disabled" | "enabled" | "" (API default: enabled, effort high)
+reasoning_effort = ""          # DeepSeek with thinking enabled: "low" | "high" | "max"
 timeout_s = 120
 
 [budget]

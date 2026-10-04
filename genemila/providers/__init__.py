@@ -9,7 +9,8 @@ def make_provider(kind: str, model: str, cfg: dict | None = None) -> AgentProvid
     cfg = cfg or {}
     if kind == "deepseek":
         from .openai_compat import DeepSeekProvider
-        return DeepSeekProvider(model=model, timeout_s=cfg.get("timeout_s", 120))
+        return DeepSeekProvider(model=model, timeout_s=cfg.get("timeout_s", 120), thinking=cfg.get("thinking", ""),
+                                reasoning_effort=cfg.get("reasoning_effort", ""))
     if kind == "openai_compat":
         from .openai_compat import OpenAICompatProvider
         return OpenAICompatProvider(model=model, base_url=cfg["base_url"], api_key_env=cfg["api_key_env"],

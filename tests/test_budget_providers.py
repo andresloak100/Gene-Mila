@@ -241,3 +241,35 @@ def test_served_model_alias_is_priced_consistently(tmp_path):
     flash = gw.pricing["deepseek-flash"]
     assert gw.cost("deepseek-flash", Usage(1000, 500, 200)) == pytest.approx(
         (200 * flash["input_cache_hit"] + 800 * flash["input_cache_miss"] + 500 * flash["output"]) / 1e6)
+
+
+def test_deepseek_thinking_switch_and_truncation(monkeypatch):
+    from genemila.providers import make_provider
+    sent = {}
+
+    class R:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"model": "deepseek-flash", "choices": [{"message": {"content": ""}, "finish_reason": "length"}],
+                    "usage": {"prompt_tokens": 10, "completion_tokens": 50,
+                              "completion_tokens_details": {"reasoning_tokens": 50}}}
+
+    def post(url, json=None, **kw):
+        sent.update(json)
+        return R()
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-not-a-key")
+    monkeypatch.setattr("genemila.providers.openai_compat.requests.post", post)
+    p = make_provider("deepseek", "deepseek-flash", {"thinking": "disabled", "reasoning_effort": "high"})
+    resp = p.complete("sys", "user", 50)
+    assert sent["thinking"] == {"type": "disabled"} and "reasoning_effort" not in sent
+    assert resp.truncated_empty and resp.reasoning_tokens == 50 and resp.usage.output_tokens == 50
+    p2 = make_provider("deepseek", "deepseek-flash", {"thinking": "enabled", "reasoning_effort": "low"})
+    p2.complete("sys", "user", 50)
+    assert sent["thinking"] == {"type": "enabled"} and sent["reasoning_effort"] == "low"
+    p3 = make_provider("deepseek", "deepseek-flash", {})
+    sent.clear()
+    p3.complete("sys", "user", 50)
+    assert "thinking" not in sent  # API default

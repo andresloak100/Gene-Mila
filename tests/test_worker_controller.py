@@ -185,3 +185,22 @@ def test_planning_scales_with_workers_and_state_is_bounded(lab_factory):
     state = {"in_flight": [f"hypothesis {i} " + "x" * 80 for i in range(500)], "best": {"score": 0.5}}
     text = render_state(state)
     assert "## BEST" in text and len(text) < 2 * SECTION_CHARS  # a long section cannot push others out
+
+
+def test_truncated_reasoning_is_not_retried(lab_factory):
+    """A reasoning model that spends the whole output limit before writing code fails once, cleanly;
+    the same provider is not asked again (it would be truncated the same way), escalation still runs."""
+    lab = lab_factory()
+    prov = MockProvider()
+    rec = run_one(lab, new_feature_spec("thinker", "MOCK_TRUNCATE variance"), provider=prov)
+    assert rec["status"] == "failed" and rec["failure_stage"] == "llm_truncated", rec
+    assert prov.calls == 1 and rec["llm_calls"] == 1
+    assert "output limit" in rec["failure_reason"]
+
+    class Fixer(MockProvider):
+        def diagnose(self, task, code, error, max_tokens):
+            nf = dict(task["new_feature"], description="variance", implementation_hint="variance")
+            return super().diagnose(dict(task, new_feature=nf), code, error, max_tokens)
+
+    rec2 = run_one(lab, new_feature_spec("thinker2", "MOCK_TRUNCATE variance"), escalation=Fixer(model="big"))
+    assert rec2["status"] == "completed", rec2["failure_reason"]
