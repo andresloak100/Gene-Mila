@@ -39,7 +39,7 @@ MEASURES = [  # key, label, how to read it from (summary, analysis)
     ("tokens_k", "LLM tokens (k, in+out)", lambda s, a: _tokens(s)),
     ("cached_share", "cached input share", lambda s, a: _cached(s)),
     ("cost_worker", "worker $ (DeepSeek)", lambda s, a: (s.get("llm_usage", {}).get("worker") or {}).get("cost_usd")),
-    ("cost_planner", "planner $ (CLI estimate)", lambda s, a: (s.get("llm_usage", {}).get("planner") or {}).get("cost_usd")),
+    ("cost_planner", "planner $ (API spend, or the Claude CLI's usage estimate)", lambda s, a: (s.get("llm_usage", {}).get("planner") or {}).get("cost_usd")),
     ("exp_per_hour", "experiments / hour", lambda s, a: s.get("compute_efficiency", {}).get("experiments_per_hour")),
     ("planner_exp_per_hour", "planner-proposed experiments / hour",
      lambda s, a: s.get("compute_efficiency", {}).get("planner_experiments_per_hour", s.get("compute_efficiency", {}).get("experiments_per_hour"))),
@@ -155,7 +155,7 @@ def render(runs):
     L = ["# Efficiency across worker counts", "",
          "Same dataset, split and time budget for every run; mean ± sd over repeats (n in the header). "
          "Gain is best model minus the starting model (best linear model on built-in features); "
-         "sealed = query-only held-out perturbations. Planner dollars are the Claude CLI's usage estimate. "
+         "sealed = query-only held-out perturbations. Planner dollars are real API spend for an API planner (DeepSeek) and the Claude CLI's usage estimate for a Claude planner. "
          "'best' rows take the headline finalist (an ensemble when one was kept); 'single model' rows the best "
          "single model. The selection score is what each run optimised: on code with cross-validated selection it "
          "averages the validation set and out-of-fold training perturbations, so it is lower than, and not "
@@ -203,7 +203,8 @@ def render(runs):
                      "the fixed template features give, not what a no-LLM search of the same length gives.")
     for i, ka in enumerate(llm):
         for kb in llm[i + 1:]:
-            if ka[0] != kb[0]:
+            same_arm, same_workers = ka[0] == kb[0], ka[1] == kb[1]
+            if not (same_arm or same_workers):
                 continue
             a = [r["values"]["gain_sealed"] for r in groups[ka]]
             b = [r["values"]["gain_sealed"] for r in groups[kb]]
@@ -214,8 +215,11 @@ def render(runs):
             diff = sb["mean"] - sa["mean"]
             verdict = ("not testable with one run per side" if p is None else
                        f"p = {p:.2f} (Welch), {'exceeds' if p < 0.05 else 'does not exceed'} run-to-run noise")
-            L.append(f"- {ka[1]} vs {kb[1]} workers ({ka[0]}): sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, "
-                     f"difference {diff:+.4f}; {verdict}.")
+            # same arm across worker counts (the scaling question), or two arms at the same worker count
+            # (code versions, or planners): both are pairwise tests on the sealed gain
+            head = (f"{ka[1]} vs {kb[1]} workers ({ka[0]})" if same_arm else
+                    f"{ka[0]} vs {kb[0]} ({ka[1]} workers)")
+            L.append(f"- {head}: sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, difference {diff:+.4f}; {verdict}.")
     if llm:
         L.append("- A difference that does not exceed noise with two repeats needs more runs before any ordering is "
                  "claimed; each extra 20-minute repeat costs about the worker $ shown above in DeepSeek spend.")
@@ -224,17 +228,22 @@ def render(runs):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--runs", nargs="+", required=True)
+    ap.add_argument("--runs", nargs="+", help="run directories (each with summary.json)")
+    ap.add_argument("--from-json", help="re-render from a scaling.json written by an earlier call, when the run "
+                                        "directories are not at hand (the .json twin is then left as it is)")
     ap.add_argument("--out", default=str(REPO_ROOT / "docs" / "results" / "scaling.md"))
     args = ap.parse_args()
-    runs = load_runs(args.runs)
+    if bool(args.runs) == bool(args.from_json):
+        ap.error("give --runs or --from-json, not both")
+    runs = load_runs(args.runs) if args.runs else json.loads(Path(args.from_json).read_text())
     if not runs:
         raise SystemExit("no run directory with summary.json among --runs")
     md = render(runs)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(md)
-    out.with_suffix(".json").write_text(json.dumps(runs, indent=1, default=str))
+    if args.runs:
+        out.with_suffix(".json").write_text(json.dumps(runs, indent=1, default=str))
     print(md)
     print(f"written to {out}")
 

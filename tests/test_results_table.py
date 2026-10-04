@@ -98,6 +98,25 @@ def test_scaling_report_handles_a_deterministic_short_control(tmp_path):
     bullets = [l for l in sr.render(runs).splitlines() if l.startswith("- scripted control (no LLM) @")]
     assert sum(l.startswith("- scripted control (no LLM) @ abc1234, 4 workers (3 runs)") for l in bullets) == 1
     assert sum(l.startswith("- scripted control (no LLM) @ def5678, 4 workers (1 run,") for l in bullets) == 1
+    # two arms at the same worker count (another code version, another planner) are tested against each
+    # other too, and the planner-dollar row no longer calls API spend an estimate
+    dirs += [_run_dir(tmp_path, f"newcode_w4_r{i}", 4, "claude_cli", "deepseek", 0.06 + 0.01 * i, 1200, commit="def5678")
+             for i in range(2)]
+    dirs += [_run_dir(tmp_path, f"ds_w4_r{i}", 4, "deepseek", "deepseek", 0.02 + 0.06 * i, 1200, commit="def5678")
+             for i in range(2)]
+    md = sr.render(sr.load_runs(dirs))
+    assert "- claude_cli:claude_cli planner, deepseek:deepseek workers @ abc1234 vs claude_cli:claude_cli planner, " \
+           "deepseek:deepseek workers @ def5678 (4 workers): sealed gain" in md
+    assert "workers @ def5678 vs deepseek:deepseek planner, deepseek:deepseek workers @ def5678 (4 workers)" in md
+    assert "| planner $ (API spend, or the Claude CLI's usage estimate) |" in md and "(CLI estimate)" not in md
+    # the report can be re-rendered from its own json twin when the run directories are elsewhere
+    runs = sr.load_runs(dirs)
+    (tmp_path / "scaling.json").write_text(json.dumps(runs, indent=1, default=str))
+    import subprocess, sys
+    out = tmp_path / "again.md"
+    subprocess.run([sys.executable, sr.__file__, "--from-json", str(tmp_path / "scaling.json"),
+                    "--out", str(out)], check=True, capture_output=True)
+    assert out.read_text() == md and not out.with_suffix(".json").exists()
 
 
 def test_handoff_state_flags_stale_clones_and_ledger_bypass(tmp_path):
