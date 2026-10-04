@@ -2,9 +2,18 @@
 
 It enforces, before every call:
   * per-run spend caps per role (worker / planner) and cumulative per-provider
-    caps across runs (persistent ledger), using a worst-case cost reservation,
-  * per-experiment and per-worker token limits,
-  * a bounded number of API retries and a circuit breaker,
+    caps across runs (persistent ledger), using a worst-case cost reservation.
+    A cap is final only when settled spend reaches it; while in-flight
+    reservations alone would exceed it, callers wait for them to settle
+    (otherwise many concurrent workers would halt the budget long before it
+    is spent),
+  * per-experiment and (optional) per-worker token limits,
+  * a bounded number of API retries and a time-based circuit breaker: after
+    `circuit_breaker_failures` failed calls (each counted once, after its
+    retries) within a window with no success, the provider is paused for a
+    cooldown that doubles on each re-trip (60 s up to 10 min); then a single
+    probe call decides whether it reopens. A blip never disables a provider
+    for the rest of the run,
 and records input / output / cached tokens, latency and estimated cost for
 every call in the experiment database and the cumulative ledger.
 """
@@ -26,6 +35,10 @@ class BudgetExceeded(RuntimeError):
 
 class TokenLimitExceeded(RuntimeError):
     pass
+
+
+BREAKER_WINDOW_S = 120.0
+BREAKER_COOLDOWN_S = (60.0, 600.0)  # first cooldown, maximum cooldown
 
 
 class SpendLedger:
@@ -60,14 +73,24 @@ class LLMGateway:
         self.db = db
         self.run_id = run_id
         self.pricing = cfg.get("pricing", {})
-        self.role_caps = {"worker": float(b["max_total_usd"]), "planner": float(b["max_planner_usd"])}
+        planner_cap = float(b.get("max_planner_usd", 0))
+        if planner_cap <= 0:  # scaled to the run length by the controller; one hour's worth until then
+            planner_cap = float(b.get("planner_usd_per_hour", 15.0))
+        self.role_caps = {"worker": float(b["max_total_usd"]), "planner": planner_cap}
         self.cumulative_caps = {k: float(v) for k, v in b.get("cumulative_usd", {}).items()}
         self.max_tokens_experiment = int(b["max_tokens_per_experiment"])
-        self.max_tokens_worker = int(b["max_tokens_per_worker"])
+        self.max_tokens_worker = int(b.get("max_tokens_per_worker", 0))  # 0 = no per-worker limit
         self.api_retries = int(b.get("api_retries", 1))
         self.breaker_limit = int(b.get("circuit_breaker_failures", 5))
         self.ledger = ledger
         self._lock = threading.Lock()
+        self._cond = threading.Condition(self._lock)
+        self.stop_event: threading.Event | None = None  # set by the lab; aborts waits at the deadline
+        self.failure_times: dict[str, list[float]] = {}
+        self.open_until: dict[str, float] = {}
+        self.cooldown: dict[str, float] = {}
+        self.probing: dict[str, bool] = {}
+        self.breaker_trips: dict[str, int] = {}
         self.spent = {"worker": 0.0, "planner": 0.0}
         self.reserved = {"worker": 0.0, "planner": 0.0}
         self.provider_spent_run: dict[str, float] = {}
@@ -113,30 +136,53 @@ class LLMGateway:
     def is_halted(self, role: str, provider: str) -> str | None:
         return self.halted.get(role) or self.halted.get(provider)
 
-    def _reserve(self, role, provider_name, model, est_in, max_tokens, worker_id, experiment_id) -> float:
+    def _stopping(self) -> bool:
+        return bool(self.stop_event and self.stop_event.is_set())
+
+    def _wait(self) -> None:
+        """Wait (lock held) for a settle or a breaker change; abort when the run is stopping."""
+        if self._stopping():
+            raise BudgetExceeded("run is stopping; no new LLM calls")
+        self._cond.wait(timeout=1.0)
+
+    def _reserve(self, role, provider_name, model, est_in, max_tokens, worker_id, experiment_id) -> tuple[float, bool]:
+        """Reserve the worst-case cost of one call. Returns (reservation, is_breaker_probe)."""
         with self._lock:
-            why = self.is_halted(role, provider_name)
-            if why:
-                raise BudgetExceeded(why)
-            if experiment_id and self.tokens_by_experiment.get(experiment_id, 0) + est_in > self.max_tokens_experiment:
-                raise TokenLimitExceeded(f"experiment {experiment_id} token limit {self.max_tokens_experiment} reached")
-            if worker_id and self.tokens_by_worker.get(worker_id, 0) + est_in > self.max_tokens_worker:
-                raise TokenLimitExceeded(f"worker {worker_id} token limit {self.max_tokens_worker} reached")
-            wc = self.worst_case(model, est_in, max_tokens)
-            if self.spent[role] + self.reserved[role] + wc > self.role_caps[role]:
-                self.halted[role] = (f"{role} budget ${self.role_caps[role]:.4f} reached "
-                                     f"(spent ${self.spent[role]:.4f}); no new {role} API calls")
-                raise BudgetExceeded(self.halted[role])
-            if provider_name in self.cumulative_caps:
-                cum = (self._ledger_base[provider_name] + self.provider_spent_run.get(provider_name, 0.0)
-                       + self.provider_reserved.get(provider_name, 0.0) + wc)
-                if cum > self.cumulative_caps[provider_name]:
-                    self.halted[provider_name] = (f"cumulative {provider_name} budget "
-                                                  f"${self.cumulative_caps[provider_name]:.4f} reached")
+            while True:
+                why = self.is_halted(role, provider_name)
+                if why:
+                    raise BudgetExceeded(why)
+                if experiment_id and self.tokens_by_experiment.get(experiment_id, 0) + est_in > self.max_tokens_experiment:
+                    raise TokenLimitExceeded(f"experiment {experiment_id} token limit {self.max_tokens_experiment} reached")
+                if self.max_tokens_worker and worker_id and \
+                        self.tokens_by_worker.get(worker_id, 0) + est_in > self.max_tokens_worker:
+                    raise TokenLimitExceeded(f"worker {worker_id} token limit {self.max_tokens_worker} reached")
+                # circuit breaker: paused, or half-open with another thread probing
+                now = time.time()
+                if self.open_until.get(provider_name, 0.0) > now or self.probing.get(provider_name):
+                    self._wait()
+                    continue
+                probe = provider_name in self.open_until  # cooldown over: this call is the probe
+                wc = self.worst_case(model, est_in, max_tokens)
+                if self.spent[role] + wc > self.role_caps[role]:
+                    self.halted[role] = (f"{role} budget ${self.role_caps[role]:.4f} reached "
+                                         f"(spent ${self.spent[role]:.4f}); no new {role} API calls")
+                    raise BudgetExceeded(self.halted[role])
+                cum_cap = self.cumulative_caps.get(provider_name)
+                cum_spent = self._ledger_base.get(provider_name, 0.0) + self.provider_spent_run.get(provider_name, 0.0)
+                if cum_cap is not None and cum_spent + wc > cum_cap:
+                    self.halted[provider_name] = f"cumulative {provider_name} budget ${cum_cap:.4f} reached"
                     raise BudgetExceeded(self.halted[provider_name])
-            self.reserved[role] += wc
-            self.provider_reserved[provider_name] = self.provider_reserved.get(provider_name, 0.0) + wc
-            return wc
+                # only in-flight reservations stand in the way: wait for them to settle, never halt on them
+                if self.spent[role] + self.reserved[role] + wc > self.role_caps[role] or (
+                        cum_cap is not None and cum_spent + self.provider_reserved.get(provider_name, 0.0) + wc > cum_cap):
+                    self._wait()
+                    continue
+                if probe:
+                    self.probing[provider_name] = True
+                self.reserved[role] += wc
+                self.provider_reserved[provider_name] = self.provider_reserved.get(provider_name, 0.0) + wc
+                return wc, probe
 
     def _settle(self, role, provider_name, wc, cost, tokens, worker_id, experiment_id) -> None:
         with self._lock:
@@ -148,6 +194,35 @@ class LLMGateway:
                 self.tokens_by_worker[worker_id] = self.tokens_by_worker.get(worker_id, 0) + tokens
             if experiment_id:
                 self.tokens_by_experiment[experiment_id] = self.tokens_by_experiment.get(experiment_id, 0) + tokens
+            self._cond.notify_all()
+
+    def _breaker(self, pname: str, ok: bool, probe: bool) -> None:
+        """Record the outcome of one logical call (after its retries)."""
+        with self._lock:
+            now = time.time()
+            if probe:
+                self.probing[pname] = False
+            if ok:
+                self.failure_times[pname] = []
+                self.consecutive_failures[pname] = 0
+                if pname in self.open_until:
+                    del self.open_until[pname]
+                    self.cooldown[pname] = BREAKER_COOLDOWN_S[0]
+                    self.db.event("breaker_closed", f"{pname} answered again; calls resume", level="info")
+            else:
+                self.consecutive_failures[pname] = self.consecutive_failures.get(pname, 0) + 1
+                recent = [t for t in self.failure_times.get(pname, []) if now - t < BREAKER_WINDOW_S] + [now]
+                self.failure_times[pname] = recent
+                if probe or len(recent) >= self.breaker_limit:
+                    cd = self.cooldown.get(pname, BREAKER_COOLDOWN_S[0])
+                    self.open_until[pname] = now + cd
+                    self.cooldown[pname] = min(BREAKER_COOLDOWN_S[1], cd * 2)
+                    self.breaker_trips[pname] = self.breaker_trips.get(pname, 0) + 1
+                    self.failure_times[pname] = []
+                    self.db.event("breaker_open", f"{pname}: {len(recent)} failed calls within "
+                                  f"{BREAKER_WINDOW_S:.0f}s{' (probe failed)' if probe else ''}; pausing {cd:.0f}s",
+                                  level="warning")
+            self._cond.notify_all()
 
     # --------------------------------------------------------------------- call
     def call(self, provider: AgentProvider, op: str, *, role: str, max_tokens: int, est_input_tokens: int,
@@ -156,7 +231,8 @@ class LLMGateway:
         attempts = 0
         while True:
             attempts += 1
-            wc = self._reserve(role, pname, provider.model, est_input_tokens, max_tokens, worker_id, experiment_id)
+            wc, probe = self._reserve(role, pname, provider.model, est_input_tokens, max_tokens, worker_id,
+                                      experiment_id)
             t0 = time.monotonic()
             try:
                 resp = getattr(provider, op)(max_tokens=max_tokens, **kwargs)
@@ -164,22 +240,22 @@ class LLMGateway:
                 self._settle(role, pname, wc, 0.0, 0, worker_id, experiment_id)
                 self._record(role, pname, provider.model, experiment_id, worker_id, op, Usage(
                     latency_s=time.monotonic() - t0), 0.0, ok=False, error=str(exc))
-                with self._lock:
-                    n = self.consecutive_failures[pname] = self.consecutive_failures.get(pname, 0) + 1
-                    if n >= self.breaker_limit:
-                        self.halted[pname] = f"circuit breaker: {n} consecutive {pname} failures"
-                if exc.retryable and attempts <= self.api_retries:
+                if exc.retryable and attempts <= self.api_retries and not probe:
                     time.sleep(min(8.0, 2.0 * attempts))
                     continue
+                self._breaker(pname, ok=False, probe=probe)
                 raise
-            except Exception:
+            except BaseException:
                 self._settle(role, pname, wc, 0.0, 0, worker_id, experiment_id)
+                if probe:
+                    with self._lock:
+                        self.probing[pname] = False
+                        self._cond.notify_all()
                 raise
             cost = self.cost(self.price_key(provider.model, resp.model), resp.usage)
             tokens = resp.usage.input_tokens + resp.usage.output_tokens
             self._settle(role, pname, wc, cost, tokens, worker_id, experiment_id)
-            with self._lock:
-                self.consecutive_failures[pname] = 0
+            self._breaker(pname, ok=True, probe=probe)
             self._record(role, pname, resp.model or provider.model, experiment_id, worker_id, op, resp.usage, cost,
                          ok=True)
             return resp

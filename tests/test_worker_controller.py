@@ -171,3 +171,17 @@ def test_deadline_is_enforced(lab_factory):
     assert not any(k in statuses for k in ("claimed", "implementing", "testing", "running"))
     assert statuses.get("killed", 0) >= 1
     assert (lab.run_dir / "summary.json").exists()
+
+
+def test_planning_scales_with_workers_and_state_is_bounded(lab_factory):
+    from genemila.controller import Controller
+    from genemila.research_state import SECTION_CHARS, render_state
+    lab = lab_factory()
+    c = Controller(lab, workers=16, seconds=1800, worker_provider=MockProvider(), planner_provider=ScriptedPlanner())
+    assert c.planner_concurrency == 3 and c.planner_batch == 12
+    assert lab.gateway.role_caps["planner"] == 7.5  # $15/h for a 30-minute run
+    assert Controller(lab, workers=4, seconds=60, worker_provider=MockProvider(),
+                      planner_provider=ScriptedPlanner()).planner_concurrency == 1
+    state = {"in_flight": [f"hypothesis {i} " + "x" * 80 for i in range(500)], "best": {"score": 0.5}}
+    text = render_state(state)
+    assert "## BEST" in text and len(text) < 2 * SECTION_CHARS  # a long section cannot push others out

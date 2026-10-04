@@ -9,6 +9,7 @@ candidates on the query-only set, and writes the final report.
 
 from __future__ import annotations
 
+import math
 import os
 import threading
 import time
@@ -26,6 +27,16 @@ try:
     import psutil
 except ImportError:  # pragma: no cover
     psutil = None
+
+# Concurrent planner rounds get different emphases so they do not propose the same ideas.
+PLANNER_FOCI = [
+    None,  # balanced: follow the configured explore / exploit / risky mix
+    "EXPLORE: propose only new-feature hypotheses from biological idea areas not tried yet (see UNEXPLORED IDEA "
+    "AREAS), clearly different from everything IN FLIGHT.",
+    "EXPLOIT: improve the current best model: add helpful features missing from it, test untested interactions, "
+    "ablate features that do not help, or sweep their parameters.",
+    "RISKY: propose bolder, less obvious biological hypotheses than those in flight; accept a higher failure rate.",
+]
 
 
 def build_providers(cfg: dict):
@@ -59,8 +70,20 @@ class Controller:
         self.quiet = quiet
         self.started = None
         self.deadline = None
-        self._planner_thread: threading.Thread | None = None
-        self.max_planner_calls = int(self.cfg["schedule"]["max_planner_calls"])
+        self._planner_threads: list[threading.Thread] = []
+        self.max_planner_calls = int(self.cfg["schedule"].get("max_planner_calls", 0))  # 0 = no limit
+        b = self.cfg["budget"]
+        if float(b.get("max_planner_usd", 0)) <= 0:  # 0 = scale the planner cap with the run length
+            self.lab.gateway.role_caps["planner"] = max(1.0, float(b.get("planner_usd_per_hour", 15.0)) * seconds / 3600)
+
+    @property
+    def planner_concurrency(self) -> int:
+        k = int(self.cfg["schedule"].get("planner_concurrency", 0) or 0)
+        return k if k > 0 else max(1, math.ceil(self.n_workers / 6))
+
+    @property
+    def planner_batch(self) -> int:
+        return int(self.cfg["schedule"].get("planner_batch", 0) or 0) or min(12, max(6, 2 * self.n_workers))
 
     # ------------------------------------------------------------------ status
     def status_line(self) -> str:
@@ -85,33 +108,43 @@ class Controller:
             print(line, flush=True)
 
     # --------------------------------------------------------------- planning
+    def _planners_alive(self) -> int:
+        self._planner_threads = [t for t in self._planner_threads if t.is_alive()]
+        return len(self._planner_threads)
+
     def _maybe_plan(self) -> None:
+        """Start planner rounds while the queue is short: up to `planner_concurrency` at once, each with its
+        own focus, so planning keeps up with many workers."""
         if self.planner is None or self.lab.stop_event.is_set():
             return
-        if self._planner_thread and self._planner_thread.is_alive():
+        alive = self._planners_alive()
+        if alive >= self.planner_concurrency:
             return
-        if self.planner.rounds >= self.max_planner_calls:
+        if self.max_planner_calls and self.planner.rounds >= self.max_planner_calls:
             return
+        n = self.planner_batch
         low = int(self.cfg["schedule"]["queue_low_water"]) or 2 * self.n_workers
         queued = self.lab.db.count_by_status().get("queued", 0)
-        if queued >= low:
+        if queued + alive * n >= low:  # rounds in flight will add about n experiments each
             return
-        # back off only when the previous round produced nothing new (avoids hammering a failing planner)
-        if self.planner.last_queued == 0 and self.planner.rounds > 0 and \
-                time.time() - self.planner.last_call < float(self.cfg["schedule"]["planner_min_interval_s"]):
+        if self.planner.backing_off(float(self.cfg["schedule"]["planner_min_interval_s"])):
             return
-        n = int(self.cfg["schedule"].get("planner_batch", 0)) or min(20, max(6, 2 * self.n_workers))
+        focus = PLANNER_FOCI[alive % len(PLANNER_FOCI)]
 
         def run():
             try:
-                ids = self.planner.refill(n)
-                self._log(f"planner round {self.planner.rounds}: queued {len(ids)} experiments")
+                ids = self.planner.refill(n, focus=focus)
+                self._log(f"planner round {self.planner.rounds}{' [' + focus.split(':')[0] + ']' if focus else ''}: "
+                          f"queued {len(ids)} experiments")
             except Exception as exc:
                 self.lab.db.event("planner_crash", f"{type(exc).__name__}: {exc}", level="error")
                 self._log(f"planner error: {exc}")
+            finally:
+                self.lab.db.close_thread_conn()
 
-        self._planner_thread = threading.Thread(target=run, name="planner", daemon=True)
-        self._planner_thread.start()
+        t = threading.Thread(target=run, name=f"planner{alive}", daemon=True)
+        self._planner_threads.append(t)
+        t.start()
 
     # ---------------------------------------------------------------- workers
     def _start_worker(self, i: int) -> None:
@@ -158,6 +191,7 @@ class Controller:
     def run(self) -> dict:
         self.started = time.time()
         self.deadline = self.started + self.seconds
+        _raise_fd_limit()
         self.lab.db.execute("UPDATE runs SET started_at=?, deadline=?, workers=? WHERE run_id=?",
                             (self.started, self.deadline, self.n_workers, self.lab.run_id))
         if self.lab.git_head_dirty():
@@ -192,11 +226,14 @@ class Controller:
                                      "('queued','claimed','running')")
 
     def _exhausted(self) -> bool:
-        if self.planner is not None and self.planner.rounds < self.max_planner_calls \
-                and self.planner.empty_rounds < 3:
+        """True only when no more work can come: the planner hit its call limit or ran dry, nothing is queued
+        and no worker is busy. An LLM planner that had empty or failed rounds backs off and tries again."""
+        if self._planners_alive():
             return False
-        if self._planner_thread and self._planner_thread.is_alive():
-            return False
+        if self.planner is not None:
+            capped = self.max_planner_calls and self.planner.rounds >= self.max_planner_calls
+            if not capped and not self.planner.dry():
+                return False
         c = self.lab.db.count_by_status()
         return c.get("queued", 0) == 0 and not any(w.current for w in self.workers)
 
@@ -225,3 +262,15 @@ class Controller:
         summary = finalize(self.lab, wall_s=time.time() - self.started, workers=self.n_workers)
         self._log(f"summary written to {self.lab.run_dir / 'summary.md'}")
         return summary
+
+
+def _raise_fd_limit(target: int = 4096) -> None:
+    """Many workers hold pipes, logs and database handles; macOS defaults to 256 open files."""
+    try:
+        import resource
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        want = target if hard == resource.RLIM_INFINITY else min(target, hard)
+        if soft != resource.RLIM_INFINITY and soft < want:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
+    except (ImportError, ValueError, OSError):
+        pass

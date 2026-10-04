@@ -99,33 +99,42 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
             "coefficients": (best.get("diagnostics_json") or {}).get("coefficients"),
             "diagnostics": {k: v for k, v in (best.get("diagnostics_json") or {}).items() if k != "coefficients"},
         },
-        "feature_registry": [f"{n}: {_short(f.get('description', ''), 70)}" for n, f in features.items()],
         "features_that_help": helpful[:10],
         "features_that_do_not_help": unhelpful[:12],
         "helpful_features_missing_from_best": untested_helpful_in_best[:8],
         "possible_interactions_untested": interactions[:8],
         "failed_directions": failed_lines,
         "unexplored_idea_areas": unexplored,
-        "in_flight": [_short(e["hypothesis"], 70) for e in inflight][:20],
+        "in_flight": [_short(e["hypothesis"], 70) for e in sorted(inflight, key=lambda e: -(e.get("created_at") or 0))][:60],
         "recent_experiments": recent,
         "compute": {"completed": len(done), "failed": len(failed), "mean_cpu_s": round(sum(cpu) / len(cpu), 2) if cpu else None,
                     "llm_calls": llm["calls"], "llm_cost_usd": round(llm["cost_usd"], 4)},
+        # last: it grows with the run; described entries are the ones the planner is most likely to build on
+        "feature_registry": [f"{n}: {_short(features[n].get('description', ''), 70)}"
+                             for n in [*sorted(best_set), *helpful_names] if n in features][:40]
+                            + ([f"other features: {', '.join(n for n in features if n not in best_set and n not in helpful_names)}"]
+                               if len(features) > len(best_set) else []),
     }
 
 
+SECTION_CHARS = 2500   # each section is truncated on its own, so a long one cannot push the others out
+TOTAL_CHARS = 20000
+
+
 def render_state(state: dict) -> str:
-    """Compact text for the planner. Bounded size."""
+    """Compact text for the planner. Bounded size: every section gets its own budget."""
     out = []
     for key, value in state.items():
         if key == "generated_at":
             continue
         title = key.replace("_", " ").upper()
         if isinstance(value, list):
-            out.append(f"## {title}")
-            out += [f"- {json.dumps(v) if isinstance(v, dict) else v}" for v in value] or ["- (none)"]
+            body = "\n".join(f"- {json.dumps(v) if isinstance(v, dict) else v}" for v in value) or "- (none)"
         elif isinstance(value, dict):
-            out.append(f"## {title}\n{json.dumps(value, separators=(',', ':'))}")
+            body = json.dumps(value, separators=(',', ':'))
         else:
-            out.append(f"## {title}\n{value}")
-    text = "\n".join(out)
-    return text[:12000]
+            body = str(value)
+        if len(body) > SECTION_CHARS:
+            body = body[:SECTION_CHARS].rsplit("\n", 1)[0] + "\n- … (truncated)"
+        out.append(f"## {title}\n{body}")
+    return "\n".join(out)[:TOTAL_CHARS]
