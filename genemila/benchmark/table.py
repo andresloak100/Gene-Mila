@@ -36,6 +36,15 @@ RF_SEEDS = (0, 1, 2)
 
 
 # ------------------------------------------------------------------ lab rows
+def run_arm(cfg: dict) -> str:
+    """Which arm a run belongs to, from its config: the LLM planner/worker pair, or the scripted no-LLM
+    control (fixed hypotheses implemented by hand-written template features)."""
+    p, w = cfg.get("planner", {}), cfg.get("worker", {})
+    if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
+        return "scripted control (no LLM)"
+    return f"{p.get('provider', '?')}:{p.get('model', '')} planner, {w.get('provider', '?')}:{w.get('model', '')} workers"
+
+
 def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
     """The best model and the starting model of one run, with CellForge metrics on `part`
     (val2 = query-only held-out perturbations; val1 = visible validation)."""
@@ -55,10 +64,7 @@ def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
         return {c: comp.get(f"cellforge_{c}") for c in COLUMNS + DESET_COLUMNS}
 
     cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
-    planner = cfg.get("planner", {}).get("provider", "")
-    worker = cfg.get("worker", {}).get("provider", "")
-    arm = "scripted control (no LLM)" if planner == "scripted" or worker in ("mock", "") else \
-        f"{planner}:{cfg.get('planner', {}).get('model', '')} planner, {worker}:{cfg.get('worker', {}).get('model', '')} workers"
+    arm = run_arm(cfg)
     return {"run_id": s.get("run_id", run_dir.name), "dataset": s.get("dataset"), "split_id": s.get("split_id"),
             "workers": s.get("workers") or cfg.get("run", {}).get("workers"), "duration_s": s.get("duration_s"),
             "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm,
