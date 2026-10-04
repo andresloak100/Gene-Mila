@@ -36,6 +36,8 @@ planner_concurrency = 0        # planner rounds allowed at once, each with its o
 planner_min_interval_s = 60    # back-off after a planner round that failed or produced nothing new
 max_planner_calls = 0          # 0 = no limit (the planner dollar cap still applies)
 replicates_max = 3             # same hypothesis to independent workers
+python_exploit = true          # queue deterministic follow-ups around the best model (add a helpful feature,
+                               # ablate, refine alpha, swap model family) whenever fewer are queued than workers
 
 [planner]
 provider = "claude_cli"        # claude_cli | anthropic | scripted

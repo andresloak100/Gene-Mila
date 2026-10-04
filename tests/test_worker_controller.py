@@ -235,3 +235,26 @@ def test_transient_api_error_is_requeued_once(lab_factory):
     w2.process(lab2.db.claim_next("W0"))
     rec2 = lab2.db.get_experiment(eid2)
     assert rec2["status"] == "failed" and rec2["failure_stage"] == "llm_api"
+
+
+def test_python_exploit_fills_the_queue_without_llm(lab_factory):
+    """With the planner limited to one round, the deterministic exploit engine keeps proposing follow-ups
+    around the best model; each configuration runs at most once and nothing is re-proposed."""
+    from genemila import exploit
+    lab = lab_factory(schedule__max_planner_calls=1)
+    ctl = Controller(lab, workers=2, seconds=60, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+                     quiet=True)
+    summary = ctl.run()
+    rows = lab.db.query("SELECT * FROM experiments WHERE proposer='python:exploit'")
+    assert rows, "exploit experiments should have been queued once the planner stopped"
+    assert all(r["kind"] == "config" and r["category"] == "exploit" and r["parent_id"] for r in rows)
+    assert all(r["status"] != "duplicate" for r in rows), "exploit never re-proposes a tried configuration"
+    assert len({r["config_hash"] for r in rows}) == len(rows)
+    groups = [r["hypothesis_group"] for r in rows]
+    assert any(g.startswith("exploit_alpha_") for g in groups) or any(g.startswith("exploit_model_") for g in groups)
+    assert summary["experiments_completed"] >= 4
+    # once everything around the best has been tried, propose() is empty rather than looping
+    best = lab.best()
+    for spec in exploit.candidates(lab, best):
+        lab.queue(spec)
+    assert exploit.propose(lab, 5) == []

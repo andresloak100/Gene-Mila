@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+from dataclasses import replace
 import threading
 import time
 from pathlib import Path
@@ -206,7 +207,7 @@ class Lab:
             spec.hyperparameters = {**spec.hyperparameters, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
             record["hyperparameters_json"] = spec.hyperparameters
         if spec.kind != "new_feature":
-            ch = config_hash(spec, self.feature_code_hashes(), self.split_id)
+            ch = self.config_hash_for(spec)
             record["config_hash"] = ch
             dup = self.db.find_by_config_hash(ch)
             if dup:
@@ -397,6 +398,13 @@ class Lab:
                 hypothesis_group=f"baseline_{model}"))
 
     # ------------------------------------------------------------------ helpers
+    def config_hash_for(self, spec: ExperimentSpec) -> str:
+        """The configuration hash an experiment gets when queued (includes the run's fold settings)."""
+        hp = spec.hyperparameters
+        if self.cv_folds > 1:
+            hp = {**hp, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
+        return config_hash(replace(spec, hyperparameters=hp), self.feature_code_hashes(), self.split_id)
+
     def best(self) -> dict | None:
         return self.db.best()
 

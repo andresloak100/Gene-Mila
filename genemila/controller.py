@@ -17,6 +17,7 @@ import time
 import traceback
 from pathlib import Path
 
+from . import exploit
 from .db import ACTIVE
 from .lab import Lab
 from .planner import Planner
@@ -73,6 +74,8 @@ class Controller:
         self.deadline = None
         self._planner_threads: list[threading.Thread] = []
         self.max_planner_calls = int(self.cfg["schedule"].get("max_planner_calls", 0))  # 0 = no limit
+        self.python_exploit = bool(self.cfg["schedule"].get("python_exploit", True))
+        self._next_exploit = 0.0
         self.min_free_mb = float(self.cfg["run"].get("min_free_disk_mb", 2000))
         b = self.cfg["budget"]
         if float(b.get("max_planner_usd", 0)) <= 0:  # 0 = scale the planner cap with run length and worker count
@@ -161,6 +164,23 @@ class Controller:
         self._planner_threads.append(t)
         t.start()
 
+    def _maybe_exploit(self) -> None:
+        """Keep workers busy while the planner thinks: when fewer experiments are queued than there are
+        workers, queue deterministic follow-ups around the current best (no LLM involved)."""
+        if not self.python_exploit or self.lab.stop_event.is_set() or time.time() < self._next_exploit:
+            return
+        self._next_exploit = time.time() + 15
+        queued = self.lab.db.count_by_status().get("queued", 0)
+        if queued >= self.n_workers:
+            return
+        n_queued = 0
+        for spec in exploit.propose(self.lab, self.n_workers - queued):
+            _, status = self.lab.queue(spec)
+            n_queued += status == "queued"
+        if n_queued:
+            self.lab.db.event("python_exploit", f"queued {n_queued} deterministic follow-ups around the best model")
+            self._log(f"exploit: queued {n_queued} follow-ups around the best model (no LLM)")
+
     # ---------------------------------------------------------------- workers
     def _start_worker(self, i: int) -> None:
         wid = f"W{i:03d}"
@@ -225,6 +245,7 @@ class Controller:
             while time.time() < self.deadline:
                 if self._baselines_done():
                     self._maybe_plan()
+                    self._maybe_exploit()
                 self._supervise()
                 if time.time() >= next_status:
                     self._log(self.status_line())
