@@ -43,7 +43,7 @@ def test_ingest_scperturb_layout(tmp_path):
     assert describe_h5ad(path)["condition_key"] == "perturbation"
     out = ingest_h5ad(path, tmp_path / "bundle", "fake", n_hvg=50, max_control_cells=200, max_eval_cells=25)
     m = json.loads((out / "manifest.json").read_text())
-    assert m["raw_counts_normalised"] and m["control_value"] == "control"
+    assert m["raw_counts_normalised"] and m["control_value"] == ["control"]
     assert m["n_dropped_labels"] == 1
     z = np.load(out / "public.npz", allow_pickle=False)
     perts = set(map(str, z["perts"]))
@@ -103,3 +103,52 @@ def test_final_report_includes_celleval(lab_factory):
     assert (lab.run_dir / "celleval" / f"{rows[0]['experiment_id']}_val2.json").exists()
     assert "## CELL-EVAL" in (lab.run_dir / "summary.md").read_text()
     assert len(lab.oracle.queries) == 1  # cell-eval rides on the same capped oracle query
+
+
+def test_counts_detected_in_csc_with_low_first_genes():
+    import scipy.sparse as sp
+    from genemila.data.real import _looks_like_counts
+    rng = np.random.default_rng(0)
+    low = rng.poisson(0.5, size=(3000, 200))         # first genes: tiny counts, max well below 20
+    high = rng.poisson(30.0, size=(3000, 400))       # most genes: large counts
+    X = sp.csc_matrix(np.hstack([low, high]).astype(np.float32))
+    assert X.data[:100_000].max() < 20               # what the old first-entries sample saw
+    assert _looks_like_counts(X)
+    assert not _looks_like_counts(sp.csc_matrix(np.log1p(X.toarray())))
+
+
+def test_unlabelled_cells_and_several_control_labels(tmp_path):
+    ad = pytest.importorskip("anndata")
+    from genemila.data.real import ingest_h5ad
+    path = fake_screen(tmp_path)
+    a = ad.read_h5ad(path)
+    lab = a.obs["perturbation"].astype(object).to_numpy()
+    ctrl = (lab == "control").nonzero()[0]
+    lab[ctrl[:250]] = "63(mod)_pBA580"                                 # Adamson-style control guide names
+    lab[ctrl[250:]] = "Gal4-4(mod)_pBA582"
+    lab[:5] = np.nan                                                   # unlabelled cells
+    a.obs["perturbation"] = lab
+    a.write_h5ad(path)
+    with pytest.raises(ValueError):
+        ingest_h5ad(path, tmp_path / "b0", "fake", n_hvg=50)          # no known control label
+    out = ingest_h5ad(path, tmp_path / "b", "fake", n_hvg=50, max_control_cells=200, max_eval_cells=25,
+                      control_value=["63(mod)_pBA580", "Gal4-4(mod)_pBA582"])
+    m = json.loads((out / "manifest.json").read_text())
+    assert m["control_value"] == ["63(mod)_pBA580", "Gal4-4(mod)_pBA582"]
+    assert "unassigned" in m["dropped_labels"]
+    assert len(np.load(out / "public.npz")["perts"]) == 21
+
+
+def test_cellforge_style_train_test_split():
+    from genemila.data.real import external_splits
+    perts = [f"G{i}" for i in range(1, 41)]
+    label_to_key = {f"G{i}_g{j}": f"G{i}" for i in range(1, 41) for j in (1, 2)}
+    test_labels = [f"G{i}_g1" for i in range(1, 9)] + ["control", "unknown_label"]
+    train_labels = [lab for lab in label_to_key if lab not in test_labels]   # includes G1_g2 .. G8_g2
+    s = external_splits({"train": train_labels, "test": test_labels}, perts, label_to_key, seed=3,
+                        val_frac_of_train=0.25)
+    assert s["val2"] == sorted(f"G{i}" for i in range(1, 9))         # their held-out set, exactly
+    assert not set(s["val2"]) & set(s["train"])                      # a gene split across guides stays held out
+    assert len(s["val1"]) == 8 and not set(s["val1"]) & set(s["train"])
+    assert sorted(s["train"] + s["val1"] + s["val2"]) == sorted(perts)
+    assert s == external_splits({"train": train_labels, "test": test_labels}, perts, label_to_key, seed=3)

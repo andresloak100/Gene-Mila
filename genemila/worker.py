@@ -177,11 +177,20 @@ class Worker:
             attempts.append((self.escalation, "diagnose"))
         code, error, violation = "", "", None
         for i, (prov, op) in enumerate(attempts):
+            if error.startswith("TRUNCATED") and prov is not self.escalation:
+                continue  # the same provider and limit would be truncated again
             if prov is self.escalation:
                 self._set(spec.experiment_id, escalated=1)
                 self.db.event("escalation", f"escalating to {prov.name}/{prov.model}", spec.experiment_id)
             kw = {"task": task} if op == "implement" else {"task": task, "code": code, "error": error}
             resp = self._llm(prov, op, spec, **kw)
+            if resp.truncated_empty:  # a retry with the same limit ends the same way: stop paying for it
+                error = (f"TRUNCATED {prov.name}/{resp.model or prov.model} reached the output limit "
+                         f"({self.wcfg['max_output_tokens']} tokens, {resp.reasoning_tokens} of them reasoning) "
+                         "before writing any code; raise worker.max_output_tokens or set worker.thinking = "
+                         "\"disabled\"")
+                self.db.event("llm_truncated", error[10:], spec.experiment_id, "warning")
+                continue
             code = extract_code(resp.text)
             (art / f"attempt_{i + 1}_{prov.name}.py").write_text(code)
             try:
@@ -199,6 +208,8 @@ class Worker:
             error = smoke
         if violation is not None and "not allowed" in str(violation):
             raise violation  # forbidden behaviour persisted after the fix attempts: reject
+        if error.startswith("TRUNCATED"):
+            raise ExperimentFailure("llm_truncated", error[10:])
         raise ExperimentFailure("test", f"feature failed after {len(attempts)} attempts: {error[-800:]}")
 
     def _smoke(self, name: str, wt: Path, art: Path, attempt: int) -> str | None:

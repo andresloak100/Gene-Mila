@@ -4,6 +4,10 @@ can be put next to theirs.
 CellForge (arXiv 2508.02276, Table 1): MSE, PCC and R^2 between predicted and
 true mean expression per perturbation, over all genes and over the top-20 DE
 genes of the true response (MSE_DE, PCC_DE, R2_DE); mean over perturbations.
+CellForge's repository has no evaluation code and its docs define DE genes
+differently (Wilcoxon, BH p < 0.05, |log2FC| > 0.5), so the same three metrics
+are also reported on that gene set (*_deset; perturbations with fewer than 2
+such genes are skipped).
 
 VCWorld (ICLR 2026): two classification tasks over (perturbation, gene) pairs.
 DE: is the gene differentially expressed (Wilcoxon, BH-adjusted p <= 0.05,
@@ -34,15 +38,24 @@ def _r2(truth, pred) -> float:
     return float(1 - ((truth - pred) ** 2).sum() / ss_tot) if ss_tot > 0 else 0.0
 
 
-def cellforge(pred: np.ndarray, truth: np.ndarray, top_de: np.ndarray) -> dict:
-    rows = []
+def cellforge(pred: np.ndarray, truth: np.ndarray, top_de: np.ndarray, deset: np.ndarray | None = None) -> dict:
+    rows, rows_set = [], []
     for i in range(truth.shape[0]):
         t, p, k = truth[i], pred[i], top_de[i]
         rows.append([np.mean((t - p) ** 2), _pcc(p, t), _r2(t, p),
                      np.mean((t[k] - p[k]) ** 2), _pcc(p[k], t[k]), _r2(t[k], p[k])])
+        if deset is not None and deset[i].sum() >= 2:
+            d = deset[i]
+            rows_set.append([np.mean((t[d] - p[d]) ** 2), _pcc(p[d], t[d]), _r2(t[d], p[d])])
     m = np.mean(rows, axis=0)
-    return dict(zip(("cellforge_mse", "cellforge_pcc", "cellforge_r2",
-                     "cellforge_mse_de", "cellforge_pcc_de", "cellforge_r2_de"), map(float, m)))
+    out = dict(zip(("cellforge_mse", "cellforge_pcc", "cellforge_r2",
+                    "cellforge_mse_de", "cellforge_pcc_de", "cellforge_r2_de"), map(float, m)))
+    if deset is not None:
+        ms = np.mean(rows_set, axis=0) if rows_set else [None] * 3
+        out.update(zip(("cellforge_mse_deset", "cellforge_pcc_deset", "cellforge_r2_deset"),
+                       [None if v is None else float(v) for v in ms]))
+        out["cellforge_n_perts_deset"] = len(rows_set)
+    return out
 
 
 def _binary(prefix: str, y: np.ndarray, yhat: np.ndarray, score: np.ndarray) -> dict:
@@ -85,4 +98,5 @@ def score(pred: np.ndarray, truth: np.ndarray, perts: list[str], ref: dict | Non
         return {}
     rows = [idx[perts[i]] for i in keep]
     pred, truth = np.asarray(pred, dtype=np.float64)[keep], np.asarray(truth, dtype=np.float64)[keep]
-    return {**cellforge(pred, truth, ref["top_de"][rows]), **vcworld(pred - control_mean, ref, rows)}
+    deset = ref["de_cellforge"][rows].astype(bool) if "de_cellforge" in ref else None
+    return {**cellforge(pred, truth, ref["top_de"][rows], deset), **vcworld(pred - control_mean, ref, rows)}

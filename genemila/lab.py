@@ -26,7 +26,7 @@ from .spec import PLUGIN_DIR, ExperimentSpec, GuardrailViolation, config_hash, v
 
 class Lab:
     def __init__(self, cfg: dict, run_dir: Path, data_dir: Path, repo: Path = REPO_ROOT, run_id: str | None = None,
-                 base_commit: str | None = None):
+                 base_commit: str | None = None, reopen: bool = False):
         self.cfg = cfg
         self.run_dir = Path(run_dir).resolve()
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -39,7 +39,10 @@ class Lab:
         self.manifest = json.loads((self.data_dir / "manifest.json").read_text())
         self.split_id = self.manifest["split_id"]
         self.dataset = self.manifest["name"]
-        self.public_dir = export_public(self.data_dir, self.run_dir / "public_data")
+        existing = self.run_dir / "public_data"
+        # re-opening a live run (status, reproduce) must not rewrite files experiments are reading
+        self.public_dir = existing if reopen and (existing / "public.npz").exists() else \
+            export_public(self.data_dir, existing)
         self.db = Database(self.run_dir / "lab.db")
         self.artifacts = self.run_dir / "artifacts"
         self.store = self.run_dir / "feature_store"
@@ -54,6 +57,8 @@ class Lab:
         self.oracle = QueryOracle(self.data_dir, max_queries=int(cfg.get("final", {}).get("max_queries", 5)))
         self.stop_event = threading.Event()   # no new experiments / LLM calls
         self.kill_event = threading.Event()   # terminate running subprocesses
+        self.gateway.stop_event = self.stop_event  # waits inside the gateway end at the deadline
+        self._closed = False
         self._val1 = LabelSet.load(self.data_dir / "private" / "val1.npz")
         self._val1_ref = reference.load(self.data_dir, "val1")  # ground-truth DE genes for comparable metrics
         z = np.load(self.public_dir / "public.npz", allow_pickle=False)
@@ -75,6 +80,9 @@ class Lab:
         """Runs experiment and smoke-test processes (warm fork server by default)."""
         from .sandbox import Executor
         with self._exec_lock:
+            if self._closed:
+                from .worker import ExperimentFailure
+                raise ExperimentFailure("killed", "the lab is shutting down")
             if self._executor is None:
                 ecfg = self.cfg["experiment"]
                 mode = ecfg.get("executor", "forkserver")
@@ -84,6 +92,8 @@ class Lab:
             return self._executor
 
     def close(self) -> None:
+        with self._exec_lock:
+            self._closed = True
         if self._executor is not None:
             self._executor.close()
             if self._executor._args[0] is not None:
@@ -340,7 +350,7 @@ def open_run(run_dir: str | Path) -> Lab:
         raise FileNotFoundError(f"no run recorded in {run_dir}")
     cfg = json.loads(row[0]["config_json"])
     return Lab(cfg, run_dir, Path(cfg["run"]["data_dir"]), run_id=row[0]["run_id"],
-               base_commit=row[0]["base_commit"])
+               base_commit=row[0]["base_commit"], reopen=True)
 
 
 def latest_run(root: str | Path = REPO_ROOT / "runs") -> Path:

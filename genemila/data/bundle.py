@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
@@ -161,12 +162,23 @@ def verify_bundle(data_dir: Path) -> list[str]:
 def export_public(data_dir: Path, dest: Path) -> Path:
     """Materialise only the public part of a dataset for experiment subprocesses."""
     data_dir, dest = Path(data_dir), Path(dest)
-    dest.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(data_dir / "public.npz", dest / "public.npz")
-    shutil.copytree(data_dir / "knowledge", dest / "knowledge", dirs_exist_ok=True)
+    (dest / "knowledge").mkdir(parents=True, exist_ok=True)
+
+    def put(src: Path, dst: Path) -> None:  # atomic, and skipped when unchanged, so readers never see a partial file
+        if dst.exists() and dst.stat().st_size == src.stat().st_size and sha256_file(dst) == sha256_file(src):
+            return
+        tmp = dst.with_name(dst.name + ".tmp")
+        shutil.copy2(src, tmp)
+        os.replace(tmp, dst)
+
+    put(data_dir / "public.npz", dest / "public.npz")
+    for f in sorted((data_dir / "knowledge").glob("*")):
+        put(f, dest / "knowledge" / f.name)
     manifest = json.loads((data_dir / "manifest.json").read_text())
     public_manifest = {k: v for k, v in manifest.items() if k != "file_sha256"}
-    (dest / "manifest.json").write_text(json.dumps(public_manifest, indent=1))
+    tmp = dest / "manifest.json.tmp"
+    tmp.write_text(json.dumps(public_manifest, indent=1))
+    os.replace(tmp, dest / "manifest.json")
     return dest
 
 

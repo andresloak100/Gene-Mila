@@ -86,16 +86,67 @@ def test_token_limits(tmp_path):
 
 
 def test_bounded_retries_and_circuit_breaker(tmp_path):
-    gw, db = gateway(tmp_path, api_retries=1, circuit_breaker_failures=4)
+    import threading
+    import time
+    gw, db = gateway(tmp_path, api_retries=1, circuit_breaker_failures=2)
     p = FixedProvider(fail="HTTP 503")
     for _ in range(2):
         with pytest.raises(ProviderError):
             gw.call(p, "complete", role="worker", max_tokens=5, est_input_tokens=5, system="s", user="u")
-    assert p.calls == 4  # 2 calls x (1 + 1 retry), never more
-    with pytest.raises(BudgetExceeded, match="circuit breaker"):
+    assert p.calls == 4  # 2 calls x (1 + 1 retry), never more; each logical call counts once
+    assert gw.open_until["deepseek"] > time.time()  # paused, not disabled for the rest of the run
+    # while paused, callers wait instead of failing; the deadline (stop event) ends the wait
+    gw.stop_event = threading.Event()
+    threading.Timer(0.3, gw.stop_event.set).start()
+    with pytest.raises(BudgetExceeded, match="stopping"):
         gw.call(p, "complete", role="worker", max_tokens=5, est_input_tokens=5, system="s", user="u")
     assert p.calls == 4
     assert db.llm_totals()["failed_calls"] == 4
+    # after the cooldown a single probe decides: a failed probe pauses again for twice as long ...
+    gw.stop_event = None
+    gw.open_until["deepseek"] = time.time() + 0.2
+    with pytest.raises(ProviderError):
+        gw.call(p, "complete", role="worker", max_tokens=5, est_input_tokens=5, system="s", user="u")
+    assert p.calls == 5  # the probe is not retried
+    assert gw.cooldown["deepseek"] == 240.0
+    # ... and a successful probe reopens the provider
+    gw.open_until["deepseek"] = time.time() + 0.2
+    p.fail = None
+    t0 = time.time()
+    gw.call(p, "complete", role="worker", max_tokens=5, est_input_tokens=5, system="s", user="u")
+    assert time.time() - t0 >= 0.15 and "deepseek" not in gw.open_until and not gw.halted
+    events = [e["kind"] for e in db.query("SELECT kind FROM events")]
+    assert "breaker_open" in events and "breaker_closed" in events
+
+
+def test_inflight_reservations_wait_instead_of_halting(tmp_path):
+    import threading
+    import time
+
+    class Slow(FixedProvider):
+        def complete(self, system, user, max_tokens):
+            time.sleep(0.1)
+            return super().complete(system, user, max_tokens)
+
+    gw, _ = gateway(tmp_path)
+    p = Slow(in_tok=10, out_tok=10)
+    wc = gw.worst_case("deepseek-chat", 1000, 3000)
+    gw.role_caps["worker"] = 2.5 * wc  # room for two worst-case reservations at a time
+    errors = []
+
+    def one():
+        try:
+            gw.call(p, "complete", role="worker", max_tokens=3000, est_input_tokens=1000, system="s", user="u")
+        except Exception as exc:  # pragma: no cover - the assertion below reports it
+            errors.append(exc)
+
+    threads = [threading.Thread(target=one) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert not errors and p.calls == 8 and not gw.halted  # actual spend is tiny; nobody was refused
+    assert gw.spent["worker"] < gw.role_caps["worker"]
 
 
 class FakeOpenAI(BaseHTTPRequestHandler):
@@ -190,3 +241,35 @@ def test_served_model_alias_is_priced_consistently(tmp_path):
     flash = gw.pricing["deepseek-flash"]
     assert gw.cost("deepseek-flash", Usage(1000, 500, 200)) == pytest.approx(
         (200 * flash["input_cache_hit"] + 800 * flash["input_cache_miss"] + 500 * flash["output"]) / 1e6)
+
+
+def test_deepseek_thinking_switch_and_truncation(monkeypatch):
+    from genemila.providers import make_provider
+    sent = {}
+
+    class R:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"model": "deepseek-flash", "choices": [{"message": {"content": ""}, "finish_reason": "length"}],
+                    "usage": {"prompt_tokens": 10, "completion_tokens": 50,
+                              "completion_tokens_details": {"reasoning_tokens": 50}}}
+
+    def post(url, json=None, **kw):
+        sent.update(json)
+        return R()
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-not-a-key")
+    monkeypatch.setattr("genemila.providers.openai_compat.requests.post", post)
+    p = make_provider("deepseek", "deepseek-flash", {"thinking": "disabled", "reasoning_effort": "high"})
+    resp = p.complete("sys", "user", 50)
+    assert sent["thinking"] == {"type": "disabled"} and "reasoning_effort" not in sent
+    assert resp.truncated_empty and resp.reasoning_tokens == 50 and resp.usage.output_tokens == 50
+    p2 = make_provider("deepseek", "deepseek-flash", {"thinking": "enabled", "reasoning_effort": "low"})
+    p2.complete("sys", "user", 50)
+    assert sent["thinking"] == {"type": "enabled"} and sent["reasoning_effort"] == "low"
+    p3 = make_provider("deepseek", "deepseek-flash", {})
+    sent.clear()
+    p3.complete("sys", "user", 50)
+    assert "thinking" not in sent  # API default

@@ -38,6 +38,13 @@ class LLMResponse:
     usage: Usage = field(default_factory=Usage)
     provider: str = ""
     model: str = ""
+    finish_reason: str = ""        # "length" = the output limit was reached
+    reasoning_tokens: int = 0      # hidden reasoning ("thinking") tokens, billed as output
+
+    @property
+    def truncated_empty(self) -> bool:
+        """The output limit was spent before any answer was written (typically on reasoning)."""
+        return self.finish_reason == "length" and not self.text.strip()
 
 
 class AgentProvider(ABC):

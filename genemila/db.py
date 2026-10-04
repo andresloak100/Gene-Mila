@@ -97,6 +97,13 @@ class Database:
             self._local.conn = c
         return c
 
+    def close_thread_conn(self) -> None:
+        """Close this thread's connection (short-lived threads such as planner rounds)."""
+        c = getattr(self._local, "conn", None)
+        if c is not None:
+            c.close()
+            self._local.conn = None
+
     # ------------------------------------------------------------------ helpers
     @staticmethod
     def _encode(fields: dict) -> dict:

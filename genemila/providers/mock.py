@@ -271,6 +271,11 @@ class MockProvider(AgentProvider):
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
         if "MOCK_CRASH" in hint:
             raise RuntimeError("simulated worker crash")
+        if "MOCK_TRUNCATE" in hint:  # a reasoning model that spends the whole output limit thinking
+            u = self._usage(json.dumps(task), "")
+            u.output_tokens = max_tokens
+            return LLMResponse(text="", usage=u, provider=self.name, model=self.model, finish_reason="length",
+                               reasoning_tokens=max_tokens)
         if "MOCK_LEAK" in hint:
             code = LEAKY.format(name=nf["name"])
         elif "MOCK_CHEAT" in hint:
@@ -288,7 +293,7 @@ class MockProvider(AgentProvider):
         self._sleep()
         nf = task["new_feature"]
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
-        if any(m in hint for m in ("MOCK_LEAK", "MOCK_CHEAT", "MOCK_SLOW", "MOCK_CRASH")):
+        if any(m in hint for m in ("MOCK_LEAK", "MOCK_CHEAT", "MOCK_SLOW", "MOCK_CRASH", "MOCK_TRUNCATE")):
             return self.implement(task, max_tokens)  # a model that repeats its mistake
         if "MOCK_BREAK_ALWAYS" in hint:
             code = "still broken(\n"
@@ -325,11 +330,16 @@ class ScriptedPlanner(AgentProvider):
         self.cursor = 0
         self.swept = False
         self.lasso = False
+        self._lock = threading.Lock()  # planner rounds may run concurrently
 
     def complete(self, system: str, user: str, max_tokens: int) -> LLMResponse:
         return LLMResponse(text="{}", provider=self.name, model=self.model)
 
     def propose(self, research_state: str, n: int, mix: dict, max_tokens: int) -> LLMResponse:
+        with self._lock:
+            return self._propose(research_state, n)
+
+    def _propose(self, research_state: str, n: int) -> LLMResponse:
         hyps = []
         while len(hyps) < n and self.cursor < len(SCRIPTED_HYPOTHESES):
             title, cat, name, desc, why = SCRIPTED_HYPOTHESES[self.cursor]
@@ -376,6 +386,7 @@ class LoadTestPlanner(AgentProvider):
         self.latency_s = latency_s
         self.replicates = replicates
         self.counter = 0
+        self._lock = threading.Lock()
 
     def complete(self, system: str, user: str, max_tokens: int) -> LLMResponse:
         return LLMResponse(text="{}", provider=self.name, model=self.model)
@@ -386,12 +397,14 @@ class LoadTestPlanner(AgentProvider):
         hyps = []
         cats = ["explore"] * 13 + ["exploit"] * 5 + ["risky"] * 2
         for _ in range(n):
-            title, cat, name, desc, why = SCRIPTED_HYPOTHESES[self.counter % len(SCRIPTED_HYPOTHESES)]
-            self.counter += 1
-            hyps.append({"title": f"{title} #{self.counter}", "category": cats[self.counter % len(cats)],
-                         "hypothesis": f"Variant {self.counter}: adding {desc} improves prediction.",
+            with self._lock:
+                self.counter += 1
+                k = self.counter
+            title, cat, name, desc, why = SCRIPTED_HYPOTHESES[(k - 1) % len(SCRIPTED_HYPOTHESES)]
+            hyps.append({"title": f"{title} #{k}", "category": cats[k % len(cats)],
+                         "hypothesis": f"Variant {k}: adding {desc} improves prediction.",
                          "rationale": why, "action": "new_feature", "parent": None,
-                         "new_feature": {"name": f"{name}_v{self.counter}", "description": desc,
+                         "new_feature": {"name": f"{name}_v{k}", "description": desc,
                                          "implementation_hint": desc, "params": {}},
                          "model_type": "ridge", "replicates": self.replicates})
         text = json.dumps({"synthesis": "Load-test planner.", "hypotheses": hyps})
