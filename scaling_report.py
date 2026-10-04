@@ -86,6 +86,10 @@ def _gain_sealed(s):
     return None if b is None or base is None else b - base
 
 
+def _is_control(arm: str) -> bool:
+    return arm.startswith("scripted control (no LLM)")
+
+
 def _tokens(s):
     u = s.get("llm_usage", {}).get("all") or {}
     return ((u.get("input_tokens") or 0) + (u.get("output_tokens") or 0)) / 1000
@@ -106,7 +110,11 @@ def load_runs(dirs):
         a = json.loads((d / "analysis.json").read_text()) if (d / "analysis.json").exists() else None
         cfg = json.loads((d / "config.json").read_text()) if (d / "config.json").exists() else {}
         runs.append({"dir": d.name, "arm": run_arm(cfg), "workers": s.get("workers") or cfg.get("run", {}).get("workers"),
-                     "values": {k: f(s, a) for k, _, f in MEASURES}})
+                     "code": (s.get("base_commit") or "")[:7], "values": {k: f(s, a) for k, _, f in MEASURES}})
+    # runs on different code versions are different arms, however alike their configs
+    if len({r["code"] for r in runs if r["code"]}) > 1:
+        for r in runs:
+            r["arm"] = f"{r['arm']} @ {r['code'] or 'unknown code'}"
     return runs
 
 
@@ -142,7 +150,7 @@ def render(runs):
     groups = {}
     for r in runs:
         groups.setdefault((r["arm"], r["workers"]), []).append(r)
-    keys = sorted(groups, key=lambda k: (k[0] != "scripted control (no LLM)", k[0], k[1] or 0))
+    keys = sorted(groups, key=lambda k: (not _is_control(k[0]), k[0], k[1] or 0))
     L = ["# Efficiency across worker counts", "",
          "Same dataset, split and time budget for every run; mean ± sd over repeats (n in the header). "
          "Gain is best model minus the starting model (best linear model on built-in features); "
@@ -160,16 +168,30 @@ def render(runs):
 
     # noise: the control's spread and pairwise tests on the sealed gain between worker counts of the LLM arm
     L += ["## Is the ordering real?", ""]
-    ctrl = [k for k in keys if k[0] == "scripted control (no LLM)"]
+    ctrl = [k for k in keys if _is_control(k[0])]
+    llm = [k for k in keys if not _is_control(k[0])]
+    llm_wall = stats([r["values"]["wall_min"] for k in llm for r in groups[k]])
     for k in ctrl:
         st = stats([r["values"]["gain_sealed"] for r in groups[k]])
         stv = stats([r["values"]["gain_visible"] for r in groups[k]])
-        if st:
+        wall = stats([r["values"]["wall_min"] for r in groups[k]])
+        if not st:
+            continue
+        short = wall and llm_wall and wall["mean"] < 0.5 * llm_wall["mean"]
+        if st["n"] > 1 and st["sd"] < 1e-9 and (stv is None or stv["sd"] < 1e-9):  # identical to rounding
+            L.append(f"- No-LLM control ({st['n']} runs): identical results every time, sealed gain {st['mean']:.4f}, "
+                     f"visible gain {stv['mean']:.4f}. The scripted recipe is deterministic on this dataset, so the "
+                     "control is a fixed-recipe reference, not a noise reference; run-to-run noise is estimated from "
+                     "the agent arms' repeats below.")
+        else:
             L.append(f"- No-LLM control ({st['n']} runs, the same scripted hypotheses every time; what varies is "
                      f"timing, scheduling order and the exploit follow-ups that order produces): sealed gain "
                      f"{fmt(st, 4)}, visible gain {fmt(stv, 4)}. Differences between worker counts smaller than about "
                      f"2 x this sd ({2 * st['sd']:.4f}) are within that noise.")
-    llm = [k for k in keys if k[0] != "scripted control (no LLM)"]
+        if short:
+            L.append(f"- The control ended after {wall['mean']:.1f} min on average (its hypotheses ran out) against "
+                     f"{llm_wall['mean']:.1f} min for the agent arms, so it is not an equal-time arm: it shows what "
+                     "the fixed template features give, not what a no-LLM search of the same length gives.")
     for i, ka in enumerate(llm):
         for kb in llm[i + 1:]:
             if ka[0] != kb[0]:

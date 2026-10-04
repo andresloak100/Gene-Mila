@@ -57,3 +57,42 @@ def test_table_from_run_summary(tmp_path, dataset):
     assert "Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers, 4 workers (n=1) | ours | 0.0100²" in md
     assert "No scripted no-LLM control run" in md
     assert "Gene-Mila starting model | ours |" in md and "documented DE set" in md
+
+
+def _run_dir(tmp_path, name, workers, planner, worker, gain_sealed, wall_s, commit="abc1234", seed=0):
+    run = tmp_path / name
+    run.mkdir()
+    base_q, best_q = 0.50, 0.50 + gain_sealed
+    summary = {"run_id": name, "dataset": "adamson_cf", "split_id": "split_x", "workers": workers, "duration_s": wall_s,
+               "base_commit": commit, "best": {"score": 0.57 + gain_sealed, "features": ["a"], "model": "ridge"},
+               "baseline": {"score": 0.556, "description": "OLS"}, "improvement_over_baseline": 0.014 + gain_sealed,
+               "experiments_completed": 9, "experiments_failed": 1, "unique_hypotheses": 9, "duplicate_experiments": 0,
+               "cpu_hours": 0.01, "llm_usage": {"all": {"input_tokens": 0, "output_tokens": 0, "cached_tokens": 0, "cost_usd": 0}},
+               "compute_efficiency": {"experiments_per_hour": 9 / (wall_s / 3600)},
+               "generalization_query_only": [
+                   {"experiment_id": "EXP_0010", "kind": "config", "visible_score": 0.571, "query_only_score": best_q},
+                   {"experiment_id": "EXP_0003", "kind": "baseline", "visible_score": 0.556, "query_only_score": base_q}]}
+    (run / "summary.json").write_text(json.dumps(summary))
+    (run / "config.json").write_text(json.dumps({"run": {"workers": workers, "seed": seed},
+                                                 "planner": {"provider": planner, "model": planner},
+                                                 "worker": {"provider": worker, "model": worker}}))
+    return run
+
+
+def test_scaling_report_handles_a_deterministic_short_control(tmp_path):
+    """Six identical control runs give no noise estimate and ended early: the report says both instead of
+    announcing a zero-width noise band; runs on another code version form their own arm."""
+    import scaling_report as sr
+    dirs = [_run_dir(tmp_path, f"scale_control_r{i}", 4, "scripted", "mock", 0.034, 126, seed=i) for i in range(3)]
+    dirs += [_run_dir(tmp_path, f"scale_w4_r{i}", 4, "claude_cli", "deepseek", 0.08 + 0.01 * i, 1200) for i in range(2)]
+    dirs += [_run_dir(tmp_path, f"scale_w8_r{i}", 8, "claude_cli", "deepseek", 0.07 + 0.03 * i, 1200) for i in range(2)]
+    md = sr.render(sr.load_runs(dirs))
+    assert "identical results every time" in md and "not a noise reference" in md
+    assert "2 x this sd (0.0000)" not in md
+    assert "not an equal-time arm" in md and "2.1 min on average" in md
+    assert "4 vs 8 workers" in md and "Welch" in md
+    # a control on new code is a separate arm, not more repeats of the old one
+    dirs.append(_run_dir(tmp_path, "newcode_control_r0", 4, "scripted", "mock", 0.05, 1200, commit="def5678"))
+    runs = sr.load_runs(dirs)
+    assert {r["arm"] for r in runs if r["dir"].startswith("newcode")} == {"scripted control (no LLM) @ def5678"}
+    assert sr.render(runs).count("No-LLM control (") == 2
