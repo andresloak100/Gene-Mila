@@ -232,7 +232,7 @@ Worker-scaling comparison, code `2492e11`, Opus planner, DeepSeek workers, 20 mi
 | 4 | 0 | 159 | 0.629 | 0.601 | 486 | 0.46 |
 | 4 | 1 | 112 | 0.609 | 0.604 | see note | 0.22 |
 | 8 | 0 | 280 | 0.637 | 0.585 | 855 | 0.71 |
-| 8 | 1 | 275 | 0.651 | 0.583 | not yet reported | 0.82 |
+| 8 | 1 | 275 | 0.651 | 0.583 | 804 | 0.82 |
 | 16 | 0 | 657 | 0.648 | 0.562 | 1,936 | 1.20 |
 
 Note: the 4-worker seed-1 run was killed at its deadline and its summary rebuilt afterwards; its
