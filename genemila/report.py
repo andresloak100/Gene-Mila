@@ -223,7 +223,8 @@ def render_markdown(s: dict) -> str:
 def finalize(lab, wall_s: float | None = None, workers: int | None = None, query: bool = True) -> dict:
     gen = run_query_only(lab, int(lab.cfg.get("final", {}).get("top_k", 3))) if query else None
     s = build_summary(lab, wall_s, workers, gen)
-    lab.db.execute("UPDATE runs SET finished_at=?, summary_json=? WHERE run_id=?",
+    # a later summarize.py must not move the run's end (throughput and cost rates are measured against it)
+    lab.db.execute("UPDATE runs SET finished_at=COALESCE(finished_at, ?), summary_json=? WHERE run_id=?",
                    (time.time(), json.dumps(s, default=str), lab.run_id))
     (Path(lab.run_dir) / "summary.json").write_text(json.dumps(s, indent=1, default=str))
     (Path(lab.run_dir) / "summary.md").write_text(render_markdown(s))

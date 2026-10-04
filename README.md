@@ -52,15 +52,18 @@ perturbations no agent was ever scored on. The last step is too small to separat
 on 16 perturbations. Summary, planner batch, research state and analysis are in
 [`docs/example_run/`](docs/example_run/).
 
-The same split, run with no LLM at all, does as well. The offline dry run in
-[Quick start](#quick-start) uses a scripted planner (seven fixed hypotheses, then combinations
-of those that helped and an alpha sweep) and hand-written template features from
+The same split, run with no LLM at all, does as well. The offline dry run in [Quick
+start](#quick-start) uses a scripted planner (seven fixed hypotheses, then combinations of
+those that helped and an alpha sweep) and hand-written template features from
 `genemila/providers/mock.py`. In 2 minutes and for $0 it reached 0.7702 on visible validation
 and 0.7776 on the sealed set ([summary](docs/example_run/control_scripted_summary.md)), against
-the agents' 0.7775 and 0.7764 for about $1.25 of recorded API cost. The agents, who never saw
-the templates, re-derived them: target co-expression adds +0.1579 in both runs. So this run
-shows that the machinery works and that the agents reach a hand-written reference; it does not
-show what agents add beyond one. That is the first question for real screens.
+the agents' 0.7775 and 0.7764 for about $1.25 of recorded API cost. The control is
+timing-sensitive, because its planner combines only results that have finished: three of four
+runs on this and earlier code gave these numbers, and one stopped a step earlier at 0.7683 and
+0.7744. The agents, who never saw the templates, re-derived them: target co-expression adds
++0.1579 in both runs. So this run shows that the machinery works and that the agents reach a
+hand-written reference; it does not show what agents add beyond one. That is the first question
+for real screens.
 
 ### A feature a worker wrote
 
@@ -269,11 +272,13 @@ with both:
    splits (`--splits`) and curated prior knowledge (`prepare_data.py knowledge`) exist. Before
    Norman, the planner has to be told the modality and that a target can be a gene pair: today
    it is told "single-gene targets", and the features that won here model loss of function.
-2. **The same game.** Results laid out like CellForge's Table 1: Unperturbed, Random Forest and
-   Linear Regression rerun on the same split, the published models quoted as reported, and
-   Gene-Mila's best model next to its pre-agent starting point. VCWorld's benchmark is drug
-   perturbations only, so until Gene-Mila has drug features the VCWorld comparison uses its DE
-   and direction metrics on Adamson and Norman, not its data.
+2. **The same game.** `results_table.py` lays results out like CellForge's Table 1: Unperturbed,
+   Random Forest and Linear Regression refitted on the same split, the published rows quoted from
+   the paper (`docs/results/cellforge_table1.json`), and Gene-Mila's best model next to its
+   starting model. Because the paper does not state its expression scale, it also checks which
+   metric definition reproduces the paper's simple-baseline rows. No real-data run has filled the
+   table yet. VCWorld's benchmark is drug perturbations only, so until Gene-Mila has drug features
+   the VCWorld comparison uses its DE and direction metrics on Adamson and Norman, not its data.
 
 Drug perturbations (Srivatsan in CellForge's set, and all of VCWorld's GeneTAK) wait on drug
 metadata: every feature today assumes a gene target, and the ingestor drops labels that name no
@@ -331,13 +336,13 @@ Every command defaults to the most recent run under `runs/`; pass `--run runs/<i
 # rehearsal with no API calls: 44 mock workers and an endless stream of distinct hypotheses
 python run_research.py --minutes 5 --workers 44 --worker-provider mock --planner-provider loadtest
 
-# paid runs, from the DeepSeek report; each raises the cumulative DeepSeek cap on purpose
-python run_research.py --minutes 20 --workers 8  --budget 0.50 \
-    --set budget.cumulative_usd.deepseek=1.0
-python run_research.py --minutes 20 --workers 16 --budget 1.00 \
-    --set budget.cumulative_usd.deepseek=2.0
-python run_research.py --hours 1 --workers 44 --budget 10 \
-    --set budget.cumulative_usd.deepseek=12
+# paid runs; each raises the cumulative DeepSeek cap on purpose
+python run_research.py --minutes 20 --workers 8  --budget 1.00 \
+    --set budget.cumulative_usd.deepseek=10
+python run_research.py --minutes 20 --workers 16 --budget 2.00 \
+    --set budget.cumulative_usd.deepseek=10
+python run_research.py --hours 1 --workers 44 --budget 5.00 \
+    --set budget.cumulative_usd.deepseek=25
 ```
 
 Experiments fork from a warm server process and reuse cached feature blocks within a run, which
@@ -346,10 +351,12 @@ on the mock benchmark cut CPU per experiment from 1.42 s to 0.07 s with bit-iden
 to use a fresh interpreter per experiment instead. `--workers` sets LLM worker slots;
 `--cpu-slots` (default: number of cores) caps simultaneous CPU experiments independently, so 44
 workers on an 8-core machine queue politely for CPU while the others are writing code. Planner
-calls are unlimited unless `--max-planner-calls` is set; planner spend is capped at
-`budget.planner_usd_per_hour` (15) times the run's hours, and new LLM calls are refused once any
-dollar cap is reached. Raise `budget.cumulative_usd.deepseek` deliberately when you want to
-spend beyond the $0.25 development cap.
+calls are unlimited unless `--max-planner-calls` is set. The planner's own cap scales with
+workers and hours (`budget.planner_usd_per_worker_hour`) and is paced over the run, so a long
+run never spends it all at the start; new LLM calls are refused once any dollar cap is reached.
+Raise `budget.cumulative_usd.deepseek` deliberately when you want to spend beyond the $0.25
+development cap; the cumulative cap includes earlier runs' ledger spend, so a run halts partway
+through when it is left at the default.
 
 ## Data
 
@@ -404,7 +411,10 @@ Every experiment is also scored with CellForge's and VCWorld's published metrics
 
 `configs/default.toml` holds every knob (workers, CPU slots, timeouts, RAM, retries,
 exploration mix, providers and models, budgets, prices). Override with `--config my.toml`
-or `--set section.key=value`. DeepSeek prices are set to the
+or `--set section.key=value`. DeepSeek's models reason before answering by default and the
+hidden reasoning counts against `worker.max_output_tokens`; the default
+`worker.thinking = "disabled"` keeps the whole limit for code (set `"enabled"` plus
+`worker.reasoning_effort` to try it). DeepSeek prices are set to the
 published peak-hour rates for `deepseek-flash` (what the API serves for `deepseek-chat`)
 and `deepseek-v4-pro`; update `[pricing.*]` if they change, and run
 `python reprice_ledger.py --apply` to recompute the spend ledger with new prices.
@@ -426,6 +436,13 @@ implementation (after `llm_retries` fixes) is handed to the stronger model once.
 smoke reports, plugin file, predictions, fitted models, metrics, logs), `feature_store/`,
 `planner/` (state given to the planner and its raw plans), `celleval/`, `controller.log`,
 `summary.md`, `summary.json`. Experiment code is pinned at `refs/genemila/<run>/<experiment>`.
+Only the chosen alpha's predictions are kept per experiment and the feature cache is bounded
+(`experiment.feature_cache_max_mb`); a run stops early when free disk drops below
+`run.min_free_disk_mb`.
+
+`python results_table.py build --runs runs/<...>` turns run summaries into a results table in
+CellForge's Table 1 layout (`docs/results/`), and `results_table.py calibrate` checks which metric
+definition reproduces the paper's simple-baseline rows.
 
 ## Architecture
 

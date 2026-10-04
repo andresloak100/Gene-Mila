@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import math
 import os
+import shutil
 import threading
 import time
 import traceback
@@ -72,9 +73,12 @@ class Controller:
         self.deadline = None
         self._planner_threads: list[threading.Thread] = []
         self.max_planner_calls = int(self.cfg["schedule"].get("max_planner_calls", 0))  # 0 = no limit
+        self.min_free_mb = float(self.cfg["run"].get("min_free_disk_mb", 2000))
         b = self.cfg["budget"]
-        if float(b.get("max_planner_usd", 0)) <= 0:  # 0 = scale the planner cap with the run length
-            self.lab.gateway.role_caps["planner"] = max(1.0, float(b.get("planner_usd_per_hour", 15.0)) * seconds / 3600)
+        if float(b.get("max_planner_usd", 0)) <= 0:  # 0 = scale the planner cap with run length and worker count
+            per_wh = float(b.get("planner_usd_per_worker_hour", b.get("planner_usd_per_hour", 15.0) / 4))
+            self.lab.gateway.role_caps["planner"] = max(1.0, per_wh * max(4, workers) * seconds / 3600)
+        self._halt_logged = False
 
     @property
     def planner_concurrency(self) -> int:
@@ -122,6 +126,17 @@ class Controller:
             return
         if self.max_planner_calls and self.planner.rounds >= self.max_planner_calls:
             return
+        why = self._workers_halted()
+        if why:  # new hypotheses would only be burned: let the queue drain and stop
+            if not self._halt_logged:
+                self._halt_logged = True
+                self._log(f"worker LLM calls are refused ({why}); no further planning")
+            return
+        gw = self.lab.gateway
+        elapsed = time.time() - (self.started or time.time())
+        allowed = gw.role_caps["planner"] * min(1.0, (elapsed + 900) / max(1.0, self.seconds))
+        if gw.spent["planner"] + gw.reserved["planner"] >= allowed:
+            return  # pace the planner budget over the run instead of spending it all early and halting
         n = self.planner_batch
         low = int(self.cfg["schedule"]["queue_low_water"]) or 2 * self.n_workers
         queued = self.lab.db.count_by_status().get("queued", 0)
@@ -198,13 +213,14 @@ class Controller:
             self._log("warning: repository has uncommitted changes; worktrees use the committed HEAD "
                       f"{self.lab.base_commit[:10]}")
         self._log(f"run {self.lab.run_id}: {self.n_workers} workers, {self.n_cpu} CPU slots, "
-                  f"{self.seconds / 60:.1f} min, dataset {self.lab.dataset} ({self.lab.split_id})")
+                  f"{self.seconds / 60:.1f} min, dataset {self.lab.dataset} ({self.lab.split_id}); caps: workers "
+                  f"${self.lab.gateway.role_caps['worker']:.2f}, planner ${self.lab.gateway.role_caps['planner']:.2f}")
         self.lab.record_analytic_baselines()
         self.lab.queue_model_baselines()
         for i in range(self.n_workers):
             self._start_worker(i)
         interval = float(self.cfg["run"]["status_interval_s"])
-        next_status = 0.0
+        next_status = next_disk_check = 0.0
         try:
             while time.time() < self.deadline:
                 if self._baselines_done():
@@ -216,6 +232,13 @@ class Controller:
                 if self._exhausted():
                     self._log("nothing left to do (planner exhausted and queue empty); stopping early")
                     break
+                if time.time() >= next_disk_check:
+                    next_disk_check = time.time() + 30
+                    free_mb = shutil.disk_usage(self.lab.run_dir).free / 1e6
+                    if free_mb < self.min_free_mb:
+                        self._log(f"only {free_mb:.0f} MB free on disk (limit {self.min_free_mb:.0f}); stopping early")
+                        self.lab.db.event("disk_low", f"{free_mb:.0f} MB free", level="error")
+                        break
                 time.sleep(0.5)
         except KeyboardInterrupt:
             self._log("interrupted; shutting down")
@@ -225,12 +248,18 @@ class Controller:
         return not self.lab.db.query("SELECT 1 FROM experiments WHERE kind='baseline' AND status IN "
                                      "('queued','claimed','running')")
 
+    def _workers_halted(self) -> str | None:
+        """Why worker LLM calls are refused for the rest of the run (a dollar cap), else None."""
+        pname = self.worker_provider.name if self.worker_provider is not None else ""
+        return self.lab.gateway.is_halted("worker", pname)
+
     def _exhausted(self) -> bool:
-        """True only when no more work can come: the planner hit its call limit or ran dry, nothing is queued
-        and no worker is busy. An LLM planner that had empty or failed rounds backs off and tries again."""
+        """True only when no more work can come: the planner hit its call limit or ran dry, or the worker
+        budget is spent, nothing is queued and no worker is busy. An LLM planner that had empty or failed
+        rounds backs off and tries again."""
         if self._planners_alive():
             return False
-        if self.planner is not None:
+        if self.planner is not None and not self._workers_halted():
             capped = self.max_planner_calls and self.planner.rounds >= self.max_planner_calls
             if not capped and not self.planner.dry():
                 return False
@@ -259,6 +288,9 @@ class Controller:
         self.lab.db.execute("DELETE FROM experiments WHERE status='reserved'")
         self._log(self.status_line())
         self.lab.close()
+        # the run's end is the end of experimentation; final scoring and summaries that follow are not
+        # worker time (analysis divides throughput and cost by this span)
+        self.lab.db.execute("UPDATE runs SET finished_at=? WHERE run_id=?", (time.time(), self.lab.run_id))
         summary = finalize(self.lab, wall_s=time.time() - self.started, workers=self.n_workers)
         self._log(f"summary written to {self.lab.run_dir / 'summary.md'}")
         return summary

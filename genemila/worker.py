@@ -17,6 +17,8 @@ import time
 import traceback
 from pathlib import Path
 
+import numpy as np
+
 from .benchmark import PRIMARY_HIGHER_IS_BETTER
 from .guard import CodeViolation, check_diff, check_plugin_source
 from .isolation import sha256_text
@@ -27,10 +29,23 @@ from .spec import PLUGIN_DIR, ExperimentSpec
 
 
 class ExperimentFailure(Exception):
-    def __init__(self, stage: str, reason: str):
+    def __init__(self, stage: str, reason: str, retryable: bool = False):
         super().__init__(reason)
         self.stage = stage
         self.reason = reason
+        self.retryable = retryable  # an infrastructure error that may pass on a later attempt
+
+
+def prune_predictions(path: Path, keep_index: int) -> None:
+    """Keep only the chosen alpha's predictions (the others were scored and are never read again).
+    The experiment is reproducible from its spec; this cuts artifact disk use by the size of the alpha grid."""
+    z = np.load(path, allow_pickle=False)
+    if z["delta"].shape[0] <= 1:
+        return
+    tmp = path.with_suffix(".tmp.npz")
+    np.savez_compressed(tmp, delta=z["delta"][keep_index:keep_index + 1], perts=z["perts"],
+                        alphas=z["alphas"][keep_index:keep_index + 1])
+    os.replace(tmp, path)
 
 
 class Worker:
@@ -86,6 +101,9 @@ class Worker:
             result, proc = self._run_experiment(spec, wt, art)
             ev = self.lab.evaluate_artifact(art / "predictions.npz")
             (art / "metrics.json").write_text(json.dumps(ev, indent=1))
+            if not self.lab.cfg["experiment"].get("keep_all_alphas", False):
+                prune_predictions(art / "predictions.npz", ev["alpha_index"])
+            self.lab.trim_feature_cache()
             parent = self.db.get_experiment(spec.parent_experiment_id) if spec.parent_experiment_id else None
             pscore = parent.get("primary_score") if parent else None
             score = ev["metrics"]["primary"]
@@ -103,10 +121,19 @@ class Worker:
             self.completed += 1
         except ExperimentFailure as exc:
             status = "killed" if exc.stage == "killed" else "failed"
-            self._set(eid, status=status, failure_stage=exc.stage, failure_reason=exc.reason[:2000])
-            self.db.event("experiment_failed", f"{exc.stage}: {exc.reason[:300]}", eid, "warning")
+            max_attempts = int(self.lab.cfg["experiment"].get("max_attempts", 2))
+            if exc.retryable and (rec.get("attempts") or 1) < max_attempts and not self.lab.stop_event.is_set():
+                status = "queued"  # a transient API error (429/5xx/network): another attempt, not a verdict
+                self._set(eid, status=status, worker_id=None, failure_stage=exc.stage,
+                          failure_reason=f"attempt {rec.get('attempts') or 1} requeued: {exc.reason[:1800]}")
+                self.db.event("experiment_requeued", f"{exc.stage}: {exc.reason[:300]}", eid, "info")
+            else:
+                self._set(eid, status=status, failure_stage=exc.stage, failure_reason=exc.reason[:2000])
+                self.db.event("experiment_failed", f"{exc.stage}: {exc.reason[:300]}", eid, "warning")
         except (BudgetExceeded, TokenLimitExceeded) as exc:
-            self._set(eid, status="failed", failure_stage="budget", failure_reason=str(exc))
+            # a spent budget is a run-level condition, not a result about this hypothesis
+            status = "cancelled" if isinstance(exc, BudgetExceeded) else "failed"
+            self._set(eid, status=status, failure_stage="budget", failure_reason=str(exc))
         except CodeViolation as exc:
             self._set(eid, status="rejected", failure_stage="guard", failure_reason=str(exc)[:2000])
             self.db.event("guard_violation", str(exc)[:300], eid, "warning")
@@ -161,7 +188,7 @@ class Worker:
                                          est_input_tokens=est, experiment_id=spec.experiment_id,
                                          worker_id=self.worker_id, **kw)
         except ProviderError as exc:
-            raise ExperimentFailure("llm_api", str(exc)) from None
+            raise ExperimentFailure("llm_api", str(exc), retryable=exc.retryable) from None
         self._set(spec.experiment_id, provider=provider.name, model=resp.model or provider.model)
         return resp
 

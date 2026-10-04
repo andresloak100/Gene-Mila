@@ -57,11 +57,16 @@ def build_matrix(ctx: FeatureContext, feature_set: list[str], feature_params: di
         params = {**cls.params, **feature_params.get(name, {})}
         t0 = time.process_time()
         path = cache_dir / f"{name}__{feature_cache_key(ctx, cls, params, perts)}.npy" if cache_dir else None
+        arr = None
         if path is not None and path.exists():
-            arr = np.load(path, allow_pickle=False)
-            if cache_log is not None:
-                cache_log.setdefault("hits", []).append(name)
-        else:
+            try:
+                arr = np.load(path, allow_pickle=False)
+            except (OSError, ValueError):  # evicted or half-written by another process: recompute
+                arr = None
+            else:
+                if cache_log is not None:
+                    cache_log.setdefault("hits", []).append(name)
+        if arr is None:
             arr = np.asarray(cls().compute(ctx, perts, params), dtype=np.float64)
             if path is not None and np.all(np.isfinite(arr)):
                 _atomic_save(path, arr)

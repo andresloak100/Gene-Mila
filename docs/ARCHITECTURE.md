@@ -12,6 +12,11 @@
   Pearson on the top-20 DE genes, direction accuracy on top-20 DE genes, raw-expression
   Pearson, per-perturbation scores, error by expression quartile, delta-scale ratio,
   plus feature/train/inference CPU time, peak RAM and model size.
+* **Results table** (`genemila/benchmark/table.py`, `results_table.py`): run summaries, the paper's
+  simple baselines refitted on the same split, and the paper's reported rows, in CellForge's Table 1
+  layout with ranks recomputed from the means; plus a calibration of candidate metric definitions
+  against the paper's Unperturbed / Linear Regression / Random Forest rows, because the paper does
+  not state its expression scale and its repository has no evaluation code.
 * **Comparable metrics** (`genemila/benchmark/comparable.py`), on every experiment's visible
   validation and on every query-only evaluation, so our numbers sit next to published ones:
   CellForge's MSE / PCC / R² on mean expression over all genes and over the top-20 DE genes,

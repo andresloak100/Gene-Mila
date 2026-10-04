@@ -23,6 +23,7 @@ from __future__ import annotations
 import json
 import os
 import selectors
+import signal
 import sys
 import traceback
 
@@ -73,11 +74,17 @@ def serve(public_dir: str | None, cache_dir: str | None) -> None:
     sel = selectors.DefaultSelector()
     sel.register(sys.stdin, selectors.EVENT_READ)
     buf = ""
+    live: set[int] = set()
     while True:
         for _key, _ in sel.select(timeout=0.05):
             chunk = os.read(sys.stdin.fileno(), 65536).decode()
-            if not chunk:
-                return  # controller went away: stop serving (children keep their own sessions)
+            if not chunk:  # controller went away: nothing supervises the children any more
+                for p in live:
+                    try:
+                        os.killpg(p, signal.SIGKILL)
+                    except (ProcessLookupError, PermissionError):
+                        pass
+                return
             buf += chunk
             while "\n" in buf:
                 line, buf = buf.split("\n", 1)
@@ -88,6 +95,7 @@ def serve(public_dir: str | None, cache_dir: str | None) -> None:
                 pid = os.fork()
                 if pid == 0:
                     _child(req)
+                live.add(pid)
                 send({"id": req["id"], "pid": pid})
         while True:
             try:
@@ -96,6 +104,7 @@ def serve(public_dir: str | None, cache_dir: str | None) -> None:
                 break
             if pid == 0:
                 break
+            live.discard(pid)
             send({"exit": pid, "status": os.waitstatus_to_exitcode(status),
                   "cpu_s": ru.ru_utime + ru.ru_stime, "maxrss": ru.ru_maxrss})
 

@@ -117,6 +117,6 @@ Then:
 python run_research.py --minutes 20 --workers 8  --budget 0.50 --set budget.cumulative_usd.deepseek=1.0
 python run_research.py --minutes 20 --workers 16 --budget 1.00 --set budget.cumulative_usd.deepseek=2.0
 python run_research.py --hours 1    --workers 44 --budget 10   --set budget.cumulative_usd.deepseek=12 \
-    --max-planner-calls 150 --set budget.max_planner_usd=15
+    --set budget.cumulative_usd.deepseek=<approved total>   # the planner cap scales with workers and hours
 python analyze_run.py               # after each run
 ```
