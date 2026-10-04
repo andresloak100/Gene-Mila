@@ -87,14 +87,14 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 - The worker-scaling comparison runs there, when it runs, as a detached driver
   (`python handoff_state.py`, or `STATE.md` and `progress.md` under
   `~/Documents/Loak-documents/genemila_scale_logs/` and `pgrep -fl run_research.py`, say whether one
-  is going; HANDOFF.md section 1 says what is planned).
+  is going; HANDOFF.md section 1 says what is planned). Don't kill the driver, don't create its
+  `STOP` file, and don't touch `runs/scale_*`, `runs/newcode*` or that log directory (read them,
+  nothing more) unless Andres asks.
 - Whoever runs anything on the Mac updates `STATE.md` there (what is running, every run directory
   and its status, open decisions, the exact next commands); whoever can push mirrors it into
   HANDOFF.md section 1. The Claude session on the Mac is refused git pushes by its own permission
   system; `gh` there is signed in as `andresloak100` with repo scope, so another agent working on
-  the Mac should try to push. Don't kill it, don't
-  create its `STOP` file, and don't touch `runs/scale_*`, `runs/newcode_*` or that log directory
-  (read them, nothing more) unless Andres asks.
+  the Mac should try to push.
 - Never edit files, commit, pull, check out or switch branches in the main checkout
   `~/Documents/Loak-documents/gene-mila` unless you own the runs there (the "Autonomous research
   system" session, or whoever Andres hands them to). The driver's next run uses whatever code is

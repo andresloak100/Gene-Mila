@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-04 18:30, by Claude ("Agent handoff" session), from the lab-code owner's
-reports at 17:40, 17:50 (its read of the Mac's checkout), 18:10 and 18:15.
+**Last updated:** 2026-10-04 19:25, by Claude ("Agent handoff" session), from the lab-code owner's
+reports (17:40 to 19:19) and Andres's own messages in the Claude research thread (19:12, 19:16).
 
 **Active agents**
 
@@ -17,18 +17,20 @@ reports at 17:40, 17:50 (its read of the Mac's checkout), 18:10 and 18:15.
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the 1/4/8/16-worker comparison on the Mac, its tables, the next lab push | (predates claim issues) |
 | Astra (ChatGPT) | not started | first task below, once Andres hands it over | |
 
-**On the Mac (18:10):** being asked to pull `9044ece` and rerun the six free control runs with the
-deeper search tiers as `runs/newcode2_control_r0` to `r5`; nothing paid. Before that, nothing was
-running. The six free control runs on `2370276`, `runs/newcode_control_r0` to `r5`, are finished: best sealed 0.553 against 0.554 on the old code,
-23 experiments each, each ending after about two minutes, no ensemble kept. No detached driver has
-been started. The paid remainder waits on Andres's answer, in his own words, to the card in the
-Claude research thread: with a $15 cap, the 8- and 16-worker seed-1 repeats `runs/scale_w8_r1` and
-`runs/scale_w16_r1` (code `2492e11`, Opus planner), then the planner check `runs/newcode_ds_w4_r0`
-and `_r1` (DeepSeek V4 Pro planner) and `runs/newcode_opus_w4_r0` and `_r1` (Opus planner), about
-$6 more; with a $10 cap, only the two repeats, about $2; or free only. Once started, the sequence
-runs as a detached driver (`nohup setsid caffeinate`), so it survives the Claude session
-disconnecting; the Mac must stay powered on and awake. The `scale_w4_r1` summary has been
-regenerated with the deadline fix (`2370276`).
+**On the Mac (since 19:17):** the paid sequence is running, detached, after Andres's own words
+"go, $15 cap" (19:16). One run at a time, 20 minutes each, every paid run on the shared ledger with a
+gate that refuses to start a run once the ledger reads $14: `runs/scale_w8_r1` (running first) and
+`runs/scale_w16_r1` (old code `2492e11` from the worktree `~/Documents/Loak-documents/gene-mila-2492e11`,
+Opus planner, seed 1); then on `537344f` the planner check `runs/newcode_opus_w4_r0` and `_r1` (Opus
+with `planner.fallback=deepseek:deepseek-v4-pro`) and `runs/newcode_ds_w4_r0` and `_r1` (DeepSeek V4
+Pro planner); then the final scaling report and results table over every run. About 2.5 hours for
+the paid part, longer if the Claude window has to reset; the ledger should end near $10. The driver
+scripts are `scale_seq.sh`, `control_seq.sh` and `chain.sh` in the log directory (no key inside), to
+be committed under `tools/`. A `STOP` file in the log directory halts the driver between runs. The
+free control rerun on the new code, `runs/newcode2_control_r0`, exhausted its search in under three
+minutes even with the deeper tiers (126 experiments, held-out 0.553, no better model), so the other
+five reruns were skipped and the no-LLM control stays a fixed-recipe reference arm, not an
+equal-time one. The Mac must stay powered on and awake (Andres said he is plugging it in).
 
 **DeepSeek ledger:** $4.66 at 2026-10-04 17:02. Opus planner dollars are the Claude CLI's estimate
 of subscription usage, not a bill.
@@ -39,8 +41,9 @@ which resets roughly five hours after its first use (resets observed at 05:00 an
 2026-10-04). When it is exhausted, Opus-planned runs wait for the reset; everything else moves to
 the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**Code:** integration branch head `537344f` (`9044ece` plus `handoff_state.py`'s clone distance, ledger-bypass
-warning and STATE.md): the planner failover chain `planner.fallback` (AGENTS.md,
+**Code:** integration branch head `1479ae9` (`9044ece` plus `handoff_state.py`'s clone distance, ledger-bypass
+warning and STATE.md, plus `--set run.data_dir=<absolute path>` so a clone can read the main checkout's bundle
+in place); the Mac's main checkout is at `537344f`. On the branch: the planner failover chain `planner.fallback` (AGENTS.md,
 "Money and usage"), deeper deterministic search tiers `schedule.exploit_depth` so the no-LLM control
 fills its 20 minutes, `handoff_state.py` (below), and the results table and scaling report labelling
 mixed-planner runs and code versions as their own arms. Every Claude-planned run on this code carries
@@ -49,16 +52,18 @@ the old code `2492e11`, which has no failover, so they wait for the usage window
 
 **Open pull requests:** #1 (README and its checker, Claude), #2 (this file, AGENTS.md, CLAUDE.md).
 
-**Next:** after Andres's answer, the paid runs above; then the final results table, calibration and
-scaling report over every run, committed to `docs/results/` from the Mac's files (section 8, items
-2 and 3). For a newly arriving agent: Norman (section 8, item 4).
+**Next:** the paid runs above, then the final results table, calibration and scaling report over every
+run, committed to `docs/results/` from the Mac's files together with the driver scripts under `tools/`
+(section 8, items 2 and 3); Andres asked (19:12) for the results table in a form he can share with his
+team, and the team results page gets the final numbers. For a newly arriving agent: Norman (section 8,
+item 4).
 
 **Decisions to respect.** Andres's own: a $10 DeepSeek cap for the comparison runs (2026-10-04
-00:04); no paid run without his word (the unattended-spend card is still open); CellForge's published
-rows marked not comparable; no 44-worker run; priorities as in section 8. Claude's, under his "up to
-you" delegation on the planner card (2026-10-04 12:59): the $15 project total with the $14 ledger
-stop, the extra $5 only for the DeepSeek-planner check; the lab-code owner maintains the protected
-benchmark, split and guard code.
+00:04); no paid run without his word; "go, $15 cap" for the unattended paid sequence (2026-10-04
+19:16); CellForge's published rows marked not comparable; no 44-worker run; priorities as in section
+8. Claude's, under his "up to you" delegation on the planner card (2026-10-04 12:59): the $15 project
+total with the $14 ledger stop, the extra $5 only for the DeepSeek-planner check (both since confirmed
+by his 19:16 words); the lab-code owner maintains the protected benchmark, split and guard code.
 
 **Only Andres can (the blockers for any other agent):**
 - Rotate the DeepSeek key (it was pasted in a chat twice) and put it into the agents' environment:
@@ -66,7 +71,7 @@ benchmark, split and guard code.
   key is in no file on the Mac (the `~/.zshenv` write was refused) and the Claude session there passes
   it to each run as a process variable, so until he does this only that session can start paid runs.
 - Give outside agents write access to the repository.
-- Answer the unattended-spend card, and merge PR #2.
+- Merge PR #2.
 - Keep the Mac powered on and awake while anything runs.
 
 **Live sources** (check them; they beat this section when they disagree):
@@ -131,13 +136,17 @@ git clone https://github.com/andresloak100/gene-mila.git gene-mila-<your-name>
 cd gene-mila-<your-name>
 git checkout -b <your-name>/<topic> origin/claude/autonomous-research-system-3k435s
 python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+# data: either point every run at the main checkout's bundle, read-only (runs write only into their
+# own run directory):   --set run.data_dir=$HOME/Documents/Loak-documents/gene-mila/data/adamson_cf
+# or copy it once:
 mkdir -p data && cp -R ../gene-mila/data/adamson_cf data/     # a copy; never modify the original
 export LEDGER="$HOME/Documents/Loak-documents/gene-mila/runs/spend_ledger.sqlite"
 nice -n 19 python -m pytest -q
 ```
 
-Your runs then land in your clone's `runs/`, away from the comparison. Off the Mac you can do
-all code work; real runs need the bundle copied over (it contains private labels, so treat the
+Your runs then land in your clone's `runs/`, away from the comparison; `run.data_dir` (since `1479ae9`)
+is resolved to an absolute path, so the main checkout's bundle can be used in place. Off the Mac you
+can do all code work; real runs need the bundle copied over (it contains private labels, so treat the
 copy like the original) and network access to `api.deepseek.com`.
 
 ## 5. Run the lab
@@ -147,7 +156,8 @@ Every script defaults to the newest run under `runs/`; pass `--run runs/<run>` t
 ```bash
 # free: scripted planner, mock workers (no LLM, no money); only when the Mac's driver is idle
 python run_research.py --dataset adamson_cf --minutes 5 --workers 2 \
-  --planner-provider scripted --worker-provider mock --run-dir runs/<your-name>_smoke
+  --planner-provider scripted --worker-provider mock --run-dir runs/<your-name>_smoke \
+  --set run.data_dir=$HOME/Documents/Loak-documents/gene-mila/data/adamson_cf   # or omit, with data/ copied
 
 # paid: DeepSeek plans and implements; only with Andres's approval and amount, never next to another paid run
 # (a Claude-planned run, Claude sessions only while usage allows, uses --planner-provider claude_cli
@@ -207,8 +217,10 @@ over six runs, 23 experiments per run, still ending after about two minutes and 
 Visible scores are not comparable across code versions: selection now averages 67 perturbations (the
 visible set plus out-of-fold training perturbations) instead of 17, which is why the tables separate
 code versions into arms. `schedule.exploit_depth` (`9044ece`)
-adds deeper deterministic search tiers so it can use the full 20 minutes; the rerun
-`runs/newcode2_control_r0` to `r5` is pending.
+added deeper deterministic search tiers, but the rerun `runs/newcode2_control_r0` still exhausted its
+search in under three minutes (126 experiments, held-out 0.553, no better model), so the other five
+reruns were skipped: the control is a fixed-recipe reference arm, and filling 20 minutes needs a source
+of new features that only the agents provide.
 
 Worker-scaling comparison, code `2492e11`, Opus planner, DeepSeek workers, 20 minutes each:
 
