@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-04 19:25, by Claude ("Agent handoff" session), from the lab-code owner's
-reports (17:40 to 19:19) and Andres's own messages in the Claude research thread (19:12, 19:16).
+**Last updated:** 2026-10-04 19:45, by Claude ("Agent handoff" session), from the lab-code owner's
+reports (17:40 to 19:41) and Andres's own messages in the Claude research thread (19:12, 19:16).
 
 **Active agents**
 
@@ -19,20 +19,21 @@ reports (17:40 to 19:19) and Andres's own messages in the Claude research thread
 
 **On the Mac (since 19:17):** the paid sequence is running, detached, after Andres's own words
 "go, $15 cap" (19:16). One run at a time, 20 minutes each, every paid run on the shared ledger with a
-gate that refuses to start a run once the ledger reads $14: `runs/scale_w8_r1` (running first) and
-`runs/scale_w16_r1` (old code `2492e11` from the worktree `~/Documents/Loak-documents/gene-mila-2492e11`,
+gate that refuses to start a run once the ledger reads $14: `runs/scale_w8_r1` (finished cleanly at 19:39: 275 experiments
+completed, best visible 0.651, held-out 0.583, $0.82) and `runs/scale_w16_r1` (running since 19:39) (old code `2492e11` from the worktree `~/Documents/Loak-documents/gene-mila-2492e11`,
 Opus planner, seed 1); then on `537344f` the planner check `runs/newcode_opus_w4_r0` and `_r1` (Opus
 with `planner.fallback=deepseek:deepseek-v4-pro`) and `runs/newcode_ds_w4_r0` and `_r1` (DeepSeek V4
 Pro planner); then the final scaling report and results table over every run. About 2.5 hours for
-the paid part, longer if the Claude window has to reset; the ledger should end near $10. The driver
-scripts are `scale_seq.sh`, `control_seq.sh` and `chain.sh` in the log directory (no key inside), to
-be committed under `tools/`. A `STOP` file in the log directory halts the driver between runs. The
+the paid part, longer if the Claude window has to reset; the ledger should end near $10. The driver is
+`tools/scale_seq.sh` (committed verbatim from the Mac as `014daeb`, no key inside; its known weaknesses
+are in its commit message); `control_seq.sh` and `chain.sh` stay on the Mac only, the control reruns
+being over. A `STOP` file in the log directory halts the driver between runs. The
 free control rerun on the new code, `runs/newcode2_control_r0`, exhausted its search in under three
 minutes even with the deeper tiers (126 experiments, held-out 0.553, no better model), so the other
 five reruns were skipped and the no-LLM control stays a fixed-recipe reference arm, not an
 equal-time one. The Mac must stay powered on and awake (Andres said he is plugging it in).
 
-**DeepSeek ledger:** $4.66 at 2026-10-04 17:02. Opus planner dollars are the Claude CLI's estimate
+**DeepSeek ledger:** $5.48 at 2026-10-04 19:41 ($4.66 before the paid sequence). Opus planner dollars are the Claude CLI's estimate
 of subscription usage, not a bill.
 
 **Claude usage:** one Claude Max window is shared by the Mac's Claude Code session, the cloud Claude
@@ -41,7 +42,7 @@ which resets roughly five hours after its first use (resets observed at 05:00 an
 2026-10-04). When it is exhausted, Opus-planned runs wait for the reset; everything else moves to
 the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**Code:** integration branch head `1479ae9` (`9044ece` plus `handoff_state.py`'s clone distance, ledger-bypass
+**Code:** integration branch head `014daeb` (`9044ece` plus `tools/scale_seq.sh`, `handoff_state.py`'s clone distance, ledger-bypass
 warning and STATE.md, plus `--set run.data_dir=<absolute path>` so a clone can read the main checkout's bundle
 in place); the Mac's main checkout is at `537344f`. On the branch: the planner failover chain `planner.fallback` (AGENTS.md,
 "Money and usage"), deeper deterministic search tiers `schedule.exploit_depth` so the no-LLM control
@@ -96,7 +97,7 @@ by his 19:16 words); the lab-code owner maintains the protected benchmark, split
 | Data bundle in use (gitignored) | `data/adamson_cf/` in the main checkout |
 | Runs (gitignored) | `runs/<run>/` in the main checkout |
 | Shared spend ledger, cumulative across all runs | `runs/spend_ledger.sqlite` in the main checkout |
-| Comparison driver: state, progress, stop switch | `~/Documents/Loak-documents/genemila_scale_logs/` (`STATE.md`, `progress.md`; a file named `STOP` halts the driver after its current step; the driver script `scale_seq.sh`, with no key inside, to be committed as `tools/scale_seq.sh`) |
+| Comparison driver: state, progress, stop switch | `~/Documents/Loak-documents/genemila_scale_logs/` (`STATE.md`, `progress.md`; a file named `STOP` halts the driver after its current step; the driver script is `tools/scale_seq.sh` on the lab branch, no key inside) |
 | Raw data | scPerturb archive on Zenodo, record 13350497: `https://zenodo.org/records/13350497/files/<file>?download=1` |
 | CellForge | paper arXiv 2508.02276; code `https://github.com/gersteinlab/CellForge` (it has no evaluation code; we rebuilt the metrics from the paper) |
 | Evaluation package | `https://github.com/ArcInstitute/cell-eval` |
@@ -231,6 +232,7 @@ Worker-scaling comparison, code `2492e11`, Opus planner, DeepSeek workers, 20 mi
 | 4 | 0 | 159 | 0.629 | 0.601 | 486 | 0.46 |
 | 4 | 1 | 112 | 0.609 | 0.604 | see note | 0.22 |
 | 8 | 0 | 280 | 0.637 | 0.585 | 855 | 0.71 |
+| 8 | 1 | 275 | 0.651 | 0.583 | not yet reported | 0.82 |
 | 16 | 0 | 657 | 0.648 | 0.562 | 1,936 | 1.20 |
 
 Note: the 4-worker seed-1 run was killed at its deadline and its summary rebuilt afterwards; its
@@ -300,8 +302,12 @@ is available, keep these settings and check `progress.md` first so nothing runs 
   both with `budget.cumulative_usd.deepseek=15`; `python analyze_run.py --run <dir>` after each;
 - then `scaling_report.py` and `results_table.py` over every `scale_*` and `newcode_*` directory
   except `_contaminated` and `_interrupted`;
-- the driver script is `~/Documents/Loak-documents/genemila_scale_logs/scale_seq.sh` on the Mac (no
-  key inside; the lab-code owner will commit it as `tools/scale_seq.sh`). Start it detached,
+- the driver script is `tools/scale_seq.sh` (`014daeb`, committed verbatim from the Mac's
+  `genemila_scale_logs/scale_seq.sh`; no key inside: `DEEPSEEK_API_KEY` must be in the starting process's
+  environment or it halts; DeepSeek-only ledger gate at $14; a Claude CLI probe before each Opus-planned
+  run, with the DeepSeek-planned runs first when the window is out; a contamination check that renames
+  an old-code run whose planner fell back). Start it detached,
   `nohup setsid caffeinate -i -s bash scale_seq.sh > ~/Documents/Loak-documents/genemila_scale_logs/driver.log 2>&1 &`,
-  with the key as a process variable; it appends to `progress.md`, skips run directories that already
-  have a `summary.json`, and stops when a `STOP` file appears. Update `STATE.md` before and after.
+  with the key as a process variable; it appends to `progress.md`, waits for any other lab run on the
+  machine to finish before each start, and stops when a `STOP` file appears. Update `STATE.md` before
+  and after.
