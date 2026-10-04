@@ -13,11 +13,13 @@ that can be decided mechanically is decided here, so the agent and CI agree on i
 * every relative link, image and anchor resolves, and every image has alt text
 * nothing GitHub's sanitizer strips (style attributes, <style>, <script>, event handlers)
 * no stock marketing phrases, emoji-led headings or bullets, badge walls, or test counts
-* every command in a shell block names a real script, real flags and real config keys
+* every command in a shell block or inline code names a real script, real flags and real
+  config keys, and every inline `section.key` that names a config section exists
 * every score-like number (three or more decimals) traces to a file under docs/, and every
   README section or figure that shows one says the data is synthetic until real-data results
   exist (repo-profile: readme.results_label)
-* SVG figures are self-contained (viewBox, <title>, no scripts or remote resources)
+* SVG figures are self-contained (viewBox, <title>, no scripts or remote resources), and the
+  numbers they draw (kept in each text group's aria-label) trace to docs/ like the README's
 * the About description and topics fit GitHub's limits; the social preview is 2:1
 """
 
@@ -29,11 +31,15 @@ import re
 import shlex
 import struct
 import sys
-import tomllib
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11: the checks need tomllib, see main()
+    tomllib = None
 
 ROOT = Path(__file__).resolve().parent.parent
 PROFILE = ROOT / ".github" / "repo-profile.toml"
@@ -41,7 +47,7 @@ PROFILE = ROOT / ".github" / "repo-profile.toml"
 DEFAULT_BANNED = [
     "powerful", "seamless", "seamlessly", "cutting-edge", "cutting edge", "state-of-the-art",
     "state of the art", "leverage", "leverages", "leveraging", "revolutionize", "revolutionizes",
-    "revolutionary", "unlock", "unlocks", "harness the power", "next-generation", "next generation",
+    "revolutionary", "unlock", "unlocks", "harness the power",
     "game-changing", "game changer", "blazing", "blazingly", "effortless", "effortlessly",
     "world-class", "best-in-class", "supercharge", "empower", "empowers", "robust and scalable",
     "easy to use", "easy-to-use", "simply put", "in today's", "dive into", "delve",
@@ -97,10 +103,12 @@ def strip_inline_code(text: str) -> str:
 
 
 def slugify(heading: str) -> str:
-    text = re.sub(r"<[^>]+>", "", heading)
+    # HTML tags are dropped only outside code spans: GitHub keeps `runs/<id>/` as text
+    parts = heading.split("`")
+    text = "".join(part if i % 2 else re.sub(r"<[^>]+>", "", part) for i, part in enumerate(parts))
     text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", text)
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
-    text = text.replace("`", "").strip().lower()
+    text = text.strip().lower()
     text = re.sub(r"[^\w\- ]", "", text)
     return text.replace(" ", "-")
 
@@ -202,6 +210,8 @@ def check_voice(name: str, prose: str, banned: list[str], max_badges: int, rep: 
 
 
 def config_has(cfg: dict, dotted: str) -> bool:
+    if set(dotted.split(".")) <= {"section", "key"}:  # the placeholder in `--set section.key=value`
+        return True
     node = cfg
     for part in dotted.split("."):
         if not isinstance(node, dict) or part.strip('"') not in node:
@@ -210,37 +220,79 @@ def config_has(cfg: dict, dotted: str) -> bool:
     return True
 
 
-def check_commands(name: str, blocks: list[tuple[str, str, int]], rep: Report) -> None:
+def load_config() -> dict:
     with (ROOT / "configs" / "default.toml").open("rb") as fh:
-        cfg = tomllib.load(fh)
-    shared = (ROOT / "genemila" / "cli_common.py").read_text()
+        return tomllib.load(fh)
+
+
+def defines_flag(src: str, flag: str) -> bool:
+    return f'"{flag}"' in src or f"'{flag}'" in src
+
+
+def script_source(script: Path) -> str:
+    src = script.read_text()
+    if "add_run_arg" in src:
+        src += (ROOT / "genemila" / "cli_common.py").read_text()
+    return src
+
+
+def check_command(where: str, line: str, cfg: dict, rep: Report) -> None:
+    """One `python script.py --flag ... --set key=value` line."""
+    m = re.match(r"^python3?\s+(?!-m\b)(\S+\.py)\b(.*)$", line)
+    if not m:
+        return
+    script = ROOT / m.group(1)
+    if not script.exists():
+        rep.error(where, f"command names {m.group(1)}, which does not exist")
+        return
+    src = script_source(script)
+    try:
+        tokens = shlex.split(m.group(2))
+    except ValueError:
+        tokens = m.group(2).split()
+    for i, tok in enumerate(tokens):
+        flag = tok.split("=")[0]
+        if flag.startswith("--") and not defines_flag(src, flag):
+            rep.error(where, f"{m.group(1)} has no {flag} option")
+        if flag == "--set":
+            value = tok.partition("=")[2] if "=" in tok else (tokens[i + 1] if i + 1 < len(tokens) else "")
+            key = value.split("=")[0]
+            if key and not config_has(cfg, key):
+                rep.error(where, f"--set {key}: no such key in configs/default.toml")
+
+
+def check_commands(name: str, blocks: list[tuple[str, str, int]], rep: Report) -> None:
+    cfg = load_config()
     for lang, body, start in blocks:
         if lang not in {"bash", "sh", "shell", "console", "zsh", ""}:
             continue
         joined = re.sub(r"\\\n\s*", " ", body)
         for offset, raw in enumerate(joined.splitlines()):
             line = raw.split(" #")[0].strip().lstrip("$ ")
-            m = re.match(r"^python3?\s+(?!-m\b)(\S+\.py)\b(.*)$", line)
-            if not m:
-                continue
-            where = f"{name}:{start + 1 + offset}"
-            script = ROOT / m.group(1)
-            if not script.exists():
-                rep.error(where, f"command names {m.group(1)}, which does not exist")
-                continue
-            src = script.read_text() + (shared if "add_run_arg" in script.read_text() else "")
-            try:
-                tokens = shlex.split(m.group(2))
-            except ValueError:
-                tokens = m.group(2).split()
-            for i, tok in enumerate(tokens):
-                flag = tok.split("=")[0]
-                if flag.startswith("--") and f'"{flag}"' not in src:
-                    rep.error(where, f"{m.group(1)} has no {flag} option")
-                if flag == "--set" and i + 1 < len(tokens):
-                    key = tokens[i + 1].split("=")[0]
-                    if not config_has(cfg, key):
-                        rep.error(where, f"--set {key}: no such key in configs/default.toml")
+            check_command(f"{name}:{start + 1 + offset}", line, cfg, rep)
+
+
+def check_inline_code(name: str, prose: str, rep: Report) -> None:
+    """Commands, flags and config keys quoted in running text are held to the same standard."""
+    cfg = load_config()
+    scripts = "".join(p.read_text() for p in ROOT.glob("*.py")) + (ROOT / "genemila" / "cli_common.py").read_text()
+    for m in re.finditer(r"`([^`\n]+)`", prose):
+        span, where = m.group(1).strip(), f"{name}:{line_of(prose, m.start())}"
+        if span.startswith(("python ", "python3 ")):
+            check_command(where, span, cfg, rep)
+            continue
+        flag = re.match(r"^(--[a-z][\w-]*)(?:[ =](\S+))?", span)
+        if flag:
+            if not defines_flag(scripts, flag.group(1)):
+                rep.error(where, f"`{flag.group(1)}` is not an option of any script")
+            if flag.group(1) == "--set" and flag.group(2):
+                key = flag.group(2).split("=")[0]
+                if not config_has(cfg, key):
+                    rep.error(where, f"--set {key}: no such key in configs/default.toml")
+            continue
+        key = re.fullmatch(r"([a-z_]+)\.([a-z_.]+)", span)
+        if key and isinstance(cfg.get(key.group(1)), dict) and not config_has(cfg, span):
+            rep.error(where, f"`{span}`: no such key in configs/default.toml")
 
 
 def check_inline_paths(name: str, prose: str, rep: Report) -> None:
@@ -248,15 +300,18 @@ def check_inline_paths(name: str, prose: str, rep: Report) -> None:
         token = m.group(1).strip()
         if REPO_PATH.match(token) and "<" not in token and "*" not in token:
             if not (ROOT / token.rstrip("/")).exists():
-                rep.error(f"{name}:{line_of(prose, m.start())}", f"`{token}` does not exist in the repo")
+                say = rep.error if "/" in token else rep.warn
+                say(f"{name}:{line_of(prose, m.start())}", f"`{token}` does not exist in the repo")
 
 
-def sections(prose: str) -> list[tuple[str, str, int]]:
+def sections(md: str, prose: str) -> list[tuple[str, str, int]]:
+    """(title, body, first line) per heading of level 1-3. Headings are read from the prose
+    (code blanked) and bodies from the full markdown, so code blocks count toward their section."""
     parts, title, buf, start = [], "(top)", [], 1
-    for i, line in enumerate(prose.splitlines(), 1):
-        if re.match(r"^#{1,3}\s", line):
+    for i, (line, plain) in enumerate(zip(md.splitlines(), prose.splitlines()), 1):
+        if re.match(r"^#{1,3}\s", plain):
             parts.append((title, "\n".join(buf), start))
-            title, buf, start = line.lstrip("# ").strip(), [], i
+            title, buf, start = plain.lstrip("# ").strip(), [], i
         else:
             buf.append(line)
     parts.append((title, "\n".join(buf), start))
@@ -270,7 +325,7 @@ def check_numbers(name: str, md: str, prose: str, label: str, rep: Report) -> No
             rep.error(f"{name}:{line_of(md, m.start())}", f"{m.group(0)} appears in no file under docs/; cite where it comes from")
     if not label:
         return
-    full_sections = sections(md)
+    full_sections = sections(md, prose)
     for title, body, start in full_sections:
         if SCORE.search(body) and label.lower() not in (title + body).lower():
             rep.error(f"{name}:{start}", f'section "{title}" shows scores but never says "{label}"')
@@ -306,7 +361,11 @@ def check_svg(path: Path, label: str, rep: Report) -> None:
             rep.error(rel, f"<{bad}> does not render when GitHub shows an SVG as an image")
     if re.search(r"""(?:href|src)\s*=\s*["']https?:""", raw) or re.search(r"url\(\s*['\"]?https?:", raw) or "@import" in raw:
         rep.error(rel, "loads a remote resource; GitHub renders SVGs as images, so it will not load")
-    text = " ".join(t.strip() for t in root.itertext() if t.strip())
+    drawn = [el.get("aria-label", "") for el in root.iter() if el.get("aria-label")]
+    if not drawn and next(root.iter(f"{SVG_NS}use"), None) is not None:
+        rep.error(rel, "outlined text carries no aria-label, so what the figure draws cannot be checked; "
+                       "rebuild it with docs/assets/build_figures.py")
+    text = " ".join([t.strip() for t in root.itertext() if t.strip()] + drawn)
     if label and SCORE.search(text) and label.lower() not in text.lower():
         rep.error(rel, f'figure shows scores but never says "{label}"')
     known = docs_numbers()
@@ -366,9 +425,10 @@ def run_checks() -> Report:
     images = check_links(name, md, prose, readme.parent, rep)
     check_sanitizer(name, prose, rep)
     check_voice(name, prose, rcfg.get("banned_phrases", DEFAULT_BANNED), rcfg.get("max_badges", 3), rep)
-    for m in re.finditer(r"\b\d+\s+(?:unit\s+|passing\s+)?tests?\b", md, re.I):
+    for m in re.finditer(r"\b\d+\s+(?:unit\s+|passing\s+)?tests\b|\b\d+\s+passed\b", md, re.I):
         rep.error(f"{name}:{line_of(md, m.start())}", f'hard-coded "{m.group(0)}" goes stale; drop the count')
     check_commands(name, blocks, rep)
+    check_inline_code(name, prose, rep)
     check_inline_paths(name, prose, rep)
     check_numbers(name, md, prose, label, rep)
     check_headings(name, prose, rcfg.get("required_headings", []), rep)
@@ -398,7 +458,21 @@ def gh_command(profile: dict) -> str:
     return " \\\n  ".join(parts)
 
 
-RELEVANT = re.compile(r"(?:^|/)(?:README\.md|repo-profile\.toml)$|(?:^|/)docs/assets/")
+RELEVANT = re.compile(r"^(?:README\.md|\.github/repo-profile\.toml|docs/.+|configs/.+\.toml|[\w-]+\.py"
+                      r"|genemila/cli_common\.py|tools/readme_check\.py)$")
+RELEVANT_CMD = re.compile(r"\bgit\s+(?:commit|merge|pull|cherry-pick|rebase|checkout|switch)\b"
+                          r"|README\.md|repo-profile|docs/|configs/|build_figures")
+
+
+def hook_relevant(tool_input: dict) -> bool:
+    if "command" in tool_input:
+        return bool(RELEVANT_CMD.search(tool_input.get("command") or ""))
+    target = Path(tool_input.get("file_path") or "")
+    try:
+        rel = target.resolve().relative_to(ROOT).as_posix() if target.is_absolute() else target.as_posix()
+    except ValueError:
+        return False
+    return bool(RELEVANT.match(rel))
 
 
 def main(argv=None) -> int:
@@ -407,6 +481,11 @@ def main(argv=None) -> int:
     ap.add_argument("--gh-command", action="store_true", help="print the gh command that applies the About box")
     args = ap.parse_args(argv)
 
+    if tomllib is None:
+        if args.hook:  # an old interpreter must not turn every edit into a hook error
+            return 0
+        print("tools/readme_check.py needs Python 3.11 or newer (tomllib)", file=sys.stderr)
+        return 1
     if args.gh_command:
         print(gh_command(load_profile()))
         return 0
@@ -415,8 +494,7 @@ def main(argv=None) -> int:
             event = json.load(sys.stdin)
         except (json.JSONDecodeError, ValueError):
             return 0
-        target = (event.get("tool_input") or {}).get("file_path", "")
-        if not RELEVANT.search(target.replace("\\", "/")):
+        if not hook_relevant(event.get("tool_input") or {}):
             return 0
         rep = run_checks()
         if rep.errors:

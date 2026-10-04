@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Draw the README figures in docs/assets/ from the numbers in docs/.
 
-    pip install fonttools
+    pip install fonttools==4.66.1
     python docs/assets/build_figures.py
 
 Every figure is a self-contained SVG: lettering is converted to outlines from the OFL fonts in
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import html
 import re
+from collections import Counter
 from pathlib import Path
 
 from fontTools.pens.svgPathPen import SVGPathPen
@@ -29,15 +30,15 @@ DOCS = HERE.parent
 
 LIGHT = {
     "paper": "#F7F5EF", "panel": "#EFECE3", "ink": "#1B2027", "soft": "#555E69",
-    "faint": "#8A929B", "rule": "#D9D4C7", "grid": "#E6E1D5",
-    "gain": "#0B7A6E", "clock": "#D4452A", "worker": "#B07415", "pi": "#3C4FA8",
-    "base": "#9AA1A9",
+    "faint": "#646C75", "rule": "#D9D4C7", "grid": "#E6E1D5",
+    "gain": "#08766A", "clock": "#C03C20", "worker": "#B07415", "pi": "#3C4FA8",
+    "base": "#5F666E",
 }
 DARK = {
     "paper": "#12171D", "panel": "#1A2028", "ink": "#E8EBEE", "soft": "#A9B1BA",
-    "faint": "#77808A", "rule": "#2D343D", "grid": "#202730",
+    "faint": "#7F8892", "rule": "#2D343D", "grid": "#202730",
     "gain": "#3CC4B1", "clock": "#FF7A5C", "worker": "#E5B04E", "pi": "#93A3FF",
-    "base": "#6E7781",
+    "base": "#858D97",
 }
 
 FONT_FILES = {
@@ -107,7 +108,10 @@ class Face:
         return pairs
 
     def glyph_name(self, ch: str) -> str:
-        return self.cmap.get(ord(ch)) or self.cmap.get(ord("?"))
+        name = self.cmap.get(ord(ch))
+        if name is None:
+            raise ValueError(f"{self.key} has no glyph for {ch!r} (U+{ord(ch):04X})")
+        return name
 
     def advance(self, name: str) -> int:
         return self.hmtx[name][0]
@@ -168,7 +172,8 @@ class Canvas:
             pen_x += f.advance(name)
             if i + 1 < len(names):
                 pen_x += f.kern.get((name, names[i + 1]), 0) + tracking * f.upm
-        self.add(f'<g class="f-{colour}" transform="translate({x:.1f} {y:.1f}) scale({scale:.5f})">'
+        self.add(f'<g class="f-{colour}" aria-label="{html.escape(text)}" '
+                 f'transform="translate({x:.1f} {y:.1f}) scale({scale:.5f})">'
                  + "".join(uses) + "</g>")
         return width
 
@@ -188,12 +193,21 @@ class Canvas:
 
 # ---------------------------------------------------------------- data from docs/
 
+def _summary_scores(summary: str) -> tuple[str, float, float]:
+    """(best experiment, visible score, query-only score) from a run's summary.md."""
+    best_id, visible = re.search(r"^(EXP_\d+): pearson_delta = ([\d.]+)", summary.split("## BEST PERFORMANCE")[1],
+                                 re.M).groups()
+    sealed = re.search(rf"^\| {best_id} \| \w+ \| [\d.]+ \| ([\d.]+) \|", summary, re.M).group(1)
+    return best_id, float(visible), float(sealed)
+
+
 def example_run() -> dict:
     """Numbers for the example run, parsed from docs/example_run/*.md and the planner state."""
     run_dir = DOCS / "example_run"
     summary = (run_dir / "summary.md").read_text()
     analysis = (run_dir / "analysis.md").read_text()
     state = (run_dir / "research_state_round3.txt").read_text()
+    readme = (run_dir / "README.md").read_text()
 
     experiments = []
     for row in re.finditer(r"^\| (EXP_\d+) \| (W\d+) \| (\w+) \| ([^|]*) \| ([\d.]*) \| ([^|]*) \| (\d+) \|",
@@ -201,9 +215,15 @@ def example_run() -> dict:
         exp, worker, status, what, score, delta, calls = (g.strip() for g in row.groups())
         experiments.append({
             "id": exp, "worker": worker, "status": status, "what": what,
-            "score": float(score) if score else None, "llm_calls": int(calls),
+            "score": float(score) if score else None, "delta": delta, "llm_calls": int(calls),
             "kind": "feature" if int(calls) > 0 else "config",
         })
+    # a config change shared by several experiments is a Python-expanded sweep; a lone one combines
+    # earlier features (proposed by the planner, built without a worker call)
+    shared = Counter(e["what"] for e in experiments if e["kind"] == "config")
+    for e in experiments:
+        if e["kind"] == "config":
+            e["kind"] = "sweep" if shared[e["what"]] > 1 else "combine"
 
     baselines = []
     for m in re.finditer(r'"id": "(EXP_\d+)", "what": "([^"]+)", "score": ([\d.]+)', state):
@@ -212,6 +232,9 @@ def example_run() -> dict:
 
     lineage = [{"id": m.group(1), "label": m.group(2), "score": float(m.group(3))}
                for m in re.finditer(r"(EXP_\d+) \[([^\]]+)\] score ([\d.]+)", summary)]
+    deltas = {e["id"]: e["delta"] for e in experiments}
+    for step in lineage:
+        step["delta"] = deltas.get(step["id"])
     query_only = {m.group(1): (float(m.group(2)), float(m.group(3)))
                   for m in re.finditer(r"^\| (EXP_\d+) \| \w+ \| ([\d.]+) \| ([\d.]+) \|", summary, re.M)}
     coefficients = [(m.group(1), float(m.group(2)))
@@ -220,9 +243,23 @@ def example_run() -> dict:
               for m in re.finditer(r"^- (EXP_\d+) (\S+) \[\w+\]: (.+)$", summary, re.M)]
     minutes = float(re.search(r"Duration: ([\d.]+) min", summary).group(1))
     completed = int(re.search(r"Experiments completed: (\d+)", summary).group(1))
+    outcome = dict(zip(("failed", "rejected", "killed", "not started"),
+                       map(int, re.search(r"failed / rejected / killed / not started: (\d+) / (\d+) / (\d+) / (\d+)",
+                                          summary).groups())))
+    split = dict(zip(("train", "visible", "sealed"), map(int, re.search(
+        r"(\d+)\s+training,\s+(\d+)\s+visible-validation\s+and\s+(\d+)\s+query-only\s+perturbations", readme).groups())))
+    control = dict(zip(("id", "visible", "sealed"),
+                       _summary_scores((run_dir / "control_scripted_summary.md").read_text())))
     return {"experiments": experiments, "baselines": baselines, "lineage": lineage,
             "query_only": query_only, "coefficients": coefficients, "failed": failed,
-            "minutes": minutes, "completed": completed}
+            "minutes": minutes, "completed": completed, "outcome": outcome, "split": split,
+            "control": control}
+
+
+def outcome_text(outcome: dict) -> str:
+    """'1 failed', or '1 failed, 2 rejected' when more than one kind occurred."""
+    parts = [f"{n} {kind}" for kind, n in outcome.items() if n]
+    return ", ".join(parts) or "none failed"
 
 
 # ---------------------------------------------------------------- figures
@@ -249,15 +286,21 @@ def example_run_figure() -> Path:
     best = run["lineage"][-1]["score"]
     visible, sealed = run["query_only"][best_id]
     base_sealed = run["query_only"]["EXP_0004"][1]
-    rejected = [e for e in exps if e["score"] is None]
+    ctrl = run["control"]
+    n_vis, n_sealed = run["split"]["visible"], run["split"]["sealed"]
+    failed = [e for e in exps if e["score"] is None]
+    lineage_text = ", ".join(f"{re.sub(r'_e[0-9]+$', '', s_['label'])} {s_['delta']} to {fmt(s_['score'])}"
+                             for s_ in steps)
 
     c = Canvas(960, 540, "Every experiment of the synthetic example run",
                f"{len(exps)} experiments after the baselines, {run['minutes']} minutes, synthetic knockout screen. "
-               f"Worker-written features and Python sweeps are plotted by pearson_delta on visible validation "
-               f"against the linear baseline at {fmt(base)}. The winning lineage adds one feature per step and "
-               f"reaches {fmt(best)}; on the sealed query-only set it scores {fmt(sealed)} against {fmt(base_sealed)} "
-               f"for the baseline. {len(rejected)} feature was rejected by the label-leakage test.",
-               "docs/example_run/analysis.md and docs/example_run/summary.md")
+               f"Worker-written features, Python-expanded alpha sweeps and one planner-proposed combination are "
+               f"plotted by pearson_delta on {n_vis} visible-validation perturbations against the linear baseline at "
+               f"{fmt(base)}. The winning lineage adds one feature per step: {lineage_text}. On the "
+               f"{n_sealed} query-only perturbations, scored after the run, it scores {fmt(sealed)} against "
+               f"{fmt(base_sealed)} for the baseline; a scripted control with no LLM scores {fmt(ctrl['sealed'])} "
+               f"({fmt(ctrl['visible'])} visible). {outcome_text(run['outcome'])}: its feature leaked the label.",
+               "docs/example_run/analysis.md, summary.md, README.md and control_scripted_summary.md")
     plate(c)
     x0, x1, y0, y1 = 76, 690, 168, 438          # plot box
     lo, hi = 0.58, 0.80
@@ -270,8 +313,8 @@ def example_run_figure() -> Path:
 
     kicker(c, f"Example run  /  synthetic knockout screen  /  4 workers  /  {run['minutes']} min", 40, 54)
     c.text("Agents propose features. The numbers decide which stay.", 40, 94, 25, "display")
-    c.text(f"{len(exps)} experiments after the baselines, in queue order, scored by pearson_delta on visible validation.",
-           40, 124, 14, "sans", "soft")
+    c.text(f"{len(exps)} experiments after the baselines, in queue order, scored by pearson_delta on the "
+           f"{n_vis} visible-validation perturbations.", 40, 124, 14, "sans", "soft")
 
     for v in (0.60, 0.65, 0.70, 0.75, 0.80):
         y = sy(v)
@@ -296,16 +339,20 @@ def example_run_figure() -> Path:
             y = y1 + 30
             c.add(f'<path class="s-clock" stroke-width="2.4" stroke-linecap="round" '
                   f'd="M{x - 5:.1f} {y - 5:.1f}L{x + 5:.1f} {y + 5:.1f}M{x + 5:.1f} {y - 5:.1f}L{x - 5:.1f} {y + 5:.1f}"/>')
-            c.text(f"{e['id']} rejected: its feature leaked the label", x + 14, y + 4.5, 11.5, "mono", "clock")
+            c.text(f"{e['id']} {e['status']}: its feature leaked the label", x + 14, y + 4.5, 11.5, "mono", "clock")
         elif e["kind"] == "feature":
             c.add(f'<circle class="f-worker s-paper" cx="{x:.1f}" cy="{sy(e["score"]):.1f}" r="5.5" stroke-width="1.5"/>')
+        elif e["kind"] == "combine":
+            y = sy(e["score"])
+            c.add(f'<path class="f-paper s-soft" stroke-width="1.4" '
+                  f'd="M{x:.1f} {y - 5.2:.1f}L{x + 5.2:.1f} {y:.1f}L{x:.1f} {y + 5.2:.1f}L{x - 5.2:.1f} {y:.1f}Z"/>')
         else:
             c.add(f'<circle class="f-paper s-soft" cx="{x:.1f}" cy="{sy(e["score"]):.1f}" r="3.6" stroke-width="1.3"/>')
 
     # winning lineage: numbered markers on the plot, key in the empty middle of the plot
     index = {e["id"]: i for i, e in enumerate(exps)}
-    kx, ky = 318, sy(0.745) + 26
-    c.add(f'<rect class="f-panel" x="{kx - 16}" y="{ky - 26}" width="352" height="{30 + 24 * len(steps)}" rx="8"/>')
+    kx, ky, kw = 318, sy(0.745) + 26, 384
+    c.add(f'<rect class="f-panel" x="{kx - 16}" y="{ky - 26}" width="{kw}" height="{30 + 24 * len(steps)}" rx="8"/>')
     kicker(c, "Winning lineage, one feature per step", kx, ky - 6, "gain")
     for n, step in enumerate(steps, 1):
         i = index[step["id"]]
@@ -318,29 +365,42 @@ def example_run_figure() -> Path:
         c.add(f'<circle class="f-gain" cx="{kx + 7}" cy="{row - 4.5:.1f}" r="7.5"/>')
         c.text(str(n), kx + 7, row - 0.4, 11, "mono-medium", "paper", anchor="middle")
         c.text("+ " + re.sub(r"_e\d+$", "", step["label"]), kx + 24, row, 12.5, "mono", "ink")
-        c.text(fmt(step["score"]), kx + 318, row, 12.5, "mono-medium", "gain", anchor="end")
+        c.text(step["delta"], kx + kw - 86, row, 11.5, "mono", "soft", anchor="end")
+        c.text(fmt(step["score"]), kx + kw - 32, row, 12.5, "mono-medium", "gain", anchor="end")
 
-    # sealed set
+    # sealed set: the winner, a no-LLM control on the same split, and the baseline
     px, pw = 724, 200
-    c.add(f'<rect class="f-panel" x="{px}" y="{y0 - 10}" width="{pw}" height="{y1 - y0 + 20}" rx="10"/>')
+    c.add(f'<rect class="f-panel" x="{px}" y="{y0 - 10}" width="{pw}" height="{y1 - y0 + 26}" rx="10"/>')
     kicker(c, "Sealed set", px + 20, y0 + 18, "ink")
-    c.text("query-only validation,", px + 20, y0 + 40, 12.5, "sans", "soft")
-    c.text("opened once at the end", px + 20, y0 + 57, 12.5, "sans", "soft")
-    c.text("best model", px + 20, y0 + 100, 12.5, "sans", "soft")
-    c.text(fmt(sealed), px + 20, y0 + 134, 32, "display", "gain")
-    c.text(f"visible {fmt(visible)}", px + 20, y0 + 156, 11.5, "mono", "faint")
-    c.text("linear baseline", px + 20, y0 + 198, 12.5, "sans", "soft")
-    c.text(fmt(base_sealed), px + 20, y0 + 232, 32, "display", "base")
-    c.text(f"visible {fmt(base)}", px + 20, y0 + 254, 11.5, "mono", "faint")
+    for j, line in enumerate(wrap(c, f"{n_sealed} query-only perturbations, scored after the run", pw - 40, 12)):
+        c.text(line, px + 20, y0 + 40 + 16 * j, 12, "sans", "soft")
+    blocks = [("best model", sealed, visible, "gain"),
+              ("scripted control, no LLM", ctrl["sealed"], ctrl["visible"], "ink"),
+              ("linear baseline", base_sealed, base, "base")]
+    for j, (label, score, vis, colour) in enumerate(blocks):
+        by = y0 + 88 + 70 * j
+        c.text(label, px + 20, by, 12.5, "sans", "soft")
+        c.text(fmt(score), px + 20, by + 27, 24, "display", colour)
+        c.text(f"visible {fmt(vis)}", px + 20, by + 44, 11.5, "mono", "faint")
 
     ly = 508
-    c.add(f'<circle class="f-worker" cx="46" cy="{ly - 4}" r="5.5"/>')
-    lx = 58 + c.text("feature written by a worker LLM", 58, ly, 12, "sans", "soft")
-    c.add(f'<circle class="f-paper s-soft" cx="{lx + 24}" cy="{ly - 4}" r="3.6" stroke-width="1.3"/>')
-    lx = lx + 34 + c.text("sweep generated in Python, no LLM call", lx + 34, ly, 12, "sans", "soft")
-    c.add(f'<path class="s-gain" stroke-width="2.25" d="M{lx + 22} {ly - 4}h18"/>')
-    c.text("best so far", lx + 46, ly, 12, "sans", "soft")
-    c.text("synthetic data  /  docs/example_run/", c.w - 36, ly, 11.5, "mono", "faint", anchor="end")
+    items = [("worker", "feature by a worker LLM"), ("sweep", "alpha sweep (Python)"),
+             ("combine", "combination (planner)"), ("best", "best so far")]
+    lx = 46
+    for kind, label in items:
+        if kind == "worker":
+            c.add(f'<circle class="f-worker" cx="{lx}" cy="{ly - 4}" r="5.5"/>')
+        elif kind == "sweep":
+            c.add(f'<circle class="f-paper s-soft" cx="{lx}" cy="{ly - 4}" r="3.6" stroke-width="1.3"/>')
+        elif kind == "combine":
+            c.add(f'<path class="f-paper s-soft" stroke-width="1.4" d="M{lx} {ly - 9.2}L{lx + 5.2} {ly - 4}'
+                  f'L{lx} {ly + 1.2}L{lx - 5.2} {ly - 4}Z"/>')
+        else:
+            c.add(f'<path class="s-gain" stroke-width="2.25" d="M{lx - 8} {ly - 4}h18"/>')
+            lx += 6
+        lx += 12 + c.text(label, lx + 12, ly, 12, "sans", "soft") + 24
+    assert lx < c.w - 36 - c.measure("synthetic data  /  docs/example_run/", 11.5, "mono") - 24, "legend overflows"
+    c.text("synthetic data  /  docs/example_run/", c.w - 36, ly, 11.5, "mono", "soft", anchor="end")
     return c.save("example-run.svg")
 
 
@@ -372,7 +432,7 @@ def station(c: Canvas, x: float, y: float, w: float, h: float, role: str, name: 
             colour: str) -> None:
     c.add(f'<rect class="f-paper s-rule" x="{x}" y="{y}" width="{w}" height="{h}" rx="10" stroke-width="1.2"/>')
     c.add(f'<rect class="f-{colour}" x="{x}" y="{y + 14}" width="3.5" height="{h - 28}" rx="1.75"/>')
-    kicker(c, role, x + 16, y + 26, colour)
+    kicker(c, role, x + 16, y + 26, "ink")
     c.text(name, x + 16, y + 49, 15, "sans-medium", "ink")
     for i, line in enumerate(wrap(c, detail, w - 30, 12.5)):
         c.text(line, x + 16, y + 72 + i * 17, 12.5, "sans", "soft")
@@ -384,8 +444,10 @@ def loop_figure() -> Path:
                "replicates. A worker LLM in its own git worktree writes one feature plugin. Guards check the code "
                "(AST rules, smoke and label-leakage test, diff limited to one file). A ridge, lasso, elastic net or "
                "OLS model is fitted on CPU in a limited subprocess. The controller scores it on visible validation "
-               "and records it in the research memory the planner reads next. All of this runs inside the deadline; "
-               "after it, the top candidates are scored once on the sealed query-only set.",
+               "and records it in the research memory the planner reads next. Code that fails a guard goes back to "
+               "the worker for a fix; if it still fails it is recorded as failed, or as rejected for forbidden code "
+               "or an edit outside its file. All of this runs inside the deadline; after it, the top candidates and "
+               "the best baseline are scored once each on the sealed query-only set.",
                "genemila/ (controller.py, planner.py, worker.py, guard.py, pipeline.py, report.py)")
     plate(c)
     kicker(c, "One experiment, end to end", 40, 54)
@@ -428,26 +490,33 @@ def loop_figure() -> Path:
     arrow(c, f"M{xs[1] - 3} {bm}H{px + 10}Q{px} {bm} {px} {bm - 10}V{top + h + 4}", "pi")
     head(c, px, top + h + 3, "up", "pi")
     c.text("next round", px + 8, top + h + 30, 11.5, "mono", "pi")
-    # what happens when a guard fails
+    # what happens when a guard fails: the error goes back to the worker for a fix
+    gx, wx, ay = xs[3] + w / 2, xs[2] + w / 2, top - 11
+    arrow(c, f"M{gx} {top - 3}V{ay + 6}Q{gx} {ay} {gx - 6} {ay}H{wx + 6}Q{wx} {ay} {wx} {ay + 6}V{top - 5}",
+          "clock", dashed=True, width=1.4)
+    head(c, wx, top - 3, "down", "clock")
+    c.text("fails: back for a fix", (gx + wx) / 2, ay - 4, 11, "mono", "clock", anchor="middle")
     gy = top + h + 32
     c.text("passes", cx + 9, gy - 2, 11, "mono", "soft")
-    c.text("fails: error sent back for a fix, then recorded as rejected", cx - 12, gy + 14, 11, "mono",
-           "clock", anchor="end")
+    c.text("still failing after the fixes:", cx - 12, gy - 2, 11, "mono", "clock", anchor="end")
+    c.text("recorded as failed or rejected", cx - 12, gy + 14, 11, "mono", "clock", anchor="end")
 
     # after the deadline
     sx0 = 742
     c.add(f'<rect class="f-panel" x="{sx0}" y="{fy0}" width="{c.w - 40 - sx0}" height="{fy1 - fy0}" rx="14"/>')
     kicker(c, "After the deadline", sx0 + 20, fy0 + 30, "ink")
     lines = [("Stop", "no new work; running fits get 30 s, then are killed"),
-             ("Sealed set", "top candidates scored once on query-only validation"),
-             ("cell-eval", "finalists scored with Arc's cell-eval on real data"),
-             ("Watchdog", "kills the whole process group if anything overruns")]
+             ("Sealed set", "top 3 candidates and the best baseline, one query each"),
+             ("cell-eval", "finalists scored with Arc's cell-eval when held-out cells exist"),
+             ("Watchdog", "kills the process group if anything overruns")]
     y = fy0 + 64
     for name, detail in lines:
         c.text(name, sx0 + 20, y, 14, "sans-medium", "ink")
         for j, line in enumerate(wrap(c, detail, c.w - 40 - sx0 - 40, 12)):
-            c.text(line, sx0 + 20, y + 19 + j * 16, 12, "sans", "soft")
-        y += 19 + 16 * len(wrap(c, detail, c.w - 40 - sx0 - 40, 12)) + 20
+            last = y + 19 + j * 16
+            c.text(line, sx0 + 20, last, 12, "sans", "soft")
+        y = last + 34
+    assert last < fy1 - 12, f"after-the-deadline panel overflows ({last} vs {fy1})"
     return c.save("loop.svg")
 
 
@@ -460,13 +529,16 @@ def hero_figure() -> Path:
     base = next(b for b in run["baselines"] if b["id"] == "EXP_0004")["score"]
     best_id, best = run["lineage"][-1]["id"], run["lineage"][-1]["score"]
     sealed = run["query_only"][best_id][1]
-    rejected = sum(1 for e in run["experiments"] if e["score"] is None)
+    base_sealed = run["query_only"]["EXP_0004"][1]
+    n_vis, n_sealed = run["split"]["visible"], run["split"]["sealed"]
+    outcome = outcome_text(run["outcome"])
 
     c = Canvas(960, 300, "Gene-Mila",
                "Gene-Mila: an autonomous research lab for single-cell perturbation prediction. Agents write the "
                "features, only a linear model may use them, and the clock stops everyone. Example run on synthetic "
-               f"data: {budget}-minute budget, {run['minutes']} minutes used, {len(run['experiments'])} experiments, "
-               f"best model {fmt(best)} pearson_delta against a {fmt(base)} baseline, {fmt(sealed)} on the sealed set.",
+               f"data: {run['minutes']} of {budget} minutes used, {len(run['experiments'])} experiments, {outcome}. "
+               f"pearson_delta, visible validation then sealed query-only set ({n_vis} perturbations each): "
+               f"linear baseline {fmt(base)} and {fmt(base_sealed)}, best model {fmt(best)} and {fmt(sealed)}.",
                "docs/example_run/README.md and docs/example_run/summary.md")
     plate(c)
     kicker(c, "Autonomous lab  /  single-cell perturbation prediction", 44, 62)
@@ -476,26 +548,35 @@ def hero_figure() -> Path:
     c.text("The clock stops everyone.", 44, 252, 21, "italic", "clock")
 
     # run card
-    x, y, w = 586, 40, 334
-    c.add(f'<rect class="f-panel" x="{x}" y="{y}" width="{w}" height="220" rx="12"/>')
-    kicker(c, "Example run", x + 22, y + 32, "ink")
-    c.text("synthetic", x + w - 22, y + 32, 11.5, "mono-medium", "clock", anchor="end")
-    rows = [
-        ("models", f"Claude {planner} / {worker}", "ink"),
-        ("budget", f"{budget} min, used {run['minutes']}", "ink"),
-        ("experiments", f"{len(run['experiments'])}, {rejected} rejected", "ink"),
-        ("linear baseline", fmt(base), "base"),
-        ("best model", fmt(best), "gain"),
-        ("sealed set", fmt(sealed), "gain"),
-    ]
-    for i, (label, value, colour) in enumerate(rows):
-        ry = y + 66 + i * 26
+    x, y, w, h = 586, 34, 334, 234
+    c.add(f'<rect class="f-panel" x="{x}" y="{y}" width="{w}" height="{h}" rx="12"/>')
+    kicker(c, "Example run", x + 22, y + 30, "ink")
+    c.text("synthetic data", x + w - 22, y + 30, 11.5, "mono-medium", "clock", anchor="end")
+    right, col = x + w - 22, 74
+
+    def leader(label: str, ry: float, value_left: float) -> None:
         lw = c.text(label, x + 22, ry, 12.5, "mono", "soft")
-        vw = c.measure(value, 12.5, "mono-medium")
-        dots_from, dots_to = x + 22 + lw + 8, x + w - 22 - vw - 8
-        c.add(f'<line class="s-rule" x1="{dots_from:.1f}" x2="{dots_to:.1f}" y1="{ry - 3.5}" y2="{ry - 3.5}" '
-              f'stroke-width="1.4" stroke-dasharray="1 4" stroke-linecap="round"/>')
-        c.text(value, x + w - 22, ry, 12.5, "mono-medium", colour, anchor="end")
+        c.add(f'<line class="s-rule" x1="{x + 22 + lw + 8:.1f}" x2="{value_left - 8:.1f}" y1="{ry - 3.5}" '
+              f'y2="{ry - 3.5}" stroke-width="1.4" stroke-dasharray="1 4" stroke-linecap="round"/>')
+
+    for i, (label, value) in enumerate([("models", f"Claude {planner} / {worker}"),
+                                        ("budget", f"{run['minutes']} of {budget} min used"),
+                                        ("experiments", f"{len(run['experiments'])}, {outcome}")]):
+        ry = y + 60 + i * 25
+        leader(label, ry, right - c.measure(value, 12.5, "mono-medium"))
+        c.text(value, right, ry, 12.5, "mono-medium", "ink", anchor="end")
+    c.add(f'<line class="s-rule" x1="{x + 22}" x2="{right}" y1="{y + 125}" y2="{y + 125}" stroke-width="1"/>')
+    c.text(f"pearson_delta, n = {n_vis}" if n_vis == n_sealed else "pearson_delta", x + 22, y + 146, 11.5,
+           "mono", "soft")
+    c.text("visible", right - col, y + 146, 11.5, "mono", "faint", anchor="end")
+    c.text("sealed", right, y + 146, 11.5, "mono", "faint", anchor="end")
+    for i, (label, vis, seal, colour) in enumerate([("linear baseline", base, base_sealed, "base"),
+                                                    ("best model", best, sealed, "gain")]):
+        ry = y + 172 + i * 25
+        leader(label, ry, right - col - c.measure(fmt(vis), 12.5, "mono-medium"))
+        c.text(fmt(vis), right - col, ry, 12.5, "mono-medium", colour, anchor="end")
+        c.text(fmt(seal), right, ry, 12.5, "mono-medium", colour, anchor="end")
+    c.text("source  docs/example_run/", x + 22, y + h - 14, 11, "mono", "soft")
     return c.save("hero.svg")
 
 

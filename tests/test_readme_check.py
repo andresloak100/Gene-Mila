@@ -97,10 +97,58 @@ def test_good_page_passes(repo):
     ("```bash\npython run.py --bogus 1\n```", "has no --bogus option"),
     ("```bash\npython run.py --set nope.key=1\n```", "no such key"),
     ("```bash\npython nosuch.py\n```", "does not exist"),
+    ("```bash\npython run.py --set=nope.key=1\n```", "no such key"),
+    ("Run `python run.py --bogus` first.", "has no --bogus option"),
+    ("Pass `--bogus` to skip it.", "not an option of any script"),
+    ("Set `run.nope` in the config.", "no such key"),
+    ("Pass `--set run.nope=2`.", "no such key"),
+    ("We ran 3 passed.", "goes stale"),
 ])
 def test_each_rule_fires(repo, snippet, expected):
     found = errors(repo, GOOD + "\n" + snippet + "\n")
     assert any(expected in e for e in found), found
+
+
+def test_quiet_on_legitimate_text(repo):
+    page = GOOD + (
+        "\nFiles: `summary.md`, `lab.db`, `run.workers`, `--minutes`, `--run runs/<id>`.\n"
+        "Override with `--set section.key=value`. Next-generation sequencing, 1 test at a time.\n"
+        "Their loader is `pertdata.py`.\n")
+    rep_errors = errors(repo, page)
+    assert rep_errors == [], rep_errors
+    assert any("pertdata.py" in w for w in rc.run_checks().warnings)
+
+
+def test_single_quoted_flags_count(repo):
+    (repo / "run.py").write_text("ap.add_argument('--minutes')\nap.add_argument('--set')\n")
+    assert errors(repo) == []
+
+
+def test_code_comments_are_not_headings(repo):
+    # the `# ...` line must not start a section, and a score in the code still needs the label
+    page = GOOD + "\n## Commands\n\n```bash\n# notes\npython run.py --minutes 2   # reaches 0.7775\n```\n"
+    found = errors(repo, page)
+    assert any('"Commands" shows scores' in e for e in found), found
+    assert not any('"notes"' in e for e in found), found
+
+
+def test_slug_keeps_code_text():
+    assert rc.slugify("Outputs of a run (`runs/<id>/`)") == "outputs-of-a-run-runsid"
+
+
+def test_svg_drawn_numbers_are_traced(repo):
+    (repo / "docs" / "assets" / "plate.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>plate, synthetic</title>'
+        '<g aria-label="best 0.9123"/></svg>')
+    found = errors(repo)
+    assert any("0.9123 appears in no file" in e for e in found), found
+
+
+def test_svg_outlines_without_labels_are_flagged(repo):
+    (repo / "docs" / "assets" / "plate.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>plate, synthetic</title>'
+        '<defs><path id="a" d="M0 0"/></defs><g><use href="#a"/></g></svg>')
+    assert any("carries no aria-label" in e for e in errors(repo))
 
 
 def test_rounded_numbers_trace_to_docs(repo):
@@ -136,6 +184,28 @@ def test_hook_mode_ignores_unrelated_files(repo, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", __import__("io").StringIO(json.dumps({"tool_input": {"file_path": str(repo / "README.md")}})))
     assert rc.main(["--hook"]) == 2
     assert "stock phrase" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("tool_input, runs", [
+    ({"command": "git commit -m 'x'"}, True),
+    ({"command": "sed -i 's/a/b/' docs/x.md"}, True),
+    ({"command": "ls -la"}, False),
+    ({"file_path": "configs/default.toml"}, True),
+    ({"file_path": "run.py"}, True),
+    ({"file_path": "genemila/lab.py"}, False),
+])
+def test_hook_watches_commands_configs_and_scripts(repo, monkeypatch, tool_input, runs):
+    (repo / "README.md").write_text(GOOD + "\nA powerful lab.\n")
+    monkeypatch.setattr("sys.stdin", __import__("io").StringIO(json.dumps({"tool_input": tool_input})))
+    assert rc.main(["--hook"]) == (2 if runs else 0)
+
+
+def test_hook_is_silent_without_tomllib(repo, monkeypatch):
+    (repo / "README.md").write_text(GOOD + "\nA powerful lab.\n")
+    monkeypatch.setattr(rc, "tomllib", None)
+    monkeypatch.setattr("sys.stdin", __import__("io").StringIO(json.dumps({"tool_input": {"file_path": "README.md"}})))
+    assert rc.main(["--hook"]) == 0
+    assert rc.main([]) == 1
 
 
 def test_gh_command(repo, capsys):

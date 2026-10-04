@@ -1,20 +1,10 @@
 name: README check
 
+# Runs on every push and pull request: the checker reads the scripts, configs and docs the
+# README quotes, so a change to any of them can break the page.
 on:
   pull_request:
-    paths:
-      - README.md
-      - docs/**
-      - .github/repo-profile.toml
-      - tools/readme_check.py
-      - run_research.py
-      - configs/default.toml
   push:
-    paths:
-      - README.md
-      - docs/**
-      - .github/repo-profile.toml
-      - tools/readme_check.py
 
 jobs:
   readme:
@@ -26,3 +16,16 @@ jobs:
           python-version: "3.11"
       - name: Check README, figures and About profile
         run: python tools/readme_check.py
+      - name: Test the checker
+        run: |
+          pip install pytest
+          python -m pytest -q --noconftest tests/test_readme_check.py
+      - name: Figures match the run reports they are drawn from
+        run: |
+          pip install fonttools==4.66.1
+          python docs/assets/build_figures.py
+          test -z "$(git status --porcelain -- docs/assets/)" || {
+            git status --short -- docs/assets/
+            echo "::error::docs/assets/*.svg differ from build_figures.py output; run it and commit the result"
+            exit 1
+          }

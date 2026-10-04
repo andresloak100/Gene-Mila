@@ -4,7 +4,7 @@ The README figures are drawn by `build_figures.py` in this folder and are not ed
 To change a figure, change the script or the run report it reads, then run:
 
 ```bash
-pip install fonttools
+pip install fonttools==4.66.1
 python docs/assets/build_figures.py
 python tools/readme_check.py
 ```
@@ -25,7 +25,12 @@ python tools/readme_check.py
    stroke); the stylesheet swaps the palette under `prefers-color-scheme: dark`. Every figure
    sits on its own paper-coloured plate, so it stays legible if the two themes disagree.
 6. **Accessible.** Each SVG has a `<title>` and a `<desc>` that states the numbers, and the
-   README gives the same information in its `alt` text or the surrounding prose.
+   README gives the same information in its `alt` text or the surrounding prose. Every outlined
+   line of text keeps its words in an `aria-label`, which is also what `tools/readme_check.py`
+   reads when it traces numbers and the synthetic label.
+7. **Layout is checked when drawing.** A missing glyph, a legend that runs into the footer, or
+   text that overflows a panel stops the script with an error instead of producing a broken
+   figure. Look at every changed figure rendered in light and dark before committing it.
 
 ## Palette
 
@@ -35,16 +40,18 @@ python tools/readme_check.py
 | `panel` | `#EFECE3` | `#1A2028` | inset panels |
 | `ink` | `#1B2027` | `#E8EBEE` | text, Python-owned steps |
 | `soft` | `#555E69` | `#A9B1BA` | secondary text |
-| `faint` | `#8A929B` | `#77808A` | axis labels, footers |
+| `faint` | `#646C75` | `#7F8892` | axis labels, secondary values |
 | `rule` / `grid` | `#D9D4C7` / `#E6E1D5` | `#2D343D` / `#202730` | hairlines |
 | `pi` | `#3C4FA8` | `#93A3FF` | the planner (Claude) |
 | `worker` | `#B07415` | `#E5B04E` | worker LLMs and the code they write |
-| `gain` | `#0B7A6E` | `#3CC4B1` | scores, the best model, things that improved |
-| `clock` | `#D4452A` | `#FF7A5C` | the deadline, guards, rejections |
-| `base` | `#9AA1A9` | `#6E7781` | baselines |
+| `gain` | `#08766A` | `#3CC4B1` | scores, the best model, things that improved |
+| `clock` | `#C03C20` | `#FF7A5C` | the deadline, guards, failures |
+| `base` | `#5F666E` | `#858D97` | baselines |
 
 Colour always means the same actor or outcome across figures; do not reuse a token for a
-different meaning.
+different meaning. Text colours (`ink`, `soft`, `faint`, and the accents used for words) keep at
+least 4.5:1 contrast on `paper` and `panel` in both themes, so small mono text stays readable.
+Kickers on the loop's stations are set in `ink`; the coloured bar beside them carries the role.
 
 ## Type
 
