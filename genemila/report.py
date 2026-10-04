@@ -177,7 +177,14 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         by.setdefault(e["status"], []).append(e)
     done = by.get("completed", [])
     run = db.query("SELECT * FROM runs LIMIT 1")[0]
-    wall_s = wall_s or ((run.get("finished_at") or time.time()) - (run.get("started_at") or time.time()))
+    duration_note = None
+    end = run.get("finished_at")
+    if end is None:  # the run never shut down (it was killed): its wall time is at most the deadline plus the grace period
+        grace = float((lab.cfg.get("run") or {}).get("shutdown_grace_s") or 0)
+        end = min(time.time(), (run.get("deadline") or time.time()) + grace)
+        duration_note = "the run was cut before it wrote its summary; its duration is capped at its deadline"
+    if wall_s is None:
+        wall_s = end - (run.get("started_at") or end)
     best = lab.best()
     base = lab.best_baseline()
     proposed = [e for e in exps if e["kind"] not in ("baseline", "ensemble")]
@@ -215,7 +222,8 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
     planner_groups = {e.get("hypothesis_group") for e in proposed if not (e.get("proposer") or "").startswith("python:")}
     summary = {
         "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id, "base_commit": lab.base_commit,
-        "duration_s": round(wall_s, 1), "workers": workers or run.get("workers"),
+        "duration_s": round(wall_s, 1), "duration_note": duration_note, "finished_at": end,
+        "workers": workers or run.get("workers"),
         "continued_from": lab.cfg["run"].get("continue_from"),
         "selection": {"cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
                       "n_visible": len(lab._val1.perts) + (len(lab._train.perts) if lab.cv_folds > 1 else 0)},
@@ -272,7 +280,7 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
 def render_markdown(s: dict) -> str:
     L = ["# RUN SUMMARY", "",
          f"Run `{s['run_id']}` on dataset `{s['dataset']}` (split `{s['split_id']}`, code `{s['base_commit'][:10]}`)", "",
-         f"- Duration: {s['duration_s'] / 60:.1f} min",
+         f"- Duration: {s['duration_s'] / 60:.1f} min" + (f" ({s['duration_note']})" if s.get("duration_note") else ""),
          f"- Workers: {s['workers']}",
          f"- Experiments proposed: {s['experiments_proposed']}",
          f"- Experiments completed: {s['experiments_completed']} (plus baselines; "
@@ -358,7 +366,7 @@ def finalize(lab, wall_s: float | None = None, workers: int | None = None, query
     s = build_summary(lab, wall_s, workers, gen)
     # a later summarize.py must not move the run's end (throughput and cost rates are measured against it)
     lab.db.execute("UPDATE runs SET finished_at=COALESCE(finished_at, ?), summary_json=? WHERE run_id=?",
-                   (time.time(), json.dumps(s, default=str), lab.run_id))
+                   (s.get("finished_at") or time.time(), json.dumps(s, default=str), lab.run_id))
     (Path(lab.run_dir) / "summary.json").write_text(json.dumps(s, indent=1, default=str))
     (Path(lab.run_dir) / "summary.md").write_text(render_markdown(s))
     return s

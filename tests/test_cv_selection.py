@@ -266,3 +266,23 @@ def test_guard_blocks_constructing_contexts(snippet):
                                        f"def compute(self, ctx, perts, params):\n        {snippet}")
     with pytest.raises(CodeViolation):
         check_plugin_source(code, "coexpr")
+
+
+def test_summary_of_a_killed_run_caps_its_duration_at_the_deadline(lab_factory):
+    """A run killed after its deadline, before it wrote a summary, has no finished_at; a later summarize must
+    not report the hours until it was regenerated as the run's duration."""
+    import time
+    from genemila.report import build_summary, finalize
+    lab = lab_factory()
+    lab.record_analytic_baselines()
+    now = time.time()
+    lab.db.execute("UPDATE runs SET started_at=?, deadline=?, finished_at=NULL WHERE run_id=?",
+                   (now - 5 * 3600, now - 5 * 3600 + 1200, lab.run_id))
+    s = build_summary(lab, None, 2, [])
+    grace = float(lab.cfg["run"]["shutdown_grace_s"])
+    assert abs(s["duration_s"] - (1200 + grace)) < 1 and s["duration_note"]
+    assert finalize(lab, query=False)["duration_note"] and "capped at its deadline" in (lab.run_dir / "summary.md").read_text()
+    row = lab.db.query("SELECT finished_at FROM runs WHERE run_id=?", (lab.run_id,))[0]
+    assert abs(row["finished_at"] - (now - 5 * 3600 + 1200 + grace)) < 1  # stored, so a second summary agrees
+    s2 = build_summary(lab, None, 2, [])
+    assert abs(s2["duration_s"] - s["duration_s"]) < 1 and s2["duration_note"] is None
