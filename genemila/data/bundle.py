@@ -67,10 +67,12 @@ def write_bundle(
     knowledge: dict | None = None,
     extra_meta: dict | None = None,
     eval_cells: dict | None = None,
+    de_non_dropout: bool = False,
 ) -> Path:
     """eval_cells (optional): {"control": matrix, "<pert>": matrix of cells} with cells x genes in
     log-normalised space. Cells of validation perturbations (and a control sample) are stored
-    privately so held-out predictions can be scored with cell-eval."""
+    privately so held-out predictions can be scored with cell-eval, together with the ground-truth
+    DE reference (top DE genes, DE labels and directions) used by the comparable metrics."""
     out_dir = Path(out_dir)
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -108,6 +110,10 @@ def write_bundle(
                            else b.astype(np.float32) for b in blocks]).tocsr()
             sp.save_npz(out_dir / "private" / f"{part}_cells.npz", X)
             np.save(out_dir / "private" / f"{part}_cells_labels.npy", np.array(labels))
+            if perts:
+                from ..benchmark import reference
+                reference.save(reference.build(X, np.array(labels), non_dropout=de_non_dropout),
+                               out_dir / "private" / f"{part}_de.npz")
     with open(out_dir / "splits.json", "w") as fh:
         json.dump(splits, fh, indent=1)
     with open(out_dir / "knowledge" / "targets.json", "w") as fh:

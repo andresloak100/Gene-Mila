@@ -13,6 +13,7 @@ import numpy as np
 
 from . import REPO_ROOT
 from .benchmark import PRIMARY_HIGHER_IS_BETTER, PRIMARY_METRIC
+from .benchmark import comparable, reference
 from .benchmark.evaluator import evaluate
 from .benchmark.oracle import QueryOracle
 from .data.bundle import LabelSet, export_public, verify_bundle
@@ -54,6 +55,7 @@ class Lab:
         self.stop_event = threading.Event()   # no new experiments / LLM calls
         self.kill_event = threading.Event()   # terminate running subprocesses
         self._val1 = LabelSet.load(self.data_dir / "private" / "val1.npz")
+        self._val1_ref = reference.load(self.data_dir, "val1")  # ground-truth DE genes for comparable metrics
         z = np.load(self.public_dir / "public.npz", allow_pickle=False)
         self.control_mean = z["control_cells"].astype(np.float64).mean(axis=0)
         self.genes = [str(g) for g in z["genes"]]
@@ -186,8 +188,14 @@ class Lab:
             if better:
                 best = (k, res)
         k, res = best
+        pred = z["delta"][k][rows].astype(np.float64) + self.control_mean
+        res["metrics"].update(self.comparable_val1(pred))
         return {"alpha_index": k, "best_alpha": float(z["alphas"][k]), "metrics": res["metrics"],
                 "diagnostics": res["diagnostics"], "alpha_scores": scores}
+
+    def comparable_val1(self, pred: np.ndarray) -> dict:
+        """CellForge and VCWorld metrics on visible validation ({} when the bundle has no held-out cells)."""
+        return comparable.score(pred, self._val1.means, self._val1.perts, self._val1_ref, self.control_mean)
 
     def _predict(self, rec: dict, perts: list[str]) -> tuple[np.ndarray, list[str]]:
         """Absolute predicted expression of an experiment (or analytic baseline) for the given perturbations."""
@@ -267,6 +275,7 @@ class Lab:
             t0 = time.process_time()
             pred = self._analytic_baseline(key, self._val1.perts)
             res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts)
+            res["metrics"].update(self.comparable_val1(pred))
             eid = self.db.next_experiment_id()
             self.db.insert_experiment({
                 "experiment_id": eid, "run_id": self.run_id, "status": "completed", "kind": "baseline",

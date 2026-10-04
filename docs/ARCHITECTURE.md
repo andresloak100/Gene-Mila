@@ -12,6 +12,16 @@
   Pearson on the top-20 DE genes, direction accuracy on top-20 DE genes, raw-expression
   Pearson, per-perturbation scores, error by expression quartile, delta-scale ratio,
   plus feature/train/inference CPU time, peak RAM and model size.
+* **Comparable metrics** (`genemila/benchmark/comparable.py`), on every experiment's visible
+  validation and on every query-only evaluation, so our numbers sit next to published ones:
+  CellForge's MSE / PCC / R² on mean expression over all genes and over the top-20 DE genes,
+  and VCWorld's DE and direction (DIR) classification metrics (accuracy, precision, recall,
+  F1, AUROC, AUPRC over perturbation-gene pairs). Ground-truth DE genes come from the
+  held-out cells (`genemila/benchmark/reference.py`: Welch t-test ranking for the top-20,
+  Wilcoxon + Benjamini-Hochberg p <= 0.05 and |log2FC| >= 0.25 for DE labels) and are stored
+  privately with the bundle. Raw-expression PCC is dominated by baseline expression (the
+  "predict control" baseline already scores about 0.97 on the synthetic data), so it is
+  reported, never optimised. Finalists are also scored with Arc's cell-eval.
 * **Baselines** (always first): unchanged (control mean), mean training response,
   and OLS / ridge / lasso on {control mean, leave-one-out mean response, target indicator}.
 * **Splits.** By perturbation, 60/20/20, seeded, hashed into a `split_id` that every
