@@ -45,6 +45,9 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   echo, log, commit or paste it, never write it to a file, never put it on a command line, and
   never ask anyone to send it to you. The code reads it from the environment
   (`genemila/providers/openai_compat.py`). The same goes for every other API key and GitHub token.
+  On the Mac the key is stored in no startup file (the write to `~/.zshenv` was refused): the
+  Claude session there passes it to each run as a process variable, so any other agent's paid run
+  needs Andres to put the rotated key into that agent's environment first.
 - Never commit `data/`, `runs/`, `*.h5ad` or `.env` (all are in `.gitignore`; never `git add -f`).
 
 ### Money and usage
@@ -73,16 +76,23 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 - Every paid run points at the shared ledger and carries its own caps:
   `--set budget.ledger=<absolute path to the shared ledger> --set budget.cumulative_usd.deepseek=<cap>
   --set budget.max_total_usd=<worker cap> --set budget.max_planner_usd=<planner cap>`.
-  Never change the $0.25 defaults in `configs/default.toml`, and never edit or reprice the ledger.
+  Never change the $0.25 defaults in `configs/default.toml`, and never edit or reprice the ledger
+  (it was repriced once, on 2026-10-04 with Andres's approval, from $0.2579 to $0.0219 after a
+  DeepSeek flash pricing correction; backup `runs/spend_ledger.sqlite.bak`).
 - Never run two paid runs at once, whoever starts them. Each run reads the ledger only when it
   starts, so runs that overlap can overshoot the cap together.
 
-### Andres's Mac (the only machine with the real data and the key)
+### Andres's Mac (the only machine with the real data)
 
 - The worker-scaling comparison runs there, when it runs, as a detached driver
-  (`python handoff_state.py`, or `pgrep -fl run_research.py` and `progress.md` under
-  `~/Documents/Loak-documents/genemila_scale_logs/`, say whether one is going; HANDOFF.md section 1
-  says what is planned). Don't kill it, don't
+  (`python handoff_state.py`, or `STATE.md` and `progress.md` under
+  `~/Documents/Loak-documents/genemila_scale_logs/` and `pgrep -fl run_research.py`, say whether one
+  is going; HANDOFF.md section 1 says what is planned).
+- Whoever runs anything on the Mac updates `STATE.md` there (what is running, every run directory
+  and its status, open decisions, the exact next commands); whoever can push mirrors it into
+  HANDOFF.md section 1. The Claude session on the Mac is refused git pushes by its own permission
+  system; `gh` there is signed in as `andresloak100` with repo scope, so another agent working on
+  the Mac should try to push. Don't kill it, don't
   create its `STOP` file, and don't touch `runs/scale_*`, `runs/newcode_*` or that log directory
   (read them, nothing more) unless Andres asks.
 - Never edit files, commit, pull, check out or switch branches in the main checkout
@@ -145,7 +155,8 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
    the files you will touch, before you start. If another owner's files are on the list, say so
    there. Taking over a stalled task: comment on its claim issue that you are taking it over.
 3. **Keep the state current.** Update `HANDOFF.md` section 1 (who is active, what is in flight,
-   what comes next) when you start, after each milestone, and **before you stop or as soon as you
+   what comes next), and `STATE.md` on the Mac when you work there, when you start, after each
+   milestone, and **before you stop or as soon as you
    expect to run out of tokens**: write the exact next step so the next agent can continue
    without asking. Put task progress in the claim issue and the pull request description.
 4. **Ask Andres for decisions** about spend, scope or protected code, and wait for his answer.

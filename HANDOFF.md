@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-04 18:15, by Claude ("Agent handoff" session), with the lab-code owner's
-reports of 17:40 and 18:10.
+**Last updated:** 2026-10-04 18:25, by Claude ("Agent handoff" session), from the lab-code owner's
+reports at 17:40, 17:50 (its read of the Mac's checkout) and 18:10.
 
 **Active agents**
 
@@ -52,17 +52,28 @@ the old code `2492e11`, which has no failover, so they wait for the usage window
 scaling report over every run, committed to `docs/results/` from the Mac's files (section 8, items
 2 and 3). For a newly arriving agent: Norman (section 8, item 4).
 
-**Decisions by Andres to respect:** DeepSeek total $15 with a $14 ledger stop; no paid run without
-his word; CellForge's published rows marked not comparable; no 44-worker run; priorities as in
-section 8; the lab-code owner maintains the protected benchmark, split and guard code under his
-standing delegation.
+**Decisions to respect.** Andres's own: a $10 DeepSeek cap for the comparison runs (2026-10-04
+00:04); no paid run without his word (the unattended-spend card is still open); CellForge's published
+rows marked not comparable; no 44-worker run; priorities as in section 8. Claude's, under his "up to
+you" delegation on the planner card (2026-10-04 12:59): the $15 project total with the $14 ledger
+stop, the extra $5 only for the DeepSeek-planner check; the lab-code owner maintains the protected
+benchmark, split and guard code.
+
+**Only Andres can (the blockers for any other agent):**
+- Rotate the DeepSeek key (it was pasted in a chat twice) and put it into the agents' environment:
+  `export DEEPSEEK_API_KEY=...` in `~/.zshenv` on the Mac, or the agent's own secret store. Today the
+  key is in no file on the Mac (the `~/.zshenv` write was refused) and the Claude session there passes
+  it to each run as a process variable, so until he does this only that session can start paid runs.
+- Give outside agents write access to the repository.
+- Answer the unattended-spend card, and merge PR #2.
+- Keep the Mac powered on and awake while anything runs.
 
 **Live sources** (check them; they beat this section when they disagree):
 
 | Question | Live source |
 |---|---|
 | Everything below in one command | `python handoff_state.py [--runs DIR] [--ledger FILE] [--logs DIR] [--json]`: git state, every run directory with arm, workers, seed, code and state (finished; in progress with minutes to its deadline; killed before its summary; excluded `_contaminated` / `_interrupted`; planner changed or lost) and headline numbers, ledger totals per provider and role, live `run_research.py` processes, the STOP file, the tail of `progress.md`. From your own clone on the Mac, read-only: `python handoff_state.py --runs ~/Documents/Loak-documents/gene-mila/runs` |
-| What is running on the Mac? | `tail -n 30 ~/Documents/Loak-documents/genemila_scale_logs/progress.md`, `pgrep -fl run_research.py` |
+| What is running on the Mac, and what comes next there? | `~/Documents/Loak-documents/genemila_scale_logs/STATE.md` (what is running, every run directory and its status, open decisions, exact next commands; written on the Mac by whoever runs there), `tail -n 30 .../progress.md` (the driver's step log), `pgrep -fl run_research.py` |
 | How much DeepSeek money is spent? | `sqlite3 ~/Documents/Loak-documents/gene-mila/runs/spend_ledger.sqlite "SELECT provider, ROUND(SUM(cost_usd),2) FROM spend GROUP BY provider"` |
 | What did a run find? | `runs/<run>/summary.md` and `summary.json` (`best`, `generalization_query_only`, `llm_usage`, `completed_by_proposer`, `split_id`) |
 | Who holds which task? | open issues titled `Claim:`, open pull requests |
@@ -74,18 +85,20 @@ standing delegation.
 |---|---|
 | Repository (private) | `https://github.com/andresloak100/gene-mila` |
 | Integration branch (pull requests go here; there is no `main` yet) | `claude/autonomous-research-system-3k435s` |
-| Main checkout on Andres's Mac: real data, key, runs. **Don't touch its files or git state** | `~/Documents/Loak-documents/gene-mila` |
+| Main checkout on Andres's Mac: real data, runs (the key is stored nowhere on the Mac). **Don't touch its files or git state** | `~/Documents/Loak-documents/gene-mila` |
 | Its Python environment | `~/Documents/Loak-documents/gene-mila/.venv` |
 | Data bundle in use (gitignored) | `data/adamson_cf/` in the main checkout |
 | Runs (gitignored) | `runs/<run>/` in the main checkout |
 | Shared spend ledger, cumulative across all runs | `runs/spend_ledger.sqlite` in the main checkout |
-| Comparison driver: progress, log, stop switch | `~/Documents/Loak-documents/genemila_scale_logs/` (`progress.md`, `driver.log`; a file named `STOP` halts the driver) |
+| Comparison driver: state, progress, stop switch | `~/Documents/Loak-documents/genemila_scale_logs/` (`STATE.md`, `progress.md`; a file named `STOP` halts the driver after its current step; the driver script `scale_seq.sh`, with no key inside, to be committed as `tools/scale_seq.sh`) |
 | Raw data | scPerturb archive on Zenodo, record 13350497: `https://zenodo.org/records/13350497/files/<file>?download=1` |
 | CellForge | paper arXiv 2508.02276; code `https://github.com/gersteinlab/CellForge` (it has no evaluation code; we rebuilt the metrics from the paper) |
 | Evaluation package | `https://github.com/ArcInstitute/cell-eval` |
 
-The Mac cannot push to GitHub. Results reach the repository when an agent with push access
-commits the files the Mac produced, exactly as they are on disk.
+The Claude session on the Mac is refused git pushes by its own permission system; `gh` there is
+signed in as `andresloak100` with repo scope, so another agent working on the Mac should try to push.
+Until someone there can, results reach the repository when an agent with push access commits the
+files the Mac produced, exactly as they are on disk.
 
 ## 3. The data
 
@@ -188,8 +201,11 @@ is the sealed query-only set, CellForge's test perturbations.
 Starting model (OLS on three baseline features): 0.556 visible, 0.520 held-out.
 Free no-LLM control on the old code: 0.571 / 0.554, identical over six seeds and finished after
 about two minutes, so it is a fixed recipe and gives no noise estimate. On the current code
-(`runs/newcode_control_r0` to `r5`, 2026-10-04) it scores 0.553 held-out with 23 experiments per
-run, still ending after about two minutes and keeping no ensemble. `schedule.exploit_depth` (`9044ece`)
+(`runs/newcode_control_r0` to `r5`, 2026-10-04) it scores 0.510 visible / 0.553 held-out, identical
+over six runs, 23 experiments per run, still ending after about two minutes and keeping no ensemble.
+Visible scores are not comparable across code versions: selection now averages 67 perturbations (the
+visible set plus out-of-fold training perturbations) instead of 17, which is why the tables separate
+code versions into arms. `schedule.exploit_depth` (`9044ece`)
 adds deeper deterministic search tiers so it can use the full 20 minutes; the rerun
 `runs/newcode2_control_r0` to `r5` is pending.
 
@@ -270,4 +286,9 @@ is available, keep these settings and check `progress.md` first so nothing runs 
   `newcode_opus_w4_r*` with `--set budget.max_total_usd=1.5 --set planner.fallback=deepseek:deepseek-v4-pro`,
   both with `budget.cumulative_usd.deepseek=15`; `python analyze_run.py --run <dir>` after each;
 - then `scaling_report.py` and `results_table.py` over every `scale_*` and `newcode_*` directory
-  except `_contaminated` and `_interrupted`.
+  except `_contaminated` and `_interrupted`;
+- the driver script is `~/Documents/Loak-documents/genemila_scale_logs/scale_seq.sh` on the Mac (no
+  key inside; the lab-code owner will commit it as `tools/scale_seq.sh`). Start it detached,
+  `nohup setsid caffeinate -i -s bash scale_seq.sh > ~/Documents/Loak-documents/genemila_scale_logs/driver.log 2>&1 &`,
+  with the key as a process variable; it appends to `progress.md`, skips run directories that already
+  have a `summary.json`, and stops when a `STOP` file appears. Update `STATE.md` before and after.
