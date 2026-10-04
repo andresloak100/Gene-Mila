@@ -7,36 +7,52 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-04 17:40, by Claude ("Agent handoff" session).
+**Last updated:** 2026-10-04 17:50, by Claude ("Agent handoff" session), with the lab-code owner's
+report of the Mac at 17:40.
 
 **Active agents**
 
 | Agent | Since | Working on | Claim |
 |---|---|---|---|
-| Claude, "Autonomous research system" | 2026-10-03 | the 1/4/8/16-worker comparison on the Mac and its tables | (predates claim issues) |
+| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the 1/4/8/16-worker comparison on the Mac, its tables, the next lab push | (predates claim issues) |
 | Astra (ChatGPT) | not started | first task below, once Andres hands it over | |
 
-**In flight on the Mac:** a detached driver (started with `nohup setsid caffeinate`, so it survives
-the Claude session disconnecting) runs six free control runs on the current code,
-`runs/newcode_control_r0` to `r5` (scripted planner, mock workers, 4 workers, 20 minutes).
-Waiting on Andres: whether the remaining paid runs may run unattended, with a $15 cap (the 8- and
-16-worker seed-1 repeats `runs/scale_w8_r1` and `runs/scale_w16_r1`, then the planner check
-`runs/newcode_ds_w4_r0`/`_r1` planned by DeepSeek V4 Pro and `runs/newcode_opus_w4_r0`/`_r1`
-planned by Opus, about $6 more), a $10 cap (only the two repeats, about $2), or free only. The Mac
-must stay powered on and awake.
+**On the Mac (17:40):** nothing is running. The six free control runs on the current code,
+`runs/newcode_control_r0` to `r5`, are finished: best sealed 0.553 against 0.554 on the old code,
+23 experiments each, each ending after about two minutes, no ensemble kept. No detached driver has
+been started. The paid remainder waits on Andres's answer, in his own words, to the card in the
+Claude research thread: with a $15 cap, the 8- and 16-worker seed-1 repeats `runs/scale_w8_r1` and
+`runs/scale_w16_r1` (code `2492e11`, Opus planner), then the planner check `runs/newcode_ds_w4_r0`
+and `_r1` (DeepSeek V4 Pro planner) and `runs/newcode_opus_w4_r0` and `_r1` (Opus planner), about
+$6 more; with a $10 cap, only the two repeats, about $2; or free only. Once started, the sequence
+runs as a detached driver (`nohup setsid caffeinate`), so it survives the Claude session
+disconnecting; the Mac must stay powered on and awake. The `scale_w4_r1` summary has been
+regenerated with the deadline fix (`2370276`).
 
 **DeepSeek ledger:** $4.66 at 2026-10-04 17:02. Opus planner dollars are the Claude CLI's estimate
 of subscription usage, not a bill.
 
-**Open pull requests:** #1 (README and its checker, Claude), #2 (this file and AGENTS.md).
+**Claude usage:** one Claude Max window is shared by the Mac's Claude Code session, the cloud Claude
+threads and the Opus planner. About three 20-minute Opus-planned runs fit in a five-hour window,
+which resets roughly five hours after its first use (resets observed at 05:00 and about 13:00 UTC on
+2026-10-04). When it is exhausted, Opus-planned runs wait for the reset; everything else moves to
+the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**Next:** after the runs, the final results table, calibration and scaling report over every run,
-committed to `docs/results/` from the Mac's files (section 8, items 2 and 3). For a newly arriving
-agent: Norman (section 8, item 4).
+**Code:** integration branch head `2370276`. The lab-code owner's next push adds deeper
+deterministic search tiers (`schedule.exploit_depth`) so the no-LLM control fills its 20 minutes,
+the results table and scaling report separating code versions into arms, in-lab planner failover
+(`planner.fallback`, see AGENTS.md), and `handoff_state.py` (below).
+
+**Open pull requests:** #1 (README and its checker, Claude), #2 (this file, AGENTS.md, CLAUDE.md).
+
+**Next:** after Andres's answer, the paid runs above; then the final results table, calibration and
+scaling report over every run, committed to `docs/results/` from the Mac's files (section 8, items
+2 and 3). For a newly arriving agent: Norman (section 8, item 4).
 
 **Decisions by Andres to respect:** DeepSeek total $15 with a $14 ledger stop; no paid run without
 his word; CellForge's published rows marked not comparable; no 44-worker run; priorities as in
-section 8.
+section 8; the lab-code owner maintains the protected benchmark, split and guard code under his
+standing delegation.
 
 **Live sources** (check them; they beat this section when they disagree):
 
@@ -47,6 +63,7 @@ section 8.
 | What did a run find? | `runs/<run>/summary.md` and `summary.json` (`best`, `generalization_query_only`, `llm_usage`, `completed_by_proposer`, `split_id`) |
 | Who holds which task? | open issues titled `Claim:`, open pull requests |
 | What changed in the code? | `git log origin/claude/autonomous-research-system-3k435s` |
+| All of the above in one command | `python handoff_state.py [--runs DIR] [--logs DIR]`: every run directory with its state (summary present, in progress, killed at the deadline, contaminated), ledger totals per provider, whether a driver is running, the tail of `progress.md`, git state. Coming in the lab-code owner's next push; until it lands, use the rows above |
 
 ## 2. Where things are
 
@@ -164,7 +181,10 @@ is the sealed query-only set, CellForge's test perturbations.
 
 Starting model (OLS on three baseline features): 0.556 visible, 0.520 held-out.
 Free no-LLM control on the old code: 0.571 / 0.554, identical over six seeds and finished after
-about two minutes, so it is a fixed recipe and gives no noise estimate.
+about two minutes, so it is a fixed recipe and gives no noise estimate. On the current code
+(`runs/newcode_control_r0` to `r5`, 2026-10-04) it scores 0.553 held-out with 23 experiments per
+run, still ending after about two minutes and keeping no ensemble; the coming `schedule.exploit_depth`
+is meant to let it use the full 20 minutes.
 
 Worker-scaling comparison, code `2492e11`, Opus planner, DeepSeek workers, 20 minutes each:
 
