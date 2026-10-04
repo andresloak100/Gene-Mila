@@ -34,7 +34,8 @@ CONTROL_LABELS = {"control", "ctrl", "non-targeting", "nontargeting", "non_targe
 
 def _looks_like_counts(X) -> bool:
     import scipy.sparse as sp
-    data = X.data[:100_000] if sp.issparse(X) else np.asarray(X[:200]).ravel()
+    # sample across the whole matrix: the first entries of a CSC matrix belong to a few low-count genes
+    data = X.data[::max(1, X.data.size // 100_000)] if sp.issparse(X) else np.asarray(X[:200]).ravel()
     data = data[data != 0]
     return data.size > 0 and bool(np.allclose(data, np.round(data))) and float(data.max()) > 20
 
@@ -66,7 +67,7 @@ def ingest_h5ad(
     out_dir: Path,
     name: str,
     condition_key: str | None = None,
-    control_value: str | None = None,
+    control_value: str | list[str] | None = None,
     gene_name_key: str = "gene_name",
     n_hvg: int = 2000,
     max_control_cells: int = 2000,
@@ -75,7 +76,15 @@ def ingest_h5ad(
     collapse_by_target: bool = True,
     seed: int = 0,
     splits_file: Path | None = None,
+    val_frac_of_train: float = 0.25,
+    knowledge_dir: Path | None = None,
 ) -> Path:
+    """Build a bundle. control_value may list several labels (e.g. different non-targeting guides).
+
+    splits_file: JSON with train/val1/val2 (or train/val/test) perturbation lists. A file with only
+    train/test (CellForge's protocol: one held-out test set) keeps their test set as our query-only
+    val2 and carves our visible val1 out of their training perturbations (val_frac_of_train, seeded),
+    so the held-out test perturbations are exactly theirs."""
     import anndata as ad
     import scipy.sparse as sp
 
@@ -88,13 +97,18 @@ def ingest_h5ad(
                               if k in adata.obs), None)
         if condition_key is None:
             raise ValueError(f"cannot find the perturbation column in obs: {list(adata.obs.columns)}")
-    cond = adata.obs[condition_key].astype(str).values
+    # unlabelled cells are NaN and stay NaN through astype(str) on recent pandas; name them
+    cond = adata.obs[condition_key].astype(object).fillna("unassigned").to_numpy(dtype=str)
     if control_value is None:
         found = [c for c in np.unique(cond) if c.lower() in CONTROL_LABELS]
-        if len(found) != 1:
+        if not found:
             raise ValueError(f"cannot identify the control label among {sorted(np.unique(cond))[:20]}; "
                              "pass --control explicitly")
-        control_value = found[0]
+        control_value = found
+    controls = [control_value] if isinstance(control_value, str) else list(control_value)
+    missing = [c for c in controls if c not in set(cond)]
+    if missing:
+        raise ValueError(f"control label(s) {missing} not found in obs[{condition_key!r}]")
     genes = (adata.var[gene_name_key] if gene_name_key in adata.var else adata.var_names).astype(str).tolist()
     gene_set = set(genes)
 
@@ -108,11 +122,11 @@ def ingest_h5ad(
         sub = X[rows]
         return np.asarray(sub.todense() if sp.issparse(sub) else sub, dtype=np.float32)
 
-    is_ctrl = cond == control_value
+    is_ctrl = np.isin(cond, controls)
     rng = np.random.default_rng(seed)
     ctrl_idx = np.flatnonzero(is_ctrl)
     if len(ctrl_idx) < 50:
-        raise ValueError(f"only {len(ctrl_idx)} control cells labelled {control_value!r}")
+        raise ValueError(f"only {len(ctrl_idx)} control cells labelled {controls!r}")
     perm = rng.permutation(ctrl_idx)
     ctrl_public = perm[:max_control_cells]
     ctrl_eval = perm[max_control_cells:max_control_cells + max_eval_cells]
@@ -121,6 +135,7 @@ def ingest_h5ad(
 
     # group perturbation labels by their measured target-gene set
     groups: dict[str, list[str]] = {}
+    label_to_key: dict[str, str] = {}
     targets: dict[str, list[str]] = {}
     dropped = []
     for c in np.unique(cond[~is_ctrl]):
@@ -130,6 +145,7 @@ def ingest_h5ad(
             continue
         key = "+".join(tg) if collapse_by_target else c
         groups.setdefault(key, []).append(c)
+        label_to_key[c] = key
         targets[key] = tg
 
     ctrl_dense = dense(ctrl_public)
@@ -150,11 +166,7 @@ def ingest_h5ad(
 
     if splits_file:  # an externally defined split (e.g. CellForge's) instead of our seeded one
         ext = json.loads(Path(splits_file).read_text())
-        alias = {"val1": ("val1", "val", "valid", "validation"), "val2": ("val2", "test")}
-        pick = {"train": "train", **{ours: next((k for k in names if k in ext), None) for ours, names in alias.items()}}
-        if None in pick.values():
-            raise ValueError(f"splits file needs train/val1/val2 (or train/val/test) lists, has {sorted(ext)}")
-        splits = {ours: sorted(p for p in ext[theirs] if p in pert_means) for ours, theirs in pick.items()}
+        splits = external_splits(ext, list(pert_means), label_to_key, seed=seed, val_frac_of_train=val_frac_of_train)
         splits["seed"] = f"external:{Path(splits_file).name}"
         splits["split_id"] = split_id_for(splits)
         in_split = set(splits["train"]) | set(splits["val1"]) | set(splits["val2"])
@@ -170,14 +182,59 @@ def ingest_h5ad(
             rows = rng.choice(rows, size=max_eval_cells, replace=False)
         eval_cells[key] = dense(np.sort(rows))[:, keep]
 
+    kept_genes = [genes[i] for i in keep]
+    knowledge, knowledge_meta = {}, None
+    if knowledge_dir:
+        from .knowledge import build, summary
+        knowledge = build(Path(knowledge_dir), kept_genes)
+        knowledge_meta = {"source_dir": str(knowledge_dir), "files": summary(knowledge)}
     return write_bundle(
-        Path(out_dir), name, [genes[i] for i in keep], ctrl_dense[:, keep], pert_means, pert_ncells,
-        targets, splits, eval_cells=eval_cells,
+        Path(out_dir), name, kept_genes, ctrl_dense[:, keep], pert_means, pert_ncells,
+        targets, splits, knowledge=knowledge, eval_cells=eval_cells,
         extra_meta={"source": [str(p) for p in paths], "condition_key": condition_key,
-                    "control_value": control_value, "raw_counts_normalised": raw_counts, "n_hvg": n_hvg,
+                    "control_value": controls, "raw_counts_normalised": raw_counts, "n_hvg": n_hvg,
                     "collapse_by_target": collapse_by_target, "dropped_labels": dropped[:50],
-                    "n_dropped_labels": len(dropped)},
+                    "n_dropped_labels": len(dropped), "knowledge": knowledge_meta},
     )
+
+
+def external_splits(ext: dict, perts: list[str], label_to_key: dict[str, str] | None = None, seed: int = 0,
+                    val_frac_of_train: float = 0.25) -> dict:
+    """Map an external split onto our perturbation keys.
+
+    Entries may be our keys or raw labels (mapped through label_to_key); unknown entries and control
+    labels are ignored. A perturbation key placed in more than one external set (e.g. two guides for
+    one gene split apart) goes to the most held-out set it appears in, so no test perturbation is
+    trained on."""
+    label_to_key = label_to_key or {}
+    alias = {"train": ("train",), "val1": ("val1", "val", "valid", "validation"), "val2": ("val2", "test")}
+    pick = {ours: next((k for k in names if k in ext), None) for ours, names in alias.items()}
+    if pick["train"] is None or pick["val2"] is None:
+        raise ValueError(f"splits file needs train and val2/test lists, has {sorted(ext)}")
+    known = set(perts)
+
+    def keys(entries):
+        out = set()
+        for e in entries:
+            k = e if e in known else label_to_key.get(e)
+            if k in known:
+                out.add(k)
+        return out
+
+    test = keys(ext[pick["val2"]])
+    val = keys(ext[pick["val1"]]) - test if pick["val1"] else set()
+    train = keys(ext[pick["train"]]) - test - val
+    note = "external"
+    if not pick["val1"]:  # CellForge-style train/test: carve our visible validation out of their train set
+        rng = np.random.default_rng(seed)
+        pool = sorted(train)
+        n_val = max(1, int(round(val_frac_of_train * len(pool))))
+        val = set(rng.choice(pool, size=n_val, replace=False).tolist())
+        train -= val
+        note = f"external train/test; val1 = {val_frac_of_train:.0%} of their train (seed {seed})"
+    splits = {"train": sorted(train), "val1": sorted(val), "val2": sorted(test), "note": note}
+    splits["split_id"] = split_id_for(splits)
+    return splits
 
 
 def describe_h5ad(path: Path) -> dict:
