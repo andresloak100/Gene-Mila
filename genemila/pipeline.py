@@ -48,28 +48,36 @@ def feature_cache_key(ctx: FeatureContext, cls, params: dict, perts: list[str]) 
     return hashlib.sha256(payload.encode()).hexdigest()[:32]
 
 
-def build_matrix(ctx: FeatureContext, feature_set: list[str], feature_params: dict, perts: list[str],
-                 timings: dict, cache_dir: Path | None = None, cache_log: dict | None = None,
-                 ) -> tuple[np.ndarray, list[str]]:
-    blocks, columns = [], []
+def feature_blocks(ctx: FeatureContext, feature_set: list[str], feature_params: dict, perts: list[str],
+                   timings: dict, cache_dir: Path | None = None, cache_log: dict | None = None,
+                   label_dep: dict | None = None) -> dict[str, np.ndarray]:
+    """One (n_perts, n_genes, dim) block per feature. label_dep, when given, records per feature whether
+    computing it read training labels (a cached block carries the flag in a sidecar file; a block whose
+    flag is unknown counts as label-dependent)."""
+    blocks = {}
     for name in feature_set:
         cls = registry.get(name)
         params = {**cls.params, **feature_params.get(name, {})}
         t0 = time.process_time()
         path = cache_dir / f"{name}__{feature_cache_key(ctx, cls, params, perts)}.npy" if cache_dir else None
-        arr = None
+        arr, dep = None, True
         if path is not None and path.exists():
             try:
                 arr = np.load(path, allow_pickle=False)
+                side = path.with_suffix(".dep")
+                dep = side.read_text().strip() != "0" if side.exists() else True
             except (OSError, ValueError):  # evicted or half-written by another process: recompute
                 arr = None
             else:
                 if cache_log is not None:
                     cache_log.setdefault("hits", []).append(name)
         if arr is None:
+            before = ctx.label_reads
             arr = np.asarray(cls().compute(ctx, perts, params), dtype=np.float64)
+            dep = ctx.label_reads > before
             if path is not None and np.all(np.isfinite(arr)):
                 _atomic_save(path, arr)
+                path.with_suffix(".dep").write_text("1" if dep else "0")
                 if cache_log is not None:
                     cache_log.setdefault("misses", []).append(name)
         timings[name] = timings.get(name, 0.0) + time.process_time() - t0
@@ -79,10 +87,26 @@ def build_matrix(ctx: FeatureContext, feature_set: list[str], feature_params: di
             raise ValueError(f"feature {name} returned shape {arr.shape}, expected ({len(perts)}, {ctx.n_genes}, dim)")
         if not np.all(np.isfinite(arr)):
             raise ValueError(f"feature {name} produced NaN/inf values")
-        blocks.append(arr)
-        columns += [name] if arr.shape[2] == 1 else [f"{name}[{j}]" for j in range(arr.shape[2])]
-    X = np.concatenate(blocks, axis=2)
-    return X.reshape(len(perts) * ctx.n_genes, X.shape[2]), columns
+        blocks[name] = arr
+        if label_dep is not None:
+            label_dep[name] = label_dep.get(name, False) or dep
+    return blocks
+
+
+def _concat(blocks: dict[str, np.ndarray], feature_set: list[str], n_perts: int, n_genes: int) -> tuple[np.ndarray, list[str]]:
+    columns = []
+    for name in feature_set:
+        d = blocks[name].shape[2]
+        columns += [name] if d == 1 else [f"{name}[{j}]" for j in range(d)]
+    X = np.concatenate([blocks[n] for n in feature_set], axis=2)
+    return X.reshape(n_perts * n_genes, X.shape[2]), columns
+
+
+def build_matrix(ctx: FeatureContext, feature_set: list[str], feature_params: dict, perts: list[str],
+                 timings: dict, cache_dir: Path | None = None, cache_log: dict | None = None,
+                 label_dep: dict | None = None) -> tuple[np.ndarray, list[str]]:
+    blocks = feature_blocks(ctx, feature_set, feature_params, perts, timings, cache_dir, cache_log, label_dep)
+    return _concat(blocks, feature_set, len(perts), ctx.n_genes)
 
 
 def cv_folds_of(train: list[str], k: int, seed: int) -> list[list[str]]:
@@ -93,30 +117,41 @@ def cv_folds_of(train: list[str], k: int, seed: int) -> list[list[str]]:
 
 def cross_validate(ctx: FeatureContext, feature_set: list[str], feature_params: dict, model_type: str,
                    alphas: list[float], seed: int, k: int, fold_seed: int, timings: dict, feature_cache,
-                   cache_log) -> np.ndarray:
+                   cache_log, train_blocks: dict[str, np.ndarray], label_dep: dict[str, bool]) -> np.ndarray:
     """Out-of-fold predicted deltas for every training perturbation, per alpha: (n_alphas, n_train, n_genes).
 
     Each fold is a context whose training labels exclude the fold, so feature code (which may only read
     training labels) recomputes its features without them; the fold's model is fitted on the rest. The
-    predictions are therefore honest out-of-sample predictions, like those for the held-out sets."""
+    predictions are therefore honest out-of-sample predictions, like those for the held-out sets.
+    Features that never read training labels are the same under every view, so their rows are sliced from
+    the full-training blocks instead of recomputed. Plugin modules are re-executed before each fold so no
+    module-level memo can carry full-training aggregates into a fold."""
     pos = {p: i for i, p in enumerate(ctx.train_perts)}
     out = np.zeros((len(alphas), len(ctx.train_perts), ctx.n_genes), dtype=np.float32)
     for fold in cv_folds_of(ctx.train_perts, k, fold_seed):
+        registry.reload_plugins()
         view = ctx.without_train(fold)
-        X_tr, _ = build_matrix(view, feature_set, feature_params, view.train_perts, timings, feature_cache, cache_log)
-        X_fo, _ = build_matrix(view, feature_set, feature_params, fold, timings, feature_cache, cache_log)
+        both = view.train_perts + fold
+        dep_feats = [f for f in feature_set if label_dep.get(f, True)]
+        fresh = feature_blocks(view, dep_feats, feature_params, both, timings, feature_cache, cache_log)
+        n_tr = len(view.train_perts)
+        tr_rows = [pos[p] for p in view.train_perts]
+        fo_rows = [pos[p] for p in fold]
+        blocks_tr = {f: (fresh[f][:n_tr] if f in fresh else train_blocks[f][tr_rows]) for f in feature_set}
+        blocks_fo = {f: (fresh[f][n_tr:] if f in fresh else train_blocks[f][fo_rows]) for f in feature_set}
+        X_tr, _ = _concat(blocks_tr, feature_set, n_tr, ctx.n_genes)
+        X_fo, _ = _concat(blocks_fo, feature_set, len(fold), ctx.n_genes)
         _, d_tr = view.train_delta()
         mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
         sd[sd == 0] = 1.0
         X_tr, X_fo = (X_tr - mu) / sd, (X_fo - mu) / sd
-        rows = [pos[p] for p in fold]
         for j, a in enumerate(alphas):
             model = make_model(model_type, a, seed)
             model.fit(X_tr, d_tr.reshape(-1))
             pred = model.predict(X_fo).reshape(len(fold), ctx.n_genes)
             if not np.all(np.isfinite(pred)):
                 raise ValueError(f"model produced non-finite cross-validation predictions at alpha={a}")
-            out[j, rows] = pred.astype(np.float32)
+            out[j, fo_rows] = pred.astype(np.float32)
     return out
 
 
@@ -151,8 +186,10 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
     evals = [p for p in ctx.perts if p not in set(train)]
     timings: dict = {}
     t0 = time.process_time()
-    X_tr, columns = build_matrix(ctx, feature_set, feature_params, train, timings, feature_cache, cache_log)
-    X_ev, _ = build_matrix(ctx, feature_set, feature_params, evals, timings, feature_cache, cache_log)
+    label_dep: dict = {}
+    train_blocks = feature_blocks(ctx, feature_set, feature_params, train, timings, feature_cache, cache_log, label_dep)
+    X_tr, columns = _concat(train_blocks, feature_set, len(train), ctx.n_genes)
+    X_ev, _ = build_matrix(ctx, feature_set, feature_params, evals, timings, feature_cache, cache_log, label_dep)
     feat_time = time.process_time() - t0
     _, d_train = ctx.train_delta()
     y = d_train.reshape(-1)
@@ -186,7 +223,7 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
     if cv_folds > 1:
         t = time.process_time()
         cv = cross_validate(ctx, feature_set, feature_params, model_type, alphas, seed, cv_folds,
-                            int(hp.get("cv_seed") or 0), timings, feature_cache, cache_log)
+                            int(hp.get("cv_seed") or 0), timings, feature_cache, cache_log, train_blocks, label_dep)
         np.savez_compressed(out_dir / "cv.npz", delta=cv, perts=np.array(train),
                             alphas=np.array(alphas, dtype=np.float64), folds=np.array([cv_folds]))
         cv_time = time.process_time() - t
@@ -205,6 +242,7 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
             "train_cpu_s": train_time, "inference_cpu_s": infer_time, "cv_cpu_s": cv_time,
         },
         "cv_folds": cv_folds,
+        "label_dependent_features": sorted(n for n, d in label_dep.items() if d),
         "model_size_bytes": int((out_dir / "models.pkl").stat().st_size),
         "feature_cache": {"hits": sorted(set(cache_log.get("hits", []))),
                           "misses": sorted(set(cache_log.get("misses", [])))},
@@ -238,6 +276,8 @@ def smoke(feature: str, public_dir: Path, plugin_dir: Path, out_dir: Path, cache
     if not problems:
         if np.allclose(a.std(axis=(0, 1)), 0):
             problems.append("feature is constant across all rows (no information)")
+        registry.reload_plugins()  # fresh module state: a memo must not hide non-determinism or leakage
+        cls = registry.get(feature)
         b = np.asarray(cls().compute(FeatureContext(public_dir, shared), perts, dict(cls.params)), dtype=np.float64)
         if b.ndim == 2:
             b = b[:, :, None]
@@ -248,6 +288,8 @@ def smoke(feature: str, public_dir: Path, plugin_dir: Path, out_dir: Path, cache
         leak_ctx = FeatureContext(public_dir, shared)
         rng = np.random.default_rng(0)
         leak_ctx._train_delta[leak_ctx._train_pos[p0]] = rng.normal(0, 5, size=leak_ctx.n_genes)
+        registry.reload_plugins()
+        cls = registry.get(feature)
         c = np.asarray(cls().compute(leak_ctx, [p0], dict(cls.params)), dtype=np.float64)
         if c.ndim == 2:
             c = c[:, :, None]

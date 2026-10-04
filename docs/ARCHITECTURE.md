@@ -13,7 +13,14 @@
   fold views of the feature context that hide the fold's labels from feature code; folds fixed
   per run, set by the lab after validation so agents cannot choose them), and the primary score
   is the mean over validation plus out-of-fold perturbations; `pearson_delta` stays the
-  validation-set value and `pearson_delta_cv` the out-of-fold value. Also recorded: RMSE, MAE, MSE,
+  validation-set value and `pearson_delta_cv` the out-of-fold value. Fold views are enforced,
+  not trusted: the guard refuses plugin code that constructs its own `FeatureContext`, reaches
+  a class through `type()`, `__init__` or `__file__`, or routes around the view; plugin modules
+  are re-executed before every fold (and between the smoke test's checks), so a module-level
+  memo cannot carry full-training aggregates into a fold. Features that never read training
+  labels (`FeatureContext.label_reads`, recorded in a `.dep` sidecar next to each cached block)
+  are sliced from the full-training block instead of recomputed per fold, so the fold cost is
+  paid only by label-dependent features. Also recorded: RMSE, MAE, MSE,
   Pearson on the top-20 DE genes, direction accuracy on top-20 DE genes, raw-expression
   Pearson, per-perturbation scores, error by expression quartile, delta-scale ratio,
   plus feature/train/inference CPU time, peak RAM and model size.
@@ -38,13 +45,20 @@
   experiments are queued than there are workers, Python queues deterministic follow-ups around
   the current best model (add a helpful feature it lacks, add the two best missing ones together,
   drop one of its features, refine the penalty around the chosen alpha, swap the model family).
-  Candidates are hashed like any queued experiment and never re-proposed, so the engine runs dry
-  instead of looping; it exists because the planner, not CPU, bounds throughput.
+  Candidates carry the best model's feature parameters and seed, are hashed like any queued
+  experiment (a guardrail rejection keeps its hash too) and are never re-proposed, so the engine
+  runs dry instead of looping; a run ends as exhausted only after one last exploit pass found
+  nothing. It exists because the planner, not CPU, bounds throughput. Summaries count completed
+  experiments by proposer (`completed_by_proposer`, `experiments_completed_planner`), so the
+  scaling report can compare worker counts on planner-proposed work alone.
 * **Ensemble finalist** (`genemila/report.py: ensemble_finalist`, `final.ensemble`): the average
   of the finalists' predicted deltas is scored like any experiment on the visible perturbations
   and, only when it beats the best single model there, becomes one more candidate for the sealed
   set (kind `ensemble`, one query-only evaluation). It never becomes the run's "best" experiment
-  that the planner or a warm start builds on.
+  that the planner or a warm start builds on. Sealed-set queries go singles, starting model,
+  ensemble, so a query cap of `top_k + 1` still scores the baseline; a damaged member artifact
+  logs `ensemble_error` and leaves no half-built row; `reproduce.py` reproduces an ensemble
+  through its members and re-averages them.
 * **Warm start** (`run_research.py --continue-from RUN_DIR`, `Lab.warm_start`): a run on the same
   dataset and split imports the earlier run's useful features (code and metadata) into its store,
   queues that run's best model as its starting experiment, and gives the planner a PRIOR CAMPAIGN

@@ -268,6 +268,8 @@ class Lab:
         spec.timeout_s = min(spec.timeout_s, self.limits["timeout_s"])
         parent = self.db.get_experiment(spec.parent_experiment_id) if spec.parent_experiment_id else None
         record = spec.to_record(self.dataset, self.split_id, self.run_id)
+        if spec.kind != "new_feature":  # hashed before validation, so a rejected configuration is never re-proposed
+            record["config_hash"] = self.config_hash_for(spec)
         try:
             flags = validate_spec(spec, self.known_features(), self.limits, parent)
         except GuardrailViolation as exc:
@@ -280,16 +282,15 @@ class Lab:
         if self.cv_folds > 1:  # set by the lab after validation (agents cannot choose it): same folds for all
             spec.hyperparameters = {**spec.hyperparameters, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
             record["hyperparameters_json"] = spec.hyperparameters
-        if spec.kind != "new_feature":
-            ch = self.config_hash_for(spec)
-            record["config_hash"] = ch
-            dup = self.db.find_by_config_hash(ch)
-            if dup:
-                record.update(status="duplicate", duplicate_of=dup["experiment_id"], finished_at=time.time(),
-                              failure_reason=f"identical configuration to {dup['experiment_id']}")
-                self.db.insert_experiment(record)
-                return spec.experiment_id, "duplicate"
-        self.db.insert_experiment(record)
+        with self.db.lock:  # the duplicate check and the insert are one step: two proposers cannot both win
+            if spec.kind != "new_feature":
+                dup = self.db.find_by_config_hash(record["config_hash"])
+                if dup:
+                    record.update(status="duplicate", duplicate_of=dup["experiment_id"], finished_at=time.time(),
+                                  failure_reason=f"identical configuration to {dup['experiment_id']}")
+                    self.db.insert_experiment(record)
+                    return spec.experiment_id, "duplicate"
+            self.db.insert_experiment(record)
         return spec.experiment_id, "queued"
 
     # --------------------------------------------------------------- evaluation

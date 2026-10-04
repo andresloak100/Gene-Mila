@@ -19,11 +19,13 @@ ALLOWED_IMPORT_ROOTS = {"numpy", "scipy", "sklearn", "math", "itertools", "funct
                         "typing", "__future__", "dataclasses", "statistics", "heapq"}
 ALLOWED_GENEMILA = {"genemila.features.api"}
 BANNED_NAMES = {"open", "eval", "exec", "compile", "__import__", "globals", "locals", "vars", "input",
-                "breakpoint", "getattr", "setattr", "delattr", "memoryview", "exit", "quit"}
+                "breakpoint", "getattr", "setattr", "delattr", "memoryview", "exit", "quit",
+                "type", "__file__", "__build_class__", "super"}
 BANNED_ATTRS = {"load", "save", "savez", "savez_compressed", "loadtxt", "genfromtxt", "fromfile", "tofile",
                 "memmap", "system", "popen", "read_csv", "read_table", "read_pickle", "to_csv",
                 "_train_delta", "_train_pos", "_targets", "_feature_cache", "public_dir", "cache_dir",
-                "_preloaded", "shared", "without_train", "_disk_cached", "__dict__",
+                "_preloaded", "shared", "without_train", "_disk_cached", "__init__", "__new__",
+                "__init_subclass__", "__dict__",
                 "__class__", "__subclasses__", "__globals__", "__builtins__", "__code__", "__bases__",
                 "__mro__", "f_globals", "f_locals"}
 
@@ -50,6 +52,10 @@ def check_plugin_source(source: str, expected_name: str) -> dict:
                 problems.append(f"import from {mod!r} not allowed")
             if mod.split(".")[0] in ("numpy", "scipy") and any(a.name in BANNED_ATTRS for a in node.names):
                 problems.append("importing file I/O helpers is not allowed")
+        elif isinstance(node, ast.Call) and (
+                (isinstance(node.func, ast.Name) and node.func.id == "FeatureContext")
+                or (isinstance(node.func, ast.Attribute) and node.func.attr == "FeatureContext")):
+            problems.append("constructing a FeatureContext is not allowed (use the ctx you are given)")
         elif isinstance(node, ast.Name) and node.id in BANNED_NAMES:
             problems.append(f"use of {node.id!r} not allowed")
         elif isinstance(node, ast.Attribute) and node.attr in BANNED_ATTRS:

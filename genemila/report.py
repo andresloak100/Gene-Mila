@@ -21,7 +21,7 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
     no new oracle query is made: only experiments already scored on the sealed set are reported, so a
     re-generated summary keeps its tables without spending query budget."""
     db = lab.db
-    cands = db.query("SELECT * FROM experiments WHERE status='completed' AND kind!='baseline' "
+    cands = db.query("SELECT * FROM experiments WHERE status='completed' AND kind NOT IN ('baseline', 'ensemble') "
                      "ORDER BY primary_score DESC")
     if not allow_new:
         cands = [c for c in cands if c.get("query_metrics_json")]
@@ -33,15 +33,23 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
             picked.append(c)
         if len(picked) >= top_k:
             break
-    if allow_new and lab.cfg.get("final", {}).get("ensemble", True) and not any(c["kind"] == "ensemble" for c in picked):
-        ens = ensemble_finalist(lab, [c for c in picked if c["kind"] != "ensemble"])
-        if ens is not None:
-            picked.append(ens)
-    # finalists by visible score (the headline is whichever wins on the visible perturbations), baseline last
-    picked.sort(key=lambda c: -(c.get("primary_score") or 0))
+    # query order: the single finalists, then the starting model, then the ensemble; so a query cap of
+    # top_k + 1 still scores the baseline and the ensemble is the one left out
+    singles = list(picked)
     base = lab.best_baseline()
     if base and (allow_new or base.get("query_metrics_json")):
         picked.append(base)
+    ens = None
+    if allow_new and lab.cfg.get("final", {}).get("ensemble", True):
+        try:
+            ens = ensemble_finalist(lab, singles)
+        except Exception as exc:  # a damaged member artifact must not lose the report
+            db.event("ensemble_error", f"{type(exc).__name__}: {exc}"[:300], level="warning")
+    elif not allow_new:
+        ens = next(iter(db.query("SELECT * FROM experiments WHERE kind='ensemble' AND status='completed' "
+                                 "AND query_metrics_json IS NOT NULL LIMIT 1")), None)
+    if ens is not None:
+        picked.append(ens)
     out = []
     for c in picked:
         try:
@@ -69,6 +77,8 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
         if v1 is not None:
             row["cell_eval"] = {"val1": v1, "val2": lab.celleval_val2(c["experiment_id"])}
         out.append(row)
+    # shown by visible score (the headline is whichever wins on the visible perturbations), baseline last
+    out.sort(key=lambda r: (r["kind"] == "baseline", -(r["visible_score"] or 0)))
     return out
 
 
@@ -114,28 +124,32 @@ def ensemble_finalist(lab, members: list[dict]) -> dict | None:
                 return None
             cv_perts, c, _ = chosen(cvp, m["best_alpha"])
             cvs.append(c)
+    ids = [m["experiment_id"] for m in members]
     eid = lab.db.next_experiment_id()
     art = lab.artifacts / eid
-    art.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(art / "predictions.npz", delta=np.mean(deltas, axis=0)[None].astype(np.float32),
-                        perts=np.array(perts_ref), alphas=np.array([0.0]))
-    if cvs:
-        np.savez_compressed(art / "cv.npz", delta=np.mean(cvs, axis=0)[None].astype(np.float32),
-                            perts=np.array(cv_perts), alphas=np.array([0.0]), folds=np.array([lab.cv_folds]))
-    ids = [m["experiment_id"] for m in members]
+    kept = False
     try:
-        ev = lab.evaluate_artifact(art / "predictions.npz")
-    except ValueError as exc:
-        lab.db.event("ensemble_skipped", str(exc)[:300], level="warning")
-        shutil.rmtree(art, ignore_errors=True)
-        return None
-    best_single = max(m["primary_score"] for m in members)
-    if ev["metrics"]["primary"] <= best_single:
-        lab.db.event("ensemble_skipped", f"average of {', '.join(ids)} scores {ev['metrics']['primary']:.4f} on the "
-                     f"visible perturbations, not above the best single model ({best_single:.4f})")
-        shutil.rmtree(art, ignore_errors=True)
-        lab.db.execute("DELETE FROM experiments WHERE experiment_id=? AND status='reserved'", (eid,))
-        return None
+        art.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(art / "predictions.npz", delta=np.mean(deltas, axis=0)[None].astype(np.float32),
+                            perts=np.array(perts_ref), alphas=np.array([0.0]))
+        if cvs:
+            np.savez_compressed(art / "cv.npz", delta=np.mean(cvs, axis=0)[None].astype(np.float32),
+                                perts=np.array(cv_perts), alphas=np.array([0.0]), folds=np.array([lab.cv_folds]))
+        try:
+            ev = lab.evaluate_artifact(art / "predictions.npz")
+        except ValueError as exc:
+            lab.db.event("ensemble_skipped", str(exc)[:300], level="warning")
+            return None
+        best_single = max(m["primary_score"] for m in members)
+        if ev["metrics"]["primary"] <= best_single:
+            lab.db.event("ensemble_skipped", f"average of {', '.join(ids)} scores {ev['metrics']['primary']:.4f} on "
+                         f"the visible perturbations, not above the best single model ({best_single:.4f})")
+            return None
+        kept = True
+    finally:
+        if not kept:  # nothing half-built survives: no artifact, no reserved id
+            shutil.rmtree(art, ignore_errors=True)
+            lab.db.execute("DELETE FROM experiments WHERE experiment_id=? AND status='reserved'", (eid,))
     feature_set = sorted(set().union(*[set(m.get("feature_set_json") or []) for m in members]))
     lab.db.insert_experiment({
         "experiment_id": eid, "run_id": lab.run_id, "status": "completed", "kind": "ensemble",
@@ -193,6 +207,12 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
     llm_w, llm_p = db.llm_totals("worker"), db.llm_totals("planner")
     gain = (best["primary_score"] - base["primary_score"]) if best and base else None
     hours = max(wall_s, 1) / 3600
+    counted = [e for e in done if e["kind"] not in ("baseline", "ensemble")]  # what the efficiency rates count
+    by_proposer = {}
+    for e in counted:
+        by_proposer[e.get("proposer") or "planner"] = by_proposer.get(e.get("proposer") or "planner", 0) + 1
+    planner_only = [e for e in counted if not (e.get("proposer") or "").startswith("python:")]
+    planner_groups = {e.get("hypothesis_group") for e in proposed if not (e.get("proposer") or "").startswith("python:")}
     summary = {
         "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id, "base_commit": lab.base_commit,
         "duration_s": round(wall_s, 1), "workers": workers or run.get("workers"),
@@ -200,7 +220,10 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "selection": {"cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
                       "n_visible": len(lab._val1.perts) + (len(lab._train.perts) if lab.cv_folds > 1 else 0)},
         "experiments_proposed": len(proposed),
-        "experiments_completed": len([e for e in done if e["kind"] not in ("baseline", "ensemble")]),
+        "experiments_completed": len(counted),
+        "completed_by_proposer": by_proposer,  # "planner" (LLM or scripted) vs python:exploit, python:warm_start
+        "experiments_completed_planner": len(planner_only),
+        "unique_hypotheses_planner": len(planner_groups),
         "experiments_failed": len(by.get("failed", [])), "experiments_rejected": len(by.get("rejected", [])),
         "experiments_killed": len(by.get("killed", [])), "experiments_cancelled": len(by.get("cancelled", [])),
         "duplicate_experiments": len(by.get("duplicate", [])),
@@ -233,11 +256,12 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "surprising_results": surprising,
         "generalization_query_only": generalization or [],
         "compute_efficiency": {
-            "experiments_per_hour": round(len(done) / hours, 2),
-            "mean_cpu_s_per_experiment": round(cpu_s / max(1, len(done)), 2),
+            "experiments_per_hour": round(len(counted) / hours, 2),
+            "planner_experiments_per_hour": round(len(planner_only) / hours, 2),
+            "mean_cpu_s_per_experiment": round(cpu_s / max(1, len(counted)), 2),
             "gain_per_cpu_hour": None if gain is None or cpu_s == 0 else gain / (cpu_s / 3600),
             "gain_per_usd": None if gain is None or not llm["cost_usd"] else gain / llm["cost_usd"],
-            "cost_per_completed_experiment_usd": llm["cost_usd"] / max(1, len(done)),
+            "cost_per_completed_experiment_usd": llm["cost_usd"] / max(1, len(counted)),
         },
         "reproduction_command": None if not best else
             f"python reproduce.py --run {lab.run_dir} --experiment {best['experiment_id']}",
@@ -251,7 +275,8 @@ def render_markdown(s: dict) -> str:
          f"- Duration: {s['duration_s'] / 60:.1f} min",
          f"- Workers: {s['workers']}",
          f"- Experiments proposed: {s['experiments_proposed']}",
-         f"- Experiments completed: {s['experiments_completed']} (plus baselines)",
+         f"- Experiments completed: {s['experiments_completed']} (plus baselines; "
+         + ", ".join(f"{k}: {v}" for k, v in sorted((s.get('completed_by_proposer') or {}).items())) + ")",
          f"- Experiments failed / rejected / killed / not started: {s['experiments_failed']} / "
          f"{s['experiments_rejected']} / {s['experiments_killed']} / {s['experiments_cancelled']}",
          f"- Unique hypotheses: {s['unique_hypotheses']} (replicated: {s['replicated_hypotheses']}); "
@@ -281,6 +306,14 @@ def render_markdown(s: dict) -> str:
     L += ["", "## FAILED FEATURES"]
     L += [f"- {f['experiment_id']} {f['feature']} [{f['stage']}]: {f['reason']}" for f in s["failed_features"]] or ["- none"]
     L += ["", "## SURPRISING RESULTS"] + ([f"- {x}" for x in s["surprising_results"]] or ["- none"])
+    ens = s.get("ensemble")
+    L += ["", "## ENSEMBLE FINALIST"]
+    if ens:
+        L += [f"{ens['experiment_id']}: average of {', '.join(ens['members'] or [])} scores {_fmt(ens['score'])} on the "
+              f"visible perturbations (query-only {_fmt(ens['query_only_score'])}). It is a finalist, not the best "
+              "single model; the union of its members' features is listed in summary.json."]
+    else:
+        L += ["- none kept (the average of the finalists did not beat the best single model, or ensembles are off)"]
     L += ["", "## GENERALIZATION TO QUERY-ONLY VALIDATION", "| experiment | kind | visible | query-only | gap |",
           "|---|---|---|---|---|"]
     L += [f"| {g['experiment_id']} | {g['kind']} | {g['visible_score']:.4f} | {g['query_only_score']:.4f} | "

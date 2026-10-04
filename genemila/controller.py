@@ -258,6 +258,7 @@ class Controller:
                     next_status = time.time() + interval
                 if self._exhausted():
                     self._log("nothing left to do (planner exhausted and queue empty); stopping early")
+                    self.lab.db.event("exhausted", "planner exhausted, queue empty, no exploit follow-up left")
                     break
                 if time.time() >= next_disk_check:
                     next_disk_check = time.time() + 30
@@ -291,7 +292,14 @@ class Controller:
             if not capped and not self.planner.dry():
                 return False
         c = self.lab.db.count_by_status()
-        return c.get("queued", 0) == 0 and not any(w.current for w in self.workers)
+        if c.get("queued", 0) or any(w.current for w in self.workers):
+            return False
+        if self.python_exploit:  # the throttle must not end a run while follow-ups remain
+            self._next_exploit = 0.0
+            self._maybe_exploit()
+            if self.lab.db.count_by_status().get("queued", 0):
+                return False
+        return True
 
     def shutdown(self) -> dict:
         self.lab.stop_event.set()

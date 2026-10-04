@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import threading
 import time
 
@@ -144,6 +145,40 @@ def test_controller_end_to_end_and_reproduce(lab_factory):
     import reproduce
     r = reproduce.reproduce(lab, summary["best"]["experiment_id"])
     assert r["reproducible"], r
+    # an ensemble of completed experiments reproduces through its members
+    import numpy as np
+    members = lab.db.query("SELECT * FROM experiments WHERE status='completed' AND artifact_dir IS NOT NULL "
+                           "AND kind!='ensemble' ORDER BY primary_score DESC LIMIT 2")
+    assert len(members) == 2
+    deltas = []
+    for m in members:
+        z = np.load(Path(m["artifact_dir"]) / "predictions.npz", allow_pickle=False)
+        alphas = list(map(float, z["alphas"]))
+        deltas.append(z["delta"][alphas.index(float(m["best_alpha"]))].astype(np.float64))
+        perts = np.array([str(p) for p in z["perts"]])
+    eid = lab.db.next_experiment_id()
+    art = lab.artifacts / eid
+    art.mkdir(parents=True)
+    np.savez_compressed(art / "predictions.npz", delta=np.mean(deltas, axis=0)[None].astype(np.float32), perts=perts,
+                        alphas=np.array([0.0]))
+    ev = lab.evaluate_artifact(art / "predictions.npz") if lab.cv_folds <= 1 else None
+    if ev is None:  # cv.npz is required when folds are on: average the members' out-of-fold predictions too
+        cvs = []
+        for m in members:
+            z = np.load(Path(m["artifact_dir"]) / "cv.npz", allow_pickle=False)
+            alphas = list(map(float, z["alphas"]))
+            cvs.append(z["delta"][alphas.index(float(m["best_alpha"]))].astype(np.float64))
+            cv_perts = z["perts"]
+        np.savez_compressed(art / "cv.npz", delta=np.mean(cvs, axis=0)[None].astype(np.float32), perts=cv_perts,
+                            alphas=np.array([0.0]), folds=np.array([lab.cv_folds]))
+        ev = lab.evaluate_artifact(art / "predictions.npz")
+    lab.db.insert_experiment({"experiment_id": eid, "run_id": lab.run_id, "status": "completed", "kind": "ensemble",
+                              "model_type": "ensemble", "dataset": lab.dataset, "split_id": lab.split_id,
+                              "primary_score": ev["metrics"]["primary"], "best_alpha": 0.0, "artifact_dir": str(art),
+                              "diagnostics_json": {"members": [m["experiment_id"] for m in members]},
+                              "hypothesis": "ensemble for the reproduce test"})
+    r = reproduce.reproduce(lab, eid)
+    assert r["kind"] == "ensemble" and r["reproducible"] and len(r["members"]) == 2, r
 
 
 def test_deadline_is_enforced(lab_factory):
@@ -253,11 +288,66 @@ def test_python_exploit_fills_the_queue_without_llm(lab_factory):
     groups = [r["hypothesis_group"] for r in rows]
     assert any(g.startswith("exploit_alpha_") for g in groups) or any(g.startswith("exploit_model_") for g in groups)
     assert summary["experiments_completed"] >= 4
+    # a run that stopped early did so only once no exploit follow-up was left
+    if lab.db.query("SELECT 1 FROM events WHERE kind='exhausted'"):
+        assert exploit.propose(lab, 50) == []
     # once everything around the best has been tried, propose() is empty rather than looping
     best = lab.best()
     for spec in exploit.candidates(lab, best):
         lab.queue(spec)
     assert exploit.propose(lab, 5) == []
+
+
+def test_exploit_never_reproposes_a_rejected_candidate(lab_factory):
+    """A guardrail rejection is terminal for that configuration: the rejected row carries the configuration
+    hash, so the exploit engine does not offer it again every throttle interval."""
+    from genemila import exploit
+    lab = lab_factory()
+    lab.record_analytic_baselines()
+    eid, st = lab.queue(ExperimentSpec(hypothesis="Ridge on the built-in features as the starting model.",
+                                       scientific_rationale="Reference model rationale.", kind="config",
+                                       feature_set=list(BASE), hyperparameters={"alpha_grid": [1.0]}))
+    lab.db.update_experiment(eid, status="completed", primary_score=0.5, best_alpha=1.0)
+    cands = exploit.candidates(lab, lab.best())
+    assert cands
+    victim = cands[0]
+    victim.hypothesis = victim.hypothesis + " using the val2 oracle"  # protected component: rejected
+    vid, st = lab.queue(victim)
+    assert st == "rejected" and lab.db.get_experiment(vid)["config_hash"]
+    hashes = {lab.config_hash_for(c) for c in exploit.propose(lab, 50)}
+    assert lab.config_hash_for(victim) not in hashes
+    assert len(hashes) == len(cands) - 1
+
+
+def test_exploit_candidates_carry_params_and_seed():
+    """Follow-ups reproduce the best model's feature parameters and seed; dropped features lose their entry;
+    an analytic baseline (no model) yields no candidates."""
+    from genemila import exploit
+
+    class FakeLab:
+        cfg = {"experiment": {"default_alpha_grid": [0.1, 1.0, 10.0]}}
+
+        class db:
+            @staticmethod
+            def query(*a, **k):
+                return [{"new_feature": "coexpr_e5", "d": 0.05}]
+
+        @staticmethod
+        def known_features():
+            return set(BASE) | {"coexpr_e5", "tf_e7"}
+
+    best = {"experiment_id": "EXP_0009", "feature_set_json": list(BASE) + ["tf_e7"], "model_type": "ridge",
+            "best_alpha": 1.0, "hyperparameters_json": {"alpha_grid": [1.0]},
+            "feature_params_json": {"tf_e7": {"k": 3}, "mean_response": {"shrink": 0.5}}, "seed": 7}
+    cands = exploit.candidates(FakeLab(), best)
+    assert cands and all(c.seed == 7 for c in cands)
+    for c in cands:
+        assert set(c.feature_params) <= set(c.feature_set)
+        if "tf_e7" in c.feature_set:
+            assert c.feature_params["tf_e7"] == {"k": 3}
+    drop = next(c for c in cands if c.hypothesis_group.startswith("exploit_drop_tf_e7"))
+    assert "tf_e7" not in drop.feature_params and drop.feature_params["mean_response"] == {"shrink": 0.5}
+    assert exploit.candidates(FakeLab(), {"experiment_id": "EXP_0001", "feature_set_json": [], "model_type": "none"}) == []
 
 
 def test_warm_start_continues_a_campaign(lab_factory, tmp_path, dataset):

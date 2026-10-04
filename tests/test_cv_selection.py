@@ -52,7 +52,8 @@ def test_pipeline_writes_out_of_fold_predictions(dataset, tmp_path):
     # the cache keys on the training set: fold blocks and full blocks coexist without clashing
     names = {p.name.split("__")[0] for p in (tmp_path / "cache" / "features").glob("*.npy")}
     assert names == set(spec["feature_set"])
-    assert len(list((tmp_path / "cache" / "features").glob("mean_response__*.npy"))) >= 1 + 2 * 3
+    # label-dependent feature: one block for train, one for evals, one per fold (train-without-fold + fold)
+    assert len(list((tmp_path / "cache" / "features").glob("mean_response__*.npy"))) == 2 + 3
 
 
 def test_lab_selects_on_validation_plus_out_of_fold(lab_factory):
@@ -125,6 +126,48 @@ def test_ensemble_finalist_is_kept_only_when_it_wins(lab_factory):
         assert s["ensemble"]["experiment_id"] == ens["experiment_id"] and s["best"]["experiment_id"] != ens["experiment_id"]
         assert s["experiments_completed"] == len(lab.db.query(
             "SELECT 1 FROM experiments WHERE status='completed' AND kind NOT IN ('baseline','ensemble')"))
+        assert s["compute_efficiency"]["experiments_per_hour"] == round(s["experiments_completed"] / (45 / 3600), 2)
+        assert sum(s["completed_by_proposer"].values()) == s["experiments_completed"]
+        from genemila.report import render_markdown
+        assert "## ENSEMBLE FINALIST" in render_markdown(s) and ens["experiment_id"] in render_markdown(s)
+        # a re-summary without new queries keeps every queried finalist, the ensemble included
+        again = run_query_only(lab, 3, allow_new=False)
+        assert [r["experiment_id"] for r in again] == [r["experiment_id"] for r in rows]
+
+
+def test_query_cap_drops_the_ensemble_before_the_baseline(lab_factory):
+    """Query order is singles, starting model, ensemble: with a cap of top_k + 1 the baseline row (the gain's
+    reference) survives and the ensemble is the row left unscored; a later re-summary does not invent it."""
+    from genemila.controller import Controller
+    from genemila.providers.mock import MockProvider, ScriptedPlanner
+    from genemila.report import run_query_only
+    lab = lab_factory(final__ensemble=False, final__top_k=2, final__max_queries=3, schedule__max_planner_calls=2)
+    Controller(lab, workers=2, seconds=45, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+               quiet=True).run()
+    lab.cfg["final"]["ensemble"] = True
+    rows = run_query_only(lab, 2, allow_new=True)
+    kinds = [r["kind"] for r in rows]
+    assert kinds[-1] == "baseline" and "ensemble" not in kinds and len(rows) <= 3
+    again = run_query_only(lab, 2, allow_new=False)
+    assert [r["experiment_id"] for r in again] == [r["experiment_id"] for r in rows]
+
+
+def test_a_damaged_member_does_not_abort_the_report(lab_factory):
+    from genemila.controller import Controller
+    from genemila.providers.mock import MockProvider, ScriptedPlanner
+    from genemila.report import run_query_only
+    lab = lab_factory(final__ensemble=False, schedule__max_planner_calls=2)
+    Controller(lab, workers=2, seconds=45, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+               quiet=True).run()
+    singles = lab.db.query("SELECT * FROM experiments WHERE status='completed' AND kind!='baseline' "
+                           "ORDER BY primary_score DESC LIMIT 2")
+    (Path(singles[0]["artifact_dir"]) / "predictions.npz").write_bytes(b"not an npz")
+    lab.cfg["final"]["ensemble"] = True
+    rows = run_query_only(lab, 2, allow_new=True)
+    assert [r["kind"] for r in rows][-1] == "baseline" and "ensemble" not in [r["kind"] for r in rows]
+    assert lab.db.query("SELECT 1 FROM events WHERE kind='ensemble_error'")
+    assert not lab.db.query("SELECT 1 FROM experiments WHERE status='reserved'")
+    assert not lab.db.query("SELECT 1 FROM experiments WHERE kind='ensemble'")
 
 
 def test_ensemble_mechanics_on_identical_members(lab_factory):
@@ -151,3 +194,75 @@ def test_ensemble_mechanics_on_identical_members(lab_factory):
         recs.append(lab.db.get_experiment(eid))
     assert ensemble_finalist(lab, recs) is None
     assert not lab.db.query("SELECT 1 FROM experiments WHERE status='reserved'")
+
+
+MEMO_LEAKY = '''import numpy as np
+from genemila.features.api import Feature, register
+_MEMO = {}
+
+@register
+class F(Feature):
+    name = "memo_leak"
+    description = "Leaky through a module-level memo (test fixture)."
+    rationale = "fixture"
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        if "d" not in _MEMO:
+            _MEMO["d"] = ctx.train_delta()
+        names, d = _MEMO["d"]
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            if p in names:
+                out[i, :, 0] = d[names.index(p)]
+        return out
+'''
+
+
+def test_module_memo_cannot_hide_leakage_or_reach_a_fold(dataset, tmp_path):
+    from genemila.pipeline import smoke
+    from genemila.features import registry
+    pub = export_public(dataset, tmp_path / "pub")
+    plugins = tmp_path / "plugins"
+    plugins.mkdir()
+    (plugins / "memo_leak.py").write_text(MEMO_LEAKY)
+    r = smoke("memo_leak", pub, plugins, tmp_path / "smoke")
+    assert r["status"] == "failed" and any("leakage" in p for p in r["problems"])
+    # a fold view after a reload starts with an empty memo: the fold's labels are not in it
+    import sys
+    registry.load_plugins(plugins)
+    ctx = FeatureContext(pub)
+    registry.get("memo_leak")().compute(ctx, ctx.train_perts[:2], {})
+    assert "d" in sys.modules["genemila_plugin_memo_leak"]._MEMO
+    registry.reload_plugins()
+    assert "d" not in sys.modules["genemila_plugin_memo_leak"]._MEMO
+
+
+def test_label_independent_features_are_sliced_not_recomputed(dataset, tmp_path):
+    pub = export_public(dataset, tmp_path / "pub")
+    spec = {"experiment_id": "EXP_t", "feature_set": ["control_mean", "mean_response", "is_target"],
+            "feature_params": {}, "model_type": "ridge",
+            "hyperparameters": {"alpha_grid": [1.0], "cv_folds": 3, "cv_seed": 0}, "seed": 0}
+    res = run(spec, pub, tmp_path / "plugins", tmp_path / "out", cache_dir=tmp_path / "cache")
+    assert res["label_dependent_features"] == ["mean_response"]
+    cache = tmp_path / "cache" / "features"
+    assert len(list(cache.glob("control_mean__*.npy"))) == 2      # train and evals only, never per fold
+    assert len(list(cache.glob("is_target__*.npy"))) == 2
+    assert len(list(cache.glob("mean_response__*.npy"))) == 2 + 3  # plus one block per fold
+    assert (next(cache.glob("control_mean__*.dep"))).read_text() == "0"
+    assert (next(cache.glob("mean_response__*.dep"))).read_text() == "1"
+
+
+@pytest.mark.parametrize("snippet", [
+    "full = FeatureContext('../../public_data')",
+    "full = type(ctx)('x')",
+    "ctx.__init__('x')",
+    "p = __file__",
+])
+def test_guard_blocks_constructing_contexts(snippet):
+    from genemila.guard import CodeViolation, check_plugin_source
+    from genemila.providers.mock import TEMPLATES
+    code = TEMPLATES["coexpr"].replace("def compute(self, ctx, perts, params):",
+                                       f"def compute(self, ctx, perts, params):\n        {snippet}")
+    with pytest.raises(CodeViolation):
+        check_plugin_source(code, "coexpr")

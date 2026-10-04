@@ -80,6 +80,7 @@ class FeatureContext:
         self._targets: dict[str, list[str]] = json.loads((self.public_dir / "knowledge" / "targets.json").read_text())
         self._feature_cache: dict = {}
         self.cache: dict = {}  # free-form cache features may use for shared work
+        self.label_reads = 0   # how often training labels were read (tells label-dependent features apart)
 
     # ---- cross-validation views ---------------------------------------------------
     @property
@@ -111,6 +112,7 @@ class FeatureContext:
     # ---- training labels (leave-one-out aware) --------------------------------
     def train_delta(self, exclude: str | None = None) -> tuple[list[str], np.ndarray]:
         """Training perturbations and their delta profiles, minus `exclude`."""
+        self.label_reads += 1
         if exclude is not None and exclude in self._train_pos:
             keep = [i for p, i in self._train_pos.items() if p != exclude]
             return [self.train_perts[i] for i in keep], self._train_delta[keep]

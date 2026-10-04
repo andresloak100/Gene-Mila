@@ -41,6 +41,8 @@ def run_arm(cfg: dict) -> str:
     control (fixed hypotheses implemented by hand-written template features)."""
     p, w = cfg.get("planner", {}), cfg.get("worker", {})
     cont = " (continued campaign)" if cfg.get("run", {}).get("continue_from") else ""
+    if "python_exploit" in cfg.get("schedule", {}) and not cfg["schedule"]["python_exploit"]:
+        cont += " (no exploit)"
     if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
         return "scripted control (no LLM)" + cont
     return f"{p.get('provider', '?')}:{p.get('model', '')} planner, {w.get('provider', '?')}:{w.get('model', '')} workers" + cont

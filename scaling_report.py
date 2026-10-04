@@ -20,14 +20,18 @@ from genemila import REPO_ROOT
 from genemila.benchmark.table import run_arm
 
 MEASURES = [  # key, label, how to read it from (summary, analysis)
-    ("best_visible", "best visible", lambda s, a: (s.get("best") or {}).get("score")),
+    ("best_visible", "best visible", lambda s, a: _visible(s, "best")),
+    ("best_visible_single", "best visible (single model)", lambda s, a: (s.get("best") or {}).get("score")),
     ("best_sealed", "best sealed", lambda s, a: _sealed(s, "best")),
     ("best_sealed_single", "best sealed (single model)", lambda s, a: _sealed(s, "single")),
     ("gain_visible", "gain over start (visible)", lambda s, a: s.get("improvement_over_baseline")),
     ("gain_sealed", "gain over start (sealed)", lambda s, a: _gain_sealed(s)),
     ("completed", "experiments completed", lambda s, a: s.get("experiments_completed")),
+    ("completed_planner", "completed, planner-proposed", lambda s, a: _planner_count(s)),
+    ("exploit_share", "share proposed by the exploit engine", lambda s, a: _exploit_share(s)),
     ("failed", "failed", lambda s, a: s.get("experiments_failed")),
     ("unique", "unique hypotheses", lambda s, a: s.get("unique_hypotheses")),
+    ("unique_planner", "unique hypotheses, planner-proposed", lambda s, a: s.get("unique_hypotheses_planner", s.get("unique_hypotheses"))),
     ("duplicates", "duplicates skipped", lambda s, a: s.get("duplicate_experiments")),
     ("cpu_hours", "CPU hours", lambda s, a: s.get("cpu_hours")),
     ("wall_min", "wall minutes", lambda s, a: (s.get("duration_s") or 0) / 60),
@@ -36,6 +40,8 @@ MEASURES = [  # key, label, how to read it from (summary, analysis)
     ("cost_worker", "worker $ (DeepSeek)", lambda s, a: (s.get("llm_usage", {}).get("worker") or {}).get("cost_usd")),
     ("cost_planner", "planner $ (CLI estimate)", lambda s, a: (s.get("llm_usage", {}).get("planner") or {}).get("cost_usd")),
     ("exp_per_hour", "experiments / hour", lambda s, a: s.get("compute_efficiency", {}).get("experiments_per_hour")),
+    ("planner_exp_per_hour", "planner-proposed experiments / hour",
+     lambda s, a: s.get("compute_efficiency", {}).get("planner_experiments_per_hour", s.get("compute_efficiency", {}).get("experiments_per_hour"))),
     ("gain_per_usd", "gain per $", lambda s, a: s.get("compute_efficiency", {}).get("gain_per_usd")),
     ("gain_per_cpu_h", "gain per CPU-hour", lambda s, a: s.get("compute_efficiency", {}).get("gain_per_cpu_hour")),
     ("utilisation", "worker utilisation", lambda s, a: (a or {}).get("worker_utilisation")),
@@ -43,15 +49,36 @@ MEASURES = [  # key, label, how to read it from (summary, analysis)
 ]
 
 
-def _sealed(s, which):
+def _row(s, which):
     rows = s.get("generalization_query_only") or []
     if which == "best":
-        r = next((g for g in rows if g.get("kind") != "baseline"), None)
-    elif which == "single":
-        r = next((g for g in rows if g.get("kind") not in ("baseline", "ensemble")), None)
-    else:
-        r = next((g for g in rows if g.get("kind") == "baseline"), None)
+        return next((g for g in rows if g.get("kind") != "baseline"), None)
+    if which == "single":
+        return next((g for g in rows if g.get("kind") not in ("baseline", "ensemble")), None)
+    return next((g for g in rows if g.get("kind") == "baseline"), None)
+
+
+def _sealed(s, which):
+    r = _row(s, which)
     return None if r is None else r.get("query_only_score")
+
+
+def _visible(s, which):
+    """Visible score of the headline row (the same model whose sealed score is reported, ensemble included)."""
+    r = _row(s, which)
+    return (s.get("best") or {}).get("score") if r is None else r.get("visible_score")
+
+
+def _planner_count(s):
+    if "experiments_completed_planner" in s:
+        return s["experiments_completed_planner"]
+    return s.get("experiments_completed")  # runs before the exploit engine existed: everything was planner-proposed
+
+
+def _exploit_share(s):
+    done = s.get("experiments_completed") or 0
+    by = s.get("completed_by_proposer") or {}
+    return None if not done else by.get("python:exploit", 0) / done
 
 
 def _gain_sealed(s):
@@ -119,11 +146,15 @@ def render(runs):
     L = ["# Efficiency across worker counts", "",
          "Same dataset, split and time budget for every run; mean ± sd over repeats (n in the header). "
          "Gain is best model minus the starting model (best linear model on built-in features); "
-         "sealed = query-only held-out perturbations. Planner dollars are the Claude CLI's usage estimate.", "",
+         "sealed = query-only held-out perturbations. Planner dollars are the Claude CLI's usage estimate. "
+         "'best' rows take the headline finalist (an ensemble when one was kept); 'single model' rows the best "
+         "single model. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
+         "which run without an LLM whenever workers would otherwise idle (their share is listed).", "",
          "| measure | " + " | ".join(f"{k[0]}, {k[1]} workers (n={len(groups[k])})" for k in keys) + " |",
          "|---|" + "---|" * len(keys)]
     for key, label, _ in MEASURES:
-        digits = 0 if key in ("completed", "failed", "unique", "duplicates") else (1 if key in ("wall_min", "tokens_k", "exp_per_hour") else 3)
+        digits = 0 if key in ("completed", "completed_planner", "failed", "unique", "unique_planner", "duplicates") else (
+            1 if key in ("wall_min", "tokens_k", "exp_per_hour", "planner_exp_per_hour") else 3)
         L.append(f"| {label} | " + " | ".join(fmt(stats([r["values"][key] for r in groups[k]]), digits) for k in keys) + " |")
     L += ["", "Runs: " + "; ".join(f"{k[0]}, {k[1]} workers: " + ", ".join(r["dir"] for r in groups[k]) for k in keys), ""]
 
@@ -134,9 +165,10 @@ def render(runs):
         st = stats([r["values"]["gain_sealed"] for r in groups[k]])
         stv = stats([r["values"]["gain_visible"] for r in groups[k]])
         if st:
-            L.append(f"- No-LLM control ({st['n']} runs, identical hypotheses, timing is the only difference): sealed gain "
+            L.append(f"- No-LLM control ({st['n']} runs, the same scripted hypotheses every time; what varies is "
+                     f"timing, scheduling order and the exploit follow-ups that order produces): sealed gain "
                      f"{fmt(st, 4)}, visible gain {fmt(stv, 4)}. Differences between worker counts smaller than about "
-                     f"2 x this sd ({2 * st['sd']:.4f}) are within timing noise.")
+                     f"2 x this sd ({2 * st['sd']:.4f}) are within that noise.")
     llm = [k for k in keys if k[0] != "scripted control (no LLM)"]
     for i, ka in enumerate(llm):
         for kb in llm[i + 1:]:
