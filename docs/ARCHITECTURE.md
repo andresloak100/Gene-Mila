@@ -13,7 +13,12 @@
   fold views of the feature context that hide the fold's labels from feature code; folds fixed
   per run, set by the lab after validation so agents cannot choose them), and the primary score
   is the mean over validation plus out-of-fold perturbations; `pearson_delta` stays the
-  validation-set value and `pearson_delta_cv` the out-of-fold value. Fold views are enforced,
+  validation-set value and `pearson_delta_cv` the out-of-fold value. `experiment.selection` can
+  switch the selection score to `pearson_delta+r2_top` (half correlation of the change, half R² of
+  the expression on each perturbation's twenty most changed genes, every term averaged the same
+  way), because correlation alone cannot see that a heavily regularised model shrinks every
+  change; the oracle scores the sealed set under the same rule and reports `pearson_delta` by
+  name next to it, and `tools/replay_selection.py` replays the rules over finished runs. Fold views are enforced,
   not trusted: the guard refuses plugin code that constructs its own `FeatureContext`, reaches
   a class through `type()`, `__init__` or `__file__`, or routes around the view; plugin modules
   are re-executed before every fold (and between the smoke test's checks), so a module-level

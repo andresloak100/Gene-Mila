@@ -46,6 +46,9 @@ def run_arm(cfg: dict, summary: dict | None = None) -> str:
     cont = " (continued campaign)" if cfg.get("run", {}).get("continue_from") else ""
     if "python_exploit" in cfg.get("schedule", {}) and not cfg["schedule"]["python_exploit"]:
         cont += " (no exploit)"
+    rule = str(cfg.get("experiment", {}).get("selection") or "pearson_delta")
+    if rule != "pearson_delta":  # another selection rule is another arm
+        cont += f" (selection {rule})"
     if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
         return "scripted control (no LLM)" + cont
     planner = f"{p.get('provider', '?')}:{p.get('model', '')}"

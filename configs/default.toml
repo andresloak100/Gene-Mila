@@ -23,6 +23,9 @@ feature_cache_max_mb = 4096    # oldest cached feature blocks are evicted beyond
 keep_all_alphas = false        # keep every alpha's predictions in predictions.npz (else only the chosen one)
 cv_folds = 5                   # model selection also uses out-of-fold predictions for the training
                                # perturbations (K folds, fixed per run); 0 = visible validation set only
+selection = "pearson_delta"    # selection score: pearson_delta (correlation of the change, blind to its size) or
+                               # pearson_delta+r2_top (adds R² on each perturbation's 20 most changed genes, so a
+                               # model that shrinks every change loses); a lab setting agents cannot change
 default_model = "ridge"
 default_alpha_grid = [0.01, 0.1, 1.0, 10.0, 100.0]
 

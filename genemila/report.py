@@ -66,6 +66,7 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
                "members": ((c.get("diagnostics_json") or {}).get("members") if c["kind"] == "ensemble" else None),
                "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
                "gap": c["primary_score"] - q["metrics"]["primary"],
+               "query_only_pearson_delta": q["metrics"].get("pearson_delta"),  # by name, whatever the rule
                "comparable": {"val1": {k: v for k, v in (c.get("val_metrics_json") or {}).items()
                                        if k.startswith(COMPARABLE_PREFIXES)},
                               "val2": {k: v for k, v in q["metrics"].items() if k.startswith(COMPARABLE_PREFIXES)}}}
@@ -248,7 +249,7 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "duration_s": round(wall_s, 1), "duration_note": duration_note, "finished_at": end,
         "workers": workers or run.get("workers"),
         "continued_from": lab.cfg["run"].get("continue_from"),
-        "selection": {"cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
+        "selection": {"rule": lab.selection, "cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
                       "n_visible": len(lab._val1.perts) + (len(lab._train.perts) if lab.cv_folds > 1 else 0)},
         "experiments_proposed": len(proposed),
         "experiments_completed": len(counted),

@@ -23,10 +23,10 @@ MEASURES = [  # key, label, how to read it from (summary, analysis)
     ("best_visible", "best visible (selection score)", lambda s, a: _visible(s, "best")),
     ("best_visible_single", "best visible (single model, selection score)", lambda s, a: (s.get("best") or {}).get("score")),
     ("best_val1", "best visible (validation set only)", lambda s, a: ((s.get("best") or {}).get("metrics") or {}).get("pearson_delta")),
-    ("best_sealed", "best sealed", lambda s, a: _sealed(s, "best")),
-    ("best_sealed_single", "best sealed (single model)", lambda s, a: _sealed(s, "single")),
+    ("best_sealed", "best sealed pearson_delta", lambda s, a: _sealed(s, "best")),
+    ("best_sealed_single", "best sealed pearson_delta (single model)", lambda s, a: _sealed(s, "single")),
     ("gain_visible", "gain over start (visible)", lambda s, a: s.get("improvement_over_baseline")),
-    ("gain_sealed", "gain over start (sealed)", lambda s, a: _gain_sealed(s)),
+    ("gain_sealed", "gain over start (sealed pearson_delta)", lambda s, a: _gain_sealed(s)),
     ("completed", "experiments completed", lambda s, a: s.get("experiments_completed")),
     ("completed_planner", "completed, planner-proposed", lambda s, a: _planner_count(s)),
     ("exploit_share", "share proposed by the exploit engine", lambda s, a: _exploit_share(s)),
@@ -60,8 +60,10 @@ def _row(s, which):
 
 
 def _sealed(s, which):
+    """Sealed pearson_delta of the row: the selection score itself under the default rule; a run under another
+    rule (experiment.selection) reports it by name, so arms stay comparable on the same metric."""
     r = _row(s, which)
-    return None if r is None else r.get("query_only_score")
+    return None if r is None else r.get("query_only_pearson_delta", r.get("query_only_score"))
 
 
 def _visible(s, which):
@@ -155,7 +157,7 @@ def render(runs):
     L = ["# Efficiency across worker counts", "",
          "Same dataset, split and time budget for every run; mean ± sd over repeats (n in the header). "
          "Gain is best model minus the starting model (best linear model on built-in features); "
-         "sealed = query-only held-out perturbations. Planner dollars are real API spend for an API planner (DeepSeek) and the Claude CLI's usage estimate for a Claude planner. "
+         "sealed = query-only held-out perturbations, always reported as pearson_delta whatever selection rule the run used. Planner dollars are real API spend for an API planner (DeepSeek) and the Claude CLI's usage estimate for a Claude planner. "
          "'best' rows take the headline finalist (an ensemble when one was kept); 'single model' rows the best "
          "single model. The selection score is what each run optimised: on code with cross-validated selection it "
          "averages the validation set and out-of-fold training perturbations, so it is lower than, and not "

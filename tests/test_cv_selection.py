@@ -286,3 +286,48 @@ def test_summary_of_a_killed_run_caps_its_duration_at_the_deadline(lab_factory):
     assert abs(row["finished_at"] - (now - 5 * 3600 + 1200 + grace)) < 1  # stored, so a second summary agrees
     s2 = build_summary(lab, None, 2, [])
     assert abs(s2["duration_s"] - s["duration_s"]) < 1 and s2["duration_note"] is None
+
+
+def test_de_aware_selection_prefers_the_right_scale(lab_factory):
+    """Two alphas of one experiment: a shrunken prediction with the perfect pattern, and one at the right size with
+    a noisier pattern. pearson_delta alone picks the shrunken one; the DE-aware rule picks the right size."""
+    labs = {rule: lab_factory(experiment__cv_folds=0, experiment__selection=rule)
+            for rule in ("pearson_delta", "pearson_delta+r2_top")}
+    lab = labs["pearson_delta"]
+    rng = np.random.default_rng(0)
+    true_delta = lab._val1.means - lab.control_mean
+    shrunk = 0.2 * true_delta
+    noisy = true_delta + rng.normal(0, 0.4 * true_delta.std(), true_delta.shape)
+    art = lab.artifacts / "EXP_scale"
+    art.mkdir()
+    np.savez_compressed(art / "predictions.npz", delta=np.stack([shrunk, noisy]).astype(np.float32),
+                        perts=np.array(lab._val1.perts), alphas=np.array([0.0, 1.0]))
+    ev_pd = lab.evaluate_artifact(art / "predictions.npz")
+    ev_de = labs["pearson_delta+r2_top"].evaluate_artifact(art / "predictions.npz")
+    assert ev_pd["best_alpha"] == 0.0 and ev_pd["metrics"]["pearson_delta"] == pytest.approx(1)
+    assert ev_de["best_alpha"] == 1.0 and ev_de["metrics"]["selection_rule"] == "pearson_delta+r2_top"
+    assert ev_de["metrics"]["mse_top"] < ev_pd["metrics"]["mse_top"]
+    assert ev_de["metrics"]["primary"] == pytest.approx(0.5 * (ev_de["metrics"]["pearson_delta"] + ev_de["metrics"]["r2_top"]))
+
+
+def test_de_aware_rule_combines_folds_and_reaches_the_oracle(lab_factory):
+    lab = lab_factory(experiment__cv_folds=3, experiment__selection="pearson_delta+r2_top")
+    lab.record_analytic_baselines()
+    base = lab.best_baseline()
+    m = base["val_metrics_json"]
+    n1, nt = len(lab._val1.perts), len(lab._train.perts)
+    pd = (n1 * m["pearson_delta"] + nt * m["pearson_delta_cv"]) / (n1 + nt)
+    r2 = (n1 * m["r2_top"] + nt * m["r2_top_cv"]) / (n1 + nt)
+    assert m["primary"] == pytest.approx(0.5 * (pd + r2)) and m["selection_rule"] == "pearson_delta+r2_top"
+    q = lab.query_only(base["experiment_id"])["metrics"]  # the sealed score means the same thing as the visible one
+    assert q["selection_rule"] == "pearson_delta+r2_top"
+    assert q["primary"] == pytest.approx(0.5 * (q["pearson_delta"] + q["r2_top"]))
+    with pytest.raises(ValueError, match="experiment.selection"):
+        lab_factory(experiment__selection="nope")
+
+
+def test_warm_start_refuses_a_run_selected_by_another_rule(lab_factory):
+    prev = lab_factory()
+    nxt = lab_factory(experiment__selection="pearson_delta+r2_top")
+    with pytest.raises(RuntimeError, match="selected models by pearson_delta"):
+        nxt.warm_start(prev.run_dir)

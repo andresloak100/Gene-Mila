@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 
 from . import REPO_ROOT
-from .benchmark import PRIMARY_HIGHER_IS_BETTER, PRIMARY_METRIC
+from .benchmark import PRIMARY_HIGHER_IS_BETTER, PRIMARY_METRIC, SELECTION_RULES, selection_score
 from .benchmark import comparable, reference
 from .benchmark.evaluator import evaluate
 from .benchmark.oracle import QueryOracle
@@ -56,8 +56,13 @@ class Lab:
             ledger_path = self.repo / ledger_path
         self.gateway = LLMGateway(self.db, cfg, self.run_id, SpendLedger(ledger_path))
         # the query-only cap is per run: queries already recorded in lab.db count, whichever process asks
+        # the model-selection rule is a lab setting (never an agent's choice); see benchmark.SELECTION_RULES
+        self.selection = str(cfg["experiment"].get("selection") or PRIMARY_METRIC)
+        if self.selection not in SELECTION_RULES:
+            raise ValueError(f"experiment.selection must be one of {sorted(SELECTION_RULES)}, not {self.selection!r}")
         self.oracle = QueryOracle(self.data_dir, max_queries=int(cfg.get("final", {}).get("max_queries", 5)),
-                                  used=lambda: self.db.query("SELECT COUNT(*) AS n FROM events WHERE kind='query_only'")[0]["n"])
+                                  used=lambda: self.db.query("SELECT COUNT(*) AS n FROM events WHERE kind='query_only'")[0]["n"],
+                                  selection=self.selection)
         self.stop_event = threading.Event()   # no new experiments / LLM calls
         self.kill_event = threading.Event()   # terminate running subprocesses
         self.gateway.stop_event = self.stop_event  # waits inside the gateway end at the deadline
@@ -191,6 +196,12 @@ class Lab:
             if run["dataset"] != self.dataset or run["split_id"] != self.split_id:
                 raise RuntimeError(f"cannot continue from {run['run_id']}: it ran on {run['dataset']} "
                                    f"({run['split_id']}), this run is on {self.dataset} ({self.split_id})")
+            raw = run.get("config_json")
+            prev_cfg = json.loads(raw) if isinstance(raw, str) else (raw or {})
+            prev_rule = str((prev_cfg.get("experiment") or {}).get("selection") or PRIMARY_METRIC)
+            if prev_rule != self.selection:  # its scores (and its best) were ranked by another rule
+                raise RuntimeError(f"cannot continue from {run['run_id']}: it selected models by {prev_rule}, "
+                                   f"this run selects by {self.selection}")
             best = prev.best()
             if best is None:
                 raise RuntimeError(f"{run['run_id']} has no completed experiment to continue from")
@@ -321,10 +332,10 @@ class Lab:
         best, scores = None, []
         for k, alpha in enumerate(z["alphas"]):
             pred = z["delta"][k][rows].astype(np.float64) + self.control_mean
-            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts)
+            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection)
             if cv is not None:
                 cv_res = evaluate(cv[k].astype(np.float64) + self.control_mean, self._train.means,
-                                  self.control_mean, self._train.perts)
+                                  self.control_mean, self._train.perts, selection=self.selection)
                 self._combine_visible(res["metrics"], cv_res["metrics"])
             scores.append({"alpha": float(alpha), PRIMARY_METRIC: res["metrics"][PRIMARY_METRIC],
                            "primary": res["metrics"]["primary"]})
@@ -340,11 +351,15 @@ class Lab:
                 "diagnostics": res["diagnostics"], "alpha_scores": scores}
 
     def _combine_visible(self, metrics: dict, cv_metrics: dict) -> None:
-        """primary = mean of the per-perturbation primary metric over validation + out-of-fold training
-        perturbations (each perturbation weighs the same)."""
+        """primary = the selection rule applied to each of its metrics averaged over validation + out-of-fold
+        training perturbations (each perturbation weighs the same); `<metric>` stays the validation-set value
+        and `<metric>_cv` the out-of-fold value."""
         n1, nt = len(self._val1.perts), len(self._train.perts)
-        metrics[f"{PRIMARY_METRIC}_cv"] = cv_metrics[PRIMARY_METRIC]
-        metrics["primary"] = (n1 * metrics[PRIMARY_METRIC] + nt * cv_metrics[PRIMARY_METRIC]) / (n1 + nt)
+        combined = {}
+        for m in sorted({PRIMARY_METRIC, *SELECTION_RULES[self.selection]}):
+            metrics[f"{m}_cv"] = cv_metrics[m]
+            combined[m] = (n1 * metrics[m] + nt * cv_metrics[m]) / (n1 + nt)
+        metrics["primary"] = selection_score(combined, self.selection)
         metrics["n_visible"] = n1 + nt
         metrics["cv_folds"] = self.cv_folds
 
@@ -442,9 +457,9 @@ class Lab:
                 continue
             t0 = time.process_time()
             pred = self._analytic_baseline(key, self._val1.perts)
-            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts)
+            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection)
             if self.cv_folds > 1:
-                cv_res = evaluate(self._cv_baseline(key), self._train.means, self.control_mean, self._train.perts)
+                cv_res = evaluate(self._cv_baseline(key), self._train.means, self.control_mean, self._train.perts, selection=self.selection)
                 self._combine_visible(res["metrics"], cv_res["metrics"])
             res["metrics"].update(self.comparable_val1(pred))
             eid = self.db.next_experiment_id()

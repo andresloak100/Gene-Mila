@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 from ..data.bundle import LabelSet
-from . import comparable, reference
+from . import PRIMARY_METRIC, comparable, reference
 from .evaluator import evaluate
 
 
@@ -27,13 +27,15 @@ class QueryBudgetExceeded(RuntimeError):
 
 
 class QueryOracle:
-    def __init__(self, data_dir: Path, max_queries: int = 5, used: "callable | None" = None):
+    def __init__(self, data_dir: Path, max_queries: int = 5, used: "callable | None" = None,
+                 selection: str = PRIMARY_METRIC):
         """`used` returns how many queries the run has already made (persisted by the lab in its database),
         so the cap holds per run, across processes and re-summaries, not per process."""
         self._labels_path = Path(data_dir) / "private" / "val2.npz"
         self.max_queries = max_queries
         self.queries: list[dict] = []
         self._used = used
+        self.selection = selection  # the run's selection rule: sealed `primary` means the same as visible
         self._lock = threading.Lock()
         self._ref = False  # DE reference for comparable metrics, loaded on first query
 
@@ -55,7 +57,7 @@ class QueryOracle:
             if sorted(idx) != sorted(labels.perts):
                 raise ValueError("predictions must cover exactly the query-only perturbations")
             pred = np.stack([pred[idx[p]] for p in labels.perts])
-            result = evaluate(pred, labels.means, control_mean, labels.perts)
+            result = evaluate(pred, labels.means, control_mean, labels.perts, selection=self.selection)
             if self._ref is False:
                 self._ref = reference.load(self._labels_path.parent.parent, "val2")
             result["metrics"].update(comparable.score(pred, labels.means, labels.perts, self._ref, control_mean))

@@ -140,7 +140,11 @@ exploration mix, providers and models, budgets, prices). Override with `--config
 or `--set section.key=value`. Model selection uses every visible perturbation: each experiment
 also predicts the training perturbations out of fold (`experiment.cv_folds`, fixed folds per run,
 set by the lab and not by agents) and the primary score averages those with the visible
-validation set, so the search signal rests on 60-70 perturbations instead of 15-20. While the
+validation set, so the search signal rests on 60-70 perturbations instead of 15-20.
+`experiment.selection` names the selection score: `pearson_delta` (the default: correlation of the
+predicted change, blind to its size) or `pearson_delta+r2_top`, which adds R² on each perturbation's
+twenty most changed genes so a model that shrinks every change loses; `tools/replay_selection.py`
+replays both rules over finished runs for free. While the
 planner thinks, `schedule.python_exploit` queues deterministic follow-ups around the best model
 (add a helpful feature, ablate, refine alpha, swap the model family) so workers never idle; and
 `final.ensemble` tries the average of the finalists as one more candidate for the sealed set, kept

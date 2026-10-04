@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import PRIMARY_METRIC, TOP_DE
+from . import PRIMARY_METRIC, SELECTION_RULES, TOP_DE, selection_score
 
 
 def _pearson(a: np.ndarray, b: np.ndarray) -> float:
@@ -20,9 +20,17 @@ def _pearson(a: np.ndarray, b: np.ndarray) -> float:
     return float((a * b).sum() / den) if den > 0 else 0.0
 
 
+def _r2(truth: np.ndarray, pred: np.ndarray) -> float:
+    ss_tot = ((truth - truth.mean()) ** 2).sum()
+    return float(1 - ((truth - pred) ** 2).sum() / ss_tot) if ss_tot > 0 else 0.0
+
+
 def evaluate(pred: np.ndarray, truth: np.ndarray, control_mean: np.ndarray, perts: list[str] | None = None,
-             top_de: int = TOP_DE) -> dict:
-    """pred, truth: (n_perts, n_genes) expression. Returns metrics + diagnostics."""
+             top_de: int = TOP_DE, selection: str = PRIMARY_METRIC) -> dict:
+    """pred, truth: (n_perts, n_genes) expression. Returns metrics + diagnostics; `primary` is the selection
+    score under `selection` (see SELECTION_RULES)."""
+    if selection not in SELECTION_RULES:
+        raise ValueError(f"unknown selection rule {selection!r}; one of {sorted(SELECTION_RULES)}")
     pred = np.asarray(pred, dtype=np.float64)
     truth = np.asarray(truth, dtype=np.float64)
     if pred.shape != truth.shape:
@@ -41,6 +49,7 @@ def evaluate(pred: np.ndarray, truth: np.ndarray, control_mean: np.ndarray, pert
             "pearson_delta_top": _pearson(d_pred[i, top], d_true[i, top]),
             "direction_acc_top": float(np.mean(np.sign(d_pred[i, top]) == np.sign(d_true[i, top]))),
             "mse_top": float(np.mean(err[i, top] ** 2)),
+            "r2_top": _r2(truth[i, top], pred[i, top]),
             "pearson_expr": _pearson(pred[i], truth[i]),
         })
     metrics = {
@@ -50,7 +59,8 @@ def evaluate(pred: np.ndarray, truth: np.ndarray, control_mean: np.ndarray, pert
     }
     for key in per_pert[0]:
         metrics[key] = float(np.mean([p[key] for p in per_pert]))
-    metrics["primary"] = metrics[PRIMARY_METRIC]
+    metrics["primary"] = selection_score(metrics, selection)
+    metrics["selection_rule"] = selection
 
     # Diagnostics: where the errors are. Safe to show agents (aggregates only).
     names = perts or [str(i) for i in range(len(per_pert))]

@@ -10,6 +10,7 @@ import itertools
 import json
 import time
 
+from .benchmark import METRIC_TEXT, PRIMARY_METRIC, SELECTION_RULES
 from .db import ACTIVE
 from .lab import Lab
 
@@ -36,8 +37,12 @@ def _short(text: str, n: int = 90) -> str:
 
 
 def _metric_text(lab: Lab) -> str:
-    base = ("pearson_delta (higher is better): Pearson correlation between predicted and true expression change, "
-            "averaged over ")
+    if lab.selection == PRIMARY_METRIC:
+        base = ("pearson_delta (higher is better): Pearson correlation between predicted and true expression change, "
+                "averaged over ")
+    else:
+        terms = " plus ".join(f"{w:g} x {m} ({METRIC_TEXT[m]})" for m, w in SELECTION_RULES[lab.selection].items())
+        base = f"selection score (higher is better): {terms}; each term is averaged over "
     if lab.cv_folds > 1:
         return base + (f"the {len(lab._train.perts) + len(lab._val1.perts)} visible perturbations "
                        f"({lab.cv_folds}-fold out-of-fold predictions of the {len(lab._train.perts)} training "

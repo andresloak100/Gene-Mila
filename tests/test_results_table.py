@@ -151,3 +151,13 @@ def test_run_config_honours_an_explicit_data_dir(tmp_path):
     cfg = rr.build_config(rr.parse_args(["--dataset", "adamson_cf", "--planner-provider", "scripted",
                                          "--worker-provider", "mock"]))
     assert cfg["run"]["data_dir"] == str(REPO_ROOT / "data" / "adamson_cf")
+
+
+def test_a_different_selection_rule_is_its_own_arm():
+    cfg = {"planner": {"provider": "claude_cli", "model": "opus"}, "worker": {"provider": "deepseek", "model": "deepseek-flash"}}
+    assert table.run_arm(cfg) == "claude_cli:opus planner, deepseek:deepseek-flash workers"
+    assert table.run_arm({**cfg, "experiment": {"selection": "pearson_delta"}}) == table.run_arm(cfg)
+    assert table.run_arm({**cfg, "experiment": {"selection": "pearson_delta+r2_top"}}) == \
+        "claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top)"
+    ctl = {"planner": {"provider": "scripted"}, "worker": {"provider": "mock"}, "experiment": {"selection": "pearson_delta+r2_top"}}
+    assert table.run_arm(ctl) == "scripted control (no LLM) (selection pearson_delta+r2_top)"
