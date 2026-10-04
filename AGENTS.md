@@ -1,9 +1,11 @@
 # AGENTS.md: read this before you change anything
 
-This file is for every coding agent that works in this repository, whatever model or product it
-runs on. It holds the rules. [`HANDOFF.md`](HANDOFF.md) holds the current state, the paths and
-commands, and the open work. Read both, then `README.md`, `docs/ARCHITECTURE.md` and
-`configs/default.toml`.
+This file is for every agent that works in this repository: the project's Claude sessions,
+Astra (a ChatGPT agent), and any other coding agent. Whichever of them still has tokens
+picks up the work where another stopped, so all of them follow the same rules and keep the same
+state. The rules are here. [`HANDOFF.md`](HANDOFF.md) holds the shared state (section 1, kept
+current by whoever is working), the paths and commands, and the open work. Read both, then
+`README.md`, `docs/ARCHITECTURE.md` and `configs/default.toml`.
 
 ## The project
 
@@ -18,19 +20,24 @@ DE and direction metrics, and Arc Institute's cell-eval for finalists.
 The owner is Andres (GitHub `andresloak100`). He wants a paper-grade result: every number must
 be reproducible from a run directory and comparable with the others.
 
-## Who else works here
+## Who works here
 
-Several Claude sessions work on this project at the same time, coordinated in Andres's Claude
-project. You cannot message them. They read this repository (branches, pull requests, issues,
-commits), and Andres relays between you and them.
+The repository is the only place every agent can read, so it is the single source of state.
+Claude sessions also talk in Andres's Claude project, which Astra cannot see; Astra talks to
+Andres in ChatGPT, which Claude cannot see. Anything another agent needs goes into this
+repository: `HANDOFF.md` section 1, GitHub issues and pull requests.
 
-| Owner | Owns | Branch |
+| Agent | Owns | Branches |
 |---|---|---|
 | Claude, "Autonomous research system" | the lab code, the runs on Andres's Mac, `docs/results/` | `claude/autonomous-research-system-3k435s`, the integration branch (there is no `main` yet) |
-| Claude, "Repo description design" | `README.md`, `docs/assets/`, the GitHub About box, `CLAUDE.md`, `tools/readme_check.py` | `claude/repo-description-design-bro3vo` (draft PR #1) |
-| You | the tasks Andres gives you | `<your-name>/<topic>`, branched from the integration branch |
+| Claude, "Repo description design" | `README.md`, `docs/assets/`, the GitHub About box, `tools/readme_check.py` | `claude/repo-description-design-bro3vo` (draft PR #1) |
+| Other Claude sessions | the tasks Andres gives them | `claude/<topic>` |
+| Astra (ChatGPT) | the tasks Andres gives it | `astra/<topic>` |
 
-## Hard rules
+When one agent runs out of tokens, another may take over its task: read its claim issue, its
+pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
+
+## Hard rules (for every agent)
 
 ### Secrets
 
@@ -47,15 +54,18 @@ commits), and Andres relays between you and them.
   A paid run needs Andres's approval in his own words, with an amount. Runs with
   `--planner-provider scripted --worker-provider mock` cost nothing and need no approval.
 - Always pass `--planner-provider` explicitly. The default planner is the Claude CLI (Opus),
-  which uses Andres's Claude subscription, the thing this handoff is meant to save. If the
-  Claude CLI is not available, the lab falls back to the scripted planner with only a warning,
-  so the run would be mislabelled.
+  which uses Andres's Claude subscription; if the Claude CLI is unavailable, the lab falls back
+  to the scripted planner with only a warning, so the run would be mislabelled.
+  - Astra and other non-Claude agents never use the Claude CLI planner.
+  - Claude sessions use it only for runs whose arm needs it (the comparison's Opus-planned runs).
+  - Once Claude usage is out, everyone uses the DeepSeek planner:
+    `--planner-provider deepseek --planner-model deepseek-v4-pro`.
 - Every paid run points at the shared ledger and carries its own caps:
   `--set budget.ledger=<absolute path to the shared ledger> --set budget.cumulative_usd.deepseek=<cap>
   --set budget.max_total_usd=<worker cap> --set budget.max_planner_usd=<planner cap>`.
   Never change the $0.25 defaults in `configs/default.toml`, and never edit or reprice the ledger.
-- Never run two paid runs at once. Each run reads the ledger only when it starts, so runs that
-  overlap can overshoot the cap together.
+- Never run two paid runs at once, whoever starts them. Each run reads the ledger only when it
+  starts, so runs that overlap can overshoot the cap together.
 
 ### Andres's Mac (the only machine with the real data and the key)
 
@@ -63,19 +73,24 @@ commits), and Andres relays between you and them.
   its `STOP` file, and don't touch `runs/scale_*`, `runs/newcode_*` or
   `~/Documents/Loak-documents/genemila_scale_logs/` (read them, nothing more) unless Andres asks.
 - Never edit files, commit, pull, check out or switch branches in the main checkout
-  `~/Documents/Loak-documents/gene-mila`. The driver's next run uses whatever code is there.
-  Work in your own clone (HANDOFF.md, section 4).
-- While the driver is running, start no lab runs on the Mac: CPU contention would corrupt the
-  comparison's timing measurements. Reading, editing and `nice -n 19 python -m pytest -q` are fine.
+  `~/Documents/Loak-documents/gene-mila` unless you own the runs there (the "Autonomous research
+  system" session, or whoever Andres hands them to). The driver's next run uses whatever code is
+  there. Everyone else works in their own clone (HANDOFF.md, section 4).
+- While the driver is running, start no other lab runs on the Mac: CPU contention would corrupt
+  the comparison's timing measurements. Reading, editing and `nice -n 19 python -m pytest -q`
+  are fine.
 
 ### Git
 
-- Branch from `claude/autonomous-research-system-3k435s` and open a draft pull request into it.
-  Never push to a `claude/*` branch, never force-push, rebase or amend a shared branch, and never
-  merge your own pull request: Andres merges.
+- Push only to your own branches, branched from `claude/autonomous-research-system-3k435s`,
+  and open a draft pull request into it. Never push to another agent's branch, never force-push,
+  rebase or amend a shared branch, and never merge your own pull request: Andres merges.
+- The one exception: a commit that changes only `HANDOFF.md` section 1 may go straight to the
+  integration branch (`git pull` first, a plain push, never forced), so the shared state never
+  waits on a merge.
 - One topic per pull request. The description says what changed, the commands you ran, and
   every number together with the run directory it came from.
-- `python -m pytest -q` must pass before every push.
+- `python -m pytest -q` must pass before every push of code.
 
 ### Scientific integrity
 
@@ -97,18 +112,22 @@ commits), and Andres relays between you and them.
 - CellForge's published numbers cannot be reproduced under any metric definition tried, so
   their rows stay in our tables marked not comparable.
 
-## How to coordinate
+## How to coordinate (every agent, every session)
 
-1. **Look first.** Read open pull requests, open issues and recent commits on the integration
-   branch, and `progress.md` on the Mac, so you don't redo or collide with work in flight.
-2. **Claim the task.** Open a GitHub issue titled `Claim: <task>` naming the files you will
-   touch, before you start. If another owner's files are on the list, say so there.
-3. **Keep progress where others can read it.** Update the issue as you go, then the pull
-   request description. The Claude sessions read GitHub; they cannot read your chat.
+1. **When you start, read the state.** `HANDOFF.md` section 1 on the integration branch, open
+   `Claim:` issues, open pull requests, recent commits, and `progress.md` on the Mac. Don't
+   redo or collide with work someone else holds.
+2. **Claim the task.** Open a GitHub issue titled `Claim: <task>` naming the agent, the branch and
+   the files you will touch, before you start. If another owner's files are on the list, say so
+   there. Taking over a stalled task: comment on its claim issue that you are taking it over.
+3. **Keep the state current.** Update `HANDOFF.md` section 1 (who is active, what is in flight,
+   what comes next) when you start, after each milestone, and **before you stop or as soon as you
+   expect to run out of tokens**: write the exact next step so the next agent can continue
+   without asking. Put task progress in the claim issue and the pull request description.
 4. **Ask Andres for decisions** about spend, scope or protected code, and wait for his answer.
-   Don't decide them for him.
-5. **Hand back.** When a task is done, the pull request carries the result, and you send Andres
-   three lines he can pass on to the Claude project: what changed, the numbers with their run
-   directories, and what is next.
-6. **Keep this file and HANDOFF.md true.** They are the memory shared between agents. When you
-   change the state they describe, update them in the same pull request and re-date the snapshot.
+   Don't decide them for him. Record his answer in section 1 or the claim issue, with the date,
+   so the other agents know it.
+5. **Finish cleanly.** The pull request carries the result; close or update the claim issue;
+   section 1 says what is next.
+6. **Keep this file and HANDOFF.md true.** When you change what they describe, update them in
+   the same pull request.

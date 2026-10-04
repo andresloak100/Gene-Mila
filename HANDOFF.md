@@ -2,17 +2,51 @@
 
 Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
-## 1. Snapshot
+## 1. Current state (whoever is working keeps this true)
 
-Written on 2026-10-04 at 17:15 UTC for an agent joining without access to the Claude project.
-Things move fast. Before relying on anything below, check the live sources:
+Update this section when you start, after each milestone, and before you stop or run out of
+tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
+
+**Last updated:** 2026-10-04 17:40, by Claude ("Agent handoff" session).
+
+**Active agents**
+
+| Agent | Since | Working on | Claim |
+|---|---|---|---|
+| Claude, "Autonomous research system" | 2026-10-03 | the 1/4/8/16-worker comparison on the Mac and its tables | (predates claim issues) |
+| Astra (ChatGPT) | not started | first task below, once Andres hands it over | |
+
+**In flight on the Mac:** a detached driver (started with `nohup setsid caffeinate`, so it survives
+the Claude session disconnecting) runs six free control runs on the current code,
+`runs/newcode_control_r0` to `r5` (scripted planner, mock workers, 4 workers, 20 minutes).
+Waiting on Andres: whether the remaining paid runs may run unattended, with a $15 cap (the 8- and
+16-worker seed-1 repeats `runs/scale_w8_r1` and `runs/scale_w16_r1`, then the planner check
+`runs/newcode_ds_w4_r0`/`_r1` planned by DeepSeek V4 Pro and `runs/newcode_opus_w4_r0`/`_r1`
+planned by Opus, about $6 more), a $10 cap (only the two repeats, about $2), or free only. The Mac
+must stay powered on and awake.
+
+**DeepSeek ledger:** $4.66 at 2026-10-04 17:02. Opus planner dollars are the Claude CLI's estimate
+of subscription usage, not a bill.
+
+**Open pull requests:** #1 (README and its checker, Claude), #2 (this file and AGENTS.md).
+
+**Next:** after the runs, the final results table, calibration and scaling report over every run,
+committed to `docs/results/` from the Mac's files (section 8, items 2 and 3). For a newly arriving
+agent: Norman (section 8, item 4).
+
+**Decisions by Andres to respect:** DeepSeek total $15 with a $14 ledger stop; no paid run without
+his word; CellForge's published rows marked not comparable; no 44-worker run; priorities as in
+section 8.
+
+**Live sources** (check them; they beat this section when they disagree):
 
 | Question | Live source |
 |---|---|
 | What is running on the Mac? | `tail -n 30 ~/Documents/Loak-documents/genemila_scale_logs/progress.md`, `pgrep -fl run_research.py` |
 | How much DeepSeek money is spent? | `sqlite3 ~/Documents/Loak-documents/gene-mila/runs/spend_ledger.sqlite "SELECT provider, ROUND(SUM(cost_usd),2) FROM spend GROUP BY provider"` |
 | What did a run find? | `runs/<run>/summary.md` and `summary.json` (`best`, `generalization_query_only`, `llm_usage`, `completed_by_proposer`, `split_id`) |
-| What changed in the code? | `git log origin/claude/autonomous-research-system-3k435s`, open pull requests and issues |
+| Who holds which task? | open issues titled `Claim:`, open pull requests |
+| What changed in the code? | `git log origin/claude/autonomous-research-system-3k435s` |
 
 ## 2. Where things are
 
@@ -105,20 +139,22 @@ Measured costs: a 20-minute, 4-worker run spends about $0.20 to $0.50 on DeepSee
 DeepSeek V4 Pro planner adds about $0.50. List run directories explicitly in the report commands,
 and leave out anything ending in `_contaminated` or `_interrupted`.
 
-## 6. In flight on 2026-10-04 at 17:15 UTC
+## 6. Handing over
 
-- **On the Mac, free:** a detached driver (started with `nohup setsid caffeinate`, so it survives the
-  Claude session disconnecting) runs six control runs on the current code,
-  `runs/newcode_control_r0` to `r5` (scripted planner, mock workers, 4 workers, 20 minutes).
-- **Waiting on Andres:** whether the remaining paid runs may run unattended. Options: a $15 cap
-  (the 8- and 16-worker seed-1 repeats `runs/scale_w8_r1` and `runs/scale_w16_r1`, then the planner
-  check: `runs/newcode_ds_w4_r0`/`_r1` planned by DeepSeek V4 Pro and `runs/newcode_opus_w4_r0`/`_r1`
-  planned by Opus, about $6 more), a $10 cap (only the two repeats, about $2), or free only.
-- **After that:** the final results table, calibration and scaling report over every run, committed
-  to `docs/results/` by the Claude "Autonomous research system" session from the Mac's files.
-- **Ledger:** DeepSeek $4.66 at 17:02 UTC. The Opus planner's dollar figures are the Claude CLI's
-  estimate of subscription usage, not a bill.
-- **The Mac** must stay powered on and awake (plugged in, lid open) for any of it.
+Starting a session (any agent):
+1. `git fetch` and read section 1 of this file on the integration branch, the open `Claim:`
+   issues and pull requests, and `progress.md` on the Mac.
+2. Pick the next unclaimed task (section 8) or continue a stalled one: comment on its claim issue
+   that you are taking it over, and branch from its pull request's head into a branch of your own.
+3. Add yourself to "Active agents" in section 1 and push that change.
+
+Stopping, or expecting to run out of tokens soon:
+1. Push your branch, even if the work is half done, and say in the pull request description what
+   works, what doesn't, and the exact next command.
+2. Update section 1: move yourself out of "Active agents" (or mark "stopped at <time>"), update
+   "In flight" and "Next", and push.
+3. Leave nothing running that nobody owns. A run you started either finishes on its own with
+   its `summary.json`, or section 1 says where it is and when it ends.
 
 ## 7. Results so far (Adamson, CellForge's split)
 
@@ -171,7 +207,7 @@ a since-fixed output limit).
    without the Claude subscription. Paid: needs Andres's approval and amount, and the Mac's driver
    must be idle. Unassigned.
 2. **Finish the 1/4/8/16-worker comparison with repeats.** The Claude "Autonomous research system"
-   session and the Mac's driver (section 6). Don't duplicate it.
+   session and the Mac's driver (section 1). Don't duplicate it.
 3. **Final tables and scaling report, committed to `docs/results/`.** Same owner. If that session
    has gone quiet and Andres asks you to, run the commands of section 5 over the full run list and
    commit the files exactly as produced.
