@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 
 from ..data.bundle import LabelSet
+from . import comparable, reference
 from .evaluator import evaluate
 
 
@@ -31,6 +32,7 @@ class QueryOracle:
         self.max_queries = max_queries
         self.queries: list[dict] = []
         self._lock = threading.Lock()
+        self._ref = False  # DE reference for comparable metrics, loaded on first query
 
     @property
     def perts(self) -> list[str]:
@@ -47,6 +49,9 @@ class QueryOracle:
                 raise ValueError("predictions must cover exactly the query-only perturbations")
             pred = np.stack([pred[idx[p]] for p in labels.perts])
             result = evaluate(pred, labels.means, control_mean, labels.perts)
+            if self._ref is False:
+                self._ref = reference.load(self._labels_path.parent.parent, "val2")
+            result["metrics"].update(comparable.score(pred, labels.means, labels.perts, self._ref, control_mean))
             out = {"experiment_id": experiment_id, "metrics": result["metrics"]}
             cells = self._labels_path.parent / "val2_cells.npz"
             if celleval_profile and genes is not None and cells.exists():

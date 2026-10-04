@@ -125,6 +125,8 @@ DE overlap/precision, discrimination score) are comparable with other methods wh
 distribution metrics treat the prediction as a point mass. Results land in
 `summary.md` / `summary.json` and `runs/<run>/celleval/`. Turn it off with
 `--set final.celleval=false`; `final.celleval_profile` picks the metric set.
+Every experiment is also scored with CellForge's and VCWorld's published metrics
+(see `docs/ARCHITECTURE.md`), and the summary has a table for each.
 
 ## Configuration
 

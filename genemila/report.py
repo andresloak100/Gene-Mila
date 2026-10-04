@@ -42,7 +42,10 @@ def run_query_only(lab, top_k: int) -> list[dict]:
             continue
         row = {"experiment_id": c["experiment_id"], "kind": c["kind"],
                "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
-               "gap": c["primary_score"] - q["metrics"]["primary"]}
+               "gap": c["primary_score"] - q["metrics"]["primary"],
+               "comparable": {"val1": {k: v for k, v in (c.get("val_metrics_json") or {}).items()
+                                       if k.startswith(COMPARABLE_PREFIXES)},
+                              "val2": {k: v for k, v in q["metrics"].items() if k.startswith(COMPARABLE_PREFIXES)}}}
         try:
             v1 = lab.celleval_val1(c["experiment_id"])
         except Exception as exc:  # cell-eval is a report extra; never lose the report over it
@@ -54,6 +57,11 @@ def run_query_only(lab, top_k: int) -> list[dict]:
     return out
 
 
+COMPARABLE_PREFIXES = ("cellforge_", "vcworld_")
+CELLFORGE_SHOWN = ("cellforge_mse", "cellforge_pcc", "cellforge_r2", "cellforge_mse_de", "cellforge_pcc_de",
+                   "cellforge_r2_de")
+VCWORLD_SHOWN = ("vcworld_de_f1", "vcworld_de_auroc", "vcworld_de_auprc", "vcworld_dir_accuracy",
+                 "vcworld_dir_f1", "vcworld_dir_auroc")
 CELLEVAL_SHOWN = ("pearson_delta", "mse", "discrimination_score_l1", "overlap_at_N", "de_direction_match")
 
 
@@ -178,6 +186,21 @@ def render_markdown(s: dict) -> str:
           "|---|---|---|---|---|"]
     L += [f"| {g['experiment_id']} | {g['kind']} | {g['visible_score']:.4f} | {g['query_only_score']:.4f} | "
           f"{g['gap']:+.4f} |" for g in s["generalization_query_only"]]
+    comp = [g for g in s["generalization_query_only"] if (g.get("comparable") or {}).get("val1")]
+    for title, shown, note in [
+            ("CELLFORGE METRICS (visible / query-only)", CELLFORGE_SHOWN,
+             "Mean expression per perturbation, all genes and top-20 DE genes (CellForge, Table 1)."),
+            ("VCWORLD METRICS (visible / query-only)", VCWORLD_SHOWN,
+             "DE: Wilcoxon BH p<=0.05 and |log2FC|>=0.25 over (perturbation, gene) pairs; DIR: up/down on "
+             "true DE genes; a prediction's log2FC decides both (VCWorld).")]:
+        if not comp:
+            break
+        L += ["", f"## {title}", note, "", "| experiment | " + " | ".join(m.split("_", 1)[1] for m in shown) + " |",
+              "|---|" + "---|" * len(shown)]
+        for g in comp:
+            v1, v2 = g["comparable"]["val1"], g["comparable"]["val2"]
+            L.append(f"| {g['experiment_id']} | " + " | ".join(f"{_fmt(v1.get(m), 3)} / {_fmt(v2.get(m), 3)}"
+                                                                for m in shown) + " |")
     rows = [g for g in s["generalization_query_only"] if g.get("cell_eval")]
     if rows:
         L += ["", "## CELL-EVAL (visible / query-only)",
