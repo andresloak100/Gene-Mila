@@ -174,6 +174,12 @@ class ForkServerClient:
             self.proc.stdin.flush()
         with self._cv:
             if not self._cv.wait_for(lambda: rid in self._started or not self.healthy, timeout=timeout):
+                # the request is in the server's pipe: kill the server so it cannot fork an unsupervised copy later
+                self.healthy = False
+                try:
+                    self.proc.kill()
+                except Exception:
+                    pass
                 raise RuntimeError("fork server did not answer")
             if rid not in self._started:
                 raise RuntimeError("fork server died")
@@ -217,14 +223,16 @@ def run_forked(client: ForkServerClient, argv: list[str], cwd: Path, log_dir: Pa
     peak, timed_out, reason, done = 0.0, False, None, None
 
     def kill(why: str):
-        nonlocal reason
+        nonlocal reason, done
         reason = reason or why
         for sig in (signal.SIGTERM, signal.SIGKILL):
             try:
                 os.killpg(pid, sig)
             except (ProcessLookupError, PermissionError):
                 return
-            if client.wait_exit(pid, 2.0) is not None:
+            d = client.wait_exit(pid, 2.0)
+            if d is not None:
+                done = d  # keep the real exit status and CPU time
                 return
 
     while True:
@@ -232,6 +240,10 @@ def run_forked(client: ForkServerClient, argv: list[str], cwd: Path, log_dir: Pa
         if done is not None:
             break
         if not client.healthy:
+            try:  # the child would otherwise run on unsupervised while the caller reruns the experiment
+                os.killpg(pid, signal.SIGKILL)
+            except (ProcessLookupError, PermissionError):
+                pass
             raise RuntimeError("fork server died during an experiment")
         if ps is not None:
             try:
@@ -247,7 +259,7 @@ def run_forked(client: ForkServerClient, argv: list[str], cwd: Path, log_dir: Pa
         elif kill_event is not None and kill_event.is_set():
             kill("terminated by controller (deadline)")
         if reason:
-            done = client.wait_exit(pid, 5.0) or {"status": -9, "cpu_s": 0.0, "maxrss": 0}
+            done = done or client.wait_exit(pid, 5.0) or {"status": -9, "cpu_s": 0.0, "maxrss": 0}
             break
         time.sleep(0.02)
     maxrss = (done.get("maxrss") or 0) / (2**20 if sys.platform == "darwin" else 1024)
@@ -261,13 +273,14 @@ class Executor:
     Falls back to fresh subprocesses automatically if the server cannot start or dies."""
 
     def __init__(self, mode: str = "forkserver", server_cwd: Path | None = None, public_dir: Path | None = None,
-                 cache_dir: Path | None = None):
+                 cache_dir: Path | None = None, on_fallback=None):
         self.mode = mode
         self.cache_dir = cache_dir
         self.client: ForkServerClient | None = None
         self._lock = threading.Lock()
         self._args = (server_cwd, public_dir, cache_dir)
         self.fallbacks = 0
+        self.on_fallback = on_fallback  # called with a message whenever the server is bypassed
 
     def _ensure_client(self) -> ForkServerClient | None:
         if self.mode != "forkserver":
@@ -290,8 +303,10 @@ class Executor:
         if client is not None:
             try:
                 return run_forked(client, argv, cwd, log_dir, timeout_s, ram_mb, cpu_s, kill_event, name)
-            except RuntimeError:
-                self.fallbacks += 1  # server trouble: rerun this one as a fresh subprocess
+            except (RuntimeError, OSError) as exc:  # server trouble: rerun this one as a fresh subprocess
+                self.fallbacks += 1
+                if self.on_fallback is not None:
+                    self.on_fallback(f"fork server bypassed ({type(exc).__name__}: {exc}); fresh subprocess")
         return run_limited([sys.executable, "-m", "genemila.pipeline", *argv], cwd, log_dir, timeout_s, ram_mb,
                            cpu_s, env, kill_event, name)
 

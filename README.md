@@ -78,17 +78,21 @@ Every command defaults to the most recent run under `runs/`; pass `--run runs/<i
 ### Scaling (only after the 4-worker test is reviewed)
 
 ```bash
-python run_research.py --minutes 20 --workers 8  --budget 1.00
-python run_research.py --minutes 20 --workers 16 --budget 2.00
-python run_research.py --hours 1    --workers 44 --budget 5.00 --set budget.cumulative_usd.deepseek=10
+python run_research.py --minutes 20 --workers 8  --budget 1.00 --set budget.cumulative_usd.deepseek=10
+python run_research.py --minutes 20 --workers 16 --budget 2.00 --set budget.cumulative_usd.deepseek=10
+python run_research.py --hours 1    --workers 44 --budget 5.00 --set budget.cumulative_usd.deepseek=25
 ```
+
+The planner's own cap scales with workers and hours (`budget.planner_usd_per_worker_hour`) and is
+paced over the run, so a long run never spends it all at the start.
 
 Experiments fork from a warm server process and reuse cached feature blocks within a run
 (see "CPU efficiency" in `docs/ARCHITECTURE.md`); set `--set experiment.executor="subprocess"`
 to use a fresh interpreter per experiment instead. `--workers` sets LLM worker slots; `--cpu-slots` (default: number of cores) caps
 simultaneous CPU experiments independently, so 44 workers on an 8-core machine queue
 politely for CPU while the others are writing code. Raise `budget.cumulative_usd.deepseek`
-deliberately when you want to spend beyond the $0.25 development cap.
+deliberately when you want to spend beyond the $0.25 development cap; the cumulative cap includes
+earlier runs' ledger spend, so a run halts partway through when it is left at the default.
 
 ## Data
 
@@ -132,7 +136,9 @@ Every experiment is also scored with CellForge's and VCWorld's published metrics
 
 `configs/default.toml` holds every knob (workers, CPU slots, timeouts, RAM, retries,
 exploration mix, providers and models, budgets, prices). Override with `--config my.toml`
-or `--set section.key=value`. DeepSeek prices are set to the
+or `--set section.key=value`. DeepSeek's models reason before answering by default and the
+hidden reasoning counts against `worker.max_output_tokens`; the default `worker.thinking = "disabled"`
+keeps the whole limit for code (set `"enabled"` plus `worker.reasoning_effort` to try it). DeepSeek prices are set to the
 published peak-hour rates for `deepseek-flash` (what the API serves for `deepseek-chat`)
 and `deepseek-v4-pro`; update `[pricing.*]` if they change, and run
 `python reprice_ledger.py --apply` to recompute the spend ledger with new prices.
@@ -151,6 +157,11 @@ implementation (after `llm_retries` fixes) is handed to the stronger model once.
 `lab.db` (everything), `artifacts/EXP_xxxx/` (spec, every LLM attempt, smoke reports,
 plugin file, predictions, fitted models, metrics, logs), `feature_store/`, `planner/`
 (state given to the planner and its raw plans), `controller.log`, `summary.md`,
-`summary.json`. Experiment code is pinned at `refs/genemila/<run>/<experiment>`.
+`summary.json`. Experiment code is pinned at `refs/genemila/<run>/<experiment>`. Only the chosen
+alpha's predictions are kept per experiment and the feature cache is bounded
+(`experiment.feature_cache_max_mb`); a run stops early when free disk drops below `run.min_free_disk_mb`.
+`python results_table.py build --runs runs/<...>` turns run summaries into a results table in
+CellForge's Table 1 layout (`docs/results/`), and `results_table.py calibrate` checks which metric
+definition reproduces the paper's simple-baseline rows.
 
 See `docs/ARCHITECTURE.md` for design notes and current limitations.

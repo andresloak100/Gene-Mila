@@ -13,7 +13,7 @@ import random
 import threading
 import time
 
-from .base import AgentProvider, LLMResponse, Usage
+from .base import ProviderError, AgentProvider, LLMResponse, Usage
 
 TEMPLATES = {
     "coexpr": '''import numpy as np
@@ -249,6 +249,7 @@ class MockProvider(AgentProvider):
         self.latency_jitter_s = latency_jitter_s  # simulated LLM latency: latency_s + U(0, jitter), for load tests
         self.calls = 0
         self._lock = threading.Lock()
+        self._errored: dict[str, int] = {}
 
     def _sleep(self) -> None:
         if self.latency_s or self.latency_jitter_s:
@@ -271,6 +272,12 @@ class MockProvider(AgentProvider):
         hint = " ".join([nf["name"], nf.get("description", ""), nf.get("implementation_hint", "")])
         if "MOCK_CRASH" in hint:
             raise RuntimeError("simulated worker crash")
+        if "MOCK_API_ERROR" in hint:  # transient provider error (429/5xx) on the first two calls for this feature
+            with self._lock:
+                n = self._errored.get(nf["name"], 0)
+                self._errored[nf["name"]] = n + 1
+            if n < 2:  # the gateway retries once itself, so the first logical call still fails
+                raise ProviderError("simulated HTTP 503", retryable=True)
         if "MOCK_TRUNCATE" in hint:  # a reasoning model that spends the whole output limit thinking
             u = self._usage(json.dumps(task), "")
             u.output_tokens = max_tokens

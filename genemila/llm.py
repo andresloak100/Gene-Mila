@@ -20,6 +20,7 @@ every call in the experiment database and the cumulative ledger.
 
 from __future__ import annotations
 
+import random
 import sqlite3
 import threading
 import time
@@ -75,7 +76,8 @@ class LLMGateway:
         self.pricing = cfg.get("pricing", {})
         planner_cap = float(b.get("max_planner_usd", 0))
         if planner_cap <= 0:  # scaled to the run length by the controller; one hour's worth until then
-            planner_cap = float(b.get("planner_usd_per_hour", 15.0))
+            planner_cap = float(b.get("planner_usd_per_worker_hour", 4.0)) * 4  # one hour at 4 workers; the
+            # controller rescales this by run length and worker count
         self.role_caps = {"worker": float(b["max_total_usd"]), "planner": planner_cap}
         self.cumulative_caps = {k: float(v) for k, v in b.get("cumulative_usd", {}).items()}
         self.max_tokens_experiment = int(b["max_tokens_per_experiment"])
@@ -88,6 +90,7 @@ class LLMGateway:
         self.stop_event: threading.Event | None = None  # set by the lab; aborts waits at the deadline
         self.failure_times: dict[str, list[float]] = {}
         self.open_until: dict[str, float] = {}
+        self.opened_at: dict[str, float] = {}
         self.cooldown: dict[str, float] = {}
         self.probing: dict[str, bool] = {}
         self.breaker_trips: dict[str, int] = {}
@@ -196,12 +199,16 @@ class LLMGateway:
                 self.tokens_by_experiment[experiment_id] = self.tokens_by_experiment.get(experiment_id, 0) + tokens
             self._cond.notify_all()
 
-    def _breaker(self, pname: str, ok: bool, probe: bool) -> None:
-        """Record the outcome of one logical call (after its retries)."""
+    def _breaker(self, pname: str, ok: bool, probe: bool, started: float | None = None) -> None:
+        """Record the outcome of one logical call (after its retries). `started` is when the call was sent:
+        a failure of a call already in flight when the breaker tripped is the same outage, not a new one."""
         with self._lock:
             now = time.time()
             if probe:
                 self.probing[pname] = False
+            if not ok and not probe and started is not None and started < self.opened_at.get(pname, -1.0):
+                self._cond.notify_all()
+                return
             if ok:
                 self.failure_times[pname] = []
                 self.consecutive_failures[pname] = 0
@@ -216,6 +223,7 @@ class LLMGateway:
                 if probe or len(recent) >= self.breaker_limit:
                     cd = self.cooldown.get(pname, BREAKER_COOLDOWN_S[0])
                     self.open_until[pname] = now + cd
+                    self.opened_at[pname] = now
                     self.cooldown[pname] = min(BREAKER_COOLDOWN_S[1], cd * 2)
                     self.breaker_trips[pname] = self.breaker_trips.get(pname, 0) + 1
                     self.failure_times[pname] = []
@@ -234,6 +242,7 @@ class LLMGateway:
             wc, probe = self._reserve(role, pname, provider.model, est_input_tokens, max_tokens, worker_id,
                                       experiment_id)
             t0 = time.monotonic()
+            sent_at = time.time()
             try:
                 resp = getattr(provider, op)(max_tokens=max_tokens, **kwargs)
             except ProviderError as exc:
@@ -241,9 +250,9 @@ class LLMGateway:
                 self._record(role, pname, provider.model, experiment_id, worker_id, op, Usage(
                     latency_s=time.monotonic() - t0), 0.0, ok=False, error=str(exc))
                 if exc.retryable and attempts <= self.api_retries and not probe:
-                    time.sleep(min(8.0, 2.0 * attempts))
+                    time.sleep(random.uniform(1.0, 4.0) * attempts)  # jitter: concurrent callers spread out
                     continue
-                self._breaker(pname, ok=False, probe=probe)
+                self._breaker(pname, ok=False, probe=probe, started=sent_at)
                 raise
             except BaseException:
                 self._settle(role, pname, wc, 0.0, 0, worker_id, experiment_id)

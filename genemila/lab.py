@@ -68,11 +68,40 @@ class Lab:
         self._register_builtins()
         self._executor = None
         self._exec_lock = threading.Lock()
+        self._cache_lock = threading.Lock()
         if not self.db.query("SELECT 1 FROM runs WHERE run_id=?", (self.run_id,)):
             self.db.execute("INSERT INTO runs (run_id, started_at, dataset, split_id, base_commit, config_json, "
                             "workers) VALUES (?,?,?,?,?,?,?)",
                             (self.run_id, time.time(), self.dataset, self.split_id, self.base_commit,
                              json.dumps(cfg), int(cfg["run"]["workers"])))
+
+    def trim_feature_cache(self) -> None:
+        """Evict the oldest cached feature blocks once the cache exceeds experiment.feature_cache_max_mb.
+        Readers tolerate a block vanishing (they recompute it), so eviction needs no coordination."""
+        cap = float(self.cfg["experiment"].get("feature_cache_max_mb", 4096)) * 1e6
+        cache = self.run_dir / "cache" / "features"
+        if cap <= 0 or not cache.exists():
+            return
+        with self._cache_lock:
+            files = []
+            for p in cache.glob("*.npy"):
+                try:
+                    st = p.stat()
+                except OSError:
+                    continue
+                files.append((st.st_mtime, st.st_size, p))
+            total = sum(f[1] for f in files)
+            if total <= cap:
+                return
+            for mtime, size, p in sorted(files):
+                try:
+                    p.unlink()
+                except OSError:
+                    continue
+                total -= size
+                if total <= cap * 0.8:
+                    break
+            self.db.event("feature_cache_trimmed", f"feature cache over {cap / 1e6:.0f} MB; evicted oldest blocks")
 
     # ----------------------------------------------------------------- executor
     @property
@@ -88,7 +117,8 @@ class Lab:
                 mode = ecfg.get("executor", "forkserver")
                 cache = self.run_dir / "cache" if ecfg.get("feature_cache", True) else None
                 server_cwd = self.worktrees.create("_server") if mode == "forkserver" else None
-                self._executor = Executor(mode, server_cwd, self.public_dir, cache)
+                self._executor = Executor(mode, server_cwd, self.public_dir, cache,
+                                          on_fallback=lambda msg: self.db.event("executor_fallback", msg, level="warning"))
             return self._executor
 
     def close(self) -> None:

@@ -6,6 +6,7 @@ import pytest
 
 from genemila.controller import Controller
 from genemila.planner import Planner
+from genemila.providers.base import ProviderError
 from genemila.providers.mock import MockProvider, ScriptedPlanner
 from genemila.spec import ExperimentSpec
 from genemila.worker import Worker
@@ -179,7 +180,7 @@ def test_planning_scales_with_workers_and_state_is_bounded(lab_factory):
     lab = lab_factory()
     c = Controller(lab, workers=16, seconds=1800, worker_provider=MockProvider(), planner_provider=ScriptedPlanner())
     assert c.planner_concurrency == 3 and c.planner_batch == 12
-    assert lab.gateway.role_caps["planner"] == 7.5  # $15/h for a 30-minute run
+    assert lab.gateway.role_caps["planner"] == 32.0  # $4 per worker-hour x 16 workers x 0.5 h
     assert Controller(lab, workers=4, seconds=60, worker_provider=MockProvider(),
                       planner_provider=ScriptedPlanner()).planner_concurrency == 1
     state = {"in_flight": [f"hypothesis {i} " + "x" * 80 for i in range(500)], "best": {"score": 0.5}}
@@ -204,3 +205,33 @@ def test_truncated_reasoning_is_not_retried(lab_factory):
 
     rec2 = run_one(lab, new_feature_spec("thinker2", "MOCK_TRUNCATE variance"), escalation=Fixer(model="big"))
     assert rec2["status"] == "completed", rec2["failure_reason"]
+
+
+def test_transient_api_error_is_requeued_once(lab_factory):
+    """A retryable provider error (429/5xx/network) puts the experiment back in the queue for another attempt
+    instead of recording a failed hypothesis; the second attempt completes."""
+    lab = lab_factory()
+    prov = MockProvider()
+    eid, status = lab.queue(new_feature_spec("flaky", "MOCK_API_ERROR variance"))
+    w = Worker(lab, "W0", prov, None, threading.Semaphore(2))
+    w.process(lab.db.claim_next("W0"))
+    rec = lab.db.get_experiment(eid)
+    assert rec["status"] == "queued" and rec["worker_id"] is None and "requeued" in rec["failure_reason"]
+    w.process(lab.db.claim_next("W0"))
+    rec = lab.db.get_experiment(eid)
+    assert rec["status"] == "completed", rec["failure_reason"]
+    assert rec["attempts"] == 2
+    # a hopeless retryable error gives up at max_attempts
+    lab2 = lab_factory()
+
+    class Down(MockProvider):
+        def implement(self, task, max_tokens):
+            raise ProviderError("simulated HTTP 503", retryable=True)
+
+    eid2, _ = lab2.queue(new_feature_spec("down", "variance"))
+    w2 = Worker(lab2, "W0", Down(), None, threading.Semaphore(2))
+    w2.process(lab2.db.claim_next("W0"))
+    assert lab2.db.get_experiment(eid2)["status"] == "queued"
+    w2.process(lab2.db.claim_next("W0"))
+    rec2 = lab2.db.get_experiment(eid2)
+    assert rec2["status"] == "failed" and rec2["failure_stage"] == "llm_api"
