@@ -42,6 +42,12 @@ claim on it is true today, and that it looks deliberately designed.
 
 ## Rubric
 
+**Research standard.** The team is writing a paper from this lab, and the owner asked for a
+very high-level project. Hold the page to the standard of a strong paper's project page: the
+research question is stated, the metric, splits and baselines are defined where results
+appear, every result names its data and its run report, limitations are specific, and the
+comparison with CellForge and VCWorld is framed as what will be measured, never as a result.
+
 **First screen.** The title block and the first sentence say something only this project could
 say: a hard wall-clock budget, linear models only, features written by agents, numbers decide.
 Test it by swapping in another repository's name. If the sentence still works, rewrite it.
