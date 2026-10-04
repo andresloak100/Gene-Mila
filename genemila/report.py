@@ -110,6 +110,8 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
     summary = {
         "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id, "base_commit": lab.base_commit,
         "duration_s": round(wall_s, 1), "workers": workers or run.get("workers"),
+        "selection": {"cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
+                      "n_visible": len(lab._val1.perts) + (len(lab._train.perts) if lab.cv_folds > 1 else 0)},
         "experiments_proposed": len(proposed), "experiments_completed": len([e for e in done if e["kind"] != "baseline"]),
         "experiments_failed": len(by.get("failed", [])), "experiments_rejected": len(by.get("rejected", [])),
         "experiments_killed": len(by.get("killed", [])), "experiments_cancelled": len(by.get("cancelled", [])),

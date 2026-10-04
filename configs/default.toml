@@ -21,6 +21,8 @@ executor = "forkserver"        # forkserver (warm, fast start) | subprocess (fre
 feature_cache = true           # reuse computed feature blocks and shared matrices within a run
 feature_cache_max_mb = 4096    # oldest cached feature blocks are evicted beyond this
 keep_all_alphas = false        # keep every alpha's predictions in predictions.npz (else only the chosen one)
+cv_folds = 5                   # model selection also uses out-of-fold predictions for the training
+                               # perturbations (K folds, fixed per run); 0 = visible validation set only
 default_model = "ridge"
 default_alpha_grid = [0.01, 0.1, 1.0, 10.0, 100.0]
 

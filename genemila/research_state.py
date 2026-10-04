@@ -35,6 +35,16 @@ def _short(text: str, n: int = 90) -> str:
     return text if len(text) <= n else text[: n - 1] + "…"
 
 
+def _metric_text(lab: Lab) -> str:
+    base = ("pearson_delta (higher is better): Pearson correlation between predicted and true expression change, "
+            "averaged over ")
+    if lab.cv_folds > 1:
+        return base + (f"the {len(lab._train.perts) + len(lab._val1.perts)} visible perturbations "
+                       f"({lab.cv_folds}-fold out-of-fold predictions of the {len(lab._train.perts)} training "
+                       f"perturbations plus the {len(lab._val1.perts)} visible validation perturbations)")
+    return base + f"the {len(lab._val1.perts)} held-out visible validation perturbations"
+
+
 def build_state(lab: Lab, max_recent: int = 10) -> dict:
     db = lab.db
     exps = db.query("SELECT * FROM experiments WHERE status!='reserved' ORDER BY created_at")
@@ -87,8 +97,7 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
     return {
         "generated_at": time.time(),
         "dataset": lab.data_summary(),
-        "primary_metric": "pearson_delta (higher is better): mean over held-out perturbations of the Pearson "
-                          "correlation between predicted and true expression change",
+        "primary_metric": _metric_text(lab),
         "knowledge_available": lab.knowledge_summary(),
         "baselines": [{"id": e["experiment_id"], "what": _short(e["hypothesis"], 60),
                        "score": round(e["primary_score"], 4)} for e in baselines],

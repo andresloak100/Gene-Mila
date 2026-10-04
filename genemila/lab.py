@@ -66,6 +66,11 @@ class Lab:
         z = np.load(self.public_dir / "public.npz", allow_pickle=False)
         self.control_mean = z["control_cells"].astype(np.float64).mean(axis=0)
         self.genes = [str(g) for g in z["genes"]]
+        self._train = LabelSet([str(p) for p in z["train_perts"]], z["train_means"].astype(np.float64))
+        # model selection: K-fold out-of-fold predictions of the training perturbations join the visible
+        # validation set, so the selection signal rests on every visible perturbation (0 = validation set only)
+        self.cv_folds = int(cfg["experiment"].get("cv_folds", 0) or 0)
+        self.cv_seed = int(cfg["run"].get("seed", 0) or 0)
         self.limits = {k: float(cfg["experiment"][k]) for k in ("cpu_limit_s", "ram_limit_mb", "timeout_s")}
         self._register_builtins()
         self._executor = None
@@ -197,6 +202,9 @@ class Lab:
             self.db.event("rejected", str(exc), spec.experiment_id, "warning")
             return spec.experiment_id, "rejected"
         record["flags_json"] = flags
+        if self.cv_folds > 1:  # set by the lab after validation (agents cannot choose it): same folds for all
+            spec.hyperparameters = {**spec.hyperparameters, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
+            record["hyperparameters_json"] = spec.hyperparameters
         if spec.kind != "new_feature":
             ch = config_hash(spec, self.feature_code_hashes(), self.split_id)
             record["config_hash"] = ch
@@ -211,7 +219,12 @@ class Lab:
 
     # --------------------------------------------------------------- evaluation
     def evaluate_artifact(self, pred_path: Path) -> dict:
-        """Score every alpha on visible validation; choose the best. Trusted controller code."""
+        """Score every alpha on the visible perturbations; choose the best. Trusted controller code.
+
+        Visible = the visible validation set plus, when the experiment was cross-validated (cv.npz next to
+        the predictions), the out-of-fold predictions of the training perturbations. The primary score is
+        the mean over all of them: selection on 60-70 perturbations instead of 15-20 is far less noisy.
+        `pearson_delta` stays the validation-set value and `pearson_delta_cv` the out-of-fold value."""
         z = np.load(pred_path, allow_pickle=False)
         perts = [str(p) for p in z["perts"]]
         idx = {p: i for i, p in enumerate(perts)}
@@ -219,11 +232,26 @@ class Lab:
         if missing:
             raise ValueError(f"predictions missing validation perturbations {missing[:3]}")
         rows = [idx[p] for p in self._val1.perts]
+        cv = None
+        cv_path = pred_path.with_name("cv.npz")
+        if self.cv_folds > 1:
+            if not cv_path.exists():
+                raise ValueError("experiment produced no cross-validation predictions (cv.npz)")
+            c = np.load(cv_path, allow_pickle=False)
+            if [str(p) for p in c["perts"]] != self._train.perts or \
+                    list(map(float, c["alphas"])) != list(map(float, z["alphas"])):
+                raise ValueError("cv.npz does not match predictions.npz (perturbations or alphas)")
+            cv = c["delta"]
         best, scores = None, []
         for k, alpha in enumerate(z["alphas"]):
             pred = z["delta"][k][rows].astype(np.float64) + self.control_mean
             res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts)
-            scores.append({"alpha": float(alpha), PRIMARY_METRIC: res["metrics"][PRIMARY_METRIC]})
+            if cv is not None:
+                cv_res = evaluate(cv[k].astype(np.float64) + self.control_mean, self._train.means,
+                                  self.control_mean, self._train.perts)
+                self._combine_visible(res["metrics"], cv_res["metrics"])
+            scores.append({"alpha": float(alpha), PRIMARY_METRIC: res["metrics"][PRIMARY_METRIC],
+                           "primary": res["metrics"]["primary"]})
             better = best is None or (res["metrics"]["primary"] > best[1]["metrics"]["primary"]
                                       if PRIMARY_HIGHER_IS_BETTER else
                                       res["metrics"]["primary"] < best[1]["metrics"]["primary"])
@@ -234,6 +262,28 @@ class Lab:
         res["metrics"].update(self.comparable_val1(pred))
         return {"alpha_index": k, "best_alpha": float(z["alphas"][k]), "metrics": res["metrics"],
                 "diagnostics": res["diagnostics"], "alpha_scores": scores}
+
+    def _combine_visible(self, metrics: dict, cv_metrics: dict) -> None:
+        """primary = mean of the per-perturbation primary metric over validation + out-of-fold training
+        perturbations (each perturbation weighs the same)."""
+        n1, nt = len(self._val1.perts), len(self._train.perts)
+        metrics[f"{PRIMARY_METRIC}_cv"] = cv_metrics[PRIMARY_METRIC]
+        metrics["primary"] = (n1 * metrics[PRIMARY_METRIC] + nt * cv_metrics[PRIMARY_METRIC]) / (n1 + nt)
+        metrics["n_visible"] = n1 + nt
+        metrics["cv_folds"] = self.cv_folds
+
+    def _cv_baseline(self, which: str) -> np.ndarray:
+        """Out-of-fold analytic baseline for the training perturbations, on the run's folds."""
+        from .pipeline import cv_folds_of
+        pred = np.tile(self.control_mean, (len(self._train.perts), 1))
+        if which == "baseline_mean_response":
+            pos = {p: i for i, p in enumerate(self._train.perts)}
+            delta = self._train.means - self.control_mean
+            for fold in cv_folds_of(self._train.perts, self.cv_folds, self.cv_seed):
+                rows = [pos[p] for p in fold]
+                rest = np.setdiff1d(np.arange(len(pos)), rows)
+                pred[rows] += delta[rest].mean(axis=0)
+        return pred
 
     def comparable_val1(self, pred: np.ndarray) -> dict:
         """CellForge and VCWorld metrics on visible validation ({} when the bundle has no held-out cells)."""
@@ -317,6 +367,9 @@ class Lab:
             t0 = time.process_time()
             pred = self._analytic_baseline(key, self._val1.perts)
             res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts)
+            if self.cv_folds > 1:
+                cv_res = evaluate(self._cv_baseline(key), self._train.means, self.control_mean, self._train.perts)
+                self._combine_visible(res["metrics"], cv_res["metrics"])
             res["metrics"].update(self.comparable_val1(pred))
             eid = self.db.next_experiment_id()
             self.db.insert_experiment({

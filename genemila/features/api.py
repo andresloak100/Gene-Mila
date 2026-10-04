@@ -15,6 +15,8 @@ ctx.train_delta(exclude=p). For row p it MUST exclude p itself, which is what
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 import os
 import tempfile
@@ -78,6 +80,26 @@ class FeatureContext:
         self._targets: dict[str, list[str]] = json.loads((self.public_dir / "knowledge" / "targets.json").read_text())
         self._feature_cache: dict = {}
         self.cache: dict = {}  # free-form cache features may use for shared work
+
+    # ---- cross-validation views ---------------------------------------------------
+    @property
+    def train_signature(self) -> str:
+        """Identifies the training set this context exposes (feature caches key on it)."""
+        return hashlib.sha256("\n".join(self.train_perts).encode()).hexdigest()[:12]
+
+    def without_train(self, exclude: list[str]) -> "FeatureContext":
+        """A view whose training labels exclude `exclude` (a cross-validation fold). Feature code sees a
+        smaller training set and nothing else changes; the fold's labels are unreachable through it. The view
+        has its own memo caches so nothing computed from the full training set leaks in."""
+        out = copy.copy(self)
+        gone = set(exclude)
+        keep = [i for i, p in enumerate(self.train_perts) if p not in gone]
+        out.train_perts = [self.train_perts[i] for i in keep]
+        out._train_delta = self._train_delta[keep]
+        out._train_pos = {p: i for i, p in enumerate(out.train_perts)}
+        out._feature_cache = {}
+        out.cache = {}
+        return out
 
     # ---- perturbation metadata -------------------------------------------------
     def target_genes(self, pert: str) -> list[str]:

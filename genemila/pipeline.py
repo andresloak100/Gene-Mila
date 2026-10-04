@@ -44,7 +44,7 @@ def feature_cache_key(ctx: FeatureContext, cls, params: dict, perts: list[str]) 
     manifest = json.loads((ctx.public_dir / "manifest.json").read_text())
     deps = sorted((d, _source_hash(registry.get(d))) for d in cls.dependencies if d in registry.REGISTRY)
     payload = json.dumps([cls.name, cls.version, _source_hash(cls), params, deps, manifest.get("name"),
-                          manifest.get("split_id"), list(perts)], sort_keys=True, default=str)
+                          manifest.get("split_id"), list(perts), ctx.train_signature], sort_keys=True, default=str)
     return hashlib.sha256(payload.encode()).hexdigest()[:32]
 
 
@@ -83,6 +83,41 @@ def build_matrix(ctx: FeatureContext, feature_set: list[str], feature_params: di
         columns += [name] if arr.shape[2] == 1 else [f"{name}[{j}]" for j in range(arr.shape[2])]
     X = np.concatenate(blocks, axis=2)
     return X.reshape(len(perts) * ctx.n_genes, X.shape[2]), columns
+
+
+def cv_folds_of(train: list[str], k: int, seed: int) -> list[list[str]]:
+    """Deterministic K folds over the training perturbations (same folds for every experiment of a run)."""
+    order = list(np.random.default_rng(seed).permutation(sorted(train)))
+    return [sorted(order[i::k]) for i in range(k)]
+
+
+def cross_validate(ctx: FeatureContext, feature_set: list[str], feature_params: dict, model_type: str,
+                   alphas: list[float], seed: int, k: int, fold_seed: int, timings: dict, feature_cache,
+                   cache_log) -> np.ndarray:
+    """Out-of-fold predicted deltas for every training perturbation, per alpha: (n_alphas, n_train, n_genes).
+
+    Each fold is a context whose training labels exclude the fold, so feature code (which may only read
+    training labels) recomputes its features without them; the fold's model is fitted on the rest. The
+    predictions are therefore honest out-of-sample predictions, like those for the held-out sets."""
+    pos = {p: i for i, p in enumerate(ctx.train_perts)}
+    out = np.zeros((len(alphas), len(ctx.train_perts), ctx.n_genes), dtype=np.float32)
+    for fold in cv_folds_of(ctx.train_perts, k, fold_seed):
+        view = ctx.without_train(fold)
+        X_tr, _ = build_matrix(view, feature_set, feature_params, view.train_perts, timings, feature_cache, cache_log)
+        X_fo, _ = build_matrix(view, feature_set, feature_params, fold, timings, feature_cache, cache_log)
+        _, d_tr = view.train_delta()
+        mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
+        sd[sd == 0] = 1.0
+        X_tr, X_fo = (X_tr - mu) / sd, (X_fo - mu) / sd
+        rows = [pos[p] for p in fold]
+        for j, a in enumerate(alphas):
+            model = make_model(model_type, a, seed)
+            model.fit(X_tr, d_tr.reshape(-1))
+            pred = model.predict(X_fo).reshape(len(fold), ctx.n_genes)
+            if not np.all(np.isfinite(pred)):
+                raise ValueError(f"model produced non-finite cross-validation predictions at alpha={a}")
+            out[j, rows] = pred.astype(np.float32)
+    return out
 
 
 def make_model(model_type: str, alpha: float, seed: int):
@@ -146,6 +181,15 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
 
     np.savez_compressed(out_dir / "predictions.npz", delta=np.stack(preds), perts=np.array(evals),
                         alphas=np.array(alphas, dtype=np.float64))
+    cv_folds = int(hp.get("cv_folds") or 0)
+    cv_time = 0.0
+    if cv_folds > 1:
+        t = time.process_time()
+        cv = cross_validate(ctx, feature_set, feature_params, model_type, alphas, seed, cv_folds,
+                            int(hp.get("cv_seed") or 0), timings, feature_cache, cache_log)
+        np.savez_compressed(out_dir / "cv.npz", delta=cv, perts=np.array(train),
+                            alphas=np.array(alphas, dtype=np.float64), folds=np.array([cv_folds]))
+        cv_time = time.process_time() - t
     with open(out_dir / "models.pkl", "wb") as fh:
         pickle.dump({"models": models, "columns": columns, "x_mean": mu, "x_std": sd}, fh)
     result = {
@@ -158,8 +202,9 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
         "feature_metadata": {n: registry.get(n).metadata() for n in feature_set},
         "timing": {
             "feature_cpu_s": feat_time, "per_feature_cpu_s": timings,
-            "train_cpu_s": train_time, "inference_cpu_s": infer_time,
+            "train_cpu_s": train_time, "inference_cpu_s": infer_time, "cv_cpu_s": cv_time,
         },
+        "cv_folds": cv_folds,
         "model_size_bytes": int((out_dir / "models.pkl").stat().st_size),
         "feature_cache": {"hits": sorted(set(cache_log.get("hits", []))),
                           "misses": sorted(set(cache_log.get("misses", [])))},

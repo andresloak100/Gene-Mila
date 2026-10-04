@@ -103,6 +103,8 @@ class Worker:
             (art / "metrics.json").write_text(json.dumps(ev, indent=1))
             if not self.lab.cfg["experiment"].get("keep_all_alphas", False):
                 prune_predictions(art / "predictions.npz", ev["alpha_index"])
+                if (art / "cv.npz").exists():
+                    prune_predictions(art / "cv.npz", ev["alpha_index"])
             self.lab.trim_feature_cache()
             parent = self.db.get_experiment(spec.parent_experiment_id) if spec.parent_experiment_id else None
             pscore = parent.get("primary_score") if parent else None
