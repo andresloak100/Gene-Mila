@@ -32,18 +32,53 @@ def sh(*cmd, cwd=None) -> str:
         return ""
 
 
-def git_state(repo: Path) -> dict:
+INTEGRATION_BRANCH = "claude/autonomous-research-system-3k435s"
+
+
+def git_state(repo: Path, fetch: bool = False) -> dict:
+    """Branch, head, dirty files, and how far HEAD is from the integration branch as last fetched (an agent
+    in a stale clone sees "behind by N"); --fetch refreshes the remote ref first."""
+    if fetch:
+        sh("git", "fetch", "-q", "origin", INTEGRATION_BRANCH, cwd=repo)
+    remote = f"origin/{INTEGRATION_BRANCH}"
+    counts = sh("git", "rev-list", "--left-right", "--count", f"HEAD...{remote}", cwd=repo).split()
+    ahead, behind = (int(counts[0]), int(counts[1])) if len(counts) == 2 else (None, None)
     return {"branch": sh("git", "rev-parse", "--abbrev-ref", "HEAD", cwd=repo),
             "head": sh("git", "rev-parse", "--short", "HEAD", cwd=repo),
             "dirty_files": len([l for l in sh("git", "status", "--porcelain", cwd=repo).splitlines() if l.strip()]),
-            "last_commit": sh("git", "log", "-1", "--format=%h %cd %s", "--date=iso-strict", cwd=repo)}
+            "last_commit": sh("git", "log", "-1", "--format=%h %cd %s", "--date=iso-strict", cwd=repo),
+            "integration_branch": INTEGRATION_BRANCH,
+            "integration_head": sh("git", "rev-parse", "--short", remote, cwd=repo) or None,
+            "integration_fetched": sh("git", "log", "-1", "--format=%cd", "--date=iso-strict", remote, cwd=repo) or None,
+            "ahead": ahead, "behind": behind, "fetched_now": fetch}
 
 
-def run_state(d: Path) -> dict:
+def is_paid(cfg: dict) -> bool:
+    """A run that can spend money: an LLM worker, or an LLM planner (anything but mock / scripted)."""
+    w = (cfg.get("worker") or {}).get("provider")
+    p = (cfg.get("planner") or {}).get("provider")
+    return bool(cfg) and (w not in ("mock", None) or p not in ("scripted", "loadtest", "mock", None))
+
+
+def ledger_of(cfg: dict, run_dir: Path) -> Path | None:
+    raw = (cfg.get("budget") or {}).get("ledger")
+    if not raw:
+        return None
+    path = Path(raw)
+    return path.resolve() if path.is_absolute() else (REPO_ROOT / path).resolve()
+
+
+def run_state(d: Path, shared_ledger: Path | None = None) -> dict:
     name = d.name
     cfg = json.loads((d / "config.json").read_text()) if (d / "config.json").exists() else {}
     out = {"dir": name, "arm": run_arm(cfg) if cfg else "?", "workers": cfg.get("run", {}).get("workers"),
-           "seed": cfg.get("run", {}).get("seed"), "dataset": cfg.get("run", {}).get("dataset") or cfg.get("run", {}).get("data_dir")}
+           "seed": cfg.get("run", {}).get("seed"), "dataset": cfg.get("run", {}).get("dataset") or cfg.get("run", {}).get("data_dir"),
+           "paid": is_paid(cfg), "ledger_ok": None}
+    if out["paid"] and shared_ledger is not None:  # a paid run outside the shared ledger bypasses the cumulative cap
+        mine = ledger_of(cfg, d)
+        out["ledger_ok"] = mine is not None and mine == shared_ledger.resolve()
+        if not out["ledger_ok"]:
+            out["ledger"] = None if mine is None else str(mine)
     if name.endswith("_contaminated") or name.endswith("_interrupted"):
         out["state"] = "excluded (" + name.rsplit("_", 1)[1] + ")"
     summary = d / "summary.json"
@@ -115,14 +150,16 @@ def main():
     ap.add_argument("--runs", default=str(REPO_ROOT / "runs"))
     ap.add_argument("--ledger", default=None, help="shared spend ledger (default: <runs>/spend_ledger.sqlite)")
     ap.add_argument("--logs", default=None, help="driver log directory with progress.md (default: the Mac's, if present)")
+    ap.add_argument("--fetch", action="store_true", help="fetch the integration branch first (needs network)")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
     runs_dir = Path(args.runs)
     ledger = Path(args.ledger) if args.ledger else runs_dir / "spend_ledger.sqlite"
     logs = Path(args.logs) if args.logs else (DEFAULT_LOGS if DEFAULT_LOGS.exists() else None)
-    runs = sorted((run_state(d) for d in runs_dir.iterdir() if d.is_dir()), key=lambda r: r["dir"]) if runs_dir.exists() else []
+    runs = sorted((run_state(d, ledger) for d in runs_dir.iterdir() if d.is_dir()), key=lambda r: r["dir"]) if runs_dir.exists() else []
     state = {"checked_at": time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()), "repo": str(REPO_ROOT),
-             "git": git_state(REPO_ROOT), "runs": runs, "ledger": ledger_totals(ledger), "ledger_path": str(ledger),
+             "git": git_state(REPO_ROOT, fetch=args.fetch), "runs": runs, "ledger": ledger_totals(ledger), "ledger_path": str(ledger),
+             "ledger_bypass": [r["dir"] for r in runs if r.get("paid") and r.get("ledger_ok") is False],
              "processes": processes(),
              "progress_tail": (logs / "progress.md").read_text().splitlines()[-15:] if logs and (logs / "progress.md").exists() else [],
              "state_file": str(logs / "STATE.md") if logs and (logs / "STATE.md").exists() else None,
@@ -132,8 +169,16 @@ def main():
         print(json.dumps(state, indent=1, default=str))
         return
     g = state["git"]
+    if g["integration_head"] is None:
+        sync = f"no local copy of origin/{g['integration_branch']} (run `git fetch origin {g['integration_branch']}`)"
+    elif g["ahead"] == 0 and g["behind"] == 0:
+        sync = f"level with origin/{g['integration_branch']} ({g['integration_head']})"
+    else:
+        sync = (f"ahead by {g['ahead']} and behind by {g['behind']} commit(s) against origin/{g['integration_branch']} "
+                f"({g['integration_head']})")
+    sync += " as fetched just now" if g["fetched_now"] else f", as last fetched (its newest commit is from {g['integration_fetched']})"
     L = [f"# Handoff state, {state['checked_at']}", "", f"Checkout `{state['repo']}`: branch `{g['branch']}` at `{g['head']}`, "
-         f"{g['dirty_files']} uncommitted file(s); last commit {g['last_commit']}.", ""]
+         f"{g['dirty_files']} uncommitted file(s); last commit {g['last_commit']}.", f"HEAD is {sync}.", ""]
     L += ["## Runs", "", "| run | arm | workers | seed | code | state | completed | best visible | best sealed | worker $ |",
           "|---|---|---|---|---|---|---|---|---|---|"]
     for r in runs:
@@ -142,6 +187,9 @@ def main():
                  f"{f(r.get('completed'))} | {f(r.get('best_visible'))} | {f(r.get('best_sealed'))} | {f(r.get('worker_usd'), 2)} |")
     if not runs:
         L.append("(no run directories)")
+    if state["ledger_bypass"]:
+        L += ["", "**WARNING: paid runs not on the shared ledger** (their spend does not count toward the cumulative cap): "
+              + ", ".join(f"{r['dir']} (ledger: {r.get('ledger') or 'none'})" for r in runs if r["dir"] in state["ledger_bypass"])]
     L += ["", "## Spend ledger", "", f"`{state['ledger_path']}`"]
     total = 0.0
     for k, v in sorted(state["ledger"].items()):

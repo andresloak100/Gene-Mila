@@ -98,3 +98,24 @@ def test_scaling_report_handles_a_deterministic_short_control(tmp_path):
     bullets = [l for l in sr.render(runs).splitlines() if l.startswith("- scripted control (no LLM) @")]
     assert sum(l.startswith("- scripted control (no LLM) @ abc1234, 4 workers (3 runs)") for l in bullets) == 1
     assert sum(l.startswith("- scripted control (no LLM) @ def5678, 4 workers (1 run,") for l in bullets) == 1
+
+
+def test_handoff_state_flags_stale_clones_and_ledger_bypass(tmp_path):
+    """The one-command state says how far the checkout is from the integration branch and names paid runs
+    whose config points at another ledger (they would bypass the cumulative cap)."""
+    import handoff_state as hs
+    (tmp_path / "runs").mkdir()
+    shared = tmp_path / "runs" / "spend_ledger.sqlite"
+    on = _run_dir(tmp_path / "runs", "paid_on_ledger", 4, "deepseek", "deepseek", 0.05, 1200)
+    off = _run_dir(tmp_path / "runs", "paid_elsewhere", 4, "deepseek", "deepseek", 0.05, 1200)
+    free = _run_dir(tmp_path / "runs", "free_control", 4, "scripted", "mock", 0.05, 1200)
+    for d, ledger in ((on, str(shared)), (off, "runs/other.sqlite"), (free, "runs/other.sqlite")):
+        cfg = json.loads((d / "config.json").read_text())
+        cfg["budget"] = {"ledger": ledger}
+        (d / "config.json").write_text(json.dumps(cfg))
+    rows = {r["dir"]: r for r in (hs.run_state(d, shared) for d in (on, off, free))}
+    assert rows["paid_on_ledger"]["paid"] and rows["paid_on_ledger"]["ledger_ok"]
+    assert rows["paid_elsewhere"]["paid"] and rows["paid_elsewhere"]["ledger_ok"] is False
+    assert not rows["free_control"]["paid"] and rows["free_control"]["ledger_ok"] is None
+    g = hs.git_state(hs.REPO_ROOT)
+    assert g["integration_branch"] == hs.INTEGRATION_BRANCH and ("behind" in g)
