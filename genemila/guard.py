@@ -22,7 +22,8 @@ BANNED_NAMES = {"open", "eval", "exec", "compile", "__import__", "globals", "loc
                 "breakpoint", "getattr", "setattr", "delattr", "memoryview", "exit", "quit"}
 BANNED_ATTRS = {"load", "save", "savez", "savez_compressed", "loadtxt", "genfromtxt", "fromfile", "tofile",
                 "memmap", "system", "popen", "read_csv", "read_table", "read_pickle", "to_csv",
-                "_train_delta", "_train_pos", "_targets", "_feature_cache", "public_dir", "__dict__",
+                "_train_delta", "_train_pos", "_targets", "_feature_cache", "public_dir", "cache_dir",
+                "_preloaded", "shared", "without_train", "_disk_cached", "__dict__",
                 "__class__", "__subclasses__", "__globals__", "__builtins__", "__code__", "__bases__",
                 "__mro__", "f_globals", "f_locals"}
 

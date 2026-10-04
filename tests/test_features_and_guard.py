@@ -111,3 +111,17 @@ def test_guard_accepts_templates_and_checks_name():
         check_plugin_source(CHEAT.format(name="abc"), "abc")
     with pytest.raises(CodeViolation):
         check_plugin_source("def broken(:\n", "abc")
+
+
+@pytest.mark.parametrize("snippet", [
+    "full = type(ctx)._preloaded",                       # the process-wide context behind a fold view
+    "full = FeatureContext.shared('public_data')",       # re-loading the full training set
+    "view = ctx.without_train([])",                      # making one's own view
+    "arr = ctx._disk_cached('x', lambda: ctx.control_mean)",
+])
+def test_guard_blocks_routes_around_fold_views(snippet):
+    code = TEMPLATES["coexpr"].replace("def compute(self, ctx, perts, params):",
+                                       f"def compute(self, ctx, perts, params):\n        {snippet}")
+    assert "def compute" in code and snippet in code
+    with pytest.raises(CodeViolation):
+        check_plugin_source(code, "coexpr")
