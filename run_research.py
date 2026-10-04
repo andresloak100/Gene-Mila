@@ -42,6 +42,9 @@ def parse_args(argv=None):
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
                     help="override any config value, e.g. --set experiment.timeout_s=120")
     ap.add_argument("--run-dir")
+    ap.add_argument("--continue-from", metavar="RUN_DIR",
+                    help="warm start: import that run's useful features and start from its best model "
+                         "(same dataset and split required)")
     ap.add_argument("--no-watchdog", action="store_true")
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--_child", action="store_true", help=argparse.SUPPRESS)
@@ -71,6 +74,11 @@ def build_config(args) -> dict:
             pass
         set_dotted(cfg, k, v)
     cfg["run"]["data_dir"] = str(REPO_ROOT / "data" / cfg["run"]["dataset"])
+    if args.continue_from:
+        prev = Path(args.continue_from).resolve()
+        if not (prev / "lab.db").exists():
+            raise SystemExit(f"--continue-from: {prev} holds no run (no lab.db)")
+        cfg["run"]["continue_from"] = str(prev)
     return cfg
 
 

@@ -22,6 +22,7 @@ from genemila.benchmark.table import run_arm
 MEASURES = [  # key, label, how to read it from (summary, analysis)
     ("best_visible", "best visible", lambda s, a: (s.get("best") or {}).get("score")),
     ("best_sealed", "best sealed", lambda s, a: _sealed(s, "best")),
+    ("best_sealed_single", "best sealed (single model)", lambda s, a: _sealed(s, "single")),
     ("gain_visible", "gain over start (visible)", lambda s, a: s.get("improvement_over_baseline")),
     ("gain_sealed", "gain over start (sealed)", lambda s, a: _gain_sealed(s)),
     ("completed", "experiments completed", lambda s, a: s.get("experiments_completed")),
@@ -46,6 +47,8 @@ def _sealed(s, which):
     rows = s.get("generalization_query_only") or []
     if which == "best":
         r = next((g for g in rows if g.get("kind") != "baseline"), None)
+    elif which == "single":
+        r = next((g for g in rows if g.get("kind") not in ("baseline", "ensemble")), None)
     else:
         r = next((g for g in rows if g.get("kind") == "baseline"), None)
     return None if r is None else r.get("query_only_score")

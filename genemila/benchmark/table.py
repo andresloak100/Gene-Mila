@@ -40,9 +40,10 @@ def run_arm(cfg: dict) -> str:
     """Which arm a run belongs to, from its config: the LLM planner/worker pair, or the scripted no-LLM
     control (fixed hypotheses implemented by hand-written template features)."""
     p, w = cfg.get("planner", {}), cfg.get("worker", {})
+    cont = " (continued campaign)" if cfg.get("run", {}).get("continue_from") else ""
     if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
-        return "scripted control (no LLM)"
-    return f"{p.get('provider', '?')}:{p.get('model', '')} planner, {w.get('provider', '?')}:{w.get('model', '')} workers"
+        return "scripted control (no LLM)" + cont
+    return f"{p.get('provider', '?')}:{p.get('model', '')} planner, {w.get('provider', '?')}:{w.get('model', '')} workers" + cont
 
 
 def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
@@ -69,8 +70,10 @@ def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
             "workers": s.get("workers") or cfg.get("run", {}).get("workers"), "duration_s": s.get("duration_s"),
             "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm,
             "best": None if best is None else {"experiment_id": best["experiment_id"],
-                                               "features": (s.get("best") or {}).get("features"),
-                                               "model": (s.get("best") or {}).get("model"),
+                                               "features": ((s.get("ensemble") or {}).get("features") if best.get("kind") == "ensemble"
+                                                            else (s.get("best") or {}).get("features")),
+                                               "model": ("ensemble of top finalists" if best.get("kind") == "ensemble"
+                                                         else (s.get("best") or {}).get("model")),
                                                "primary": best.get("query_only_score"), "metrics": metrics(best)},
             "start": None if start is None else {"experiment_id": start["experiment_id"],
                                                  "description": (s.get("baseline") or {}).get("description"),

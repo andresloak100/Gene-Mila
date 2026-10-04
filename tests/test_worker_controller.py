@@ -258,3 +258,43 @@ def test_python_exploit_fills_the_queue_without_llm(lab_factory):
     for spec in exploit.candidates(lab, best):
         lab.queue(spec)
     assert exploit.propose(lab, 5) == []
+
+
+def test_warm_start_continues_a_campaign(lab_factory, tmp_path, dataset):
+    """A second run on the same split imports the first run's useful features, starts from its best model and
+    tells the planner what was already learned; a run on another split is refused."""
+    first = lab_factory(schedule__max_planner_calls=2)
+    Controller(first, workers=2, seconds=45, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+               quiet=True).run()
+    best = first.best()
+    assert best["kind"] == "new_feature" or best["feature_set_json"]
+    second = lab_factory(run__continue_from=str(first.run_dir), schedule__max_planner_calls=1)
+    ctl = Controller(second, workers=2, seconds=30, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+                     quiet=True)
+    summary = ctl.run()
+    info = json.loads((second.run_dir / "warm_start.json").read_text())
+    assert info["run_id"] == first.run_id and info["features"] == best["feature_set_json"]
+    imported = [f for f in second.db.features() if (f.get("creator_experiment") or "").startswith("warm:")]
+    assert {f["name"] for f in imported} >= {f for f in best["feature_set_json"] if f not in ("control_mean", "mean_response", "is_target")}
+    assert all((second.store / f"{f['name']}.py").exists() for f in imported)
+    start = second.db.query("SELECT * FROM experiments WHERE proposer='python:warm_start'")
+    assert len(start) == 1 and start[0]["status"] == "completed", start[0].get("failure_reason")
+    assert start[0]["feature_set_json"] == best["feature_set_json"]
+    assert abs(start[0]["primary_score"] - best["primary_score"]) < 1e-6  # same model, same split: same score
+    assert summary["continued_from"] == str(first.run_dir)
+    from genemila.research_state import build_state, render_state
+    text = render_state(build_state(second))
+    assert "PRIOR CAMPAIGN" in text and first.run_id in text
+    # another split: refused
+    from genemila.data.synthetic import generate
+    other = generate(tmp_path / "other", n_genes=120, n_perts=30, n_control=600, cells_per_pert=40, seed=1, split_seed=7)
+    from genemila.lab import Lab
+    from conftest import make_cfg
+    cfg = make_cfg(tmp_path, run__continue_from=str(first.run_dir))
+    cfg["run"]["data_dir"] = str(other)
+    lab3 = Lab(cfg, tmp_path / "run_other", other, repo=second.repo)
+    try:
+        with pytest.raises(RuntimeError, match="cannot continue"):
+            lab3.warm_start(first.run_dir)
+    finally:
+        lab3.stop_event.set(); lab3.kill_event.set(); lab3.close()

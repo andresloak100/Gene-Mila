@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+import shutil
 import time
 from pathlib import Path
+
+import numpy as np
 
 from .benchmark.oracle import QueryBudgetExceeded
 
@@ -30,6 +33,12 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
             picked.append(c)
         if len(picked) >= top_k:
             break
+    if allow_new and lab.cfg.get("final", {}).get("ensemble", True) and not any(c["kind"] == "ensemble" for c in picked):
+        ens = ensemble_finalist(lab, [c for c in picked if c["kind"] != "ensemble"])
+        if ens is not None:
+            picked.append(ens)
+    # finalists by visible score (the headline is whichever wins on the visible perturbations), baseline last
+    picked.sort(key=lambda c: -(c.get("primary_score") or 0))
     base = lab.best_baseline()
     if base and (allow_new or base.get("query_metrics_json")):
         picked.append(base)
@@ -46,6 +55,7 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
             db.event("query_only_error", str(exc), c["experiment_id"], "warning")
             continue
         row = {"experiment_id": c["experiment_id"], "kind": c["kind"],
+               "members": ((c.get("diagnostics_json") or {}).get("members") if c["kind"] == "ensemble" else None),
                "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
                "gap": c["primary_score"] - q["metrics"]["primary"],
                "comparable": {"val1": {k: v for k, v in (c.get("val_metrics_json") or {}).items()
@@ -70,6 +80,81 @@ VCWORLD_SHOWN = ("vcworld_de_f1", "vcworld_de_auroc", "vcworld_de_auprc", "vcwor
 CELLEVAL_SHOWN = ("pearson_delta", "mse", "discrimination_score_l1", "overlap_at_N", "de_direction_match")
 
 
+def ensemble_finalist(lab, members: list[dict]) -> dict | None:
+    """One more finalist: the average of the finalists' predicted deltas (an average of linear models is
+    itself linear in the union of their features). It is scored like any experiment on the visible
+    perturbations and kept, as a completed experiment of kind 'ensemble', only when it beats the best single
+    member there; so it costs at most one query-only evaluation and never replaces a better single model.
+    Built once per run; a re-summary finds the stored record."""
+    existing = lab.db.query("SELECT * FROM experiments WHERE kind='ensemble' AND status='completed' LIMIT 1")
+    if existing:
+        return existing[0]
+    members = [m for m in members if m.get("artifact_dir") and m.get("primary_score") is not None]
+    if len(members) < 2:
+        return None
+
+    def chosen(path, alpha):
+        z = np.load(path, allow_pickle=False)
+        alphas = list(map(float, z["alphas"]))
+        k = alphas.index(float(alpha)) if float(alpha) in alphas else 0
+        return [str(p) for p in z["perts"]], z["delta"][k].astype(np.float64), z
+
+    deltas, cvs, perts_ref, cv_perts = [], [], None, None
+    for m in members:
+        perts, d, _ = chosen(Path(m["artifact_dir"]) / "predictions.npz", m["best_alpha"])
+        if perts_ref is None:
+            perts_ref = perts
+        elif perts != perts_ref:
+            lab.db.event("ensemble_skipped", "finalists predict different perturbation sets", level="warning")
+            return None
+        deltas.append(d)
+        if lab.cv_folds > 1:
+            cvp = Path(m["artifact_dir"]) / "cv.npz"
+            if not cvp.exists():
+                return None
+            cv_perts, c, _ = chosen(cvp, m["best_alpha"])
+            cvs.append(c)
+    eid = lab.db.next_experiment_id()
+    art = lab.artifacts / eid
+    art.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(art / "predictions.npz", delta=np.mean(deltas, axis=0)[None].astype(np.float32),
+                        perts=np.array(perts_ref), alphas=np.array([0.0]))
+    if cvs:
+        np.savez_compressed(art / "cv.npz", delta=np.mean(cvs, axis=0)[None].astype(np.float32),
+                            perts=np.array(cv_perts), alphas=np.array([0.0]), folds=np.array([lab.cv_folds]))
+    ids = [m["experiment_id"] for m in members]
+    try:
+        ev = lab.evaluate_artifact(art / "predictions.npz")
+    except ValueError as exc:
+        lab.db.event("ensemble_skipped", str(exc)[:300], level="warning")
+        shutil.rmtree(art, ignore_errors=True)
+        return None
+    best_single = max(m["primary_score"] for m in members)
+    if ev["metrics"]["primary"] <= best_single:
+        lab.db.event("ensemble_skipped", f"average of {', '.join(ids)} scores {ev['metrics']['primary']:.4f} on the "
+                     f"visible perturbations, not above the best single model ({best_single:.4f})")
+        shutil.rmtree(art, ignore_errors=True)
+        lab.db.execute("DELETE FROM experiments WHERE experiment_id=? AND status='reserved'", (eid,))
+        return None
+    feature_set = sorted(set().union(*[set(m.get("feature_set_json") or []) for m in members]))
+    lab.db.insert_experiment({
+        "experiment_id": eid, "run_id": lab.run_id, "status": "completed", "kind": "ensemble",
+        "category": "exploit", "hypothesis": f"Average of the predictions of the top finalists {', '.join(ids)}.",
+        "rationale": "Averaging independently selected linear models cancels part of their selection noise; "
+                     "the result is still a linear model in the union of their features.",
+        "hypothesis_group": "ensemble_top_finalists", "feature_set_json": feature_set, "model_type": "ensemble",
+        "parent_id": members[0]["experiment_id"], "dataset": lab.dataset, "split_id": lab.split_id,
+        "proposer": "python:ensemble", "provider": "python", "model": "ensemble",
+        "val_metrics_json": {**ev["metrics"], "alpha_scores": ev["alpha_scores"]},
+        "diagnostics_json": {**ev["diagnostics"], "members": ids}, "primary_score": ev["metrics"]["primary"],
+        "parent_score": best_single, "delta_from_parent": ev["metrics"]["primary"] - best_single,
+        "best_alpha": 0.0, "artifact_dir": str(art), "finished_at": time.time(), "code_commit": lab.base_commit,
+        "seed": 0})
+    lab.db.event("ensemble", f"{eid}: average of {', '.join(ids)} scores {ev['metrics']['primary']:.4f} vs best "
+                 f"single {best_single:.4f} on the visible perturbations", eid)
+    return lab.db.get_experiment(eid)
+
+
 def build_summary(lab, wall_s: float | None, workers: int | None, generalization: list[dict] | None) -> dict:
     db = lab.db
     exps = db.query("SELECT * FROM experiments WHERE status NOT IN ('reserved')")
@@ -81,7 +166,8 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
     wall_s = wall_s or ((run.get("finished_at") or time.time()) - (run.get("started_at") or time.time()))
     best = lab.best()
     base = lab.best_baseline()
-    proposed = [e for e in exps if e["kind"] != "baseline"]
+    proposed = [e for e in exps if e["kind"] not in ("baseline", "ensemble")]
+    ensemble = next((e for e in done if e["kind"] == "ensemble"), None)
     groups = {}
     for e in proposed:
         groups.setdefault(e.get("hypothesis_group"), []).append(e)
@@ -110,9 +196,11 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
     summary = {
         "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id, "base_commit": lab.base_commit,
         "duration_s": round(wall_s, 1), "workers": workers or run.get("workers"),
+        "continued_from": lab.cfg["run"].get("continue_from"),
         "selection": {"cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
                       "n_visible": len(lab._val1.perts) + (len(lab._train.perts) if lab.cv_folds > 1 else 0)},
-        "experiments_proposed": len(proposed), "experiments_completed": len([e for e in done if e["kind"] != "baseline"]),
+        "experiments_proposed": len(proposed),
+        "experiments_completed": len([e for e in done if e["kind"] not in ("baseline", "ensemble")]),
         "experiments_failed": len(by.get("failed", [])), "experiments_rejected": len(by.get("rejected", [])),
         "experiments_killed": len(by.get("killed", [])), "experiments_cancelled": len(by.get("cancelled", [])),
         "duplicate_experiments": len(by.get("duplicate", [])),
@@ -127,6 +215,10 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
             "metrics": best.get("val_metrics_json"),
             "coefficients": (best.get("diagnostics_json") or {}).get("coefficients")},
         "improvement_over_baseline": gain,
+        "ensemble": None if not ensemble else {
+            "experiment_id": ensemble["experiment_id"], "members": (ensemble.get("diagnostics_json") or {}).get("members"),
+            "score": ensemble["primary_score"], "features": ensemble.get("feature_set_json"),
+            "query_only_score": (ensemble.get("query_metrics_json") or {}).get("primary")},
         "lineage": [{"experiment_id": e["experiment_id"], "added": e.get("new_feature") or e["kind"],
                      "score": e["primary_score"], "hypothesis": e["hypothesis"]} for e in lineage],
         "most_useful_features": [{"feature": e["new_feature"], "experiment_id": e["experiment_id"],

@@ -237,6 +237,12 @@ class Controller:
                   f"${self.lab.gateway.role_caps['worker']:.2f}, planner ${self.lab.gateway.role_caps['planner']:.2f}")
         self.lab.record_analytic_baselines()
         self.lab.queue_model_baselines()
+        prev = self.cfg["run"].get("continue_from")
+        if prev:
+            info = self.lab.warm_start(Path(prev))
+            self._log(f"warm start from {info['run_id']}: {len(info['imported'])} features imported, starting model "
+                      f"{info['start_experiment']} on {len(info['features'])} features"
+                      + (f"; missing {info['missing']}" if info["missing"] else ""))
         for i in range(self.n_workers):
             self._start_worker(i)
         interval = float(self.cfg["run"]["status_interval_s"])

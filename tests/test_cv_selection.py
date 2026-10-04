@@ -88,3 +88,66 @@ def test_cv_off_keeps_the_old_protocol(lab_factory):
     lab.record_analytic_baselines()
     m = lab.best_baseline()["val_metrics_json"]
     assert "n_visible" not in m and m["primary"] == m["pearson_delta"]
+
+
+def test_ensemble_finalist_is_kept_only_when_it_wins(lab_factory):
+    """The average of the finalists becomes one more candidate for the sealed set only when it beats the best
+    single model on the visible perturbations; it never becomes the lab's 'best' experiment."""
+    from genemila.controller import Controller
+    from genemila.providers.mock import MockProvider, ScriptedPlanner
+    from genemila.report import ensemble_finalist, run_query_only
+    lab = lab_factory(final__ensemble=False, schedule__max_planner_calls=2)
+    Controller(lab, workers=2, seconds=45, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+               quiet=True).run()
+    singles = lab.db.query("SELECT * FROM experiments WHERE status='completed' AND kind!='baseline' "
+                           "ORDER BY primary_score DESC LIMIT 3")
+    assert len(singles) >= 2
+    ens = ensemble_finalist(lab, singles)
+    best_single = max(s["primary_score"] for s in singles)
+    if ens is None:
+        assert lab.db.query("SELECT 1 FROM events WHERE kind='ensemble_skipped'")
+        assert not lab.db.query("SELECT 1 FROM experiments WHERE kind='ensemble'")
+        assert not lab.db.query("SELECT 1 FROM experiments WHERE status='reserved'")
+    else:
+        assert ens["kind"] == "ensemble" and ens["primary_score"] > best_single
+        assert (Path(ens["artifact_dir"]) / "predictions.npz").exists()
+        assert (Path(ens["artifact_dir"]) / "cv.npz").exists() == (lab.cv_folds > 1)
+        assert set(ens["diagnostics_json"]["members"]) == {s["experiment_id"] for s in singles}
+        assert ensemble_finalist(lab, singles)["experiment_id"] == ens["experiment_id"]  # built once
+        assert lab.best()["kind"] != "ensemble"
+        lab.cfg["final"]["ensemble"] = True
+        rows = run_query_only(lab, 3, allow_new=True)
+        kinds = [r["kind"] for r in rows]
+        assert kinds[0] == "ensemble" and kinds[-1] == "baseline" and rows[0]["members"]
+        assert rows[0]["query_only_score"] is not None
+        from genemila.report import build_summary
+        s = build_summary(lab, 45.0, 2, rows)
+        assert s["ensemble"]["experiment_id"] == ens["experiment_id"] and s["best"]["experiment_id"] != ens["experiment_id"]
+        assert s["experiments_completed"] == len(lab.db.query(
+            "SELECT 1 FROM experiments WHERE status='completed' AND kind NOT IN ('baseline','ensemble')"))
+
+
+def test_ensemble_mechanics_on_identical_members(lab_factory):
+    """Two identical members average to themselves: the ensemble cannot beat them, so nothing is kept."""
+    from genemila.report import ensemble_finalist
+    from genemila.spec import ExperimentSpec
+    from genemila.pipeline import run as run_pipeline
+    lab = lab_factory()
+    lab.record_analytic_baselines()
+    recs = []
+    for i in range(2):
+        eid, _ = lab.queue(ExperimentSpec(hypothesis=f"ridge on builtins {i}", scientific_rationale="a reference model",
+                                          feature_set=["control_mean", "mean_response", "is_target"],
+                                          hyperparameters={"alpha_grid": [1.0]}, kind="config"))
+        rec = lab.db.get_experiment(eid)
+        if rec["status"] != "queued":  # the second is a duplicate configuration: run it anyway for the test
+            lab.db.update_experiment(eid, status="queued")
+        out = lab.artifacts / eid
+        run_pipeline(ExperimentSpec.from_record(lab.db.get_experiment(eid)).run_spec(), lab.public_dir,
+                     lab.run_dir / "plugins", out)
+        ev = lab.evaluate_artifact(out / "predictions.npz")
+        lab.db.update_experiment(eid, status="completed", primary_score=ev["metrics"]["primary"],
+                                 best_alpha=ev["best_alpha"], artifact_dir=str(out), val_metrics_json=ev["metrics"])
+        recs.append(lab.db.get_experiment(eid))
+    assert ensemble_finalist(lab, recs) is None
+    assert not lab.db.query("SELECT 1 FROM experiments WHERE status='reserved'")

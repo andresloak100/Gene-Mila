@@ -106,7 +106,8 @@ output = 0.0
 
 [final]
 top_k = 3                      # visible-validation winners evaluated on the query-only set
-max_queries = 5                # hard cap on query-only evaluations per run
+max_queries = 5                # hard cap on query-only evaluations per run (top_k + ensemble + baseline)
+ensemble = true                # also try the average of the top_k finalists, kept only if it wins on the visible set
 celleval = true                # also score finalists with Arc's cell-eval when held-out cells exist
 celleval_profile = "full"      # cell-eval profile: full | minimal | vcc | de
 

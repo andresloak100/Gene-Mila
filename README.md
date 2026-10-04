@@ -69,6 +69,7 @@ python leaderboard.py                # ranked experiments; --all includes failur
 python leaderboard.py --lineage EXP_0012
 python summarize.py --state          # the compressed research state the planner sees
 python summarize.py                  # regenerate the run summary (keeps stored query-only scores)
+python run_research.py --dataset adamson_cf --minutes 20 --workers 4 --continue-from runs/<earlier run>
 python reproduce.py --experiment EXP_0012
 python analyze_run.py                # worker independence, tokens, cost, bottlenecks, projections
 ```
@@ -136,7 +137,16 @@ Every experiment is also scored with CellForge's and VCWorld's published metrics
 
 `configs/default.toml` holds every knob (workers, CPU slots, timeouts, RAM, retries,
 exploration mix, providers and models, budgets, prices). Override with `--config my.toml`
-or `--set section.key=value`. DeepSeek's models reason before answering by default and the
+or `--set section.key=value`. Model selection uses every visible perturbation: each experiment
+also predicts the training perturbations out of fold (`experiment.cv_folds`, fixed folds per run,
+set by the lab and not by agents) and the primary score averages those with the visible
+validation set, so the search signal rests on 60-70 perturbations instead of 15-20. While the
+planner thinks, `schedule.python_exploit` queues deterministic follow-ups around the best model
+(add a helpful feature, ablate, refine alpha, swap the model family) so workers never idle; and
+`final.ensemble` tries the average of the finalists as one more candidate for the sealed set, kept
+only when it wins on the visible perturbations. `--continue-from runs/<earlier run>` warm-starts a
+run on the same split from that run's useful features and best model, with a PRIOR CAMPAIGN
+section in the planner's state. DeepSeek's models reason before answering by default and the
 hidden reasoning counts against `worker.max_output_tokens`; the default `worker.thinking = "disabled"`
 keeps the whole limit for code (set `"enabled"` plus `worker.reasoning_effort` to try it). DeepSeek prices are set to the
 published peak-hour rates for `deepseek-flash` (what the API serves for `deepseek-chat`)
@@ -157,8 +167,9 @@ implementation (after `llm_retries` fixes) is handed to the stronger model once.
 `lab.db` (everything), `artifacts/EXP_xxxx/` (spec, every LLM attempt, smoke reports,
 plugin file, predictions, fitted models, metrics, logs), `feature_store/`, `planner/`
 (state given to the planner and its raw plans), `controller.log`, `summary.md`,
-`summary.json`. Experiment code is pinned at `refs/genemila/<run>/<experiment>`. Only the chosen
-alpha's predictions are kept per experiment and the feature cache is bounded
+`summary.json`, `warm_start.json` when continued from an earlier run. Experiment code is pinned at
+`refs/genemila/<run>/<experiment>`. Only the chosen alpha's predictions (`predictions.npz` for the
+held-out sets, `cv.npz` out of fold for the training perturbations) are kept per experiment and the feature cache is bounded
 (`experiment.feature_cache_max_mb`); a run stops early when free disk drops below `run.min_free_disk_mb`.
 `python results_table.py build --runs runs/<...>` turns run summaries into a results table in
 CellForge's Table 1 layout (`docs/results/`), and `results_table.py calibrate` checks which metric

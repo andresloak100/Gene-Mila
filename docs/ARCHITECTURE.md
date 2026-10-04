@@ -8,7 +8,12 @@
   change. Ridge/lasso/elastic-net/OLS only. The alpha grid is scored on visible
   validation by the controller, never by the experiment.
 * **Primary metric.** `pearson_delta`: per held-out perturbation, Pearson correlation of
-  predicted vs true change across genes, averaged. Also recorded: RMSE, MAE, MSE,
+  predicted vs true change across genes, averaged. Selection uses every visible perturbation:
+  each experiment also predicts the training perturbations out of fold (`experiment.cv_folds`
+  fold views of the feature context that hide the fold's labels from feature code; folds fixed
+  per run, set by the lab after validation so agents cannot choose them), and the primary score
+  is the mean over validation plus out-of-fold perturbations; `pearson_delta` stays the
+  validation-set value and `pearson_delta_cv` the out-of-fold value. Also recorded: RMSE, MAE, MSE,
   Pearson on the top-20 DE genes, direction accuracy on top-20 DE genes, raw-expression
   Pearson, per-perturbation scores, error by expression quartile, delta-scale ratio,
   plus feature/train/inference CPU time, peak RAM and model size.
@@ -29,6 +34,23 @@
   reported, never optimised. Finalists are also scored with Arc's cell-eval.
 * **Baselines** (always first): unchanged (control mean), mean training response,
   and OLS / ridge / lasso on {control mean, leave-one-out mean response, target indicator}.
+* **Exploit engine** (`genemila/exploit.py`, `schedule.python_exploit`): whenever fewer
+  experiments are queued than there are workers, Python queues deterministic follow-ups around
+  the current best model (add a helpful feature it lacks, add the two best missing ones together,
+  drop one of its features, refine the penalty around the chosen alpha, swap the model family).
+  Candidates are hashed like any queued experiment and never re-proposed, so the engine runs dry
+  instead of looping; it exists because the planner, not CPU, bounds throughput.
+* **Ensemble finalist** (`genemila/report.py: ensemble_finalist`, `final.ensemble`): the average
+  of the finalists' predicted deltas is scored like any experiment on the visible perturbations
+  and, only when it beats the best single model there, becomes one more candidate for the sealed
+  set (kind `ensemble`, one query-only evaluation). It never becomes the run's "best" experiment
+  that the planner or a warm start builds on.
+* **Warm start** (`run_research.py --continue-from RUN_DIR`, `Lab.warm_start`): a run on the same
+  dataset and split imports the earlier run's useful features (code and metadata) into its store,
+  queues that run's best model as its starting experiment, and gives the planner a PRIOR CAMPAIGN
+  section (its best scores, helpful and unhelpful features, failed ideas). Another split is
+  refused, because a model selected on other visible perturbations may have been selected on this
+  split's sealed ones.
 * **Splits.** By perturbation, 60/20/20, seeded, hashed into a `split_id` that every
   experiment records. `val1` metrics guide the agents; `val2` is query-only.
 

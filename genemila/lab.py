@@ -173,6 +173,80 @@ class Lab:
                                 "code_hash": sha256_text(dst.read_text()), "creator_experiment": experiment_id,
                                 "compute_cpu_s": compute_cpu_s})
 
+    def warm_start(self, prev_run_dir: Path) -> dict:
+        """Continue a campaign: import the previous run's useful features (code and metadata) into this run's
+        store, queue its best model as this run's starting point, and leave a summary of what it learned for
+        the planner (run_dir/warm_start.json, rendered as PRIOR CAMPAIGN in the research state).
+
+        Only a run on the same dataset and split qualifies: a model selected on another split's visible
+        perturbations could have been selected on this split's sealed ones."""
+        from .research_state import HELP_THRESHOLD
+        prev_run_dir = Path(prev_run_dir).resolve()
+        prev = Database(prev_run_dir / "lab.db")
+        try:
+            row = prev.query("SELECT * FROM runs LIMIT 1")
+            if not row:
+                raise RuntimeError(f"{prev_run_dir} holds no run")
+            run = row[0]
+            if run["dataset"] != self.dataset or run["split_id"] != self.split_id:
+                raise RuntimeError(f"cannot continue from {run['run_id']}: it ran on {run['dataset']} "
+                                   f"({run['split_id']}), this run is on {self.dataset} ({self.split_id})")
+            best = prev.best()
+            if best is None:
+                raise RuntimeError(f"{run['run_id']} has no completed experiment to continue from")
+            feats = {f["name"]: f for f in prev.features()}
+            helpful = [r["new_feature"] for r in prev.query(
+                "SELECT new_feature, MAX(delta_from_parent) AS d FROM experiments WHERE status='completed' AND "
+                "new_feature IS NOT NULL AND delta_from_parent IS NOT NULL GROUP BY new_feature ORDER BY d DESC")
+                if r["d"] is not None and r["d"] > HELP_THRESHOLD]
+            wanted = [f for f in (best.get("feature_set_json") or []) + helpful if f not in BUILTIN_FEATURES]
+            imported, missing = [], []
+            for name in dict.fromkeys(wanted):
+                src = prev_run_dir / "feature_store" / f"{name}.py"
+                meta = feats.get(name)
+                if not src.exists() or meta is None:
+                    missing.append(name)
+                    continue
+                if name in self.known_features():
+                    continue
+                dst = self.store / f"{name}.py"
+                shutil.copy2(src, dst)
+                self.db.upsert_feature({**meta, "implementation_path": str(dst.relative_to(self.run_dir)),
+                                        "code_hash": sha256_text(dst.read_text()),
+                                        "creator_experiment": f"warm:{run['run_id']}:{meta.get('creator_experiment')}"})
+                imported.append(name)
+            start_set = [f for f in (best.get("feature_set_json") or []) if f not in missing]
+            hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items() if k in ("alpha", "alpha_grid")}
+            sealed = (best.get("query_metrics_json") or {}).get("primary")
+            eid, status = self.queue(ExperimentSpec(
+                hypothesis=f"Warm start: the best model of run {run['run_id']} ({best['experiment_id']}, visible "
+                           f"{best['primary_score']:.4f}) is the starting point of this run.",
+                scientific_rationale="A continued campaign starts where the previous one ended instead of "
+                                     "rediscovering its features; everything proposed here is measured against it.",
+                kind="config", category="exploit", feature_set=start_set, model_type=best["model_type"],
+                hyperparameters=hp, proposer="python:warm_start", priority=95.0,
+                hypothesis_group=f"warm_start_{run['run_id']}"))
+            failed = prev.query("SELECT hypothesis, failure_stage, failure_reason FROM experiments WHERE status IN "
+                                "('failed','rejected','killed') ORDER BY finished_at DESC LIMIT 12")
+            unhelpful = [r["new_feature"] for r in prev.query(
+                "SELECT new_feature, MAX(delta_from_parent) AS d FROM experiments WHERE status='completed' AND "
+                "new_feature IS NOT NULL AND delta_from_parent IS NOT NULL GROUP BY new_feature")
+                if r["d"] is not None and r["d"] <= HELP_THRESHOLD]
+            info = {"run_id": run["run_id"], "run_dir": str(prev_run_dir), "best_experiment": best["experiment_id"],
+                    "best_visible": best["primary_score"], "best_sealed": sealed, "model": best["model_type"],
+                    "features": start_set, "helpful_features": helpful,
+                    "unhelpful_features": unhelpful[:20],
+                    "failed_ideas": [{"idea": r["hypothesis"][:90], "stage": r["failure_stage"],
+                                      "reason": (r["failure_reason"] or "")[:110]} for r in failed],
+                    "imported": imported, "missing": missing, "start_experiment": eid, "start_status": status}
+            (self.run_dir / "warm_start.json").write_text(json.dumps(info, indent=1))
+            self.db.event("warm_start", f"continued from {run['run_id']}: imported {len(imported)} features, "
+                                        f"queued {eid} ({status}); missing {missing}" if missing else
+                                        f"continued from {run['run_id']}: imported {len(imported)} features, queued {eid} ({status})")
+            return info
+        finally:
+            prev.close_thread_conn()
+
     # -------------------------------------------------------------------- queue
     def queue(self, spec: ExperimentSpec) -> tuple[str, str]:
         """Validate and enqueue. Returns (experiment_id, status). Rejections are recorded, not dropped."""

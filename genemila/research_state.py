@@ -94,11 +94,22 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
                               key=lambda e: e.get("finished_at") or 0)[-max_recent:]]
     cpu = [e["cpu_s"] for e in done if e.get("cpu_s")]
     llm = db.llm_totals()
+    prior = None
+    warm = lab.run_dir / "warm_start.json"
+    if warm.exists():
+        w = json.loads(warm.read_text())
+        prior = {"continued_from": w["run_id"], "its_best": {"visible": w["best_visible"], "sealed": w["best_sealed"],
+                                                              "model": w["model"], "features": w["features"]},
+                 "features_that_helped_there": w["helpful_features"][:10],
+                 "features_that_did_not_help_there": w["unhelpful_features"][:12],
+                 "ideas_that_failed_there": [f"{f['idea']} [{f['stage']}]" for f in w["failed_ideas"][:8]],
+                 "note": "Its best model is this run's starting experiment; do not re-propose what is listed here."}
     return {
         "generated_at": time.time(),
         "dataset": lab.data_summary(),
         "primary_metric": _metric_text(lab),
         "knowledge_available": lab.knowledge_summary(),
+        **({"prior_campaign": prior} if prior else {}),
         "baselines": [{"id": e["experiment_id"], "what": _short(e["hypothesis"], 60),
                        "score": round(e["primary_score"], 4)} for e in baselines],
         "current_best": None if not best else {
