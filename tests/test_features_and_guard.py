@@ -69,6 +69,14 @@ def test_smoke_accepts_good_feature(dataset, tmp_path):
     assert r["status"] == "ok", r
 
 
+def test_smoke_accepts_components_template(dataset, tmp_path):
+    from genemila.providers.mock import _pick_template
+    assert _pick_template("response_components low-rank response components") == "components"
+    assert _pick_template("pca_alignment PCA loadings product of target and gene g on top PCs") == "pca"
+    r = run_smoke(dataset, tmp_path, TEMPLATES["components"], name="comp")
+    assert r["status"] == "ok", r
+
+
 def test_smoke_detects_label_leakage(dataset, tmp_path):
     r = run_smoke(dataset, tmp_path, LEAKY)
     assert r["status"] == "failed"

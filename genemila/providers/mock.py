@@ -113,6 +113,79 @@ class F(Feature):
             out[i, :, 0] = (w[:, None] * d[top]).sum(axis=0) / w.sum()
         return out
 ''',
+    "components": '''import numpy as np
+from genemila.features.api import Feature, register
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Low-rank response components of the training perturbations (leave-one-out SVD of their centred "
+                   "delta profiles); p's weight on each component is predicted by kernel ridge from its target's "
+                   "annotations (gene-set memberships, protein interactions, TF-network partners). One column per component.")
+    rationale = ("A few shared programs make up most responses. Fitting the map from a target's annotations to the "
+                 "programs' weights, instead of copying the closest training perturbations, extrapolates to targets "
+                 "without a close training perturbation.")
+    inputs = ["train_delta", "targets", "gene_sets", "ppi_network", "prior_network"]
+    params = {{"n_components": 4, "alpha": 1.0}}
+    dim = 4
+
+    def _kernel(self, ctx):
+        """Cosine kernel between genes from prior knowledge only (no training labels): shared gene sets,
+        shared interaction partners, shared TF-network partners."""
+        if "components_kernel" in ctx.cache:
+            return ctx.cache["components_kernel"]
+        n, idx = ctx.n_genes, ctx.gene_index
+        parts = []
+        sets = ctx.knowledge("gene_sets") or {{}}
+        if sets:
+            s = np.zeros((n, len(sets)))
+            for c, members in enumerate(sets.values()):
+                for g in members:
+                    j = idx.get(str(g))
+                    if j is not None:
+                        s[j, c] = 1.0
+            parts.append(s @ s.T)
+        for source in ("ppi_network", "prior_network"):
+            edges = ctx.knowledge(source) or []
+            if edges:
+                a = np.zeros((n, n))
+                for e in edges:
+                    i, j = idx.get(str(e[0])), idx.get(str(e[1]))
+                    if i is not None and j is not None and i != j:
+                        a[i, j] = a[j, i] = 1.0
+                parts.append(a @ a.T + a)
+        kern = np.zeros((n, n))
+        for part in parts:
+            d = np.sqrt(np.maximum(np.diag(part), 1e-12))
+            kern += part / np.outer(d, d)
+        kern /= max(len(parts), 1)
+        ctx.cache["components_kernel"] = kern
+        return kern
+
+    def compute(self, ctx, perts, params):
+        nc, alpha = int(params["n_components"]), float(params["alpha"])
+        kern = self._kernel(ctx)
+        out = np.zeros((len(perts), ctx.n_genes, self.dim))
+        for i, p in enumerate(perts):
+            tp = ctx.target_indices(p)
+            names, d = ctx.train_delta(exclude=p)
+            tq = [ctx.target_indices(q) for q in names]
+            rows = [r for r, t in enumerate(tq) if t]
+            if not tp or len(rows) <= nc:
+                continue
+            d = d[rows]
+            m = d.mean(axis=0)
+            _, _, vt = np.linalg.svd(d - m, full_matrices=False)
+            basis = vt[:nc]                                   # components x genes
+            load = (d - m) @ basis.T                          # training weights, n_train x components
+            ktt = np.array([[kern[np.ix_(tq[r], tq[c])].mean() for c in rows] for r in rows])
+            kpt = np.array([kern[np.ix_(tp, tq[r])].mean() for r in rows])
+            w = np.linalg.solve(ktt + alpha * np.eye(len(rows)), load)
+            pred = kpt @ w                                    # p's predicted weight on each component
+            cols = min(nc, self.dim)
+            out[i, :, :cols] = (basis[:cols] * pred[:cols, None]).T
+        return out
+''',
     "pca": '''import numpy as np
 from genemila.features.api import Feature, register
 
@@ -225,7 +298,8 @@ class F(Feature):
 
 def _pick_template(text: str) -> str:
     text = text.lower()
-    for key, words in [("similar", ("similar", "knn", "neighbor", "neighbour", "transfer")),
+    for key, words in [("components", ("component", "low-rank", "low rank", "kernel ridge")),
+                       ("similar", ("similar", "knn", "neighbor", "neighbour", "transfer")),
                        ("network", ("network", "prior", "edge", "regulat", "tf ")),
                        ("module", ("module", "pathway", "gene_set", "gene set")),
                        ("pca", ("pca", "principal", "latent", "svd")),
@@ -325,6 +399,11 @@ SCRIPTED_HYPOTHESES = [
      "Shared latent programs predict co-movement."),
     ("Gene variability", "explore", "control_variance", "control-cell std of gene g (variance)",
      "Variable genes respond more."),
+    ("Response components", "explore", "response_components",
+     "low-rank response components of the training perturbations, with p's weight on each predicted from its "
+     "target's annotations by kernel ridge",
+     "A few shared programs make up most responses; mapping a target's annotations to the programs' weights "
+     "extrapolates to targets without a close training perturbation."),
 ]
 
 
