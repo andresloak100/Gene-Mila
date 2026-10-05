@@ -56,7 +56,7 @@ chosen on it.
 - **Time to best, 28 runs** (`tools/time_to_best.py`, report in docs/results/time_to_best.md; visible scores only;
   warm-started runs are shown but not counted; its first version measured from the
   "predict no change" baseline and overstated how early the gain arrived, fixed in bee2106): 60 to 92% of each agent
-  run's final gain is there after five minutes and 74 to 97% after ten; the last quarter adds +0.000 to +0.004 in 11
+  run's final gain is there after five minutes and 74 to 97% after ten; the last quarter adds under +0.005 in 11
   of 13 agent runs. The two exceptions (+0.007 and +0.011) are 8- and 16-worker runs on the old code, the same runs
   whose visible gains did not carry to the sealed set. On the new code with the Opus planner the curve is flat after
   the midpoint (+0.003 and +0.005 in the last ten minutes). Longer runs are not the lever.
