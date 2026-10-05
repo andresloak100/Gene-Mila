@@ -264,7 +264,7 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "llm_usage": {"all": llm, "worker": llm_w, "planner": llm_p},
         "planner": planner,
         "baseline": None if not base else {"experiment_id": base["experiment_id"], "score": base["primary_score"],
-                                           "description": base["hypothesis"]},
+                                           "description": base["hypothesis"], "metrics": base.get("val_metrics_json")},
         "best": None if not best else {
             "experiment_id": best["experiment_id"], "score": best["primary_score"], "model": best["model_type"],
             "alpha": best["best_alpha"], "features": best.get("feature_set_json"),

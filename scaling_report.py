@@ -25,7 +25,7 @@ MEASURES = [  # key, label, how to read it from (summary, analysis)
     ("best_val1", "best visible (validation set only)", lambda s, a: ((s.get("best") or {}).get("metrics") or {}).get("pearson_delta")),
     ("best_sealed", "best sealed pearson_delta", lambda s, a: _sealed(s, "best")),
     ("best_sealed_single", "best sealed pearson_delta (single model)", lambda s, a: _sealed(s, "single")),
-    ("gain_visible", "gain over start (visible)", lambda s, a: s.get("improvement_over_baseline")),
+    ("gain_visible", "gain over start (visible)", lambda s, a: _gain_visible(s)),
     ("gain_sealed", "gain over start (sealed pearson_delta)", lambda s, a: _gain_sealed(s)),
     ("completed", "experiments completed", lambda s, a: s.get("experiments_completed")),
     ("completed_planner", "completed, planner-proposed", lambda s, a: _planner_count(s)),
@@ -82,6 +82,17 @@ def _exploit_share(s):
     done = s.get("experiments_completed") or 0
     by = s.get("completed_by_proposer") or {}
     return None if not done else by.get("python:exploit", 0) / done
+
+
+def _gain_visible(s):
+    """Visible gain on the pearson_delta scale: the run's own improvement when it selected by pearson_delta;
+    for another selection rule, validation-set pearson_delta of best minus start when the summary carries both
+    (summaries since the rule exists do), else None rather than a number on another scale."""
+    if ((s.get("selection") or {}).get("rule") or "pearson_delta") == "pearson_delta":
+        return s.get("improvement_over_baseline")
+    b = ((s.get("best") or {}).get("metrics") or {}).get("pearson_delta")
+    st = ((s.get("baseline") or {}).get("metrics") or {}).get("pearson_delta")
+    return None if b is None or st is None else b - st
 
 
 def _gain_sealed(s):
@@ -162,7 +173,8 @@ def render(runs):
          "single model. The selection score is what each run optimised: on code with cross-validated selection it "
          "averages the validation set and out-of-fold training perturbations, so it is lower than, and not "
          "comparable with, the validation-only score of earlier code; 'validation set only' is comparable across "
-         "code versions. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
+         "code versions, and a run that selected by another score shows its visible gain on the pearson_delta scale "
+         "or not at all. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
          "which run without an LLM whenever workers would otherwise idle (their share is listed).", "",
          "| measure | " + " | ".join(f"{k[0]}, {k[1]} workers (n={len(groups[k])})" for k in keys) + " |",
          "|---|" + "---|" * len(keys)]
@@ -221,7 +233,7 @@ def render(runs):
             # (code versions, or planners): both are pairwise tests on the sealed gain
             head = (f"{ka[1]} vs {kb[1]} workers ({ka[0]})" if same_arm else
                     f"{ka[0]} vs {kb[0]} ({ka[1]} workers)")
-            L.append(f"- {head}: sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, difference {diff:+.4f}; {verdict}.")
+            L.append(f"- {head}: sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, difference {diff:+.4f} (second minus first); {verdict}.")
     if llm:
         L.append("- A difference that does not exceed noise with two repeats needs more runs before any ordering is "
                  "claimed; each extra 20-minute repeat costs about the worker $ shown above in DeepSeek spend.")

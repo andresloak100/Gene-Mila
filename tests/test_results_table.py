@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 import numpy as np
 
 from genemila.benchmark import table
@@ -59,7 +61,8 @@ def test_table_from_run_summary(tmp_path, dataset):
     assert "Gene-Mila starting model | ours |" in md and "documented DE set" in md
 
 
-def _run_dir(tmp_path, name, workers, planner, worker, gain_sealed, wall_s, commit="abc1234", seed=0):
+def _run_dir(tmp_path, name, workers, planner, worker, gain_sealed, wall_s, commit="abc1234", seed=0, rule=None,
+             start_metrics=None):
     run = tmp_path / name
     run.mkdir()
     base_q, best_q = 0.50, 0.50 + gain_sealed
@@ -72,10 +75,20 @@ def _run_dir(tmp_path, name, workers, planner, worker, gain_sealed, wall_s, comm
                "generalization_query_only": [
                    {"experiment_id": "EXP_0010", "kind": "config", "visible_score": 0.571, "query_only_score": best_q},
                    {"experiment_id": "EXP_0003", "kind": "baseline", "visible_score": 0.556, "query_only_score": base_q}]}
+    cfg = {"run": {"workers": workers, "seed": seed}, "planner": {"provider": planner, "model": planner},
+           "worker": {"provider": worker, "model": worker}}
+    if rule:  # a run under another selection rule: its scores are on that rule's scale, pearson_delta by name
+        cfg["experiment"] = {"selection": rule}
+        summary["selection"] = {"rule": rule}
+        summary["best"] = {**summary["best"], "score": 0.71, "metrics": {"pearson_delta": 0.61}}
+        summary["improvement_over_baseline"] = 0.075
+        for g in summary["generalization_query_only"]:
+            g["query_only_pearson_delta"] = g["query_only_score"]
+            g["query_only_score"] = g["query_only_score"] + 0.1
+        if start_metrics:
+            summary["baseline"]["metrics"] = start_metrics
     (run / "summary.json").write_text(json.dumps(summary))
-    (run / "config.json").write_text(json.dumps({"run": {"workers": workers, "seed": seed},
-                                                 "planner": {"provider": planner, "model": planner},
-                                                 "worker": {"provider": worker, "model": worker}}))
+    (run / "config.json").write_text(json.dumps(cfg))
     return run
 
 
@@ -161,3 +174,56 @@ def test_a_different_selection_rule_is_its_own_arm():
         "claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top)"
     ctl = {"planner": {"provider": "scripted"}, "worker": {"provider": "mock"}, "experiment": {"selection": "pearson_delta+r2_top"}}
     assert table.run_arm(ctl) == "scripted control (no LLM) (selection pearson_delta+r2_top)"
+
+
+def test_another_selection_rule_keeps_the_report_on_one_scale(tmp_path):
+    import scaling_report as sr
+    dirs = [_run_dir(tmp_path, f"w4_r{i}", 4, "claude_cli", "deepseek", 0.08 + 0.01 * i, 1200) for i in range(2)]
+    dirs.append(_run_dir(tmp_path, "derule_r0", 4, "claude_cli", "deepseek", 0.06, 1200, rule="pearson_delta+r2_top"))
+    dirs.append(_run_dir(tmp_path, "derule_r1", 4, "claude_cli", "deepseek", 0.07, 1200, rule="pearson_delta+r2_top",
+                         start_metrics={"pearson_delta": 0.556}))
+    runs = {r["dir"]: r for r in sr.load_runs(dirs)}
+    assert runs["derule_r0"]["arm"].endswith("(selection pearson_delta+r2_top)")
+    # sealed numbers come from the pearson_delta field, not from the combined score
+    assert runs["derule_r0"]["values"]["best_sealed"] == pytest.approx(0.56)
+    assert runs["derule_r0"]["values"]["gain_sealed"] == pytest.approx(0.06)
+    # the visible gain is on the pearson_delta scale when the summary allows it, else blank
+    assert runs["derule_r0"]["values"]["gain_visible"] is None
+    assert runs["derule_r1"]["values"]["gain_visible"] == pytest.approx(0.61 - 0.556)
+    assert runs["w4_r0"]["values"]["gain_visible"] == pytest.approx(0.014 + 0.08)
+    md = sr.render(list(runs.values()))
+    assert "(second minus first)" in md and "visible gain on the pearson_delta scale" in md
+
+
+def test_table_reads_the_sealed_score_by_name_and_pools_the_starting_model(tmp_path):
+    comp = {f"cellforge_{c}": v for c, v in zip(table.COLUMNS, (0.01, 0.98, 0.95, 0.2, 0.9, 0.8))}
+    base = {f"cellforge_{c}": v for c, v in zip(table.COLUMNS, (0.02, 0.97, 0.93, 0.3, 0.85, 0.7))}
+    runs = []
+    for name, rule in (("plain_r0", None), ("derule_r0", "pearson_delta+r2_top")):
+        run = tmp_path / name
+        run.mkdir()
+        best_row = {"experiment_id": "EXP_0100", "kind": "new_feature", "query_only_score": 0.5,
+                    "comparable": {"val1": comp, "val2": comp}}
+        start_row = {"experiment_id": "EXP_0003", "kind": "baseline", "query_only_score": 0.4,
+                     "comparable": {"val1": base, "val2": base}}
+        cfg = {"run": {"workers": 4, "data_dir": str(tmp_path / "nodata")},
+               "planner": {"provider": "claude_cli", "model": "opus"}, "worker": {"provider": "deepseek", "model": "deepseek-flash"}}
+        if rule:
+            best_row.update(query_only_score=0.7, query_only_pearson_delta=0.48)
+            start_row.update(query_only_score=0.6, query_only_pearson_delta=0.4)
+            cfg["experiment"] = {"selection": rule}
+        summary = {"run_id": name, "dataset": "adamson_cf", "split_id": "split_x", "workers": 4, "duration_s": 1200,
+                   "best": {"features": ["a"], "model": "ridge"}, "baseline": {"description": "OLS"},
+                   "generalization_query_only": [best_row, start_row]}
+        (run / "summary.json").write_text(json.dumps(summary))
+        (run / "config.json").write_text(json.dumps(cfg))
+        runs.append(run)
+    t = table.build(runs, tmp_path / "no_paper.json", part="val2")
+    by_arm = {b["arm"]: b for b in t["blocks"]}
+    derule = next(b for a, b in by_arm.items() if "(selection pearson_delta+r2_top)" in a)
+    plain = next(b for a, b in by_arm.items() if "(selection" not in a)
+    assert derule["best_primary"] == [0.48] and plain["best_primary"] == [0.5]
+    # the starting model is pooled over both runs, not taken from whichever block comes first
+    assert t["start_all"]["adamson_cf|split_x"]["mse"]["n"] == 2
+    md = table.render(t)
+    assert "| Gene-Mila starting model | ours | 0.0200 ± 0.0000" in md  # pooled over both runs (n=2), rank mark follows
