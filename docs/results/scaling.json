@@ -916,5 +916,39 @@
    "utilisation": 0.227,
    "llm_share": 0.0
   }
+ },
+ {
+  "dir": "control_components_from_opus_r0",
+  "arm": "no-LLM continuation of newcode_opus_w4_r0 @ bee2106",
+  "workers": 4,
+  "code": "bee2106",
+  "values": {
+   "best_visible": 0.59079170548684,
+   "best_visible_single": 0.59079170548684,
+   "best_val1": 0.612921815581311,
+   "best_sealed": 0.5996835371551024,
+   "best_sealed_single": 0.5996835371551024,
+   "gain_visible": 0.08979147370697016,
+   "gain_sealed": 0.08008617868966139,
+   "completed": 1316,
+   "completed_planner": 11,
+   "exploit_share": 0.9908814589665653,
+   "failed": 1,
+   "unique": 1317,
+   "unique_planner": 12,
+   "duplicates": 20,
+   "cpu_hours": 0.1399,
+   "wall_min": 20.021666666666665,
+   "tokens_k": 5.178,
+   "cached_share": 0.0,
+   "cost_worker": 0.0,
+   "cost_planner": 0,
+   "exp_per_hour": 3943.74,
+   "planner_exp_per_hour": 32.96,
+   "gain_per_usd": null,
+   "gain_per_cpu_h": 0.6416990750774674,
+   "utilisation": 0.251,
+   "llm_share": 0.0
+  }
  }
 ]

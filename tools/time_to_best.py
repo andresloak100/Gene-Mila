@@ -88,6 +88,7 @@ def analyse_run(run_dir: Path) -> dict | None:
     summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
     code = (summary.get("base_commit") or "")[:7]
     arm = run_arm(cfg, summary) if cfg else "unknown arm"
+    continuation = bool((cfg.get("run") or {}).get("continue_from"))  # warm start: its "gain" is the imported model
     return {
         "run_id": run_dir.name, "dir": str(run_dir), "code": code,
         "arm": f"{arm} @ {code}" if code else arm,  # runs on different code are different arms, as in the tables
@@ -96,7 +97,7 @@ def analyse_run(run_dir: Path) -> dict | None:
         "n_improvements": len(improvements), "last_improvement_min": last_min,
         "share_at": {str(q): share(q) for q in CHECKPOINTS},
         "gain_last_quarter": gain_last_quarter, "gain_last_half": gain_last_half,
-        "duration_min": duration_min,
+        "duration_min": duration_min, "continuation": continuation,
         "used_budget": duration_min >= LAST_QUARTER * budget_min,  # lasted into its final quarter
         "still_rising": gain_last_quarter >= RISING_MIN_ABS,
         "experiments_after": sum(1 for e in others if e["finished_at"] > last_ts),
@@ -121,13 +122,15 @@ def render(reports: list[dict]) -> str:
          "quarter, half and three quarters of the time budget; the next two columns are the gain that arrived after the "
          f"midpoint and after three quarters. A run is \"still rising\" when the last quarter added at least {RISING_MIN_ABS} "
          "(the threshold is a judgement; the column before it shows the amount); a run that ended before its final "
-         "quarter (the scripted control runs out of hypotheses in minutes) is not counted either way.", "",
+         "quarter (the scripted control runs out of hypotheses in minutes) is not counted either way, nor is a warm-started "
+         "run, whose gain is the model it imported.", "",
          "| run | arm | workers | budget (min) | start → best (visible) | share at 25% / 50% / 75% | gain after 50% | "
          "gain after 75% | last improvement (min) | experiments after it | planner rounds after it | still rising |",
          "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in reports:
         sh = r["share_at"]
-        rising = ("yes" if r["still_rising"] else "no") if r["used_budget"] else "ended early"
+        rising = ("continuation (its gain is the warm start)" if r["continuation"] else
+                  ("yes" if r["still_rising"] else "no") if r["used_budget"] else "ended early")
         L.append(f"| {r['run_id']} | {r['arm']} | {r['workers']} | {r['budget_min']:.1f} | {_f(r['start'])} → {_f(r['final_best'])} "
                  f"| {_pct(sh['0.25'])} / {_pct(sh['0.5'])} / {_pct(sh['0.75'])} | {r['gain_last_half']:+.4f} | "
                  f"{r['gain_last_quarter']:+.4f} | {r['last_improvement_min']:.1f} | {r['experiments_after']} of {r['experiments']} "
@@ -138,8 +141,11 @@ def render(reports: list[dict]) -> str:
         arms.setdefault((r["arm"], r["workers"]), []).append(r)
     for (arm, workers), rs in sorted(arms.items(), key=lambda kv: (str(kv[0][0]), kv[0][1] or 0)):
         n = len(rs)
-        used = [r for r in rs if r["used_budget"]]
+        used = [r for r in rs if r["used_budget"] and not r["continuation"]]
         head = f"- {arm}, {workers} workers ({n} run{'' if n == 1 else 's'}): "
+        if all(r["continuation"] for r in rs):
+            L.append(head + "warm-started from another campaign, so its gain is the imported model and it is not counted.")
+            continue
         if not used:
             L.append(head + f"ended after {median(r['last_improvement_min'] for r in rs):.1f} min (median last improvement) "
                      f"of a {median(r['budget_min'] for r in rs):.0f}-min budget, so the budget was not the limit.")
@@ -147,7 +153,7 @@ def render(reports: list[dict]) -> str:
         L.append(head + f"share of the final gain reached by the midpoint {median(r['share_at']['0.5'] or 0 for r in used):.0%} "
                  f"(median); gain after three quarters {median(r['gain_last_quarter'] for r in used):+.4f} (median); "
                  f"{sum(1 for r in used if r['still_rising'])} of {len(used)} still rising in the final quarter.")
-    used = [r for r in reports if r["used_budget"]]
+    used = [r for r in reports if r["used_budget"] and not r["continuation"]]
     n_rising = sum(1 for r in used if r["still_rising"])
     L += ["", "## Reading", ""]
     if used:

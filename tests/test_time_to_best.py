@@ -78,3 +78,15 @@ def test_flat_run_and_report(tmp_path):
             "| 2.0 | 1 of 3 | 2 | no |") in md
     assert "0 of 1 runs that used their budget were still rising" in md
     assert json.loads(out.with_suffix(".json").read_text())[0]["run_id"] == "run_a"
+
+
+def test_warm_started_runs_are_shown_but_not_counted(tmp_path):
+    d = _run_dir(tmp_path, [(5, 0.59), (600, 0.591)])
+    cfg = json.loads((d / "config.json").read_text())
+    cfg["run"]["continue_from"] = "/x/runs/agents_w4_r0"
+    (d / "config.json").write_text(json.dumps(cfg))
+    r = time_to_best.analyse_run(d)
+    assert r["continuation"] and r["arm"] == "no-LLM continuation of agents_w4_r0"
+    md = time_to_best.render([r])
+    assert "| continuation (its gain is the warm start) |" in md and "not counted" in md
+    assert "No run used its final quarter" in md  # nothing counted: the only run is a continuation

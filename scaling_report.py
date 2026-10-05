@@ -13,6 +13,7 @@ analyze_run.py when present).
 
 import argparse
 import json
+import re
 import math
 from pathlib import Path
 
@@ -104,6 +105,17 @@ def _is_control(arm: str) -> bool:
     return arm.startswith("scripted control (no LLM)")
 
 
+def _is_continuation(arm: str) -> bool:
+    """A warm-started run re-searches another campaign's features: its result is that campaign's, so it is
+    neither a control nor an arm of its own in the comparisons (it stays in the table and the run list)."""
+    return arm.startswith("no-LLM continuation of ") or "(continued from " in arm
+
+
+def _continued_source(arm: str) -> str | None:
+    m = re.search(r"no-LLM continuation of (\S+)|\(continued from (\S+)\)", arm)
+    return (m.group(1) or m.group(2)) if m else None
+
+
 def _tokens(s):
     u = s.get("llm_usage", {}).get("all") or {}
     return ((u.get("input_tokens") or 0) + (u.get("output_tokens") or 0)) / 1000
@@ -187,7 +199,8 @@ def render(runs):
     # noise: the control's spread and pairwise tests on the sealed gain between worker counts of the LLM arm
     L += ["## Is the ordering real?", ""]
     ctrl = [k for k in keys if _is_control(k[0])]
-    llm = [k for k in keys if not _is_control(k[0])]
+    cont = [k for k in keys if _is_continuation(k[0])]
+    llm = [k for k in keys if not _is_control(k[0]) and not _is_continuation(k[0])]
     llm_wall = stats([r["values"]["wall_min"] for k in llm for r in groups[k]])
     for k in ctrl:
         st = stats([r["values"]["gain_sealed"] for r in groups[k]])
@@ -228,6 +241,15 @@ def render(runs):
             ", so the agents' gain over this control on sealed pearson_delta is not established")
         L.append(f"- {k[0]}, {k[1]} workers against the agent arms at {k[1]} workers: sealed gain {fmt(st, 4)} vs " +
                  ", ".join(f"{fmt(s, 4)} ({kb[0]})" for kb, s in peers) + f": {where}{tail}.")
+    for k in cont:  # one sentence per continued run: what it is and what it continued; no comparison
+        src = _continued_source(k[0])
+        for r in groups[k]:
+            srun = next((x for x in runs if x["dir"] == src), None)
+            line = f"- {r['dir']} ({k[0]}, {k[1]} workers): sealed gain {r['values']['gain_sealed']:.4f}"
+            line += (f" against {srun['values']['gain_sealed']:.4f} for the run it continued ({src})" if srun else
+                     f" (the run it continued, {src}, is not in this table)")
+            L.append(line + "; its model is that campaign's, re-searched without an LLM, so it is neither a control "
+                     "nor an arm in the comparisons above and below.")
     for i, ka in enumerate(llm):
         for kb in llm[i + 1:]:
             same_arm, same_workers = ka[0] == kb[0], ka[1] == kb[1]

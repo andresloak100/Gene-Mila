@@ -62,7 +62,7 @@ def test_table_from_run_summary(tmp_path, dataset):
 
 
 def _run_dir(tmp_path, name, workers, planner, worker, gain_sealed, wall_s, commit="abc1234", seed=0, rule=None,
-             start_metrics=None):
+             start_metrics=None, continue_from=None):
     run = tmp_path / name
     run.mkdir()
     base_q, best_q = 0.50, 0.50 + gain_sealed
@@ -88,6 +88,8 @@ def _run_dir(tmp_path, name, workers, planner, worker, gain_sealed, wall_s, comm
         if start_metrics:
             summary["baseline"]["metrics"] = start_metrics
     (run / "summary.json").write_text(json.dumps(summary))
+    if continue_from:
+        cfg["run"]["continue_from"] = continue_from
     (run / "config.json").write_text(json.dumps(cfg))
     return run
 
@@ -248,3 +250,19 @@ def test_continued_runs_are_named_after_their_source_and_are_not_controls():
     llm = {"run": {"continue_from": "runs/a"}, "planner": {"provider": "claude_cli", "model": "opus"},
            "worker": {"provider": "deepseek", "model": "deepseek-flash"}}
     assert table.run_arm(llm) == "claude_cli:opus planner, deepseek:deepseek-flash workers (continued from a)"
+
+
+def test_continued_runs_stay_out_of_the_comparisons(tmp_path):
+    import scaling_report as sr
+    dirs = [_run_dir(tmp_path, f"agents_w4_r{i}", 4, "claude_cli", "deepseek", 0.08 + 0.01 * i, 1200) for i in range(2)]
+    dirs.append(_run_dir(tmp_path, "ctl_r0", 4, "scripted", "mock", 0.034, 126))
+    dirs.append(_run_dir(tmp_path, "cont_r0", 4, "scripted", "mock", 0.079, 1200, continue_from="/x/runs/agents_w4_r0"))
+    runs = sr.load_runs(dirs)
+    assert {r["arm"] for r in runs if r["dir"] == "cont_r0"} == {"no-LLM continuation of agents_w4_r0"}  # one code version: no suffix
+    md = sr.render(runs)
+    assert "no-LLM continuation of agents_w4_r0, 4 workers (n=1)" in md  # in the table ...
+    noise = md.split("## Is the ordering real?")[1]
+    vs = [l for l in noise.splitlines() if " vs " in l or "against the agent arms" in l]
+    assert vs and not any("continuation" in l for l in vs)  # ... but in no comparison, on either side
+    assert ("- cont_r0 (no-LLM continuation of agents_w4_r0, 4 workers): sealed gain 0.0790 against 0.0800 "
+            "for the run it continued (agents_w4_r0); its model is that campaign's") in noise
