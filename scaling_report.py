@@ -233,7 +233,9 @@ def render(runs):
             # (code versions, or planners): both are pairwise tests on the sealed gain
             head = (f"{ka[1]} vs {kb[1]} workers ({ka[0]})" if same_arm else
                     f"{ka[0]} vs {kb[0]} ({ka[1]} workers)")
-            L.append(f"- {head}: sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, difference {diff:+.4f} (second minus first); {verdict}.")
+            ahead = "tie" if abs(diff) < 5e-5 else ("second ahead" if diff > 0 else "first ahead")
+            L.append(f"- {head}: sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, difference {diff:+.4f} "
+                     f"(second minus first; {ahead}); {verdict}.")
     if llm:
         L.append("- A difference that does not exceed noise with two repeats needs more runs before any ordering is "
                  "claimed; each extra 20-minute repeat costs about the worker $ shown above in DeepSeek spend.")

@@ -18,7 +18,7 @@ Metrics on query-only held-out perturbations: MSE, Pearson correlation and R² b
 | Unperturbed (rerun) | rerun | 0.0103 | 0.9785 | 0.9505 | 0.2263 | 0.8995 | 0.6060 |
 | Linear Regression (rerun) | rerun | 0.0071 | 0.9845 | 0.9660 | 0.1602 | 0.9200 | 0.7140 |
 | Random Forest (rerun) | rerun | 0.0095 ± 0.0000 | 0.9803 ± 0.0000 | 0.9547 ± 0.0000 | 0.1983 ± 0.0004 | 0.9091 ± 0.0001 | 0.6499 ± 0.0005 |
-| Gene-Mila starting model | ours | 0.0070 | 0.9846 | 0.9663 | 0.1536 | 0.9318 | 0.7341 |
+| Gene-Mila starting model | ours | 0.0070 ± 0.0000 | 0.9846 ± 0.0000 | 0.9663 ± 0.0000 | 0.1536 ± 0.0000 | 0.9318 ± 0.0000 | 0.7341 ± 0.0000 |
 | Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top) @ 7debddd, 4 workers (n=1) | ours | 0.0061 | 0.9865 | 0.9709 | 0.1159³ | 0.9546 | 0.8043 |
 | Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11, 1 workers (n=2) | ours | 0.0062 ± 0.0004 | 0.9862 ± 0.0009 | 0.9702 ± 0.0018 | **0.1086 ± 0.0049**¹ | 0.9572 ± 0.0007² | 0.8173 ± 0.0063 |
 | Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11, 4 workers (n=2) | ours | 0.0058 ± 0.0003 | 0.9873 ± 0.0007³ | 0.9722 ± 0.0016 | 0.1167 ± 0.0023 | 0.9554 ± 0.0007³ | 0.8028 ± 0.0031 |
@@ -41,7 +41,7 @@ Metrics on query-only held-out perturbations: MSE, Pearson correlation and R² b
 | Unperturbed (rerun) | rerun | 0.1551 | 0.8479 | 0.5507 |
 | Linear Regression (rerun) | rerun | 0.1338 | 0.8749 | 0.6170 |
 | Random Forest (rerun) | rerun | 0.1464 ± 0.0002 | 0.8670 ± 0.0005 | 0.5661 ± 0.0006 |
-| Gene-Mila starting model | ours | 0.0916 | 0.9021 | 0.7240 |
+| Gene-Mila starting model | ours | 0.0916 ± 0.0000 | 0.9021 ± 0.0000 | 0.7240 ± 0.0000 |
 | Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top) @ 7debddd, 4 workers (n=1) | ours | 0.0333 | 0.9644 | 0.8994 |
 | Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11, 1 workers (n=2) | ours | 0.0296 ± 0.0011 | 0.9685 ± 0.0002 | 0.9102 ± 0.0031 |
 | Gene-Mila, claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11, 4 workers (n=2) | ours | 0.0326 ± 0.0020 | 0.9678 ± 0.0017 | 0.8978 ± 0.0012 |

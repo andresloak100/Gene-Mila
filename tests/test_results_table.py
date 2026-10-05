@@ -192,7 +192,7 @@ def test_another_selection_rule_keeps_the_report_on_one_scale(tmp_path):
     assert runs["derule_r1"]["values"]["gain_visible"] == pytest.approx(0.61 - 0.556)
     assert runs["w4_r0"]["values"]["gain_visible"] == pytest.approx(0.014 + 0.08)
     md = sr.render(list(runs.values()))
-    assert "(second minus first)" in md and "visible gain on the pearson_delta scale" in md
+    assert "(second minus first; " in md and " ahead)" in md and "visible gain on the pearson_delta scale" in md
 
 
 def test_table_reads_the_sealed_score_by_name_and_pools_the_starting_model(tmp_path):
