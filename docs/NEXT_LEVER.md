@@ -50,3 +50,30 @@ version) and the next candidate is tested the same free way before anything is p
 
 Nothing here touches the sealed set before a run's end-of-run oracle, and no selection rule or hyperparameter is
 chosen on it.
+
+## Results of the two free checks (02:30 UTC 2026-10-05, code 74e07ca)
+
+- **Time to best, 26 runs** (`tools/time_to_best.py`, visible scores only; its first version measured from the
+  "predict no change" baseline and overstated how early the gain arrived, fixed in bee2106): 60 to 92% of each agent
+  run's final gain is there after five minutes and 74 to 97% after ten; the last quarter adds +0.000 to +0.004 in 11
+  of 13 agent runs. The two exceptions (+0.007 and +0.011) are 8- and 16-worker runs on the old code, the same runs
+  whose visible gains did not carry to the sealed set. On the new code with the Opus planner the curve is flat after
+  the midpoint (+0.003 and +0.005 in the last ten minutes). Longer runs are not the lever.
+- **The control with `response_components`** (`control_components_w4_r0`, 182 s, 179 experiments, deterministic):
+  sealed pearson_delta **0.593**, against 0.554 for the seven-hypothesis control and 0.584 to 0.602 for the agent arms
+  at 4 workers; MSE_DE 0.142, PCC_DE 0.943, R²_DE 0.755 (agents 0.117 to 0.124, 0.953 to 0.955, 0.79 to 0.80). Best
+  model: ridge, alpha 41,310, on mean_response, is_target, response_components, target_level. On its own the feature
+  scored +0.020 visible over its parent. Its selection score (0.531) underestimates its sealed score by 0.062, the
+  largest gap of any run; the agent runs on the same code are within 0.014.
+
+What it changes: on sealed pearson_delta the agents' margin over a no-LLM control is gone once the control has one
+good transfer feature; on the DE-gene metrics the agents still lead. Two cautions travel with the number: the feature
+was written after the agent runs had shown that transfer between related targets is what works, so it is a
+hand-written feature informed by the agents' findings, not what one gets without agents; and it was designed after
+26 sealed results on this split had been read, so 0.593 is not as clean a held-out number as the agent runs' are.
+One run, one seed, untuned (n_components 4, kernel alpha 1.0). Its clean test is Norman.
+
+Next, in order: a free warm start of the scripted control from `newcode_opus_w4_r0` (the feature on top of the
+agents' best model); then, only on Andres's word, two Opus-planned 4-worker runs continuing from the new control;
+and the feature's parameters (components, kernel alpha) swept on visible data in free control runs before anything
+paid.
