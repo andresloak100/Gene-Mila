@@ -848,5 +848,39 @@
    "utilisation": 0.78,
    "llm_share": 0.374
   }
+ },
+ {
+  "dir": "newcode_derule_opus_w4_r0",
+  "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top) @ 7debddd",
+  "workers": 4,
+  "code": "7debddd",
+  "values": {
+   "best_visible": 0.7154979434527926,
+   "best_visible_single": 0.7131163596442116,
+   "best_val1": 0.609021875598763,
+   "best_sealed": 0.5839218823186828,
+   "best_sealed_single": 0.5693312238852904,
+   "gain_visible": 0.0748095201821597,
+   "gain_sealed": 0.06432452385324183,
+   "completed": 352,
+   "completed_planner": 158,
+   "exploit_share": 0.5511363636363636,
+   "failed": 13,
+   "unique": 347,
+   "unique_planner": 153,
+   "duplicates": 3,
+   "cpu_hours": 0.3857,
+   "wall_min": 20.515,
+   "tokens_k": 712.231,
+   "cached_share": 0.2524873734636811,
+   "cost_worker": 0.340787904,
+   "cost_planner": 2.920696,
+   "exp_per_hour": 1029.5,
+   "planner_exp_per_hour": 462.1,
+   "gain_per_usd": 0.022937264872106417,
+   "gain_per_cpu_h": 0.19397712760636074,
+   "utilisation": 0.573,
+   "llm_share": 0.319
+  }
  }
 ]

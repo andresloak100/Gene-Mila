@@ -5,6 +5,115 @@
   {
    "dataset": "adamson_cf",
    "split_id": "split_450515be1a0d8d2e",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top) @ 7debddd",
+   "workers": 4,
+   "n_runs": 1,
+   "run_ids": [
+    "newcode_derule_opus_w4_r0"
+   ],
+   "data_dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/data/adamson_cf",
+   "best": {
+    "mse": {
+     "mean": 0.006084456846741226,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc": {
+     "mean": 0.9865384014482143,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2": {
+     "mean": 0.9709165528010308,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_de": {
+     "mean": 0.11593509492059433,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_de": {
+     "mean": 0.9546445503385966,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_de": {
+     "mean": 0.8043179032395706,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_deset": {
+     "mean": 0.03326465836546002,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_deset": {
+     "mean": 0.9644197869512561,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_deset": {
+     "mean": 0.8994250262156781,
+     "std": 0.0,
+     "n": 1
+    }
+   },
+   "start": {
+    "mse": {
+     "mean": 0.007039087039889803,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc": {
+     "mean": 0.9846084168233286,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2": {
+     "mean": 0.966319990734692,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_de": {
+     "mean": 0.15355345347474497,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_de": {
+     "mean": 0.9318245289901906,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_de": {
+     "mean": 0.73408650246828,
+     "std": 0.0,
+     "n": 1
+    },
+    "mse_deset": {
+     "mean": 0.09157736929506922,
+     "std": 0.0,
+     "n": 1
+    },
+    "pcc_deset": {
+     "mean": 0.9020659486249205,
+     "std": 0.0,
+     "n": 1
+    },
+    "r2_deset": {
+     "mean": 0.7240086015640083,
+     "std": 0.0,
+     "n": 1
+    }
+   },
+   "best_primary": [
+    0.7003220328850339
+   ],
+   "start_description": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "dataset": "adamson_cf",
+   "split_id": "split_450515be1a0d8d2e",
    "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers @ 2492e11",
    "workers": 1,
    "n_runs": 2,
