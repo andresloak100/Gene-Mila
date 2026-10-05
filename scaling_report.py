@@ -215,6 +215,19 @@ def render(runs):
             L.append(f"- {name} ended after {wall['mean']:.1f} min on average (its hypotheses ran out) against "
                      f"{llm_wall['mean']:.1f} min for the agent arms, so it is not an equal-time arm: it shows what "
                      "the fixed template features give, not what a no-LLM search of the same length gives.")
+    for k in ctrl:  # each control against the agent arms at its worker count: is the agents' gain over it established?
+        st = stats([r["values"]["gain_sealed"] for r in groups[k]])
+        peers = [(kb, stats([r["values"]["gain_sealed"] for r in groups[kb]])) for kb in llm if kb[1] == k[1]]
+        peers = [(kb, s) for kb, s in peers if s]
+        if not st or not peers:
+            continue
+        lo, hi = min(s["mean"] for _, s in peers), max(s["mean"] for _, s in peers)
+        where = ("above every agent arm" if st["mean"] > hi else
+                 "below every agent arm" if st["mean"] < lo else "within the agents' range")
+        tail = "" if where == "below every agent arm" else (
+            ", so the agents' gain over this control on sealed pearson_delta is not established")
+        L.append(f"- {k[0]}, {k[1]} workers against the agent arms at {k[1]} workers: sealed gain {fmt(st, 4)} vs " +
+                 ", ".join(f"{fmt(s, 4)} ({kb[0]})" for kb, s in peers) + f": {where}{tail}.")
     for i, ka in enumerate(llm):
         for kb in llm[i + 1:]:
             same_arm, same_workers = ka[0] == kb[0], ka[1] == kb[1]

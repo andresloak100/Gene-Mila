@@ -1,11 +1,13 @@
 """When did each finished run stop improving?
 
 For every run directory, follow the running best *visible* score (the selection score each experiment was
-scored by, `primary_score`) through the run in order of completion and report the minute of the last
-improvement, the share of the run's final gain already reached at 25%, 50% and 75% of its time budget, and how
-many experiments and planner rounds came after the last improvement. This is the free check behind "longer
-runs": if most runs went flat long before their deadline, a longer budget alone is unlikely to help; if they
-were still improving in the last quarter, it is the cheaper next test.
+scored by, `primary_score`) through the run in order of completion, starting from the run's starting model
+(the best of its baseline fits), and report the minute of the last improvement, the share of the run's final
+gain already reached at 25%, 50% and 75% of its time budget, the gain that arrived in the last half and the
+last quarter, and how many experiments and planner rounds came after the last improvement. This is the free
+check behind "longer runs": if the gain of the runs that used their whole budget had largely arrived by the
+midpoint, a longer budget alone is unlikely to help; if a meaningful part of it came in the last quarter, a
+longer budget is the cheaper next test.
 
 Visible data only: the tool reads each run's lab.db (experiments, planner rounds, the runs row) and its
 config.json and summary.json for the arm label. The sealed set is never touched.
@@ -27,7 +29,9 @@ from genemila.benchmark.table import run_arm  # noqa: E402
 from genemila.db import Database  # noqa: E402
 
 CHECKPOINTS = (0.25, 0.5, 0.75)
-LAST_QUARTER = 0.75  # an improvement after this share of the budget counts as "still rising"
+LAST_QUARTER = 0.75
+RISING_MIN_ABS = 0.005    # a late gain counts when it is at least this much ...
+RISING_MIN_SHARE = 0.10   # ... and at least this share of the run's whole gain
 
 
 def analyse_run(run_dir: Path) -> dict | None:
@@ -42,35 +46,39 @@ def analyse_run(run_dir: Path) -> dict | None:
     if not exps:
         return None
     run = runs[0] if runs else {}
-    start = run.get("started_at") or min(e["finished_at"] for e in exps)
-    end = run.get("deadline") or max(e["finished_at"] for e in exps)
-    budget_min = max((end - start) / 60.0, 1e-9)
+    start_ts = run.get("started_at") or min(e["finished_at"] for e in exps)
+    end_ts = run.get("deadline") or max(e["finished_at"] for e in exps)
+    budget_min = max((end_ts - start_ts) / 60.0, 1e-9)
     rounds = [r["ts"] for r in db.query("SELECT ts FROM planner_rounds ORDER BY ts")]
 
-    base = next((e["primary_score"] for e in exps if e.get("kind") == "baseline"), None)
-    best = base if base is not None else -float("inf")
+    baselines = [e["primary_score"] for e in exps if e.get("kind") == "baseline"]
+    others = [e for e in exps if e.get("kind") != "baseline"]
+    # the starting model is the best baseline fit (the first baseline is usually "predict no change")
+    start = max(baselines) if baselines else (others[0]["primary_score"] if others else None)
+    best = start
     improvements: list[tuple[float, float]] = []  # (minute, new best)
-    for e in exps:
-        if e.get("kind") == "baseline":
-            continue
+    for e in others:
         if e["primary_score"] > best:
             best = e["primary_score"]
-            improvements.append(((e["finished_at"] - start) / 60.0, best))
-    if base is None and improvements:
-        base = improvements[0][1]
-    final = best if best > -float("inf") else base
+            improvements.append(((e["finished_at"] - start_ts) / 60.0, best))
+    final = best
+    gain = final - start
     last_min = improvements[-1][0] if improvements else 0.0
-    last_ts = start + last_min * 60.0
-    gain = (final - base) if (final is not None and base is not None) else None
+    last_ts = start_ts + last_min * 60.0
 
-    def share(q: float) -> float | None:
-        if not gain:
-            return None
-        best_q = base
+    def best_at(q: float) -> float:
+        b = start
         for minute, score in improvements:
             if minute <= q * budget_min:
-                best_q = score
-        return (best_q - base) / gain
+                b = score
+        return b
+
+    def share(q: float) -> float | None:
+        return None if gain <= 0 else (best_at(q) - start) / gain
+
+    gain_last_quarter = final - best_at(LAST_QUARTER)
+    gain_last_half = final - best_at(0.5)
+    last_exp_min = (max(e["finished_at"] for e in others) - start_ts) / 60.0 if others else 0.0
 
     cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
     summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
@@ -80,13 +88,15 @@ def analyse_run(run_dir: Path) -> dict | None:
         "run_id": run_dir.name, "dir": str(run_dir), "code": code,
         "arm": f"{arm} @ {code}" if code else arm,  # runs on different code are different arms, as in the tables
         "workers": (cfg.get("run") or {}).get("workers", run.get("workers")),
-        "budget_min": budget_min, "start": base, "final_best": final, "gain": gain,
+        "budget_min": budget_min, "start": start, "final_best": final, "gain": gain,
         "n_improvements": len(improvements), "last_improvement_min": last_min,
-        "still_rising": bool(improvements) and last_min > LAST_QUARTER * budget_min,
         "share_at": {str(q): share(q) for q in CHECKPOINTS},
-        "experiments_after": sum(1 for e in exps if e.get("kind") != "baseline" and e["finished_at"] > last_ts),
+        "gain_last_quarter": gain_last_quarter, "gain_last_half": gain_last_half,
+        "used_budget": last_exp_min >= LAST_QUARTER * budget_min,  # ran into its final quarter at all
+        "still_rising": gain_last_quarter >= max(RISING_MIN_ABS, RISING_MIN_SHARE * gain),
+        "experiments_after": sum(1 for e in others if e["finished_at"] > last_ts),
         "planner_rounds_after": sum(1 for t in rounds if t > last_ts),
-        "experiments": sum(1 for e in exps if e.get("kind") != "baseline"),
+        "experiments": len(others),
     }
 
 
@@ -100,33 +110,51 @@ def _pct(x):
 
 def render(reports: list[dict]) -> str:
     L = ["# When did each run stop improving?", "",
-         "Running best of the visible selection score, by minute of the run (experiments in order of completion; "
-         "the sealed set is never read). \"Share of final gain\" is how much of the run's final visible gain over "
-         "its starting model had been reached at a quarter, half and three quarters of the time budget. A run is "
-         "\"still rising\" when its last improvement came in the final quarter.", "",
-         "| run | arm | workers | budget (min) | start → best (visible) | share at 25% / 50% / 75% | last improvement (min) "
-         "| experiments after it | planner rounds after it | still rising |",
-         "|---|---|---|---|---|---|---|---|---|---|"]
+         "Running best of the visible selection score, by minute of the run (experiments in order of completion, "
+         "single models; the sealed set is never read). The start is the run's starting model, the best of its baseline "
+         "fits. \"Share of final gain\" is how much of the run's final visible gain over the start had been reached at a "
+         "quarter, half and three quarters of the time budget; the next two columns are the gain that arrived after the "
+         f"midpoint and after three quarters. A run is \"still rising\" when the last quarter added at least {RISING_MIN_ABS} "
+         f"and at least {RISING_MIN_SHARE:.0%} of its whole gain; a run that ended before its final quarter (the "
+         "scripted control runs out of hypotheses in minutes) is not counted either way.", "",
+         "| run | arm | workers | budget (min) | start → best (visible) | share at 25% / 50% / 75% | gain after 50% | "
+         "gain after 75% | last improvement (min) | experiments after it | planner rounds after it | still rising |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in reports:
         sh = r["share_at"]
+        rising = ("yes" if r["still_rising"] else "no") if r["used_budget"] else "ended early"
         L.append(f"| {r['run_id']} | {r['arm']} | {r['workers']} | {r['budget_min']:.1f} | {_f(r['start'])} → {_f(r['final_best'])} "
-                 f"| {_pct(sh['0.25'])} / {_pct(sh['0.5'])} / {_pct(sh['0.75'])} | {r['last_improvement_min']:.1f} "
-                 f"| {r['experiments_after']} of {r['experiments']} | {r['planner_rounds_after']} | {'yes' if r['still_rising'] else 'no'} |")
+                 f"| {_pct(sh['0.25'])} / {_pct(sh['0.5'])} / {_pct(sh['0.75'])} | {r['gain_last_half']:+.4f} | "
+                 f"{r['gain_last_quarter']:+.4f} | {r['last_improvement_min']:.1f} | {r['experiments_after']} of {r['experiments']} "
+                 f"| {r['planner_rounds_after']} | {rising} |")
     L += ["", "## By arm", ""]
     arms: dict[tuple, list[dict]] = {}
     for r in reports:
         arms.setdefault((r["arm"], r["workers"]), []).append(r)
     for (arm, workers), rs in sorted(arms.items(), key=lambda kv: (str(kv[0][0]), kv[0][1] or 0)):
-        rising = sum(1 for r in rs if r["still_rising"])
-        L.append(f"- {arm}, {workers} workers ({len(rs)} run{'' if len(rs) == 1 else 's'}): last improvement at "
-                 f"{median(r['last_improvement_min'] for r in rs):.1f} min (median) of a {median(r['budget_min'] for r in rs):.0f}-min budget; "
-                 f"{rising} of {len(rs)} still rising in the final quarter.")
-    n_rising = sum(1 for r in reports if r["still_rising"])
-    L += ["", "## Reading", "",
-          f"{n_rising} of {len(reports)} runs were still improving in their final quarter. If that is a minority, the runs "
-          "went flat before their deadline and a longer budget alone is unlikely to raise the score; the lever is then a "
-          "new feature family. If it is a majority, a longer budget is the cheaper next test. Visible scores only: whether "
-          "a late visible improvement survives on the sealed set is a separate question the runs' summaries answer."]
+        n = len(rs)
+        used = [r for r in rs if r["used_budget"]]
+        head = f"- {arm}, {workers} workers ({n} run{'' if n == 1 else 's'}): "
+        if not used:
+            L.append(head + f"ended after {median(r['last_improvement_min'] for r in rs):.1f} min (median last improvement) "
+                     f"of a {median(r['budget_min'] for r in rs):.0f}-min budget, so the budget was not the limit.")
+            continue
+        L.append(head + f"share of the final gain reached by the midpoint {median(r['share_at']['0.5'] or 0 for r in used):.0%} "
+                 f"(median); gain after three quarters {median(r['gain_last_quarter'] for r in used):+.4f} (median); "
+                 f"{sum(1 for r in used if r['still_rising'])} of {len(used)} still rising in the final quarter.")
+    used = [r for r in reports if r["used_budget"]]
+    n_rising = sum(1 for r in used if r["still_rising"])
+    L += ["", "## Reading", ""]
+    if used:
+        L.append(f"{n_rising} of {len(used)} runs that used their budget were still rising in the final quarter (median gain "
+                 f"after three quarters {median(r['gain_last_quarter'] for r in used):+.4f}; median share of the gain reached "
+                 f"by the midpoint {median(r['share_at']['0.5'] or 0 for r in used):.0%}). If that is a minority and the late "
+                 "gains are small, the runs had plateaued before their deadline and a longer budget alone is unlikely to raise "
+                 "the score; the lever is then a new feature family. If it is a majority, a longer budget is the cheaper next "
+                 "test. Visible scores only: whether a late visible improvement survives on the sealed set is a separate "
+                 "question the runs' summaries answer.")
+    else:
+        L.append("No run used its final quarter, so the budget was not what limited these runs.")
     return "\n".join(L) + "\n"
 
 

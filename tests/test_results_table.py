@@ -111,6 +111,16 @@ def test_scaling_report_handles_a_deterministic_short_control(tmp_path):
     bullets = [l for l in sr.render(runs).splitlines() if l.startswith("- scripted control (no LLM) @")]
     assert sum(l.startswith("- scripted control (no LLM) @ abc1234, 4 workers (3 runs)") for l in bullets) == 1
     assert sum(l.startswith("- scripted control (no LLM) @ def5678, 4 workers (1 run,") for l in bullets) == 1
+    # each control is placed against the agent arms at its worker count (here one agent arm, gains 0.08 and 0.09)
+    lines = [l for l in sr.render(runs).splitlines() if "against the agent arms at 4 workers" in l]
+    assert len(lines) == 2
+    assert any(l.startswith("- scripted control (no LLM) @ abc1234, 4 workers against the agent arms at 4 workers: "
+                            "sealed gain 0.0340 ± 0.0000 vs 0.0850 ± 0.0071 (") and l.endswith("): below every agent arm.") for l in lines), lines
+    dirs.append(_run_dir(tmp_path, "strong_control_r0", 4, "scripted", "mock", 0.086, 180, commit="fff0000"))
+    lines = [l for l in sr.render(sr.load_runs(dirs)).splitlines() if "against the agent arms at 4 workers" in l]
+    assert any(l.startswith("- scripted control (no LLM) @ fff0000, 4 workers against") and l.endswith(
+        "): above every agent arm, so the agents' gain over this control on sealed pearson_delta is not established.")
+        for l in lines), lines
     # two arms at the same worker count (another code version, another planner) are tested against each
     # other too, and the planner-dollar row no longer calls API spend an estimate
     dirs += [_run_dir(tmp_path, f"newcode_w4_r{i}", 4, "claude_cli", "deepseek", 0.06 + 0.01 * i, 1200, commit="def5678")

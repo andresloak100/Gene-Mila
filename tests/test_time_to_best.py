@@ -20,13 +20,15 @@ def test_never_reads_the_sealed_labels():
 
 def _run_dir(tmp_path, improvements, budget_s=1200.0, rounds=(100.0, 950.0, 1150.0)):
     d = tmp_path / "run_a"
-    d.mkdir()
+    d.mkdir(parents=True)
     db = Database(d / "lab.db")
     t0 = 1_000_000.0
     db.conn.execute("INSERT INTO runs (run_id, started_at, deadline, workers) VALUES (?, ?, ?, ?)", ("run_a", t0, t0 + budget_s, 4))
-    db.insert_experiment({"experiment_id": "EXP_0001", "status": "completed", "kind": "baseline", "finished_at": t0 + 10,
-                          "primary_score": 0.5})
-    for n, (sec, score) in enumerate(improvements, start=2):
+    db.insert_experiment({"experiment_id": "EXP_0001", "status": "completed", "kind": "baseline", "finished_at": t0 + 5,
+                          "primary_score": 0.0})  # "predict no change": not the starting model
+    db.insert_experiment({"experiment_id": "EXP_0002", "status": "completed", "kind": "baseline", "finished_at": t0 + 10,
+                          "primary_score": 0.5})  # the starting model is the best baseline fit
+    for n, (sec, score) in enumerate(improvements, start=3):
         db.insert_experiment({"experiment_id": f"EXP_{n:04d}", "status": "completed", "kind": "new_feature",
                               "finished_at": t0 + sec, "primary_score": score})
     db.insert_experiment({"experiment_id": "EXP_0999", "status": "completed", "kind": "ensemble", "finished_at": t0 + 1190,
@@ -45,7 +47,8 @@ def test_last_improvement_and_shares(tmp_path):
     r = time_to_best.analyse_run(d)
     assert r["arm"] == "scripted control (no LLM)" and r["workers"] == 4
     assert r["budget_min"] == 20.0 and r["start"] == 0.5 and r["final_best"] == 0.62
-    assert r["n_improvements"] == 3 and r["last_improvement_min"] == 16.0 and r["still_rising"]
+    assert r["n_improvements"] == 3 and r["last_improvement_min"] == 16.0 and r["still_rising"] and r["used_budget"]
+    assert abs(r["gain_last_quarter"] - 0.02) < 1e-9 and abs(r["gain_last_half"] - 0.02) < 1e-9
     assert abs(r["share_at"]["0.25"] - (0.60 - 0.5) / 0.12) < 1e-9  # 5 min in: best so far 0.60
     assert r["share_at"]["0.5"] == r["share_at"]["0.75"] == r["share_at"]["0.25"]
     assert r["experiments_after"] == 1 and r["experiments"] == 5 and r["planner_rounds_after"] == 1
@@ -55,10 +58,13 @@ def test_flat_run_and_report(tmp_path):
     d = _run_dir(tmp_path, [(60, 0.55), (120, 0.56), (1100, 0.50)])
     r = time_to_best.analyse_run(d)
     assert r["last_improvement_min"] == 2.0 and not r["still_rising"] and r["experiments_after"] == 1
-    assert r["share_at"]["0.25"] == 1.0
+    assert r["share_at"]["0.25"] == 1.0 and r["gain_last_quarter"] == 0.0 and r["used_budget"]
+    short = time_to_best.analyse_run(_run_dir(tmp_path / "s", [(60, 0.55), (120, 0.56)]))
+    assert not short["used_budget"]  # ended long before its final quarter: counted neither way
     out = tmp_path / "report.md"
     assert time_to_best.main(["--runs", str(d), str(tmp_path / "missing"), "--out", str(out)]) == 0
     md = out.read_text()
-    assert "| run_a | scripted control (no LLM) | 4 | 20.0 | 0.500 → 0.560 | 100% / 100% / 100% | 2.0 | 1 of 3 | 2 | no |" in md
-    assert "0 of 1 runs were still improving" in md
+    assert ("| run_a | scripted control (no LLM) | 4 | 20.0 | 0.500 → 0.560 | 100% / 100% / 100% | +0.0000 | +0.0000 "
+            "| 2.0 | 1 of 3 | 2 | no |") in md
+    assert "0 of 1 runs that used their budget were still rising" in md
     assert json.loads(out.with_suffix(".json").read_text())[0]["run_id"] == "run_a"

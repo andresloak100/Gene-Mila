@@ -882,5 +882,39 @@
    "utilisation": 0.573,
    "llm_share": 0.319
   }
+ },
+ {
+  "dir": "control_components_w4_r0",
+  "arm": "scripted control (no LLM) @ 74e07ca",
+  "workers": 4,
+  "code": "74e07ca",
+  "values": {
+   "best_visible": 0.5312723607188214,
+   "best_visible_single": 0.5312723607188214,
+   "best_val1": 0.5868131911206248,
+   "best_sealed": 0.5932368662414598,
+   "best_sealed_single": 0.5932368662414598,
+   "gain_visible": 0.030272128938951592,
+   "gain_sealed": 0.0736395077760188,
+   "completed": 179,
+   "completed_planner": 9,
+   "exploit_share": 0.9497206703910615,
+   "failed": 1,
+   "unique": 181,
+   "unique_planner": 11,
+   "duplicates": 1,
+   "cpu_hours": 0.0175,
+   "wall_min": 3.0383333333333336,
+   "tokens_k": 5.176,
+   "cached_share": 0.0,
+   "cost_worker": 0.0,
+   "cost_planner": 0,
+   "exp_per_hour": 3534.68,
+   "planner_exp_per_hour": 177.72,
+   "gain_per_usd": null,
+   "gain_per_cpu_h": 1.7337593818097174,
+   "utilisation": 0.227,
+   "llm_share": 0.0
+  }
  }
 ]
