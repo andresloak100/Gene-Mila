@@ -73,7 +73,27 @@ hand-written feature informed by the agents' findings, not what one gets without
 26 sealed results on this split had been read, so 0.593 is not as clean a held-out number as the agent runs' are.
 One run, one seed, untuned (n_components 4, kernel alpha 1.0). Its clean test is Norman.
 
-Next, in order: a free warm start of the scripted control from `newcode_opus_w4_r0` (the feature on top of the
-agents' best model); then, only on Andres's word, two Opus-planned 4-worker runs continuing from the new control;
-and the feature's parameters (components, kernel alpha) swept on visible data in free control runs before anything
-paid.
+## The warm start settles it (03:10 UTC 2026-10-05, code bee2106)
+
+`control_components_from_opus_r0`: the scripted control continued from `newcode_opus_w4_r0`, so it started from the
+agents' 12 features and best model and re-searched without an LLM for the full 20 minutes (1,316 experiments, 1,304 of
+them the exploit engine's; 211 included `response_components`, 36 of those together with the agents' kNN features).
+Best model: ridge, alpha 4,590, eleven of the agents' features plus the scripted `target_level`; `response_components`
+was not selected, and the best model that included it scored 0.5846 visible against 0.5908 without it. Sealed
+pearson_delta 0.5997 against 0.6007 for the agents' own run; MSE_DE 0.119 against 0.118, R²_DE 0.800 against 0.802.
+In the tables this run is "no-LLM continuation of newcode_opus_w4_r0": its result is the agents' model re-searched,
+not a control's (the generators were fixed in 0774b42 after the first regeneration labelled it a control and the
+scaling report took it for the equal-time no-LLM reference).
+
+What follows:
+
+- The hand-written feature and the agents' kNN features carry the same signal. Alone, either reaches 0.59 to 0.60;
+  together they reach no further. About 0.60 sealed pearson_delta is where transfer between related targets tops out
+  on this split, and 1,300 further experiments around the agents' feature set moved nothing.
+- The paid step proposed above (agent runs starting from the new feature) is withdrawn: the free warm start already
+  shows it would buy nothing. Nothing paid is running; the DeepSeek ledger stays at $10.25.
+- Next is Norman et al. 2019, where the lab and the hand-written feature both get a clean test. Raising Adamson
+  further would need information of a different kind, such as responses measured for the same or related targets in
+  other K562 screens (Replogle et al. 2022 is in the same scPerturb archive); that is a different task from
+  predicting an unseen perturbation from this dataset alone, would not be comparable with CellForge's protocol, and
+  is Andres's call to make before any of it is built.
