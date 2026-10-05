@@ -7,73 +7,73 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-04 19:45, by Claude ("Agent handoff" session), from the lab-code owner's
-reports (17:40 to 19:41) and Andres's own messages in the Claude research thread (19:12, 19:16).
+**Last updated:** 2026-10-05 01:50, by Claude ("Agent handoff" session), from the lab-code owner's
+replies up to 01:41 and the files committed under `docs/results/` on the integration branch.
 
 **Active agents**
 
 | Agent | Since | Working on | Claim |
 |---|---|---|---|
-| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the 1/4/8/16-worker comparison on the Mac, its tables, the next lab push | (predates claim issues) |
-| Astra (ChatGPT) | not started | first task below, once Andres hands it over | |
+| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | regenerating the four results files with the fixed generators (free, on the Mac), then the collaborator summary, the Claude Doc and the results page | (predates claim issues) |
+| Astra (ChatGPT) | not started | Norman (section 8, item 4), once Andres hands it over | |
 
-**On the Mac (since 19:17):** the paid sequence is running, detached, after Andres's own words
-"go, $15 cap" (19:16). One run at a time, 20 minutes each, every paid run on the shared ledger with a
-gate that refuses to start a run once the ledger reads $14: `runs/scale_w8_r1` (finished cleanly at 19:39: 275 experiments
-completed, best visible 0.651, held-out 0.583, $0.82) and `runs/scale_w16_r1` (running since 19:39) (old code `2492e11` from the worktree `~/Documents/Loak-documents/gene-mila-2492e11`,
-Opus planner, seed 1); then on `537344f` the planner check `runs/newcode_opus_w4_r0` and `_r1` (Opus
-with `planner.fallback=deepseek:deepseek-v4-pro`) and `runs/newcode_ds_w4_r0` and `_r1` (DeepSeek V4
-Pro planner); then the final scaling report and results table over every run. About 2.5 hours for
-the paid part, longer if the Claude window has to reset; the ledger should end near $10. The driver is
-`tools/scale_seq.sh` (committed verbatim from the Mac as `014daeb`, no key inside; its known weaknesses
-are in its commit message); `control_seq.sh` and `chain.sh` stay on the Mac only, the control reruns
-being over. A `STOP` file in the log directory halts the driver between runs. The
-free control rerun on the new code, `runs/newcode2_control_r0`, exhausted its search in under three
-minutes even with the deeper tiers (126 experiments, held-out 0.553, no better model), so the other
-five reruns were skipped and the no-LLM control stays a fixed-recipe reference arm, not an
-equal-time one. The Mac must stay powered on and awake (Andres said he is plugging it in).
+**On the Mac (01:41):** nothing is running. Every paid Adamson run is finished: the 1/4/8/16-worker
+comparison (two seeds each), the planner check (`newcode_opus_w4_r0`/`_r1`, `newcode_ds_w4_r0`/`_r1`),
+the no-LLM controls, and tonight's `newcode_derule_opus_w4_r0` (01:07 to 01:29). 26 runs are in the
+tables. Adamson is not to be rerun; the next lever there is a new feature family or longer runs, and
+no paid run starts without Andres's own words.
 
-**DeepSeek ledger:** $5.48 at 2026-10-04 19:41 ($4.66 before the paid sequence). Opus planner dollars are the Claude CLI's estimate
-of subscription usage, not a bill.
+**Results (read the files, not this paragraph; the lab-code owner is still fixing two table cells that
+mixed the two score scales):** `docs/results/summary_for_collaborators.md` (the one-page account),
+`results_table.md` (CellForge's Table 1 layout), `scaling.md` (efficiency by arm) and
+`selection_replay.md`, all on the integration branch and regenerated from the run outputs. In words:
+every agent arm beats every baseline refit on the same split on the top-20 DE genes; more workers raised
+throughput, not the held-out score; the DE-aware selection rule `experiment.selection =
+pearson_delta+r2_top` was tested with one paid run in the exact setup of `newcode_opus_w4_r0` and did
+not help (sealed pearson_delta 0.584 vs 0.601, MSE_DE 0.116 vs 0.118, R²_DE 0.804 vs 0.802, finalist
+ridge alpha 17,000 vs 100 to 510), so the default rule stays and the plateau near 0.60 held-out is not a
+selection problem.
+
+**DeepSeek ledger:** $10.25 at 2026-10-05 01:29, of the $15 cap ($4.75 left; the $14 stop leaves $3.75
+that a run may start on). Opus planner dollars are the Claude CLI's estimate of subscription usage, not
+a bill.
 
 **Claude usage:** one Claude Max window is shared by the Mac's Claude Code session, the cloud Claude
-threads and the Opus planner. About three 20-minute Opus-planned runs fit in a five-hour window,
-which resets roughly five hours after its first use (resets observed at 05:00 and about 13:00 UTC on
-2026-10-04). When it is exhausted, Opus-planned runs wait for the reset; everything else moves to
-the DeepSeek planner (AGENTS.md, "Money and usage").
+threads and the Opus planner. About three 20-minute Opus-planned runs fit in a five-hour window, which
+resets roughly five hours after its first use. When it is exhausted, Opus-planned runs wait for the
+reset; everything else moves to the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**Code:** integration branch head `014daeb` (`9044ece` plus `tools/scale_seq.sh`, `handoff_state.py`'s clone distance, ledger-bypass
-warning and STATE.md, plus `--set run.data_dir=<absolute path>` so a clone can read the main checkout's bundle
-in place); the Mac's main checkout is at `537344f`. On the branch: the planner failover chain `planner.fallback` (AGENTS.md,
-"Money and usage"), deeper deterministic search tiers `schedule.exploit_depth` so the no-LLM control
-fills its 20 minutes, `handoff_state.py` (below), and the results table and scaling report labelling
-mixed-planner runs and code versions as their own arms. Every Claude-planned run on this code carries
-`--set planner.fallback=deepseek:deepseek-v4-pro`. The comparison's two remaining Opus repeats run on
-the old code `2492e11`, which has no failover, so they wait for the usage window (section 9).
+**Code:** integration branch head `f006346`: `experiment.selection` (selection rules that also score
+the DE genes, default unchanged) and `tools/replay_selection.py` (a free, visible-data-only replay of
+selection rules), the planner failover chain `planner.fallback`, `handoff_state.py`, `--set
+run.data_dir`, `tools/scale_seq.sh`, and generators that keep one score scale across arms.
 
 **Open pull requests:** #1 (README and its checker, Claude), #2 (this file, AGENTS.md, CLAUDE.md).
 
-**Next:** the paid runs above, then the final results table, calibration and scaling report over every
-run, committed to `docs/results/` from the Mac's files together with the driver scripts under `tools/`
-(section 8, items 2 and 3); Andres asked (19:12) for the results table in a form he can share with his
-team, and the team results page gets the final numbers. For a newly arriving agent: Norman (section 8,
-item 4).
+**Next:** the lab-code owner finishes the regenerated tables, the collaborator summary, the Claude Doc
+and the team results page. A newly arriving agent takes Norman (section 8, item 4): the same Zenodo
+record, CellForge's split, the free control first, the DeepSeek-planned arm only after Andres approves
+an amount. Then Srivatsan, which needs his design decision on drug metadata first.
 
-**Decisions to respect.** Andres's own: a $10 DeepSeek cap for the comparison runs (2026-10-04
-00:04); no paid run without his word; "go, $15 cap" for the unattended paid sequence (2026-10-04
-19:16); CellForge's published rows marked not comparable; no 44-worker run; priorities as in section
-8. Claude's, under his "up to you" delegation on the planner card (2026-10-04 12:59): the $15 project
-total with the $14 ledger stop, the extra $5 only for the DeepSeek-planner check (both since confirmed
-by his 19:16 words); the lab-code owner maintains the protected benchmark, split and guard code.
+**Decisions to respect.** Andres's own: a $10 DeepSeek cap for the comparison runs (2026-10-04 00:04);
+no paid run without his word; "go, $15 cap" for the unattended paid sequence (2026-10-04 19:16); "Fix,
+then 1 run" and "go" (2026-10-04 23:21) and "continue wake it up" (2026-10-05 01:05) for the one paid
+confirmation run of the selection rule; CellForge's published rows marked not comparable; no 44-worker
+run; priorities as in section 8. Claude's, under his delegation: the $15 project total with the $14
+ledger stop; the default selection rule stays after the negative confirmation run; the lab-code owner
+maintains the protected benchmark, split and guard code.
 
 **Only Andres can (the blockers for any other agent):**
 - Rotate the DeepSeek key (it was pasted in a chat twice) and put it into the agents' environment:
   `export DEEPSEEK_API_KEY=...` in `~/.zshenv` on the Mac, or the agent's own secret store. Today the
-  key is in no file on the Mac (the `~/.zshenv` write was refused) and the Claude session there passes
-  it to each run as a process variable, so until he does this only that session can start paid runs.
+  key is in no file on the Mac and the Claude session there passes it to each run as a process variable,
+  so until he does this only that session can start paid runs; any other agent can do free work only.
 - Give outside agents write access to the repository.
 - Merge PR #2.
 - Keep the Mac powered on and awake while anything runs.
+
+Sections 7 to 9 below were written on 2026-10-04 while the comparison was still running; the files
+under `docs/results/` on the integration branch supersede their numbers.
 
 **Live sources** (check them; they beat this section when they disagree):
 
