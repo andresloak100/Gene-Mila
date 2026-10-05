@@ -4,7 +4,9 @@ For every run directory, follow the running best *visible* score (the selection 
 scored by, `primary_score`) through the run in order of completion, starting from the run's starting model
 (the best of its baseline fits), and report the minute of the last improvement, the share of the run's final
 gain already reached at 25%, 50% and 75% of its time budget, the gain that arrived in the last half and the
-last quarter, and how many experiments and planner rounds came after the last improvement. This is the free
+last quarter (a run is "still rising" when the last quarter added at least 0.005), and how many experiments and
+planner rounds came after the last improvement. Runs that ended before their final quarter are shown but not
+counted; a run that lasted the budget and gained nothing late counts as not rising. This is the free
 check behind "longer runs": if the gain of the runs that used their whole budget had largely arrived by the
 midpoint, a longer budget alone is unlikely to help; if a meaningful part of it came in the last quarter, a
 longer budget is the cheaper next test.
@@ -30,8 +32,7 @@ from genemila.db import Database  # noqa: E402
 
 CHECKPOINTS = (0.25, 0.5, 0.75)
 LAST_QUARTER = 0.75
-RISING_MIN_ABS = 0.005    # a late gain counts when it is at least this much ...
-RISING_MIN_SHARE = 0.10   # ... and at least this share of the run's whole gain
+RISING_MIN_ABS = 0.005    # a run is still rising when its last quarter added at least this much
 
 
 def analyse_run(run_dir: Path) -> dict | None:
@@ -78,7 +79,10 @@ def analyse_run(run_dir: Path) -> dict | None:
 
     gain_last_quarter = final - best_at(LAST_QUARTER)
     gain_last_half = final - best_at(0.5)
-    last_exp_min = (max(e["finished_at"] for e in others) - start_ts) / 60.0 if others else 0.0
+    # how long the run actually lasted: its recorded end, else its last experiment of any status
+    ended = db.query("SELECT MAX(finished_at) AS t FROM experiments WHERE finished_at IS NOT NULL")
+    end_ts_actual = run.get("finished_at") or (ended[0]["t"] if ended and ended[0]["t"] else None) or end_ts
+    duration_min = (end_ts_actual - start_ts) / 60.0
 
     cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
     summary = json.loads((run_dir / "summary.json").read_text()) if (run_dir / "summary.json").exists() else {}
@@ -92,8 +96,9 @@ def analyse_run(run_dir: Path) -> dict | None:
         "n_improvements": len(improvements), "last_improvement_min": last_min,
         "share_at": {str(q): share(q) for q in CHECKPOINTS},
         "gain_last_quarter": gain_last_quarter, "gain_last_half": gain_last_half,
-        "used_budget": last_exp_min >= LAST_QUARTER * budget_min,  # ran into its final quarter at all
-        "still_rising": gain_last_quarter >= max(RISING_MIN_ABS, RISING_MIN_SHARE * gain),
+        "duration_min": duration_min,
+        "used_budget": duration_min >= LAST_QUARTER * budget_min,  # lasted into its final quarter
+        "still_rising": gain_last_quarter >= RISING_MIN_ABS,
         "experiments_after": sum(1 for e in others if e["finished_at"] > last_ts),
         "planner_rounds_after": sum(1 for t in rounds if t > last_ts),
         "experiments": len(others),
@@ -115,8 +120,8 @@ def render(reports: list[dict]) -> str:
          "fits. \"Share of final gain\" is how much of the run's final visible gain over the start had been reached at a "
          "quarter, half and three quarters of the time budget; the next two columns are the gain that arrived after the "
          f"midpoint and after three quarters. A run is \"still rising\" when the last quarter added at least {RISING_MIN_ABS} "
-         f"and at least {RISING_MIN_SHARE:.0%} of its whole gain; a run that ended before its final quarter (the "
-         "scripted control runs out of hypotheses in minutes) is not counted either way.", "",
+         "(the threshold is a judgement; the column before it shows the amount); a run that ended before its final "
+         "quarter (the scripted control runs out of hypotheses in minutes) is not counted either way.", "",
          "| run | arm | workers | budget (min) | start → best (visible) | share at 25% / 50% / 75% | gain after 50% | "
          "gain after 75% | last improvement (min) | experiments after it | planner rounds after it | still rising |",
          "|---|---|---|---|---|---|---|---|---|---|---|---|"]

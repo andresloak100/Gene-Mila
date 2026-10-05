@@ -43,14 +43,20 @@ def run_arm(cfg: dict, summary: dict | None = None) -> str:
     actually produced its plans ("claude_cli:opus -> deepseek:deepseek-v4-pro planner"), and one that lost
     every planner says so; neither is pooled with the clean runs of its configured arm."""
     p, w = cfg.get("planner", {}), cfg.get("worker", {})
-    cont = " (continued campaign)" if cfg.get("run", {}).get("continue_from") else ""
+    src = cfg.get("run", {}).get("continue_from")
+    source = Path(str(src)).name if src else ""  # a warm start carries the campaign it continues in its name
+    cont = ""
     if "python_exploit" in cfg.get("schedule", {}) and not cfg["schedule"]["python_exploit"]:
         cont += " (no exploit)"
     rule = str(cfg.get("experiment", {}).get("selection") or "pearson_delta")
     if rule != "pearson_delta":  # another selection rule is another arm
         cont += f" (selection {rule})"
     if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
+        if source:  # re-searches another campaign's features without an LLM: its result is theirs, not a control's
+            return f"no-LLM continuation of {source}" + cont
         return "scripted control (no LLM)" + cont
+    if source:
+        cont = f" (continued from {source})" + cont
     planner = f"{p.get('provider', '?')}:{p.get('model', '')}"
     ph = (summary or {}).get("planner") or {}
     if ph.get("mixed"):

@@ -59,8 +59,18 @@ def test_flat_run_and_report(tmp_path):
     r = time_to_best.analyse_run(d)
     assert r["last_improvement_min"] == 2.0 and not r["still_rising"] and r["experiments_after"] == 1
     assert r["share_at"]["0.25"] == 1.0 and r["gain_last_quarter"] == 0.0 and r["used_budget"]
-    short = time_to_best.analyse_run(_run_dir(tmp_path / "s", [(60, 0.55), (120, 0.56)]))
-    assert not short["used_budget"]  # ended long before its final quarter: counted neither way
+    ds = _run_dir(tmp_path / "s", [(60, 0.55), (120, 0.56)])
+    Database(ds / "lab.db").conn.execute("DELETE FROM experiments WHERE experiment_id IN ('EXP_0998', 'EXP_0999')")
+    Database(ds / "lab.db").conn.commit()
+    short = time_to_best.analyse_run(ds)
+    assert not short["used_budget"] and short["duration_min"] == 2.0  # ended long before its final quarter: counted neither way
+    # a run that lasted its budget but completed nothing late is "no", not "ended early"
+    d2 = _run_dir(tmp_path / "q", [(60, 0.55), (780, 0.60)])
+    Database(d2 / "lab.db").conn.execute("UPDATE experiments SET finished_at = finished_at + 1100, status='failed' "
+                                         "WHERE experiment_id='EXP_0998'")
+    Database(d2 / "lab.db").conn.commit()
+    quiet = time_to_best.analyse_run(d2)
+    assert quiet["used_budget"] and not quiet["still_rising"] and quiet["last_improvement_min"] == 13.0
     out = tmp_path / "report.md"
     assert time_to_best.main(["--runs", str(d), str(tmp_path / "missing"), "--out", str(out)]) == 0
     md = out.read_text()

@@ -237,3 +237,14 @@ def test_table_reads_the_sealed_score_by_name_and_pools_the_starting_model(tmp_p
     assert t["start_all"]["adamson_cf|split_x"]["mse"]["n"] == 2
     md = table.render(t)
     assert "| Gene-Mila starting model | ours | 0.0200 ± 0.0000" in md  # pooled over both runs (n=2), rank mark follows
+
+
+def test_continued_runs_are_named_after_their_source_and_are_not_controls():
+    import scaling_report as sr
+    ctl = {"run": {"workers": 4, "continue_from": "/x/runs/newcode_opus_w4_r0"}, "planner": {"provider": "scripted"},
+           "worker": {"provider": "mock"}}
+    assert table.run_arm(ctl) == "no-LLM continuation of newcode_opus_w4_r0"
+    assert not sr._is_control(table.run_arm(ctl))  # never the equal-time reference, never "a control against the agents"
+    llm = {"run": {"continue_from": "runs/a"}, "planner": {"provider": "claude_cli", "model": "opus"},
+           "worker": {"provider": "deepseek", "model": "deepseek-flash"}}
+    assert table.run_arm(llm) == "claude_cli:opus planner, deepseek:deepseek-flash workers (continued from a)"
