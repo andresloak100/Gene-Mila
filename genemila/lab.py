@@ -227,6 +227,7 @@ class Lab:
                                         "creator_experiment": f"warm:{run['run_id']}:{meta.get('creator_experiment')}"})
                 imported.append(name)
             start_set = [f for f in (best.get("feature_set_json") or []) if f not in missing]
+            feature_params = {k: v for k, v in (best.get("feature_params_json") or {}).items() if k in start_set}
             hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items() if k in ("alpha", "alpha_grid")}
             sealed = (best.get("query_metrics_json") or {}).get("primary")
             eid, status = self.queue(ExperimentSpec(
@@ -235,6 +236,7 @@ class Lab:
                 scientific_rationale="A continued campaign starts where the previous one ended instead of "
                                      "rediscovering its features; everything proposed here is measured against it.",
                 kind="config", category="exploit", feature_set=start_set, model_type=best["model_type"],
+                feature_params=feature_params, seed=best.get("seed") or 0,
                 hyperparameters=hp, proposer="python:warm_start", priority=95.0,
                 hypothesis_group=f"warm_start_{run['run_id']}"))
             failed = prev.query("SELECT hypothesis, failure_stage, failure_reason FROM experiments WHERE status IN "
