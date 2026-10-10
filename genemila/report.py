@@ -3,23 +3,178 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import tempfile
 import time
 from pathlib import Path
 
 import numpy as np
 
 from .benchmark.oracle import QueryBudgetExceeded
+from .model_selection import POLICY_VERSION, enabled as curation_enabled, order_candidates, score_tolerance
 
 
 def _fmt(x, nd=4):
     return "n/a" if x is None else (f"{x:.{nd}f}" if isinstance(x, float) else str(x))
 
 
+def _read_frozen_selection(lab) -> dict | None:
+    path = Path(lab.run_dir) / "final_selection.json"
+    if not path.is_file():
+        return None
+    frozen = json.loads(path.read_text())
+    required = {"version", "run_id", "enabled", "score_tolerance", "selected_id", "raw_accuracy_champion_id",
+                "finalist_ids", "policy", "pareto_frontier"}
+    if not isinstance(frozen, dict) or not required <= frozen.keys() or frozen.get("enabled") is not True:
+        raise ValueError("frozen model selection is incomplete")
+    score_tolerance({"curation": {"score_tolerance": frozen["score_tolerance"]}})
+    if frozen.get("version") != POLICY_VERSION or frozen.get("run_id") != lab.run_id:
+        raise ValueError("frozen model selection has an incompatible policy or run")
+    finalists = frozen["finalist_ids"]
+    if not isinstance(finalists, list) or any(not isinstance(eid, str) for eid in finalists) or \
+            len(set(finalists)) != len(finalists):
+        raise ValueError("frozen model selection has an invalid finalist list")
+    if (frozen["selected_id"] is None) != (frozen["raw_accuracy_champion_id"] is None):
+        raise ValueError("frozen model selection is missing a winner identity")
+    for key in ("selected_id", "raw_accuracy_champion_id"):
+        eid = frozen.get(key)
+        if eid is None:
+            continue
+        record = lab.db.get_experiment(eid)
+        if record is None or record.get("status") != "completed" or record.get("kind") == "ensemble":
+            raise ValueError(f"frozen {key} is not a completed single model")
+    if frozen.get("selected_id") is not None and frozen["selected_id"] not in frozen["finalist_ids"]:
+        raise ValueError("frozen compact winner is absent from the finalist list")
+    # Query results, query availability, and changed preferences cannot revise a frozen winner.
+    for eid in dict.fromkeys([frozen.get("selected_id"), frozen.get("raw_accuracy_champion_id"),
+                             *frozen["finalist_ids"]]):
+        if eid is None:
+            continue
+        record = lab.db.get_experiment(eid)
+        if record is None or record.get("status") != "completed":
+            raise ValueError(f"frozen finalist {eid!r} is missing or incomplete")
+    return frozen
+
+
+def _compact_finalists(lab, top_k: int, allow_new: bool) -> list[dict]:
+    """Freeze the visible policy and finalist order before accessing any query-only result."""
+    frozen = _read_frozen_selection(lab)
+    if frozen is not None:
+        return [lab.db.get_experiment(eid) for eid in frozen["finalist_ids"]]
+    selection = lab.compact_selection()
+    candidates = lab.db.query("SELECT * FROM experiments WHERE status='completed' "
+                              "AND kind NOT IN ('baseline', 'ensemble') ORDER BY primary_score DESC")
+    candidates = order_candidates(candidates, selection)
+    picked, seen = [], set()
+    protected = {selection.get("selected_id"), selection.get("raw_accuracy_champion_id")}
+    for record in candidates:
+        if len(picked) >= max(1, top_k):
+            break
+        # A pruned refit and its raw champion can share feature modules but use different numeric columns.
+        selector = (record.get("hyperparameters_json") or {}).get("column_selection")
+        features = record.get("feature_set_json") or []
+        key = json.dumps({"features": features if selector else sorted(features),
+                          "model": record.get("model_type"),
+                          "column_selection": selector},
+                         sort_keys=True)
+        if record["experiment_id"] in protected or key not in seen:
+            picked.append(record)
+            seen.add(key)
+    singles = list(picked)
+    selected = lab.db.get_experiment(selection["selected_id"]) if selection["selected_id"] else None
+    if selected is not None and selected.get("kind") == "baseline":
+        picked.insert(0, selected)
+    base = lab.best_baseline()
+    if base is not None and base["experiment_id"] not in {r["experiment_id"] for r in picked}:
+        picked.append(base)
+    ensemble = None
+    if allow_new and lab.cfg.get("final", {}).get("ensemble", True):
+        try:
+            ensemble = ensemble_finalist(lab, singles)
+        except Exception as exc:
+            lab.db.event("ensemble_error", f"{type(exc).__name__}: {exc}"[:300], level="warning")
+    else:
+        existing = lab.db.query("SELECT * FROM experiments WHERE kind='ensemble' AND status='completed' "
+                                "ORDER BY experiment_id LIMIT 1")
+        ensemble = existing[0] if existing else None
+    if ensemble is not None:
+        picked.append(ensemble)
+    frozen = {**selection, "run_id": lab.run_id, "frozen_at": time.time(),
+              "finalist_ids": [r["experiment_id"] for r in picked],
+              "ensemble_role": "Separate final diagnostic; never replaces the compact single-model incumbent."}
+    # Write completely before publication. A hard link publishes without replacing an earlier freeze.
+    path = Path(lab.run_dir) / "final_selection.json"
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, prefix=".selection-", delete=False) as fh:
+            temporary = Path(fh.name)
+            json.dump(frozen, fh, indent=1, allow_nan=False)
+            fh.flush()
+            os.fsync(fh.fileno())
+        try:
+            os.link(temporary, path)
+            directory = os.open(path.parent, os.O_RDONLY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+        except FileExistsError:
+            frozen = _read_frozen_selection(lab)
+            return [lab.db.get_experiment(eid) for eid in frozen["finalist_ids"]]
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    return picked
+
+
 def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
     """Query-only (sealed-set) rows for the top-k visible winners plus the best baseline. With allow_new=False
     no new oracle query is made: only experiments already scored on the sealed set are reported, so a
     re-generated summary keeps its tables without spending query budget."""
+    db = lab.db
+    compact = curation_enabled(lab.cfg) or (Path(lab.run_dir) / "final_selection.json").is_file()
+    if compact:
+        picked = _compact_finalists(lab, top_k, allow_new)
+    else:
+        picked = _legacy_finalists(lab, top_k, allow_new)
+    out = []
+    for c in picked:
+        if not allow_new and not c.get("query_metrics_json"):
+            continue
+        try:
+            if c.get("query_metrics_json"):
+                q = {"metrics": c["query_metrics_json"]}
+            else:
+                q = lab.query_only(c["experiment_id"])
+        except QueryBudgetExceeded:
+            break
+        except Exception as exc:  # never lose the report over one candidate
+            db.event("query_only_error", str(exc), c["experiment_id"], "warning")
+            continue
+        row = {"experiment_id": c["experiment_id"], "kind": c["kind"],
+               "members": ((c.get("diagnostics_json") or {}).get("members") if c["kind"] == "ensemble" else None),
+               "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
+               "gap": c["primary_score"] - q["metrics"]["primary"],
+               "query_only_pearson_delta": q["metrics"].get("pearson_delta"),
+               "comparable": {"val1": {k: v for k, v in (c.get("val_metrics_json") or {}).items()
+                                       if k.startswith(COMPARABLE_PREFIXES)},
+                              "val2": {k: v for k, v in q["metrics"].items() if k.startswith(COMPARABLE_PREFIXES)}}}
+        try:
+            v1 = lab.celleval_val1(c["experiment_id"])
+        except Exception as exc:
+            db.event("celleval_error", f"{type(exc).__name__}: {exc}"[:300], c["experiment_id"], "warning")
+            v1 = None
+        if v1 is not None:
+            row["cell_eval"] = {"val1": v1, "val2": lab.celleval_val2(c["experiment_id"])}
+        out.append(row)
+    if not compact:
+        out.sort(key=lambda r: (r["kind"] == "baseline", -(r["visible_score"] or 0)))
+    return out
+
+
+def _legacy_finalists(lab, top_k: int, allow_new: bool) -> list[dict]:
+    """Original behavior for runs without explicit compact curation."""
     db = lab.db
     cands = db.query("SELECT * FROM experiments WHERE status='completed' AND kind NOT IN ('baseline', 'ensemble') "
                      "ORDER BY primary_score DESC")
@@ -50,37 +205,7 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
                                  "AND query_metrics_json IS NOT NULL LIMIT 1")), None)
     if ens is not None:
         picked.append(ens)
-    out = []
-    for c in picked:
-        try:
-            if c.get("query_metrics_json"):
-                q = {"metrics": c["query_metrics_json"]}
-            else:
-                q = lab.query_only(c["experiment_id"])
-        except QueryBudgetExceeded:
-            break
-        except Exception as exc:  # never lose the report over one candidate
-            db.event("query_only_error", str(exc), c["experiment_id"], "warning")
-            continue
-        row = {"experiment_id": c["experiment_id"], "kind": c["kind"],
-               "members": ((c.get("diagnostics_json") or {}).get("members") if c["kind"] == "ensemble" else None),
-               "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
-               "gap": c["primary_score"] - q["metrics"]["primary"],
-               "query_only_pearson_delta": q["metrics"].get("pearson_delta"),  # by name, whatever the rule
-               "comparable": {"val1": {k: v for k, v in (c.get("val_metrics_json") or {}).items()
-                                       if k.startswith(COMPARABLE_PREFIXES)},
-                              "val2": {k: v for k, v in q["metrics"].items() if k.startswith(COMPARABLE_PREFIXES)}}}
-        try:
-            v1 = lab.celleval_val1(c["experiment_id"])
-        except Exception as exc:  # cell-eval is a report extra; never lose the report over it
-            db.event("celleval_error", f"{type(exc).__name__}: {exc}"[:300], c["experiment_id"], "warning")
-            v1 = None
-        if v1 is not None:
-            row["cell_eval"] = {"val1": v1, "val2": lab.celleval_val2(c["experiment_id"])}
-        out.append(row)
-    # shown by visible score (the headline is whichever wins on the visible perturbations), baseline last
-    out.sort(key=lambda r: (r["kind"] == "baseline", -(r["visible_score"] or 0)))
-    return out
+    return picked
 
 
 COMPARABLE_PREFIXES = ("cellforge_", "vcworld_")
@@ -208,7 +333,12 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         duration_note = "the run was cut before it wrote its summary; its duration is capped at its deadline"
     if wall_s is None:
         wall_s = end - (run.get("started_at") or end)
-    best = lab.best()
+    compact_selection = None
+    if curation_enabled(lab.cfg) or (Path(lab.run_dir) / "final_selection.json").is_file():
+        compact_selection = _read_frozen_selection(lab) or lab.compact_selection()
+        best = lab.db.get_experiment(compact_selection["selected_id"]) if compact_selection["selected_id"] else None
+    else:
+        best = lab.best()
     base = lab.best_baseline()
     proposed = [e for e in exps if e["kind"] not in ("baseline", "ensemble")]
     ensemble = next((e for e in done if e["kind"] == "ensemble"), None)
@@ -299,6 +429,19 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "reproduction_command": None if not best else
             f"python reproduce.py --run {lab.run_dir} --experiment {best['experiment_id']}",
     }
+    if compact_selection is not None:
+        raw_id = compact_selection["raw_accuracy_champion_id"]
+        raw = db.get_experiment(raw_id) if raw_id else None
+        raw_meta = compact_selection.get("raw_accuracy_champion") or {}
+        selected_meta = compact_selection.get("compact_selected_winner") or {}
+        if summary["best"] is not None:
+            summary["best"]["n_features"] = selected_meta.get("n_features")
+        summary["raw_accuracy_champion"] = None if raw is None else {
+            "experiment_id": raw_id, "score": raw["primary_score"], "model": raw["model_type"],
+            "alpha": raw["best_alpha"], "features": raw.get("feature_set_json"),
+            "n_features": raw_meta.get("n_features"), "metrics": raw.get("val_metrics_json")}
+        summary["compact_selected_winner"] = summary["best"]
+        summary["model_selection"] = compact_selection
     return summary
 
 
@@ -325,6 +468,22 @@ def render_markdown(s: dict) -> str:
                  f"{' -> '.join(ph['used']) or 'none'}; " + "; ".join(f"at {sw['at_min']} min: {sw['note']}" for sw in ph["switches"])
                  + (f"; no planner left after {ph['exhausted_at_min']} min" if ph.get("exhausted_at_min") is not None else ""))
     b, best = s["baseline"], s["best"]
+    if s.get("model_selection"):
+        policy = s["model_selection"]
+        raw = s.get("raw_accuracy_champion")
+        L += ["", "## COMPACT MODEL SELECTION", policy["policy"],
+              f"- Score tolerance: {policy['score_tolerance']}; visible validation/CV constituent regressions forbidden.",
+              "- Winner selected before query-only evaluation; sealed results cannot change it.",
+              f"- Raw accuracy champion: {raw['experiment_id']} (visible {_fmt(raw['score'], 8)}, "
+              f"numeric columns {_fmt(raw.get('n_features'))})." if raw else "- Raw accuracy champion: none.",
+              f"- Compact selected winner: {best['experiment_id']} (visible {_fmt(best['score'], 8)}, "
+              f"numeric columns {_fmt(best.get('n_features'))})." if best else "- Compact selected winner: none."]
+        if policy.get("fallback_reason"):
+            L.append(f"- Kept raw accuracy champion: {policy['fallback_reason']}.")
+        L += ["", "Visible score / numeric-column Pareto frontier:", "", "| experiment | columns | visible score |",
+              "|---|---:|---:|"]
+        L += [f"| {p['experiment_id']} | {p['n_features']} | {_fmt(p['visible_score'], 8)} |"
+              for p in policy["pareto_frontier"]]
     L += ["", "## BASELINE PERFORMANCE", f"{b['experiment_id']}: {b['description']} pearson_delta = {b['score']:.4f}"
           if b else "n/a", "", "## BEST PERFORMANCE"]
     if best:

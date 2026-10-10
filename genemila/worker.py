@@ -51,7 +51,8 @@ def prune_predictions(path: Path, keep_index: int) -> None:
 
 class Worker:
     def __init__(self, lab: Lab, worker_id: str, provider: AgentProvider | None,
-                 escalation: AgentProvider | None, cpu_slots: threading.Semaphore):
+                 escalation: AgentProvider | None, cpu_slots: threading.Semaphore,
+                 *, queue_lane: str | None = None):
         self.lab = lab
         self.db = lab.db
         self.worker_id = worker_id
@@ -61,11 +62,13 @@ class Worker:
         self.wcfg = lab.cfg["worker"]
         self.current: str | None = None
         self.completed = 0
+        self.queue_lane = queue_lane
 
     # ------------------------------------------------------------------ loop
     def loop(self, idle_sleep: float = 0.5) -> None:
         while not self.lab.stop_event.is_set():
-            rec = self.db.claim_next(self.worker_id)
+            rec = (self.db.claim_next(self.worker_id, lane=self.queue_lane) if self.queue_lane is not None
+                   else self.db.claim_next(self.worker_id))
             if rec is None:
                 time.sleep(idle_sleep)
                 continue
@@ -113,7 +116,7 @@ class Worker:
             score = ev["metrics"]["primary"]
             delta = None if pscore is None else (score - pscore) * (1 if PRIMARY_HIGHER_IS_BETTER else -1)
             self._set(eid, status="completed", val_metrics_json={**ev["metrics"], "alpha_scores": ev["alpha_scores"]},
-                      diagnostics_json={**ev["diagnostics"], "coefficients": self._coefs(result, ev["best_alpha"])},
+                      diagnostics_json=self._diagnostics(result, ev),
                       primary_score=score, parent_score=pscore, delta_from_parent=delta,
                       best_alpha=ev["best_alpha"], timing_json=result["timing"],
                       model_size_bytes=result["model_size_bytes"], cpu_s=proc.cpu_s, peak_rss_mb=proc.peak_rss_mb)
@@ -183,6 +186,19 @@ class Worker:
             if c["alpha"] == alpha:
                 return {k: round(v, 5) for k, v in c["coef"].items()}
         return {}
+
+    def _diagnostics(self, result: dict, evaluation: dict) -> dict:
+        """Persist deployable column counts and the policy's comparison protocol."""
+        n_features = result.get("n_features")
+        return {**evaluation["diagnostics"],
+                "coefficients": self._coefs(result, evaluation["best_alpha"]),
+                "n_features": n_features,
+                "n_raw_features": result.get("n_raw_features", n_features),
+                "n_available_features": result.get("n_raw_features", n_features),
+                "selection_rule": self.lab.selection,
+                "cv_folds": self.lab.cv_folds, "cv_seed": self.lab.cv_seed,
+                "n_visible": evaluation["metrics"].get("n_visible"),
+                "n_validation": evaluation["metrics"].get("n_validation")}
 
     def _task(self, spec: ExperimentSpec) -> dict:
         from .feature_memory import configured_feature_capsule

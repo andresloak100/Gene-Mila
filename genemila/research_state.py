@@ -115,6 +115,15 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         "generated_at": time.time(),
         "dataset": lab.data_summary(),
         "primary_metric": _metric_text(lab),
+        **({"curation_policy": {
+            "selected_parent": (best or {}).get("experiment_id"),
+            "reserved_workers": (lab.cfg.get("curation") or {}).get("reserved_workers", 2),
+            "score_tolerance": (lab.cfg.get("curation") or {}).get("score_tolerance", 0.0),
+            "note": "CURRENT BEST is the controller-selected incumbent. The shared board's CV-only leader "
+                    "may differ. Deterministic workers screen columns and test removals; propose complementary "
+                    "signal and preserve inherited column_selection. A small search-score gain is not proof "
+                    "of generalization; never use query-only results to guide proposals."}}
+           if (lab.cfg.get("curation") or {}).get("enabled", False) else {}),
         "knowledge_available": lab.knowledge_summary(),
         **({"prior_campaign": prior} if prior else {}),
         "baselines": [{"id": e["experiment_id"], "what": _short(e["hypothesis"], 60),
@@ -122,6 +131,8 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         "current_best": None if not best else {
             "id": best["experiment_id"], "score": round(best["primary_score"], 4),
             "features": best.get("feature_set_json"), "model": best["model_type"], "alpha": best["best_alpha"],
+            **({"column_selection": best["hyperparameters_json"]["column_selection"]}
+               if (best.get("hyperparameters_json") or {}).get("column_selection") else {}),
             "gain_over_best_baseline": None if not best_base else round(best["primary_score"] - best_base["primary_score"], 4),
             "coefficients": (best.get("diagnostics_json") or {}).get("coefficients"),
             "diagnostics": {k: v for k, v in (best.get("diagnostics_json") or {}).items() if k != "coefficients"},

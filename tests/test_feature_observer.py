@@ -92,6 +92,21 @@ def test_failed_observation_is_archived_once_after_master_review(lab):
     assert len(board(lab).archive()) == 1
 
 
+def test_candidate_signature_is_stable_across_execution_ids_but_not_protocol_or_config(lab):
+    first = candidate(lab, "EXP_first")
+    publish_worker_observation(lab, "EXP_first", "W0", first)
+    lab.records["EXP_again"] = copy.deepcopy(lab.records["EXP_first"])
+    lab.records["EXP_again"].update(experiment_id="EXP_again", code_commit="incidental-new-commit")
+    publish_worker_observation(lab, "EXP_again", "W1", first)
+    tasks = board(lab).tasks()
+    assert tasks[0]["result"]["candidate_signature"] == tasks[1]["result"]["candidate_signature"]
+    lab.records["EXP_changed"] = copy.deepcopy(lab.records["EXP_first"])
+    lab.records["EXP_changed"].update(experiment_id="EXP_changed", config_hash="changed-source-or-config")
+    publish_worker_observation(lab, "EXP_changed", "W2", first)
+    tasks = board(lab).tasks()
+    assert tasks[0]["result"]["candidate_signature"] != tasks[2]["result"]["candidate_signature"]
+
+
 def test_changed_result_cannot_replace_canonical_completed_observation(lab):
     result = candidate(lab, "EXP_1")
     publish_worker_observation(lab, "EXP_1", "W0", result)

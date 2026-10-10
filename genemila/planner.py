@@ -201,6 +201,10 @@ class Planner:
         modelled = self.lab.db.query("SELECT * FROM experiments WHERE status='completed' AND model_type!='none' "
                                      "AND primary_score IS NOT NULL ORDER BY primary_score DESC LIMIT 1")
         best = modelled[0] if modelled else None
+        if (self.cfg.get("curation") or {}).get("enabled", False):
+            selected = self.lab.best()
+            if selected and selected.get("feature_set_json"):
+                best = selected
         prio = self._priorities()
         known = self.lab.known_features()
         specs = []
@@ -234,9 +238,15 @@ class Planner:
             category=category, parent_experiment_id=(parent or {}).get("experiment_id"), model_type=model,
             hyperparameters={"alpha_grid": grid} if model != "ols" else {},
             feature_params=copy.deepcopy((parent or {}).get("feature_params_json") or {}),
-            seed=int(self.cfg["run"].get("seed", 0)), cpu_limit_s=ecfg["cpu_limit_s"],
+            seed=int((parent or {}).get("seed") if (parent or {}).get("seed") is not None
+                     else self.cfg["run"].get("seed", 0)), cpu_limit_s=ecfg["cpu_limit_s"],
             ram_limit_mb=ecfg["ram_limit_mb"], timeout_s=ecfg["timeout_s"], proposer=proposer,
             priority=prio.get(category, 0.0))
+        # A child must not silently restore all columns removed by its parent.
+        # A deliberate model-family change may use its own penalty instead.
+        selector = ((parent or {}).get("hyperparameters_json") or {}).get("column_selection")
+        if selector is not None and model == "ridge":
+            common["hyperparameters"]["column_selection"] = copy.deepcopy(selector)
         action = h.get("action", "new_feature")
         if action == "new_feature" and isinstance(h.get("new_feature"), dict):
             nf = h["new_feature"]
@@ -271,7 +281,9 @@ class Planner:
             c = copy.deepcopy(common)
             c["proposer"] = f"sweep({c['proposer']})"
             if target == "alpha_grid":
-                c["hyperparameters"] = {"alpha_grid": v if isinstance(v, list) else [v]}
+                c["hyperparameters"] = {**c["hyperparameters"],
+                                        "alpha_grid": v if isinstance(v, list) else [v]}
+                c["hyperparameters"].pop("alpha", None)
             elif target.startswith("feature_params."):
                 parts = target.split(".")
                 if len(parts) != 3 or parts[1] not in base_set:

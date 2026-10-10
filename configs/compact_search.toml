@@ -1,0 +1,15 @@
+# Opt-in compact search policy. Provider, duration and budget settings remain
+# inherited from the normal configuration/explicit launch overrides.
+# This file does not launch a campaign or authorize additional API spending.
+[curation]
+enabled = true
+reserved_workers = 2
+max_candidates_per_round = 32
+interval_s = 15.0
+score_tolerance = 0.0
+
+[feature_board]
+path = "feature_board.sqlite"
+metric_scope = "lab_oof_at_visible_selected_alpha_v2_compact"
+max_recent = 12
+max_chars = 8000

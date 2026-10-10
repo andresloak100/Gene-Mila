@@ -169,14 +169,26 @@ class Database:
         return self.decode(self.conn.execute("SELECT * FROM experiments WHERE experiment_id=?",
                                              (experiment_id,)).fetchone())
 
-    def claim_next(self, worker_id: str) -> dict | None:
-        """Atomically move the highest-priority queued experiment to 'claimed'."""
+    def claim_next(self, worker_id: str, *, lane: str | None = None) -> dict | None:
+        """Atomically claim work, preferring a lane and borrowing when it is empty.
+
+        The default keeps the historical priority queue. Curation workers prefer
+        deterministic curator jobs; discovery workers prefer everything else.
+        Both can borrow idle capacity, without competing for the other's backlog.
+        """
+        if lane not in (None, "curation", "discovery"):
+            raise ValueError(f"unknown worker queue lane {lane!r}")
+        order = "priority DESC, created_at ASC"
+        if lane == "curation":
+            order = "CASE WHEN proposer='python:curator' THEN 0 ELSE 1 END, " + order
+        elif lane == "discovery":
+            order = "CASE WHEN proposer='python:curator' THEN 1 ELSE 0 END, " + order
         with self.lock:
             c = self.conn
             c.execute("BEGIN IMMEDIATE")
             try:
                 row = c.execute("SELECT experiment_id FROM experiments WHERE status='queued' "
-                                "ORDER BY priority DESC, created_at ASC LIMIT 1").fetchone()
+                                f"ORDER BY {order} LIMIT 1").fetchone()
                 if row is None:
                     c.execute("COMMIT")
                     return None

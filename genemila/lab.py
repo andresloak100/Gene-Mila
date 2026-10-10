@@ -22,6 +22,7 @@ from .db import Database
 from .features.registry import BUILTIN_FEATURES, FeatureDependencyError, dependency_closure
 from .isolation import WorktreeManager, git, sha256_text
 from .llm import LLMGateway, SpendLedger
+from .model_selection import POLICY_VERSION, enabled as curation_enabled, score_tolerance, select_compact
 from .spec import PLUGIN_DIR, ExperimentSpec, GuardrailViolation, config_hash, validate_spec
 
 
@@ -241,6 +242,19 @@ class Lab:
                 raise RuntimeError(f"cannot continue from {run['run_id']}: it selected models by {prev_rule}, "
                                    f"this run selects by {self.selection}")
             best = prev.best()
+            if curation_enabled(getattr(self, "cfg", {})) and curation_enabled(prev_cfg):
+                # Continue the donor's visible-only compact policy; sealed scores are never inputs.
+                donor_selection = select_compact(prev.completed(), best, prev_cfg)
+                frozen_path = prev_run_dir / "final_selection.json"
+                if frozen_path.is_file():
+                    frozen = json.loads(frozen_path.read_text())
+                    if frozen.get("run_id") != run["run_id"] or frozen.get("version") != POLICY_VERSION:
+                        raise RuntimeError("donor's frozen compact selection has an incompatible run or policy")
+                    donor_selection = frozen
+                chosen = donor_selection.get("selected_id")
+                best = prev.get_experiment(chosen) if chosen else best
+                if best is not None and (best.get("status") != "completed" or best.get("kind") == "ensemble"):
+                    raise RuntimeError("donor's compact incumbent is not a completed single model")
             if best is None:
                 raise RuntimeError(f"{run['run_id']} has no completed experiment to continue from")
             feats = {f["name"]: f for f in prev.features()}
@@ -289,7 +303,8 @@ class Lab:
             start_set = [f for f in selected if f in closures]
             start_sources = {n for f in start_set for n in closures[f]}
             feature_params = {k: v for k, v in (best.get("feature_params_json") or {}).items() if k in start_sources}
-            hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items() if k in ("alpha", "alpha_grid")}
+            hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items()
+                  if k in ("alpha", "alpha_grid", "column_selection")}
             sealed = (best.get("query_metrics_json") or {}).get("primary")
             eid, status = self.queue(ExperimentSpec(
                 hypothesis=f"Warm start: the best model of run {run['run_id']} ({best['experiment_id']}, visible "
@@ -411,6 +426,8 @@ class Lab:
         k, res = best
         pred = z["delta"][k][rows].astype(np.float64) + self.control_mean
         res["metrics"].update(self.comparable_val1(pred))
+        if curation_enabled(self.cfg):
+            res["metrics"].update(self.visible_selection_protocol())
         return {"alpha_index": k, "best_alpha": float(z["alphas"][k]), "metrics": res["metrics"],
                 "diagnostics": res["diagnostics"], "alpha_scores": scores}
 
@@ -426,6 +443,8 @@ class Lab:
         metrics["primary"] = selection_score(combined, self.selection)
         metrics["n_visible"] = n1 + nt
         metrics["cv_folds"] = self.cv_folds
+        if curation_enabled(self.cfg):
+            metrics.update(self.visible_selection_protocol())
 
     def _cv_baseline(self, which: str) -> np.ndarray:
         """Out-of-fold analytic baseline for the training perturbations, on the run's folds."""
@@ -560,7 +579,43 @@ class Lab:
         return config_hash(replace(spec, hyperparameters=hp), self.feature_code_hashes(spec.feature_set), self.split_id)
 
     def best(self) -> dict | None:
-        return self.db.best()
+        if not curation_enabled(self.cfg):
+            return self.db.best()
+        selection = self.compact_selection()
+        return self.db.get_experiment(selection["selected_id"]) if selection["selected_id"] else None
+
+    def visible_selection_protocol(self) -> dict:
+        """Controller-owned scope for stored visible selection metrics."""
+        n_validation = len(self._val1.perts)
+        return {"selection_rule": self.selection, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed,
+                "n_validation": n_validation,
+                "n_visible": n_validation + (len(self._train.perts) if self.cv_folds > 1 else 0)}
+
+    def compact_selection(self) -> dict:
+        """Stored metadata only; callers can freeze this before query-only evaluation."""
+        tolerance = score_tolerance(self.cfg)
+        # Database connections are thread-local and worker completion does not use db.lock.
+        # A SQLite read snapshot keeps raw, marker, and candidates mutually consistent even
+        # when another connection completes a model between SELECTs. SAVEPOINT also nests
+        # safely if the caller already has a transaction. Release before artifact inspection.
+        conn = self.db.conn
+        conn.execute("SAVEPOINT compact_selection_snapshot")
+        try:
+            raw = self.db.best()
+            marker = self.db.query("SELECT COUNT(*) n, MAX(finished_at) latest FROM experiments "
+                                   "WHERE status='completed'")[0]
+            key = (marker["n"], marker["latest"], None if raw is None else raw["experiment_id"],
+                   None if raw is None else raw["primary_score"], tolerance)
+            cached = getattr(self, "_compact_selection_cache", None)
+            if cached is not None and cached[0] == key:
+                return cached[1]
+            completed = self.db.completed()
+        finally:
+            conn.execute("RELEASE compact_selection_snapshot")
+        # Completed visible results are immutable. Query-only writes do not invalidate this cache.
+        selection = select_compact(completed, raw, self.cfg)
+        self._compact_selection_cache = (key, selection)
+        return selection
 
     def best_baseline(self) -> dict | None:
         rows = self.db.query("SELECT * FROM experiments WHERE kind='baseline' AND status='completed' "

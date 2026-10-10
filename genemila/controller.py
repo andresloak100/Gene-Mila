@@ -18,6 +18,7 @@ import traceback
 from pathlib import Path
 
 from . import exploit
+from .curation_scheduler import CurationScheduler
 from .db import ACTIVE
 from .lab import Lab
 from .planner import Planner
@@ -83,6 +84,7 @@ class Controller:
         self.lab = lab
         self.cfg = lab.cfg
         self.n_workers = workers
+        self.curation = CurationScheduler(lab, workers)
         self.seconds = seconds
         cpu = int(self.cfg["run"].get("cpu_slots") or 0) or (os.cpu_count() or 1)
         self.cpu_slots = threading.Semaphore(cpu)
@@ -143,6 +145,13 @@ class Controller:
         self._planner_threads = [t for t in self._planner_threads if t.is_alive()]
         return len(self._planner_threads)
 
+    def _queued_discovery(self) -> int:
+        """A pruning backlog must not suppress replenishment of discovery work."""
+        if not self.curation.enabled:
+            return self.lab.db.count_by_status().get("queued", 0)
+        return self.lab.db.query("SELECT COUNT(*) AS n FROM experiments WHERE status='queued' "
+                                 "AND COALESCE(proposer,'')!='python:curator'")[0]["n"]
+
     def _maybe_plan(self) -> None:
         """Start planner rounds while the queue is short: up to `planner_concurrency` at once, each with its
         own focus, so planning keeps up with many workers."""
@@ -166,7 +175,7 @@ class Controller:
             return  # pace the planner budget over the run instead of spending it all early and halting
         n = self.planner_batch
         low = int(self.cfg["schedule"]["queue_low_water"]) or 2 * self.n_workers
-        queued = self.lab.db.count_by_status().get("queued", 0)
+        queued = self._queued_discovery()
         if queued + alive * n >= low:  # rounds in flight will add about n experiments each
             return
         if self.planner.backing_off(float(self.cfg["schedule"]["planner_min_interval_s"])):
@@ -194,7 +203,7 @@ class Controller:
         if not self.python_exploit or self.lab.stop_event.is_set() or time.time() < self._next_exploit:
             return
         self._next_exploit = time.time() + 15
-        queued = self.lab.db.count_by_status().get("queued", 0)
+        queued = self._queued_discovery()
         if queued >= self.n_workers:
             return
         n_queued, want = 0, self.n_workers - queued
@@ -212,6 +221,14 @@ class Controller:
             self._log(f"exploit: queued {n_queued} follow-ups around the best model (no LLM)")
 
     # ---------------------------------------------------------------- workers
+    def _maybe_curate(self, *, force: bool = False) -> None:
+        if self.lab.stop_event.is_set():
+            return
+        ids = self.curation.maybe_queue(force=force)
+        if ids:
+            self._log(f"curation: queued {len(ids)} deterministic pruning jobs around "
+                      f"{self.curation.parent_id}; {self.curation.reserved_workers} reserved workers")
+
     def _review_feature_observations(self, *, force: bool = False) -> None:
         from .feature_observer import review_worker_observations
         if not force and time.time() < self._next_feature_board_review:
@@ -230,7 +247,8 @@ class Controller:
 
     def _start_worker(self, i: int) -> None:
         wid = f"W{i:03d}"
-        w = Worker(self.lab, wid, self.worker_provider, self.escalation, self.cpu_slots)
+        w = Worker(self.lab, wid, self.worker_provider, self.escalation, self.cpu_slots,
+                   queue_lane=self.curation.lane(i))
 
         def target():
             try:
@@ -296,6 +314,7 @@ class Controller:
         try:
             while time.time() < self.deadline:
                 if self._baselines_done():
+                    self._maybe_curate()
                     self._maybe_plan()
                     self._maybe_exploit()
                 self._supervise()
@@ -339,6 +358,9 @@ class Controller:
             if not capped and not self.planner.dry():
                 return False
         if self._in_flight() or any(w.current for w in self.workers):
+            return False
+        self._maybe_curate(force=True)  # a timer must not end a run with pruning candidates left
+        if self._in_flight():
             return False
         if self.python_exploit:  # the throttle must not end a run while follow-ups remain
             self._next_exploit = 0.0

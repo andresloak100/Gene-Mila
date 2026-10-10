@@ -8,6 +8,8 @@ import re
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+from .column_selection import ColumnSelectionError, validate_column_selection
+
 PLUGIN_DIR = "genemila/features/plugins"
 ALLOWED_MODELS = ("ridge", "lasso", "elasticnet", "ols")
 KINDS = ("baseline", "new_feature", "config")
@@ -18,6 +20,7 @@ PROTECTED_PATHS = (
     "genemila/benchmark/", "genemila/data/", "genemila/pipeline.py", "genemila/features/api.py",
     "genemila/features/registry.py", "genemila/features/builtin.py", "configs/", "tests/",
     "genemila/controller.py", "genemila/worker.py", "genemila/guard.py", "genemila/spec.py",
+    "genemila/column_selection.py",
 )
 
 _CHEAT_PATTERNS = [
@@ -104,6 +107,11 @@ def config_hash(spec: ExperimentSpec, feature_code_hashes: dict[str, str], split
         "feature_params": spec.feature_params, "model_type": spec.model_type,
         "hyperparameters": spec.hyperparameters, "seed": spec.seed, "split_id": split_id,
     }
+    if "column_selection" in spec.hyperparameters:
+        # Cyclic sparse solvers can select different correlated columns in a
+        # different input order, which also changes the downstream ridge fit.
+        # Preserve the historical order-independent identity for unselected fits.
+        payload["feature_order"] = list(spec.feature_set)
     return "C_" + hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -136,8 +144,15 @@ def validate_spec(spec: ExperimentSpec, known_features: set[str], limits: dict, 
             or spec.timeout_s > limits["timeout_s"]:
         raise GuardrailViolation("experiment requests more compute than allowed")
     for k, v in spec.hyperparameters.items():
-        if k not in ("alpha", "alpha_grid"):
+        if k not in ("alpha", "alpha_grid", "column_selection"):
             raise GuardrailViolation(f"unknown hyperparameter {k!r}")
+    if "column_selection" in spec.hyperparameters:
+        if spec.model_type != "ridge":
+            raise GuardrailViolation("column_selection requires a downstream ridge model")
+        try:
+            validate_column_selection(spec.hyperparameters["column_selection"])
+        except ColumnSelectionError as exc:
+            raise GuardrailViolation(str(exc)) from exc
     grid = spec.hyperparameters.get("alpha_grid", [])
     if len(grid) > 12:
         raise GuardrailViolation("alpha grid larger than 12 values")

@@ -25,6 +25,7 @@ import numpy as np
 
 from .features import registry
 from .features.api import FeatureContext, _atomic_save
+from .column_selection import fit_column_selection, validate_column_selection
 
 
 def feature_cache_key(ctx: FeatureContext, cls, params: dict, perts: list[str]) -> str:
@@ -107,7 +108,8 @@ def cv_folds_of(train: list[str], k: int, seed: int) -> list[list[str]]:
 
 def cross_validate(ctx: FeatureContext, feature_set: list[str], feature_params: dict, model_type: str,
                    alphas: list[float], seed: int, k: int, fold_seed: int, timings: dict, feature_cache,
-                   cache_log, train_blocks: dict[str, np.ndarray], label_dep: dict[str, bool]) -> np.ndarray:
+                   cache_log, train_blocks: dict[str, np.ndarray], label_dep: dict[str, bool],
+                   column_selection: dict | None = None, selection_log: list | None = None) -> np.ndarray:
     """Out-of-fold predicted deltas for every training perturbation, per alpha: (n_alphas, n_train, n_genes).
 
     Each fold is a context whose training labels exclude the fold, so feature code (which may only read
@@ -118,7 +120,9 @@ def cross_validate(ctx: FeatureContext, feature_set: list[str], feature_params: 
     module-level memo can carry full-training aggregates into a fold."""
     pos = {p: i for i, p in enumerate(ctx.train_perts)}
     out = np.zeros((len(alphas), len(ctx.train_perts), ctx.n_genes), dtype=np.float32)
-    for fold in cv_folds_of(ctx.train_perts, k, fold_seed):
+    if column_selection is not None and model_type != "ridge":
+        raise ValueError("column_selection requires a downstream ridge model")
+    for fold_index, fold in enumerate(cv_folds_of(ctx.train_perts, k, fold_seed)):
         registry.reload_plugins()
         view = ctx.without_train(fold)
         both = view.train_perts + fold
@@ -129,11 +133,23 @@ def cross_validate(ctx: FeatureContext, feature_set: list[str], feature_params: 
         fo_rows = [pos[p] for p in fold]
         blocks_tr = {f: (fresh[f][:n_tr] if f in fresh else train_blocks[f][tr_rows]) for f in feature_set}
         blocks_fo = {f: (fresh[f][n_tr:] if f in fresh else train_blocks[f][fo_rows]) for f in feature_set}
-        X_tr, _ = _concat(blocks_tr, feature_set, n_tr, ctx.n_genes)
+        X_tr, raw_columns = _concat(blocks_tr, feature_set, n_tr, ctx.n_genes)
         X_fo, _ = _concat(blocks_fo, feature_set, len(fold), ctx.n_genes)
         _, d_tr = view.train_delta()
-        mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
-        sd[sd == 0] = 1.0
+        if column_selection is None:
+            mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
+            sd[sd == 0] = 1.0
+        else:
+            # This mask sees only this fold's training rows and labels. Never use
+            # the full-fit mask, nor the rows/labels of the held-out fold here.
+            selected = fit_column_selection(X_tr, d_tr.reshape(-1), column_selection, seed=seed)
+            mask = selected.mask
+            mu, sd = selected.mean[mask], selected.scale[mask]
+            X_tr, X_fo = X_tr[:, mask], X_fo[:, mask]
+            if selection_log is not None:
+                selection_log.append({**selected.metadata, "fold_index": fold_index,
+                                      "train_perts": list(view.train_perts), "eval_perts": list(fold),
+                                      "columns": [c for c, keep in zip(raw_columns, mask) if keep]})
         X_tr, X_fo = (X_tr - mu) / sd, (X_fo - mu) / sd
         for j, a in enumerate(alphas):
             model = make_model(model_type, a, seed)
@@ -171,6 +187,11 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
     ctx.configure_features(feature_params, reset=True)
     hp = spec.get("hyperparameters", {})
     model_type = spec.get("model_type", "ridge")
+    selection_config = None
+    if "column_selection" in hp:
+        selection_config = validate_column_selection(hp["column_selection"])
+        if model_type != "ridge":
+            raise ValueError("column_selection requires a downstream ridge model")
     alphas = [0.0] if model_type == "ols" else list(hp.get("alpha_grid", [hp.get("alpha", 1.0)]))
 
     train = ctx.train_perts
@@ -185,8 +206,21 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
     _, d_train = ctx.train_delta()
     y = d_train.reshape(-1)
 
-    mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
-    sd[sd == 0] = 1.0
+    raw_columns = list(columns)
+    selected_mask = np.ones(len(raw_columns), dtype=bool)
+    selection_metadata = None
+    selection_time = 0.0
+    if selection_config is None:
+        mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
+        sd[sd == 0] = 1.0
+    else:
+        t = time.process_time()
+        selected = fit_column_selection(X_tr, y, selection_config, seed=seed)
+        selection_time = time.process_time() - t
+        selected_mask, selection_metadata = selected.mask, selected.metadata
+        mu, sd = selected.mean[selected_mask], selected.scale[selected_mask]
+        X_tr, X_ev = X_tr[:, selected_mask], X_ev[:, selected_mask]
+        columns = [c for c, keep in zip(raw_columns, selected_mask) if keep]
     X_tr = (X_tr - mu) / sd
     X_ev = (X_ev - mu) / sd
 
@@ -211,20 +245,34 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
                         alphas=np.array(alphas, dtype=np.float64))
     cv_folds = int(hp.get("cv_folds") or 0)
     cv_time = 0.0
+    cv_selection = []
     if cv_folds > 1:
         t = time.process_time()
         cv = cross_validate(ctx, feature_set, feature_params, model_type, alphas, seed, cv_folds,
-                            int(hp.get("cv_seed") or 0), timings, feature_cache, cache_log, train_blocks, label_dep)
+                            int(hp.get("cv_seed") or 0), timings, feature_cache, cache_log, train_blocks, label_dep,
+                            column_selection=selection_config, selection_log=cv_selection)
         np.savez_compressed(out_dir / "cv.npz", delta=cv, perts=np.array(train),
                             alphas=np.array(alphas, dtype=np.float64), folds=np.array([cv_folds]))
         cv_time = time.process_time() - t
+    retained = [n for n in feature_set if any(c == n or c.startswith(n + "[") for c in columns)]
+    retained_sources = registry.dependency_closure(retained)
+    selection_artifact = {"raw_columns": raw_columns, "selected_mask": selected_mask.tolist(),
+                          "selected_indices": np.flatnonzero(selected_mask).tolist(),
+                          "column_selection": selection_metadata, "cv_column_selection": cv_selection,
+                          "retained_feature_set": retained, "retained_feature_sources": retained_sources,
+                          "retained_dependency_only_sources": [n for n in retained_sources if n not in retained]}
     with open(out_dir / "models.pkl", "wb") as fh:
-        pickle.dump({"models": models, "columns": columns, "x_mean": mu, "x_std": sd}, fh)
+        pickle.dump({"schema_version": 2, "models": models, "columns": columns, "x_mean": mu, "x_std": sd,
+                     "feature_set": feature_set, "feature_params": feature_params, "seed": seed,
+                     "alphas": alphas, "genes": ctx.genes, "train_perts": train,
+                     "n_features": len(columns), "n_raw_features": len(raw_columns), **selection_artifact}, fh)
     result = {
         "status": "ok",
         "columns": columns,
         "n_train_rows": int(X_tr.shape[0]),
         "n_features": int(X_tr.shape[1]),
+        "n_raw_features": len(raw_columns),
+        **selection_artifact,
         "alphas": alphas,
         "coefficients": coefs,
         "feature_metadata": {n: registry.get(n).metadata() for n in feature_set},
@@ -232,6 +280,7 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
         "timing": {
             "feature_cpu_s": feat_time, "per_feature_cpu_s": timings,
             "train_cpu_s": train_time, "inference_cpu_s": infer_time, "cv_cpu_s": cv_time,
+            "selection_cpu_s": selection_time,
         },
         "cv_folds": cv_folds,
         "label_dependent_features": sorted(n for n, d in label_dep.items() if d),

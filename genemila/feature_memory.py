@@ -63,8 +63,8 @@ def _champion(raw):
 
 
 def _archive(rows, max_recent):
-    result = []
-    for row in rows:
+    result, seen = [], set()
+    for row in reversed(rows):
         if not isinstance(row, dict) or row.get("status") not in ("failed", "rejected"):
             continue
         record = {"status": row["status"], "feature_names": _names(row.get("feature_names"))}
@@ -72,8 +72,38 @@ def _archive(rows, max_recent):
             value = _text(row.get(key), 350 if key == "reason" else 200)
             if value is not None:
                 record[key] = value
+        # Repeated executions must not crowd every older, distinct lesson out
+        # of the bounded prompt. These are exact identities, not claims of
+        # scientific equivalence between differently named features.
+        signature = record.get("candidate_signature")
+        identity = (signature, record.get("reason"))
+        if signature and identity in seen:
+            continue
+        if signature:
+            seen.add(identity)
         result.append(record)
-    return result[-max_recent:]
+        if len(result) >= max_recent:
+            break
+    return list(reversed(result))
+
+
+def _archive_summary(rows):
+    """Allowlisted failure classes over a bounded window, without scores/text."""
+    counts = {}
+    total = 0
+    for row in rows:
+        if not isinstance(row, dict) or row.get("status") not in ("failed", "rejected"):
+            continue
+        total += 1
+        reason = (_text(row.get("reason"), 2000) or "").lower()
+        category = ("constant" if "constant" in reason else
+                    "leakage_guard" if "leakage" in reason else
+                    "dependency" if "dependenc" in reason or "keyerror" in reason else
+                    "convergence" if "converg" in reason else
+                    "timeout" if "timeout" in reason or "timed out" in reason else
+                    "visible_regression" if "regress" in reason else "other")
+        counts[category] = counts.get(category, 0) + 1
+    return {"records_examined": total, "failure_classes": counts}
 
 
 def read_feature_memory(path: str | Path, *, max_recent: int = 8) -> dict:
@@ -107,7 +137,7 @@ def read_feature_memory(path: str | Path, *, max_recent: int = 8) -> dict:
             rows = connection.execute(
                 "SELECT status,feature_names_json,candidate_signature,parent_id,reference_id,reason "
                 "FROM feature_archive WHERE status IN ('rejected','failed') "
-                "ORDER BY archive_id DESC LIMIT ?", (max_recent,)).fetchall()
+                "ORDER BY archive_id DESC LIMIT ?", (1000,)).fetchall()
             archive = []
             for row in reversed(rows):
                 record = dict(row)
@@ -117,7 +147,9 @@ def read_feature_memory(path: str | Path, *, max_recent: int = 8) -> dict:
             connection.close()
     if isinstance(champion, dict) and scope is not None:
         champion = {**champion, "metric_scope": scope}
-    result = {"champion": _champion(champion), "recent_archive": _archive(archive, max_recent)}
+    archive = archive[-1000:]
+    result = {"champion": _champion(champion), "recent_archive": _archive(archive, max_recent),
+              "archive_window": _archive_summary(archive)}
     if scope is not None:
         result["metric_scope"] = _text(scope, 200)
     return result

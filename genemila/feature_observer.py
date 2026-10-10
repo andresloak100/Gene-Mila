@@ -91,7 +91,18 @@ def publish_worker_observation(lab, experiment_id: str, worker_id: str, result: 
                 "config_hash": record.get("config_hash"), "code_commit": record.get("code_commit"),
                 "feature_names": features, "feature_params": record.get("feature_params_json") or {},
                 "model_type": record.get("model_type"), "best_alpha": record.get("best_alpha")}
-    signature = hashlib.sha256(_json(identity).encode()).hexdigest()
+    # Observation IDs identify executions. Candidate IDs identify the same
+    # source/configuration under the same scoring protocol across executions.
+    # Do not include a run ID, result, selected alpha, or incidental git commit.
+    # If the source/config hash is unavailable, fail closed to execution identity.
+    config_hash = record.get("config_hash")
+    candidate_identity = ({"version": 2, "protocol": protocol, "config_hash": config_hash,
+                           "feature_names": features,
+                           "feature_params": record.get("feature_params_json") or {},
+                           "model_type": record.get("model_type"),
+                           "hyperparameters": record.get("hyperparameters_json") or {},
+                           "seed": record.get("seed", 0)} if config_hash else identity)
+    signature = hashlib.sha256(_json(candidate_identity).encode()).hexdigest()
     sources = list((result or {}).get("feature_sources") or features)
     commit = record.get("code_commit")
     source_paths = [f"git:{commit}:" + ("genemila/features/builtin.py" if name in BUILTIN_FEATURES else

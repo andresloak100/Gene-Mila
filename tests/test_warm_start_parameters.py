@@ -177,3 +177,33 @@ def test_config_hash_tracks_transitive_code_defaults_params_and_availability(tmp
         assert lab.config_hash_for(spec).startswith("C_")
     finally:
         lab.db.close_thread_conn()
+
+
+@pytest.mark.parametrize("selector", [
+    {"method": "lasso", "alpha": .003, "max_iter": 4000},
+    {"method": "elasticnet", "alpha": .002, "l1_ratio": .7, "max_iter": 3000},
+    {"method": "variance"},
+])
+def test_warm_start_preserves_column_selector_feature_order_and_seed(tmp_path, selector):
+    source, target = _metadata_lab(tmp_path / "source"), _metadata_lab(tmp_path / "target")
+    try:
+        winner = ExperimentSpec(
+            experiment_id="EXP_0001", hypothesis="A selected column model is the prior winner.",
+            scientific_rationale="Synthetic continuation must keep the fitted model's selector configuration.",
+            feature_set=["is_target", "mean_response"], model_type="ridge", seed=17,
+            hyperparameters={"alpha_grid": [3., 30.], "column_selection": selector}, status="completed")
+        record = winner.to_record(source.dataset, source.split_id, source.run_id)
+        record["primary_score"] = .6
+        source.db.insert_experiment(record)
+        # Metadata-only legacy callers intentionally have no cfg attribute.
+        assert not hasattr(target, "cfg")
+        info = target.warm_start(source.run_dir, strict=True)
+        queued = target.db.get_experiment(info["start_experiment"])
+        assert info["start_status"] == "queued"
+        assert queued["hyperparameters_json"] == winner.hyperparameters
+        assert queued["feature_set_json"] == ["is_target", "mean_response"]
+        assert queued["model_type"] == "ridge" and queued["seed"] == 17
+        assert source.db.get_experiment("EXP_0001")["hyperparameters_json"] == winner.hyperparameters
+    finally:
+        source.db.close_thread_conn()
+        target.db.close_thread_conn()
