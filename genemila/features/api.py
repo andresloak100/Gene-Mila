@@ -79,6 +79,8 @@ class FeatureContext:
         self._train_pos = {p: i for i, p in enumerate(self.train_perts)}
         self._targets: dict[str, list[str]] = json.loads((self.public_dir / "knowledge" / "targets.json").read_text())
         self._feature_cache: dict = {}
+        self._feature_params: dict = {}
+        self._feature_registry: dict = dict(REGISTRY)
         self.cache: dict = {}  # free-form cache features may use for shared work
         self.label_reads = 0   # how often training labels were read (tells label-dependent features apart)
 
@@ -162,14 +164,35 @@ class FeatureContext:
             return np.nan_to_num(c)
         return self._disk_cached("gene_corr", compute)
 
+    def configure_features(self, feature_params: dict, *, reset: bool = False) -> None:
+        """Set experiment parameters for selected features and dependency-only sources.
+
+        Fold views inherit these parameters but start with empty memo caches. A new
+        experiment also clears free-form feature state, even when its params match.
+        """
+        if reset or self._feature_params != feature_params or self._feature_registry != REGISTRY:
+            self._feature_params = copy.deepcopy(feature_params)
+            self._feature_registry = dict(REGISTRY)
+            self._feature_cache = {}
+            self.cache = {}
+
     def feature(self, name: str, perts: list[str], params: dict | None = None) -> np.ndarray:
-        """Compute another registered feature (for composition)."""
-        key = (name, tuple(perts), json.dumps(params or {}, sort_keys=True))
+        """Compute a dependency using defaults, experiment params, then explicit overrides."""
+        from . import registry
+
+        self.configure_features(self._feature_params)
+        cls = registry.get(name)
+        merged = {**cls.params, **self._feature_params.get(name, {}), **(params or {})}
+        fingerprint = registry.dependency_fingerprint(name, self._feature_params, merged)
+        key = (name, tuple(perts), fingerprint)
         if key not in self._feature_cache:
-            cls = REGISTRY[name]
-            merged = {**cls.params, **(params or {})}
-            self._feature_cache[key] = cls().compute(self, perts, merged)
-        return self._feature_cache[key]
+            before = self.label_reads
+            arr = cls().compute(self, perts, merged)
+            self._feature_cache[key] = (arr, self.label_reads > before)
+        else:
+            # A cached training-label dependency must still be recomputed in CV views.
+            self.label_reads += int(self._feature_cache[key][1])
+        return self._feature_cache[key][0]
 
 
 def _atomic_save(path: Path, arr: np.ndarray) -> None:

@@ -126,6 +126,9 @@ def test_guard_accepts_templates_and_checks_name():
     "full = FeatureContext.shared('public_data')",       # re-loading the full training set
     "view = ctx.without_train([])",                      # making one's own view
     "arr = ctx._disk_cached('x', lambda: ctx.control_mean)",
+    "ctx.configure_features({})",
+    "full = ctx._feature_params",
+    "full = ctx._feature_registry",
 ])
 def test_guard_blocks_routes_around_fold_views(snippet):
     code = TEMPLATES["coexpr"].replace("def compute(self, ctx, perts, params):",

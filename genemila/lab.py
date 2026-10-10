@@ -19,7 +19,7 @@ from .benchmark.evaluator import evaluate
 from .benchmark.oracle import QueryOracle
 from .data.bundle import LabelSet, export_public, verify_bundle
 from .db import Database
-from .features.registry import BUILTIN_FEATURES
+from .features.registry import BUILTIN_FEATURES, FeatureDependencyError, dependency_closure
 from .isolation import WorktreeManager, git, sha256_text
 from .llm import LLMGateway, SpendLedger
 from .spec import PLUGIN_DIR, ExperimentSpec, GuardrailViolation, config_hash, validate_spec
@@ -158,17 +158,51 @@ class Lab:
     def known_features(self) -> set[str]:
         return {f["name"] for f in self.db.features()}
 
-    def feature_code_hashes(self) -> dict[str, str]:
-        return {f["name"]: f["code_hash"] for f in self.db.features()}
+    def feature_code_hashes(self, names: list[str] | None = None) -> dict[str, str]:
+        """Metadata fingerprints for each predictor's entire source closure.
+
+        Include unavailable sources in the identity rather than raising here: queue()
+        must still be able to record rejected configurations. Source installation is
+        the strict validation boundary. No plugin code is imported in the controller.
+        """
+        features = {f["name"]: f for f in self.db.features()}
+        hashes = {}
+        for name in names if names is not None else features:
+            sources, pending = {}, [name]
+            while pending:
+                dependency = pending.pop()
+                if dependency in sources:
+                    continue
+                meta = features.get(dependency)
+                if meta is None:
+                    sources[dependency] = {"available": False}
+                    continue
+                deps = meta.get("dependencies") or []
+                sources[dependency] = {
+                    "code_hash": meta.get("code_hash"), "version": meta.get("version"),
+                    "params": meta.get("params") or {}, "dependencies": deps,
+                    "available": dependency in BUILTIN_FEATURES or (self.store / f"{dependency}.py").is_file(),
+                }
+                if isinstance(deps, (list, tuple)):
+                    pending.extend(d for d in deps if isinstance(d, str))
+            hashes[name] = sha256_text(json.dumps(sources, sort_keys=True, default=str))
+        return hashes
 
     def store_files(self, names: list[str]) -> dict[str, Path]:
+        """Source closure for selected predictors (dependencies do not become columns).
+
+        Resolve DB metadata only: the controller must not execute stored plugin code.
+        Missing sources are an explicit failure, never silently covered by a warm cache.
+        """
+        metadata = {f["name"]: f for f in self.db.features()}
         out = {}
-        for n in names:
+        for n in dependency_closure(names, metadata):
             if n in BUILTIN_FEATURES:
                 continue
             p = self.store / f"{n}.py"
-            if p.exists():
-                out[n] = p
+            if not p.is_file():
+                raise FeatureDependencyError(f"missing feature source file for {n!r}: {p}")
+            out[n] = p
         return out
 
     def add_to_store(self, name: str, source: Path, experiment_id: str, metadata: dict, compute_cpu_s: float) -> None:
@@ -178,13 +212,17 @@ class Lab:
                                 "code_hash": sha256_text(dst.read_text()), "creator_experiment": experiment_id,
                                 "compute_cpu_s": compute_cpu_s})
 
-    def warm_start(self, prev_run_dir: Path) -> dict:
+    def warm_start(self, prev_run_dir: Path, *, strict: bool = False) -> dict:
         """Continue a campaign: import the previous run's useful features (code and metadata) into this run's
         store, queue its best model as this run's starting point, and leave a summary of what it learned for
         the planner (run_dir/warm_start.json, rendered as PRIOR CAMPAIGN in the research state).
 
         Only a run on the same dataset and split qualifies: a model selected on another split's visible
-        perturbations could have been selected on this split's sealed ones."""
+        perturbations could have been selected on this split's sealed ones. Use
+        strict=True for an exact continuation: an incomplete incumbent source closure
+        fails before importing anything or queueing a changed model. The default
+        preserves legacy partial continuation and explicitly reports dropped predictors.
+        """
         from .research_state import HELP_THRESHOLD
         prev_run_dir = Path(prev_run_dir).resolve()
         prev = Database(prev_run_dir / "lab.db")
@@ -210,14 +248,36 @@ class Lab:
                 "SELECT new_feature, MAX(delta_from_parent) AS d FROM experiments WHERE status='completed' AND "
                 "new_feature IS NOT NULL AND delta_from_parent IS NOT NULL GROUP BY new_feature ORDER BY d DESC")
                 if r["d"] is not None and r["d"] > HELP_THRESHOLD]
-            wanted = [f for f in (best.get("feature_set_json") or []) + helpful if f not in BUILTIN_FEATURES]
-            imported, missing = [], []
+            selected = list(best.get("feature_set_json") or [])
+            closures, missing_sources = {}, {}
+            already_known = self.known_features()
+            for name in dict.fromkeys(selected + helpful):
+                try:
+                    closure = dependency_closure([name], feats)
+                    absent = [n for n in closure if n not in BUILTIN_FEATURES
+                              and not (prev_run_dir / "feature_store" / f"{n}.py").is_file()]
+                    if absent:
+                        raise FeatureDependencyError(f"missing source files for {absent}")
+                    if strict and name in selected:
+                        for dependency in closure:
+                            if dependency in BUILTIN_FEATURES or dependency not in already_known:
+                                continue
+                            existing = self.store / f"{dependency}.py"
+                            previous = prev_run_dir / "feature_store" / f"{dependency}.py"
+                            if not existing.is_file() or existing.read_bytes() != previous.read_bytes():
+                                raise FeatureDependencyError(f"existing source {dependency!r} differs from the prior incumbent")
+                    closures[name] = closure
+                except FeatureDependencyError as exc:
+                    missing_sources[name] = str(exc)
+            dropped = [name for name in selected if name not in closures]
+            if strict and dropped:
+                details = "; ".join(f"{name}: {missing_sources[name]}" for name in dropped)
+                raise FeatureDependencyError(f"exact warm start cannot reproduce incumbent source closure: {details}")
+            wanted = [n for closure in closures.values() for n in closure if n not in BUILTIN_FEATURES]
+            imported, missing = [], list(missing_sources)
             for name in dict.fromkeys(wanted):
                 src = prev_run_dir / "feature_store" / f"{name}.py"
-                meta = feats.get(name)
-                if not src.exists() or meta is None:
-                    missing.append(name)
-                    continue
+                meta = feats[name]
                 if name in self.known_features():
                     continue
                 dst = self.store / f"{name}.py"
@@ -226,8 +286,9 @@ class Lab:
                                         "code_hash": sha256_text(dst.read_text()),
                                         "creator_experiment": f"warm:{run['run_id']}:{meta.get('creator_experiment')}"})
                 imported.append(name)
-            start_set = [f for f in (best.get("feature_set_json") or []) if f not in missing]
-            feature_params = {k: v for k, v in (best.get("feature_params_json") or {}).items() if k in start_set}
+            start_set = [f for f in selected if f in closures]
+            start_sources = {n for f in start_set for n in closures[f]}
+            feature_params = {k: v for k, v in (best.get("feature_params_json") or {}).items() if k in start_sources}
             hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items() if k in ("alpha", "alpha_grid")}
             sealed = (best.get("query_metrics_json") or {}).get("primary")
             eid, status = self.queue(ExperimentSpec(
@@ -247,7 +308,8 @@ class Lab:
                 if r["d"] is not None and r["d"] <= HELP_THRESHOLD]
             info = {"run_id": run["run_id"], "run_dir": str(prev_run_dir), "best_experiment": best["experiment_id"],
                     "best_visible": best["primary_score"], "best_sealed": sealed, "model": best["model_type"],
-                    "features": start_set, "helpful_features": helpful,
+                    "features": start_set, "feature_sources": sorted(start_sources), "helpful_features": helpful,
+                    "strict": strict, "dropped_features": dropped, "missing_sources": missing_sources,
                     "unhelpful_features": unhelpful[:20],
                     "failed_ideas": [{"idea": r["hypothesis"][:90], "stage": r["failure_stage"],
                                       "reason": (r["failure_reason"] or "")[:110]} for r in failed],
@@ -495,7 +557,7 @@ class Lab:
         hp = spec.hyperparameters
         if self.cv_folds > 1:
             hp = {**hp, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
-        return config_hash(replace(spec, hyperparameters=hp), self.feature_code_hashes(), self.split_id)
+        return config_hash(replace(spec, hyperparameters=hp), self.feature_code_hashes(spec.feature_set), self.split_id)
 
     def best(self) -> dict | None:
         return self.db.best()

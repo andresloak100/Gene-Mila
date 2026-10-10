@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import inspect
 import json
 import pickle
 import sys
@@ -28,22 +27,11 @@ from .features import registry
 from .features.api import FeatureContext, _atomic_save
 
 
-_SOURCE_HASH: dict[str, str] = {}
-
-
-def _source_hash(cls) -> str:
-    path = inspect.getsourcefile(cls)
-    if path not in _SOURCE_HASH:
-        with open(path, "rb") as fh:
-            _SOURCE_HASH[path] = hashlib.sha256(fh.read()).hexdigest()
-    return _SOURCE_HASH[path]
-
-
 def feature_cache_key(ctx: FeatureContext, cls, params: dict, perts: list[str]) -> str:
     """Identifies a computed feature block: same code, parameters, data and perturbations."""
     manifest = json.loads((ctx.public_dir / "manifest.json").read_text())
-    deps = sorted((d, _source_hash(registry.get(d))) for d in cls.dependencies if d in registry.REGISTRY)
-    payload = json.dumps([cls.name, cls.version, _source_hash(cls), params, deps, manifest.get("name"),
+    sources = registry.dependency_fingerprint(cls.name, ctx._feature_params, params)
+    payload = json.dumps(["declared-closure-v1", sources, manifest.get("name"),
                           manifest.get("split_id"), list(perts), ctx.train_signature], sort_keys=True, default=str)
     return hashlib.sha256(payload.encode()).hexdigest()[:32]
 
@@ -54,6 +42,8 @@ def feature_blocks(ctx: FeatureContext, feature_set: list[str], feature_params: 
     """One (n_perts, n_genes, dim) block per feature. label_dep, when given, records per feature whether
     computing it read training labels (a cached block carries the flag in a sidecar file; a block whose
     flag is unknown counts as label-dependent)."""
+    ctx.configure_features(feature_params)
+    registry.dependency_closure(feature_set)  # validate even without a disk cache
     blocks = {}
     for name in feature_set:
         cls = registry.get(name)
@@ -178,6 +168,7 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
     cache_log: dict = {}
     feature_set = spec["feature_set"]
     feature_params = spec.get("feature_params", {})
+    ctx.configure_features(feature_params, reset=True)
     hp = spec.get("hyperparameters", {})
     model_type = spec.get("model_type", "ridge")
     alphas = [0.0] if model_type == "ols" else list(hp.get("alpha_grid", [hp.get("alpha", 1.0)]))
@@ -237,6 +228,7 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
         "alphas": alphas,
         "coefficients": coefs,
         "feature_metadata": {n: registry.get(n).metadata() for n in feature_set},
+        "feature_sources": registry.dependency_closure(feature_set),
         "timing": {
             "feature_cpu_s": feat_time, "per_feature_cpu_s": timings,
             "train_cpu_s": train_time, "inference_cpu_s": infer_time, "cv_cpu_s": cv_time,
@@ -255,6 +247,7 @@ def smoke(feature: str, public_dir: Path, plugin_dir: Path, out_dir: Path, cache
     """Fast correctness test for a new feature: shape, finiteness, determinism, leakage."""
     out_dir.mkdir(parents=True, exist_ok=True)
     registry.load_plugins(plugin_dir)
+    registry.dependency_closure([feature])
     cls = registry.get(feature)
     meta = cls.metadata()
     shared = Path(cache_dir) / "shared" if cache_dir else None

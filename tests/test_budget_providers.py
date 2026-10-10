@@ -85,6 +85,42 @@ def test_token_limits(tmp_path):
                 worker_id="W1", system="s", user="u")
 
 
+def test_stopped_run_refuses_call_before_reservation(tmp_path):
+    gw, db = gateway(tmp_path)
+    gw.stop_event = threading.Event()
+    gw.stop_event.set()
+    provider = FixedProvider()
+    with pytest.raises(BudgetExceeded, match="run is stopping"):
+        gw.call(provider, "complete", role="worker", max_tokens=500,
+                est_input_tokens=1000, system="s", user="u")
+    assert provider.calls == 0
+    assert gw.reserved == {"worker": 0.0, "planner": 0.0}
+    assert gw.provider_reserved == {}
+    assert db.llm_totals()["calls"] == 0
+
+
+def test_deadline_during_failed_call_prevents_retry(tmp_path, monkeypatch):
+    gw, db = gateway(tmp_path, api_retries=1)
+    gw.stop_event = threading.Event()
+    monkeypatch.setattr("genemila.llm.time.sleep", lambda _: None)
+
+    class DeadlineFailure(FixedProvider):
+        def complete(self, system, user, max_tokens):
+            self.calls += 1
+            gw.stop_event.set()
+            raise ProviderError("synthetic retryable failure at deadline", retryable=True)
+
+    provider = DeadlineFailure()
+    with pytest.raises(BudgetExceeded, match="run is stopping"):
+        gw.call(provider, "complete", role="worker", max_tokens=500,
+                est_input_tokens=1000, system="s", user="u")
+    assert provider.calls == 1
+    assert gw.reserved == {"worker": 0.0, "planner": 0.0}
+    assert gw.provider_reserved["deepseek"] == 0.0
+    assert db.llm_totals()["calls"] == 1
+    assert db.llm_totals()["failed_calls"] == 1
+
+
 def test_bounded_retries_and_circuit_breaker(tmp_path):
     import threading
     import time

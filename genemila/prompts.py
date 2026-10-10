@@ -64,6 +64,7 @@ class MyFeature(Feature):
     version = 1
     description = "..."; rationale = "..."
     inputs = ["control_cells", ...]    # which ctx inputs are used
+    dependencies = []  # declare every ctx.feature input; retained even when not a predictor column
     params = {"k": 10}                 # defaults; actual values arrive in `params`
     dim = 1                            # number of output columns
     def compute(self, ctx: FeatureContext, perts: list[str], params: dict) -> np.ndarray:
@@ -115,6 +116,7 @@ def worker_implement(task: dict) -> str:
         f"EXPERIMENT {task['experiment_id']}\n"
         f"Hypothesis: {task['hypothesis']}\nRationale: {task['rationale']}\n"
         f"Other features in this model (do not duplicate them): {task['existing_features']}\n\n"
+        + ((task["feature_memory"] + "\n\n") if task.get("feature_memory") else "") +
         f"Implement feature `{nf['name']}`: {nf.get('description', '')}\n"
         f"Implementation hint: {nf.get('implementation_hint', '')}\n"
         f"Suggested params: {json.dumps(nf.get('params', {}))}\n"
@@ -127,6 +129,7 @@ def worker_diagnose(task: dict, code: str, error: str) -> str:
     return (
         f"API:\n{FEATURE_API_DOC}\n\n"
         f"Hypothesis being tested: {task['hypothesis']}\n"
+        + ((task["feature_memory"] + "\n\n") if task.get("feature_memory") else "") +
         f"YOUR CODE for feature `{nf['name']}`:\n```python\n{code}```\n\n"
         f"It failed validation with this ERROR:\n{error[-1500:]}\n\n"
         "Return the complete corrected file in one python code block."

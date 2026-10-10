@@ -99,6 +99,7 @@ class Controller:
         self.max_planner_calls = int(self.cfg["schedule"].get("max_planner_calls", 0))  # 0 = no limit
         self.python_exploit = bool(self.cfg["schedule"].get("python_exploit", True))
         self._next_exploit = 0.0
+        self._next_feature_board_review = 0.0
         self.min_free_mb = float(self.cfg["run"].get("min_free_disk_mb", 2000))
         b = self.cfg["budget"]
         if float(b.get("max_planner_usd", 0)) <= 0:  # 0 = scale the planner cap with run length and worker count
@@ -211,6 +212,22 @@ class Controller:
             self._log(f"exploit: queued {n_queued} follow-ups around the best model (no LLM)")
 
     # ---------------------------------------------------------------- workers
+    def _review_feature_observations(self, *, force: bool = False) -> None:
+        from .feature_observer import review_worker_observations
+        if not force and time.time() < self._next_feature_board_review:
+            return
+        self._next_feature_board_review = time.time() + 5
+        try:
+            decisions = review_worker_observations(self.lab, limit=512 if force else 128)
+        except Exception as exc:
+            self.lab.db.event("feature_board_error", f"master review skipped: {type(exc).__name__}: {exc}"[:600],
+                              level="warning")
+            return
+        if decisions:
+            accepted = sum(d["accepted"] for d in decisions)
+            self.lab.db.event("feature_board_review", f"master reviewed {len(decisions)} worker results; "
+                              f"{accepted} retained-candidate promotions; Lab ranking unchanged")
+
     def _start_worker(self, i: int) -> None:
         wid = f"W{i:03d}"
         w = Worker(self.lab, wid, self.worker_provider, self.escalation, self.cpu_slots)
@@ -268,7 +285,7 @@ class Controller:
         self.lab.queue_model_baselines()
         prev = self.cfg["run"].get("continue_from")
         if prev:
-            info = self.lab.warm_start(Path(prev))
+            info = self.lab.warm_start(Path(prev), strict=bool(self.cfg["run"].get("warm_start_strict", False)))
             self._log(f"warm start from {info['run_id']}: {len(info['imported'])} features imported, starting model "
                       f"{info['start_experiment']} on {len(info['features'])} features"
                       + (f"; missing {info['missing']}" if info["missing"] else ""))
@@ -282,6 +299,7 @@ class Controller:
                     self._maybe_plan()
                     self._maybe_exploit()
                 self._supervise()
+                self._review_feature_observations()
                 if time.time() >= next_status:
                     self._log(self.status_line())
                     next_status = time.time() + interval
@@ -354,6 +372,7 @@ class Controller:
         self.lab.db.execute("UPDATE experiments SET status='cancelled', failure_reason='not started before deadline' "
                             "WHERE status='queued'")
         self.lab.db.execute("DELETE FROM experiments WHERE status='reserved'")
+        self._review_feature_observations(force=True)
         self._log(self.status_line())
         self.lab.close()
         # the run's end is the end of experimentation; final scoring and summaries that follow are not

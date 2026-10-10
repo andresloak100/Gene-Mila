@@ -23,7 +23,8 @@ BANNED_NAMES = {"open", "eval", "exec", "compile", "__import__", "globals", "loc
                 "type", "__file__", "__build_class__", "super"}
 BANNED_ATTRS = {"load", "save", "savez", "savez_compressed", "loadtxt", "genfromtxt", "fromfile", "tofile",
                 "memmap", "system", "popen", "read_csv", "read_table", "read_pickle", "to_csv",
-                "_train_delta", "_train_pos", "_targets", "_feature_cache", "public_dir", "cache_dir",
+                "_train_delta", "_train_pos", "_targets", "_feature_cache", "_feature_params", "_feature_registry",
+                "configure_features", "public_dir", "cache_dir",
                 "_preloaded", "shared", "without_train", "_disk_cached", "__init__", "__new__",
                 "__init_subclass__", "__dict__",
                 "__class__", "__subclasses__", "__globals__", "__builtins__", "__code__", "__bases__",
@@ -35,7 +36,7 @@ class CodeViolation(ValueError):
 
 
 def check_plugin_source(source: str, expected_name: str) -> dict:
-    """Validate a feature plugin. Returns {class_name}. Raises CodeViolation."""
+    """Validate a feature plugin; return its class name and literal dependency list."""
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
@@ -64,16 +65,38 @@ def check_plugin_source(source: str, expected_name: str) -> dict:
             problems.append("global/nonlocal statements not allowed")
     classes = [n for n in tree.body if isinstance(n, ast.ClassDef)]
     registered = []
+    dependencies = []
     for c in classes:
         if any((isinstance(d, ast.Name) and d.id == "register") for d in c.decorator_list):
             for stmt in c.body:
                 if isinstance(stmt, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "name" for t in stmt.targets):
                     if isinstance(stmt.value, ast.Constant):
                         registered.append((c.name, stmt.value.value))
+                if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+                    targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+                    if any(isinstance(t, ast.Name) and t.id == "dependencies" for t in targets):
+                        try:
+                            value = ast.literal_eval(stmt.value)
+                            if not isinstance(value, list) or any(not isinstance(d, str) for d in value):
+                                raise ValueError
+                            dependencies = value
+                        except (ValueError, TypeError, SyntaxError):
+                            problems.append("dependencies must be a literal list of feature names")
     if len(registered) != 1:
         problems.append(f"file must register exactly one feature class (found {len(registered)})")
     elif registered[0][1] != expected_name:
         problems.append(f"feature name must be {expected_name!r}, got {registered[0][1]!r}")
+    literal_dependencies = set()
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                and isinstance(node.func.value, ast.Name) and node.func.value.id == "ctx"
+                and node.func.attr == "feature"):
+            argument = node.args[0] if node.args else next((kw.value for kw in node.keywords if kw.arg == "name"), None)
+            if isinstance(argument, ast.Constant) and isinstance(argument.value, str):
+                literal_dependencies.add(argument.value)
+    undeclared = sorted(literal_dependencies - set(dependencies))
+    if undeclared:
+        problems.append(f"ctx.feature uses undeclared dependencies {undeclared}; add these names to the class dependencies list")
     for stmt in tree.body:  # no top-level side effects beyond imports/classes/constants/functions
         if not isinstance(stmt, (ast.Import, ast.ImportFrom, ast.ClassDef, ast.FunctionDef, ast.Assign,
                                  ast.AnnAssign, ast.Expr)):
@@ -82,7 +105,7 @@ def check_plugin_source(source: str, expected_name: str) -> dict:
             problems.append("top-level expressions (other than docstrings) not allowed")
     if problems:
         raise CodeViolation("; ".join(sorted(set(problems))))
-    return {"class_name": registered[0][0]}
+    return {"class_name": registered[0][0], "dependencies": dependencies}
 
 
 def changed_files(worktree: Path, base_commit: str) -> list[str]:

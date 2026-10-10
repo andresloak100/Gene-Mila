@@ -21,6 +21,7 @@ import numpy as np
 
 from .benchmark import PRIMARY_HIGHER_IS_BETTER
 from .guard import CodeViolation, check_diff, check_plugin_source
+from .features.registry import FeatureDependencyError
 from .isolation import sha256_text
 from .lab import Lab
 from .llm import BudgetExceeded, TokenLimitExceeded
@@ -79,6 +80,7 @@ class Worker:
         art.mkdir(parents=True, exist_ok=True)
         (art / "spec.json").write_text(json.dumps(spec.to_dict(), indent=1))
         wt = None
+        result = None
         t0 = time.monotonic()
         status = "failed"
         try:
@@ -87,7 +89,7 @@ class Worker:
                 wt, self.lab.store_files([f for f in spec.feature_set if f != (spec.proposed_feature or {}).get("name")]))
             if spec.kind == "new_feature":
                 self._set(eid, status="implementing")
-                self._implement(spec, wt, art)
+                self._implement(spec, wt, art, installed)
             else:
                 self._set(eid, provider="python", model="deterministic")
             files = check_diff(wt, self.lab.base_commit, spec.allowed_files, list(installed))
@@ -121,6 +123,9 @@ class Worker:
                                       result["timing"]["per_feature_cpu_s"].get(name, 0.0))
             status = "completed"
             self.completed += 1
+        except FeatureDependencyError as exc:
+            self._set(eid, status="failed", failure_stage="dependencies", failure_reason=str(exc)[:2000])
+            self.db.event("experiment_failed", f"dependencies: {exc}"[:300], eid, "warning")
         except ExperimentFailure as exc:
             status = "killed" if exc.stage == "killed" else "failed"
             max_attempts = int(self.lab.cfg["experiment"].get("max_attempts", 2))
@@ -155,12 +160,22 @@ class Worker:
                     self.lab.worktrees.remove(wt)
                 except Exception:
                     pass
+            self._publish_feature_observation(eid, result)
             self.current = None
         return status
 
     # -------------------------------------------------------------- internals
     def _set(self, eid: str, **fields) -> None:
         self.db.update_experiment(eid, heartbeat=time.time(), **fields)
+
+    def _publish_feature_observation(self, eid: str, result: dict | None) -> None:
+        from .feature_observer import publish_worker_observation
+        try:
+            publish_worker_observation(self.lab, eid, self.worker_id, result)
+        except Exception as exc:
+            # Board outages or invalid protocol settings must not rewrite scientific results.
+            self.db.event("feature_board_error", f"observation skipped: {type(exc).__name__}: {exc}"[:600],
+                          eid, "warning")
 
     @staticmethod
     def _coefs(result: dict, alpha: float) -> dict:
@@ -170,16 +185,22 @@ class Worker:
         return {}
 
     def _task(self, spec: ExperimentSpec) -> dict:
+        from .feature_memory import configured_feature_capsule
+
         existing = []
         for f in spec.feature_set:
             if f == spec.proposed_feature["name"]:
                 continue
             meta = self.db.feature(f)
             existing.append(f"{f} ({(meta or {}).get('description', '')[:80]})")
-        return {"experiment_id": spec.experiment_id, "hypothesis": spec.hypothesis,
+        task = {"experiment_id": spec.experiment_id, "hypothesis": spec.hypothesis,
                 "rationale": spec.scientific_rationale, "new_feature": spec.proposed_feature,
                 "data_summary": self.lab.data_summary(), "knowledge_summary": self.lab.knowledge_summary(),
                 "existing_features": "; ".join(existing)}
+        capsule = configured_feature_capsule(self.lab.cfg, base_dir=self.lab.run_dir)
+        if capsule:
+            task["feature_memory"] = capsule
+        return task
 
     def _llm(self, provider: AgentProvider, op: str, spec: ExperimentSpec, **kw):
         if self.lab.stop_event.is_set():
@@ -194,7 +215,14 @@ class Worker:
         self._set(spec.experiment_id, provider=provider.name, model=resp.model or provider.model)
         return resp
 
-    def _implement(self, spec: ExperimentSpec, wt: Path, art: Path) -> None:
+    def _install_dependency_sources(self, names: list[str], wt: Path, installed: dict[str, str]) -> None:
+        """Make declared inputs available to a new plugin before smoke-testing it."""
+        sources = self.lab.store_files(names)
+        missing = {name: source for name, source in sources.items()
+                   if f"{PLUGIN_DIR}/{name}.py" not in installed}
+        installed.update(self.lab.worktrees.install_features(wt, missing))
+
+    def _implement(self, spec: ExperimentSpec, wt: Path, art: Path, installed: dict[str, str]) -> None:
         if self.provider is None:
             raise ExperimentFailure("implement", "no worker LLM provider configured")
         task = self._task(spec)
@@ -223,8 +251,9 @@ class Worker:
             code = extract_code(resp.text)
             (art / f"attempt_{i + 1}_{prov.name}.py").write_text(code)
             try:
-                check_plugin_source(code, name)
-            except CodeViolation as exc:
+                metadata = check_plugin_source(code, name)
+                self._install_dependency_sources(metadata["dependencies"], wt, installed)
+            except (CodeViolation, FeatureDependencyError) as exc:
                 error = f"static check failed: {exc}"
                 violation = exc
                 continue

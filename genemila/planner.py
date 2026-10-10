@@ -15,6 +15,7 @@ import threading
 import time
 
 from .lab import Lab
+from .feature_memory import configured_feature_capsule
 from .llm import BudgetExceeded
 from .providers.base import AgentProvider, ProviderError
 from .research_state import build_state, render_state
@@ -127,6 +128,9 @@ class Planner:
         """Ask for ~n hypotheses and queue the resulting experiments. Returns queued ids."""
         state = build_state(self.lab)
         text = render_state(state)
+        capsule = configured_feature_capsule(self.cfg, base_dir=self.lab.run_dir)
+        if capsule:
+            text += "\n\n" + capsule
         if focus:
             text += f"\n## YOUR FOCUS FOR THIS ROUND\n{focus}\n(Other planner rounds run in parallel with other focuses.)"
         with self._lock:

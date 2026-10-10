@@ -6,6 +6,7 @@ import pytest
 
 from genemila.benchmark import PRIMARY_METRIC
 from genemila.db import Database
+from genemila.features.registry import FeatureDependencyError
 from genemila.lab import Lab
 from genemila.spec import ExperimentSpec
 
@@ -71,3 +72,108 @@ def test_warm_start_preserves_parameters_and_seed_for_surviving_features(tmp_pat
     finally:
         source.db.close_thread_conn()
         target.db.close_thread_conn()
+
+
+def _composite_winner(source):
+    for name, dependencies in (("leaf", []), ("middle", ["leaf"]), ("composite", ["middle"])):
+        code = f"raise AssertionError('must not execute {name}')\n"
+        (source.store / f"{name}.py").write_text(code)
+        source.db.upsert_feature({"name": name, "params": {"scale": 1}, "dependencies": dependencies,
+                                  "creator_experiment": "EXP_0001", "code_hash": name})
+    winner = ExperimentSpec(
+        experiment_id="EXP_0001", hypothesis="A composite is the prior winning model.",
+        scientific_rationale="Metadata fixture tests closure preservation without execution.",
+        feature_set=["mean_response", "composite"], feature_params={"leaf": {"scale": 7}},
+        hyperparameters={"alpha_grid": [1.]}, status="completed")
+    record = winner.to_record(source.dataset, source.split_id, source.run_id)
+    record["primary_score"] = 0.6
+    source.db.insert_experiment(record)
+    return winner
+
+
+def test_exact_warm_start_imports_dependency_only_sources_and_params(tmp_path):
+    source, target = _metadata_lab(tmp_path / "source"), _metadata_lab(tmp_path / "target")
+    try:
+        winner = _composite_winner(source)
+        info = target.warm_start(source.run_dir, strict=True)
+        queued = target.db.get_experiment(info["start_experiment"])
+        assert queued["feature_set_json"] == winner.feature_set
+        assert queued["feature_params_json"] == {"leaf": {"scale": 7}}
+        assert set(info["imported"]) == {"leaf", "middle", "composite"}
+        assert info["dropped_features"] == [] and info["missing_sources"] == {}
+        assert info["strict"] is True
+        assert set(target.store_files(queued["feature_set_json"])) == {"leaf", "middle", "composite"}
+    finally:
+        source.db.close_thread_conn()
+        target.db.close_thread_conn()
+
+
+def test_exact_warm_start_missing_dependency_fails_before_import_or_queue(tmp_path):
+    source, target = _metadata_lab(tmp_path / "source"), _metadata_lab(tmp_path / "target")
+    try:
+        _composite_winner(source)
+        (source.store / "leaf.py").unlink()
+        with pytest.raises(FeatureDependencyError, match="exact warm start.*composite.*leaf"):
+            target.warm_start(source.run_dir, strict=True)
+        assert list(target.store.iterdir()) == []
+        assert target.db.query("SELECT * FROM experiments") == []
+    finally:
+        source.db.close_thread_conn()
+        target.db.close_thread_conn()
+
+
+def test_partial_warm_start_reports_consumer_dropped_for_missing_input(tmp_path):
+    source, target = _metadata_lab(tmp_path / "source"), _metadata_lab(tmp_path / "target")
+    try:
+        _composite_winner(source)
+        (source.store / "leaf.py").unlink()
+        info = target.warm_start(source.run_dir)
+        queued = target.db.get_experiment(info["start_experiment"])
+        assert queued["feature_set_json"] == ["mean_response"]
+        assert queued["feature_params_json"] == {}
+        assert info["dropped_features"] == ["composite"]
+        assert "leaf" in info["missing_sources"]["composite"]
+    finally:
+        source.db.close_thread_conn()
+        target.db.close_thread_conn()
+
+
+def test_exact_warm_start_rejects_conflicting_existing_dependency(tmp_path):
+    source, target = _metadata_lab(tmp_path / "source"), _metadata_lab(tmp_path / "target")
+    try:
+        _composite_winner(source)
+        target.db.upsert_feature({"name": "leaf", "params": {"scale": 1}, "dependencies": [], "code_hash": "other"})
+        (target.store / "leaf.py").write_text("raise AssertionError('different source')\n")
+        with pytest.raises(FeatureDependencyError, match="exact warm start.*existing source 'leaf' differs"):
+            target.warm_start(source.run_dir, strict=True)
+        assert target.db.query("SELECT * FROM experiments") == []
+        assert {p.name for p in target.store.iterdir()} == {"leaf.py"}
+    finally:
+        source.db.close_thread_conn()
+        target.db.close_thread_conn()
+
+
+def test_config_hash_tracks_transitive_code_defaults_params_and_availability(tmp_path):
+    lab = _metadata_lab(tmp_path / "lab")
+    try:
+        spec = _composite_winner(lab)
+        original = lab.config_hash_for(spec)
+        leaf = lab.db.feature("leaf")
+        lab.db.upsert_feature({**leaf, "code_hash": "new_leaf_source"})
+        assert lab.config_hash_for(spec) != original
+        lab.db.upsert_feature(leaf)
+        assert lab.config_hash_for(spec) == original
+        lab.db.upsert_feature({**leaf, "params": {"scale": 1, "power": 2}})
+        assert lab.config_hash_for(spec) != original
+        lab.db.upsert_feature(leaf)
+        spec.feature_params["leaf"]["scale"] = 8
+        assert lab.config_hash_for(spec) != original
+        spec.feature_params["leaf"]["scale"] = 7
+        assert lab.config_hash_for(spec) == original
+        (lab.store / "leaf.py").unlink()
+        assert lab.config_hash_for(spec) != original
+        # Invalid proposals still get identities so the queue can archive their rejection.
+        spec.feature_set = ["unknown_feature"]
+        assert lab.config_hash_for(spec).startswith("C_")
+    finally:
+        lab.db.close_thread_conn()

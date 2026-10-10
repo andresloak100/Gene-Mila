@@ -10,6 +10,17 @@ shutdown_grace_s = 30          # how long running experiments may finish after t
 status_interval_s = 10
 min_free_disk_mb = 2000        # stop starting experiments when the disk holding the run has less free space
 seed = 0
+warm_start_strict = false     # with --continue-from: require the entire incumbent source closure;
+                             # false preserves partial continuation and reports dropped predictors
+
+[feature_board]
+path = ""                    # SQLite board or exported metadata JSON; empty disables sharing
+                             # relative paths resolve under the current run directory; absolute paths share across runs
+max_recent = 8               # latest archived failures/rejections included in planner and worker prompts
+max_chars = 6000             # bounded shared metadata capsule; readers never create or modify the board
+metric_scope = ""            # nonempty + path opts into automatic worker-result publication/master review
+                             # use a new scope/board for each CV protocol; only pearson_delta_cv is published
+master_id = "master"         # coordination identity allowed to promote the board's retained candidate
 
 [experiment]
 timeout_s = 300                # per-experiment CPU-run timeout

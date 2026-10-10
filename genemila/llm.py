@@ -152,6 +152,8 @@ class LLMGateway:
         """Reserve the worst-case cost of one call. Returns (reservation, is_breaker_probe)."""
         with self._lock:
             while True:
+                if self._stopping():
+                    raise BudgetExceeded("run is stopping; no new LLM calls")
                 why = self.is_halted(role, provider_name)
                 if why:
                     raise BudgetExceeded(why)

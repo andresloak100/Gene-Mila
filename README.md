@@ -158,6 +158,39 @@ published peak-hour rates for `deepseek-flash` (what the API serves for `deepsee
 and `deepseek-v4-pro`; update `[pricing.*]` if they change, and run
 `python reprice_ledger.py --apply` to recompute the spend ledger with new prices.
 
+For exact continuation, set `run.warm_start_strict=true`: every selected feature's declared
+dependency sources must be available and any already-installed source must match. Dependencies
+remain available even when their columns are removed, and dependency-only parameter overrides
+are preserved. The default `false` retains partial continuation; `warm_start.json` explicitly
+records any `dropped_features` and `missing_sources`.
+
+An optional `feature_board.path` connects the planner and workers to the same bounded feature
+memory: the retained candidate and recent failed or rejected directions. Use an existing board
+written by a coordinating master, or its exported metadata JSON. A path alone enables read-only
+prompt memory. This setting does not change the laboratory's model ranking or start additional agents.
+Relative paths resolve under the new campaign directory; an absolute path shares a board:
+
+```sh
+python run_research.py --dataset adamson_cf --workers 8 --minutes 20 \
+  --continue-from runs/previous-campaign \
+  --set run.warm_start_strict=true \
+  --set feature_board.path=/absolute/path/to/feature-board.sqlite
+```
+
+To publish each worker's actual result and have the controller retain the best candidate, also
+set `feature_board.metric_scope` to an explicit name, for example
+`--set feature_board.metric_scope=lab_oof_at_visible_selected_alpha_v1`, using a fresh SQLite board
+path for the first campaign. Completed observations contain only training out-of-fold Pearson,
+column count, feature names, source references, and the comparison protocol. The controller
+promotes higher Pearson (or fewer columns on an exact tie) and archives regressions and failures;
+repeated observations are idempotent. Existing `Lab.best()` rankings remain unchanged.
+
+The board binds dataset, split, fold count, fold seed, metric definition, and alpha-selection rule.
+Here CV Pearson is measured at the alpha chosen by the laboratory's visible selection rule;
+it must not be mixed with scores from a curator that selected alpha on training CV alone.
+Use a separate board for a different protocol or seed. Missing CV metrics, incompatible protocols,
+and conflicting result replays are skipped and recorded as `feature_board_error` events.
+
 ## Providers
 
 `genemila/providers/` hides every model behind `AgentProvider` (`propose`, `implement`,
