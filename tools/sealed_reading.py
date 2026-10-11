@@ -95,14 +95,31 @@ def _additive(lab) -> dict | None:
     return rows[0] if rows else None
 
 
-def _start(lab) -> dict | None:
-    """A continued run's starting model (Lab.warm_start queues the previous run's best as hypothesis group
-    warm_start_<its run id>), or None for a run that continues nothing."""
-    if not lab.cfg["run"].get("continue_from"):
-        return None
-    rows = lab.db.query("SELECT * FROM experiments WHERE hypothesis_group LIKE 'warm_start_%' AND status='completed' "
-                        "ORDER BY created_at LIMIT 1")
-    return rows[0] if rows else None
+def _start(lab) -> tuple[dict | None, str | None]:
+    """A continued run's starting model, or None and why there is none to compare. Lab.warm_start records the
+    experiment it queued (warm_start.json "start_experiment"; the warm_start_<run id> hypothesis group otherwise); a
+    start queued as a duplicate of an identical experiment of the run (a model baseline, say) is that experiment, and
+    a start the lab rejected (an analytic baseline, which no spec can rebuild) or that failed is named as such."""
+    warm = lab.run_dir / "warm_start.json"
+    eid = json.loads(warm.read_text()).get("start_experiment") if warm.exists() else None
+    if eid is None:
+        rows = lab.db.query("SELECT experiment_id FROM experiments WHERE hypothesis_group LIKE 'warm_start_%' "
+                            "ORDER BY created_at LIMIT 1")
+        eid = rows[0]["experiment_id"] if rows else None
+    if eid is None:
+        return None, "the run recorded no starting model: nothing to compare"
+    rec, seen = lab.db.get_experiment(eid), set()
+    while rec is not None and rec["status"] == "duplicate" and rec.get("duplicate_of") and \
+            rec["experiment_id"] not in seen:
+        seen.add(rec["experiment_id"])
+        rec = lab.db.get_experiment(rec["duplicate_of"])
+    if rec is None:
+        return None, f"the run's starting model {eid} is not in its database: nothing to compare"
+    if rec["status"] != "completed":
+        via = "" if rec["experiment_id"] == eid else f" (queued as {eid}, a duplicate of it)"
+        return None, (f"the run's starting model {rec['experiment_id']}{via} ended with status {rec['status']}: "
+                      "nothing to compare")
+    return rec, None
 
 
 def read_run(lab) -> dict:
@@ -123,11 +140,11 @@ def read_run(lab) -> dict:
         out["visible"] = lab.compare_visible(sel["experiment_id"], add["experiment_id"], metric=METRIC)
         out["sealed"] = _paired_query(lab, sel, lab, add)
     if lab.cfg["run"].get("continue_from"):
-        start = _start(lab)
+        start, why = _start(lab)
         cont = {"from": Path(lab.cfg["run"]["continue_from"]).name, "start": None if start is None else
                 _model(lab, start), "visible": None, "sealed": None, "note": None}
         if start is None:
-            cont["note"] = "the run's starting model did not complete: nothing to compare"
+            cont["note"] = why
         elif start["experiment_id"] == sel["experiment_id"]:
             cont["note"] = "the run selected its starting model: its search added nothing it kept"
         else:
@@ -315,7 +332,7 @@ def render(rep: dict) -> str:
         L += [f"## {r['run']}: selected model against its starting model", "",
               f"The run continued {c['from']}; its starting model "
               + (f"{st['experiment_id']} ({len(st['features'] or [])} features, visible {_f(st['visible_score'])})"
-                 if st else "did not complete")
+                 if st else "is not available")
               + f", selected {r['selected']['experiment_id']}. The difference is what the run's own search added.", ""]
         if c["sealed"] is None:
             L += [c["note"] or "No comparison.", ""]

@@ -31,7 +31,8 @@ def make_lab(tmp_path, bundles, code_repo):
     from genemila.lab import Lab
     made = []
 
-    def factory(bundle=None, alpha_grid=(1.0, 100.0), score_additive=False, continue_from=None, start_score=0.5):
+    def factory(bundle=None, alpha_grid=(1.0, 100.0), score_additive=False, continue_from=None, start_score=0.5,
+                start_exists=False):
         bundle = bundle or bundles[0]
         cfg = make_cfg(tmp_path)
         cfg["run"]["data_dir"] = str(bundle)
@@ -41,7 +42,12 @@ def make_lab(tmp_path, bundles, code_repo):
         made.append(lab)
         lab.record_analytic_baselines()
         if continue_from is not None:  # the previous run's best, queued as this run's first experiment and fitted
-            sid = lab.warm_start(Path(continue_from))["start_experiment"]
+            if start_exists:  # an identical experiment already in the run: the warm start is queued as its duplicate
+                eid0, status = lab.queue(_ridge_spec("the previous run's model, already in this run"))
+                assert status == "queued"
+            info = lab.warm_start(Path(continue_from))
+            sid = eid0 if start_exists else info["start_experiment"]
+            assert info["start_status"] == ("duplicate" if start_exists else "queued")
             rec = lab.db.get_experiment(sid)
             out = lab.artifacts / sid
             run(ExperimentSpec.from_record(rec).run_spec(), lab.public_dir, lab.run_dir / "plugins", out)
@@ -216,3 +222,26 @@ def test_a_continued_run_that_kept_its_start_has_nothing_to_compare(make_lab):
     rep = sealed_reading.analyse([lab.run_dir])
     assert rep["protocol"]["sealed_scorings"] == 2   # the selected start against the additive baseline only
     assert "its search added nothing it kept" in sealed_reading.render(rep)
+
+
+def test_a_start_queued_as_a_duplicate_is_the_experiment_it_duplicates(make_lab):
+    """When the run already holds the starting configuration (a model baseline, say), Lab.warm_start queues its start
+    as a duplicate; the reading follows duplicate_of to the experiment that ran."""
+    prev, _ = make_lab()
+    lab, eid = make_lab(alpha_grid=(1000.0,), continue_from=prev.run_dir, start_exists=True)
+    warm = json.loads((lab.run_dir / "warm_start.json").read_text())
+    dup = lab.db.get_experiment(warm["start_experiment"])
+    assert dup["status"] == "duplicate"
+    c = sealed_reading.read_run(lab)["continuation"]
+    assert c["start"]["experiment_id"] == dup["duplicate_of"] != eid and c["sealed"] is not None
+
+
+def test_a_start_that_did_not_run_is_named_by_its_status(make_lab):
+    prev, _ = make_lab()
+    lab, _ = make_lab(alpha_grid=(1000.0,), continue_from=prev.run_dir)
+    sid = json.loads((lab.run_dir / "warm_start.json").read_text())["start_experiment"]
+    lab.db.update_experiment(sid, status="failed")
+    c = sealed_reading.read_run(lab)["continuation"]
+    assert c["sealed"] is None
+    assert c["note"] == f"the run's starting model {sid} ended with status failed: nothing to compare"
+    assert "is not available" in sealed_reading.render(sealed_reading.analyse([lab.run_dir]))

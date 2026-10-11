@@ -314,7 +314,7 @@ def test_modality_sign_and_the_bundles_modality(tmp_path):
 
 
 def test_build_without_modality_writes_the_file_as_before(tmp_path, dataset):
-    """No --modality: the keys (so the planner's 'dict of N entries' line), the description and the source are
+    """No --modality: the keys, the description and the source are
     those every earlier file had; and every gene of a pair in targets.json is looked up in the screen."""
     import shutil
     bundle = tmp_path / "bundle"

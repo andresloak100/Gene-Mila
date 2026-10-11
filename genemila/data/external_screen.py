@@ -46,8 +46,9 @@ modality in source.bundle_modality, and a top-level sign: -1 when both modalitie
 screen read for a CRISPRa bundle, whose same-target response is expected to point the other way), +1 when they
 agree or either is unknown. Consumers multiply a target's own delta by sign before using it as that target's
 predicted change; similarities between rows do not depend on it. The description then starts with the screen's
-modality and the sign, as the planner sees only its first 60 characters. Without modality the file is written
-exactly as before (no sign key, absent meaning +1).
+modality and the sign. Without modality the file is written exactly as before (no sign key, absent meaning +1). The
+planner and workers see the whole description and the file's keys (lab.knowledge_summary; until 11 Oct 2026 only the
+first 60 characters of the description).
 """
 
 from __future__ import annotations
@@ -512,8 +513,8 @@ def modality_sign(screen_modality: str | None, bundle_modality_: str | None) -> 
 
 def _description(space: str, file_name: str, modality: str | None, bundle_mod: str | None, sign: int) -> str:
     """The knowledge file's description. Without a modality it is the sentence every earlier file carries; with one it
-    leads with the screen's modality and the sign (the planner reads the first 60 characters, lab.knowledge_summary)
-    and says what the sign is for."""
+    leads with the screen's modality and the sign and says what the sign is for. The planner and workers read it
+    whole (lab.knowledge_summary)."""
     body = (f"perts[gene].delta = {space} of that screen's cells of the perturbation minus its own control mean, over "
             "this bundle's genes in bundle order (null where unmeasured there)")
     if not modality:
@@ -637,7 +638,8 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
 
     space = ("mean over cells of log1p(10,000 x counts / cell total)" if normalise else
              "mean over cells of the stored (already normalised) values")
-    # the planner sees the first 60 characters of this sentence (lab.knowledge_summary), so it leads with the content
+    # the planner and workers read this sentence whole with the file's keys (lab.knowledge_summary); it leads with
+    # the content
     knowledge = {
         "description": _description(space, h5ad.name, modality, bundle_mod, sign),
         "source": {
@@ -666,8 +668,8 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
                                            if 0 < counts[g] < min_cells},
     }
     if modality:
-        # only with a modality: a file built without one keeps the keys (and so the planner's "dict of N entries"
-        # line) it always had. sign follows the description, the first key the planner reads.
+        # only with a modality: a file built without one keeps the keys it always had. sign follows the description,
+        # the first key, both of which the planner reads (lab.knowledge_summary).
         knowledge = {"description": knowledge.pop("description"), "sign": int(sign), **knowledge}
         knowledge["source"].update(modality=modality, bundle_modality=bundle_mod)
     out.parent.mkdir(parents=True, exist_ok=True)

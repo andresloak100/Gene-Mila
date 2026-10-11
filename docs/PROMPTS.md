@@ -118,7 +118,7 @@ The first round of a batch has no focus line and follows the configured mix.
 rule of section 3), `planner_user` adds two sentences after "Only reference features listed in the state.":
 
 ```text
- Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes. The baselines in the state are reference predictions, not features: no model contains baseline_additive's prediction (a pair's change as the sum of its genes' single-gene training changes) unless one of its features computes it.
+ Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes. The baselines in the state are reference predictions, not features: no model contains the additive baseline's prediction (a perturbation's change as the sum of its genes' single-gene training changes) unless one of its features computes it.
 ```
 
 and the shape's `add_features` entry reads `"for combine (a feature-set combination): existing feature names to add"`.
