@@ -46,19 +46,25 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   echo, log, commit or paste it, never write it to a file, never put it on a command line, and
   never ask anyone to send it to you. The code reads it from the environment
   (`genemila/providers/openai_compat.py`). The same goes for every other API key and GitHub token.
-  On the Mac the key is in no file today: the Claude session there passes it to each run as a process
-  variable. Andres stores the rotated key himself in `~/.zshenv` on the Mac; nobody asks him to paste it
+  On the Mac Andres keeps his key himself in `~/.zshenv` as `API_KEY` (his message of 2026-10-11 19:22
+  UTC); each run gets it under the lab's name in its own process environment only,
+  `DEEPSEEK_API_KEY="$API_KEY" <command>`, and nobody prints or copies it. Nobody asks him to paste it
   anywhere, and any other agent's paid run waits until the key is in that agent's environment. The
   repository is public, so a pushed secret is published: scan what you push.
 - Never commit `data/`, `runs/`, `*.h5ad` or `.env` (all are in `.gitignore`; never `git add -f`).
 
 ### Money and usage
 
-- Every paid API call comes out of Andres's money. DeepSeek has a cumulative cap of **$34 for
-  the whole project** (Andres, 2026-10-11 02:39; it was $15 until then), enforced through the shared
-  spend ledger: every paid run passes `--set budget.cumulative_usd.deepseek=34`, and no paid run
-  starts once the ledger reads **$33.50** or more. Inside the cap the choice of what to spend on is
-  delegated to the lab-code owner; beyond it, Andres sets a new amount. Every paid run starts only on
+- Every paid API call comes out of Andres's money. On 2026-10-11 he put the rest of his DeepSeek
+  balance at the lab-code owner's disposal ("you can spent as much as u want and you think is necessary
+  we have in total 33 in deep seek", 19:10 UTC; "keep improving the model spent those dolars well",
+  19:16; DeepSeek's console then showed a balance of $33.01 and $16.98 billed). The shared spend ledger
+  counts about twice what DeepSeek bills (it read $33.97 when DeepSeek had billed $16.98, likely
+  off-peak pricing; not checked call by call), and its higher figure is what every cap counts. Spending
+  goes in blocks, each pre-specified in the repository before it starts: the current one,
+  [`docs/PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md), lets the ledger reach **$48**; every paid run in it
+  passes `--set budget.cumulative_usd.deepseek=48` and starts only when the ledger plus its own worker
+  and planner caps stays at or below $48. Earlier caps were $15, then $34 (02:39 the same day). Every paid run starts only on
   Andres's own words. Runs with `--planner-provider scripted --worker-provider mock` cost nothing and
   need no approval.
 - Always pass `--planner-provider` explicitly. The default planner is the Claude CLI (Opus),

@@ -481,3 +481,14 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   reopened from before the change gets no new feature row. No run has used it yet; expected direction, fixed now:
   none until a run shows one. Before a fresh paid agent run is read, tools/sealed_reading.py needs to read it
   against `baseline_ridge_additive` as its start (today it reads a start only for a continued run).
+- **N4's planner ran out (found 11 Oct 19:40 UTC, reviewing the next block).** N4's summary.json records
+  `planner.exhausted_at_min` 18.7 and `planner.mixed` true: at minute 18.7 of 20 the shared ledger reached the $34
+  cumulative cap then in force, the planner's next call was refused and the run finished its last 1.3 minutes on the
+  exploit engine and the queue. By AGENTS.md N4 is therefore its own arm, "deepseek:deepseek-v4-pro planner (lost its
+  planner)", and its numbers above stand as that arm's; it is never pooled with its repeats.
+- **The paid block after N4 (docs/PLAN_AFTER_N4.md):** on Andres's go of 19:10 to 19:17 UTC, three repeats of N4 on
+  its code (seeds 1 to 3; r1 started 19:16:54), then three fresh DeepSeek runs from the additive start after a free
+  no-LLM control on it, then an Adamson re-split. Every reading, the arm rule and the combined model are fixed in
+  that file; tools/sealed_reading.py now reads a fresh run against its start (`baseline_ridge_additive` on a bundle
+  with pairs) and records the planner and a gene-clustering ratio, and tools/arm_reading.py reads arms and combined
+  models.

@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-11 18:30, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
-(18:30). `docs/LAB_STATE.md` on the integration branch is the lab-code
+**Last updated:** 2026-10-11 19:45, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
+(19:45). `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
 
@@ -16,11 +16,17 @@ over this section where they disagree; this section is the short cross-agent vie
 
 | Agent | Since | Working on | Claim |
 |---|---|---|---|
-| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | Norman 2019 (Andres chose "Claude now", 11 Oct 12:02): N3 and N4 done, the DeepSeek cap is spent (see below) | (predates claim issues) |
+| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (18:10):** nothing running. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+**On the Mac (19:50):** nothing running. B1's first repeat, `runs/norman_ds_from_n2_w4_r1` (seed 1, code 076282c),
+ran 19:16:54 to about 19:37 and ended cleanly ($1.436; ledger $35.41); its sealed result is deliberately unread until
+`docs/PLAN_AFTER_N4.md` is on GitHub. The Mac's Claude session then reached its usage limit, so the block waits for
+it to reset (or for another agent Andres hands the Mac runs to). A STOP file in `genemila_scale_logs` holds the run
+driver; a worktree at 076282c, `~/Documents/Mila/Gene-Mila/gene-mila-076282c`, is ready for r2 and r3 (its free dry
+check passed). Exact next steps, in order: read r1 with `tools/sealed_reading.py` from a clone at the commit that
+adds the plan; run r2, then r3, with the command in the plan's B1; read them; then B2 and B3 as the plan says. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). Two paid Norman runs today
@@ -31,7 +37,10 @@ control N2) selected a ridge model of 11 features scoring **0.726** sealed pears
 far, against 0.719 for its start and 0.713 for the additive rule; by the pre-set paired rule neither gain is
 established (+0.008 ± 0.004 over the start, +0.014 ± 0.008 over the rule; `docs/results/norman_n4_sealed_reading.md`),
 and on the most-changed genes it is worse than the rule (R²_DE 0.819 against 0.846). The Mac's reports are merged
-(PR #3 and PR #4, under `docs/mac/` and `docs/results/`); Astra's two branches are on GitHub.
+(PR #3 and PR #4, under `docs/mac/` and `docs/results/`); Astra's two branches are on GitHub. N4's planner ran out
+at 18.7 of its 20 minutes, when the ledger reached the $34 cap then in force (`summary.json`: `planner.mixed` true,
+`exhausted_at_min` 18.7), so by the rules N4 is its own arm, "(lost its planner)", and is never pooled with its
+repeats.
 
 **Results on Adamson (CellForge's seed-42 split; read the files):** tables over 28 runs in
 `docs/results/results_table.md` and `scaling.md`, the account in `docs/results/summary_for_collaborators.md`,
@@ -64,10 +73,13 @@ chooses on (+0.030 over the baseline on visible data). The two paid agent runs a
 fresh run on a bundle with pairs starts its agents from ridge on the additive rule (the built-in feature
 `additive_response` and the baseline `baseline_ridge_additive`); no run has used it yet.
 
-**DeepSeek ledger:** **$33.97 of the $34 cap** after N4 (11 Oct 18:08; $31.78 before the Norman runs, N3 $1.03,
-N4 $1.16), passed as `--set budget.cumulative_usd.deepseek=34` (Andres, 11 Oct 02:39: "we have a max of 34 for deep
-seek spend it as you think is best but we need to have a very good model"). The cap is spent: any paid run needs a
-new amount from Andres. `budget.max_total_usd` caps a run's workers only; the planner has its own cap
+**DeepSeek ledger:** $33.97 after N4 (11 Oct 18:08; $31.78 before the Norman runs, N3 $1.03, N4 $1.16), $33.97
+when B1's first repeat started. At 19:10 to 19:16 Andres put the rest of his balance at the lab-code owner's disposal
+("you can spent as much as u want and you think is necessary we have in total 33 in deep seek"; "keep improving the
+model spent those dolars well"); DeepSeek's console showed $33.01 left and $16.98 billed, so the ledger counts about
+twice the bill (likely off-peak pricing; not checked call by call). The block in `docs/PLAN_AFTER_N4.md` lets the
+ledger reach $48 and starts a run only when the ledger plus its own caps stays within it; spending beyond the block
+is pre-specified in the repository first. `budget.max_total_usd` caps a run's workers only; the planner has its own cap
 (`budget.max_planner_usd`, by default derived from `planner_usd_per_worker_hour`), so N4, given only
 `max_total_usd=1.1`, cost $1.16. Every paid run sets both. Opus planner dollars are the Claude CLI's estimate of
 subscription usage, not a bill.
@@ -76,10 +88,10 @@ subscription usage, not a bill.
 and the Opus planner; nearly spent on 11 Oct. When it is out, Opus-planned runs wait; everything else uses
 the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**The key:** `DEEPSEEK_API_KEY` is in no file on the Mac; the Claude session there passes it to each paid
-run as a process variable. Andres pasted keys in chat at 15:34 (N3) and 17:48 (N4), so the key must be
-rotated now. From now on nobody asks him to paste it anywhere: he stores the rotated key himself in
-`~/.zshenv` on the Mac (`export DEEPSEEK_API_KEY=...`), and every agent reads it from the environment.
+**The key:** Andres keeps it himself in `~/.zshenv` on the Mac as `API_KEY` (11 Oct 19:22); each run gets it as
+`DEEPSEEK_API_KEY="$API_KEY" <command>`, in its own process environment only. He pasted keys in chat at 15:34 and
+17:48; he asked that the 17:48 one be used ("use the same key", 19:17), and B1's first repeat ran on it. Nobody asks
+him to paste a key anywhere.
 
 **Code:** 419 tests pass at `c6fadc0` (the additive start model for pair bundles): Norman 2019 (gene-grouped
 split, order-independent pair labels, additive baseline, CRISPRa-aware Replogle features, the `norman_v1`
@@ -95,17 +107,21 @@ first.
 AGENTS.md, CLAUDE.md) merged as `4356ca2`, PR #1 (README and its checker) as `ca35f88`. The Mac's reports went in
 as PR #3 and PR #4 (N4), md5-verified and scanned for keys first. None is open.
 
-**Next:** (1) free: measure the new additive start model on Norman with a no-LLM run on the Mac (its visible score
-first; a sealed scoring is one more look at the Norman sealed set and is reported as such); (2) free: check whether
+**Next:** the block in `docs/PLAN_AFTER_N4.md`, in its order (B1: N4's repeats r2 and r3; B2: a free control, then
+three fresh Norman runs from the additive start; B3: the Adamson re-split, a free control, then two runs), each read
+by the rules fixed there, with `tools/sealed_reading.py` and `tools/arm_reading.py`; results go to Andres before
+anything more is spent. After it: (1) free: measure the new additive start model on Norman with a no-LLM run on the
+Mac (B2's control does this); (2) free: check whether
 the heavy ridge penalty is why the selected Norman models lose to the additive rule on the most-changed genes, and if
 so pre-specify a fix before any run; (3) better outside data for Norman: Replogle is a knockdown screen and Norman is
 activation, so look for a public CRISPRa screen in K562, asking Andres before any download; (4) Srivatsan sci-Plex 3,
 which needs drug and dose ingestion and Andres's design decision first; (5) the compact-model rules (Andres's ask,
-11 Oct 00:32; `docs/LAB_STATE.md`, "In progress", item 2). Paid work waits on a new cap from Andres. An arriving
+11 Oct 00:32; `docs/LAB_STATE.md`, "In progress", item 2). An arriving
 agent that is not the lab-code owner may take free code work on (2), (4) or (5), claimed with an issue. The
 timeline given on 5 Oct (three datasets by 10 to 12 Oct) has slipped: Norman started on 11 Oct, Srivatsan has not.
 
-**Decisions to respect.** Andres's own: the $34 DeepSeek cap with spending inside it delegated (11 Oct
+**Decisions to respect.** Andres's own: the rest of his DeepSeek balance, spent as the lab-code owner judges
+necessary (11 Oct 19:10 to 19:16), the key in `~/.zshenv` as `API_KEY` (19:22); before that the $34 cap (11 Oct
 02:39); Replogle 2022 as the external screen (11 Oct); the compact-model rules (11 Oct 00:32); Norman to
 Claude, "Claude now" (11 Oct 12:02) and "download norman" (12:04); the paid run goes to Norman, not
 Adamson (started on his words, 15:34); N4, "start the paid run" (17:47); the lab lives in `~/Documents/Mila/Gene-Mila` and everything goes
@@ -115,8 +131,7 @@ Claude's, under his delegation: the default selection rule stays; one full paid 
 short ones; the lab-code owner maintains the protected benchmark, split and guard code.
 
 **Only Andres can (the blockers for any other agent):**
-- Rotate the DeepSeek key (pasted in chat twice on 11 Oct) and store it himself in `~/.zshenv` on the Mac.
-- Set a new DeepSeek amount: the $34 cap is spent ($33.97), so no paid run starts without one.
+- Rotate the DeepSeek key when he chooses (two were pasted in chat on 11 Oct; he asked that the second be used).
 - Create a `main` branch, if he wants one (PRs #1 to #4 are merged).
 - Give outside agents write access to the repository (Astra's branches go up through the Mac session's
   `gh` login, which is his).
