@@ -20,22 +20,33 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (21:30):** nothing running; STOP file in place; ledger $38.08 of the block's $48. B1 is finished and
-read (docs/NORMAN_PLAN.md section 8; the readings and the three runs' summaries are in draft PR #6, waiting for
-Andres to merge): the agents' search adds nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of
-the three repeats scores 0.723 sealed, +0.0041 ± 0.0011 over N2's selected model, not established over the additive
-rule; it is the delivered Norman model unless B2's combined model scores higher on the visible validation
-perturbations. Exact next steps, in order (B2 then B3, docs/PLAN_AFTER_N4.md; Andres said "continue" at 20:56 UTC):
-`git pull --ff-only` the main checkout to the lab branch head, which holds the B2 scripts in
-`docs/mac/block_after_n4/`, and pull nothing more until B3 has ended (every B2 and B3 run checks it runs on the
-commit the control records in `genemila_scale_logs/block_after_n4_b2b3_commit.txt`); `bash
-docs/mac/block_after_n4/block_b2_control.sh` (free, about 20 minutes); then, one at a time,
-`DEEPSEEK_API_KEY="$API_KEY" bash docs/mac/block_after_n4/block_b2_run.sh 0`, then `1`, then `2`, each only after the
-one before printed "stop rule passed"; a stop writes `genemila_scale_logs/block_after_n4_stopped.txt` and halts the
-block until the cause is written up; then B2's readings, then B3. Scripts pushed after the control has started (B2's
-readings, B3) are brought in without moving the checkout: `git fetch origin claude/autonomous-research-system-3k435s`
-and `git show origin/claude/autonomous-research-system-3k435s:docs/mac/block_after_n4/<script> >
-../genemila_scale_logs/<script>`, run from there. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+**On the Mac (21:35):** ledger $38.08 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
+readings and the three runs' summaries are in draft PR #6, waiting for Andres to merge): the agents' search adds
+nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of the three repeats scores 0.723 sealed,
++0.0041 ± 0.0011 over N2's selected model, not established over the additive rule; it is the delivered Norman model
+unless B2's combined model scores higher on the visible validation perturbations. B2 (docs/PLAN_AFTER_N4.md; Andres
+said "continue" at 20:56 UTC) runs unattended: after `git pull --ff-only` of the main checkout, the Mac starts
+`docs/mac/block_after_n4/block_b2_chain.sh` detached (the command is in its header), which runs the free control
+`runs/norman_control_addstart_w4_r0` and then the paid seeds `runs/norman_ds_addstart_w4_r0`, `_r1`, `_r2` one at a
+time, each only if the step before passed; the control pins the commit in
+`genemila_scale_logs/block_after_n4_b2b3_commit.txt`, and nobody pulls in the main checkout until B3 has ended; a
+stop writes `genemila_scale_logs/block_after_n4_stopped.txt` and ends the chain; `progress.md` and
+`genemila_scale_logs/block_b2_chain.log` say where it is. Exact next steps once the chain has finished (all free,
+from the main checkout, with `.venv/bin/python`): `tools/sealed_reading.py --runs runs/<run> --out
+docs/results/norman_b2_<r0|r1|r2|control>_sealed_reading.md` for the three runs and the control; for each run
+`tools/sealed_reading.py --versus --runs runs/norman_ds_addstart_w4_r<S> runs/norman_control_addstart_w4_r0 --out
+docs/results/norman_b2_r<S>_versus_control.md`; the primary reading `tools/arm_reading.py rule --readings
+docs/results/norman_b2_r0_sealed_reading.json docs/results/norman_b2_r1_sealed_reading.json
+docs/results/norman_b2_r2_sealed_reading.json --against start --out docs/results/norman_b2_arm_vs_start.md`, the same
+with `--against additive`, and `--against versus` over the three versus JSON twins; `tools/arm_reading.py combine
+--members runs/norman_ds_addstart_w4_r0 runs/norman_ds_addstart_w4_r1 runs/norman_ds_addstart_w4_r2 --reference R
+--out docs/results/norman_b2_combined_vs_<name>.md` for R = `runs/norman_ds_addstart_w4_r0:start` (the start,
+baseline_ridge_additive), `runs/norman_control_addstart_w4_r0`, `runs/norman_ds_addstart_w4_r0:additive`, and the B1
+arm `runs/norman_ds_from_n2_w4_r1 runs/norman_ds_from_n2_w4_r2 runs/norman_ds_from_n2_w4_r3`; then the delivered
+Norman model by the plan's rule (visible_validation in the combine JSONs, B2's against B1's); push the readings and
+the runs' summaries like PR #6. B3 (the Adamson re-split) has no script yet: build and run it exactly as the plan's
+B3 says, on the pinned commit (bring later scripts in with `git fetch` and `git show origin/claude/autonomous-
+research-system-3k435s:<path> > ../genemila_scale_logs/<file>`, never by pulling). The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). Two paid Norman runs today
