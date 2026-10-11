@@ -310,3 +310,48 @@ kill is replaced by the next unused seed.
 starting only at $45.50 or less; at their caps ($2.50 each) the ledger would end at $46.03 at most, inside $48. B3 is
 dropped from this block, as the plan foresaw ("if anything in B1 or B2 stops the block, B3 is what is dropped").
 Whether B3 runs later, under a cap above $48, goes to Andres with B2's results.
+
+## Addendum, 2026-10-11 23:10 UTC, to the note of 22:50 (written before any B2 sealed reading)
+
+A review of the note found what follows. The note stands except where this section corrects it.
+
+**The replacement departs from the plan, and it is bounded.** "The arm reading" above already says what happens when
+a run is its own arm: the arm is read over the remaining runs, with R stated. Read that way, B2's arm would be r0 and
+r2. The note's replacement of r1 by seed 3 departs from that, and its last sentence under "Disclosure" stated as a
+standing rule what is a decision taken here. The reason for it: B2 was designed with R = 3, and with R = 2 the
+run-to-run part of the arm's standard error has one degree of freedom, so k can grow to 12.7 and the primary reading
+would be far weaker than designed, for a cause that has nothing to do with the search. The departure is bounded: only
+r1 is replaced. If r2 or r3 is lost too, that is written up and the arm is read over the runs that remain, as the plan
+says, with no further replacement. The arm as first specified, r0 and r2 by the rule against the start, is reported
+beside the primary reading and marked reported, not read, as the jackknife row of the 20:30 amendment is; it scores
+nothing new on the sealed set.
+
+**Who decided the extra run.** Seed 3 is a paid run the plan did not list. It runs on Andres's standing words of 19:10
+to 19:16 UTC, which put the rest of his DeepSeek balance at the lab-code owner's judgement ("you can spent as much as u
+want and you think is necessary we have in total 33 in deep seek"; "keep improving the model spent those dolars
+well"), within this block's $48 cap and in the place of B3's spending. He was told in the build thread at 22:52 UTC.
+
+**The evidence that the watchdog never acted on r0** is that r0's log has no WATCHDOG line (the stop-rule check it
+passed), not its exit code: run_research.py returns 0 after a watchdog kill when summary.json already exists.
+
+**Where r1's kill is recorded.** Nothing in r1's run directory records it. The fallback marks only experiments still
+active as killed, and there were none; its summary.json has no duration note, because the shutdown had already
+recorded the run's end. `handoff_state.py`, `sealed_reading.py` and `arm_reading.py` would therefore take r1 for a
+clean run if given it. The record is `genemila_scale_logs/norman_ds_addstart_w4_r1.log` (the WATCHDOG line),
+`genemila_scale_logs/block_after_n4_stopped_r1.txt` and this plan. r1's reading is written as
+`docs/results/norman_b2_r1_killed_sealed_reading.md`, apart from the members' files, and is never passed to
+`arm_reading.py`. It is not renamed `_contaminated`, AGENTS.md's treatment of a broken run: its search ended normally, and whether all five of its sealed queries ran before the kill is
+being checked against the event times in its lab.db; a later commit records the answer.
+
+**The cause, narrowed.** The control and r0 finished within the watchdog's allowance on the same machine, so "the
+watchdog's margin is too short for finishing a Norman run on this machine" says too much. The finishing times of the control, r0 and r1, and whether anything else ran on
+the Mac while r1 ran, are being collected; a later commit records them.
+
+**Disclosure, completed.** Every run's log in `genemila_scale_logs/` ends with the rendered summary, which holds every
+finalist's sealed score; r0's and r1's logs hold them now. Nobody reads the end of a B2 run's log, or a B2 run's
+summary.md, before the readings. r0's selected model and visible score were also seen, printed by the run script
+(EXP_0724, 24 features, visible 0.628). The command that displayed r1's EXP_0003 row is being confirmed with the Mac
+session; a later commit records it.
+
+**Reproducibility.** `--no-watchdog` is recorded only in the "command:" lines the run script prints into
+`genemila_scale_logs/block_b2_resume.log`; config.json does not hold it.

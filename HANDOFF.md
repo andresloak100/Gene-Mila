@@ -8,7 +8,7 @@ Update this section when you start, after each milestone, and before you stop or
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
 **Last updated:** 2026-10-11 22:55, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
-(19:45). `docs/LAB_STATE.md` on the integration branch is the lab-code
+(22:55). `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
 
@@ -20,7 +20,7 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (22:55):** ledger $41.03 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
+**On the Mac (23:10):** ledger $41.03 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
 readings and the three runs' summaries are in draft PR #6, waiting for Andres to merge): the agents' search adds
 nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of the three repeats scores 0.723 sealed,
 +0.0041 ± 0.0011 over N2's selected model, not established over the additive rule; it is the delivered Norman model
@@ -29,26 +29,36 @@ said "continue" at 20:56 UTC) runs on the pinned commit ce1b530 (recorded in
 `genemila_scale_logs/block_after_n4_b2b3_commit.txt`; nobody pulls in the main checkout until B2 has ended). The free
 control `runs/norman_control_addstart_w4_r0` and seed 0 `runs/norman_ds_addstart_w4_r0` ($1.293) passed. Seed 1
 `runs/norman_ds_addstart_w4_r1` ($1.649) was killed by run_research.py's watchdog while finishing, after its full
-search, and stopped the block. The plan's note of 22:50 UTC writes it up: r1 is its own arm, and B2 continues with
-seed 2 and then seed 3 in r1's place, run with `--no-watchdog` and a 90-minute backstop by
-`docs/mac/block_after_n4/block_b2_resume.sh` (brought into `genemila_scale_logs/b2_resume/` with `git show`; the
-command is in its header). B3 is dropped from this block. `progress.md` and `genemila_scale_logs/block_b2_resume.log`
-say where it is; a stop writes `genemila_scale_logs/block_after_n4_stopped.txt` and ends the script. Exact next steps
+search, and stopped the block. The plan's note of 22:50 UTC and its addendum of 23:10 write it up: r1 is its own
+arm (its kill is recorded only in `genemila_scale_logs/norman_ds_addstart_w4_r1.log` and
+`block_after_n4_stopped_r1.txt`, not in its run directory, so never pass r1 to `arm_reading.py`), and B2 continues
+with seed 2 and then seed 3 in r1's place, run with `--no-watchdog` and a 90-minute backstop by
+`docs/mac/block_after_n4/block_b2_resume.sh`. It was brought in without touching the checkout (`git fetch origin
+claude/autonomous-research-system-3k435s`; `mkdir -p ../genemila_scale_logs/b2_resume`; `git show
+FETCH_HEAD:docs/mac/block_after_n4/block_b2_run.sh > ../genemila_scale_logs/b2_resume/block_b2_run.sh`, the same for
+`block_b2_resume.sh`; md5s abf9af19… and 79d80ef6…; the stop marker renamed `block_after_n4_stopped_r1.txt`) and
+started at 22:52:00 UTC with the command in its header; seed 2 runs, seed 3 follows by itself, the end is expected
+about 23:45 UTC. `--no-watchdog` is recorded only in the "command:" lines of `genemila_scale_logs/block_b2_resume.log`.
+B3 is dropped from this block (plan note of 22:50). `progress.md` and `block_b2_resume.log` say where B2 is; a stop
+writes `genemila_scale_logs/block_after_n4_stopped.txt` and ends the script. Every run's log in
+`genemila_scale_logs/` ends with the rendered summary, which holds the finalists' sealed scores: read no B2 run's log
+end and no `summary.md` before the readings; read the `.check.txt` files and `block_b2_resume.log` instead. Exact next steps
 once seeds 2 and 3 have passed (all free, from the main checkout, with `.venv/bin/python`): `tools/sealed_reading.py
---runs runs/<run> --out docs/results/norman_b2_<r0|r1|r2|r3|control>_sealed_reading.md` for the four runs and the
-control (r1's is a row of its own, never in the arm); for r0, r2 and r3 `tools/sealed_reading.py --versus --runs
+--runs runs/<run> --out docs/results/norman_b2_<r0|r2|r3|control>_sealed_reading.md` for the three arm runs and the
+control, and `--out docs/results/norman_b2_r1_killed_sealed_reading.md` for r1 (a row of its own, never in the arm); for r0, r2 and r3 `tools/sealed_reading.py --versus --runs
 runs/norman_ds_addstart_w4_r<S> runs/norman_control_addstart_w4_r0 --out docs/results/norman_b2_r<S>_versus_control.md`;
 the primary reading `tools/arm_reading.py rule --readings docs/results/norman_b2_r0_sealed_reading.json
 docs/results/norman_b2_r2_sealed_reading.json docs/results/norman_b2_r3_sealed_reading.json --against start --out
 docs/results/norman_b2_arm_vs_start.md`, the same with `--against additive`, and `--against versus` over the three
-versus JSON twins; `tools/arm_reading.py combine --members runs/norman_ds_addstart_w4_r0
+versus JSON twins; the arm as first specified, `rule --readings` over r0 and r2 only `--against start --out
+docs/results/norman_b2_arm_r0_r2_vs_start_reported.md`, reported and not read (addendum of 23:10); `tools/arm_reading.py combine --members runs/norman_ds_addstart_w4_r0
 runs/norman_ds_addstart_w4_r2 runs/norman_ds_addstart_w4_r3 --reference R --out
 docs/results/norman_b2_combined_vs_<name>.md` for R = `runs/norman_ds_addstart_w4_r0:start` (the start,
 baseline_ridge_additive), `runs/norman_control_addstart_w4_r0`, `runs/norman_ds_addstart_w4_r0:additive`, and the B1
 arm `runs/norman_ds_from_n2_w4_r1 runs/norman_ds_from_n2_w4_r2 runs/norman_ds_from_n2_w4_r3`; then the delivered
 Norman model by the plan's rule (visible_validation in the combine JSONs, B2's against B1's); push the readings and
-the runs' summaries like PR #6. B3 (the Adamson re-split) runs only if Andres raises the cap above $48; it has no
-script yet, and it would run exactly as the plan's B3 says, on the pinned commit (bring later scripts in with
+the runs' summaries like PR #6. Whether B3 (the Adamson re-split) runs later goes to Andres with B2's results; it
+would need a cap above $48 and has no script yet, and it would run exactly as the plan's B3 says, on the pinned commit (bring later scripts in with
 `git fetch` and `git show origin/claude/autonomous-research-system-3k435s:<path> > ../genemila_scale_logs/<file>`,
 never by pulling). How to work on the Mac (paths, the
 key, the STOP file, how results reach GitHub): `docs/mac/MAC_HANDOFF.md` and the running log `docs/mac/STATE.md` (in
