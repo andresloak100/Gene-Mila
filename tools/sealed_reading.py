@@ -19,8 +19,9 @@ the runs' caps, as the readings were fixed in the plan before any run. Each run'
 pair of runs on different code versions is flagged. A category with fewer than MIN_READ sealed perturbations is
 reported but not read (NORMAN_PLAN.md section 3); every other category is read by the same rule as the pool.
 
-Run directories are read only: predictions come from the runs' stored artifacts (Lab._predict, no plugin code runs),
-the tool uses oracle instances of its own and never writes into a run, its database or its query log.
+Run directories are read only in content: predictions come from the runs' stored artifacts (Lab._predict, no plugin
+code runs), the tool uses oracle instances of its own and adds nothing to a run, its database or its query log
+(opening a database may let SQLite remove its empty -wal and -shm sidecar files).
 
     python tools/sealed_reading.py --runs runs/norman_control_w4_r0 runs/norman_control_replogle_w4_r0 \
         --out docs/results/norman_sealed_reading.md
@@ -170,7 +171,8 @@ def _f(x, nd: int = 3) -> str:
 def _diff(p: dict) -> str:
     if "mean_diff" not in p:
         return "–"
-    return f"{p['mean_diff']:+.3f} ± {p['se']:.3f}"
+    nd = 3 if max(abs(p["mean_diff"]), p["se"]) >= 0.005 else 5   # a difference that rounds to zero still shows
+    return f"{p['mean_diff']:+.{nd}f} ± {p['se']:.{nd}f}"
 
 
 def _wins(p: dict) -> str:
@@ -200,10 +202,11 @@ def _table(sealed: dict, visible: dict | None, a: str, b: str) -> list[str]:
         L.append(f"| sealed, {cat} | {pc['n']} | {_f(_cat_mean(ma, cat))} | {_f(_cat_mean(mb, cat))} | {_diff(pc)} | "
                  f"{_wins(pc)} | {_verdict(pc, a, b, pc['n'])} |")
     if visible:
-        L.append(f"| visible, pooled | {visible['n']} | | | {_diff(visible)} | {_wins(visible)} | "
+        L.append(f"| visible and out-of-fold, pooled | {visible['n']} | | | {_diff(visible)} | {_wins(visible)} | "
                  f"{_verdict(visible, a, b)} |")
         for cat, pc in (visible.get("by_category") or {}).items():
-            L.append(f"| visible, {cat} | {pc['n']} | | | {_diff(pc)} | {_wins(pc)} | {_verdict(pc, a, b)} |")
+            L.append(f"| visible and out-of-fold, {cat} | {pc['n']} | | | {_diff(pc)} | {_wins(pc)} | "
+                     f"{_verdict(pc, a, b)} |")
     return L
 
 
@@ -258,7 +261,8 @@ def render(rep: dict) -> str:
          f"Pre-specified (docs/NORMAN_PLAN.md section 5). Metric {pr['metric']} per sealed perturbation, paired. "
          f"Reading rule, pooled and in every category: {pr['rule']}; a category with fewer than {pr['min_read']} "
          f"sealed perturbations is reported, not read.{expected} {_scorings(rep)} Wins are counted per perturbation; "
-         "the visible rows pair the same models on the visible validation (and out-of-fold training) perturbations. "
+         "the visible and out-of-fold rows pair the same models on the visible validation perturbations and, out of fold, "
+         "the training ones. "
          f"Tool code {str(rep.get('code_commit') or 'unknown')[:7]}.", ""]
     for r in rep["runs"]:
         s, a = r["selected"], r["additive"]

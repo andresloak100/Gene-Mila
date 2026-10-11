@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 13:40 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 13:51 UTC.
 
 ## What this is
 
@@ -224,8 +224,11 @@ Conclusion: the limit on this bundle is information about the targets, not searc
   its rule (external_stack +0.023 ± 0.006 over stack_inbundle, better on 68 of 112), so the screen adds
   information on Norman too; but on the sealed set the scripted control with the screen (N2) scores 0.7188
   pearson_delta against 0.7170 without it (N1) and 0.7126 for the additive baseline, a +0.002 that is no finding
-  (its selection kept the flipped direct response and left out the kernel-ridge feature). The paired,
-  per-category readings come from tools/sealed_reading.py (to run on the Mac). Before that: plan items 1 to 13 of section 4 and the `norman_v1` leave-one-out are
+  (its selection kept the flipped direct response and left out the kernel-ridge feature). Paired sealed
+  readings (docs/results/norman_sealed_reading.md): N2 minus N1 +0.002 ± 0.001, better on 40 of 56, passes the
+  rule pooled in the expected direction, singles not established; neither control beats the additive baseline
+  pooled (+0.004 and +0.006, within error; +0.012 on pair_seen1), while on visible and out-of-fold
+  perturbations they led it by +0.030: selection overfits the perturbations it chooses on. Before that: plan items 1 to 13 of section 4 and the `norman_v1` leave-one-out are
   implemented and reviewed, see the commit after b63491d; every new behaviour is gated on a bundle with pairs, a
   recorded modality or a gene split, and a frozen-output test (tests/data/adamson_text_b63491d.json) pins Adamson's
   prompts, scripted hypotheses and templates; on the Mac's macOS suite (anndata 0.13.4, pandas 3) nine

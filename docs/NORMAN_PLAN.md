@@ -383,3 +383,17 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   the screen is 62% against 81% in training. Files (push list): summary.json md5 e0bb5704beca4652b11d2fd11b35b99e,
   config.json b67be1e5a9bf0f803d1b57bccce81a82, analysis log 8f1315085486e717f242324c100a426f. Queries used: N1 5 of
   5, N2 4 of 5.
+- **Sealed readings of section 5** (tools/sealed_reading.py at 5fe6e76, run on the Mac; docs/results/
+  norman_sealed_reading.md, md5 f7a2a004fdda877289a8c002afca9bbf, JSON 673cb5bbe2d47c76e48bde4f6496b195 on the push
+  list; 6 sealed scorings of models every run had already scored; stored pooled values reproduced). Paired
+  pearson_delta, sealed: N1 selected minus additive +0.004 ± 0.008 (28 of 56), no difference; N2 selected minus
+  additive +0.006 ± 0.007 (32 of 56), no difference; in both, pair_seen1 (n 27) +0.012 selected better and singles
+  (n 16) -0.009 and -0.005, no difference; pair_seen0 (8) and pair_seen2 (5) reported, not read. On the visible and
+  out-of-fold perturbations the same comparison is +0.030 ± 0.009: the selection's gain over the additive baseline
+  was mostly fitted to the perturbations it was chosen on. **N2 minus N1 (the screen): +0.002 ± 0.001, better on 40
+  of 56: passes the rule pooled, in the expected direction; on singles +0.004 ± 0.002 (12 of 16), exactly twice its
+  error, not established.** The paired error is that small because N2's model is N1's plus one feature. Reading: the
+  Adamson finding holds in direction on a fresh dataset, by the leave-one-out and the sealed comparison alike, but
+  the scripted control turned +0.002 of the leave-one-out's +0.023 into sealed accuracy, and neither control beats
+  the additive baseline pooled. The audit's repeat check: astra_ds_w8_2h rerun alone under v3 code with a fresh
+  cache reproduces its feature_audit_v3 entry exactly (timings aside).

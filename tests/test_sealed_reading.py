@@ -158,3 +158,8 @@ def test_small_categories_are_reported_not_read():
     assert sealed_reading._verdict(p, "x", "y", p["n"]) == "reported, not read"
     assert sealed_reading._verdict({**p, "n": 12}, "x", "y", 12) == "x better"
     assert sealed_reading._verdict({"n": 2}, "x", "y", 2) == "too few to report"
+
+
+def test_a_difference_that_rounds_to_zero_still_shows():
+    assert sealed_reading._diff({"mean_diff": 0.00031, "se": 0.00012}) == "+0.00031 ± 0.00012"
+    assert sealed_reading._diff({"mean_diff": 0.012, "se": 0.004}) == "+0.012 ± 0.004"
