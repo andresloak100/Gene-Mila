@@ -20,7 +20,7 @@ The two halves of one perturbation's cells agree with each other at only 0.72 on
 
 ## Learned similarity between targets (leave-one-out, tuning inside each fold)
 
-As printed by tools/learned_kernel_experiment.py on the Mac (its JSON is to be committed when pasted): a ridge model from gene-set overlap, interaction-network overlap, co-expression and gene family to response similarity, used to weight the other perturbations' responses.
+From docs/results/learned_kernel_experiment.json (written by tools/learned_kernel_experiment.py on the Mac, md5 bfdaa06b56711157f74350065fac772f): a ridge model from gene-set overlap, interaction-network overlap, co-expression and gene family to response similarity, used to weight the other perturbations' responses.
 
 | Transfer predictor, leave-one-out over the 50 training perturbations | pearson_delta |
 |---|---|
@@ -85,3 +85,5 @@ The learned similarity adds +0.010 and is better in 27 of 50 perturbations: insi
 | IARS2 | 1111 | 0.167 | 0.996 | 0.880 | 0.957 | 0.977 |
 | CARS | 501 | 0.220 | 0.994 | 0.880 | 0.915 | 0.951 |
 | TIMM44 | 590 | 0.149 | 0.991 | 0.889 | 0.967 | 0.982 |
+
+Perturbations no similarity-based predictor reaches (learned kernel under 0.15): GNPNAT1 (-0.01), SRPR (0.00), ERN1 (0.06), CAD (0.13). SRPR is the clearest case where the knowledge files miss a relation: its hindsight best relative is SRPRB (0.79 in the per-perturbation table above), yet every similarity predictor scores it near 0.02, and SRPRB itself reaches only 0.36 to 0.51. An independent screen that measures both would repair those first; GNPNAT1, CAD, ERN1, MRGBP and ASCC3 stay low under hindsight too, so a screen helps them only if it carries their own responses.
