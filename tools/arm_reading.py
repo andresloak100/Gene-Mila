@@ -267,6 +267,10 @@ def read_arm(paths: list[Path], against: str) -> dict:
             "selected_spread": {name: _spread([c["stored"].get(k) for c in comps]) for k, name in ARM_METRICS}}
 
 
+def _alpha(x) -> str:
+    return "–" if x is None else f"{x:g}"   # ridge alphas run from 1e-05 to 1e+05
+
+
 def _arm_verdict(r: dict, what: str) -> str:
     return {"a": f"{what} better", "b": f"{what} worse", "none": "no difference established"}[r["verdict"]]
 
@@ -291,7 +295,7 @@ def render_arm(rep: dict) -> str:
           + (" start alpha / continued run's alpha |" if warm else ""),
           "|---|---|---|---|---|---|---|---|---|" + ("---|" if warm else "")]
     for r in rep["runs"]:
-        alphas = (f" {sr._f(r.get('start_alpha'), 0)} / {sr._f(r.get('source_alpha'), 0)} |" if warm else "")
+        alphas = (f" {_alpha(r.get('start_alpha'))} / {_alpha(r.get('source_alpha'))} |" if warm else "")
         if r["selected_reference"]:
             L.append(f"| {r['run']} | {str(r.get('base_commit') or 'unknown')[:7]} | {r['selected']} | "
                      f"{r['reference']} | – | 0 (kept its reference) | – | – | – |" + alphas)

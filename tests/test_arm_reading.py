@@ -66,7 +66,7 @@ def _ratio(r=1.0, jk=1.3):
 
 def _reading(tmp_path, run, d, se, split="split_x", start=True, is_additive=False, cats=None, pd=0.72,
              planner=CLEAN, kept=False, ratio=1.0, has_summary=True, bundle="/data/norman", knowledge=("rep",),
-             kind="warm_start"):
+             kind="warm_start", alpha=20000.0):
     """One run's sealed_reading JSON twin: against its additive baseline the difference is d / 2, against its start
     d; the selected model's own end-of-run scoring carries pd and the comparable DE metrics."""
     stored = {"pearson_delta": pd, "cellforge_mse_de": 0.10 + pd / 100, "cellforge_pcc_de": 0.9,
@@ -78,7 +78,7 @@ def _reading(tmp_path, run, d, se, split="split_x", start=True, is_additive=Fals
          "visible": _paired(d * 3, se, cats=cats), "cluster_ratio": _ratio(ratio), "note": None}
     if start:
         base = {"kind": kind, "source": {"run": "n2", "experiment_id": "EXP_0198", "alpha": 50000.0},
-                "start": {"experiment_id": "EXP_7", "alpha": 20000.0}}
+                "start": {"experiment_id": "EXP_7", "alpha": alpha}}
         r["continuation"] = ({**base, "start": None, "sealed": None, "note": "same", "is_additive": True}
                              if is_additive else
                              {**base, "sealed": None, "visible": None, "cluster_ratio": None,
@@ -128,8 +128,9 @@ def test_inflation_kept_references_and_runs_that_are_their_own_arm(tmp_path):
     beside it); a run that kept its reference enters with g = 0, s = 0 and its selected model still counts in the
     spread; a run whose planner changed, or with no summary.json, is left out and named."""
     a = _reading(tmp_path, "a", 0.010, 0.002, ratio=1.5)
-    b = _reading(tmp_path, "b", 0.010, 0.002, ratio=0.8)
+    b = _reading(tmp_path, "b", 0.010, 0.002, ratio=0.8, alpha=6e-05)
     rep = arm_reading.read_arm([a, b], "start")
+    assert "| 6e-05 / 50000 |" in arm_reading.render_arm(rep)   # small ridge alphas keep their digits
     assert [r["inflation"] for r in rep["runs"]] == [1.5, 1.0]
     assert rep["pooled"]["S"] == pytest.approx((0.003 + 0.002) / 2)
     assert rep["pooled_as_first_specified"]["S"] == pytest.approx(0.002 * 1.3)
