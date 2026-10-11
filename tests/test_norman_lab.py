@@ -581,7 +581,7 @@ def test_additive_response_is_the_additive_baseline_left_out(pair_lab):
     """On a bundle with pairs the built-in additive_response is the additive baseline's predicted change: for a
     validation perturbation exactly that, for a training one the same rule without it, and in a cross-validation
     fold's view the baseline's out-of-fold twin, so ridge on it starts where the additive baseline is."""
-    from genemila.additive import additive_delta
+    from genemila.features.builtin import additive_delta
     from genemila.features.registry import BUILTIN_FEATURES, get
     lab = pair_lab(experiment__cv_folds=3)
     assert lab.builtin_features == BUILTIN_FEATURES + ["additive_response"]
@@ -624,6 +624,8 @@ def test_pair_bundle_agents_start_from_ridge_on_the_additive_rule(pair_lab):
     modelled = [b for b in base.values() if b["model_type"] != "none" and b["status"] == "completed"]
     assert max(modelled, key=lambda b: b["primary_score"]) is start
     assert start["primary_score"] > base["baseline_ridge"]["primary_score"]
+    # the starting model the run reports (summary, sealed scoring, results table) stays one every pair run has
+    assert lab.best_baseline()["hypothesis_group"] != "baseline_ridge_additive"
     first = lab.db.query("SELECT * FROM experiments WHERE kind!='baseline' AND proposer NOT LIKE 'python%' "
                          "ORDER BY created_at LIMIT 1")
     assert first and first[0]["parent_id"] == start["experiment_id"]
@@ -661,3 +663,14 @@ def test_reopening_a_pair_run_from_before_the_built_in_writes_nothing(pair_lab, 
         assert "additive_response" in again.builtin_features
     finally:
         again.close()
+
+
+def test_the_additive_start_leaves_the_additivity_idea_unexplored(pair_lab):
+    """baseline_ridge_additive's text names no idea-bank key, so the planner still sees the additivity idea (pairs as
+    the sum of their singles, and departures from it) as unexplored before any agent proposes one."""
+    from genemila.research_state import PAIR_IDEAS, build_state
+    lab = pair_lab()
+    lab.record_analytic_baselines()
+    lab.queue_model_baselines()
+    assert lab.db.query("SELECT 1 FROM experiments WHERE hypothesis_group='baseline_ridge_additive'")
+    assert PAIR_IDEAS[0][0] in build_state(lab)["unexplored_idea_areas"]

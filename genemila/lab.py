@@ -20,7 +20,7 @@ from .benchmark.evaluator import bundle_strata, categories_of, category_summary,
 from .benchmark.oracle import QueryOracle
 from .data.bundle import LabelSet, added_knowledge, export_public, verify_bundle
 from .db import Database
-from .additive import additive_delta  # noqa: F401  (genemila.lab.additive_delta, as tools import it)
+from .features.builtin import additive_delta  # noqa: F401  (also genemila.lab.additive_delta, as tools import it)
 from .features.registry import ALL_BUILTIN_FEATURES, BUILTIN_FEATURES, PAIR_BUILTIN_FEATURES
 from .guard import CodeViolation, check_plugin_source
 from .isolation import WorktreeManager, git, sha256_text
@@ -697,8 +697,8 @@ class Lab:
                 hypothesis_group=f"baseline_{model}"))
         if "additive_response" in self.builtin_features:
             self.queue(ExperimentSpec(
-                hypothesis="RIDGE on additive_response (the sum of the genes' single-gene changes) and the baseline "
-                           "features.",
+                hypothesis="RIDGE on the baseline features plus the built-in sum of each target gene's single-gene "
+                           "training change.",
                 scientific_rationale="The additive rule as a feature of a linear model: the starting model on a "
                                      "bundle with pairs, so every new feature is measured on top of the rule.",
                 kind="baseline", category="baseline", feature_set=base + ["additive_response"], model_type="ridge",
@@ -717,7 +717,12 @@ class Lab:
         return self.db.best()
 
     def best_baseline(self) -> dict | None:
-        rows = self.db.query("SELECT * FROM experiments WHERE kind='baseline' AND status='completed' "
+        """The starting model a run reports (summary.json "baseline", the sealed scoring of the start, the results
+        table's starting-model row, which averages it over every run of a dataset and split): the best of the
+        baselines every run of the bundle has. baseline_ridge_additive, the agents' start on a bundle with pairs
+        since c6fadc0, is left out, so pair runs before and after it report the same reference."""
+        rows = self.db.query("SELECT * FROM experiments WHERE kind='baseline' AND status='completed' AND "
+                             "COALESCE(hypothesis_group, '') != 'baseline_ridge_additive' "
                              "ORDER BY primary_score DESC LIMIT 1")
         return rows[0] if rows else None
 

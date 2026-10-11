@@ -483,15 +483,19 @@ single change standing in for a gene without one.
 
 Since 2026-10-11, after the Norman run N4, a bundle with pairs also has a fourth built-in feature, `additive_response`
 (`AdditiveResponse` in the same file): the additive baseline's predicted change as a feature, leaving p out, computed
-by the one rule the baseline and the feature share (`genemila/additive.py`). The lab registers it only on such a
-bundle and queues a sixth baseline beside the five, `baseline_ridge_additive`: ridge on the three built-in features
-plus `additive_response`. The planner and the exploit engine take the best completed model as the parent of a new
-feature, so agents' features there are measured on top of the additive rule; the Norman agents of N3 started from the
-three built-ins (visible 0.542) and never rebuilt the plain rule (docs/NORMAN_PLAN.md section 8). The planner reads
-its description in the feature registry:
+by the one rule the baseline and the feature share (`additive_delta`, in the same file, so the feature cache key, the
+file's hash, covers it). The lab registers it only on such a bundle and queues one more baseline,
+`baseline_ridge_additive`: ridge on the three built-in features plus `additive_response`, with the hypothesis text
+"RIDGE on the baseline features plus the built-in sum of each target gene's single-gene training change.", worded to
+match no idea-bank key, so the additivity idea stays unexplored for the planner. The planner and the exploit engine
+take the best completed model as the parent of a new feature, so agents' features there are measured on top of the
+additive rule; the Norman agents of N3 started from the three built-ins (visible 0.542) and never rebuilt the plain
+rule (docs/NORMAN_PLAN.md section 8). The starting model a run reports (summary, sealed scoring, results table) stays
+the best of the other baselines (`Lab.best_baseline`), so pair runs before and after the change report the same
+reference. The planner's feature registry shows the first 70 characters of the description, which is:
 
 ```text
-Additive model of single-gene responses: the sum over p's target genes of each gene's single-gene training change (the mean change of the training perturbations whose one target is that gene), with the mean single-gene training change for a gene without one, leaving p out. It is the additive baseline's predicted change.
+The additive baseline's prediction: the sum over p's target genes of each gene's single-gene training change (the mean change of the training perturbations whose one target is that gene), with the mean single-gene training change for a gene without one, leaving p out.
 ```
 
 Adamson's bundle and every other bundle without pairs keep the three features and five baselines above, so their
