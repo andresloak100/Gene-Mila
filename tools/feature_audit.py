@@ -16,7 +16,9 @@ set (one-standard-error rule on the backward path) are chosen on the training pe
 compact model is compared with the full one on the validation perturbations, which no choice of the tool touched.
 On that engine the tool measures redundancy, single-feature and drop-one scores, Lasso selection stability (penalty
 by cross-validation over the fold-recomputed designs), a merge test for correlated clusters and a verdict per
-feature; every feature that is not kept goes into a failed-feature box a lab component can import.
+feature; every feature that is not kept goes into a failed-feature box a lab component can import, except the ones a
+kept feature computes through ctx.feature (a composite's inputs, recorded per feature, transitively), which a lab that
+banned them could no longer compute the kept feature without.
 
 Run directories are strictly read only: the database through a read-only SQLite URI (a private copy when a
 write-ahead log is present, so no -wal or -shm file is ever created next to it), plugins imported file by file
@@ -78,10 +80,16 @@ NOISE_FLOOR = 0.001         # margin of practical equivalence: a paired differen
 CONST_REL = 1e-20           # a prediction whose within-perturbation variance is below this share of its sum of
                             # squares is constant up to rounding: pearson_delta 0, as for an exactly constant one
 SHOW_COMPACT_RUNS = 10      # compact sets listed by name in the report (the rest are in the JSON)
-VERDICTS = ("kept", "redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
+AUDIT_FORMAT = 2            # what a checkpointed audit of a run holds; 2: the dependency map, required inputs and the
+                            # merge test's weakest links, so no checkpoint written without them is ever reused
+VERDICTS = ("kept", "required_input", "redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
+BOXED_VERDICTS = VERDICTS[2:]  # the verdicts that go into the failed-feature box
 RULE = ("kept: in the compact set, the smallest feature set on the greedy backward path (chosen on the training "
         "perturbations' out-of-fold scores) whose score is within max(one paired SE, 0.001) of the path's best; a "
-        "feature kept in the selected model's or the pool's compact set is not boxed. Otherwise, in this order: "
+        "feature kept in the selected model's or the pool's compact set is not boxed. required_input: a feature that "
+        "a kept feature computes through ctx.feature, directly or transitively (recorded while the kept feature is "
+        "computed), whatever its own scores; it is not boxed either, since a lab that banned it could no longer "
+        "compute the kept feature. Otherwise, in this order: "
         "harmful: dropping it from the full model raises the visible score by more than max(paired SE, 0.001); "
         "redundant: one of its columns correlates |r| >= 0.9 with a column of a kept feature (partner named); "
         "substitutable: dropping it from the full model lowers the visible score by more than max(paired SE, 0.001), "
@@ -91,6 +99,12 @@ RULE = ("kept: in the compact set, the smallest feature set on the greedy backwa
         "ridge penalty chosen on the training perturbations' out-of-fold scores under one fold partition and "
         "reported under another, so only the validation perturbations are independent of it. 0.001 is a margin of "
         "practical equivalence, not a noise estimate. Built-in features are never boxed.")
+COMPOSITES = ("a feature that computes other registered features through ctx.feature (a composite) is audited as one "
+              "feature with its own columns; every name it calls, directly or through the features it calls, is "
+              "recorded on its fresh view and on every view derived from it, also a name outside the pool or one "
+              "that is not registered (the per-run 'dependencies' map); a feature that a kept feature of either scope "
+              "needs gets the verdict required_input in each scope where it is not kept and is never boxed; compact "
+              "sets are reported as listed and with their required inputs expanded (features and columns computed)")
 
 
 class Skip(Exception):
@@ -457,6 +471,27 @@ def corr_from_gram(G: np.ndarray, constant=None) -> np.ndarray:
     return np.clip(R, -1.0, 1.0)
 
 
+def weakest_link(A: np.ndarray) -> float:
+    """The smallest weight of a maximum spanning tree of the complete graph with weights A (symmetric, |r| of a
+    cluster's columns), by Prim's algorithm: the strongest chain of correlations that joins every member, so for a
+    single-linkage cluster at a threshold it is at least the threshold, however weakly its two ends correlate (that
+    all-pairs minimum is another number). 1.0 for a single column."""
+    A = np.asarray(A, dtype=np.float64)
+    k = A.shape[0]
+    if k < 2:
+        return 1.0
+    inside = np.zeros(k, dtype=bool)
+    inside[0] = True
+    best = A[0].copy()
+    links = []
+    for _ in range(k - 1):
+        j = int(np.argmax(np.where(inside, -np.inf, best)))
+        links.append(float(best[j]))
+        inside[j] = True
+        best = np.maximum(best, A[j])
+    return min(links)
+
+
 def union_find(n: int, edges) -> list[list[int]]:
     """Connected groups (two or more members) of n items under the given edges, members sorted, groups by first."""
     parent = list(range(n))
@@ -479,7 +514,9 @@ def union_find(n: int, edges) -> list[list[int]]:
 def redundancy(X: np.ndarray, columns: list[str], feature_of: list[str], constant=None) -> dict:
     """Redundancy of a standardised design X (rows x C): constant columns, exact duplicates, highly correlated pairs,
     clusters at |r| >= 0.9 (union-find), rank, effective rank (participation ratio of the correlation eigenvalues)
-    and condition number of the correlation matrix (None when singular)."""
+    and condition number of the correlation matrix (None when singular). A cluster is single linkage, a chain of
+    pairs at |r| >= 0.9, so its two ends may hardly correlate: its weakest link (the smallest |r| of a maximum
+    spanning tree, at least 0.9) is what defines it, and the all-pairs minimum is kept apart as min_pair_abs_r."""
     X = np.asarray(X, dtype=np.float64)
     C = X.shape[1]
     constant = (X.std(axis=0) <= 1e-12) if constant is None else np.asarray(constant, dtype=bool)
@@ -498,10 +535,12 @@ def redundancy(X: np.ndarray, columns: list[str], feature_of: list[str], constan
     cond = float(lam.max() / lam.min()) if lam.size and lam.min() > lam.max() * 1e-12 else None
 
     def rec(g):
-        sub = np.abs(R[np.ix_(g, g)])[np.triu_indices(len(g), 1)]
+        A = np.abs(R[np.ix_(g, g)])
+        sub = A[np.triu_indices(len(g), 1)]
         return {"columns": [columns[i] for i in g], "index": [int(i) for i in g],
                 "features": list(dict.fromkeys(feature_of[i] for i in g)),
-                "min_abs_r": float(sub.min()), "max_abs_r": float(sub.max())}
+                "weakest_link_abs_r": weakest_link(A), "min_pair_abs_r": float(sub.min()),
+                "max_abs_r": float(sub.max())}
     return {"n_columns": C, "constant_columns": [columns[i] for i in np.flatnonzero(constant)],
             "duplicate_groups": [[columns[i] for i in g] for g in dup],
             "n_duplicate_columns": int(sum(len(g) - 1 for g in dup)),
@@ -558,6 +597,34 @@ def merged_engine(engine: Engine, idx, clusters) -> Engine:
     seed_units = {s: [(merge_unit(u.subset(idx), clusters)[0], rows) for u, rows in us]
                   for s, us in engine.seed_units.items()}
     return Engine(seed_units, merge_unit(engine.val_unit.subset(idx), clusters)[0], engine.n_train, engine.alphas)
+
+
+def merge_test(engine: Engine, idx, clusters: list[dict]) -> list[dict]:
+    """The merge test of the model on columns idx: each cluster at |r| >= 0.9 (redundancy's records, indices into
+    idx) that spans two or more features replaced by its first principal component, then, when there are several,
+    all of them at once; each with the cluster's weakest link (what joins it, at least 0.9) and its all-pairs minimum
+    (the combined row: the smallest of each), the merged model's score and its paired difference from the full one."""
+    idx = list(idx)
+    full_vec = engine.score_idx(idx)["vector"]
+    merges, qualifying = [], []
+    for cl in clusters:
+        if len(cl["features"]) < 2:
+            continue
+        qualifying.append(cl["index"])
+        res = merged_engine(engine, idx, [cl["index"]]).score_idx(range(len(idx) - len(cl["index"]) + 1))
+        merges.append({"columns": cl["columns"], "features": cl["features"],
+                       "weakest_link_abs_r": cl["weakest_link_abs_r"], "min_pair_abs_r": cl["min_pair_abs_r"],
+                       "n_columns": len(idx) - len(cl["index"]) + 1, "mean": res["mean"], "se": res["se"],
+                       "alphas": [c["alpha"] for c in res["chosen"]], "vs_full": paired(res["vector"], full_vec)})
+    if len(qualifying) > 1:
+        n_new = len(idx) - sum(len(c) for c in qualifying) + len(qualifying)
+        res = merged_engine(engine, idx, qualifying).score_idx(range(n_new))
+        merges.append({"columns": "all clusters above", "features": sorted({f for m in merges for f in m["features"]}),
+                       "weakest_link_abs_r": min(m["weakest_link_abs_r"] for m in merges),
+                       "min_pair_abs_r": min(m["min_pair_abs_r"] for m in merges), "n_columns": n_new,
+                       "mean": res["mean"], "se": res["se"], "alphas": [c["alpha"] for c in res["chosen"]],
+                       "vs_full": paired(res["vector"], full_vec)})
+    return merges
 
 
 # ------------------------------------------------------------------ Lasso stability
@@ -658,7 +725,8 @@ def lasso_stability(X: np.ndarray, y: np.ndarray, groups: np.ndarray, cv_units: 
 def assign_verdicts(features: list[str], kept, n_columns: dict, single: dict, drop_one: dict, partner: dict,
                     kept_partner: dict, lasso_freq: dict | None, failed: dict) -> list[dict]:
     """One verdict per feature (the features analysed, then the unrecomputable ones), with its evidence. Order of the
-    rules: unrecomputable, kept, harmful, redundant, substitutable, no_gain (see RULE)."""
+    rules: unrecomputable, kept, harmful, redundant, substitutable, no_gain (see RULE). required_input, which outranks
+    every verdict but kept, needs the kept features of both scopes and is set afterwards (mark_required)."""
     kept = set(kept)
     out = []
     for f in list(features) + [g for g in failed if g not in features]:
@@ -691,6 +759,92 @@ def assign_verdicts(features: list[str], kept, n_columns: dict, single: dict, dr
                                  f"by {-d['diff']:+.4f} (paired SE {d['se']:.4f}), within max(SE, {NOISE_FLOOR:g})")
         out.append({"feature": f, "verdict": v, "reason": why, "evidence": ev})
     return out
+
+
+# ------------------------------------------------------------------ composites: what a kept feature needs
+def dependency_map(calls: dict) -> dict:
+    """The features each feature computes through ctx.feature. calls: {feature: {caller: [callees]}}, the calls
+    recorded on that feature's own fresh view (and the views derived from it), where the caller is the feature itself
+    or a feature it called. Returns {feature: {"direct": names it called itself, "transitive": every name reached}},
+    sorted, for the features that called any. The transitive sets are then closed over the map as well (a feature
+    that needs B needs whatever B needed on B's own view), which can only add names: a feature kept for its own
+    columns must never lose an input to the box because a memo or a parameter hid a call."""
+    out = {}
+    for f, edges in calls.items():
+        seen, todo = set(), list(edges.get(f, []))
+        while todo:
+            g = todo.pop()
+            if g != f and g not in seen:
+                seen.add(g)
+                todo.extend(edges.get(g, []))
+        if seen:
+            out[f] = {"direct": sorted(set(edges.get(f, [])) - {f}), "transitive": seen}
+    changed = True
+    while changed:
+        changed = False
+        for f, d in out.items():
+            more = set().union(*[out[g]["transitive"] for g in d["transitive"] if g in out]) - d["transitive"] - {f}
+            if more:
+                d["transitive"] |= more
+                changed = True
+    return {f: {"direct": d["direct"], "transitive": sorted(d["transitive"])} for f, d in out.items()}
+
+
+def required_by(kept, deps: dict) -> dict[str, list[str]]:
+    """Every feature that a kept feature needs (deps: dependency_map, transitive), with the kept features that need
+    it, in the order they are given."""
+    out: dict[str, list[str]] = {}
+    for k in dict.fromkeys(kept):
+        for g in (deps.get(k) or {}).get("transitive", []):
+            if g != k:
+                out.setdefault(g, []).append(k)
+    return out
+
+
+def mark_required(verdicts: list[dict], req: dict[str, list[str]]) -> None:
+    """In place: every verdict but kept of a feature that kept features need becomes required_input, naming them; the
+    verdict it would otherwise have stays in its evidence (verdict_otherwise), and so does its own evidence."""
+    for v in verdicts:
+        f = v["feature"]
+        if v["verdict"] == "kept" or f not in req:
+            continue
+        ev = dict(v.get("evidence") or {})
+        if v["verdict"] != "required_input":
+            ev["verdict_otherwise"] = v["verdict"]
+            ev["reason_otherwise"] = v["reason"]
+        ev["required_by"] = list(req[f])
+        v["verdict"] = "required_input"
+        v["reason"] = (f"computed through ctx.feature by kept feature(s) {_names(req[f], 3)}, which a lab that banned "
+                       f"it could not compute" + (f"; otherwise {ev['verdict_otherwise']}"
+                                                  if ev.get("verdict_otherwise") else ""))
+        v["evidence"] = ev
+
+
+def compact_expansion(features: list[str], n_columns: int, deps: dict, dep_columns: dict) -> dict:
+    """A compact set's size with its required inputs expanded: the features its members compute through ctx.feature
+    (transitively) that are not members themselves, and the features and columns computed in all (the inputs'
+    columns as they were called; None when an input's were never seen, as for a call that raised)."""
+    own = set(features)
+    inputs = sorted({g for f in features for g in (deps.get(f) or {}).get("transitive", [])} - own)
+    cols = [dep_columns.get(g) for g in inputs]
+    return {"required_inputs": inputs, "n_features_expanded": len(features) + len(inputs),
+            "n_columns_expanded": None if any(c is None for c in cols) else int(n_columns) + int(sum(cols))}
+
+
+def apply_dependencies(r: dict) -> None:
+    """In place, on one audited run: a feature kept in either scope's compact set (or with the verdict kept) that
+    computes others through ctx.feature (r["dependencies"]) makes each of them required_input in every scope where it
+    is not kept itself, and each compact set gets its size with its required inputs expanded."""
+    deps, dep_columns = r.get("dependencies") or {}, r.get("dependency_columns") or {}
+    scopes = [a for a in (r.get("selected_analysis"), r.get("pool")) if a]
+    kept = [f for a in scopes for f in (a.get("compact") or {}).get("features", [])]
+    kept += [v["feature"] for a in scopes for v in a.get("verdicts") or [] if v["verdict"] == "kept"]
+    req = required_by(kept, deps)
+    for a in scopes:
+        mark_required(a.get("verdicts") or [], req)
+        if a.get("compact"):
+            a["compact"].update(compact_expansion(a["compact"]["features"], a["compact"]["n_columns"], deps,
+                                                  dep_columns))
 
 
 def analyse_model(engine: Engine, features: list[str], R: np.ndarray, columns: list[str], failed: dict,
@@ -923,14 +1077,43 @@ def _pool(meta: dict, sel_feats: list[str], sel_params: dict) -> tuple[list[str]
 class LabelWatch(FeatureContext):
     """A fresh view of a context (empty memos, the same training set) that counts every read of the training labels,
     through train_delta or directly through the private _train_delta, also from views a feature derives from it (the
-    counter is shared by copies), so that a feature's label dependence is detected however it reaches the labels."""
+    counter is shared by copies), so that a feature's label dependence is detected however it reaches the labels.
+    It records, the same way, every registered feature computed through ctx.feature: who called which name (the
+    owner, or a feature the owner called, and so on down), before the name is even looked up, so that a call of a
+    name that is not registered, or that a memo answers, is recorded too; and how many columns each name returned."""
 
-    def __init__(self, base: FeatureContext):  # a view of base: FeatureContext.__init__ would reload the data
+    def __init__(self, base: FeatureContext, owner: str | None = None):  # a view: __init__ would reload the data
         state = dict(base.without_train([]).__dict__)
         state.pop("label_reads", None)
         state["_watched_delta"] = state.pop("_train_delta")
         state["_watch_counter"] = [0]
+        state["_watch_calls"] = {}                              # caller -> {callee: None}, an ordered set
+        state["_watch_stack"] = [] if owner is None else [str(owner)]
+        state["_watch_columns"] = {}                            # callee -> columns returned (the most seen)
         self.__dict__.update(state)
+
+    def feature(self, name: str, perts: list[str], params: dict | None = None) -> np.ndarray:
+        stack = self.__dict__["_watch_stack"]
+        self.__dict__["_watch_calls"].setdefault(stack[-1] if stack else None, {}).setdefault(str(name), None)
+        stack.append(str(name))
+        try:
+            arr = super().feature(name, perts, params)
+        finally:
+            stack.pop()
+        shape = np.shape(arr)
+        if len(shape) in (2, 3):
+            seen = self.__dict__["_watch_columns"]
+            seen[str(name)] = max(seen.get(str(name), 0), 1 if len(shape) == 2 else int(shape[2]))
+        return arr
+
+    @property
+    def feature_calls(self) -> dict:
+        """{caller: [callees]} in the order first called (caller None: a call made with no owner)."""
+        return {k: list(v) for k, v in self.__dict__["_watch_calls"].items()}
+
+    @property
+    def feature_columns(self) -> dict:
+        return dict(self.__dict__["_watch_columns"])
 
     @property
     def label_reads(self) -> int:
@@ -956,10 +1139,12 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     detected per feature on a clean slate: each feature's blocks of the training perturbations and of every
     perturbation outside the training set are computed on its own fresh view (plugins re-executed first, so neither
     another feature's memo nor a module-level memo can hide a read of the labels), which counts every read of the
-    training labels. Then, for each fold seed and fold, plugins re-executed and the label-dependent features
-    recomputed on the view without the fold (training rows plus fold rows in one call); a label-free feature's rows
-    are sliced from its full-training block, which no label shaped. Nothing is cached on disk. A feature that raises
-    anywhere is dropped (failed); `failed` may carry features already known to be unrecomputable."""
+    training labels and every feature it computes through ctx.feature (calls: {feature: {caller: [callees]}},
+    call_columns: the columns each called name returned). Then, for each fold seed and fold, plugins re-executed and
+    the label-dependent features recomputed on the view without the fold (training rows plus fold rows in one call); a
+    label-free feature's rows are sliced from its full-training block, which no label shaped. Nothing is cached on
+    disk. A feature that raises anywhere is dropped (failed), the calls it made before raising still recorded;
+    `failed` may carry features already known to be unrecomputable."""
     train = list(ctx.train_perts)
     evals = [p for p in ctx.perts if p not in set(train)]
     G = ctx.n_genes
@@ -967,6 +1152,8 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     failed = dict(failed or {})
     label_dep: dict[str, bool] = {}
     full_tr, full_ev = {}, {}
+    calls: dict[str, dict] = {}
+    call_columns: dict[str, int] = {}
 
     def reload_marking():
         for f, e in reload_run_plugins().items():
@@ -978,7 +1165,7 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
         reload_marking()
         if f in failed:
             continue
-        view = LabelWatch(ctx)
+        view = LabelWatch(ctx, owner=f)
         try:
             full_tr[f] = feature_blocks(view, [f], params, train, timings, None, None, label_dep)[f]
             blk = feature_blocks(view, [f], params, evals, timings, None, None, label_dep)[f]
@@ -989,6 +1176,9 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
         except Exception as exc:  # missing dependency, bad shape, NaN: unrecomputable
             failed[f] = _err(exc)
             full_tr.pop(f, None)
+        calls[f] = view.feature_calls
+        for g, c in view.feature_columns.items():
+            call_columns[g] = max(call_columns.get(g, 0), c)
     _, D = ctx.train_delta()
     pos = {p: i for i, p in enumerate(train)}
     raw_units: dict[int, list] = {}
@@ -1055,7 +1245,7 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     return {"features": ok, "columns": columns, "feature_of": feature_of, "columns_of": columns_of,
             "seed_units": seed_units, "val_unit": val_unit, "Xtr": Xtr_s, "Xev": Xev_s, "y": y, "evals": evals,
             "constant": constant, "failed": failed, "label_dependent": sorted(f for f in ok if label_dep.get(f, True)),
-            "feature_cpu_s": {f: float(v) for f, v in timings.items()}}
+            "feature_cpu_s": {f: float(v) for f, v in timings.items()}, "calls": calls, "call_columns": call_columns}
 
 
 def _model_alpha(sel: dict) -> tuple[str, float, int]:
@@ -1256,7 +1446,12 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
         f"folds, in {timings['features_and_fits']:.0f} s")
     failed = fits["failed"]
     out.update(n_train=len(ctx.train_perts), n_val=len(val1.perts), n_genes=ctx.n_genes,
-               unrecomputable=failed, label_dependent=fits["label_dependent"], feature_cpu_s=fits["feature_cpu_s"])
+               unrecomputable=failed, label_dependent=fits["label_dependent"], feature_cpu_s=fits["feature_cpu_s"],
+               audit_format=AUDIT_FORMAT, dependencies=dependency_map(fits["calls"]),
+               dependency_columns=fits["call_columns"])
+    if out["dependencies"]:
+        log(f"{len(out['dependencies'])} composite feature(s) compute others through ctx.feature: "
+            + _names(sorted(out["dependencies"]), 3))
     engine = Engine(fits["seed_units"], fits["val_unit"], len(ctx.train_perts), alphas, fits["columns_of"])
     columns, feature_of = fits["columns"], fits["feature_of"]
     sel_feats = [f for f in sel_feats_all if f in fits["columns_of"]]
@@ -1286,25 +1481,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     t = lap("selected_paths", t)
     analysis["redundancy"] = red
     analysis["lasso"] = lasso
-    # merge test: clusters at |r| >= 0.9 spanning two or more of the model's features
-    full_vec = engine.score(sel_feats)["vector"]
-    merges, qualifying = [], []
-    for cl in red["clusters"]:
-        if len(cl["features"]) < 2:
-            continue
-        qualifying.append(cl["index"])
-        res = merged_engine(engine, sel_idx, [cl["index"]]).score_idx(range(len(sel_idx) - len(cl["index"]) + 1))
-        merges.append({"columns": cl["columns"], "features": cl["features"], "min_abs_r": cl["min_abs_r"],
-                       "n_columns": len(sel_idx) - len(cl["index"]) + 1, "mean": res["mean"], "se": res["se"],
-                       "alphas": [c["alpha"] for c in res["chosen"]], "vs_full": paired(res["vector"], full_vec)})
-    if len(qualifying) > 1:
-        n_new = len(sel_idx) - sum(len(c) for c in qualifying) + len(qualifying)
-        res = merged_engine(engine, sel_idx, qualifying).score_idx(range(n_new))
-        merges.append({"columns": "all clusters above", "features": sorted({f for m in merges for f in m["features"]}),
-                       "min_abs_r": min(m["min_abs_r"] for m in merges), "n_columns": n_new, "mean": res["mean"],
-                       "se": res["se"], "alphas": [c["alpha"] for c in res["chosen"]],
-                       "vs_full": paired(res["vector"], full_vec)})
-    analysis["merge"] = merges
+    analysis["merge"] = merge_test(engine, sel_idx, red["clusters"])  # clusters spanning two or more features
     t = lap("merge", t)
     out["selected_analysis"] = analysis
     # ---- the pool: census, single and drop-one, paths, compact choice and verdicts
@@ -1315,6 +1492,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
         t = lap("pool_paths", t)
     else:
         out["pool"] = None
+    apply_dependencies(out)  # a composite kept in either scope keeps its inputs out of the box in both
     marks = []
     if sel_failed:
         marks.append(f"{len(sel_failed)} selected feature(s) unrecomputable")
@@ -1350,15 +1528,16 @@ def _family(name: str) -> str:
 
 def combined_verdicts(r: dict) -> list[dict]:
     """One verdict per (run, feature) over both scopes: kept when the feature is kept in the selected model's or the
-    pool's compact set; otherwise the selected model's verdict when the feature is in it, else the pool's. Each
-    entry carries both scopes' verdicts."""
+    pool's compact set; otherwise required_input when a kept feature needs it in either scope; otherwise the selected
+    model's verdict when the feature is in it, else the pool's. Each entry carries both scopes' verdicts."""
     scopes = {s: {v["feature"]: v for v in ((r.get(key) or {}).get("verdicts") or [])}
               for s, key in (("selected", "selected_analysis"), ("pool", "pool"))}
     out = []
     for f in dict.fromkeys(list(scopes["selected"]) + list(scopes["pool"])):
         here = {s: d[f] for s, d in scopes.items() if f in d}
         kept_in = [s for s, v in here.items() if v["verdict"] == "kept"]
-        scope = kept_in[0] if kept_in else ("selected" if "selected" in here else "pool")
+        needed_in = [s for s, v in here.items() if v["verdict"] == "required_input"]
+        scope = (kept_in or needed_in or ["selected" if "selected" in here else "pool"])[0]
         v = here[scope]
         out.append({"feature": f, "verdict": v["verdict"], "reason": v["reason"], "scope": scope, "kept_in": kept_in,
                     "evidence": v["evidence"], "builtin": f in BUILTIN_FEATURES,
@@ -1387,6 +1566,8 @@ def _aggregate_class(runs: list[dict]) -> dict:
             fam["n"] += 1
             if v["verdict"] == "kept":
                 fam["kept"] += 1
+            elif v["verdict"] == "required_input":  # neither kept for its own columns nor boxed
+                fam["required_input"] += 1
             else:
                 fam["boxed"] += 1
                 fam[v["verdict"]] += 1
@@ -1396,6 +1577,9 @@ def _aggregate_class(runs: list[dict]) -> dict:
         c = a["compact"]
         rows.append({"run": r["run"], "n_features": a["census"]["n_features"], "n_columns": a["census"]["n_columns"],
                      "compact_features": c["n_features"], "compact_columns": c["n_columns"],
+                     "n_inputs": len(c.get("required_inputs") or []),
+                     "expanded_features": c.get("n_features_expanded", c["n_features"]),
+                     "expanded_columns": c.get("n_columns_expanded", c["n_columns"]),
                      "diff": c["vs_full"]["diff"], "se": c["vs_full"]["se"], "n_val": c["vs_full"]["n"],
                      "class": classify(c["vs_full"]["diff"], c["vs_full"]["se"]),
                      "train_diff": c["vs_full_train"]["diff"]})
@@ -1422,7 +1606,11 @@ def _aggregate_class(runs: list[dict]) -> dict:
                             "median_features": _median([x["compact_features"] for x in rows]),
                             "median_full_features": _median([x["n_features"] for x in rows]),
                             "median_columns": _median([x["compact_columns"] for x in rows]),
-                            "median_full_columns": _median([x["n_columns"] for x in rows])},
+                            "median_full_columns": _median([x["n_columns"] for x in rows]),
+                            "n_with_inputs": sum(1 for x in rows if x["n_inputs"]),
+                            "median_features_expanded": _median([x["expanded_features"] for x in rows]),
+                            "median_columns_expanded": _median([x["expanded_columns"] for x in rows
+                                                                if x["expanded_columns"] is not None])},
         "sealed": {"n": len(sealed),
                    "mean_difference": float(np.mean([s["difference"] for s in sealed])) if sealed else None,
                    "compact_higher": sum(1 for s in sealed if s["difference"] > 0),
@@ -1452,11 +1640,12 @@ def aggregate(runs: list[dict]) -> dict:
 
 
 def _checkpoint_key(run_dir: Path, proto: dict) -> str:
-    """Identifies an audit by everything it depends on: this tool's code, the protocol, the run's path, database,
-    configuration and plugins. A run that changed, or a changed tool, is audited afresh."""
+    """Identifies an audit by everything it depends on: this tool's code, the protocol and the format of what it
+    records (AUDIT_FORMAT), the run's path, database, configuration and plugins. A run that changed, or a changed
+    tool, is audited afresh."""
     h = hashlib.sha256()
     h.update(Path(__file__).read_bytes())
-    h.update(json.dumps(proto, sort_keys=True, default=str).encode())
+    h.update(json.dumps({**proto, "audit_format": AUDIT_FORMAT}, sort_keys=True, default=str).encode())
     h.update(str(Path(run_dir).resolve()).encode())
     files = [run_dir / n for n in ("lab.db", "lab.db-wal", "config.json", "summary.json")]
     files += sorted((run_dir / "feature_store").glob("*.py")) if (run_dir / "feature_store").is_dir() else []
@@ -1496,11 +1685,13 @@ def analyse(run_dirs: list[Path], cache_dir: Path, fold_seeds=None, resamples: i
             ck = None
         if ck is not None and ck.exists():
             try:
-                runs.append(json.loads(ck.read_text()))
+                cached = json.loads(ck.read_text())
+            except ValueError:
+                cached = None
+            if isinstance(cached, dict) and cached.get("audit_format") == AUDIT_FORMAT:  # never an older audit's
+                runs.append(cached)
                 say(f"[feature_audit] {d.name}: taken from the checkpoint {ck.name} ({i + 1}/{len(run_dirs)})")
                 continue
-            except ValueError:
-                pass
         say(f"[feature_audit] run {i + 1}/{len(run_dirs)}: {d}")
         try:
             r = _plain(audit_run(d, fold_seeds, resamples, use_pool, sealed, say))
@@ -1516,21 +1707,22 @@ def analyse(run_dirs: list[Path], cache_dir: Path, fold_seeds=None, resamples: i
                          "fixed_alphas": list(FIXED_ALPHAS), "pool_min_gain": POOL_MIN_GAIN,
                          "corr_high": CORR_HIGH, "duplicate_r": DUPLICATE_R, "stable_frequency": STABLE_FREQ,
                          "sealed_flag": SEALED_FLAG, "reproduction_flag": REPRO_FLAG, "noise_floor": NOISE_FLOOR,
-                         "rule": RULE},
+                         "rule": RULE, "composites": COMPOSITES, "audit_format": AUDIT_FORMAT},
             "runs": runs, "aggregate": aggregate(runs)}
 
 
 def build_box(rep: dict) -> dict:
     """Every feature an agent might propose again that the audit did not keep: one entry per (run, feature), with
-    the combined verdict over the selected model's and the pool's analyses (a feature kept in either is not boxed),
-    its reason and evidence (both scopes' verdicts inside). Built-in features are never boxed."""
+    the combined verdict over the selected model's and the pool's analyses (a feature kept in either is not boxed,
+    nor is one that a kept feature computes through ctx.feature), its reason and evidence (both scopes' verdicts
+    inside). Built-in features are never boxed."""
     entries = []
     for r in rep["runs"]:
         sel = r.get("selected") or {}
         intro = r.get("introduced_by") or {}
         info = r.get("feature_info") or {}
         for v in combined_verdicts(r):
-            if v["verdict"] == "kept" or v["builtin"]:
+            if v["verdict"] not in BOXED_VERDICTS or v["builtin"]:
                 continue
             f = v["feature"]
             entries.append({"run": r["run"], "run_id": r.get("run_id"), "arm": r.get("arm"),
@@ -1619,6 +1811,24 @@ def _names_within(xs, width: int) -> str:
     return _names(xs, k)
 
 
+def _compact_fc(c: dict) -> str:
+    """A compact set's size for the Runs table: features (+ required inputs, when its members compute any through
+    ctx.feature) / columns of the model."""
+    k = len(c.get("required_inputs") or [])
+    return f"{c['n_features']}" + (f" (+{_plural(k, 'input')})" if k else "") + f"/{c['n_columns']}"
+
+
+def _inputs_clause(c: dict, width: int = 60) -> str:
+    """The required inputs of a compact set and its expanded size, for a sentence or a list line ('' when none)."""
+    inputs = c.get("required_inputs") or []
+    if not inputs:
+        return ""
+    cols = c.get("n_columns_expanded")
+    return (f"; with the {_plural(len(inputs), 'required input')} it computes through ctx.feature "
+            f"({_names_within(inputs, width)}): {c.get('n_features_expanded', 'n/a')} features, "
+            f"{'n/a' if cols is None else cols} columns computed")
+
+
 def render(rep: dict) -> str:
     runs, agg, proto = rep["runs"], rep["aggregate"], rep["protocol"]
     audited = [r for r in runs if r["status"] == "audited"]
@@ -1629,6 +1839,8 @@ def render(rep: dict) -> str:
     any_sealed = any(r.get("sealed") for r in audited)
     nonridge = any(r["selected"]["model_type"] != "ridge" for r in audited)
     any_marked = any(r.get("marks") for r in audited)
+    composites = "composites" in proto  # the audit recorded what each feature computes through ctx.feature
+    any_inputs = any(r["selected_analysis"]["compact"].get("required_inputs") for r in audited)
     floor = proto.get("noise_floor", NOISE_FLOOR)
     fs = proto.get("fold_seeds")
     seeds_txt = (f"fold seeds {', '.join(map(str, fs))}" if isinstance(fs, list)
@@ -1652,8 +1864,12 @@ def render(rep: dict) -> str:
          f"established or below {floor:g}, a margin of practical equivalence. Lasso: "
          f"penalty by cross-validation over the fold-recomputed designs, then {proto.get('resamples')} half-samples; "
          f"stable = selected in at least {proto.get('stable_frequency', STABLE_FREQ):.0%}. Verdicts, in order: kept, "
-         "harmful, redundant (|r| ≥ 0.9 with a kept feature), substitutable (established drop-one gain the compact "
-         "set does without), no_gain, unrecomputable.", ""]
+         + ("required_input, " if composites else "")
+         + "harmful, redundant (|r| ≥ 0.9 with a kept feature), substitutable (established drop-one gain the compact "
+         "set does without), no_gain, unrecomputable."
+         + (" A composite (a feature computing others through ctx.feature, recorded transitively on its fresh view) "
+            "is one feature; what a kept one needs is never boxed (required_input) and counts in its expanded size."
+            if composites else ""), ""]
     if any_sealed:
         L += ["Sealed scores, read before the numbers: the sealed perturbations have already been read for dozens of "
               "finalists across about thirty runs, so these are one more look at a used set, not a clean test; the "
@@ -1678,7 +1894,7 @@ def render(rep: dict) -> str:
         row = (f"| {r['run']}{'*' if s['model_type'] != 'ridge' else ''}{' †' if r.get('marks') else ''} | "
                f"{arms.get(r['arm'])} | {n_f} | {a['census']['n_columns']} | {red['rank']} | "
                f"{red['n_duplicate_columns']} | "
-               f"{red['n_pairs_above_0.9']} | {c['n_features']}/{c['n_columns']} | {_f(a['full']['mean'])} | "
+               f"{red['n_pairs_above_0.9']} | {_compact_fc(c)} | {_f(a['full']['mean'])} | "
                f"{_f(c['mean'])} | {_pd(c['vs_full'])} | {len(a['lasso']['stable_features'])}/{n_f} |")
         if any_sealed:
             sd = r.get("sealed")
@@ -1687,7 +1903,10 @@ def render(rep: dict) -> str:
         L.append(row)
     L += ["", ("Arms: " + "; ".join(f"{code} = {arm}" for arm, code in arms.items()) + ".") if arms else "Arms: none.",
           "feat./cols: the selected model; dup.: exact duplicate columns; r≥0.9: column pairs with |r| ≥ 0.9; "
-          "compact f/c: the compact set; full, compact: visible scores (the compact set was chosen on the training "
+          "compact f/c: the compact set"
+          + (" (+ inputs: the features its members compute through ctx.feature, not columns of the model)"
+             if any_inputs else "")
+          + "; full, compact: visible scores (the compact set was chosen on the training "
           "perturbations, which flatter it); Δ val: compact − full on the validation perturbations, paired; Lasso: "
           "Lasso-stable features."
           + (" *: the selected model is not ridge (its type is in the JSON) and is audited as ridge on the same "
@@ -1700,7 +1919,8 @@ def render(rep: dict) -> str:
     if shown:
         L += ["", f"Compact sets ({CLASS_LABEL[prim]} runs):", ""]
         for r in shown[:SHOW_COMPACT_RUNS]:
-            L.append(f"- {r['run']}: {_names_within(r['selected_analysis']['compact']['features'], 90)}")
+            c = r["selected_analysis"]["compact"]
+            L.append(f"- {r['run']}: {_names_within(c['features'], 90)}" + _inputs_clause(c))
         if len(shown) > SHOW_COMPACT_RUNS:
             L.append(f"- … {len(shown) - SHOW_COMPACT_RUNS} more runs")
     present = [c for c in ("agent", "no_llm") if agg["classes"][c]["n_runs"]] or [agg["primary"]]
@@ -1708,13 +1928,16 @@ def render(rep: dict) -> str:
           "| verdict | " + " | ".join(f"{CLASS_LABEL[c]}: selected | {CLASS_LABEL[c]}: pools" for c in present) + " |",
           "|---|" + "---|---|" * len(present)]
     for v in VERDICTS:
-        L.append(f"| {v} | " + " | ".join(f"{agg['classes'][c]['verdict_counts']['selected'][v]} | "
-                                         f"{agg['classes'][c]['verdict_counts']['pool'][v]}" for c in present) + " |")
+        if v == "required_input" and not composites:  # an older audit never looked: no count, rather than a false 0
+            continue
+        L.append(f"| {v} | " + " | ".join(f"{agg['classes'][c]['verdict_counts']['selected'].get(v, 0)} | "
+                                         f"{agg['classes'][c]['verdict_counts']['pool'].get(v, 0)}" for c in present)
+                 + " |")
     pa = agg["classes"][prim]
     if pa["families_kept"] or pa["families_boxed"]:
         kept = ", ".join(f"{x['family']} {x['kept']}/{x['n']}" for x in pa["families_kept"][:4]) or "none"
         boxed = ", ".join(f"{x['family']} {x['boxed']}/{x['n']} ("
-                          + ", ".join(f"{x[v]} {v}" for v in VERDICTS[1:] if x.get(v)) + ")"
+                          + ", ".join(f"{x[v]} {v}" for v in BOXED_VERDICTS if x.get(v)) + ")"
                           for x in pa["families_boxed"][:4]) or "none"
         L += ["", f"Feature families of the {CLASS_LABEL[prim]} runs (name without its _e<experiment> suffix, "
               "built-ins left out; one verdict per run and feature, kept in either scope counts as kept), most often "
@@ -1739,6 +1962,9 @@ def _render_detail(r: dict) -> list[str]:
             f"Compact − full on the {comp['vs_full']['n']} validation perturbations {_pd(comp['vs_full'])}, "
             f"{comp['vs_full']['wins']} wins; on the {comp['vs_full_train']['n']} training perturbations that chose it "
             f"{_pd(comp['vs_full_train'])}.")
+    if comp.get("required_inputs"):
+        para += (f" Compact set of {_plural(comp['n_features'], 'feature')} and {_plural(comp['n_columns'], 'column')}"
+                 + _inputs_clause(comp, 120) + ".")
     if vr.get("available"):
         parts = [f"{k.replace('_', '-')} {_f(vr[k]['tool'])} vs stored {_f(vr[k]['stored'])}"
                  for k in ("validation", "out_of_fold") if vr.get(k)]
@@ -1795,13 +2021,18 @@ def _render_detail(r: dict) -> list[str]:
           + f". Lasso penalty {a['lasso']['lambda']:.3g}; {len(a['lasso']['stable_features'])} stable features"
           + (f": {_names(a['lasso']['stable_features'], 2)}." if a["lasso"]["stable_features"] else ".")]
     merges = a.get("merge") or []
+    links = [m.get("weakest_link_abs_r") for m in merges]
     L += ["", "Merge test (a cluster at |r| ≥ 0.9 spanning two or more features replaced by its first principal "
-          "component, fitted on each fit's training rows only):", ""]
+          "component, fitted on each fit's training rows only"
+          + ("; weakest link: the smallest |r| of the chain joining the cluster, ≥ 0.9; its ends may correlate less, "
+             "min_pair_abs_r in the JSON" if any(x is not None for x in links) else "")
+          + "):", ""]
     if merges:
-        L += ["| cluster features | min abs r | cols | merged score | merged − full (SE) |", "|---|---|---|---|---|"]
-        for m in merges[:2]:
+        L += ["| cluster features | weakest link \\|r\\| | cols | merged score | merged − full (SE) |",
+              "|---|---|---|---|---|"]
+        for m, link in zip(merges[:2], links):
             name = "all clusters" if isinstance(m["columns"], str) else _names_within(m["features"], 60)
-            L.append(f"| {name} | {m['min_abs_r']:.3f} | {m['n_columns']} | {_f(m['mean'])} | {_pd(m['vs_full'])} |")
+            L.append(f"| {name} | {_f(link, 3)} | {m['n_columns']} | {_f(m['mean'])} | {_pd(m['vs_full'])} |")
         if len(merges) > 2:
             L.append(f"| … {len(merges) - 2} more in the JSON | | | | |")
     else:
@@ -1833,6 +2064,12 @@ def _reading(rep: dict) -> str:
                      f"{cf['median_full_features']:g} features ({cf['median_columns']:g} of "
                      f"{cf['median_full_columns']:g} columns) and is smaller than the full model in {cf['n_smaller']} "
                      f"of {cf['n']} runs.")
+        if cf.get("n_with_inputs"):
+            cols = cf.get("median_columns_expanded")
+            parts.append(f" In {cf['n_with_inputs']} of the {cf['n']} runs it keeps a composite that computes other "
+                         "features through ctx.feature; counting those required inputs, it computes a median of "
+                         f"{cf['median_features_expanded']:g} features"
+                         + ("" if cols is None else f" and {cols:g} columns") + ".")
     if cf["n_smaller"]:
         cats = [f"within one paired SE in {cf['not_established']} of {cf['n_smaller']} runs"]
         if cf["below_margin"]:
@@ -1860,19 +2097,23 @@ def _reading(rep: dict) -> str:
     elif cf["n"]:
         parts.append(" No model can be made smaller within that band on the training perturbations.")
     vc = A["verdict_counts"]["selected"]
+    req = vc.get("required_input", 0)  # absent from an audit that predates composites
     dropped = vc["redundant"] + vc["substitutable"] + vc["harmful"] + vc["no_gain"]
-    if dropped:
-        share = vc["redundant"] / dropped
-        parts.append(f" Of the {dropped} features of the selected models outside their compact sets, "
-                     f"{vc['redundant']} are redundant (|r| ≥ 0.9 with a kept feature), {vc['substitutable']} "
-                     f"substitutable (an established drop-one gain that kept features take over), {vc['no_gain']} "
-                     f"no_gain and {vc['harmful']} harmful; "
-                     + ("near-duplication explains most of the feature count" if share >= 0.5 else
-                        "near-duplication explains a minority of the count: most dropped features are not copies "
-                        "of kept ones" if share > 0 else
-                        "near-duplication explains none of the count: no dropped feature is a copy of a kept one")
-                     + (f"; a no_gain feature's drop-one effect is within max(paired SE, {band:g}), which is not "
-                        "proof of zero effect." if vc["no_gain"] else "."))
+    if dropped + req:
+        share = vc["redundant"] / dropped if dropped else 0.0
+        parts.append(f" Of the {dropped + req} features of the selected models outside their compact sets, "
+                     + (f"{req} {'is a required input' if req == 1 else 'are required inputs'} of kept features (not "
+                        f"boxed){', ' if dropped else '.'}" if req else "")
+                     + ("" if not dropped else
+                        f"{vc['redundant']} are redundant (|r| ≥ 0.9 with a kept feature), {vc['substitutable']} "
+                        f"substitutable (an established drop-one gain that kept features take over), {vc['no_gain']} "
+                        f"no_gain and {vc['harmful']} harmful; "
+                        + ("near-duplication explains most of the feature count" if share >= 0.5 else
+                           "near-duplication explains a minority of the count: most dropped features are not copies "
+                           "of kept ones" if share > 0 else
+                           "near-duplication explains none of the count: no dropped feature is a copy of a kept one")
+                        + (f"; a no_gain feature's drop-one effect is within max(paired SE, {band:g}), which is not "
+                           "proof of zero effect." if vc["no_gain"] else ".")))
     if vc["unrecomputable"]:
         parts.append(f" {vc['unrecomputable']} feature(s) of the selected models could not be recomputed and are "
                      "boxed as such.")

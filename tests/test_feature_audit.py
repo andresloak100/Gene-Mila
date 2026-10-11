@@ -4,7 +4,8 @@ perturbations only, redundancy, Lasso stability with a fold-honest penalty, the 
 loaded file by file and label dependence detected per feature; end to end on a finished run it writes the report,
 its JSON twin and the failed-feature box, re-renders byte for byte, leaves the run directory untouched, survives a
 broken plugin, resumes from checkpoints, and reads the sealed set only through two queries of its own oracle when
-asked."""
+asked. Composites (features that compute others through ctx.feature) keep the features they need out of the box, and
+a single-linkage cluster is reported by its weakest link; a JSON written before either still renders."""
 
 import ast
 import gc
@@ -224,9 +225,50 @@ def test_duplicates_clusters_and_rank():
     assert red["n_pairs_above_0.9"] == 3 and red["n_pairs_above_0.7"] == 3
     assert [cl["columns"] for cl in red["clusters"]] == [["a", "b", "c"]]
     assert red["clusters"][0]["features"] == ["fa", "fb", "fc"] and red["clusters"][0]["max_abs_r"] == pytest.approx(1)
+    cl = red["clusters"][0]  # a, b and c all correlate above 0.9: the weakest link is the all-pairs minimum here
+    assert "min_abs_r" not in cl and cl["weakest_link_abs_r"] == pytest.approx(cl["min_pair_abs_r"])
+    assert cl["weakest_link_abs_r"] >= fa.CORR_HIGH
     assert red["top_pairs"][0]["a"] == "a" and red["top_pairs"][0]["b"] == "b"
     assert red["condition_number"] is None and 1.0 < red["effective_rank"] < 4.0
     assert fa.union_find(5, [(0, 1), (3, 4), (1, 0)]) == [[0, 1], [3, 4]]
+
+
+def _chain(angles_deg, n=500, seed=8):
+    """Columns cos(t) e1 + sin(t) e2 over two exactly orthonormal, centred directions, so that column i correlates
+    cos(t_i - t_j) with column j."""
+    Z = np.random.default_rng(seed).normal(size=(n, 2))
+    Q = np.linalg.qr(Z - Z.mean(axis=0))[0] * np.sqrt(n)
+    t = np.radians(np.asarray(angles_deg, dtype=float))
+    return Q[:, :1] * np.cos(t) + Q[:, 1:] * np.sin(t)
+
+
+def test_a_chained_cluster_is_reported_by_its_weakest_link():
+    """Single linkage at 0.9 chains a ~ b ~ c (|r| = cos 25° = 0.906 each) although a and c correlate only
+    cos 50° = 0.643, and a five-column chain whose ends correlate cos 88° = 0.035: the weakest link (the smallest |r|
+    of a maximum spanning tree, what joins the cluster) is at least 0.9; the all-pairs minimum is kept apart."""
+    X = np.column_stack([_chain([0, 25, 50]), _chain([0, 22, 44, 66, 88], seed=9),
+                         np.random.default_rng(10).normal(size=500)])
+    Xs = fa.standardise(X)[0]
+    cols = [f"c{i}" for i in range(X.shape[1])]
+    red = fa.redundancy(Xs, cols, ["fa", "fb", "fc", "fd", "fd", "fe", "fe", "fe", "ff"])
+    three, five = red["clusters"]
+    assert three["columns"] == ["c0", "c1", "c2"] and five["columns"] == ["c3", "c4", "c5", "c6", "c7"]
+    assert three["weakest_link_abs_r"] == pytest.approx(np.cos(np.radians(25)), abs=1e-9)
+    assert three["min_pair_abs_r"] == pytest.approx(np.cos(np.radians(50)), abs=1e-9)
+    assert five["weakest_link_abs_r"] == pytest.approx(np.cos(np.radians(22)), abs=1e-9)
+    assert five["min_pair_abs_r"] == pytest.approx(np.cos(np.radians(88)), abs=1e-9)
+    for cl in (three, five):
+        assert cl["weakest_link_abs_r"] >= fa.CORR_HIGH > 0.65 > cl["min_pair_abs_r"]
+    assert "min_abs_r" not in three and three["max_abs_r"] == pytest.approx(three["weakest_link_abs_r"])
+    # the weakest link is the bottleneck: the largest threshold at which the cluster is still connected
+    rng = np.random.default_rng(11)
+    for k in (2, 3, 6, 9):
+        A = np.abs(np.corrcoef(rng.normal(size=(k, 30)) + rng.normal(size=30)))
+        edges = sorted(((A[i, j], i, j) for i in range(k) for j in range(i + 1, k)), reverse=True)
+        joined = next(w for w, _, _ in edges
+                      if [len(g) for g in fa.union_find(k, [(i, j) for v, i, j in edges if v >= w])] == [k])
+        assert fa.weakest_link(A) == pytest.approx(joined, abs=1e-12)
+    assert fa.weakest_link(np.ones((1, 1))) == 1.0
 
 
 def _row_units(X, y, n_p, n_g, folds):
@@ -369,6 +411,71 @@ def test_the_box_has_one_entry_per_run_and_feature_and_never_a_builtin():
     assert comb["x_e3"]["verdict"] == "kept" and comb["x_e3"]["kept_in"] == ["pool"] and comb["control_mean"]["builtin"]
 
 
+def test_dependency_map_is_transitive_and_closed_over_every_feature():
+    calls = {"a": {"a": ["b", "x"], "b": ["c"]},   # on a's view: a calls b and x, b calls c
+             "b": {"b": ["c"]}, "c": {}, "x": {"x": ["y"]},  # x called y on its own view only (a memo, other params)
+             "z": {"z": ["z", "nowhere"]}}           # a call of itself is no dependency, one of an unknown name is
+    deps = fa.dependency_map(calls)
+    assert deps == {"a": {"direct": ["b", "x"], "transitive": ["b", "c", "x", "y"]},
+                    "b": {"direct": ["c"], "transitive": ["c"]}, "x": {"direct": ["y"], "transitive": ["y"]},
+                    "z": {"direct": ["nowhere"], "transitive": ["nowhere"]}}
+    assert fa.required_by(["a", "b", "q"], deps) == {"b": ["a"], "c": ["a", "b"], "x": ["a"], "y": ["a"]}
+
+
+def test_inputs_of_a_kept_feature_are_required_and_never_boxed():
+    """inf2 is kept for its own column and computes noise0 through ctx.feature, which computes noise1 (A needs B needs
+    C), and ghost, unrecomputable on its own. The pool's compact set keeps inf2; the selected model does not even
+    contain it. noise0 and noise1 come out required_input in both scopes, naming inf2, whatever they would otherwise
+    be, and so does ghost; none of them is boxed. noise3 computes noise2 too, but noise3 is not kept: noise2 keeps its
+    own verdict. The compact set's size is reported as listed and with its required inputs expanded."""
+    eng, names, _ = _synthetic()
+    R = fa.corr_from_gram(eng.val_unit.G)
+    sel = fa.analyse_model(eng, ["inf1", "dup", "noise0", "noise1", "noise2"], R, names, {})
+    pool = fa.analyse_model(eng, names, R, names, {"ghost": "ValueError: feature ghost returned 2 columns"})
+    assert "inf2" in pool["compact"]["features"] and "inf2" not in sel["census"]["features"]
+    otherwise = {s: {v["feature"]: v["verdict"] for v in a["verdicts"]} for s, a in (("selected", sel), ("pool", pool))}
+    assert {otherwise[s][f] for s in otherwise for f in ("noise0", "noise1")} <= set(fa.BOXED_VERDICTS)
+    deps = fa.dependency_map({"inf2": {"inf2": ["noise0", "ghost"], "noise0": ["noise1"]},
+                              "noise0": {"noise0": ["noise1"]}, "noise3": {"noise3": ["noise2"]}})
+    run = {"run": "r1", "run_id": "R1", "arm_class": "agent", "selected": {"experiment_id": "EXP_9"},
+           "selected_analysis": sel, "pool": pool, "dependencies": deps,
+           "dependency_columns": {"noise0": 1, "noise1": 1, "ghost": 3, "noise2": 1}}
+    fa.apply_dependencies(run)
+    for scope, a in (("selected", sel), ("pool", pool)):
+        v = {x["feature"]: x for x in a["verdicts"]}
+        for f in ("noise0", "noise1"):
+            assert v[f]["verdict"] == "required_input" and v[f]["evidence"]["required_by"] == ["inf2"], (scope, f)
+            assert v[f]["evidence"]["verdict_otherwise"] == otherwise[scope][f] and "inf2" in v[f]["reason"]
+            assert "drop_one" in v[f]["evidence"]  # its own evidence stays
+        assert v["noise2"]["verdict"] == otherwise[scope]["noise2"] != "required_input"
+    v = {x["feature"]: x for x in pool["verdicts"]}
+    assert v["ghost"]["verdict"] == "required_input" and v["ghost"]["evidence"]["verdict_otherwise"] == "unrecomputable"
+    assert v["inf2"]["verdict"] == "kept"
+    comp = pool["compact"]
+    assert comp["required_inputs"] == ["ghost", "noise0", "noise1"] and comp["n_features"] == 2
+    assert comp["n_features_expanded"] == 5 and comp["n_columns_expanded"] == comp["n_columns"] + 5
+    assert sel["compact"]["required_inputs"] == [] and sel["compact"]["n_features_expanded"] == 1
+    assert fa._compact_fc(comp) == "2 (+3 inputs)/2" and fa._compact_fc(sel["compact"]) == "1/1"
+    assert fa.compact_expansion(["inf2"], 1, deps, {"noise0": 1})["n_columns_expanded"] is None  # columns unseen
+    box = fa.build_box({"runs": [run]})
+    boxed = {e["feature"] for e in box["entries"]}
+    assert not boxed & {"inf2", "noise0", "noise1", "ghost"} and {"noise2", "noise3"} <= boxed
+    assert "required_input" in box["rule"]
+    comb = {c["feature"]: c for c in fa.combined_verdicts(run)}
+    assert comb["noise0"]["verdict"] == comb["ghost"]["verdict"] == "required_input"
+    assert comb["noise0"]["scope"] == "selected" and comb["ghost"]["scope"] == "pool"
+    again = json.loads(json.dumps(run, default=str))  # applying it twice changes nothing
+    fa.apply_dependencies(run)
+    assert json.loads(json.dumps(run, default=str)) == again
+    # the verdict tables count it, apart from the boxed verdicts
+    agg = fa._aggregate_class([{**run, "status": "audited"}])
+    assert agg["verdict_counts"]["selected"]["required_input"] == 2
+    assert agg["verdict_counts"]["pool"]["required_input"] == 3
+    boxed_fams = {x["family"] for x in agg["families_boxed"]}  # a required input is neither kept nor boxed
+    assert not boxed_fams & {"noise0", "noise1", "ghost"} and "noise2" in boxed_fams
+    assert agg["compact_vs_full"]["n_with_inputs"] == 0  # the selected model's compact set computes nothing
+
+
 # ------------------------------------------------------------------ plugins and label dependence
 PLUGIN = '''
 import numpy as np
@@ -458,6 +565,49 @@ def test_label_dependence_is_detected_per_feature_and_those_features_are_recompu
     finally:
         fa.load_run_plugins(tmp_path / "empty")
     assert label_dep["memo_a"] and not label_dep["memo_b"] and not label_dep["private_d"]
+
+
+def test_the_features_a_composite_computes_are_recorded_on_its_watched_view(tmp_path, dataset):
+    """comp_a computes in_b and in_x through ctx.feature; in_b computes in_c (registered, but not among the audited
+    features) and in_x computes in_c through a view it derives from its own; broken calls a name nothing registers
+    and raises. Every call is recorded on the calling feature's own fresh view, nested calls included (comp_a's view
+    sees in_b and in_x call in_c), with the columns each name returned."""
+    store = tmp_path / "store"
+    store.mkdir()
+    _plugin(store, "in_c", "        return np.broadcast_to(ctx.control_mean[None, :, None], "
+                           "(len(perts), ctx.n_genes, 1)).copy()")
+    _plugin(store, "in_b", "        return 2.0 * np.asarray(ctx.feature('in_c', perts, {}))")
+    _plugin(store, "in_x", "        a = np.asarray(ctx.without_train(ctx.train_perts[:1]).feature('in_c', perts))\n"
+                           "        return np.concatenate([a, np.ones_like(a)], axis=2)")
+    _plugin(store, "comp_a", "        b = np.asarray(ctx.feature('in_b', perts))\n"
+                             "        return np.concatenate([b, np.asarray(ctx.feature('in_x', perts))], axis=2)")
+    _plugin(store, "broken", "        return ctx.feature('nowhere_registered_xyz', perts)")
+    try:
+        fa.load_run_plugins(store)
+        ctx = FeatureContext(dataset)
+        val1 = LabelSet.load(dataset / "private" / "val1.npz")
+        fits = fa.compute_fits(ctx, ["comp_a", "in_b", "in_x", "broken"], {}, [0, 1], 5, val1.perts,
+                               val1.means - ctx.control_mean)
+    finally:
+        fa.load_run_plugins(tmp_path / "empty")
+    assert set(fits["failed"]) == {"broken"} and fits["failed"]["broken"].startswith("KeyError")
+    assert len(fits["columns_of"]["comp_a"]) == 3
+    assert fits["label_dependent"] == ["comp_a", "in_x"]  # deriving a view slices the labels: counted, conservatively
+    assert fits["calls"]["comp_a"] == {"comp_a": ["in_b", "in_x"], "in_b": ["in_c"], "in_x": ["in_c"]}
+    assert fits["calls"]["broken"] == {"broken": ["nowhere_registered_xyz"]}  # recorded before the lookup raised
+    assert fits["call_columns"] == {"in_b": 1, "in_c": 1, "in_x": 2}
+    assert fa.dependency_map(fits["calls"]) == {
+        "comp_a": {"direct": ["in_b", "in_x"], "transitive": ["in_b", "in_c", "in_x"]},
+        "in_b": {"direct": ["in_c"], "transitive": ["in_c"]}, "in_x": {"direct": ["in_c"], "transitive": ["in_c"]},
+        "broken": {"direct": ["nowhere_registered_xyz"], "transitive": ["nowhere_registered_xyz"]}}
+    # the label counter and the calls are shared by every view derived from the watched one, never by its base
+    base_reads = ctx.label_reads
+    view = fa.LabelWatch(ctx, owner="f")
+    derived = view.without_train(ctx.train_perts[:2])
+    derived.feature("mean_response", ctx.perts[:2])
+    assert view.feature_calls == {"f": ["mean_response"]} and view.feature_columns == {"mean_response": 1}
+    assert view.label_reads >= 2 and ctx.label_reads == base_reads
+    assert fa.LabelWatch(ctx).feature_calls == {}
 
 
 # ------------------------------------------------------------------ opening runs read only
@@ -652,6 +802,13 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
         assert vr["available"] and vr["validation"]["diff"] == pytest.approx(0, abs=1e-4) and not vr["flag"]
         assert vr["out_of_fold"] is not None and vr["out_of_fold"]["diff"] == pytest.approx(0, abs=1e-4)
     assert r["marks"] == []
+    # no scripted feature computes another through ctx.feature: an empty dependency map, nothing required, and every
+    # cluster of the merge test is defined by its weakest link, at least 0.9, however far apart its ends are
+    assert r["audit_format"] == fa.AUDIT_FORMAT and r["dependencies"] == {} and "composites" in rep["protocol"]
+    assert a["compact"]["required_inputs"] == [] and a["compact"]["n_features_expanded"] == a["compact"]["n_features"]
+    assert a["compact"]["n_columns_expanded"] == a["compact"]["n_columns"]
+    for m in a["merge"]:
+        assert m["weakest_link_abs_r"] >= fa.CORR_HIGH and m["min_pair_abs_r"] <= m["weakest_link_abs_r"]
     pv = {v["feature"]: v["verdict"] for v in r["pool"]["verdicts"]}
     assert set(pv) == set(pool)
     # the box: one entry per feature that is kept in neither scope, built-ins never, with both scopes' verdicts
@@ -673,13 +830,13 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
                  "No agent run was audited"):
         assert part in md, part
     assert "sealed" not in md.split("## Runs")[1].split("## Verdicts")[0].lower() and "†" not in md
-    for line in md.splitlines():  # every table row has as many cells as its header
-        if line.startswith("|") and "skipped:" not in line:
+    for line in md.splitlines():  # every table row has as many cells as its header; an escaped pipe is cell text,
+        if line.startswith("|") and "skipped:" not in line and "weakest link" not in line:  # the merge header's only
             assert line.count("|") == line.replace("\\|", "").count("|")
     tables = [b for b in md.split("\n\n") if b.startswith("|")]
     for tb in tables:
         rows = tb.splitlines()
-        assert len({r.count("|") for r in rows}) == 1, rows[0]
+        assert len({r.replace("\\|", "").count("|") for r in rows}) == 1, rows[0]
     assert len(md.encode()) < 15000
     # the JSON twin re-renders the markdown byte for byte, without opening any run
     again = tmp_path / "again.md"
@@ -692,6 +849,21 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
     assert fa.main(["--runs", str(run_dir), "--out", str(third), "--cache", str(tmp_path / "cache"),
                     "--resamples", "8"]) == 0
     assert not calls and third.read_bytes() == out.read_bytes()
+    # a checkpoint without the dependency map (an audit written before it existed) is never taken: audited afresh
+    (ck,) = (tmp_path / "cache" / "audits").glob(f"{run_dir.name}__*.json")
+    old = json.loads(ck.read_text())
+    for key in ("audit_format", "dependencies", "dependency_columns"):
+        old.pop(key)
+    ck.write_text(json.dumps(old))
+    monkeypatch.setattr(fa, "audit_run", lambda d, *a, **k: calls.append(d) or {"run": d.name, "path": str(d),
+                                                                               "status": "skipped", "reason": "stub"})
+    assert fa.main(["--runs", str(run_dir), "--out", str(tmp_path / "fourth.md"), "--cache", str(tmp_path / "cache"),
+                    "--resamples", "8"]) == 0
+    assert calls == [run_dir.resolve()]
+    proto = {"fold_seeds": None, "resamples": 8, "pool": True, "sealed": False}
+    key = fa._checkpoint_key(run_dir, proto)
+    monkeypatch.setattr(fa, "AUDIT_FORMAT", fa.AUDIT_FORMAT - 1)  # and the format is part of the checkpoint's key
+    assert fa._checkpoint_key(run_dir, proto) != key
     assert _listing(run_dir) == before
 
 
@@ -732,6 +904,86 @@ def test_a_plugin_that_fails_to_import_costs_only_its_own_features(finished_run,
     r = fa.audit_run(run, log=lambda m: None)
     assert r["status"] == "skipped" and r["reason"] == "unexpected error: RuntimeError: boom"
     assert r["arm"] == "scripted control (no LLM)" and r["arm_class"] == "no_llm"
+
+
+COMPOSITE = "comp_a_e901"
+INPUTS = ["in_b_e902", "in_x_e903"]
+
+
+def _composite_run(finished_run: Path, dst: Path) -> Path:
+    """A copy of the finished run whose best experiment is a composite model, as on Astra's second campaign: the
+    composite comp_a_e901 computes mean_response, in_b_e902 and in_x_e903 through ctx.feature, in_b_e902 computes
+    in_c_e904 (in no experiment, so outside the pool) and in_x_e903 computes it through a view it derives; the two
+    inputs are constant columns, so the composite carries all the signal and is the compact set on its own."""
+    run = _copy_run(finished_run, dst)
+    store = run / "feature_store"
+    _plugin(store, "in_c_e904", "        return np.ones((len(perts), ctx.n_genes, 1))")
+    _plugin(store, "in_b_e902", "        return 2.0 * np.asarray(ctx.feature('in_c_e904', perts))")
+    _plugin(store, "in_x_e903", "        v = ctx.without_train(ctx.train_perts[:1])\n"
+                                "        return 0.0 * np.asarray(v.feature('in_c_e904', perts))")
+    _plugin(store, COMPOSITE, "        m = np.asarray(ctx.feature('mean_response', perts))\n"
+                              "        b, x = (np.asarray(ctx.feature(f, perts)) for f in ('in_b_e902', 'in_x_e903'))\n"
+                              "        return m + 0.0 * b + x")
+    con = sqlite3.connect(run / "lab.db")
+    con.row_factory = sqlite3.Row
+    best = dict(con.execute("SELECT * FROM experiments WHERE status='completed' AND primary_score IS NOT NULL "
+                            "AND COALESCE(kind, '') NOT IN ('baseline', 'ensemble') "
+                            "ORDER BY primary_score DESC, finished_at, experiment_id LIMIT 1").fetchone())
+    best.update(experiment_id="EXP_COMP", kind="new_feature", new_feature=COMPOSITE, primary_score=10.0,
+                delta_from_parent=0.01, feature_set_json=json.dumps([COMPOSITE] + INPUTS), feature_params_json="{}",
+                val_metrics_json=None, query_metrics_json=None)
+    con.execute(f"INSERT INTO experiments ({', '.join(best)}) VALUES ({', '.join('?' * len(best))})",
+                list(best.values()))
+    con.commit()
+    con.close()
+    return run
+
+
+def test_a_kept_composite_keeps_its_inputs_out_of_the_box(finished_run, tmp_path):
+    """End to end: the selected model is the composite and its two inputs; the composite is the compact set. The
+    run's dependency map names every feature it computes (transitively, also in_c_e904 outside the pool); its inputs
+    get the verdict required_input in both scopes and never enter the box; the compact set is reported as listed and
+    expanded, in the JSON and in the report, whose Verdicts table and Reading count the required inputs."""
+    run = _composite_run(finished_run, tmp_path / "comp_run")
+    out = tmp_path / "comp.md"
+    assert fa.main(["--runs", str(run), "--out", str(out), "--cache", str(tmp_path / "cache"), "--resamples", "4"]) == 0
+    rep = json.loads(out.with_suffix(".json").read_text())
+    (r,) = rep["runs"]
+    assert r["status"] == "audited", r.get("reason")
+    assert r["selected"]["experiment_id"] == "EXP_COMP" and not r["unrecomputable"]
+    everything = sorted(INPUTS + ["in_c_e904", "mean_response"])
+    assert r["dependencies"][COMPOSITE] == {"direct": sorted(INPUTS + ["mean_response"]), "transitive": everything}
+    assert r["dependencies"]["in_b_e902"] == {"direct": ["in_c_e904"], "transitive": ["in_c_e904"]}
+    assert r["dependencies"]["in_x_e903"] == {"direct": ["in_c_e904"], "transitive": ["in_c_e904"]}
+    assert "in_c_e904" not in r["pool_features"] and r["dependency_columns"]["in_c_e904"] == 1
+    a = r["selected_analysis"]
+    comp = a["compact"]
+    assert comp["features"] == [COMPOSITE] and comp["n_columns"] == 1
+    assert comp["required_inputs"] == everything and comp["n_features_expanded"] == 5
+    assert comp["n_columns_expanded"] == 5
+    assert {x["feature"]: x["verdict"] for x in a["verdicts"]}[COMPOSITE] == "kept"  # (the pool may keep its twin,
+    assert {c["feature"]: c["verdict"] for c in fa.combined_verdicts(r)}[COMPOSITE] == "kept"  # mean_response)
+    for scope in ("selected_analysis", "pool"):
+        v = {x["feature"]: x for x in r[scope]["verdicts"]}
+        for f in INPUTS:
+            assert v[f]["verdict"] == "required_input" and v[f]["evidence"]["required_by"] == [COMPOSITE], (scope, f)
+            assert v[f]["evidence"]["verdict_otherwise"] in fa.BOXED_VERDICTS
+    box = json.loads((tmp_path / "comp_feature_box.json").read_text())
+    boxed = {e["feature"] for e in box["entries"]}
+    assert not boxed & set([COMPOSITE] + everything), boxed
+    md = out.read_text()
+    row = next(line for line in md.splitlines() if line.startswith("| comp_run "))
+    assert "| 1 (+4 inputs)/1 |" in row
+    assert f"- comp_run: {COMPOSITE}; with the 4 required inputs it computes through ctx.feature (" in md
+    assert ": 5 features, 5 columns computed" in md
+    assert "A composite (a feature computing others through ctx.feature, recorded transitively" in md
+    vrow = next(line for line in md.splitlines() if line.startswith("| required_input |"))
+    assert vrow.startswith("| required_input | 2 | ")
+    assert "2 are required inputs of kept features" in md.split("## Reading")[1]
+    assert "counting those required inputs, it computes a median of 5 features and 5 columns" in md
+    again = tmp_path / "comp_again.md"
+    assert fa.main(["--from-json", str(out.with_suffix(".json")), "--out", str(again)]) == 0
+    assert again.read_bytes() == out.read_bytes()
 
 
 def test_score_sealed_spends_exactly_two_queries_per_run(finished_run, tmp_path, monkeypatch):
@@ -775,6 +1027,74 @@ def test_score_sealed_spends_exactly_two_queries_per_run(finished_run, tmp_path,
     assert _listing(run_dir) == before
 
 
+NEW_KEYS = {"dependencies", "dependency_columns", "audit_format", "composites", "required_inputs",
+            "n_features_expanded", "n_columns_expanded", "n_with_inputs", "median_features_expanded",
+            "median_columns_expanded", "required_input", "weakest_link_abs_r"}
+
+
+def _as_written_before(obj):
+    """A report as the audit wrote it before composites and weakest links: those keys gone, and the all-pairs minimum
+    of a cluster under its old name, min_abs_r."""
+    if isinstance(obj, dict):
+        return {("min_abs_r" if k == "min_pair_abs_r" else k): _as_written_before(v) for k, v in obj.items()
+                if k not in NEW_KEYS}
+    if isinstance(obj, list):
+        return [_as_written_before(v) for v in obj]
+    return obj
+
+
+def test_the_merge_test_prints_weakest_links_and_an_older_json_still_renders(finished_run, tmp_path):
+    """A chain fa ~ fb ~ fc at |r| = cos 25° (ends at cos 50°) and a pair fd ~ fe at cos 10°: the merge test reports
+    each cluster's weakest link, the combined row the smallest, and the report prints that column, never the
+    all-pairs minimum. A JSON written before composites and weakest links renders without error and claims neither."""
+    rng = np.random.default_rng(12)
+    n_tr, n_val, n_g = 30, 8, 40
+
+    def design(n, seed):
+        return np.column_stack([_chain([0, 25, 50], n, seed), _chain([0, 10], n, seed + 1),
+                                np.random.default_rng(seed + 2).normal(size=n)])
+    X, Xv = design(n_tr * n_g, 20), design(n_val * n_g, 30)
+    Y, Yv = (Z[:, 0] + 0.5 * Z[:, 3] + rng.normal(size=len(Z)) for Z in (X, Xv))
+    names = ["fa", "fb", "fc", "fd", "fe", "fn"]
+    eng = fa.static_engine(X.reshape(n_tr, n_g, 6), Y.reshape(n_tr, n_g), Xv.reshape(n_val, n_g, 6),
+                           Yv.reshape(n_val, n_g), {f: [i] for i, f in enumerate(names)}, [0, 1], 5, [1.0, 100.0])
+    red = fa.redundancy(fa.standardise(X)[0], names, names)
+    merges = fa.merge_test(eng, range(6), red["clusters"])
+    chain, pair, both = merges
+    cos = lambda deg: float(np.cos(np.radians(deg)))  # noqa: E731
+    assert chain["features"] == ["fa", "fb", "fc"] and chain["n_columns"] == 4 and pair["n_columns"] == 5
+    assert chain["weakest_link_abs_r"] == pytest.approx(cos(25), abs=1e-9)
+    assert chain["min_pair_abs_r"] == pytest.approx(cos(50), abs=1e-9)
+    assert pair["weakest_link_abs_r"] == pytest.approx(cos(10), abs=1e-9) == pytest.approx(pair["min_pair_abs_r"])
+    assert both["columns"] == "all clusters above" and both["n_columns"] == 3
+    assert both["weakest_link_abs_r"] == chain["weakest_link_abs_r"] and both["min_pair_abs_r"] == chain["min_pair_abs_r"]
+    assert all(np.isfinite(m["mean"]) and m["vs_full"]["n"] == n_tr + n_val for m in merges)
+    # the report prints the weakest link; the all-pairs minimum stays in the JSON
+    out = tmp_path / "new.md"
+    assert fa.main(["--runs", str(finished_run), "--out", str(out), "--cache", str(tmp_path / "cache"),
+                    "--resamples", "2"]) == 0
+    rep = json.loads(out.with_suffix(".json").read_text())
+    rep["runs"][0]["selected_analysis"]["merge"] = fa._plain(merges)
+    md = fa.render(rep)
+    assert "| cluster features | weakest link \\|r\\| | cols | merged score | merged − full (SE) |" in md
+    assert "| fa, fb, fc | 0.906 | 4 |" in md and "| fd, fe | 0.985 | 5 |" in md and "| 0.643 |" not in md
+    assert "weakest link: the smallest |r| of the chain joining the cluster, ≥ 0.9; its ends may correlate" in md
+    assert "| required_input | 0 | 0 |" in md and "A composite (" in md
+    # the same report as written before the fix: no dependency map, no weakest link, the all-pairs minimum as
+    # min_abs_r (0.010 for a long chain, which the old column printed as if it described the cluster)
+    old = _as_written_before(rep)
+    old["runs"][0]["selected_analysis"]["merge"][0]["min_abs_r"] = 0.010
+    assert "dependencies" not in old["runs"][0] and "min_abs_r" in old["runs"][0]["selected_analysis"]["merge"][0]
+    (tmp_path / "old.json").write_text(json.dumps(old))
+    assert fa.main(["--from-json", str(tmp_path / "old.json"), "--out", str(tmp_path / "old.md")]) == 0
+    md_old = (tmp_path / "old.md").read_text()
+    assert "| fa, fb, fc | n/a | 4 |" in md_old and "| fd, fe | n/a | 5 |" in md_old
+    assert "| 0.010 |" not in md_old and "| 0.643 |" not in md_old and "min_pair_abs_r" not in md_old
+    assert "required_input" not in md_old and "A composite (" not in md_old and "inputs" not in md_old
+    assert "Verdicts, in order: kept, harmful" in md_old and "## Reading" in md_old
+    assert fa.build_box(old)["entries"] == fa.build_box(rep)["entries"]  # no composite here: the same box
+
+
 def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
     """A pasteable report: thirty runs with long names and arms (agent runs and no-LLM controls apart), a detailed
     run of forty features, and in a second case half the runs skipped with long reasons and many unrecomputable
@@ -796,7 +1116,8 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
     a["compact"]["features"] = long[:9]
     a["lasso"]["stable_features"] = long[:8]
     a["redundancy"]["top_pairs"] = [{"a": long[i] + "[0]", "b": long[i + 1] + "[2]", "r": 0.99} for i in range(15)]
-    a["merge"] = [{"columns": [long[i] + "[0]", long[i + 1] + "[1]"], "features": long[i:i + 2], "min_abs_r": 0.95,
+    a["merge"] = [{"columns": [long[i] + "[0]", long[i + 1] + "[1]"], "features": long[i:i + 2],
+                   "weakest_link_abs_r": 0.95, "min_pair_abs_r": 0.95,
                    "n_columns": 100, "mean": 0.5, "se": 0.01, "alphas": [100.0, 1000.0],
                    "vs_full": {"diff": 0.0, "se": 0.001, "wins": 30, "losses": 30, "n": 67}} for i in range(8)]
     a["verdicts"] = [{"feature": f, "verdict": fa.VERDICTS[i % 5], "reason": "x", "evidence": {}}
@@ -819,7 +1140,9 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
                      "reason": "unexpected error: ModuleNotFoundError: No module named 'torch_geometric' " + "z" * 220}
             runs.append(x)
         return runs
-    for kw, bound in (({}, 14500), ({"skipped_every": 2, "unrecomputable": 25}, 14500)):
+    # (the bound was 14500 before the protocol's sentence on composites, the required_input row and the merge test's
+    # definition of a weakest link added about 0.35 KB to these extreme cases)
+    for kw, bound in (({}, 14800), ({"skipped_every": 2, "unrecomputable": 25}, 14800)):
         runs = runs_of(**kw)
         big = {**rep, "runs": runs, "aggregate": fa.aggregate(runs)}
         md = fa.render(json.loads(json.dumps(fa._plain(big))))
