@@ -518,3 +518,34 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   that chooses the delivered model: combined 0.7801, N2 0.7746, additive 0.7259. N4 (+0.008 over its start, its own
   arm) was one draw of a search whose mean contribution is about zero with a spread of 0.007 between seeds; averaging
   the runs is what helps. The ledger went from $33.97 to $38.08 over the three repeats ($4.11, about $2 billed).
+  **B2 result (fresh DeepSeek runs from the additive start; read on 11 Oct, by 23:45 UTC, with
+  docs/mac/block_after_n4/block_b2_read.sh at 0a750e0, tools at the pinned ce1b530; the 16 readings, the five runs'
+  summaries and the logs are in PR #7, md5s in docs/mac/MD5SUMS_b2.txt).** The free control
+  (`runs/norman_control_addstart_w4_r0`) and seeds 0, 2 and 3 ended cleanly with their planner unchanged; seed 1 was
+  killed by run_research.py's watchdog while finishing and is its own arm, and seed 3 ran in its place
+  (docs/PLAN_AFTER_N4.md, note of 22:50 UTC and addendum of 23:00). Sealed pearson_delta: the start,
+  `baseline_ridge_additive` (EXP_0007, alpha 0.01), 0.716; the control's selected model 0.719; the runs' selected
+  models r0 EXP_0724 (24 features, alpha 0.01, $1.293) 0.722, r2 EXP_0715 (16 features, alpha 100, $1.369) 0.720, r3
+  EXP_0625 (11 features, alpha 300,000, $1.194) 0.730. **Primary reading, the arm over r0, r2 and r3 against their
+  start** (docs/results/norman_b2_arm_vs_start.md): G +0.0078, SE 0.0056 (S 0.0046 after the overlap-robust ratios
+  1.24, 1.23 and 1.35; sd_g 0.0054), k 2.11, so the bar is 0.0118; every run positive (+0.0055, +0.0039, +0.0139),
+  110 of 168 perturbation-run pairs won: **no difference established.** As in B1, the agents' search is not shown to
+  add to its start, though here all three runs point the same way. Secondary: the arm against the additive baseline
+  G +0.0113 against a bar of 0.0113 (0.011290 against 0.011267), 117 of 168: "the arm better" by the rule, by the
+  narrowest margin, so it is fragile; against the control's selected model +0.0051, SE 0.0095, no difference
+  established. Reported, not read: the arm as first specified (r0 and r2) against the start, G +0.0047, SE 0.0027,
+  k 2.02, below its bar. The arm's selected models, mean ± sd over the three runs: pearson_delta 0.7239 ± 0.0054,
+  MSE_DE 0.120 ± 0.022, PCC_DE 0.931 ± 0.011, R²_DE 0.828 ± 0.027; on the most-changed genes they do worse than the
+  additive rule (R²_DE 0.846), r3's heavily shrunk model most (alpha 300,000). **The combined model** (the plain
+  average of EXP_0724, EXP_0715 and EXP_0625): 0.727 sealed; against the additive baseline +0.0143 ± 0.0025, better on
+  45 of 56 (A better), the largest gain over the additive rule of any Norman model so far, but worse on its top-20 DE
+  genes (MSE 0.123 against 0.110, R² 0.847 against 0.850 in that reading); against the start +0.0108 ± 0.0024 (44 of
+  56, A better); against the control's selected model +0.0081 ± 0.0063 and against B1's combined model +0.0040 ±
+  0.0060, no difference established in either. **Delivered model, by the rule fixed before B2:** B1's combined model
+  stays, since B2's scores lower on the 63 visible validation perturbations (0.7505 against 0.7801); B2's slightly
+  higher sealed score (0.727 against 0.723, not established) does not enter that choice. Seed 1, read alone as its own
+  arm (docs/results/norman_b2_r1_killed_sealed_reading.md): EXP_0875 (10 features, alpha 120,000) 0.727 sealed, +0.0113
+  ± 0.0045 over its start; it decides nothing. The readings made 58 sealed scorings on the tools' own oracles. Norman's
+  sealed set has now been scored for many models, so comparisons on it are descriptive from here on
+  (docs/PLAN_AFTER_N4.md, "What happens after"). The ledger went from $38.08 to $43.59 over B2 ($5.51 with seed 1,
+  about $2.75 billed at the observed ratio); B3 was dropped from the block.

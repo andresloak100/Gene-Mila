@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-11 23:45, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
+**Last updated:** 2026-10-11 23:50, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
 (22:55). `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
@@ -20,7 +20,16 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (23:45):** ledger $43.59 of the block's $48. B2's paid runs are done: seeds 2 (`runs/norman_ds_addstart_w4_r2`, $1.369, selected EXP_0715) and 3 (`_r3`, $1.194, EXP_0625) passed the stop rule (22:52 to 23:39 UTC, no backstop fired); B2's readings run on the Mac by `docs/mac/block_after_n4/block_b2_read.sh` (0a750e0, md5 16d6ef10…, run from `genemila_scale_logs/b2_resume/`), and the Mac pushes them with the runs' summaries on `claude/mac-b2-2026-10-11` as a draft PR. What follows is the state before that. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
+**On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
+read (docs/NORMAN_PLAN.md section 8; readings, the five runs' summaries and the logs in draft PR #7, md5s checked,
+no key-shaped strings): seeds 2 (`runs/norman_ds_addstart_w4_r2`, $1.369) and 3 (`_r3`, $1.194) passed; the primary
+reading (the arm over r0, r2, r3 against their start) is not established (G +0.0078, bar 0.0118, all runs positive);
+B2's combined model scores 0.727 sealed, +0.014 ± 0.003 over the additive rule but worse on its top-20 DE genes; the
+delivered Norman model stays B1's combined model (visible validation 0.7801 against 0.7505). B3 is dropped from the
+block; the pin on ce1b530 can go (the main checkout may be pulled to the lab head; move aside, never delete, any
+untracked file that blocks it). Next, free: whether ridge shrinkage is what costs the selected models the DE genes
+(B2's r3, alpha 300,000, has the best pearson_delta and the worst DE scores). What follows is the state before B2's
+end. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
 readings and the three runs' summaries are in draft PR #6, waiting for Andres to merge): the agents' search adds
 nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of the three repeats scores 0.723 sealed,
 +0.0041 ± 0.0011 over N2's selected model, not established over the additive rule; it is the delivered Norman model

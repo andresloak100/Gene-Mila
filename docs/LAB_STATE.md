@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 22:55 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 23:50 UTC.
 
 ## What this is
 
@@ -152,8 +152,15 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    arm because its planner ran out at 18.7 of 20 minutes (the $34 cap bound; summary.json `planner.mixed`), so it
    is its own arm "(lost its planner)". B2: a free no-LLM control on the additive start, then three fresh DeepSeek
    runs from it (the control and seed 0 passed; seed 1 was killed by run_research.py's watchdog while finishing, is
-   its own arm and stopped the block; seeds 2 and 3, with --no-watchdog and a 90-minute backstop, are to complete the arm;
-   plan note of 22:50 UTC). B3, dropped from this block by the plan note of 22:50 UTC: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson
+   its own arm and stopped the block; seeds 2 and 3, with --no-watchdog and a 90-minute backstop, completed the arm;
+   plan note of 22:50 UTC). **B2 result (PR #7; docs/NORMAN_PLAN.md section 8):** primary reading, the arm over r0, r2
+   and r3 against their start (ridge on the additive rule, 0.716 sealed), G +0.0078 against a bar of 0.0118, every run
+   positive: no difference established. Secondary: the arm against the additive rule G +0.0113 against a bar of
+   0.0113, "better" by the narrowest margin (fragile); against the control, no difference. B2's combined model scores
+   0.727 sealed, +0.0143 ± 0.0025 over the additive rule (45 of 56), the largest Norman gain over it so far, but worse
+   on the most-changed genes (top-20 DE MSE 0.123 against 0.110), and not established over the control (0.719) or B1's
+   combined model (0.723). The delivered Norman model stays B1's combined model by the rule fixed before B2 (visible
+   validation 0.7801 against B2's 0.7505). Ledger $43.59 after B2. B3, dropped from this block by the plan note of 22:50 UTC: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson
    perturbation's labels or sealed scores were used in development; only the agents-versus-control contrast is
    read). Each arm's deliverable is its combined model, the average of its runs' selected models; for Norman the
    delivered model is B1's unless B2's scores higher on the visible validation perturbations. One primary reading
