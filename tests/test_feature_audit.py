@@ -5,7 +5,10 @@ loaded file by file and label dependence detected per feature; end to end on a f
 its JSON twin and the failed-feature box, re-renders byte for byte, leaves the run directory untouched, survives a
 broken plugin, resumes from checkpoints, and reads the sealed set only through two queries of its own oracle when
 asked. Composites (features that compute others through ctx.feature) keep the features they need out of the box, and
-a single-linkage cluster is reported by its weakest link; a JSON written before either still renders."""
+a single-linkage cluster is reported by its weakest link; a JSON written before either still renders. A feature whose
+values change with Python's str hash seed (a plugin built on hash() of a name) comes out unstable: boxed, never kept,
+outside every path and compact set, and so does a composite computing it; from the command line the audit runs its
+plugins under PYTHONHASHSEED=0, so two invocations write the same report, and ties go by feature name."""
 
 import ast
 import gc
@@ -14,6 +17,7 @@ import json
 import os
 import shutil
 import sqlite3
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -211,6 +215,44 @@ def test_paths_and_the_compact_set_never_look_at_the_validation_perturbations():
     assert vs["n"] == eng.n_val and res[0]["compact"]["vs_full_train"]["n"] == eng.n_train
     assert vs["class"] == fa.classify(vs["diff"], vs["se"])
     assert vs["diff"] != pytest.approx(res[1]["compact"]["vs_full"]["diff"], abs=1e-6)
+
+
+def test_ties_are_broken_by_name_whatever_order_the_features_come_in():
+    """inf1 and dup are exact duplicates (r = 1), so adding or dropping either scores the same up to rounding: the
+    forward path adds, and the backward path keeps, dup (first by name) in every order the features are listed in,
+    and the paths, the compact set and the verdicts are the same. Duplicate partners and tied best sets go by name
+    and size too, never by position."""
+    eng, names, _ = _synthetic()
+    assert abs(eng.score(["inf1"])["train_mean"] - eng.score(["dup"])["train_mean"]) < fa.TIE_TOL
+    orders = [names, names[::-1], sorted(names, key=lambda f: f[::-1])]
+    R = fa.corr_from_gram(eng.val_unit.G)
+    for path, key in ((fa.forward_path, "added"), (fa.backward_path, "removed")):  # a backward step lists its
+        runs = [path(eng, o) for o in orders]                                       # features in the input's order
+        for p in runs[1:]:
+            assert [s[key] for s in p] == [s[key] for s in runs[0]], path
+            assert [sorted(s["features"]) for s in p] == [sorted(s["features"]) for s in runs[0]], path
+            assert [s["alphas"] for s in p] == [s["alphas"] for s in runs[0]], path
+    fwd, bwd = fa.forward_path(eng, names[::-1]), fa.backward_path(eng, names[::-1])
+    added = [s["added"] for s in fwd]
+    assert added[0] == "dup" and added.index("inf1") > added.index("inf2")  # inf1 adds nothing once dup is in
+    removed = [s["removed"] for s in bwd[1:]]
+    assert "inf1" in removed and "dup" not in removed and bwd[-1]["features"] == ["dup"]
+    res = [fa.analyse_model(eng, o, R, names, {}) for o in orders]
+    for r in res[1:]:
+        assert sorted(r["compact"]["features"]) == sorted(res[0]["compact"]["features"])
+        assert ({v["feature"]: (v["verdict"], v["reason"]) for v in r["verdicts"]}
+                == {v["feature"]: (v["verdict"], v["reason"]) for v in res[0]["verdicts"]})
+    assert "dup" in res[0]["compact"]["features"] and "inf1" not in res[0]["compact"]["features"]
+    # the strongest partner among exact duplicates is the one first by name, in either order of the others
+    Rp = np.array([[1.0, 0.95, 0.95, 0.3], [0.95, 1.0, 1.0, 0.2], [0.95, 1.0, 1.0, 0.2], [0.3, 0.2, 0.2, 1.0]])
+    cols = ["x", "b", "a", "c"]
+    for others in ({"b": [1], "a": [2], "c": [3]}, {"c": [3], "a": [2], "b": [1]}):
+        assert fa.strongest_partner(Rp, [0], others, cols)["feature"] == "a"
+    # two steps whose means tie: the smaller is the best set, wherever it stands
+    v = np.random.default_rng(3).normal(0.5, 0.1, size=40)
+    for sizes in ([(3, 3), (2, 2)], [(2, 2), (3, 3)]):
+        pick, best, _ = fa.one_se_choice([v, v.copy()], sizes)
+        assert sizes[best] == (2, 2) and pick == best
 
 
 def test_duplicates_clusters_and_rank():
@@ -913,6 +955,15 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
         assert m["weakest_link_abs_r"] >= fa.CORR_HIGH and m["min_pair_abs_r"] <= m["weakest_link_abs_r"]
     pv = {v["feature"]: v["verdict"] for v in r["pool"]["verdicts"]}
     assert set(pv) == set(pool)
+    # the hash-seed check computed every recomputable feature again under three seeds: the scripted features are
+    # deterministic, so every block is identical, nothing is unstable, and the audit is the audit it was
+    hc = r["hash_check"]
+    assert hc["seeds"] == [0, 1, 2] and hc["checked"] == [f for f in pool if f not in r["unrecomputable"]]
+    assert hc["unstable"] == {} and hc["via"] == {} and hc["errors"] == {} and r["selected_unstable"] == []
+    assert hc["seed_dependent"] == [] and hc["run_hash_seed"] == 0  # a new run records the lab's seed
+    assert all(hc["blocks"][f]["max_abs_diff"] == 0.0 == hc["blocks"][f]["max_std_diff"] for f in hc["checked"])
+    assert "unstable" not in set(verdicts.values()) | set(pv.values()) and "hash_check" in r["timings"]
+    assert rep["protocol"]["python_hash_seed"] == fa.python_hash_seed() and not rep["protocol"]["hash_seed_reexec"]
     # the box: one entry per feature that is kept in neither scope, built-ins never, with both scopes' verdicts
     assert box["generated_by"] == "tools/feature_audit.py" and "one paired SE" in box["rule"]
     assert box["required_inputs"] == [] and box["dependencies"] == {}
@@ -924,13 +975,13 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
                           "arm_class"}
         assert e["verdict"] in ("redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
         assert e["run"] == run_dir.name and set(e["evidence"]["scopes"]) <= {"selected", "pool"}
-        if e["verdict"] != "unrecomputable":
+        if e["verdict"] not in ("unrecomputable", "unstable"):
             assert set(e["evidence"]) == {"columns", "single", "drop_one", "lasso_frequency", "partner", "scopes"}
     md = out.read_text()
     for part in ("## Runs", "## Verdicts", f"## Detail: {run_dir.name}", "## Reading", "Backward path", "Forward path",
                  "Merge test", "| run | arm | feat. |", "A1 = scripted control (no LLM)", "Δ val (SE)",
                  "Compact sets (no-LLM runs)", f"- {run_dir.name}: ", "| verdict | no-LLM: selected |",
-                 "No agent run was audited"):
+                 "No agent run was audited", "| unstable | 0 | 0 |", "unstable (changes with the hash seed), "):
         assert part in md, part
     assert "sealed" not in md.split("## Runs")[1].split("## Verdicts")[0].lower() and "†" not in md
     for line in md.splitlines():  # every table row has as many cells as its header; an escaped pipe is cell text,
@@ -1183,20 +1234,23 @@ def test_score_sealed_spends_exactly_two_queries_per_run(finished_run, tmp_path,
     assert _listing(run_dir) == before
 
 
+HASH_KEYS = {"hash_check", "unstable", "python_hash_seed", "hash_seed_reexec", "selected_unstable",
+             "n_selected_unstable", "selected_features_unstable"}
 NEW_KEYS = {"dependencies", "audit_format", "composites", "required_inputs", "failed_inputs",
             "n_features_expanded", "n_columns_expanded", "n_with_inputs", "median_features_expanded",
             "median_columns_expanded", "median_full_features_expanded", "median_full_columns_expanded",
-            "required_input", "weakest_link_abs_r"}
+            "required_input", "weakest_link_abs_r"} | HASH_KEYS
 
 
-def _as_written_before(obj):
+def _as_written_before(obj, keys=NEW_KEYS, rename=True):
     """A report as the audit wrote it before composites and weakest links: those keys gone, and the all-pairs minimum
-    of a cluster under its old name, min_abs_r."""
+    of a cluster under its old name, min_abs_r. With keys=HASH_KEYS and rename False: as AUDIT_FORMAT 3 wrote it,
+    composites and weakest links in, the hash-seed check and the verdict unstable not yet."""
     if isinstance(obj, dict):
-        return {("min_abs_r" if k == "min_pair_abs_r" else k): _as_written_before(v) for k, v in obj.items()
-                if k not in NEW_KEYS}
+        return {("min_abs_r" if rename and k == "min_pair_abs_r" else k): _as_written_before(v, keys, rename)
+                for k, v in obj.items() if k not in keys}
     if isinstance(obj, list):
-        return [_as_written_before(v) for v in obj]
+        return [_as_written_before(v, keys, rename) for v in obj]
     return obj
 
 
@@ -1250,7 +1304,25 @@ def test_the_merge_test_prints_weakest_links_and_an_older_json_still_renders(fin
     assert "| 0.010 |" not in md_old and "| 0.643 |" not in md_old and "min_pair_abs_r" not in md_old
     assert "required_input" not in md_old and "A composite (" not in md_old and "inputs" not in md_old
     assert "Verdicts, in order: kept, harmful" in md_old and "## Reading" in md_old
+    assert "unstable" not in md_old and "hash seed" not in md_old
     assert fa.build_box(old)["entries"] == fa.build_box(rep)["entries"]  # no composite here: the same box
+    # a report of AUDIT_FORMAT 3 (composites, no hash-seed check) renders as it did: no unstable row, no claim
+    assert "| unstable | 0 | 0 |" in md
+    assert "Verdicts, in order: kept, required_input, unstable (changes with the hash seed), harmful" in md
+    v3 = _as_written_before(rep, HASH_KEYS, rename=False)
+    assert "hash_check" not in v3["protocol"] and "unstable" not in json.dumps(v3["aggregate"])
+    (tmp_path / "v3.json").write_text(json.dumps(v3))
+    assert fa.main(["--from-json", str(tmp_path / "v3.json"), "--out", str(tmp_path / "v3.md")]) == 0
+    md_v3 = (tmp_path / "v3.md").read_text()
+    assert "Verdicts, in order: kept, required_input, harmful" in md_v3 and "| required_input | 0 | 0 |" in md_v3
+    assert "unstable" not in md_v3 and "hash seed" not in md_v3 and "| fa, fb, fc | 0.906 | 4 |" in md_v3
+    # the Reading's closing sentence: older reports keep theirs, so they re-render byte for byte; a report with the
+    # hash-seed check states the paired-SE and margin rules in the protocol paragraph only, to stay pasteable
+    closing = ("A difference within one paired SE is not established and one below 0.001 is treated as practically "
+               "nil; single fold-seed differences below about 0.02 never were established.")
+    assert md_old.rstrip().endswith(closing) and md_v3.rstrip().endswith(closing)
+    assert "Single fold-seed differences below about 0.02 never were established." in md and closing not in md
+    assert fa.build_box(v3)["entries"] == fa.build_box(rep)["entries"]
 
 
 def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
@@ -1279,9 +1351,9 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
                    "weakest_link_abs_r": 0.95, "min_pair_abs_r": 0.95,
                    "n_columns": 100, "mean": 0.5, "se": 0.01, "alphas": [100.0, 1000.0],
                    "vs_full": {"diff": 0.0, "se": 0.001, "wins": 30, "losses": 30, "n": 67}} for i in range(8)]
-    shown = ("kept", "required_input", "redundant", "substitutable", "harmful", "no_gain")  # every verdict the
-    a["verdicts"] = [{"feature": f, "verdict": shown[i % len(shown)], "reason": "x", "evidence": {}}  # Reading names
-                     for i, f in enumerate(long)]
+    shown = ("kept", "required_input", "unstable", "redundant", "substitutable", "harmful", "no_gain")  # every
+    a["verdicts"] = [{"feature": f, "verdict": shown[i % len(shown)], "reason": "x", "evidence": {}}  # verdict the
+                     for i, f in enumerate(long)]                                                  # Reading names
     inputs = [f"random_projection_input_feature_variant_{i:02d}_e{200 + i}" for i in range(12)]
     a["census"].update(required_inputs=[], failed_inputs=[], n_features_expanded=a["census"]["n_features"],
                        n_columns_expanded=a["census"]["n_columns"])
@@ -1308,6 +1380,7 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
             x["sealed"] = {"selected": 0.6, "compact": 0.59, "difference": -0.01, "reproduction_flag": i % 7 == 0,
                            "n_queries": 2}
             x["marks"] = ["1 selected feature(s) unrecomputable"] if i % 6 == 0 else []
+            x["selected_unstable"] = [long[2]] if i % 4 == 1 else []  # a feature built on hash(), left out
             x["unrecomputable"] = {f"{long[j]}_x": "ModuleNotFoundError: No module named 'nonexistent_pkg_" + "y" * 80
                                    + "'" for j in range(unrecomputable)}
             if i % 2 == 0:  # every other run keeps a composite (all of those the second case does not skip)
@@ -1329,6 +1402,362 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
                 "113 columns computed; 1 failed input\n") in md
         assert "With its composites' required inputs (" in md and "| required_input |" in md
         assert "are required inputs of kept features (not boxed); of the other " in md and " no_gain and " in md
+        assert "| unstable | " in md and " feature(s) of the selected models are unstable (boxed)." in md
+        assert "unrecomputable or unstable, or the lab's visible score" in md  # the † runs
         assert len(md.encode()) < 15000, (kw, len(md.encode()))  # under 15 KB even in these extreme cases
     assert "With its 12 required inputs the compact set computes 21 features and 113 columns (full model: " in md
     assert "+22 more in the JSON" in md and "z" * 100 not in md  # capped lists, truncated reasons
+
+
+# ------------------------------------------------------------------ features that change with Python's hash seed
+def _public_copy(dataset: Path, dst: Path) -> Path:
+    """The dataset's public files alone (no private/ directory, so no held-out label can be read from it)."""
+    dst.mkdir(parents=True)
+    shutil.copyfile(dataset / "public.npz", dst / "public.npz")
+    shutil.copytree(dataset / "knowledge", dst / "knowledge")
+    return dst
+
+
+def test_compare_blocks_measures_a_difference_in_units_of_the_columns_spread():
+    rng = np.random.default_rng(21)
+    a = rng.normal(size=(6, 20, 3)) * [1.0, 1e-3, 5.0] + [0.0, 1e3, 0.0]
+    same = fa.compare_blocks(a, a.copy())
+    assert same == {"columns": 3, "max_abs_diff": 0.0, "max_std_diff": 0.0}
+    b = a * (1 + 1e-15 * rng.normal(size=a.shape))  # rounding: far below the tolerance, also on the column at 1e3
+    assert 0 < fa.compare_blocks(a, b)["max_abs_diff"] and fa.compare_blocks(a, b)["max_std_diff"] < fa.HASH_TOL
+    c = a.copy()
+    c[2, :, 1] += 1e-4  # a tenth of that column's spread, tiny in absolute terms next to its mean of 1e3
+    got = fa.compare_blocks(a, c)
+    assert got["max_abs_diff"] == pytest.approx(1e-4, rel=1e-6) and got["max_std_diff"] > 0.05 > fa.HASH_TOL
+    k = np.ones((6, 20, 1))  # a constant column that is another constant under the other seed
+    assert fa.compare_blocks(k, 2 * k)["max_std_diff"] > fa.HASH_TOL
+    flat = 1e6 + 1e-9 * rng.normal(size=(6, 20, 1))  # constant up to rounding: its size, not its spread, measures it
+    assert fa.compare_blocks(flat, flat * (1 + 1e-15 * rng.normal(size=flat.shape)))["max_std_diff"] < fa.HASH_TOL
+    shapes = fa.compare_blocks(a, a[:, :, :2])
+    assert shapes["max_std_diff"] is None and shapes["shapes"] == [[6, 20, 3], [6, 20, 2]]
+
+
+def test_the_hash_seed_check_finds_what_changes_with_the_seed(tmp_path, dataset, monkeypatch):
+    """Three fresh processes under PYTHONHASHSEED 0, 1 and 2 compute each block through the audit's own plugin
+    loading, on the public data alone: a feature built on hash() of a perturbation name differs, and so does one whose
+    shape, or whose failure, follows the seed (simulated through the variable itself), and one that follows the order
+    of a two-name set, which is the same under seeds 1 and 2 and differs under 0, the lab's; deterministic features,
+    one of them printing to stdout, agree to the last bit; a feature that raises under every seed is not compared.
+    A second process under seed 0 (repeat) tells a feature that follows memory addresses (here the process id) from
+    one that follows the seed: the former differs under the same seed too (same_seed)."""
+    store = tmp_path / "store"
+    store.mkdir()
+    env = "import os\n"
+    _plugin(store, "hashy", "        u = np.array([abs(hash(p)) % 1000 / 1000.0 for p in perts])\n"
+                            "        return np.asarray(ctx.feature('mean_response', perts)) * (1.0 + u[:, None, None])")
+    _plugin(store, "steady", "        print('a plugin printing to stdout')\n"
+                             "        return np.broadcast_to(ctx.control_mean[None, :, None] ** 2, "
+                             "(len(perts), ctx.n_genes, 1)).copy()")
+    _plugin(store, "shapey", "        return np.ones((len(perts), ctx.n_genes, "
+                             "1 + int(os.environ['PYTHONHASHSEED'])))", prefix=env)
+    # the review's case: list({"UPR", "P53"}) is ['P53', 'UPR'] under seed 0 and ['UPR', 'P53'] under 1 and 2
+    _plugin(store, "two_programs", "        base = np.asarray(ctx.feature('mean_response', perts))\n"
+                                   "        order = list({'UPR', 'P53'})\n"
+                                   "        return base if order[0] == 'UPR' else np.sign(base) * base ** 2")
+    _plugin(store, "pidy", "        return np.broadcast_to(ctx.control_mean[None, :, None] * os.getpid(), "
+                           "(len(perts), ctx.n_genes, 1)).copy()", prefix=env)
+    _plugin(store, "raisey", "        if os.environ['PYTHONHASHSEED'] == '2':\n"
+                             "            raise ValueError('only under two')\n"
+                             "        return np.ones((len(perts), ctx.n_genes, 1))", prefix=env)
+    _plugin(store, "always_bad", "        raise ValueError('always')")
+    public = _public_copy(dataset, tmp_path / "public")
+    feats = ["hashy", "steady", "shapey", "raisey", "always_bad", "two_programs", "pidy", "mean_response",
+             "control_mean"]
+    hc = fa.hash_check(public, store, feats, {}, 0, repeat=True)
+    assert "hashy" not in REGISTRY  # nothing was loaded into this process
+    assert hc["seeds"] == [0, 1, 2] and hc["repeat"] is True and hc["tolerance"] == fa.HASH_TOL
+    assert hc["checked"] == ["hashy", "steady", "shapey", "raisey", "two_programs", "pidy", "mean_response",
+                             "control_mean"]
+    assert set(hc["unstable"]) == {"hashy", "shapey", "raisey", "two_programs", "pidy"}
+    assert hc["same_seed"] == ["pidy"] and set(hc["errors"]) == {"always_bad"}
+    assert "between two processes under the same PYTHONHASHSEED 0" in hc["unstable"]["pidy"]
+    assert "no hash seed fixes" in hc["unstable"]["pidy"] and hc["blocks"]["pidy"]["pair"] == [0, 0]
+    assert hc["blocks"]["hashy"]["max_abs_diff"] > 0 and hc["blocks"]["hashy"]["max_std_diff"] > fa.HASH_TOL
+    assert "hash" in hc["unstable"]["hashy"]
+    assert "it returned 1 column(s) under PYTHONHASHSEED 0 and 2 under 1" in hc["unstable"]["shapey"]
+    assert "raised under PYTHONHASHSEED 2 only (ValueError: only under two)" in hc["unstable"]["raisey"]
+    assert hc["blocks"]["two_programs"]["pair"] == [0, 1] and hc["blocks"]["two_programs"]["max_std_diff"] > 1
+    assert "under PYTHONHASHSEED 0 and 1" in hc["unstable"]["two_programs"]
+    for f in ("steady", "mean_response", "control_mean"):
+        assert hc["blocks"][f] == {"columns": 1, "max_abs_diff": 0.0, "max_std_diff": 0.0}, f
+    assert "always" in hc["errors"]["always_bad"]
+    # a composite computing an unstable feature is unstable too, even when its own block agrees; nested calls count
+    deps = fa.dependency_map({"comp": {"comp": ["mid"], "mid": ["hashy"]}, "other": {"other": ["steady"]}})
+    rec = fa.unstable_records(hc, deps, ["hashy", "steady", "comp", "other", "raisey"])
+    assert list(rec) == ["hashy", "raisey", "comp"] and rec["comp"]["evidence"]["via"] == ["hashy"]
+    assert "computes unstable feature(s) hashy" in rec["comp"]["reason"] and rec["hashy"]["columns"] == 1
+    assert rec["hashy"]["evidence"]["max_std_diff"] == hc["blocks"]["hashy"]["max_std_diff"]
+    assert fa.hash_check(public, store, [], {}, 0)["checked"] == []  # nothing to check: no process at all
+
+    def no_process(*a, **k):
+        raise OSError("no interpreter")
+    monkeypatch.setattr(fa.subprocess, "Popen", no_process)  # the check cannot run: nothing is unstable, all is said
+    down = fa.hash_check(public, store, ["steady", "hashy"], {}, 0)
+    assert down["unstable"] == {} and down["checked"] == [] and set(down["errors"]) == {"steady", "hashy"}
+    assert "did not start: OSError: no interpreter" in down["errors"]["hashy"]
+
+
+def test_the_hash_seed_worker_opens_the_public_data_and_the_plugins_only():
+    src = TOOL.read_text()
+    tree = ast.parse(src)
+    lines = src.splitlines()
+    fns = {n.name: "\n".join(lines[n.lineno - 1:n.end_lineno]) for n in ast.walk(tree)
+           if isinstance(n, ast.FunctionDef) and n.name in ("_hash_seed_worker", "hash_check")}
+    for name in ("_hash_seed_worker", "hash_check"):
+        for word in ("private", "LabelSet", "QueryOracle", "data_dir", "val1", "score_sealed"):
+            assert word not in fns[name], (name, word)
+    assert "load_run_plugins(" in fns["_hash_seed_worker"] and "reload_run_plugins()" in fns["_hash_seed_worker"]
+    assert "LabelWatch(ctx, owner=f)" in fns["_hash_seed_worker"]  # the view compute_fits computes a full block on
+
+
+def test_unstable_features_are_never_kept_never_required_and_always_boxed():
+    single = {"a": {"mean": 0.3, "se": 0.01}}
+    drop = {"a": {"diff": 0.01, "se": 0.001, "wins": 50, "losses": 17, "n": 67}}
+    unstable = {"h": {"reason": "its training block differs", "columns": 2, "evidence": {"max_abs_diff": 0.4}},
+                "a": {"reason": "listed by mistake among the analysed features", "columns": 1, "evidence": {}}}
+    out = fa.assign_verdicts(["a"], ["a"], {"a": 1}, single, drop, {}, {}, None, {"e": "KeyError: e"}, unstable)
+    v = {o["feature"]: o for o in out}
+    assert [o["feature"] for o in out] == ["a", "h", "e"]
+    assert v["a"]["verdict"] == v["h"]["verdict"] == "unstable" and v["e"]["verdict"] == "unrecomputable"
+    assert v["h"]["evidence"]["hash_check"] == {"max_abs_diff": 0.4} and v["h"]["evidence"]["columns"] == 2
+    fa.mark_required(out, {"h": ["k"]})  # never happens (a feature computing h is unstable itself); if it did,
+    assert v["h"]["verdict"] == "unstable" and "required_by" not in v["h"]["evidence"]  # h would stay boxed
+    run = {"run": "r1", "selected_analysis": {"verdicts": out}, "pool": {"verdicts": out}}
+    assert {e["feature"]: e["verdict"] for e in fa.build_box({"runs": [run]})["entries"]} == {
+        "a": "unstable", "h": "unstable", "e": "unrecomputable"}
+    assert "unstable" in fa.BOXED_VERDICTS and "unstable" in fa.RULE
+    agg = fa._aggregate_class([{**run, "status": "skipped"}])
+    assert agg["verdict_counts"]["selected"]["unstable"] == 2
+
+
+HASHY, VIA, STEADY = "hashy_e950", "uses_hashy_e951", "steady_e952"
+
+
+def _hash_run(finished_run: Path, dst: Path, recorded_seed: bool = False) -> Path:
+    """A copy of the finished run whose best experiment holds a feature built on hash() of perturbation names, as two
+    agent-written plugins of past runs were, written straight into its feature store (past the lab's guard):
+    hashy_e950 scales mean_response by a factor drawn from hash(name) per perturbation; uses_hashy_e951 computes it
+    through ctx.feature and returns mean_response alone, so its own block agrees under every seed; steady_e952 is
+    deterministic. The model holds them besides the best experiment's own features. Unless recorded_seed, the run is
+    one from before the hash seed was fixed, as those two were: its config records no run.hash_seed."""
+    run = _copy_run(finished_run, dst)
+    if not recorded_seed:
+        cfg = json.loads((run / "config.json").read_text())
+        assert cfg["run"].pop("hash_seed") == 0  # every new run records it
+        (run / "config.json").write_text(json.dumps(cfg))
+        con = sqlite3.connect(run / "lab.db")
+        for run_id, raw in con.execute("SELECT run_id, config_json FROM runs").fetchall():
+            c = json.loads(raw)
+            c["run"].pop("hash_seed", None)
+            con.execute("UPDATE runs SET config_json=? WHERE run_id=?", (json.dumps(c), run_id))
+        con.commit()
+        con.close()
+    store = run / "feature_store"
+    _plugin(store, HASHY, "        u = np.array([abs(hash(p)) % 1000 / 1000.0 for p in perts])\n"
+                          "        return np.asarray(ctx.feature('mean_response', perts)) * (1.0 + u[:, None, None])")
+    _plugin(store, VIA, f"        h = np.asarray(ctx.feature('{HASHY}', perts))\n"
+                        "        return np.asarray(ctx.feature('mean_response', perts)) + 0.0 * h")
+    _plugin(store, STEADY, "        return np.broadcast_to(ctx.control_mean[None, :, None] ** 2, "
+                           "(len(perts), ctx.n_genes, 1)).copy()")
+    con = sqlite3.connect(run / "lab.db")
+    con.row_factory = sqlite3.Row
+    best = dict(con.execute("SELECT * FROM experiments WHERE status='completed' AND primary_score IS NOT NULL "
+                            "AND COALESCE(kind, '') NOT IN ('baseline', 'ensemble') "
+                            "ORDER BY primary_score DESC, finished_at, experiment_id LIMIT 1").fetchone())
+    feats = [f for f in json.loads(best["feature_set_json"]) if f not in (HASHY, VIA, STEADY)] + [HASHY, VIA, STEADY]
+    best.update(experiment_id="EXP_HASH", kind="new_feature", new_feature=HASHY, primary_score=10.0,
+                delta_from_parent=0.01, feature_set_json=json.dumps(feats), feature_params_json="{}",
+                val_metrics_json=None, query_metrics_json=None)
+    con.execute(f"INSERT INTO experiments ({', '.join(best)}) VALUES ({', '.join('?' * len(best))})",
+                list(best.values()))
+    con.commit()
+    con.close()
+    return run
+
+
+def test_a_feature_built_on_hash_is_unstable_boxed_and_never_kept(finished_run, tmp_path):
+    """End to end, on a run from before the hash seed was fixed: hashy_e950 differs between the check's processes,
+    uses_hashy_e951 computes it (its own block agrees), so both are unstable in both scopes: boxed, never kept, never
+    required, outside the census, the paths and the compact sets, and the run is marked because the audited model is
+    smaller than the run's. Every other feature agrees to the last bit and is audited as before; the report counts
+    the unstable features."""
+    run = _hash_run(finished_run, tmp_path / "hash_run")
+    before = _listing(run)
+    out = tmp_path / "hash.md"
+    assert fa.main(["--runs", str(run), "--out", str(out), "--cache", str(tmp_path / "cache"), "--resamples", "4"]) == 0
+    assert _listing(run) == before  # neither process wrote anything into the run
+    rep = json.loads(out.with_suffix(".json").read_text())
+    (r,) = rep["runs"]
+    assert r["status"] == "audited", r.get("reason")
+    assert r["selected"]["experiment_id"] == "EXP_HASH" and not r["unrecomputable"]
+    hc = r["hash_check"]
+    assert hc["checked"] == r["pool_features"] and hc["errors"] == {}
+    assert set(hc["unstable"]) == {HASHY} and hc["via"] == {VIA: [HASHY]}
+    assert hc["blocks"][HASHY]["max_std_diff"] > fa.HASH_TOL and hc["blocks"][VIA]["max_abs_diff"] == 0.0
+    assert all(hc["blocks"][f]["max_abs_diff"] == 0.0 for f in hc["checked"] if f != HASHY)  # deterministic: exact
+    assert hc["seed_dependent"] == sorted([HASHY, VIA]) and hc["run_hash_seed"] is None and not hc["reproducible"]
+    assert r["selected_unstable"] == sorted([HASHY, VIA]) and r["selected_missing"] == []
+    assert "2 selected feature(s) unstable under the hash seed" in r["marks"]
+    assert not r["visible_reproduction"]["available"] and "unstable" in r["visible_reproduction"]["reason"]
+    for scope in ("selected_analysis", "pool"):
+        a = r[scope]
+        v = {x["feature"]: x for x in a["verdicts"]}
+        assert v[HASHY]["verdict"] == v[VIA]["verdict"] == "unstable", scope
+        assert v[HASHY]["evidence"]["hash_check"]["max_abs_diff"] > 0 and "hash" in v[HASHY]["reason"]
+        assert v[VIA]["evidence"]["hash_check"]["via"] == [HASHY] and HASHY in v[VIA]["reason"]
+        assert v[STEADY]["verdict"] not in ("unstable", "unrecomputable") and STEADY in a["census"]["features"]
+        seen = set(a["census"]["features"]) | set(a["compact"]["features"]) | set(a["drop_one"]) | set(a["single"])
+        seen |= {f for st in a["forward"] + a["backward"] for f in st["features"]}
+        assert not seen & {HASHY, VIA}, scope
+        assert [x["feature"] for x in a["verdicts"] if x["verdict"] == "kept"] == a["compact"]["features"]
+    sa = r["selected_analysis"]
+    assert set(sa["lasso"]["feature_frequency"]) == set(sa["census"]["features"])
+    comb = {c["feature"]: c["verdict"] for c in fa.combined_verdicts(r)}
+    assert comb[HASHY] == comb[VIA] == "unstable"
+    box = json.loads((tmp_path / "hash_feature_box.json").read_text())
+    boxed = {e["feature"]: e for e in box["entries"]}
+    assert boxed[HASHY]["verdict"] == boxed[VIA]["verdict"] == "unstable" and STEADY not in box["required_inputs"]
+    assert not {x["feature"] for x in box["required_inputs"]} & {HASHY, VIA}
+    md = out.read_text()
+    assert "| unstable | 2 | 2 |" in md and "| hash_run † | A1 |" in md
+    assert "†: the audited model is not exactly the run's (selected features unrecomputable or unstable" in md
+    assert "2 feature(s) of the selected models are unstable (boxed)." in md.split("## Reading")[1]
+    assert len(md.encode()) < 15000
+    again = tmp_path / "hash_again.md"
+    assert fa.main(["--from-json", str(out.with_suffix(".json")), "--out", str(again)]) == 0
+    assert again.read_bytes() == out.read_bytes()
+
+
+def _without_timings(obj):
+    if isinstance(obj, dict):
+        return {k: _without_timings(v) for k, v in obj.items() if k not in ("timings", "feature_cpu_s")}
+    if isinstance(obj, list):
+        return [_without_timings(v) for v in obj]
+    return obj
+
+
+def _cli(args, seed, extra_env=None, timeout=600, flags=(), tool=TOOL):
+    env = {k: v for k, v in os.environ.items() if k not in ("PYTHONHASHSEED", fa.HASH_REEXEC_ENV)}
+    if seed is not None:
+        env["PYTHONHASHSEED"] = str(seed)
+    env.update(extra_env or {})
+    return subprocess.run([sys.executable, *flags, str(tool), *map(str, args)], env=env, capture_output=True,
+                          text=True, timeout=timeout)
+
+
+def test_two_invocations_from_the_command_line_write_the_same_report(finished_run, tmp_path):
+    """The same audit started twice from the command line, from shells whose hash seeds differ (1 and 2), with the
+    plugin built on hash() in the run: both re-execute under PYTHONHASHSEED=0, record it, and write the same JSON
+    (timings apart), the same report and the same box."""
+    run = _hash_run(finished_run, tmp_path / "hash_run")
+    outs = []
+    for seed in (1, 2):
+        out = tmp_path / f"cli{seed}" / "audit.md"
+        res = _cli(["--runs", run, "--out", out, "--resamples", "4"], seed)
+        assert res.returncode == 0, res.stderr[-3000:]
+        outs.append(out)
+    reps = [json.loads(o.with_suffix(".json").read_text()) for o in outs]
+    for rep in reps:
+        assert rep["protocol"]["python_hash_seed"] == "0" and rep["protocol"]["hash_seed_reexec"] is True
+        assert rep["runs"][0]["status"] == "audited" and set(rep["runs"][0]["hash_check"]["unstable"]) == {HASHY}
+    assert _without_timings(reps[0]) == _without_timings(reps[1])
+    assert outs[0].read_bytes() == outs[1].read_bytes()
+    assert ((outs[0].parent / "audit_feature_box.json").read_bytes()
+            == (outs[1].parent / "audit_feature_box.json").read_bytes())
+
+
+def test_a_run_that_recorded_the_hash_seed_is_audited_as_the_lab_computed_it(finished_run, tmp_path):
+    """A run since the seed was fixed records run.hash_seed 0, the seed every experiment process ran under: the audit
+    from the command line runs under the same seed, so a feature that depends on it computes exactly the lab's values.
+    The check still finds it and lists it (seed_dependent), but it is audited as any other feature: not unstable,
+    not boxed for it, inside the census and the paths, and the visible reproduction is attempted. A pool feature
+    that follows the process (its id here; memory addresses alike) differs under the lab's seed too, in the check's
+    second process under it: unstable, as in any run."""
+    run = _hash_run(finished_run, tmp_path / "hash_run", recorded_seed=True)
+    pidy = "pid_scaled_e953"
+    _plugin(run / "feature_store", pidy, "        return np.broadcast_to(ctx.control_mean[None, :, None] * os.getpid(), "
+                                         "(len(perts), ctx.n_genes, 1)).copy()", prefix="import os\n")
+    con = sqlite3.connect(run / "lab.db")
+    con.row_factory = sqlite3.Row
+    row = dict(con.execute("SELECT * FROM experiments WHERE experiment_id='EXP_HASH'").fetchone())
+    row.update(experiment_id="EXP_PID", new_feature=pidy, primary_score=5.0,
+               feature_set_json=json.dumps(json.loads(row["feature_set_json"]) + [pidy]))
+    con.execute(f"INSERT INTO experiments ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", list(row.values()))
+    con.commit()
+    con.close()
+    out = tmp_path / "rec" / "audit.md"
+    res = _cli(["--runs", run, "--out", out, "--resamples", "4"], 1)
+    assert res.returncode == 0, res.stderr[-3000:]
+    assert ("2 depend on it (hashy_e950, uses_hashy_e951), audited as any other: the run recorded hash seed 0 and "
+            f"the audit runs under it; 1 unstable under that seed too ({pidy})") in res.stderr
+    rep = json.loads(out.with_suffix(".json").read_text())
+    (r,) = rep["runs"]
+    assert r["status"] == "audited", r.get("reason")
+    assert r["selected"]["experiment_id"] == "EXP_HASH" and pidy in r["pool_features"]
+    hc = r["hash_check"]
+    assert hc["repeat"] is True and hc["same_seed"] == [pidy] and set(hc["unstable"]) == {HASHY, pidy}
+    assert hc["seed_dependent"] == sorted([HASHY, VIA, pidy])
+    assert hc["run_hash_seed"] == 0 and hc["audit_hash_seed"] == "0" and hc["reproducible"] is True
+    assert r["selected_unstable"] == [] and r["visible_reproduction"]["available"]
+    assert not any("unstable" in m for m in r["marks"])
+    for scope in ("selected_analysis", "pool"):
+        a = r[scope]
+        assert {HASHY, VIA} <= set(a["census"]["features"]) and HASHY in a["drop_one"], scope
+        assert {x["feature"] for x in a["verdicts"] if x["verdict"] == "unstable"} == (
+            {pidy} if scope == "pool" else set()), scope
+    assert pidy not in r["pool"]["census"]["features"]
+    md = out.read_text()
+    assert "| unstable | 0 | 1 |" in md and "unstable (boxed)" not in md
+
+
+def test_compact_model_curve_writes_the_same_curve_from_any_shell(finished_run, tmp_path):
+    """tools/compact_model_curve.py computes the run's plugins in its own process: from shells whose hash seeds differ
+    it re-executes under the lab's seed, so a plugin built on hash() of a name gives the same curve every time."""
+    run = _hash_run(finished_run, tmp_path / "hash_run")
+    outs = []
+    for seed in (1, 2):
+        d = tmp_path / f"curve{seed}"
+        d.mkdir()
+        res = _cli([run, d], seed, tool=ROOT / "tools" / "compact_model_curve.py", timeout=900)
+        assert res.returncode == 0, res.stderr[-3000:]
+        outs.append(json.loads((d / "compact_model_curve_hash_run.json").read_text()))
+    assert HASHY in outs[0]["pool_features"] and outs[0] == outs[1]
+
+
+def test_the_command_line_reexecutes_once_under_hash_seed_zero(tmp_path):
+    """From a shell without PYTHONHASHSEED, or with another seed, the tool re-executes itself under 0 and says so in
+    the protocol, also when it inherited the flag of another process's re-execution; under 0 it runs as it is; and an
+    interpreter that ignores the environment (-E), where the variable cannot take effect, is not re-executed: the
+    audit runs on and records the seed it had. Interpreter options survive the re-execution. A call from Python
+    never re-executes."""
+    empty = tmp_path / "empty_run"
+    empty.mkdir()
+
+    def proto(seed, extra=None, name="a", flags=()):
+        out = tmp_path / name / "audit.md"
+        res = _cli(["--runs", empty, "--out", out], seed, extra, timeout=120, flags=flags)
+        assert res.returncode == 0, res.stderr[-3000:]
+        return json.loads(out.with_suffix(".json").read_text())["protocol"], res.stderr
+    p, _ = proto(None, name="unset")
+    assert (p["python_hash_seed"], p["hash_seed_reexec"]) == ("0", True)
+    p, _ = proto(7, name="seven")
+    assert (p["python_hash_seed"], p["hash_seed_reexec"]) == ("0", True)
+    p, _ = proto(0, name="zero")
+    assert (p["python_hash_seed"], p["hash_seed_reexec"]) == ("0", False)
+    p, _ = proto(7, {fa.HASH_REEXEC_ENV: "1"}, name="inherited")  # another process's flag stops nothing
+    assert (p["python_hash_seed"], p["hash_seed_reexec"]) == ("0", True)
+    p, err = proto(7, name="ignored", flags=("-E",))  # the variable cannot take effect: no re-execution, no loop
+    assert (p["python_hash_seed"], p["hash_seed_reexec"]) == ("random", False)
+    assert "not 0" in err and "the interpreter ignores the environment" in err
+    p, err = proto(7, name="xopt", flags=("-X", "importtime"))  # the re-executed audit keeps -X importtime
+    assert (p["python_hash_seed"], p["hash_seed_reexec"]) == ("0", True)
+    assert err.count("import time: self [us]") == 2  # one header per process: the shell's and the re-executed one
+    out = tmp_path / "inproc" / "audit.md"
+    assert fa.main(["--runs", str(empty), "--out", str(out)]) == 0
+    p = json.loads(out.with_suffix(".json").read_text())["protocol"]
+    assert p["python_hash_seed"] == fa.python_hash_seed() and p["hash_seed_reexec"] is False

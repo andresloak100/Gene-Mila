@@ -2,7 +2,10 @@
 each refit exactly once through its own oracle, leaves the run untouched, and re-renders from its JSON twin."""
 
 import json
+import os
+import shutil
 import sqlite3
+import subprocess
 import sys
 from pathlib import Path
 
@@ -299,3 +302,55 @@ def test_training_set_refit_reproduces_the_runs_sealed_scores(finished_run, tmp_
             assert f["refit"][k] == pytest.approx(f["original"][k], abs=1e-6), (f["experiment_id"], k)
     base = next(f for f in r["finalists"] if f["role"] == "baseline")
     assert base["model"] in ("ridge", "lasso", "ols") and set(base["features"]) == {"control_mean", "mean_response", "is_target"}
+
+
+SET_ORDER = ("ATF4", "XBP1", "HSPA5", "DDIT3", "ERN1")  # where ATF4 falls in a set of these follows the str hash seed
+
+
+def _atf4_index(seed: int) -> int:
+    code = f"print(list({{{', '.join(map(repr, SET_ORDER))}}}).index('ATF4'))"
+    return int(subprocess.run([sys.executable, "-c", code], env={**os.environ, "PYTHONHASHSEED": str(seed)},
+                              capture_output=True, text=True, check=True).stdout)
+
+
+def test_the_command_line_refits_under_the_labs_hash_seed(finished_run, tmp_path):
+    """refit_visible computes the run's plugins in its own process. Here every agent plugin of the run's sealed-scored
+    finalists is scaled by where ATF4 falls in a set of five names, which differs under PYTHONHASHSEED 0 (the lab's),
+    1 and 2: from shells under 1 and 2 the tool re-executes itself under 0, records it, and refits and scores the
+    same models the same way both times, rather than another model per shell. A call from Python keeps its own seed
+    and says so."""
+    assert len({_atf4_index(s) for s in (0, 1, 2)}) == 3  # the scaling really differs between the three seeds
+    run = tmp_path / "run"
+    shutil.copytree(finished_run, run, ignore=shutil.ignore_patterns("worktrees", "__pycache__"))
+    c = _db(run)
+    feats = {f for (raw,) in c.execute("SELECT feature_set_json FROM experiments WHERE query_metrics_json IS NOT NULL")
+             for f in json.loads(raw or "[]")}
+    c.close()
+    changed = []
+    for f in sorted(feats):
+        plugin = run / "feature_store" / f"{f}.py"
+        if plugin.exists():
+            src = plugin.read_text()
+            head = "    def compute(self, ctx, perts, params):\n"
+            assert src.count(head) == 1, f
+            plugin.write_text(src.replace(head, head + f"        order = list({{{', '.join(map(repr, SET_ORDER))}}})\n"
+                                          "        return self._plain(ctx, perts, params) * (1.0 + 0.1 * "
+                                          "order.index('ATF4'))\n\n    def _plain(self, ctx, perts, params):\n"))
+            changed.append(f)
+    assert changed, feats
+    reps = []
+    for seed in (1, 2):
+        env = {k: v for k, v in os.environ.items() if k not in ("PYTHONHASHSEED", "GENEMILA_HASHSEED_REEXEC")}
+        env["PYTHONHASHSEED"] = str(seed)
+        out = tmp_path / f"shell{seed}" / "refit.md"
+        p = subprocess.run([sys.executable, str(ROOT / "tools" / "refit_visible.py"), "--runs", str(run), "--out",
+                            str(out)], env=env, capture_output=True, text=True, timeout=900)
+        assert p.returncode == 0, p.stderr[-3000:]
+        reps.append((json.loads(out.with_suffix(".json").read_text()), out.read_bytes()))
+    for rep, _ in reps:
+        assert rep["protocol"]["python_hash_seed"] == "0" and rep["protocol"]["hash_seed_reexec"] is True
+    assert reps[0][0] == reps[1][0] and reps[0][1] == reps[1][1]
+    inproc = tmp_path / "inproc.md"
+    assert rv.main(["--runs", str(finished_run), "--out", str(inproc), "--cache", str(tmp_path / "cache")]) == 0
+    proto = json.loads(inproc.with_suffix(".json").read_text())["protocol"]
+    assert proto["python_hash_seed"] == rv.python_hash_seed() and proto["hash_seed_reexec"] is False

@@ -136,6 +136,8 @@ def main(argv=None) -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     from genemila.data.bundle import added_knowledge
     cfg["run"]["external_knowledge"] = added_knowledge(data_dir)  # files added after the build: their own arm
+    from genemila.sandbox import HASH_SEED
+    cfg["run"].setdefault("hash_seed", HASH_SEED)  # every experiment process's PYTHONHASHSEED (the lab refuses another)
     (run_dir / "config.json").write_text(json.dumps(cfg, indent=1))
     print(f"run directory: {run_dir}")
     cmd = [sys.executable, str(Path(__file__).resolve()), "--_child", "--run-dir", str(run_dir)]

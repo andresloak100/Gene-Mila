@@ -20,6 +20,19 @@ feature; every feature that is not kept goes into a failed-feature box a lab com
 kept feature computes through ctx.feature (a composite's inputs, recorded per feature, transitively), which a lab that
 banned them could no longer compute the kept feature without.
 
+Python salts every str hash per process, so a plugin built on hash() of a name is a different pseudo-random feature
+in every process. From the command line the tool therefore re-executes itself under PYTHONHASHSEED=0, the seed every
+experiment process of the lab runs with (genemila.sandbox.HASH_SEED; once: an environment flag stops a second time),
+so that two identical invocations write the same report, and it computes each audited feature's full-training block
+once more in each of three fresh processes under PYTHONHASHSEED 0, 1 and 2, through the same plugin loading and on
+the public data alone. A feature whose block differs between any two of them depends on the hash seed. In a run that
+recorded the seed its experiment processes ran under (run.hash_seed), audited under that same seed, such a feature is
+the lab's own and is audited as any other, unless a second process under that seed computes it differently too (it
+follows memory addresses, which no seed fixes); otherwise (a run from before the seed was fixed, whose processes each
+drew their own) it is unstable: left out of every score, path and compact set, and boxed. Ties between training scores
+(within 1e-9, as for exact duplicates) are broken by feature name, never by the order in which features happen to be
+listed.
+
 Run directories are strictly read only: the database through a read-only SQLite URI (a private copy when a
 write-ahead log is present, so no -wal or -shm file is ever created next to it), plugins imported file by file
 without writing bytecode (a file that fails to import makes only its own features unrecomputable), and no feature
@@ -41,6 +54,7 @@ import os
 import re
 import shutil
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import time
@@ -61,6 +75,8 @@ from genemila.features import registry  # noqa: E402
 from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
 from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
 from genemila.pipeline import cv_fold_targets, cv_folds_of, feature_blocks, make_model  # noqa: E402
+from genemila.sandbox import (HASH_REEXEC_ENV, python_hash_seed, reexec_under_hash_seed,  # noqa: E402
+                              reexecuted_under_hash_seed)
 
 FIXED_ALPHAS = (1.0, 10.0, 100.0, 1e3, 1e4, 3e4, 1e5)
 POOL_MIN_GAIN = 0.0005      # a feature joins the pool when adding it raised its parent's visible score by more
@@ -81,17 +97,40 @@ CONST_REL = 1e-20           # a prediction whose within-perturbation variance is
                             # squares is constant up to rounding: pearson_delta 0, as for an exactly constant one
 SHOW_COMPACT_RUNS = 10      # compact sets listed by name in the report, at most (the rest are in the JSON), and only
 COMPACT_LIST_BYTES = 850    # as many as fit in this many bytes: long names, or composites' inputs, list fewer
-AUDIT_FORMAT = 3            # what a checkpointed audit of a run holds; 2: the dependency map, required inputs and the
+AUDIT_FORMAT = 4            # what a checkpointed audit of a run holds; 2: the dependency map, required inputs and the
                             # merge test's weakest links; 3: what each feature's own calls returned (per feature) and
-                            # the full model expanded too. No checkpoint of another format is ever reused
-VERDICTS = ("kept", "required_input", "redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
+                            # the full model expanded too; 4: the hash-seed check and the verdict unstable, with
+                            # rounding ties broken by name. No checkpoint of another format is ever reused
+TIE_TOL = 1e-9              # two training scores closer than this are tied (rounding: exact duplicate columns in
+                            # another order score the same up to about 1e-15), and the tie is broken by feature name,
+                            # never by the order the features happen to be listed in; six orders below the margin
+HASH_SEEDS = (0, 1, 2)      # the PYTHONHASHSEED values of the processes that compute every feature's block again: 0
+                            # is the lab's (sandbox.HASH_SEED) and the command line's own, and three seeds miss the
+                            # order of a two-name set a quarter of the time where two would miss it half the time
+HASH_TOL = 1e-6             # a block whose two computations differ by more than this, in units of a column's standard
+                            # deviation over the training rows (what the engine divides it by), is unstable: a change of
+                            # 1e-6 in a standardised value is far below any score effect (the margin is 0.001), while a
+                            # feature built on hash() of a name changes by O(1); rounding noise is about 1e-15
+HASH_WORKER_ARG = "--hash-seed-worker"            # internal: the process that computes blocks for the hash-seed check
+VERDICTS = ("kept", "required_input", "unstable", "redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
 BOXED_VERDICTS = VERDICTS[2:]  # the verdicts that go into the failed-feature box
 RULE = ("kept: in the compact set, the smallest feature set on the greedy backward path (chosen on the training "
         "perturbations' out-of-fold scores) whose score is within max(one paired SE, 0.001) of the path's best; a "
         "feature kept in the selected model's or the pool's compact set is not boxed. required_input: a feature that "
         "a kept feature computes through ctx.feature, directly or transitively (recorded while the kept feature is "
         "computed), whatever its own scores; it is not boxed either, since a lab that banned it could no longer "
-        "compute the kept feature. Otherwise, in this order: "
+        "compute the kept feature. unstable: its full-training block, computed again in three fresh processes under "
+        "PYTHONHASHSEED 0, 1 and 2 by the audit's own plugin loading, differs between two of them by more than 1e-6 "
+        "of a column's standard deviation (or in shape, or raises under some seeds only), so its values depend on "
+        "Python's per-process str hash, and the run did not record the seed its experiment processes ran under "
+        "(run.hash_seed, recorded since that seed was fixed) or the audit runs under another one, so no score of it "
+        "can be reproduced; a feature that computes an unstable one through ctx.feature is unstable too. An unstable "
+        "feature is left out of every score, path and compact set, so it is never kept and no kept feature needs it, "
+        "and it is always boxed. A feature that depends on the seed in a run audited under the seed it recorded "
+        "computes the lab's own values: it is listed (hash_check.seed_dependent) and audited as any other, unless a "
+        "second process under that same seed computes its block differently too (hash_check.same_seed: it follows "
+        "memory addresses, which no seed fixes), which makes it unstable there as well. "
+        "Otherwise, in this order: "
         "harmful: dropping it from the full model raises the visible score by more than max(paired SE, 0.001); "
         "redundant: one of its columns correlates |r| >= 0.9 with a column of a kept feature (partner named); "
         "substitutable: dropping it from the full model lowers the visible score by more than max(paired SE, 0.001), "
@@ -100,7 +139,9 @@ RULE = ("kept: in the compact set, the smallest feature set on the greedy backwa
         "computed, or its plugin failed to import. Scores: pearson_delta per visible perturbation; each subset's "
         "ridge penalty chosen on the training perturbations' out-of-fold scores under one fold partition and "
         "reported under another, so only the validation perturbations are independent of it. 0.001 is a margin of "
-        "practical equivalence, not a noise estimate. Built-in features are never boxed.")
+        "practical equivalence, not a noise estimate. Built-in features are never boxed. Ties (training scores within "
+        "1e-9, as for exact duplicates) are broken by feature name: the forward path adds, and the backward path "
+        "keeps, the feature first by name.")
 COMPOSITES = ("a feature that computes other registered features through ctx.feature (a composite) is audited as one "
               "feature with its own columns; every name it calls, directly or through the features it calls, is "
               "recorded on its fresh view and on every view derived from it, also a name outside the pool or one "
@@ -395,17 +436,20 @@ def _quiet(_msg: str) -> None:
     return None
 
 
+def best_by_name(scored: list[tuple[dict, str]], last: bool = False) -> tuple[dict, str]:
+    """The (result, feature) with the highest training mean; candidates within TIE_TOL of it are tied, and the tie
+    goes to the feature first by name (last: the one last by name), whatever order the candidates come in."""
+    top = max(r["train_mean"] for r, _ in scored)
+    tied = [(r, f) for r, f in scored if r["train_mean"] >= top - TIE_TOL]
+    return (max if last else min)(tied, key=lambda rf: rf[1])
+
+
 def forward_path(engine: Engine, features: list[str], log=_quiet, label: str = "forward") -> list[dict]:
-    """Greedy by whole feature from nothing: add the feature that raises the honest TRAINING score most (ties:
-    first); the validation perturbations play no part in the choice."""
+    """Greedy by whole feature from nothing: add the feature that raises the honest TRAINING score most (ties within
+    TIE_TOL: the feature first by name); the validation perturbations play no part in the choice."""
     chosen, remaining, steps, t0 = [], list(features), [], time.perf_counter()
     while remaining:
-        best = None
-        for f in remaining:
-            r = engine.score(chosen + [f])
-            if best is None or r["train_mean"] > best[0]["train_mean"]:
-                best = (r, f)
-        r, f = best
+        r, f = best_by_name([(engine.score(chosen + [g]), g) for g in remaining])
         chosen.append(f)
         remaining.remove(f)
         steps.append(_step(engine, chosen, r, added=f))
@@ -416,16 +460,12 @@ def forward_path(engine: Engine, features: list[str], log=_quiet, label: str = "
 
 def backward_path(engine: Engine, features: list[str], log=_quiet, label: str = "backward") -> list[dict]:
     """Greedy by whole feature from the full model: drop the feature whose removal leaves the highest honest
-    TRAINING score (ties: first), down to one feature; the first step is the full model."""
+    TRAINING score (ties within TIE_TOL: the feature last by name is dropped, so that of two exact duplicates both
+    paths keep the one first by name), down to one feature; the first step is the full model."""
     current, t0 = list(features), time.perf_counter()
     steps = [_step(engine, current, engine.score(current), removed=None)]
     while len(current) > 1:
-        best = None
-        for f in current:
-            r = engine.score([g for g in current if g != f])
-            if best is None or r["train_mean"] > best[0]["train_mean"]:
-                best = (r, f)
-        r, f = best
+        r, f = best_by_name([(engine.score([g for g in current if g != h]), h) for h in current], last=True)
         current = [g for g in current if g != f]
         steps.append(_step(engine, current, r, removed=f))
         log(f"{label} {len(current)} left: -{f}, training {r['train_mean']:.4f} ({time.perf_counter() - t0:.0f} s)")
@@ -440,10 +480,11 @@ def noise_band(se: float, floor: float = NOISE_FLOOR) -> float:
 def one_se_choice(vectors: list[np.ndarray], sizes: list, floor: float = NOISE_FLOOR) -> tuple[int, int, list[dict]]:
     """One-standard-error rule: the best set is the highest mean; a candidate qualifies when its mean is within one
     paired SE (between the candidate's and the best set's vectors, at least `floor`) of the best; the smallest
-    qualifying set wins (sizes: sortable, e.g. (features, columns)). Returns (chosen index, best index, comparisons
-    best - candidate). The audit passes the training parts of the vectors only."""
+    qualifying set wins (sizes: sortable, e.g. (features, columns)). Means within TIE_TOL of the highest are tied, and
+    the smallest of them (then the first) is the best set, so rounding never picks it. Returns (chosen index, best
+    index, comparisons best - candidate). The audit passes the training parts of the vectors only."""
     means = [float(np.mean(v)) for v in vectors]
-    best = int(np.argmax(means))
+    best = min((i for i, m in enumerate(means) if m >= max(means) - TIE_TOL), key=lambda i: (sizes[i], i))
     cmp = [paired(vectors[best], v) for v in vectors]
     ok = [i for i, c in enumerate(cmp) if c["diff"] <= noise_band(c["se"], floor)]
     pick = min(ok, key=lambda i: (sizes[i], -means[i], i))
@@ -554,17 +595,20 @@ def redundancy(X: np.ndarray, columns: list[str], feature_of: list[str], constan
 
 
 def strongest_partner(R: np.ndarray, cols_f, others: dict, columns: list[str]) -> dict | None:
-    """The column of another feature (others: feature -> column indices) most correlated with a column of this one."""
-    best = None
+    """The column of another feature (others: feature -> column indices) most correlated with a column of this one;
+    partners within TIE_TOL in |r| (exact duplicates) are tied, and the tie goes to the feature first by name."""
+    cands = []
     for g, cols_g in others.items():
         if not cols_g or not len(cols_f):
             continue
         sub = R[np.ix_(cols_f, cols_g)]
         i, j = np.unravel_index(int(np.argmax(np.abs(sub))), sub.shape)
         r = float(sub[i, j])
-        if best is None or abs(r) > abs(best["r"]):
-            best = {"feature": g, "column": columns[cols_g[j]], "own_column": columns[cols_f[i]], "r": r}
-    return best
+        cands.append({"feature": g, "column": columns[cols_g[j]], "own_column": columns[cols_f[i]], "r": r})
+    if not cands:
+        return None
+    top = max(abs(c["r"]) for c in cands)
+    return min((c for c in cands if abs(c["r"]) >= top - TIE_TOL), key=lambda c: c["feature"])
 
 
 # ------------------------------------------------------------------ merge test
@@ -709,7 +753,7 @@ def lasso_stability(X: np.ndarray, y: np.ndarray, groups: np.ndarray, cv_units: 
         counts += np.abs(coefs[:, 0]) > 1e-12
         mag += np.abs(coefs[:, 0])
     freq = counts / max(int(resamples), 1)
-    ranking = sorted(range(C), key=lambda i: (-freq[i], -mag[i], i))
+    ranking = sorted(range(C), key=lambda i: (-freq[i], -mag[i], columns[i]))  # ties: by column name
     path_lams = grid[np.unique(np.round(np.linspace(0, len(grid) - 1, 5)).astype(int))]
     lam_p, coefs_p = fit(np.ones(len(y), dtype=bool), path_lams)
     path = [{"lambda": float(lam_p[i]), "n_columns": int((np.abs(coefs_p[:, i]) > 1e-12).sum()),
@@ -727,17 +771,29 @@ def lasso_stability(X: np.ndarray, y: np.ndarray, groups: np.ndarray, cv_units: 
 
 # ------------------------------------------------------------------ verdicts
 def assign_verdicts(features: list[str], kept, n_columns: dict, single: dict, drop_one: dict, partner: dict,
-                    kept_partner: dict, lasso_freq: dict | None, failed: dict) -> list[dict]:
-    """One verdict per feature (the features analysed, then the unrecomputable ones), with its evidence. Order of the
-    rules: unrecomputable, kept, harmful, redundant, substitutable, no_gain (see RULE). required_input, which outranks
-    every verdict but kept, needs the kept features of both scopes and is set afterwards (mark_required)."""
+                    kept_partner: dict, lasso_freq: dict | None, failed: dict,
+                    unstable: dict | None = None) -> list[dict]:
+    """One verdict per feature (the features analysed, then the unstable ones, then the unrecomputable ones), with
+    its evidence. Order of the rules: unrecomputable, unstable, kept, harmful, redundant, substitutable, no_gain (see
+    RULE). unstable: {feature: {"reason", "evidence"}} (unstable_records), features left out of the analysis, so none
+    of them is ever kept. required_input, which outranks every verdict but kept and unstable, needs the kept features
+    of both scopes and is set afterwards (mark_required); no kept feature ever needs an unstable one, since a feature
+    that computes an unstable one is unstable itself."""
     kept = set(kept)
+    unstable = {f: u for f, u in (unstable or {}).items() if f not in failed}
     out = []
-    for f in list(features) + [g for g in failed if g not in features]:
+    for f in list(features) + [g for g in unstable if g not in features] + [g for g in failed if g not in features]:
         if f in failed:
             out.append({"feature": f, "verdict": "unrecomputable", "reason": str(failed[f])[:200],
                         "evidence": {"columns": None, "single": None, "drop_one": None, "lasso_frequency": None,
                                      "partner": None}})
+            continue
+        if f in unstable:
+            u = unstable[f]
+            out.append({"feature": f, "verdict": "unstable", "reason": str(u["reason"])[:300],
+                        "evidence": {"columns": u.get("columns"), "single": None, "drop_one": None,
+                                     "lasso_frequency": None, "partner": None,
+                                     "hash_check": dict(u.get("evidence") or {})}})
             continue
         d, s, kp = drop_one[f], single[f], kept_partner.get(f)
         ev = {"columns": int(n_columns[f]), "single": {"mean": s["mean"], "se": s["se"]},
@@ -811,12 +867,13 @@ def required_by(kept, deps: dict) -> dict[str, list[str]]:
 
 
 def mark_required(verdicts: list[dict], req: dict[str, list[str]]) -> None:
-    """In place: every verdict but kept of a feature that kept features need becomes required_input, naming them; the
-    verdict it would otherwise have stays in its evidence (verdict_otherwise), and so does its own evidence. Applying
-    it again with more kept features only widens required_by."""
+    """In place: every verdict but kept and unstable of a feature that kept features need becomes required_input,
+    naming them; the verdict it would otherwise have stays in its evidence (verdict_otherwise), and so does its own
+    evidence. Applying it again with more kept features only widens required_by. An unstable feature stays unstable
+    and boxed: no kept feature needs one (a feature computing it is unstable itself, outside every compact set)."""
     for v in verdicts:
         f = v["feature"]
-        if v["verdict"] == "kept" or f not in req:
+        if v["verdict"] in ("kept", "unstable") or f not in req:
             continue
         ev = dict(v.get("evidence") or {})
         if v["verdict"] != "required_input":
@@ -870,11 +927,12 @@ def apply_dependencies(r: dict) -> None:
 
 
 def analyse_model(engine: Engine, features: list[str], R: np.ndarray, columns: list[str], failed: dict,
-                  lasso_freq: dict | None = None, log=_quiet, label: str = "") -> dict:
+                  lasso_freq: dict | None = None, log=_quiet, label: str = "", unstable: dict | None = None) -> dict:
     """Census, single-feature and drop-one scores, forward and backward paths, the compact choice and verdicts of
     one feature set on an engine. R: the correlation matrix of the engine's columns (full training design). The
     paths and the compact set are chosen on the training perturbations; the compact model is compared with the full
-    one on the validation perturbations (and, for reference, on the training ones that chose it)."""
+    one on the validation perturbations (and, for reference, on the training ones that chose it). failed and
+    unstable (unstable_records) are the scope's features left out of it, which only get their verdicts."""
     full = engine.score(features)
     single = {f: engine.score([f]) for f in features}
     drop = {f: paired(full["vector"], engine.score([g for g in features if g != f])["vector"]) for f in features}
@@ -892,7 +950,7 @@ def analyse_model(engine: Engine, features: list[str], R: np.ndarray, columns: l
     kept_partner = {f: strongest_partner(R, cols_of[f], {g: cols_of[g] for g in comp_feats if g != f}, columns)
                     for f in features if f not in comp_feats}
     verdicts = assign_verdicts(features, comp_feats, {f: len(cols_of[f]) for f in features}, single, drop, partner,
-                               kept_partner, lasso_freq, failed)
+                               kept_partner, lasso_freq, failed, unstable)
     vs_val = paired(engine.val_part(comp["vector"]), engine.val_part(full["vector"]))
     vs_val["class"] = classify(vs_val["diff"], vs_val["se"])
 
@@ -1274,6 +1332,244 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
             "feature_cpu_s": {f: float(v) for f, v in timings.items()}, "calls": calls, "computed": computed}
 
 
+# ------------------------------------------------------------------ the hash-seed check
+# python_hash_seed (the seed of this process's str hashes) comes from genemila.sandbox, shared with the other tools
+
+
+def _hash_seed_worker() -> int:
+    """One process of the hash-seed check (hash_check starts it with PYTHONHASHSEED set). It reads its spec as JSON on
+    stdin, loads the run's plugins as the audit does (load_run_plugins after seeding numpy with the model's seed),
+    opens the run's public data and nothing else (no label of any held-out perturbation), and for each feature in
+    order, with the plugins re-executed and numpy seeded afresh, so that no other feature's state reaches it, computes
+    its block of the training perturbations on a fresh watched view, as compute_fits does, and writes a JSON header
+    line and the block's float64 bytes to its data stream. A feature that raises sends the error instead. Whatever a
+    plugin prints goes to stderr, never into the stream."""
+    data = os.fdopen(os.dup(1), "wb")
+    os.dup2(2, 1)
+    sys.stdout = sys.stderr
+    spec = json.loads(sys.stdin.read())
+    params, seed = spec.get("params") or {}, int(spec.get("seed") or 0)
+    with _no_bytecode():
+        np.random.seed(seed)
+        load_run_plugins(Path(spec["store"]))
+        ctx = FeatureContext(Path(spec["public"]), None)
+        train = list(ctx.train_perts)
+        for f in spec["features"]:
+            head, blk = {"feature": f}, None
+            try:
+                failed = reload_run_plugins()
+                if f in failed:
+                    raise RuntimeError(failed[f])
+                np.random.seed(seed)
+                blk = np.ascontiguousarray(feature_blocks(LabelWatch(ctx, owner=f), [f], params, train, {}, None,
+                                                          None, {})[f], dtype="<f8")
+                head.update(ok=True, shape=list(blk.shape), nbytes=int(blk.nbytes))
+            except BaseException as exc:  # noqa: BLE001  (a plugin may even call sys.exit)
+                if isinstance(exc, KeyboardInterrupt):
+                    raise
+                head.update(ok=False, error=_err(exc))
+                blk = None
+            data.write(json.dumps(head).encode() + b"\n")
+            if blk is not None:
+                data.write(memoryview(blk).cast("B"))
+            data.flush()
+            del blk
+    data.close()
+    return 0
+
+
+def _read_record(stream) -> dict | None:
+    """One feature's record from a worker's data stream (its header, with the block under "block" when it returned
+    one), or None when the stream ended or broke."""
+    try:
+        line = stream.readline()
+        if not line:
+            return None
+        head = json.loads(line)
+        if head.get("ok"):
+            n = int(head["nbytes"])
+            buf = stream.read(n)
+            if len(buf) != n:
+                return None
+            head["block"] = np.frombuffer(buf, dtype="<f8").reshape(head["shape"])
+        return head
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+def compare_blocks(a: np.ndarray, b: np.ndarray) -> dict:
+    """Two computations of one feature block (n_perts, n_genes, dim): its columns, the largest absolute difference and
+    the largest difference in units of the column's scale, its standard deviation over all rows (the larger of the
+    two; what the engine divides the column by), at least 1e-6 of its largest magnitude, so that a constant column is
+    measured against its size; 0 for identical blocks. Blocks of different shapes have no difference (None)."""
+    a, b = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
+    if a.shape != b.shape:
+        return {"columns": None, "shapes": [list(a.shape), list(b.shape)], "max_abs_diff": None,
+                "max_std_diff": None}
+    C = int(a.shape[2]) if a.ndim == 3 else 1
+    A, B = a.reshape(-1, C), b.reshape(-1, C)
+    if np.array_equal(A, B):
+        return {"columns": C, "max_abs_diff": 0.0, "max_std_diff": 0.0}
+    d = np.abs(A - B).max(axis=0)
+    scale = np.maximum(np.maximum(A.std(axis=0), B.std(axis=0)),
+                       1e-6 * np.maximum(np.abs(A).max(axis=0), np.abs(B).max(axis=0)))
+    rel = np.where(scale > 0, d / np.where(scale > 0, scale, 1.0), 0.0)
+    return {"columns": C, "max_abs_diff": float(d.max()), "max_std_diff": float(rel.max())}
+
+
+NO_SEED_FIXES = ("something no hash seed fixes (memory addresses: id(), or the order of a set of objects other than "
+                 "strings and numbers)")
+
+
+def hash_check(public_dir: Path, store: Path, features: list[str], params: dict, model_seed: int,
+               seeds=HASH_SEEDS, repeat: bool = False) -> dict:
+    """Every feature's block of the training perturbations computed once in each of several fresh processes, one per
+    hash seed (PYTHONHASHSEED 0, 1 and 2) and, with repeat, a second one under the first seed, all running this
+    file's own plugin loading (_hash_seed_worker) on the run's public data alone, side by side, and compared pair by
+    pair as their blocks arrive, one block per process in memory at a time. A feature whose blocks differ between
+    any two processes by more than HASH_TOL of a column's scale (compare_blocks), whose blocks differ in shape, or
+    that raises in some processes only, depends on the seed (unstable); one whose two blocks under the same seed
+    differ that way (repeat) follows something no hash seed fixes (same_seed), so the seed a run recorded does not
+    reproduce it either. Returns {"seeds", "repeat", "tolerance", "checked" (the features computed in every process),
+    "blocks" ({feature: the largest differences over every pair of processes, and the seeds of the "pair" with the
+    largest scaled one}), "unstable" ({feature: reason}), "same_seed" (those of them that differ under one seed),
+    "errors" ({feature: why it was not compared}; every feature when a process cannot even start, and then nothing
+    is unstable, the audit going on as before the check existed)}."""
+    seeds = [int(s) for s in seeds]
+    if len(set(seeds)) != len(seeds) or len(seeds) < 2:
+        raise ValueError("the hash-seed check compares at least two distinct seeds")
+    out = {"seeds": seeds, "repeat": bool(repeat), "tolerance": HASH_TOL, "checked": [], "blocks": {},
+           "unstable": {}, "same_seed": [], "errors": {}}
+    features = list(features)
+    if not features:
+        return out
+    run_seeds = seeds + ([seeds[0]] if repeat else [])  # one process each; the repeat is the last one
+    labels = [str(s) for s in seeds] + ([f"{seeds[0]} (again)"] if repeat else [])
+    same = (0, len(seeds)) if repeat else None
+    spec = json.dumps({"public": str(public_dir), "store": str(store), "features": features, "params": params,
+                       "seed": int(model_seed)}, default=str).encode()
+    procs, alive, ended = [], [], {}
+    try:
+        for s, label in zip(run_seeds, labels):
+            env = {k: v for k, v in os.environ.items() if k != HASH_REEXEC_ENV}
+            env["PYTHONHASHSEED"] = str(s)
+            try:
+                procs.append(subprocess.Popen([sys.executable, str(Path(__file__).resolve()), HASH_WORKER_ARG],
+                                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, env=env))
+            except OSError as exc:
+                out["errors"] = {f: f"not compared: the process under PYTHONHASHSEED {label} did not start: "
+                                    f"{_err(exc)}" for f in features}
+                return out  # (finally stops the ones that did start)
+            alive.append(True)
+        for p in procs:
+            with contextlib.suppress(OSError):  # one that died before reading its spec ends its stream at once
+                p.stdin.write(spec)
+                p.stdin.close()
+
+        def end(i):
+            if alive[i]:
+                alive[i] = False
+                with contextlib.suppress(subprocess.TimeoutExpired):
+                    procs[i].wait(timeout=30)
+                ended[i] = procs[i].poll()
+        for f in features:
+            recs = []
+            for i, p in enumerate(procs):
+                rec = _read_record(p.stdout) if alive[i] else None
+                if rec is not None and rec.get("feature") != f:
+                    rec = None
+                if rec is None:
+                    end(i)
+                recs.append(rec)
+            if any(r is None for r in recs):
+                gone = [i for i, r in enumerate(recs) if r is None]
+                out["errors"][f] = (f"not compared: the process under PYTHONHASHSEED "
+                                    f"{'/'.join(labels[i] for i in gone)} ended early (exit code "
+                                    f"{', '.join(str(ended.get(i)) for i in gone)})")
+                continue
+            bad = [i for i, r in enumerate(recs) if not r.get("ok")]
+            if len(bad) == len(recs):
+                out["errors"][f] = f"raised under every seed: {recs[0]['error']}"[:200]
+                continue
+            out["checked"].append(f)
+            if bad:
+                one_of_same = same is not None and (same[0] in bad) != (same[1] in bad)
+                out["unstable"][f] = (f"it raised under PYTHONHASHSEED {'/'.join(labels[i] for i in bad)} only "
+                                      f"({recs[bad[0]]['error'][:80]}), so whether it can be computed depends on "
+                                      + (NO_SEED_FIXES if one_of_same else "Python's salted str hash"))
+                if one_of_same:
+                    out["same_seed"].append(f)
+                continue
+            pairs = {(i, j): compare_blocks(recs[i]["block"], recs[j]["block"])
+                     for i in range(len(recs)) for j in range(i + 1, len(recs))}
+            del recs
+            shaped = sorted(ij for ij, c in pairs.items() if c["max_std_diff"] is None)
+            if shaped:
+                (i, j) = same if same in shaped else shaped[0]
+                c = pairs[(i, j)]
+                out["blocks"][f] = {**c, "pair": [run_seeds[i], run_seeds[j]]}
+                out["unstable"][f] = (f"it returned {c['shapes'][0][-1]} column(s) under PYTHONHASHSEED {labels[i]} "
+                                      f"and {c['shapes'][1][-1]} under {labels[j]}: its shape depends on "
+                                      + (NO_SEED_FIXES if (i, j) == same else "Python's salted str hash"))
+                if (i, j) == same:
+                    out["same_seed"].append(f)
+                continue
+            i, j = max(pairs, key=lambda ij: pairs[ij]["max_std_diff"])
+            if same is not None and pairs[same]["max_std_diff"] > HASH_TOL:
+                i, j = same  # what no seed fixes is the finding, whatever the seeds add to it
+            worst = pairs[(i, j)]
+            cmp = {"columns": worst["columns"], "max_abs_diff": max(c["max_abs_diff"] for c in pairs.values()),
+                   "max_std_diff": max(c["max_std_diff"] for c in pairs.values())}
+            if cmp["max_std_diff"] > 0:
+                cmp["pair"] = [run_seeds[i], run_seeds[j]]
+            out["blocks"][f] = cmp
+            if worst["max_std_diff"] > HASH_TOL:
+                diff = (f"by up to {worst['max_abs_diff']:.3g} ({worst['max_std_diff']:.3g} column SDs, tolerance "
+                        f"{HASH_TOL:g})")
+                if (i, j) == same:
+                    out["same_seed"].append(f)
+                    out["unstable"][f] = (f"its training block differs between two processes under the same "
+                                          f"PYTHONHASHSEED {labels[i]} {diff}: its values follow {NO_SEED_FIXES}, "
+                                          "so its scores cannot be reproduced")
+                else:
+                    out["unstable"][f] = (f"its training block differs between processes under PYTHONHASHSEED "
+                                          f"{labels[i]} and {labels[j]} {diff}: its values depend on Python's salted "
+                                          "str hash (hash() of a name, or set order), so its scores cannot be "
+                                          "reproduced")
+        for i in range(len(procs)):
+            end(i)
+    finally:
+        for p in procs:
+            if p.poll() is None:
+                p.kill()
+                p.wait()
+            with contextlib.suppress(OSError):
+                p.stdout.close()
+    return out
+
+
+def unstable_records(check: dict, deps: dict, features) -> dict:
+    """{feature: {"reason", "columns", "evidence"}} of the unstable features among `features`: those the hash-seed
+    check found unstable, then, since a lab that kept a composite would compute its inputs, every feature that
+    computes one of them through ctx.feature on its own view (deps: dependency_map, transitive, so nested calls
+    included), even when its own block agrees (evidence "via" names them)."""
+    direct = check.get("unstable") or {}
+    blocks = check.get("blocks") or {}
+    out = {}
+    for f in features:
+        if f in direct:
+            out[f] = {"reason": direct[f], "columns": (blocks.get(f) or {}).get("columns"),
+                      "evidence": {"seeds": check.get("seeds"), **(blocks.get(f) or {})}}
+    for f in features:
+        via = sorted(set((deps.get(f) or {}).get("transitive", [])) & set(direct))
+        if f not in out and via:
+            out[f] = {"reason": (f"it computes unstable feature(s) {_names(via, 3)} through ctx.feature, so a lab "
+                                 "keeping it would compute values that change with Python's hash seed"),
+                      "columns": (blocks.get(f) or {}).get("columns"),
+                      "evidence": {"seeds": check.get("seeds"), **(blocks.get(f) or {}), "via": via}}
+    return out
+
+
 def _model_alpha(sel: dict) -> tuple[str, float, int]:
     model_type = sel.get("model_type") or "ridge"
     hp = sel.get("hyperparameters_json") or {}
@@ -1482,19 +1778,52 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     if out["dependencies"]:
         log(f"{len(out['dependencies'])} composite feature(s) compute others through ctx.feature: "
             + _names(sorted(out["dependencies"]), 3))
+    # ---- the hash-seed check: each feature's training block again under hash seeds 0, 1 and 2, in fresh processes.
+    # A run that recorded the seed its experiment processes ran under (run.hash_seed, since the lab fixed it), audited
+    # under that same seed, computed exactly the values this audit computes: its seed-dependent features (a set of
+    # names iterated in order, which the guard allows) are the lab's own and are audited as any other. A run without
+    # the record drew a seed in every process, and an audit under another seed computes other values: unstable
+    run_seed, own = rcfg.get("hash_seed"), python_hash_seed()
+    recorded = run_seed is not None and own.isdigit() and str(run_seed) == own
+    # under the run's seed, a second process under it tells what no seed fixes (addresses) from what it does fix
+    hc = out["hash_check"] = hash_check(run_dir / "public_data", store, fits["features"], params, model_seed,
+                                        repeat=recorded)
+    dependent = unstable_records(hc, out["dependencies"], fits["features"])
+    noisy = unstable_records({**hc, "unstable": {f: why for f, why in hc["unstable"].items() if f in hc["same_seed"]}},
+                             out["dependencies"], fits["features"])
+    hc.update(via={f: u["evidence"]["via"] for f, u in dependent.items() if "via" in u["evidence"]},
+              seed_dependent=sorted(dependent), run_hash_seed=run_seed, audit_hash_seed=own, reproducible=recorded)
+    unstable = noisy if recorded else dependent
+    t = lap("hash_check", t)
+    log(f"hash-seed check of {len(hc['checked'])} feature(s) under PYTHONHASHSEED "
+        f"{', '.join(map(str, HASH_SEEDS))} in {timings['hash_check']:.0f} s: "
+        + ("none depends on the seed" if not dependent else
+           f"{len(dependent) - len(unstable)} depend on it ({_names([f for f in dependent if f not in unstable], 3)}),"
+           f" audited as any other: the run recorded hash seed {run_seed} and the audit runs under it"
+           + (f"; {len(unstable)} unstable under that seed too ({_names(list(unstable), 3)})" if unstable else "")
+           if recorded else
+           f"{len(unstable)} unstable ({_names(list(unstable), 3)}): the run recorded "
+           + ("no hash seed" if run_seed is None else f"hash seed {run_seed}, the audit runs under {own}")))
     engine = Engine(fits["seed_units"], fits["val_unit"], len(ctx.train_perts), alphas, fits["columns_of"])
     columns, feature_of = fits["columns"], fits["feature_of"]
-    sel_feats = [f for f in sel_feats_all if f in fits["columns_of"]]
+    sel_feats = [f for f in sel_feats_all if f in fits["columns_of"] and f not in unstable]
     sel_failed = {f: failed[f] for f in sel_feats_all if f in failed}
+    sel_unstable = {f: unstable[f] for f in sel_feats_all if f in unstable}
     out["selected_missing"] = sorted(sel_failed)
+    out["selected_unstable"] = sorted(sel_unstable)
     if not sel_feats:
-        out["selected_analysis"] = {"verdicts": assign_verdicts([], [], {}, {}, {}, {}, {}, None, sel_failed)}
-        raise Skip("no feature of the selected model could be recomputed")
+        out["selected_analysis"] = {"verdicts": assign_verdicts([], [], {}, {}, {}, {}, {}, None, sel_failed,
+                                                                sel_unstable)}
+        raise Skip("no feature of the selected model could be recomputed"
+                   + (" with values independent of the hash seed" if sel_unstable else ""))
     sel_idx = engine.columns(sel_feats)
     R_all = corr_from_gram(fits["val_unit"].G, fits["constant"])
     out["visible_reproduction"] = (visible_reproduction(engine, sel_idx, sel, run_cv_folds, k, cv_seed)
-                                   if not sel_failed else {"available": False, "flag": False,
-                                                           "reason": "a feature of the model is unrecomputable"})
+                                   if not sel_failed and not sel_unstable else
+                                   {"available": False, "flag": False,
+                                    "reason": ("a feature of the model is unrecomputable" if sel_failed else
+                                               "a feature of the model is unstable (its values change with the hash "
+                                               "seed)")})
     # ---- the selected model: everything
     red = redundancy(fits["Xtr"][:, sel_idx], [columns[i] for i in sel_idx], [feature_of[i] for i in sel_idx],
                      fits["constant"][sel_idx])
@@ -1507,7 +1836,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     lasso["cv"] = f"the {k} folds of seed {seeds[0]}, every feature recomputed without the fold"
     t = lap("lasso", t)
     analysis = analyse_model(engine, sel_feats, R_all, columns, sel_failed, lasso["feature_frequency"], log,
-                             "selected")
+                             "selected", unstable=sel_unstable)
     t = lap("selected_paths", t)
     analysis["redundancy"] = red
     analysis["lasso"] = lasso
@@ -1517,9 +1846,10 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     apply_dependencies(out)  # at once: should anything below fail, these verdicts already keep inputs out of the box
     # ---- the pool: census, single and drop-one, paths, compact choice and verdicts
     if use_pool:
-        pool_ok = [f for f in pool if f in fits["columns_of"]]
+        pool_ok = [f for f in pool if f in fits["columns_of"] and f not in unstable]
         pool_failed = {f: failed[f] for f in pool if f in failed}
-        out["pool"] = analyse_model(engine, pool_ok, R_all, columns, pool_failed, None, log, "pool")
+        out["pool"] = analyse_model(engine, pool_ok, R_all, columns, pool_failed, None, log, "pool",
+                                    unstable={f: unstable[f] for f in pool if f in unstable})
         t = lap("pool_paths", t)
     else:
         out["pool"] = None
@@ -1527,6 +1857,8 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     marks = []
     if sel_failed:
         marks.append(f"{len(sel_failed)} selected feature(s) unrecomputable")
+    if sel_unstable:
+        marks.append(f"{len(sel_unstable)} selected feature(s) unstable under the hash seed")
     if out["visible_reproduction"].get("flag"):
         marks.append(f"visible reproduction off by {out['visible_reproduction']['max_abs_diff']:.4f}")
     out["marks"] = marks
@@ -1545,7 +1877,8 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
                          "selected_model": model_type, "selected_alpha": best_alpha, "compact_alpha": comp_alpha,
                          "compact_features": comp["features"], "stored_selected": stored, "reproduction_diff": diff,
                          "reproduction_flag": bool(diff is not None and abs(diff) > SEALED_FLAG),
-                         "selected_features_missing": sorted(sel_failed)}
+                         "selected_features_missing": sorted(sel_failed),
+                         "selected_features_unstable": sorted(sel_unstable)}
         t = lap("sealed", t)
     timings["total"] = round(time.perf_counter() - t0, 3)
     out["timings"] = timings
@@ -1672,6 +2005,7 @@ def aggregate(runs: list[dict]) -> dict:
                                  "n_beyond": sum(1 for x in repro if x > REPRO_FLAG),
                                  "max_abs_diff": max(repro) if repro else None, "threshold": REPRO_FLAG},
         "n_selected_missing": sum(1 for r in audited if r.get("selected_missing")),
+        "n_selected_unstable": sum(1 for r in audited if r.get("selected_unstable")),
         "n_marked": sum(1 for r in audited if r.get("marks")),
         "detail_run": best,
     }
@@ -1708,10 +2042,12 @@ def analyse(run_dirs: list[Path], cache_dir: Path, fold_seeds=None, resamples: i
             sealed: bool = False, log=None) -> dict:
     """Every run, one after the other. Each audited run is written to a checkpoint in cache_dir/audits as soon as it
     is done, and a run whose checkpoint matches (same tool, protocol and run contents) is taken from it, so an
-    interrupted job resumes where it stopped and never scores a run's sealed models twice."""
+    interrupted job resumes where it stopped and never scores a run's sealed models twice. The hash seed the plugins
+    run under is part of a checkpoint's key: a checkpoint written under another seed is never taken."""
     say = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+    seed = python_hash_seed()
     proto_key = {"fold_seeds": list(fold_seeds) if fold_seeds else None, "resamples": int(resamples),
-                 "pool": bool(use_pool), "sealed": bool(sealed)}
+                 "pool": bool(use_pool), "sealed": bool(sealed), "python_hash_seed": seed}
     runs = []
     for i, d in enumerate(run_dirs):
         d = Path(d).resolve()
@@ -1745,7 +2081,11 @@ def analyse(run_dirs: list[Path], cache_dir: Path, fold_seeds=None, resamples: i
                          "fixed_alphas": list(FIXED_ALPHAS), "pool_min_gain": POOL_MIN_GAIN,
                          "corr_high": CORR_HIGH, "duplicate_r": DUPLICATE_R, "stable_frequency": STABLE_FREQ,
                          "sealed_flag": SEALED_FLAG, "reproduction_flag": REPRO_FLAG, "noise_floor": NOISE_FLOOR,
-                         "rule": RULE, "composites": COMPOSITES, "audit_format": AUDIT_FORMAT},
+                         "rule": RULE, "composites": COMPOSITES, "audit_format": AUDIT_FORMAT,
+                         # the seed of the str hashes the plugins ran under ('0' from the command line, which
+                         # re-executes itself under it, and whether it did; a call from Python keeps its own)
+                         "python_hash_seed": seed, "hash_seed_reexec": reexecuted_under_hash_seed(),
+                         "hash_check": {"seeds": list(HASH_SEEDS), "tolerance": HASH_TOL, "tie_tolerance": TIE_TOL}},
             "runs": runs, "aggregate": aggregate(runs)}
 
 
@@ -1907,6 +2247,7 @@ def render(rep: dict) -> str:
     nonridge = any(r["selected"]["model_type"] != "ridge" for r in audited)
     any_marked = any(r.get("marks") for r in audited)
     composites = "composites" in proto  # the audit recorded what each feature computes through ctx.feature
+    hashed = "hash_check" in proto  # the audit looked for features whose values change with the str hash seed
     any_inputs = any(r["selected_analysis"][m].get("required_inputs") for r in audited for m in ("census", "compact"))
     floor = proto.get("noise_floor", NOISE_FLOOR)
     fs = proto.get("fold_seeds")
@@ -1932,6 +2273,9 @@ def render(rep: dict) -> str:
          f"penalty by cross-validation over the fold-recomputed designs, then {proto.get('resamples')} half-samples; "
          f"stable = selected in at least {proto.get('stable_frequency', STABLE_FREQ):.0%}. Verdicts, in order: kept, "
          + ("required_input, " if composites else "")
+         # the seeds, the tolerance, the seed the plugins ran under (0 from the command line) and the rule of unstable
+         # are in the JSON (protocol and rule): the report stays pasteable
+         + ("unstable (changes with the hash seed), " if hashed else "")
          + "harmful, redundant (|r| ≥ 0.9 with a kept feature), substitutable (established drop-one gain the compact "
          "set does without), no_gain, unrecomputable."
          + (" A composite (a feature computing others through ctx.feature) is one feature; what a kept one computes "
@@ -1975,9 +2319,9 @@ def render(rep: dict) -> str:
           + (" (+k): k required inputs, computed through ctx.feature." if any_inputs else "")
           + (" *: the selected model is not ridge (its type is in the JSON) and is audited as ridge on the same "
              "columns (ols: alpha 0 by least squares)." if nonridge else "")
-          + (f" †: the audited model is not exactly the run's (selected features unrecomputable, or the lab's "
-             f"visible score not reproduced within {proto.get('reproduction_flag', REPRO_FLAG):g})."
-             if any_marked else "")]
+          + (" †: the audited model is not exactly the run's (selected features unrecomputable"
+             + (" or unstable" if hashed else "") + ", or the lab's visible score not reproduced within "
+             f"{proto.get('reproduction_flag', REPRO_FLAG):g})." if any_marked else "")]
     prim = agg["primary"]
     shown = [r for r in audited if r.get("arm_class") == prim]
     if shown:
@@ -1998,8 +2342,8 @@ def render(rep: dict) -> str:
           "| verdict | " + " | ".join(f"{CLASS_LABEL[c]}: selected | {CLASS_LABEL[c]}: pools" for c in present) + " |",
           "|---|" + "---|---|" * len(present)]
     for v in VERDICTS:
-        if v == "required_input" and not composites:  # an older audit never looked: no count, rather than a false 0
-            continue
+        if (v == "required_input" and not composites) or (v == "unstable" and not hashed):
+            continue  # an older audit never looked: no count, rather than a false 0
         L.append(f"| {v} | " + " | ".join(f"{agg['classes'][c]['verdict_counts']['selected'].get(v, 0)} | "
                                          f"{agg['classes'][c]['verdict_counts']['pool'].get(v, 0)}" for c in present)
                  + " |")
@@ -2208,6 +2552,8 @@ def _reading(rep: dict) -> str:
     if vc["unrecomputable"]:
         parts.append(f" {vc['unrecomputable']} feature(s) of the selected models could not be recomputed and are "
                      "boxed as such.")
+    if vc.get("unstable"):  # absent from an audit that predates the hash-seed check
+        parts.append(f" {vc['unstable']} feature(s) of the selected models are unstable (boxed).")
     vr = agg["visible_reproduction"]
     if vr["n_checked"]:
         parts.append(f" The engine reproduces the lab's stored visible scores within {vr['threshold']:g} for "
@@ -2232,8 +2578,11 @@ def _reading(rep: dict) -> str:
                      f"to the selected model on average, higher in {sum(s['compact_higher'] for s in sealed)} of {n} "
                      f"runs; {sum(s['flagged'] for s in sealed)} reproduction(s) flagged. No sealed number entered any "
                      "choice, and none should be read as a clean test.")
-    parts.append(f" A difference within one paired SE is not established and one below {band:g} is treated as "
-                 "practically nil; single fold-seed differences below about 0.02 never were established.")
+    if "hash_check" in rep["protocol"]:  # the paired-SE and margin rules are stated once, in the protocol paragraph,
+        parts.append(" Single fold-seed differences below about 0.02 never were established.")  # room for unstable
+    else:  # a report from before the hash-seed check re-renders as it was written, byte for byte
+        parts.append(f" A difference within one paired SE is not established and one below {band:g} is treated as "
+                     "practically nil; single fold-seed differences below about 0.02 never were established.")
     return "".join(parts)
 
 
@@ -2252,6 +2601,9 @@ def _plain(obj):
 
 
 def main(argv=None) -> int:
+    """The command line (argv None: sys.argv, re-executed under PYTHONHASHSEED=0, the lab's seed, when it is not
+    already that: genemila.sandbox.reexec_under_hash_seed), or a call from Python with its arguments (argv), which
+    runs in this process under whatever hash seed it has; the protocol records the seed and whether it re-executed."""
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--runs", nargs="*", default=[],
                     help="finished run directories (lab.db, public_data/, feature_store/)")
@@ -2269,6 +2621,8 @@ def main(argv=None) -> int:
                          "resumes (default: a temporary directory, lost on exit; recommended for long jobs)")
     ap.add_argument("--from-json", default=None, help="re-render the markdown from a JSON twin; no run is opened")
     args = ap.parse_args(argv)
+    if argv is None and not args.from_json:
+        reexec_under_hash_seed("feature_audit")
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     if args.from_json:
@@ -2301,4 +2655,6 @@ def main(argv=None) -> int:
 
 
 if __name__ == "__main__":
+    if sys.argv[1:2] == [HASH_WORKER_ARG]:  # one process of the hash-seed check, started by hash_check
+        sys.exit(_hash_seed_worker())
     sys.exit(main())

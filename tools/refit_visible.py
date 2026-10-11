@@ -14,6 +14,12 @@ refit ones. The protocol was fixed before any sealed result under it was read an
 shows; nothing is selected, tuned or chosen by a sealed score. The run directories are read only: the tool
 never writes into a run, its database, its cache or its query log, and uses an oracle instance of its own.
 
+The run's plugins are computed in this process, so from the command line the tool re-executes itself under
+PYTHONHASHSEED=0, the seed of every experiment process of the lab (genemila.sandbox.HASH_SEED): a plugin that follows
+str hashes (the order of a set of names, or hash() in a past run's plugin) then computes what the lab computed, and
+the same in every invocation, rather than refitting another model under every shell's own seed. The JSON's protocol
+records the seed the refits ran under and whether the tool re-executed.
+
     python tools/refit_visible.py --runs runs/a runs/b --out docs/results/refit_visible.md [--arm-ensembles]
     python tools/refit_visible.py --from-json docs/results/refit_visible.json --out docs/results/refit_visible.md
 """
@@ -38,6 +44,7 @@ from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
 from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
 from genemila.lab import additive_delta, open_run  # noqa: E402
 from genemila.pipeline import build_matrix, make_model  # noqa: E402
+from genemila.sandbox import python_hash_seed, reexec_under_hash_seed, reexecuted_under_hash_seed  # noqa: E402
 from genemila.spec import ExperimentSpec  # noqa: E402
 
 METRICS = ["pearson_delta", "cellforge_mse_de", "cellforge_pcc_de", "cellforge_r2_de"]
@@ -327,7 +334,10 @@ def analyse(run_dirs: list[Path], cache_dir: Path, seed_repeats: int = 1, arm_en
     for r in runs:
         r.pop("_arrays", None)
     return {"protocol": {"metrics": METRICS, "seeds_per_fit": int(seed_repeats), "arm_ensembles": bool(arm_ensembles),
-                         "multi_dataset": multi},
+                         "multi_dataset": multi,
+                         # the str hash seed the plugins ran under: '0' from the command line, which re-executes
+                         # itself under the lab's seed (and whether it did); a call from Python keeps its own
+                         "python_hash_seed": python_hash_seed(), "hash_seed_reexec": reexecuted_under_hash_seed()},
             "runs": runs, "arms": arms, "reading": reading}
 
 
@@ -470,6 +480,8 @@ def _plain(obj):
 
 
 def main(argv=None) -> int:
+    """The command line (argv None: re-executed under PYTHONHASHSEED=0, the lab's seed, unless it already is that),
+    or a call from Python with its arguments (argv), which runs in this process under whatever hash seed it has."""
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--runs", nargs="*", default=[], help="run directories (lab.db, config.json, summary.json, feature_store/)")
     ap.add_argument("--out", required=True, help="markdown report")
@@ -481,6 +493,8 @@ def main(argv=None) -> int:
                     help="repeat every fit under N consecutive seeds (features recomputed under each) and average "
                          "the predicted deltas; only feature code that draws random numbers can differ (default 1)")
     args = ap.parse_args(argv)
+    if argv is None and not args.from_json:
+        reexec_under_hash_seed("refit_visible")
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     if args.from_json:

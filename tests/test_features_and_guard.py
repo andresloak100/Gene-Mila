@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -151,3 +152,121 @@ def test_guard_blocks_routes_around_fold_views(snippet):
     assert "def compute" in code and snippet in code
     with pytest.raises(CodeViolation):
         check_plugin_source(code, "coexpr")
+
+
+# hash() and id() differ between processes (str hashes are salted per process, id() is a memory address): a feature
+# built on them is noise no other process reproduces, which the smoke test's in-process determinism check never sees
+@pytest.mark.parametrize("snippet, what", [
+    ("h = abs(hash(perts[0])) % ctx.n_genes", "use of 'hash'"),            # as found in a past run's plugin
+    ("s = 1.0 / (1.0 + abs(hash(perts[0]) % 1000) / 1000.0)", "use of 'hash'"),
+    ("h = hash", "use of 'hash'"),                                          # an alias, called later
+    ("h = sorted(perts, key=hash)", "use of 'hash'"),
+    ("h = perts[0].__hash__()", "access to .__hash__"),
+    ("h = str.__hash__", "access to .__hash__"),
+    ("h = id(ctx) % 7", "call of id()"),
+    ("h = sorted(perts, key=id)", "use of 'id'"),                           # the builtin, not a variable
+    ("h = __builtins__['hash']", "use of '__builtins__'"),                  # reaching any builtin by name
+    # the builtins module through an allowed module's attributes, or an attribute looked up by string
+    ("import dataclasses\n        h = dataclasses.builtins.id(ctx)", "access to .builtins"),
+    ("import dataclasses\n        h = dataclasses.sys.modules['builtins'].hash(perts[0])", "access to .sys"),
+    ("from dataclasses import builtins\n        h = builtins.id(ctx)", "import of ['builtins'] from 'dataclasses'"),
+    ("h = len.__self__.hash(perts[0])", "access to .__self__"),                 # a builtin function's module
+    ("import genemila.features.api as api\n        h = api.os.getpid()", "access to .os"),
+    ("h = str.__getattribute__(perts[0], '__ha' + 'sh__')()", "access to .__getattribute__"),
+    ("h = object.__getattribute__(ctx, '_train' + '_delta')", "access to .__getattribute__"),
+    # a set of functions is ordered by their addresses, which PYTHONHASHSEED does not fix
+    ("x = np.arange(4.0) ** 2\n        a, b = [f(x) for f in {np.mean, np.median}]", "iteration over a set of objects"),
+    ("for f in frozenset([np.mean, np.max]):\n            pass", "iteration over a set of objects"),
+])
+def test_guard_refuses_hash_and_id_and_says_why(snippet, what):
+    code = TEMPLATES["variance"].format(name="f").replace("return np.broadcast_to",
+                                                          f"{snippet}\n        return np.broadcast_to")
+    with pytest.raises(CodeViolation, match=re.escape(what)) as exc:
+        check_plugin_source(code, "f")
+    if what.startswith(("use of 'hash'", "use of 'id'", "call of id()", "access to .__hash__", "iteration")):
+        msg = str(exc.value)
+        assert "differ between processes" in msg and "sorted order" in msg and "ctx.perts or ctx.genes" in msg
+        assert "zlib.crc32" in msg and "hashlib" in msg and "allowed imports" in msg
+        assert "set of objects other than strings and numbers" in msg and "tuple or list" in msg
+
+
+@pytest.mark.parametrize("module, body, what", [
+    # a binding of id elsewhere (another function's argument) does not hide the builtin here
+    ("def _helper(id=0):\n    return id\n\n\nADDR = id", "h = ADDR(perts[0])", "use of 'id'"),
+    ("def _helper(id=0):\n    return id", "h = sorted(perts, key=id)", "use of 'id'"),
+    ("def _loop():\n    for id in range(3):\n        pass", "h = list(map(id, perts))", "use of 'id'"),
+    # a module-level binding counts from the next statement on: until then the name is still the builtin
+    ("hash = hash", "h = hash(perts[0])", "use of 'hash'"),
+    ("def hash(s, h=hash):\n    return zlib.crc32(s.encode())", "h = hash(perts[0])", "use of 'hash'"),
+    ("H = id\n\n\ndef id(x):\n    return 0", "h = H(perts[0])", "use of 'id'"),
+    # a name the plugin binds where the use sees it is not the builtin
+    ("def hash(s):\n    return zlib.crc32(s.encode())", "h = hash(perts[0])", None),  # the replacement suggested
+    ("", "hash = zlib.crc32(perts[0].encode())\n        h = hash % 7", None),
+    ("", "for id in range(2):\n            h = id", None),
+    ("", "h = [id for id in range(3)]", None),
+    ("", "h = (lambda id: id + 1)(2)", None),
+    ("ID = 3\n\n\ndef id(x):\n    return ID", "h = id(perts[0])", None),
+    # sets used without their order, or of literals whose hash the fixed seed fixes
+    ("", "h = [p in {perts[0], perts[-1]} for p in perts]", None),
+    ("", "h = sorted({perts[0], perts[-1]}) + [len({np.mean, np.max})]", None),
+    ("", "for g in {'ATF4', 'XBP1', 3, (1, 'a')}:\n            pass", None),
+])
+def test_guard_resolves_hash_and_id_by_scope(module, body, what):
+    """hash and id are refused where they reach the builtins, by Python's scoping: a binding in another function, or
+    one at module level after (or in) the statement that uses the name, leaves the use on the builtin; a binding the
+    use sees (a local, a loop variable, a helper def hash built on zlib.crc32) does not."""
+    code = TEMPLATES["variance"].format(name="f").replace("import numpy as np", f"import zlib\n\nimport numpy as np\n\n{module}\n")
+    code = code.replace("return np.broadcast_to", f"{body}\n        return np.broadcast_to")
+    if what is None:
+        check_plugin_source(code, "f")
+    else:
+        with pytest.raises(CodeViolation, match=re.escape(f"{what} not allowed: hash() and id() differ")):
+            check_plugin_source(code, "f")
+
+
+def test_guard_allows_the_stable_replacements_it_recommends(dataset, tmp_path):
+    """zlib.crc32 and hashlib on encoded bytes pass the guard, as its message says, and run in the smoke test (a
+    subprocess, as the worker runs it); a variable named id is not the builtin."""
+    code = TEMPLATES["variance"].replace("import numpy as np", "import hashlib\nimport zlib\n\nimport numpy as np")
+    code = code.replace("return np.broadcast_to", "w = np.array([zlib.crc32(p.encode()) % 7 + int(hashlib.sha256("
+                        "p.encode()).hexdigest()[:2], 16) for p in perts], dtype=float)\n"
+                        "        for id in range(2):\n            w = w + id\n"
+                        "        return w[:, None, None] + np.broadcast_to")
+    check_plugin_source(code.format(name="stable"), "stable")
+    r = run_smoke(dataset, tmp_path, code, name="stable")
+    assert r["status"] == "ok", r
+
+
+def _plugin_sources() -> dict[str, str]:
+    """Every feature plugin source the lab ships or the tests use: the built-in features, the plugin directory, every
+    string constant in genemila/providers (the scripted templates among them) and in the tests that registers a
+    feature (formatted when it is a template)."""
+    import ast
+    root = Path(__file__).resolve().parent.parent
+    out = {"genemila/features/builtin.py": (root / "genemila" / "features" / "builtin.py").read_text()}
+    for p in sorted((root / "genemila" / "features" / "plugins").glob("*.py")):
+        out[str(p.relative_to(root))] = p.read_text()
+    for f in sorted((root / "genemila" / "providers").glob("*.py")) + sorted((root / "tests").glob("*.py")):
+        for node in ast.walk(ast.parse(f.read_text())):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str) and "@register" in node.value:
+                # a template ({name} in it) is formatted first: its escaped braces {{}} parse as a set of a dict
+                fmt = node.value.replace("{{", "{").replace("}}", "}")
+                for src in ((fmt, node.value) if "{name}" in node.value else (node.value, fmt)):
+                    try:
+                        ast.parse(src)
+                    except SyntaxError:
+                        continue
+                    out[f"{f.relative_to(root)}:{node.lineno}"] = src
+                    break
+    return out
+
+
+def test_no_shipped_template_or_fixture_plugin_uses_hash_or_id():
+    import ast
+    from genemila.guard import process_dependent_uses
+    sources = _plugin_sources()
+    assert any(k.startswith("genemila/providers/mock.py") for k in sources)
+    assert any(k.startswith("tests/test_determinism.py") for k in sources)  # the set-order plugin there is allowed
+    assert {k: process_dependent_uses(ast.parse(s)) for k, s in sources.items()} == {k: [] for k in sources}
+    for key, tpl in TEMPLATES.items():  # and the guard as a whole still takes every scripted template
+        check_plugin_source(tpl.format(name="abc", knowledge="ext_screen"), "abc")

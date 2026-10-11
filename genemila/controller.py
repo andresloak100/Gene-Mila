@@ -272,7 +272,8 @@ class Controller:
             info = self.lab.warm_start(Path(prev))
             self._log(f"warm start from {info['run_id']}: {len(info['imported'])} features imported, starting model "
                       f"{info['start_experiment']} on {len(info['features'])} features"
-                      + (f"; missing {info['missing']}" if info["missing"] else ""))
+                      + (f"; missing {info['missing']}" if info["missing"] else "")
+                      + (f"; refused by the plugin guard {sorted(info['refused'])}" if info.get("refused") else ""))
         for i in range(self.n_workers):
             self._start_worker(i)
         interval = float(self.cfg["run"]["status_interval_s"])

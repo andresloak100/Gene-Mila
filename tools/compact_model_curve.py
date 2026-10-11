@@ -1,7 +1,10 @@
 # Written and run on the Mac on 2026-10-11 (original md5 dbb27bd37fbb3c06dc2038d82048ac85, 7,081 bytes, run from
 # genemila_scale_logs at lab commit 1c434bd); moved into tools/ with the repository root taken from this file's
 # location and the output directory as an optional second argument. Output committed byte for byte as
-# docs/results/compact_model_curve_newcode_opus_w4_r0.json; reading in docs/results/compact_model_curve.md.
+# docs/results/compact_model_curve_newcode_opus_w4_r0.json; reading in docs/results/compact_model_curve.md. It runs
+# the run's plugins in its own process, so it re-executes itself under PYTHONHASHSEED=0, the lab's seed
+# (genemila.sandbox.HASH_SEED): a plugin that follows str hashes then computes what the lab computed, in every
+# invocation alike (added on 2026-10-11; no other change to what it computes or writes).
 """How few features does the model need? Free, offline, TRAINING perturbations only.
 
 Takes the feature pool of a finished run (the 12 features of its best model, every other feature that
@@ -25,6 +28,10 @@ sys.path.insert(0, str(REPO))
 from genemila.features import registry  # noqa: E402
 from genemila.features.api import FeatureContext  # noqa: E402
 from genemila.pipeline import cv_fold_targets, cv_folds_of, feature_blocks  # noqa: E402
+from genemila.sandbox import reexec_under_hash_seed  # noqa: E402
+
+if __name__ == "__main__":  # before any plugin is loaded: the same blocks as the lab's, whatever the shell's seed
+    reexec_under_hash_seed("compact_model_curve")
 
 run = Path(sys.argv[1]).resolve()
 import sqlite3  # noqa: E402

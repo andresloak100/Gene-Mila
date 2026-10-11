@@ -21,6 +21,7 @@ from .benchmark.oracle import QueryOracle
 from .data.bundle import LabelSet, added_knowledge, export_public, verify_bundle
 from .db import Database
 from .features.registry import BUILTIN_FEATURES
+from .guard import CodeViolation, check_plugin_source
 from .isolation import WorktreeManager, git, sha256_text
 from .llm import LLMGateway, SpendLedger
 from .spec import PLUGIN_DIR, ExperimentSpec, GuardrailViolation, config_hash, validate_spec
@@ -55,6 +56,16 @@ class Lab:
         elif sorted(recorded) != seen:
             raise RuntimeError(f"run.external_knowledge {sorted(recorded)} does not match the knowledge files added "
                                f"to the bundle {seen}; the bundle's knowledge/ changed after the run was configured")
+        # every experiment process runs with a fixed hash seed (sandbox.HASH_SEED), so a feature that follows str
+        # hashes (a set of names iterated in order) computes the same blocks in every process: recorded in the run's
+        # config as run.hash_seed. A run reopened from before the seed was fixed records none (its processes each
+        # drew their own) and keeps none; it is not part of the arm, whose runs a label already tells apart by code
+        from .sandbox import HASH_SEED
+        if not reopen:
+            if cfg["run"].get("hash_seed", HASH_SEED) != HASH_SEED:
+                raise RuntimeError(f"run.hash_seed {cfg['run']['hash_seed']!r} is not the seed every experiment "
+                                   f"process runs with ({HASH_SEED}, sandbox.HASH_SEED); it is not configurable")
+            cfg["run"]["hash_seed"] = HASH_SEED
         self.db = Database(self.run_dir / "lab.db")
         self.artifacts = self.run_dir / "artifacts"
         self.store = self.run_dir / "feature_store"
@@ -213,7 +224,13 @@ class Lab:
         the planner (run_dir/warm_start.json, rendered as PRIOR CAMPAIGN in the research state).
 
         Only a run on the same dataset and split qualifies: a model selected on another split's visible
-        perturbations could have been selected on this split's sealed ones."""
+        perturbations could have been selected on this split's sealed ones. Every imported plugin passes the
+        plugin guard as it stands now, as if an agent had just written it, except that id() is allowed (in past
+        runs' plugins it is a cache key, which changes no value): a past run's plugin it refuses (one built on
+        hash() of a name, whose values no other process reproduced) is not imported, and neither is one
+        that names a refused feature (it would compute it through ctx.feature); both are left out of the starting
+        model and of the features offered to the planner as helpful, and listed with the guard's reason (refused,
+        in warm_start.json and in the warm_start event)."""
         from .research_state import HELP_THRESHOLD
         prev_run_dir = Path(prev_run_dir).resolve()
         prev = Database(prev_run_dir / "lab.db")
@@ -240,7 +257,7 @@ class Lab:
                 "new_feature IS NOT NULL AND delta_from_parent IS NOT NULL GROUP BY new_feature ORDER BY d DESC")
                 if r["d"] is not None and r["d"] > HELP_THRESHOLD]
             wanted = [f for f in (best.get("feature_set_json") or []) + helpful if f not in BUILTIN_FEATURES]
-            imported, missing = [], []
+            imported, missing, refused, sources = [], [], {}, {}
             for name in dict.fromkeys(wanted):
                 src = prev_run_dir / "feature_store" / f"{name}.py"
                 meta = feats.get(name)
@@ -249,13 +266,31 @@ class Lab:
                     continue
                 if name in self.known_features():
                     continue
+                try:
+                    check_plugin_source(src.read_text(), name, imported=True)
+                except CodeViolation as exc:
+                    refused[name] = f"plugin guard: {exc}"[:200]
+                    continue
+                sources[name] = src.read_text()
+            again = True
+            while again:  # a feature naming a refused one (ctx.feature) would fail on it: refused too, transitively
+                again = False
+                for name, text in list(sources.items()):
+                    via = sorted(r for r in refused if re.search(rf"\b{re.escape(r)}\b", text))
+                    if via:
+                        refused[name] = f"names refused feature(s) {', '.join(via)}"[:200]
+                        del sources[name]
+                        again = True
+            for name in sources:
+                src, meta = prev_run_dir / "feature_store" / f"{name}.py", feats[name]
                 dst = self.store / f"{name}.py"
                 shutil.copy2(src, dst)
                 self.db.upsert_feature({**meta, "implementation_path": str(dst.relative_to(self.run_dir)),
                                         "code_hash": sha256_text(dst.read_text()),
                                         "creator_experiment": f"warm:{run['run_id']}:{meta.get('creator_experiment')}"})
                 imported.append(name)
-            start_set = [f for f in (best.get("feature_set_json") or []) if f not in missing]
+            start_set = [f for f in (best.get("feature_set_json") or []) if f not in missing and f not in refused]
+            helpful = [f for f in helpful if f not in refused]  # not in this run: the planner cannot build on them
             hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items() if k in ("alpha", "alpha_grid")}
             sealed = (best.get("query_metrics_json") or {}).get("primary")
             eid, status = self.queue(ExperimentSpec(
@@ -278,11 +313,12 @@ class Lab:
                     "unhelpful_features": unhelpful[:20],
                     "failed_ideas": [{"idea": r["hypothesis"][:90], "stage": r["failure_stage"],
                                       "reason": (r["failure_reason"] or "")[:110]} for r in failed],
-                    "imported": imported, "missing": missing, "start_experiment": eid, "start_status": status}
+                    "imported": imported, "missing": missing, "refused": refused, "start_experiment": eid,
+                    "start_status": status}
             (self.run_dir / "warm_start.json").write_text(json.dumps(info, indent=1))
             self.db.event("warm_start", f"continued from {run['run_id']}: imported {len(imported)} features, "
-                                        f"queued {eid} ({status}); missing {missing}" if missing else
-                                        f"continued from {run['run_id']}: imported {len(imported)} features, queued {eid} ({status})")
+                                        f"queued {eid} ({status})" + (f"; missing {missing}" if missing else "")
+                                        + (f"; refused by the plugin guard {sorted(refused)}" if refused else ""))
             return info
         finally:
             prev.close_thread_conn()
