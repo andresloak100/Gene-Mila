@@ -79,9 +79,11 @@ NOISE_FLOOR = 0.001         # margin of practical equivalence: a paired differen
                             # smaller still, and fold seeds alone move a score by about 0.02.
 CONST_REL = 1e-20           # a prediction whose within-perturbation variance is below this share of its sum of
                             # squares is constant up to rounding: pearson_delta 0, as for an exactly constant one
-SHOW_COMPACT_RUNS = 10      # compact sets listed by name in the report (the rest are in the JSON)
-AUDIT_FORMAT = 2            # what a checkpointed audit of a run holds; 2: the dependency map, required inputs and the
-                            # merge test's weakest links, so no checkpoint written without them is ever reused
+SHOW_COMPACT_RUNS = 10      # compact sets listed by name in the report, at most (the rest are in the JSON), and only
+COMPACT_LIST_BYTES = 850    # as many as fit in this many bytes: long names, or composites' inputs, list fewer
+AUDIT_FORMAT = 3            # what a checkpointed audit of a run holds; 2: the dependency map, required inputs and the
+                            # merge test's weakest links; 3: what each feature's own calls returned (per feature) and
+                            # the full model expanded too. No checkpoint of another format is ever reused
 VERDICTS = ("kept", "required_input", "redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
 BOXED_VERDICTS = VERDICTS[2:]  # the verdicts that go into the failed-feature box
 RULE = ("kept: in the compact set, the smallest feature set on the greedy backward path (chosen on the training "
@@ -104,7 +106,9 @@ COMPOSITES = ("a feature that computes other registered features through ctx.fea
               "recorded on its fresh view and on every view derived from it, also a name outside the pool or one "
               "that is not registered (the per-run 'dependencies' map); a feature that a kept feature of either scope "
               "needs gets the verdict required_input in each scope where it is not kept and is never boxed; compact "
-              "sets are reported as listed and with their required inputs expanded (features and columns computed)")
+              "sets and full models are reported as listed and with their required inputs expanded (the features and "
+              "columns their members' own calls computed, each distinct computation once; a name whose every call "
+              "raised is listed apart as a failed input and counted nowhere)")
 
 
 class Skip(Exception):
@@ -762,13 +766,22 @@ def assign_verdicts(features: list[str], kept, n_columns: dict, single: dict, dr
 
 
 # ------------------------------------------------------------------ composites: what a kept feature needs
-def dependency_map(calls: dict) -> dict:
+def _params_key(params) -> str:
+    """The parameters a feature was called with, as FeatureContext.feature keys its memo (None and {} alike)."""
+    return json.dumps(params or {}, sort_keys=True, default=str)
+
+
+def dependency_map(calls: dict, computed: dict | None = None) -> dict:
     """The features each feature computes through ctx.feature. calls: {feature: {caller: [callees]}}, the calls
     recorded on that feature's own fresh view (and the views derived from it), where the caller is the feature itself
-    or a feature it called. Returns {feature: {"direct": names it called itself, "transitive": every name reached}},
-    sorted, for the features that called any. The transitive sets are then closed over the map as well (a feature
-    that needs B needs whatever B needed on B's own view), which can only add names: a feature kept for its own
-    columns must never lose an input to the box because a memo or a parameter hid a call."""
+    or a feature it called; computed: {feature: [{"name", "params", "columns"}]}, the distinct computations those
+    calls returned on the same view. Returns {feature: {"direct": names it called itself, "transitive": every name
+    reached on its view, "computed": what returned there, sorted}}, for the features that called any. The walk stays
+    on the feature's own view, and that is complete: the view starts with empty memos after the plugins were
+    re-executed, and a call is recorded before any memo is consulted, so it holds every name the feature computes,
+    nested calls included. What a callee calls on its own view, with the run's parameters rather than the ones the
+    feature passed it, is not something the feature needs, so it is not added."""
+    computed = computed or {}
     out = {}
     for f, edges in calls.items():
         seen, todo = set(), list(edges.get(f, []))
@@ -778,16 +791,12 @@ def dependency_map(calls: dict) -> dict:
                 seen.add(g)
                 todo.extend(edges.get(g, []))
         if seen:
-            out[f] = {"direct": sorted(set(edges.get(f, [])) - {f}), "transitive": seen}
-    changed = True
-    while changed:
-        changed = False
-        for f, d in out.items():
-            more = set().union(*[out[g]["transitive"] for g in d["transitive"] if g in out]) - d["transitive"] - {f}
-            if more:
-                d["transitive"] |= more
-                changed = True
-    return {f: {"direct": d["direct"], "transitive": sorted(d["transitive"])} for f, d in out.items()}
+            done = sorted((c for c in computed.get(f, []) if c["name"] in seen),
+                          key=lambda c: (c["name"], _params_key(c.get("params"))))
+            out[f] = {"direct": sorted(set(edges.get(f, [])) - {f}), "transitive": sorted(seen),
+                      "computed": [{"name": c["name"], "params": c.get("params") or {}, "columns": int(c["columns"])}
+                                   for c in done]}
+    return out
 
 
 def required_by(kept, deps: dict) -> dict[str, list[str]]:
@@ -803,7 +812,8 @@ def required_by(kept, deps: dict) -> dict[str, list[str]]:
 
 def mark_required(verdicts: list[dict], req: dict[str, list[str]]) -> None:
     """In place: every verdict but kept of a feature that kept features need becomes required_input, naming them; the
-    verdict it would otherwise have stays in its evidence (verdict_otherwise), and so does its own evidence."""
+    verdict it would otherwise have stays in its evidence (verdict_otherwise), and so does its own evidence. Applying
+    it again with more kept features only widens required_by."""
     for v in verdicts:
         f = v["feature"]
         if v["verdict"] == "kept" or f not in req:
@@ -820,31 +830,43 @@ def mark_required(verdicts: list[dict], req: dict[str, list[str]]) -> None:
         v["evidence"] = ev
 
 
-def compact_expansion(features: list[str], n_columns: int, deps: dict, dep_columns: dict) -> dict:
-    """A compact set's size with its required inputs expanded: the features its members compute through ctx.feature
-    (transitively) that are not members themselves, and the features and columns computed in all (the inputs'
-    columns as they were called; None when an input's were never seen, as for a call that raised)."""
+def expanded_size(features: list[str], n_columns: int, deps: dict) -> dict:
+    """A model's size with its required inputs expanded (a compact set's or a full model's): the features its members
+    compute through ctx.feature on their own views (transitively) that are not members themselves, and the features
+    and columns computed in all, the model's own plus each distinct computation of an input (name and parameters as
+    called) once, with the columns it returned on a member's view, never what a call by a feature outside the model
+    returned. A name whose every call raised there (a composite may catch that) was never computed: it is listed
+    apart (failed_inputs; a kept member still needs it) and counted nowhere."""
     own = set(features)
-    inputs = sorted({g for f in features for g in (deps.get(f) or {}).get("transitive", [])} - own)
-    cols = [dep_columns.get(g) for g in inputs]
-    return {"required_inputs": inputs, "n_features_expanded": len(features) + len(inputs),
-            "n_columns_expanded": None if any(c is None for c in cols) else int(n_columns) + int(sum(cols))}
+    needed = {g for f in features for g in (deps.get(f) or {}).get("transitive", [])} - own
+    done: dict[tuple, int] = {}
+    for f in features:
+        for c in (deps.get(f) or {}).get("computed", []):
+            if c["name"] in needed:
+                key = (c["name"], _params_key(c.get("params")))
+                done[key] = max(done.get(key, 0), int(c["columns"]))
+    inputs = sorted({name for name, _ in done})
+    return {"required_inputs": inputs, "failed_inputs": sorted(needed - set(inputs)),
+            "n_features_expanded": len(features) + len(inputs),
+            "n_columns_expanded": int(n_columns) + int(sum(done.values()))}
 
 
 def apply_dependencies(r: dict) -> None:
-    """In place, on one audited run: a feature kept in either scope's compact set (or with the verdict kept) that
-    computes others through ctx.feature (r["dependencies"]) makes each of them required_input in every scope where it
-    is not kept itself, and each compact set gets its size with its required inputs expanded."""
-    deps, dep_columns = r.get("dependencies") or {}, r.get("dependency_columns") or {}
+    """In place, on one run, with whatever verdicts it has so far (it is applied again when the pool's are in, and
+    when the audit fails after the selected model's): a feature kept in either scope's compact set (or with the
+    verdict kept) that computes others through ctx.feature (r["dependencies"]) makes each of them required_input in
+    every scope where it is not kept itself, and each scope's full model and compact set get their size with their
+    required inputs expanded."""
+    deps = r.get("dependencies") or {}
     scopes = [a for a in (r.get("selected_analysis"), r.get("pool")) if a]
     kept = [f for a in scopes for f in (a.get("compact") or {}).get("features", [])]
     kept += [v["feature"] for a in scopes for v in a.get("verdicts") or [] if v["verdict"] == "kept"]
     req = required_by(kept, deps)
     for a in scopes:
         mark_required(a.get("verdicts") or [], req)
-        if a.get("compact"):
-            a["compact"].update(compact_expansion(a["compact"]["features"], a["compact"]["n_columns"], deps,
-                                                  dep_columns))
+        for key in ("census", "compact"):
+            if a.get(key):
+                a[key].update(expanded_size(a[key]["features"], a[key]["n_columns"], deps))
 
 
 def analyse_model(engine: Engine, features: list[str], R: np.ndarray, columns: list[str], failed: dict,
@@ -1080,7 +1102,8 @@ class LabelWatch(FeatureContext):
     counter is shared by copies), so that a feature's label dependence is detected however it reaches the labels.
     It records, the same way, every registered feature computed through ctx.feature: who called which name (the
     owner, or a feature the owner called, and so on down), before the name is even looked up, so that a call of a
-    name that is not registered, or that a memo answers, is recorded too; and how many columns each name returned."""
+    name that is not registered, or that a memo answers, is recorded too; and, per name and parameters as called, how
+    many columns the call returned (nothing for a call that raised)."""
 
     def __init__(self, base: FeatureContext, owner: str | None = None):  # a view: __init__ would reload the data
         state = dict(base.without_train([]).__dict__)
@@ -1089,7 +1112,7 @@ class LabelWatch(FeatureContext):
         state["_watch_counter"] = [0]
         state["_watch_calls"] = {}                              # caller -> {callee: None}, an ordered set
         state["_watch_stack"] = [] if owner is None else [str(owner)]
-        state["_watch_columns"] = {}                            # callee -> columns returned (the most seen)
+        state["_watch_computed"] = {}                           # (callee, parameters) -> columns returned
         self.__dict__.update(state)
 
     def feature(self, name: str, perts: list[str], params: dict | None = None) -> np.ndarray:
@@ -1102,8 +1125,8 @@ class LabelWatch(FeatureContext):
             stack.pop()
         shape = np.shape(arr)
         if len(shape) in (2, 3):
-            seen = self.__dict__["_watch_columns"]
-            seen[str(name)] = max(seen.get(str(name), 0), 1 if len(shape) == 2 else int(shape[2]))
+            done, key = self.__dict__["_watch_computed"], (str(name), _params_key(params))
+            done[key] = max(done.get(key, 0), 1 if len(shape) == 2 else int(shape[2]))
         return arr
 
     @property
@@ -1112,8 +1135,10 @@ class LabelWatch(FeatureContext):
         return {k: list(v) for k, v in self.__dict__["_watch_calls"].items()}
 
     @property
-    def feature_columns(self) -> dict:
-        return dict(self.__dict__["_watch_columns"])
+    def feature_computed(self) -> list[dict]:
+        """[{"name", "params" (as called), "columns"}]: each distinct computation that returned, in the order it did."""
+        return [{"name": n, "params": json.loads(k), "columns": c}
+                for (n, k), c in self.__dict__["_watch_computed"].items()]
 
     @property
     def label_reads(self) -> int:
@@ -1140,11 +1165,11 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     perturbation outside the training set are computed on its own fresh view (plugins re-executed first, so neither
     another feature's memo nor a module-level memo can hide a read of the labels), which counts every read of the
     training labels and every feature it computes through ctx.feature (calls: {feature: {caller: [callees]}},
-    call_columns: the columns each called name returned). Then, for each fold seed and fold, plugins re-executed and
-    the label-dependent features recomputed on the view without the fold (training rows plus fold rows in one call); a
-    label-free feature's rows are sliced from its full-training block, which no label shaped. Nothing is cached on
-    disk. A feature that raises anywhere is dropped (failed), the calls it made before raising still recorded;
-    `failed` may carry features already known to be unrecomputable."""
+    computed: {feature: what those calls returned on its view, with their columns}). Then, for each fold seed and
+    fold, plugins re-executed and the label-dependent features recomputed on the view without the fold (training rows
+    plus fold rows in one call); a label-free feature's rows are sliced from its full-training block, which no label
+    shaped. Nothing is cached on disk. A feature that raises anywhere is dropped (failed), the calls it made before
+    raising still recorded; `failed` may carry features already known to be unrecomputable."""
     train = list(ctx.train_perts)
     evals = [p for p in ctx.perts if p not in set(train)]
     G = ctx.n_genes
@@ -1153,7 +1178,7 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     label_dep: dict[str, bool] = {}
     full_tr, full_ev = {}, {}
     calls: dict[str, dict] = {}
-    call_columns: dict[str, int] = {}
+    computed: dict[str, list] = {}
 
     def reload_marking():
         for f, e in reload_run_plugins().items():
@@ -1176,9 +1201,7 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
         except Exception as exc:  # missing dependency, bad shape, NaN: unrecomputable
             failed[f] = _err(exc)
             full_tr.pop(f, None)
-        calls[f] = view.feature_calls
-        for g, c in view.feature_columns.items():
-            call_columns[g] = max(call_columns.get(g, 0), c)
+        calls[f], computed[f] = view.feature_calls, view.feature_computed  # per feature: its own calls only
     _, D = ctx.train_delta()
     pos = {p: i for i, p in enumerate(train)}
     raw_units: dict[int, list] = {}
@@ -1245,7 +1268,7 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     return {"features": ok, "columns": columns, "feature_of": feature_of, "columns_of": columns_of,
             "seed_units": seed_units, "val_unit": val_unit, "Xtr": Xtr_s, "Xev": Xev_s, "y": y, "evals": evals,
             "constant": constant, "failed": failed, "label_dependent": sorted(f for f in ok if label_dep.get(f, True)),
-            "feature_cpu_s": {f: float(v) for f, v in timings.items()}, "calls": calls, "call_columns": call_columns}
+            "feature_cpu_s": {f: float(v) for f, v in timings.items()}, "calls": calls, "computed": computed}
 
 
 def _model_alpha(sel: dict) -> tuple[str, float, int]:
@@ -1352,6 +1375,9 @@ def audit_run(run_dir: Path, fold_seeds: list[int] | None = None, resamples: int
     except Exception as exc:  # one broken run must not lose the others; the traceback goes to stderr
         print(traceback.format_exc(), file=sys.stderr)
         out["status"], out["reason"] = "skipped", f"unexpected error: {_err(exc)}"
+    if out["status"] != "audited" and out.get("dependencies") and out.get("selected_analysis"):
+        with contextlib.suppress(Exception):  # whatever verdicts a failed audit left, the box takes them as they are:
+            apply_dependencies(out)           # the inputs of what they keep must stay out of it on every path
     return out
 
 
@@ -1447,8 +1473,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     failed = fits["failed"]
     out.update(n_train=len(ctx.train_perts), n_val=len(val1.perts), n_genes=ctx.n_genes,
                unrecomputable=failed, label_dependent=fits["label_dependent"], feature_cpu_s=fits["feature_cpu_s"],
-               audit_format=AUDIT_FORMAT, dependencies=dependency_map(fits["calls"]),
-               dependency_columns=fits["call_columns"])
+               audit_format=AUDIT_FORMAT, dependencies=dependency_map(fits["calls"], fits["computed"]))
     if out["dependencies"]:
         log(f"{len(out['dependencies'])} composite feature(s) compute others through ctx.feature: "
             + _names(sorted(out["dependencies"]), 3))
@@ -1484,6 +1509,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     analysis["merge"] = merge_test(engine, sel_idx, red["clusters"])  # clusters spanning two or more features
     t = lap("merge", t)
     out["selected_analysis"] = analysis
+    apply_dependencies(out)  # at once: should anything below fail, these verdicts already keep inputs out of the box
     # ---- the pool: census, single and drop-one, paths, compact choice and verdicts
     if use_pool:
         pool_ok = [f for f in pool if f in fits["columns_of"]]
@@ -1492,7 +1518,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
         t = lap("pool_paths", t)
     else:
         out["pool"] = None
-    apply_dependencies(out)  # a composite kept in either scope keeps its inputs out of the box in both
+    apply_dependencies(out)  # again: a composite kept in either scope keeps its inputs out of the box in both
     marks = []
     if sel_failed:
         marks.append(f"{len(sel_failed)} selected feature(s) unrecomputable")
@@ -1574,12 +1600,15 @@ def _aggregate_class(runs: list[dict]) -> dict:
     rows = []
     for r in audited:
         a = r["selected_analysis"]
-        c = a["compact"]
-        rows.append({"run": r["run"], "n_features": a["census"]["n_features"], "n_columns": a["census"]["n_columns"],
+        c, cen = a["compact"], a["census"]
+        rows.append({"run": r["run"], "n_features": cen["n_features"], "n_columns": cen["n_columns"],
                      "compact_features": c["n_features"], "compact_columns": c["n_columns"],
                      "n_inputs": len(c.get("required_inputs") or []),
                      "expanded_features": c.get("n_features_expanded", c["n_features"]),
                      "expanded_columns": c.get("n_columns_expanded", c["n_columns"]),
+                     # the full model counted the same way (None from an audit that expanded only the compact set)
+                     "full_expanded_features": cen.get("n_features_expanded"),
+                     "full_expanded_columns": cen.get("n_columns_expanded"),
                      "diff": c["vs_full"]["diff"], "se": c["vs_full"]["se"], "n_val": c["vs_full"]["n"],
                      "class": classify(c["vs_full"]["diff"], c["vs_full"]["se"]),
                      "train_diff": c["vs_full_train"]["diff"]})
@@ -1610,7 +1639,11 @@ def _aggregate_class(runs: list[dict]) -> dict:
                             "n_with_inputs": sum(1 for x in rows if x["n_inputs"]),
                             "median_features_expanded": _median([x["expanded_features"] for x in rows]),
                             "median_columns_expanded": _median([x["expanded_columns"] for x in rows
-                                                                if x["expanded_columns"] is not None])},
+                                                                if x["expanded_columns"] is not None]),
+                            "median_full_features_expanded": _median([x["full_expanded_features"] for x in rows
+                                                                     if x["full_expanded_features"] is not None]),
+                            "median_full_columns_expanded": _median([x["full_expanded_columns"] for x in rows
+                                                                    if x["full_expanded_columns"] is not None])},
         "sealed": {"n": len(sealed),
                    "mean_difference": float(np.mean([s["difference"] for s in sealed])) if sealed else None,
                    "compact_higher": sum(1 for s in sealed if s["difference"] > 0),
@@ -1715,19 +1748,34 @@ def build_box(rep: dict) -> dict:
     """Every feature an agent might propose again that the audit did not keep: one entry per (run, feature), with
     the combined verdict over the selected model's and the pool's analyses (a feature kept in either is not boxed,
     nor is one that a kept feature computes through ctx.feature), its reason and evidence (both scopes' verdicts
-    inside). Built-in features are never boxed."""
-    entries = []
+    inside). Built-in features are never boxed. The features left out because a kept feature needs them are listed
+    apart (required_inputs: one record per run and feature, naming the kept features that need it and the verdict it
+    would otherwise have), with each run's dependency map, so that a lab importing only the box knows why they are
+    missing from it and that pruning them would break a kept feature; entries keep their meaning."""
+    entries, required, deps = [], [], {}
     for r in rep["runs"]:
         sel = r.get("selected") or {}
         intro = r.get("introduced_by") or {}
         info = r.get("feature_info") or {}
+        where = {"run": r["run"], "run_id": r.get("run_id"), "arm": r.get("arm"), "arm_class": r.get("arm_class"),
+                 "dataset": r.get("dataset"), "split_id": r.get("split_id")}
+        if r.get("dependencies"):
+            deps[r["run"]] = r["dependencies"]
         for v in combined_verdicts(r):
-            if v["verdict"] not in BOXED_VERDICTS or v["builtin"]:
-                continue
             f = v["feature"]
-            entries.append({"run": r["run"], "run_id": r.get("run_id"), "arm": r.get("arm"),
-                            "arm_class": r.get("arm_class"), "dataset": r.get("dataset"),
-                            "split_id": r.get("split_id"),
+            if v["builtin"]:
+                continue
+            if v["verdict"] == "required_input":
+                ev = v["evidence"] or {}
+                required.append({**where, "scope": v["scope"], "feature": f, "family": _family(f),
+                                 "code_hash": (info.get(f) or {}).get("code_hash"),
+                                 "required_by": list(ev.get("required_by") or []),
+                                 "verdict_otherwise": ev.get("verdict_otherwise"), "reason": v["reason"],
+                                 "scopes": v["scopes"]})
+                continue
+            if v["verdict"] not in BOXED_VERDICTS:
+                continue
+            entries.append({**where,
                             "experiment": (sel.get("experiment_id") if v["scope"] == "selected"
                                            else intro.get(f) or sel.get("experiment_id")),
                             "introduced_by": intro.get(f), "scope": v["scope"], "feature": f, "family": _family(f),
@@ -1735,7 +1783,8 @@ def build_box(rep: dict) -> dict:
                             "description": (info.get(f) or {}).get("description"),
                             "verdict": v["verdict"], "reason": v["reason"],
                             "evidence": {**(v["evidence"] or {}), "scopes": v["scopes"]}})
-    return {"generated_by": "tools/feature_audit.py", "rule": RULE, "entries": entries}
+    return {"generated_by": "tools/feature_audit.py", "rule": RULE, "entries": entries, "required_inputs": required,
+            "dependencies": deps}
 
 
 # ================================================================== rendering
@@ -1811,22 +1860,35 @@ def _names_within(xs, width: int) -> str:
     return _names(xs, k)
 
 
+def _items_within(items: list[str], width: int) -> str:
+    """As many items as fit in about `width` characters (at least one), joined; 'none' when there are none."""
+    k = 1
+    while k < len(items) and len(", ".join(items[:k + 1])) <= width:
+        k += 1
+    return ", ".join(items[:k]) or "none"
+
+
+def _plus_inputs(m: dict) -> str:
+    """' (+k)' for a model (census or compact set) whose members compute k other features through ctx.feature, its
+    required inputs, which are not columns of the model; '' when none."""
+    k = len(m.get("required_inputs") or [])
+    return f" (+{k})" if k else ""
+
+
 def _compact_fc(c: dict) -> str:
-    """A compact set's size for the Runs table: features (+ required inputs, when its members compute any through
-    ctx.feature) / columns of the model."""
-    k = len(c.get("required_inputs") or [])
-    return f"{c['n_features']}" + (f" (+{_plural(k, 'input')})" if k else "") + f"/{c['n_columns']}"
+    """A compact set's size for the Runs table: features (+ required inputs) / columns of the model."""
+    return f"{c['n_features']}{_plus_inputs(c)}/{c['n_columns']}"
 
 
-def _inputs_clause(c: dict, width: int = 60) -> str:
-    """The required inputs of a compact set and its expanded size, for a sentence or a list line ('' when none)."""
-    inputs = c.get("required_inputs") or []
-    if not inputs:
-        return ""
+def _inputs_clause(c: dict) -> str:
+    """A compact set's required inputs and its expanded size, counts only, for its list line ('' when none; the
+    names are in the JSON). Failed inputs (called, never returned) are counted apart, since they are counted nowhere
+    else; an audit written before them has none, and may lack a column count."""
+    inputs, failed = c.get("required_inputs") or [], c.get("failed_inputs") or []
     cols = c.get("n_columns_expanded")
-    return (f"; with the {_plural(len(inputs), 'required input')} it computes through ctx.feature "
-            f"({_names_within(inputs, width)}): {c.get('n_features_expanded', 'n/a')} features, "
-            f"{'n/a' if cols is None else cols} columns computed")
+    return ((f"; +{_plural(len(inputs), 'input')}: {c.get('n_features_expanded', 'n/a')} features, "
+             f"{'n/a' if cols is None else cols} columns computed" if inputs else "")
+            + (f"; {_plural(len(failed), 'failed input')}" if failed else ""))
 
 
 def render(rep: dict) -> str:
@@ -1840,7 +1902,7 @@ def render(rep: dict) -> str:
     nonridge = any(r["selected"]["model_type"] != "ridge" for r in audited)
     any_marked = any(r.get("marks") for r in audited)
     composites = "composites" in proto  # the audit recorded what each feature computes through ctx.feature
-    any_inputs = any(r["selected_analysis"]["compact"].get("required_inputs") for r in audited)
+    any_inputs = any(r["selected_analysis"][m].get("required_inputs") for r in audited for m in ("census", "compact"))
     floor = proto.get("noise_floor", NOISE_FLOOR)
     fs = proto.get("fold_seeds")
     seeds_txt = (f"fold seeds {', '.join(map(str, fs))}" if isinstance(fs, list)
@@ -1867,9 +1929,8 @@ def render(rep: dict) -> str:
          + ("required_input, " if composites else "")
          + "harmful, redundant (|r| ≥ 0.9 with a kept feature), substitutable (established drop-one gain the compact "
          "set does without), no_gain, unrecomputable."
-         + (" A composite (a feature computing others through ctx.feature, recorded transitively on its fresh view) "
-            "is one feature; what a kept one needs is never boxed (required_input) and counts in its expanded size."
-            if composites else ""), ""]
+         + (" A composite (a feature computing others through ctx.feature) is one feature; what a kept one computes "
+            "is a required input (+k), never boxed." if composites else ""), ""]
     if any_sealed:
         L += ["Sealed scores, read before the numbers: the sealed perturbations have already been read for dozens of "
               "finalists across about thirty runs, so these are one more look at a used set, not a clean test; the "
@@ -1892,8 +1953,8 @@ def render(rep: dict) -> str:
         a, s = r["selected_analysis"], r["selected"]
         c, red, n_f = a["compact"], a["redundancy"], a["census"]["n_features"]
         row = (f"| {r['run']}{'*' if s['model_type'] != 'ridge' else ''}{' †' if r.get('marks') else ''} | "
-               f"{arms.get(r['arm'])} | {n_f} | {a['census']['n_columns']} | {red['rank']} | "
-               f"{red['n_duplicate_columns']} | "
+               f"{arms.get(r['arm'])} | {n_f}{_plus_inputs(a['census'])} | {a['census']['n_columns']} | "
+               f"{red['rank']} | {red['n_duplicate_columns']} | "
                f"{red['n_pairs_above_0.9']} | {_compact_fc(c)} | {_f(a['full']['mean'])} | "
                f"{_f(c['mean'])} | {_pd(c['vs_full'])} | {len(a['lasso']['stable_features'])}/{n_f} |")
         if any_sealed:
@@ -1903,12 +1964,10 @@ def render(rep: dict) -> str:
         L.append(row)
     L += ["", ("Arms: " + "; ".join(f"{code} = {arm}" for arm, code in arms.items()) + ".") if arms else "Arms: none.",
           "feat./cols: the selected model; dup.: exact duplicate columns; r≥0.9: column pairs with |r| ≥ 0.9; "
-          "compact f/c: the compact set"
-          + (" (+ inputs: the features its members compute through ctx.feature, not columns of the model)"
-             if any_inputs else "")
-          + "; full, compact: visible scores (the compact set was chosen on the training "
+          "compact f/c: the compact set; full, compact: visible scores (the compact set was chosen on the training "
           "perturbations, which flatter it); Δ val: compact − full on the validation perturbations, paired; Lasso: "
           "Lasso-stable features."
+          + (" (+k): k required inputs, computed through ctx.feature." if any_inputs else "")
           + (" *: the selected model is not ridge (its type is in the JSON) and is audited as ridge on the same "
              "columns (ols: alpha 0 by least squares)." if nonridge else "")
           + (f" †: the audited model is not exactly the run's (selected features unrecomputable, or the lab's "
@@ -1918,11 +1977,17 @@ def render(rep: dict) -> str:
     shown = [r for r in audited if r.get("arm_class") == prim]
     if shown:
         L += ["", f"Compact sets ({CLASS_LABEL[prim]} runs):", ""]
+        lines: list[str] = []
         for r in shown[:SHOW_COMPACT_RUNS]:
             c = r["selected_analysis"]["compact"]
-            L.append(f"- {r['run']}: {_names_within(c['features'], 90)}" + _inputs_clause(c))
-        if len(shown) > SHOW_COMPACT_RUNS:
-            L.append(f"- … {len(shown) - SHOW_COMPACT_RUNS} more runs")
+            clause = _inputs_clause(c)  # its names give way to it, so a line stays about as long
+            line = f"- {r['run']}: {_names_within(c['features'], max(40, 90 - len(clause)))}" + clause
+            if lines and len("\n".join(lines + [line]).encode()) > COMPACT_LIST_BYTES:
+                break
+            lines.append(line)
+        L += lines
+        if len(shown) > len(lines):
+            L.append(f"- … {len(shown) - len(lines)} more runs")
     present = [c for c in ("agent", "no_llm") if agg["classes"][c]["n_runs"]] or [agg["primary"]]
     L += ["", "## Verdicts", "",
           "| verdict | " + " | ".join(f"{CLASS_LABEL[c]}: selected | {CLASS_LABEL[c]}: pools" for c in present) + " |",
@@ -1935,10 +2000,10 @@ def render(rep: dict) -> str:
                  + " |")
     pa = agg["classes"][prim]
     if pa["families_kept"] or pa["families_boxed"]:
-        kept = ", ".join(f"{x['family']} {x['kept']}/{x['n']}" for x in pa["families_kept"][:4]) or "none"
-        boxed = ", ".join(f"{x['family']} {x['boxed']}/{x['n']} ("
-                          + ", ".join(f"{x[v]} {v}" for v in BOXED_VERDICTS if x.get(v)) + ")"
-                          for x in pa["families_boxed"][:4]) or "none"
+        kept = _items_within([f"{x['family']} {x['kept']}/{x['n']}" for x in pa["families_kept"][:4]], 200)
+        boxed = _items_within([f"{x['family']} {x['boxed']}/{x['n']} ("
+                               + ", ".join(f"{x[v]} {v}" for v in BOXED_VERDICTS if x.get(v)) + ")"
+                               for x in pa["families_boxed"][:4]], 200)
         L += ["", f"Feature families of the {CLASS_LABEL[prim]} runs (name without its _e<experiment> suffix, "
               "built-ins left out; one verdict per run and feature, kept in either scope counts as kept), most often "
               f"kept: {kept}. Most often boxed: {boxed}."]
@@ -1962,9 +2027,14 @@ def _render_detail(r: dict) -> list[str]:
             f"Compact − full on the {comp['vs_full']['n']} validation perturbations {_pd(comp['vs_full'])}, "
             f"{comp['vs_full']['wins']} wins; on the {comp['vs_full_train']['n']} training perturbations that chose it "
             f"{_pd(comp['vs_full_train'])}.")
-    if comp.get("required_inputs"):
-        para += (f" Compact set of {_plural(comp['n_features'], 'feature')} and {_plural(comp['n_columns'], 'column')}"
-                 + _inputs_clause(comp, 120) + ".")
+    inputs, failed, cen = comp.get("required_inputs") or [], comp.get("failed_inputs") or [], a["census"]
+    if inputs or failed:  # their names are in the JSON
+        cols = comp.get("n_columns_expanded")
+        para += (f" With its {_plural(len(inputs), 'required input')} the compact set computes "
+                 f"{comp.get('n_features_expanded', 'n/a')} features and {'n/a' if cols is None else cols} columns"
+                 + (f" (full model: {cen['n_features_expanded']}, {cen['n_columns_expanded']})"
+                    if cen.get("n_features_expanded") is not None else "") if inputs else " The compact set has")
+        para += (f"{';' if inputs else ''} {_plural(len(failed), 'failed input')}" if failed else "") + "."
     if vr.get("available"):
         parts = [f"{k.replace('_', '-')} {_f(vr[k]['tool'])} vs stored {_f(vr[k]['stored'])}"
                  for k in ("validation", "out_of_fold") if vr.get(k)]
@@ -2024,8 +2094,8 @@ def _render_detail(r: dict) -> list[str]:
     links = [m.get("weakest_link_abs_r") for m in merges]
     L += ["", "Merge test (a cluster at |r| ≥ 0.9 spanning two or more features replaced by its first principal "
           "component, fitted on each fit's training rows only"
-          + ("; weakest link: the smallest |r| of the chain joining the cluster, ≥ 0.9; its ends may correlate less, "
-             "min_pair_abs_r in the JSON" if any(x is not None for x in links) else "")
+          + ("; weakest link: the smallest |r| joining it, ≥ 0.9; its ends may correlate less (min_pair_abs_r in the "
+             "JSON)" if any(x is not None for x in links) else "")
           + "):", ""]
     if merges:
         L += ["| cluster features | weakest link \\|r\\| | cols | merged score | merged − full (SE) |",
@@ -2064,12 +2134,15 @@ def _reading(rep: dict) -> str:
                      f"{cf['median_full_features']:g} features ({cf['median_columns']:g} of "
                      f"{cf['median_full_columns']:g} columns) and is smaller than the full model in {cf['n_smaller']} "
                      f"of {cf['n']} runs.")
-        if cf.get("n_with_inputs"):
+        if cf.get("n_with_inputs"):  # both sizes on one basis: the full model's inputs expanded the same way
             cols = cf.get("median_columns_expanded")
-            parts.append(f" In {cf['n_with_inputs']} of the {cf['n']} runs it keeps a composite that computes other "
-                         "features through ctx.feature; counting those required inputs, it computes a median of "
-                         f"{cf['median_features_expanded']:g} features"
-                         + ("" if cols is None else f" and {cols:g} columns") + ".")
+            full_f, full_c = cf.get("median_full_features_expanded"), cf.get("median_full_columns_expanded")
+            parts.append(f" With its composites' required inputs ({cf['n_with_inputs']} of {cf['n']} runs), it "
+                         f"computes a median of {cf['median_features_expanded']:g}"
+                         + ("" if full_f is None else f" of {full_f:g}") + " features"
+                         + ("" if cols is None else f" ({cols:g}" + ("" if full_c is None else f" of {full_c:g}")
+                            + " columns)")
+                         + ("" if full_f is None else ", the full model's counted alike") + ".")
     if cf["n_smaller"]:
         cats = [f"within one paired SE in {cf['not_established']} of {cf['n_smaller']} runs"]
         if cf["below_margin"]:
@@ -2101,19 +2174,32 @@ def _reading(rep: dict) -> str:
     dropped = vc["redundant"] + vc["substitutable"] + vc["harmful"] + vc["no_gain"]
     if dropped + req:
         share = vc["redundant"] / dropped if dropped else 0.0
+        if not req:  # the share is of every feature outside the compact sets
+            explains = ("near-duplication explains most of the feature count" if share >= 0.5 else
+                        "near-duplication explains a minority of the count: most dropped features are not copies of "
+                        "kept ones" if share > 0 else
+                        "near-duplication explains none of the count: no dropped feature is a copy of a kept one")
+        elif dropped == 1:  # of the one feature neither kept nor required, which the sentence names
+            explains = ("near-duplication explains it" if share else
+                        "near-duplication does not explain it: it is not a copy of a kept one")
+        else:  # of the features neither kept nor required, which the sentence names: never of the required inputs
+            explains = (f"near-duplication explains most of those {dropped}" if share >= 0.5 else
+                        f"near-duplication explains a minority of those {dropped}: most are not copies of kept ones"
+                        if share > 0 else
+                        f"near-duplication explains none of those {dropped}: none is a copy of a kept one")
+        listed = ("" if not dropped else
+                  (f"{vc['redundant']} are redundant" if not req else
+                   f"of the other {'one' if dropped == 1 else dropped}, {vc['redundant']} redundant")
+                  + f" (|r| ≥ 0.9 with a kept feature), {vc['substitutable']} substitutable (an established drop-one "
+                  f"gain that kept features take over), {vc['no_gain']} no_gain and {vc['harmful']} harmful; "
+                  + explains
+                  + (f"; a no_gain feature's drop-one effect is within max(paired SE, {band:g}), which is not proof "
+                     "of zero effect." if vc["no_gain"] else "."))
         parts.append(f" Of the {dropped + req} features of the selected models outside their compact sets, "
-                     + (f"{req} {'is a required input' if req == 1 else 'are required inputs'} of kept features (not "
-                        f"boxed){', ' if dropped else '.'}" if req else "")
-                     + ("" if not dropped else
-                        f"{vc['redundant']} are redundant (|r| ≥ 0.9 with a kept feature), {vc['substitutable']} "
-                        f"substitutable (an established drop-one gain that kept features take over), {vc['no_gain']} "
-                        f"no_gain and {vc['harmful']} harmful; "
-                        + ("near-duplication explains most of the feature count" if share >= 0.5 else
-                           "near-duplication explains a minority of the count: most dropped features are not copies "
-                           "of kept ones" if share > 0 else
-                           "near-duplication explains none of the count: no dropped feature is a copy of a kept one")
-                        + (f"; a no_gain feature's drop-one effect is within max(paired SE, {band:g}), which is not "
-                           "proof of zero effect." if vc["no_gain"] else ".")))
+                     + ("" if not req else
+                        f"{req} {'is a required input' if req == 1 else 'are required inputs'} of kept features (not "
+                        "boxed)" + ("; " if dropped else "."))
+                     + listed)
     if vc["unrecomputable"]:
         parts.append(f" {vc['unrecomputable']} feature(s) of the selected models could not be recomputed and are "
                      "boxed as such.")

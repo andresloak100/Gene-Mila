@@ -411,23 +411,48 @@ def test_the_box_has_one_entry_per_run_and_feature_and_never_a_builtin():
     assert comb["x_e3"]["verdict"] == "kept" and comb["x_e3"]["kept_in"] == ["pool"] and comb["control_mean"]["builtin"]
 
 
-def test_dependency_map_is_transitive_and_closed_over_every_feature():
-    calls = {"a": {"a": ["b", "x"], "b": ["c"]},   # on a's view: a calls b and x, b calls c
-             "b": {"b": ["c"]}, "c": {}, "x": {"x": ["y"]},  # x called y on its own view only (a memo, other params)
-             "z": {"z": ["z", "nowhere"]}}           # a call of itself is no dependency, one of an unknown name is
-    deps = fa.dependency_map(calls)
-    assert deps == {"a": {"direct": ["b", "x"], "transitive": ["b", "c", "x", "y"]},
-                    "b": {"direct": ["c"], "transitive": ["c"]}, "x": {"direct": ["y"], "transitive": ["y"]},
-                    "z": {"direct": ["nowhere"], "transitive": ["nowhere"]}}
-    assert fa.required_by(["a", "b", "q"], deps) == {"b": ["a"], "c": ["a", "b"], "x": ["a"], "y": ["a"]}
+def test_dependency_map_walks_each_features_own_view():
+    # on a's view a calls b and x, b calls c, and x calls nothing (a passes it parameters of its own); x calls y on
+    # its own view only, with the run's parameters for x. A call of itself is no dependency, one of an unknown name is.
+    calls = {"a": {"a": ["b", "x"], "b": ["c"]}, "b": {"b": ["c"]}, "c": {}, "x": {"x": ["y"]},
+             "z": {"z": ["z", "nowhere"]}}
+    computed = {"a": [{"name": "x", "params": {"k": 0}, "columns": 2}, {"name": "c", "params": {}, "columns": 1},
+                      {"name": "b", "params": {}, "columns": 1}, {"name": "a", "params": {}, "columns": 9}],
+                "x": [{"name": "y", "params": {}, "columns": 4}]}
+    deps = fa.dependency_map(calls, computed)
+    assert deps == {"a": {"direct": ["b", "x"], "transitive": ["b", "c", "x"],
+                          "computed": [{"name": "b", "params": {}, "columns": 1},
+                                       {"name": "c", "params": {}, "columns": 1},
+                                       {"name": "x", "params": {"k": 0}, "columns": 2}]},
+                    "b": {"direct": ["c"], "transitive": ["c"], "computed": []},
+                    "x": {"direct": ["y"], "transitive": ["y"],
+                          "computed": [{"name": "y", "params": {}, "columns": 4}]},
+                    "z": {"direct": ["nowhere"], "transitive": ["nowhere"], "computed": []}}
+    # y is what x needs with the run's parameters, not what a needs: a computes x itself, with its own
+    assert fa.required_by(["a", "b", "q"], deps) == {"b": ["a"], "c": ["a", "b"], "x": ["a"]}
+    assert fa.expanded_size(["a"], 3, deps) == {"required_inputs": ["b", "c", "x"], "failed_inputs": [],
+                                                "n_features_expanded": 4, "n_columns_expanded": 7}
+    # nowhere never returned: z needs it all the same, yet it is counted nowhere
+    assert fa.expanded_size(["z"], 1, deps) == {"required_inputs": [], "failed_inputs": ["nowhere"],
+                                                "n_features_expanded": 1, "n_columns_expanded": 1}
+    # columns are what the members' own calls returned, each distinct computation (name, parameters) once
+    one = {"name": "b", "params": {}, "columns": 1}
+    deps = fa.dependency_map({f: {f: ["b"]} for f in "pqr"},
+                             {"p": [one], "q": [{"name": "b", "params": {"dim": 40}, "columns": 40}],
+                              "r": [{**one, "params": None}]})
+    assert fa.expanded_size(["p"], 1, deps)["n_columns_expanded"] == 2  # never what q's call returned
+    assert fa.expanded_size(["p", "r"], 2, deps)["n_columns_expanded"] == 3  # None and {}: one computation
+    assert fa.expanded_size(["p", "q"], 2, deps)["n_columns_expanded"] == 43  # two computations of b
+    assert fa.expanded_size(["p", "q"], 2, deps)["n_features_expanded"] == 3
 
 
 def test_inputs_of_a_kept_feature_are_required_and_never_boxed():
     """inf2 is kept for its own column and computes noise0 through ctx.feature, which computes noise1 (A needs B needs
-    C), and ghost, unrecomputable on its own. The pool's compact set keeps inf2; the selected model does not even
-    contain it. noise0 and noise1 come out required_input in both scopes, naming inf2, whatever they would otherwise
-    be, and so does ghost; none of them is boxed. noise3 computes noise2 too, but noise3 is not kept: noise2 keeps its
-    own verdict. The compact set's size is reported as listed and with its required inputs expanded."""
+    C), and ghost, unrecomputable on its own, whose call raised (inf2 caught it). The pool's compact set keeps inf2;
+    the selected model does not even contain it. noise0 and noise1 come out required_input in both scopes, naming
+    inf2, whatever they would otherwise be, and so does ghost; none of them is boxed, and the box lists them apart.
+    noise3 computes noise2 too, but noise3 is not kept: noise2 keeps its own verdict. The compact set's size is
+    reported as listed and with its required inputs expanded, ghost a failed input counted nowhere."""
     eng, names, _ = _synthetic()
     R = fa.corr_from_gram(eng.val_unit.G)
     sel = fa.analyse_model(eng, ["inf1", "dup", "noise0", "noise1", "noise2"], R, names, {})
@@ -435,11 +460,13 @@ def test_inputs_of_a_kept_feature_are_required_and_never_boxed():
     assert "inf2" in pool["compact"]["features"] and "inf2" not in sel["census"]["features"]
     otherwise = {s: {v["feature"]: v["verdict"] for v in a["verdicts"]} for s, a in (("selected", sel), ("pool", pool))}
     assert {otherwise[s][f] for s in otherwise for f in ("noise0", "noise1")} <= set(fa.BOXED_VERDICTS)
+    one = {"params": {}, "columns": 1}
     deps = fa.dependency_map({"inf2": {"inf2": ["noise0", "ghost"], "noise0": ["noise1"]},
-                              "noise0": {"noise0": ["noise1"]}, "noise3": {"noise3": ["noise2"]}})
+                              "noise0": {"noise0": ["noise1"]}, "noise3": {"noise3": ["noise2"]}},
+                             {"inf2": [{"name": "noise1", **one}, {"name": "noise0", **one}],
+                              "noise0": [{"name": "noise1", **one}], "noise3": [{"name": "noise2", **one}]})
     run = {"run": "r1", "run_id": "R1", "arm_class": "agent", "selected": {"experiment_id": "EXP_9"},
-           "selected_analysis": sel, "pool": pool, "dependencies": deps,
-           "dependency_columns": {"noise0": 1, "noise1": 1, "ghost": 3, "noise2": 1}}
+           "selected_analysis": sel, "pool": pool, "dependencies": deps}
     fa.apply_dependencies(run)
     for scope, a in (("selected", sel), ("pool", pool)):
         v = {x["feature"]: x for x in a["verdicts"]}
@@ -452,15 +479,26 @@ def test_inputs_of_a_kept_feature_are_required_and_never_boxed():
     assert v["ghost"]["verdict"] == "required_input" and v["ghost"]["evidence"]["verdict_otherwise"] == "unrecomputable"
     assert v["inf2"]["verdict"] == "kept"
     comp = pool["compact"]
-    assert comp["required_inputs"] == ["ghost", "noise0", "noise1"] and comp["n_features"] == 2
-    assert comp["n_features_expanded"] == 5 and comp["n_columns_expanded"] == comp["n_columns"] + 5
+    assert comp["required_inputs"] == ["noise0", "noise1"] and comp["failed_inputs"] == ["ghost"]
+    assert comp["n_features"] == 2 and comp["n_features_expanded"] == 4
+    assert comp["n_columns_expanded"] == comp["n_columns"] + 2
     assert sel["compact"]["required_inputs"] == [] and sel["compact"]["n_features_expanded"] == 1
-    assert fa._compact_fc(comp) == "2 (+3 inputs)/2" and fa._compact_fc(sel["compact"]) == "1/1"
-    assert fa.compact_expansion(["inf2"], 1, deps, {"noise0": 1})["n_columns_expanded"] is None  # columns unseen
+    assert fa._compact_fc(comp) == "2 (+2)/2" and fa._compact_fc(sel["compact"]) == "1/1"
+    assert fa._inputs_clause(comp) == "; +2 inputs: 4 features, 4 columns computed; 1 failed input"
+    # the full models are expanded the same way: here every input of a member is a member itself
+    assert pool["census"]["required_inputs"] == [] and pool["census"]["failed_inputs"] == ["ghost"]
+    assert pool["census"]["n_features_expanded"] == pool["census"]["n_features"] == len(names)
+    assert sel["census"]["required_inputs"] == sel["census"]["failed_inputs"] == []
     box = fa.build_box({"runs": [run]})
     boxed = {e["feature"] for e in box["entries"]}
     assert not boxed & {"inf2", "noise0", "noise1", "ghost"} and {"noise2", "noise3"} <= boxed
     assert "required_input" in box["rule"]
+    # what the box leaves out because a kept feature needs it is listed apart, with the run's dependency map
+    req = {x["feature"]: x for x in box["required_inputs"]}
+    assert set(req) == {"noise0", "noise1", "ghost"} and box["dependencies"] == {"r1": deps}
+    assert all(x["required_by"] == ["inf2"] and x["run"] == "r1" and x["run_id"] == "R1" for x in req.values())
+    assert req["ghost"]["verdict_otherwise"] == "unrecomputable" and req["ghost"]["scope"] == "pool"
+    assert req["noise0"]["verdict_otherwise"] == otherwise["selected"]["noise0"]
     comb = {c["feature"]: c for c in fa.combined_verdicts(run)}
     assert comb["noise0"]["verdict"] == comb["ghost"]["verdict"] == "required_input"
     assert comb["noise0"]["scope"] == "selected" and comb["ghost"]["scope"] == "pool"
@@ -474,6 +512,32 @@ def test_inputs_of_a_kept_feature_are_required_and_never_boxed():
     boxed_fams = {x["family"] for x in agg["families_boxed"]}  # a required input is neither kept nor boxed
     assert not boxed_fams & {"noise0", "noise1", "ghost"} and "noise2" in boxed_fams
     assert agg["compact_vs_full"]["n_with_inputs"] == 0  # the selected model's compact set computes nothing
+
+
+def test_the_reading_names_the_count_its_near_duplication_share_is_taken_over():
+    """The share of redundant features is taken over the features neither kept nor required; with required inputs
+    among the features outside the compact sets the Reading names that count, so 2 redundant of 4 is never read as
+    most of 14."""
+    def reading(**counts):
+        agg = fa.aggregate([])
+        agg["n_audited"] = agg["classes"]["agent"]["n_audited"] = 1
+        agg["classes"]["agent"]["verdict_counts"]["selected"].update(counts)
+        return fa._reading({"aggregate": agg, "protocol": {}})
+    text = reading(required_input=10, redundant=2, no_gain=2)
+    assert ("Of the 14 features of the selected models outside their compact sets, 10 are required inputs of kept "
+            "features (not boxed); of the other 4, 2 redundant (|r| ≥ 0.9 with a kept feature), 0 substitutable "
+            "(an established drop-one gain that kept features take over), 2 no_gain and 0 harmful; near-duplication "
+            "explains most of those 4;") in text
+    assert "most of the feature count" not in text
+    text = reading(required_input=10, redundant=1, no_gain=3)
+    assert "near-duplication explains a minority of those 4: most are not copies of kept ones;" in text
+    text = reading(required_input=1, harmful=1)
+    assert "(not boxed); of the other one, 0 redundant" in text and "does not explain it: it is not a copy" in text
+    assert "1 is a required input of kept features (not boxed). " in reading(required_input=1)
+    # with no required input, the share is of every feature outside the compact sets, worded as before
+    text = reading(redundant=2, no_gain=2)
+    assert ("Of the 4 features of the selected models outside their compact sets, 2 are redundant (|r| ≥ 0.9 with a "
+            "kept feature),") in text and "near-duplication explains most of the feature count;" in text
 
 
 # ------------------------------------------------------------------ plugins and label dependence
@@ -571,7 +635,11 @@ def test_the_features_a_composite_computes_are_recorded_on_its_watched_view(tmp_
     """comp_a computes in_b and in_x through ctx.feature; in_b computes in_c (registered, but not among the audited
     features) and in_x computes in_c through a view it derives from its own; broken calls a name nothing registers
     and raises. Every call is recorded on the calling feature's own fresh view, nested calls included (comp_a's view
-    sees in_b and in_x call in_c), with the columns each name returned."""
+    sees in_b and in_x call in_c), with the columns each computation returned there. in_k calls in_c only when its
+    parameter k is set, as the run sets it; comp_k computes in_k with k = 0 (and calls a missing name, catching the
+    error), comp_z with k = 5: comp_k needs in_k but not in_c, which in_k computes only with the run's parameters or
+    comp_z's, and its expanded size counts the one column its own call of in_k returned, neither comp_z's eleven
+    nor the failed name."""
     store = tmp_path / "store"
     store.mkdir()
     _plugin(store, "in_c", "        return np.broadcast_to(ctx.control_mean[None, :, None], "
@@ -582,30 +650,63 @@ def test_the_features_a_composite_computes_are_recorded_on_its_watched_view(tmp_
     _plugin(store, "comp_a", "        b = np.asarray(ctx.feature('in_b', perts))\n"
                              "        return np.concatenate([b, np.asarray(ctx.feature('in_x', perts))], axis=2)")
     _plugin(store, "broken", "        return ctx.feature('nowhere_registered_xyz', perts)")
+    _plugin(store, "in_k", "        k = int(params.get('k', 1))\n"
+                           "        if k:\n"
+                           "            ctx.feature('in_c', perts)\n"
+                           "        return np.ones((len(perts), ctx.n_genes, 2 * k + 1))")
+    _plugin(store, "comp_k", "        try:\n"
+                             "            ctx.feature('nowhere_caught_xyz', perts)\n"
+                             "        except KeyError:\n"
+                             "            pass\n"
+                             "        return 3.0 * np.asarray(ctx.feature('in_k', perts, {'k': 0}))")
+    _plugin(store, "comp_z", "        return np.asarray(ctx.feature('in_k', perts, {'k': 5}))[:, :, :1]")
+    feats = ["comp_a", "in_b", "in_x", "broken", "in_k", "comp_k", "comp_z"]
     try:
         fa.load_run_plugins(store)
         ctx = FeatureContext(dataset)
         val1 = LabelSet.load(dataset / "private" / "val1.npz")
-        fits = fa.compute_fits(ctx, ["comp_a", "in_b", "in_x", "broken"], {}, [0, 1], 5, val1.perts,
-                               val1.means - ctx.control_mean)
+        fits = fa.compute_fits(ctx, feats, {"in_k": {"k": 1}}, [0, 1], 5, val1.perts, val1.means - ctx.control_mean)
     finally:
         fa.load_run_plugins(tmp_path / "empty")
     assert set(fits["failed"]) == {"broken"} and fits["failed"]["broken"].startswith("KeyError")
-    assert len(fits["columns_of"]["comp_a"]) == 3
+    assert len(fits["columns_of"]["comp_a"]) == 3 and len(fits["columns_of"]["in_k"]) == 3
     assert fits["label_dependent"] == ["comp_a", "in_x"]  # deriving a view slices the labels: counted, conservatively
     assert fits["calls"]["comp_a"] == {"comp_a": ["in_b", "in_x"], "in_b": ["in_c"], "in_x": ["in_c"]}
     assert fits["calls"]["broken"] == {"broken": ["nowhere_registered_xyz"]}  # recorded before the lookup raised
-    assert fits["call_columns"] == {"in_b": 1, "in_c": 1, "in_x": 2}
-    assert fa.dependency_map(fits["calls"]) == {
-        "comp_a": {"direct": ["in_b", "in_x"], "transitive": ["in_b", "in_c", "in_x"]},
-        "in_b": {"direct": ["in_c"], "transitive": ["in_c"]}, "in_x": {"direct": ["in_c"], "transitive": ["in_c"]},
-        "broken": {"direct": ["nowhere_registered_xyz"], "transitive": ["nowhere_registered_xyz"]}}
+    assert fits["calls"]["comp_k"] == {"comp_k": ["nowhere_caught_xyz", "in_k"]}  # in_k with k = 0 calls nothing
+    assert fits["calls"]["in_k"] == {"in_k": ["in_c"]}  # with the run's k = 1 it does, on its own view
+    c1 = {"params": {}, "columns": 1}
+    assert fits["computed"]["comp_a"] == [{"name": "in_c", **c1}, {"name": "in_b", **c1},
+                                          {"name": "in_x", "params": {}, "columns": 2}]  # in_c once, as called
+    assert fits["computed"]["comp_k"] == [{"name": "in_k", "params": {"k": 0}, "columns": 1}]
+    assert fits["calls"]["comp_z"] == {"comp_z": ["in_k"], "in_k": ["in_c"]}  # with k = 5 it does, on comp_z's
+    assert fits["computed"]["comp_z"] == [{"name": "in_c", **c1}, {"name": "in_k", "params": {"k": 5}, "columns": 11}]
+    assert fits["computed"]["broken"] == [] and fits["computed"]["in_b"] == [{"name": "in_c", **c1}]
+    deps = fa.dependency_map(fits["calls"], fits["computed"])
+    assert deps == {
+        "comp_a": {"direct": ["in_b", "in_x"], "transitive": ["in_b", "in_c", "in_x"],
+                   "computed": [{"name": "in_b", **c1}, {"name": "in_c", **c1},
+                                {"name": "in_x", "params": {}, "columns": 2}]},
+        "in_b": {"direct": ["in_c"], "transitive": ["in_c"], "computed": [{"name": "in_c", **c1}]},
+        "in_x": {"direct": ["in_c"], "transitive": ["in_c"], "computed": [{"name": "in_c", **c1}]},
+        "broken": {"direct": ["nowhere_registered_xyz"], "transitive": ["nowhere_registered_xyz"], "computed": []},
+        "in_k": {"direct": ["in_c"], "transitive": ["in_c"], "computed": [{"name": "in_c", **c1}]},
+        "comp_k": {"direct": ["in_k", "nowhere_caught_xyz"], "transitive": ["in_k", "nowhere_caught_xyz"],
+                   "computed": [{"name": "in_k", "params": {"k": 0}, "columns": 1}]},
+        "comp_z": {"direct": ["in_k"], "transitive": ["in_c", "in_k"],
+                   "computed": [{"name": "in_c", **c1}, {"name": "in_k", "params": {"k": 5}, "columns": 11}]}}
+    assert fa.required_by(["comp_k"], deps) == {"in_k": ["comp_k"], "nowhere_caught_xyz": ["comp_k"]}  # not in_c
+    assert fa.expanded_size(["comp_k"], 1, deps) == {"required_inputs": ["in_k"],
+                                                     "failed_inputs": ["nowhere_caught_xyz"],
+                                                     "n_features_expanded": 2, "n_columns_expanded": 2}
+    assert fa.expanded_size(["comp_a"], 3, deps)["n_columns_expanded"] == 3 + 1 + 1 + 2
     # the label counter and the calls are shared by every view derived from the watched one, never by its base
     base_reads = ctx.label_reads
     view = fa.LabelWatch(ctx, owner="f")
     derived = view.without_train(ctx.train_perts[:2])
     derived.feature("mean_response", ctx.perts[:2])
-    assert view.feature_calls == {"f": ["mean_response"]} and view.feature_columns == {"mean_response": 1}
+    assert view.feature_calls == {"f": ["mean_response"]}
+    assert view.feature_computed == [{"name": "mean_response", **c1}]
     assert view.label_reads >= 2 and ctx.label_reads == base_reads
     assert fa.LabelWatch(ctx).feature_calls == {}
 
@@ -806,13 +907,15 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
     # cluster of the merge test is defined by its weakest link, at least 0.9, however far apart its ends are
     assert r["audit_format"] == fa.AUDIT_FORMAT and r["dependencies"] == {} and "composites" in rep["protocol"]
     assert a["compact"]["required_inputs"] == [] and a["compact"]["n_features_expanded"] == a["compact"]["n_features"]
-    assert a["compact"]["n_columns_expanded"] == a["compact"]["n_columns"]
+    assert a["compact"]["n_columns_expanded"] == a["compact"]["n_columns"] and a["compact"]["failed_inputs"] == []
+    assert a["census"]["required_inputs"] == [] and a["census"]["n_columns_expanded"] == a["census"]["n_columns"]
     for m in a["merge"]:
         assert m["weakest_link_abs_r"] >= fa.CORR_HIGH and m["min_pair_abs_r"] <= m["weakest_link_abs_r"]
     pv = {v["feature"]: v["verdict"] for v in r["pool"]["verdicts"]}
     assert set(pv) == set(pool)
     # the box: one entry per feature that is kept in neither scope, built-ins never, with both scopes' verdicts
     assert box["generated_by"] == "tools/feature_audit.py" and "one paired SE" in box["rule"]
+    assert box["required_inputs"] == [] and box["dependencies"] == {}
     kept_any = {f for f, v in verdicts.items() if v == "kept"} | {f for f, v in pv.items() if v == "kept"}
     expected_boxed = (set(verdicts) | set(pv)) - kept_any - set(fa.BUILTIN_FEATURES)
     assert {e["feature"] for e in box["entries"]} == expected_boxed and len(box["entries"]) == len(expected_boxed)
@@ -852,7 +955,7 @@ def test_end_to_end_report_twin_box_and_an_untouched_run(finished_run, tmp_path,
     # a checkpoint without the dependency map (an audit written before it existed) is never taken: audited afresh
     (ck,) = (tmp_path / "cache" / "audits").glob(f"{run_dir.name}__*.json")
     old = json.loads(ck.read_text())
-    for key in ("audit_format", "dependencies", "dependency_columns"):
+    for key in ("audit_format", "dependencies"):
         old.pop(key)
     ck.write_text(json.dumps(old))
     monkeypatch.setattr(fa, "audit_run", lambda d, *a, **k: calls.append(d) or {"run": d.name, "path": str(d),
@@ -952,15 +1055,21 @@ def test_a_kept_composite_keeps_its_inputs_out_of_the_box(finished_run, tmp_path
     assert r["status"] == "audited", r.get("reason")
     assert r["selected"]["experiment_id"] == "EXP_COMP" and not r["unrecomputable"]
     everything = sorted(INPUTS + ["in_c_e904", "mean_response"])
-    assert r["dependencies"][COMPOSITE] == {"direct": sorted(INPUTS + ["mean_response"]), "transitive": everything}
-    assert r["dependencies"]["in_b_e902"] == {"direct": ["in_c_e904"], "transitive": ["in_c_e904"]}
-    assert r["dependencies"]["in_x_e903"] == {"direct": ["in_c_e904"], "transitive": ["in_c_e904"]}
-    assert "in_c_e904" not in r["pool_features"] and r["dependency_columns"]["in_c_e904"] == 1
+    one = {"params": {}, "columns": 1}
+    assert r["dependencies"][COMPOSITE] == {"direct": sorted(INPUTS + ["mean_response"]), "transitive": everything,
+                                            "computed": [{"name": f, **one} for f in everything]}
+    assert r["dependencies"]["in_b_e902"] == {"direct": ["in_c_e904"], "transitive": ["in_c_e904"],
+                                              "computed": [{"name": "in_c_e904", **one}]}
+    assert r["dependencies"]["in_x_e903"] == r["dependencies"]["in_b_e902"]
+    assert "in_c_e904" not in r["pool_features"] and "dependency_columns" not in r
     a = r["selected_analysis"]
     comp = a["compact"]
     assert comp["features"] == [COMPOSITE] and comp["n_columns"] == 1
     assert comp["required_inputs"] == everything and comp["n_features_expanded"] == 5
-    assert comp["n_columns_expanded"] == 5
+    assert comp["n_columns_expanded"] == 5 and comp["failed_inputs"] == []
+    # the full model counted the same way computes exactly what its compact set computes
+    assert a["census"]["n_features"] == 3 and a["census"]["required_inputs"] == ["in_c_e904", "mean_response"]
+    assert a["census"]["n_features_expanded"] == 5 and a["census"]["n_columns_expanded"] == 5
     assert {x["feature"]: x["verdict"] for x in a["verdicts"]}[COMPOSITE] == "kept"  # (the pool may keep its twin,
     assert {c["feature"]: c["verdict"] for c in fa.combined_verdicts(r)}[COMPOSITE] == "kept"  # mean_response)
     for scope in ("selected_analysis", "pool"):
@@ -971,19 +1080,66 @@ def test_a_kept_composite_keeps_its_inputs_out_of_the_box(finished_run, tmp_path
     box = json.loads((tmp_path / "comp_feature_box.json").read_text())
     boxed = {e["feature"] for e in box["entries"]}
     assert not boxed & set([COMPOSITE] + everything), boxed
+    # the box itself says what it leaves out and why: a lab that reads only the box must not prune these
+    assert sorted(x["feature"] for x in box["required_inputs"]) == INPUTS
+    for x in box["required_inputs"]:
+        assert x["required_by"] == [COMPOSITE] and x["verdict_otherwise"] in fa.BOXED_VERDICTS
+        assert x["scope"] == "selected" and COMPOSITE in x["reason"] and x["run"] == "comp_run"
+        assert x["run_id"] == r["run_id"]
+    assert box["dependencies"] == {"comp_run": r["dependencies"]}
     md = out.read_text()
     row = next(line for line in md.splitlines() if line.startswith("| comp_run "))
-    assert "| 1 (+4 inputs)/1 |" in row
-    assert f"- comp_run: {COMPOSITE}; with the 4 required inputs it computes through ctx.feature (" in md
-    assert ": 5 features, 5 columns computed" in md
-    assert "A composite (a feature computing others through ctx.feature, recorded transitively" in md
+    assert "| 3 (+2) | 3 |" in row and "| 1 (+4)/1 |" in row  # the full model computes five features too
+    assert " (+k): k required inputs, computed through ctx.feature." in md
+    assert f"- comp_run: {COMPOSITE}; +4 inputs: 5 features, 5 columns computed\n" in md
+    assert "With its 4 required inputs the compact set computes 5 features and 5 columns (full model: 5, 5)." in md
+    assert ("A composite (a feature computing others through ctx.feature) is one feature; what a kept one computes "
+            "is a required input (+k), never boxed.") in md
     vrow = next(line for line in md.splitlines() if line.startswith("| required_input |"))
     assert vrow.startswith("| required_input | 2 | ")
-    assert "2 are required inputs of kept features" in md.split("## Reading")[1]
-    assert "counting those required inputs, it computes a median of 5 features and 5 columns" in md
+    reading = md.split("## Reading")[1]
+    assert "2 are required inputs of kept features (not boxed)." in reading
+    assert ("With its composites' required inputs (1 of 1 runs), it computes a median of 5 of 5 features (5 of 5 "
+            "columns), the full model's counted alike.") in reading
     again = tmp_path / "comp_again.md"
     assert fa.main(["--from-json", str(out.with_suffix(".json")), "--out", str(again)]) == 0
     assert again.read_bytes() == out.read_bytes()
+
+
+def test_a_failure_after_the_selected_verdicts_still_keeps_their_inputs_out_of_the_box(finished_run, tmp_path,
+                                                                                        monkeypatch):
+    """The pool's analysis raises after the selected model's verdicts are in: the run is skipped, yet the verdicts it
+    keeps already name the composite's inputs required_input, so the box (which takes a skipped run's verdicts as
+    they are) leaves them out and lists them apart."""
+    run = _composite_run(finished_run, tmp_path / "comp_run")
+    real = fa.analyse_model
+
+    def pool_fails(*a, **k):
+        if k.get("label", a[7] if len(a) > 7 else "") == "pool":
+            raise np.linalg.LinAlgError("SVD did not converge")
+        return real(*a, **k)
+    monkeypatch.setattr(fa, "analyse_model", pool_fails)
+    r = fa._plain(fa.audit_run(run, resamples=2, log=lambda m: None))
+    assert r["status"] == "skipped" and "LinAlgError" in r["reason"] and "pool" not in r
+    v = {x["feature"]: x for x in r["selected_analysis"]["verdicts"]}
+    assert v[COMPOSITE]["verdict"] == "kept"
+    for f in INPUTS:
+        assert v[f]["verdict"] == "required_input" and v[f]["evidence"]["required_by"] == [COMPOSITE], f
+    box = fa.build_box({"runs": [r]})
+    assert not {e["feature"] for e in box["entries"]} & set([COMPOSITE] + INPUTS)
+    assert sorted(x["feature"] for x in box["required_inputs"]) == INPUTS and "comp_run" in box["dependencies"]
+    # and so it is on every path: had the selected analysis not applied them itself, the failed audit would
+    calls = []
+    real_apply = fa.apply_dependencies
+
+    def first_call_skipped(out):  # the selected analysis's own call does nothing; audit_run's fallback must do it
+        calls.append(len(calls))
+        if len(calls) > 1:
+            real_apply(out)
+    monkeypatch.setattr(fa, "apply_dependencies", first_call_skipped)
+    r = fa.audit_run(run, resamples=2, log=lambda m: None)
+    assert len(calls) == 2 and r["status"] == "skipped"
+    assert {x["feature"]: x["verdict"] for x in r["selected_analysis"]["verdicts"]}["in_b_e902"] == "required_input"
 
 
 def test_score_sealed_spends_exactly_two_queries_per_run(finished_run, tmp_path, monkeypatch):
@@ -1027,9 +1183,10 @@ def test_score_sealed_spends_exactly_two_queries_per_run(finished_run, tmp_path,
     assert _listing(run_dir) == before
 
 
-NEW_KEYS = {"dependencies", "dependency_columns", "audit_format", "composites", "required_inputs",
+NEW_KEYS = {"dependencies", "audit_format", "composites", "required_inputs", "failed_inputs",
             "n_features_expanded", "n_columns_expanded", "n_with_inputs", "median_features_expanded",
-            "median_columns_expanded", "required_input", "weakest_link_abs_r"}
+            "median_columns_expanded", "median_full_features_expanded", "median_full_columns_expanded",
+            "required_input", "weakest_link_abs_r"}
 
 
 def _as_written_before(obj):
@@ -1067,7 +1224,8 @@ def test_the_merge_test_prints_weakest_links_and_an_older_json_still_renders(fin
     assert chain["min_pair_abs_r"] == pytest.approx(cos(50), abs=1e-9)
     assert pair["weakest_link_abs_r"] == pytest.approx(cos(10), abs=1e-9) == pytest.approx(pair["min_pair_abs_r"])
     assert both["columns"] == "all clusters above" and both["n_columns"] == 3
-    assert both["weakest_link_abs_r"] == chain["weakest_link_abs_r"] and both["min_pair_abs_r"] == chain["min_pair_abs_r"]
+    assert both["weakest_link_abs_r"] == chain["weakest_link_abs_r"]
+    assert both["min_pair_abs_r"] == chain["min_pair_abs_r"]
     assert all(np.isfinite(m["mean"]) and m["vs_full"]["n"] == n_tr + n_val for m in merges)
     # the report prints the weakest link; the all-pairs minimum stays in the JSON
     out = tmp_path / "new.md"
@@ -1078,7 +1236,7 @@ def test_the_merge_test_prints_weakest_links_and_an_older_json_still_renders(fin
     md = fa.render(rep)
     assert "| cluster features | weakest link \\|r\\| | cols | merged score | merged − full (SE) |" in md
     assert "| fa, fb, fc | 0.906 | 4 |" in md and "| fd, fe | 0.985 | 5 |" in md and "| 0.643 |" not in md
-    assert "weakest link: the smallest |r| of the chain joining the cluster, ≥ 0.9; its ends may correlate" in md
+    assert "weakest link: the smallest |r| joining it, ≥ 0.9; its ends may correlate less (min_pair_abs_r" in md
     assert "| required_input | 0 | 0 |" in md and "A composite (" in md
     # the same report as written before the fix: no dependency map, no weakest link, the all-pairs minimum as
     # min_abs_r (0.010 for a long chain, which the old column printed as if it described the cluster)
@@ -1096,9 +1254,10 @@ def test_the_merge_test_prints_weakest_links_and_an_older_json_still_renders(fin
 
 
 def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
-    """A pasteable report: thirty runs with long names and arms (agent runs and no-LLM controls apart), a detailed
-    run of forty features, and in a second case half the runs skipped with long reasons and many unrecomputable
-    features."""
+    """A pasteable report: thirty runs with long names and arms (agent runs and no-LLM controls apart), each with
+    every verdict the Reading names, every other one keeping a composite that computes twelve required inputs (as on
+    Astra's second campaign), a detailed run of forty features, and in a second case half the runs skipped with long
+    reasons and many unrecomputable features (every run left keeping a composite)."""
     out = tmp_path / "one.md"
     assert fa.main(["--runs", str(finished_run), "--out", str(out), "--cache", str(tmp_path / "cache"), "--no-pool",
                     "--resamples", "2"]) == 0
@@ -1120,8 +1279,24 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
                    "weakest_link_abs_r": 0.95, "min_pair_abs_r": 0.95,
                    "n_columns": 100, "mean": 0.5, "se": 0.01, "alphas": [100.0, 1000.0],
                    "vs_full": {"diff": 0.0, "se": 0.001, "wins": 30, "losses": 30, "n": 67}} for i in range(8)]
-    a["verdicts"] = [{"feature": f, "verdict": fa.VERDICTS[i % 5], "reason": "x", "evidence": {}}
+    shown = ("kept", "required_input", "redundant", "substitutable", "harmful", "no_gain")  # every verdict the
+    a["verdicts"] = [{"feature": f, "verdict": shown[i % len(shown)], "reason": "x", "evidence": {}}  # Reading names
                      for i, f in enumerate(long)]
+    inputs = [f"random_projection_input_feature_variant_{i:02d}_e{200 + i}" for i in range(12)]
+    a["census"].update(required_inputs=[], failed_inputs=[], n_features_expanded=a["census"]["n_features"],
+                       n_columns_expanded=a["census"]["n_columns"])
+
+    def composite(x, i):
+        """Astra's composite: 50 columns computing 12 inputs, here in a compact set of nine; in some runs the full
+        model computes inputs that are not its members, in others a call raised."""
+        c, cen = x["selected_analysis"]["compact"], x["selected_analysis"]["census"]
+        c.update(features=["random_projection_all_features_e2763"] + long[:8], n_features=9, n_columns=77,
+                 required_inputs=inputs, failed_inputs=["missing_input_e299"] if i % 4 == 0 else [],
+                 n_features_expanded=21, n_columns_expanded=113)
+        if i % 3 == 0:
+            cen.update(required_inputs=inputs[:2], n_features_expanded=cen["n_features"] + 2,
+                       n_columns_expanded=cen["n_columns"] + 6)
+        return x
 
     def runs_of(skipped_every=0, unrecomputable=0):
         runs = []
@@ -1135,19 +1310,25 @@ def test_the_report_stays_small_for_thirty_runs(finished_run, tmp_path):
             x["marks"] = ["1 selected feature(s) unrecomputable"] if i % 6 == 0 else []
             x["unrecomputable"] = {f"{long[j]}_x": "ModuleNotFoundError: No module named 'nonexistent_pkg_" + "y" * 80
                                    + "'" for j in range(unrecomputable)}
+            if i % 2 == 0:  # every other run keeps a composite (all of those the second case does not skip)
+                x = composite(x, i)
             if skipped_every and i % skipped_every == 1:
                 x = {"run": x["run"], "path": "/x", "status": "skipped", "arm": x["arm"], "arm_class": x["arm_class"],
                      "reason": "unexpected error: ModuleNotFoundError: No module named 'torch_geometric' " + "z" * 220}
             runs.append(x)
         return runs
-    # (the bound was 14500 before the protocol's sentence on composites, the required_input row and the merge test's
-    # definition of a weakest link added about 0.35 KB to these extreme cases)
-    for kw, bound in (({}, 14800), ({"skipped_every": 2, "unrecomputable": 25}, 14800)):
+    for kw in ({}, {"skipped_every": 2, "unrecomputable": 25}):
         runs = runs_of(**kw)
         big = {**rep, "runs": runs, "aggregate": fa.aggregate(runs)}
         md = fa.render(json.loads(json.dumps(fa._plain(big))))
         assert md.count("| newcode_opus_w4_continuation_r") == 30 and "A4 = " in md, kw
         assert "| verdict | agent: selected | agent: pools | no-LLM: selected | no-LLM: pools |" in md
         assert "no-LLM runs as a reference" in md and "No-LLM runs (reference)" in md
-        assert len(md.encode()) < bound, (kw, len(md.encode()))  # well under 15 KB even in these extreme cases
+        assert "| 9 (+12)/77 |" in md and " (+2) | " in md and "(+k): k required inputs" in md
+        assert ("- newcode_opus_w4_continuation_r04: random_projection_all_features_e2763 +8; +12 inputs: 21 features, "
+                "113 columns computed; 1 failed input\n") in md
+        assert "With its composites' required inputs (" in md and "| required_input |" in md
+        assert "are required inputs of kept features (not boxed); of the other " in md and " no_gain and " in md
+        assert len(md.encode()) < 15000, (kw, len(md.encode()))  # under 15 KB even in these extreme cases
+    assert "With its 12 required inputs the compact set computes 21 features and 113 columns (full model: " in md
     assert "+22 more in the JSON" in md and "z" * 100 not in md  # capped lists, truncated reasons
