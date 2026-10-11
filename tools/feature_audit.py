@@ -1,0 +1,1972 @@
+#!/usr/bin/env python3
+"""Feature audit of finished runs: are the features redundant, which of them earn their place, and how compact can
+the model be while keeping its accuracy? A pre-specified protocol replayed over finished runs, free of any LLM, on
+visible data only (with an optional sealed check fenced into one function).
+
+For each run the tool audits the run's selected single model (the completed experiment, neither ensemble nor
+baseline, with the highest visible score) and, unless --no-pool, a pool of features: that model's features, every
+feature that improved on its parent, and the three built-ins. Every score is pearson_delta per visible perturbation:
+out-of-fold predictions for the training perturbations (features that read training labels recomputed without each
+fold, label dependence detected per feature on a fresh view with the plugins re-executed, so no other feature's memo
+can hide it) plus predictions for the visible validation perturbations from a fit on all training perturbations.
+Each subset's ridge penalty is chosen on the training perturbations' out-of-fold scores under one fold partition and
+reported under another, both directions averaged; the training perturbations are the same under both
+partitions, so only the validation perturbations are independent of that choice. The greedy paths and the compact
+set (one-standard-error rule on the backward path) are chosen on the training perturbations' scores alone, and the
+compact model is compared with the full one on the validation perturbations, which no choice of the tool touched.
+On that engine the tool measures redundancy, single-feature and drop-one scores, Lasso selection stability (penalty
+by cross-validation over the fold-recomputed designs), a merge test for correlated clusters and a verdict per
+feature; every feature that is not kept goes into a failed-feature box a lab component can import.
+
+Run directories are strictly read only: the database through a read-only SQLite URI (a private copy when a
+write-ahead log is present, so no -wal or -shm file is ever created next to it), plugins imported file by file
+without writing bytecode (a file that fails to import makes only its own features unrecomputable), and no feature
+block is cached on disk. The tool's --cache directory holds one checkpoint per audited run: pass it for long jobs,
+so that an interrupted job resumes from the runs already audited (and never scores their sealed models twice); the
+default is a temporary directory, lost on exit.
+
+    python tools/feature_audit.py --runs runs/a runs/b --out docs/results/feature_audit.md --cache ~/.fa_cache
+    python tools/feature_audit.py --runs runs/a runs/b --out audit.md --cache ~/.fa_cache --score-sealed
+    python tools/feature_audit.py --from-json docs/results/feature_audit.json --out docs/results/feature_audit.md
+"""
+from __future__ import annotations
+
+import argparse
+import contextlib
+import hashlib
+import json
+import os
+import re
+import shutil
+import sqlite3
+import sys
+import tempfile
+import time
+import traceback
+import warnings
+from dataclasses import dataclass
+from pathlib import Path
+from urllib.parse import quote
+
+import numpy as np
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from genemila.benchmark.table import run_arm  # noqa: E402
+from genemila.data.bundle import LabelSet  # noqa: E402  (visible validation labels only)
+from genemila.features import registry  # noqa: E402
+from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
+from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
+from genemila.pipeline import cv_folds_of, feature_blocks, make_model  # noqa: E402
+
+FIXED_ALPHAS = (1.0, 10.0, 100.0, 1e3, 1e4, 3e4, 1e5)
+POOL_MIN_GAIN = 0.0005      # a feature joins the pool when adding it raised its parent's visible score by more
+CORR_HIGH = 0.9             # clusters, redundancy verdicts
+CORR_MID = 0.7
+DUPLICATE_R = 0.9999        # exact duplicates
+STABLE_FREQ = 0.8           # Lasso-stable: selected in at least this share of the half-samples
+TOP_PAIRS = 15
+LASSO_LAMBDAS = 25
+LASSO_RATIO = 1e-4          # smallest lambda of the grid, relative to the largest (which zeroes every column)
+SEALED_FLAG = 0.002         # sealed reproduction difference that is flagged
+REPRO_FLAG = 0.002          # visible reproduction difference that marks a run (†)
+NOISE_FLOOR = 0.001         # margin of practical equivalence: a paired difference within max(SE, this) is either not
+                            # established or smaller than 0.001. It is not a noise estimate: two models that differ
+                            # only by an exact duplicate column differ systematically by about 1e-5 with a paired SE
+                            # smaller still, and fold seeds alone move a score by about 0.02.
+CONST_REL = 1e-20           # a prediction whose within-perturbation variance is below this share of its sum of
+                            # squares is constant up to rounding: pearson_delta 0, as for an exactly constant one
+SHOW_COMPACT_RUNS = 10      # compact sets listed by name in the report (the rest are in the JSON)
+VERDICTS = ("kept", "redundant", "substitutable", "harmful", "no_gain", "unrecomputable")
+RULE = ("kept: in the compact set, the smallest feature set on the greedy backward path (chosen on the training "
+        "perturbations' out-of-fold scores) whose score is within max(one paired SE, 0.001) of the path's best; a "
+        "feature kept in the selected model's or the pool's compact set is not boxed. Otherwise, in this order: "
+        "harmful: dropping it from the full model raises the visible score by more than max(paired SE, 0.001); "
+        "redundant: one of its columns correlates |r| >= 0.9 with a column of a kept feature (partner named); "
+        "substitutable: dropping it from the full model lowers the visible score by more than max(paired SE, 0.001), "
+        "yet the compact set does without it (kept features substitute for it); no_gain: any other feature outside "
+        "the compact set (drop-one effect within max(paired SE, 0.001)); unrecomputable: it raised while being "
+        "computed, or its plugin failed to import. Scores: pearson_delta per visible perturbation; each subset's "
+        "ridge penalty chosen on the training perturbations' out-of-fold scores under one fold partition and "
+        "reported under another, so only the validation perturbations are independent of it. 0.001 is a margin of "
+        "practical equivalence, not a noise estimate. Built-in features are never boxed.")
+
+
+class Skip(Exception):
+    """A run that cannot be audited (missing data, plugins or experiments): reported, never a crash."""
+
+
+# ================================================================== the visible scoring engine (pure numpy)
+def pearson_rows(P: np.ndarray, Y: np.ndarray) -> np.ndarray:
+    """pearson_delta along the last axis, exactly as genemila.benchmark.evaluator._pearson (0 when a side is
+    constant). P may carry leading axes (alphas) that broadcast against Y. The engine scores from sufficient
+    statistics instead (unit_scores); this is the reference it is tested against."""
+    P = np.asarray(P, dtype=np.float64)
+    Y = np.asarray(Y, dtype=np.float64)
+    Pc = P - P.mean(axis=-1, keepdims=True)
+    Yc = Y - Y.mean(axis=-1, keepdims=True)
+    num = (Pc * Yc).sum(axis=-1)
+    den = np.sqrt((Pc * Pc).sum(axis=-1) * (Yc * Yc).sum(axis=-1))
+    out = np.zeros(np.shape(num))
+    ok = den > 0
+    out[ok] = num[ok] / den[ok]
+    return out
+
+
+def standardise(X_train: np.ndarray, *others: np.ndarray):
+    """Columns standardised by the training mean and standard deviation (a zero deviation becomes 1), as
+    genemila.pipeline.run does. Returns (X_train_std, [others_std], mean, sd)."""
+    mu = X_train.mean(axis=0)
+    sd = X_train.std(axis=0)
+    sd[sd == 0] = 1.0
+    return (X_train - mu) / sd, [(X - mu) / sd for X in others], mu, sd
+
+
+@dataclass
+class Unit:
+    """One fit of the engine: ridge sufficient statistics of a standardised training design, and per predicted
+    perturbation p the sufficient statistics of its standardised rows X_p (n_genes x C) and true deltas y_p, from
+    which pearson_delta of any linear prediction X_p w + ybar follows exactly."""
+    G: np.ndarray       # (C, C) Xtr^T Xtr, columns standardised by this fit's training rows
+    b: np.ndarray       # (C,) Xtr^T (y - ybar)
+    ybar: float
+    n: int              # training rows
+    M: np.ndarray       # (n_out, C, C) Xc_p^T Xc_p, Xc_p = X_p centred over genes
+    c: np.ndarray       # (n_out, C) Xc_p^T (y_p - mean y_p)
+    m: np.ndarray       # (n_out, C) mean of X_p over genes
+    yy: np.ndarray      # (n_out,) |y_p - mean y_p|^2
+    ym: np.ndarray      # (n_out,) mean of y_p over genes
+    n_genes: int
+
+    @property
+    def n_out(self) -> int:
+        return int(self.yy.shape[0])
+
+    def subset(self, idx) -> "Unit":
+        idx = np.asarray(idx, dtype=int)
+        return Unit(self.G[np.ix_(idx, idx)], self.b[idx], self.ybar, self.n, self.M[:, idx[:, None], idx[None, :]],
+                    self.c[:, idx], self.m[:, idx], self.yy, self.ym, self.n_genes)
+
+    def transform(self, T: np.ndarray) -> "Unit":
+        """The unit of the design X @ T (T: C x C_new), for training and predicted rows alike."""
+        return Unit(T.T @ self.G @ T, T.T @ self.b, self.ybar, self.n, np.matmul(np.matmul(T.T, self.M), T),
+                    self.c @ T, self.m @ T, self.yy, self.ym, self.n_genes)
+
+
+def unit_from_standardised(Xs: np.ndarray, y: np.ndarray, Xo: np.ndarray, Yout: np.ndarray) -> Unit:
+    """A unit from training rows Xs already standardised by their own mean and sd, targets y, and predicted rows Xo
+    (n_out * n_genes, C) standardised with the same statistics; Yout (n_out, n_genes) true deltas."""
+    y = np.asarray(y, dtype=np.float64).reshape(-1)
+    Yout = np.asarray(Yout, dtype=np.float64)
+    n_out, n_genes = Yout.shape
+    ybar = float(y.mean())
+    X3 = np.asarray(Xo, dtype=np.float64).reshape(n_out, n_genes, -1)
+    m = X3.mean(axis=1)
+    Xc = X3 - m[:, None, :]
+    ym = Yout.mean(axis=1)
+    Yc = Yout - ym[:, None]
+    return Unit(Xs.T @ Xs, Xs.T @ (y - ybar), ybar, int(Xs.shape[0]), np.matmul(Xc.transpose(0, 2, 1), Xc),
+                np.einsum("pgc,pg->pc", Xc, Yc), m, (Yc * Yc).sum(axis=1), ym, int(n_genes))
+
+
+def make_unit(Xtr: np.ndarray, ytr: np.ndarray, Xout: np.ndarray, Yout: np.ndarray) -> Unit:
+    """A fit on raw (unstandardised) training rows Xtr with targets ytr, predicting Xout (true deltas Yout)."""
+    Xs, (Xo,), _, _ = standardise(np.asarray(Xtr, dtype=np.float64), np.asarray(Xout, dtype=np.float64))
+    return unit_from_standardised(Xs, ytr, Xo, Yout)
+
+
+def ridge_weights(G: np.ndarray, b: np.ndarray, idx, alpha: float) -> np.ndarray:
+    """w = (G[S,S] + alpha I)^-1 b[S]; with standardised (mean-zero) columns and intercept ybar this is sklearn
+    Ridge(alpha, fit_intercept=True). alpha = 0 (ols) by least squares, the minimum-norm solution."""
+    idx = np.asarray(idx, dtype=int)
+    if idx.size == 0:
+        return np.zeros(0)
+    A = G[np.ix_(idx, idx)]
+    if alpha <= 0:
+        return np.linalg.lstsq(A, b[idx], rcond=None)[0]
+    return np.linalg.solve(A + float(alpha) * np.eye(idx.size), b[idx])
+
+
+def ridge_weight_grid(G: np.ndarray, b: np.ndarray, idx, alphas) -> np.ndarray:
+    """(|S|, n_alpha) ridge weights for every alpha from one eigendecomposition; alpha = 0 by least squares."""
+    idx = np.asarray(idx, dtype=int)
+    W = np.zeros((idx.size, len(alphas)))
+    if idx.size == 0:
+        return W
+    A, r = G[np.ix_(idx, idx)], b[idx]
+    pos = [k for k, a in enumerate(alphas) if a > 0]
+    if pos:
+        lam, V = np.linalg.eigh(A)
+        c = V.T @ r
+        for k in pos:
+            W[:, k] = V @ (c / (lam + float(alphas[k])))
+    for k, a in enumerate(alphas):
+        if a <= 0:
+            W[:, k] = np.linalg.lstsq(A, r, rcond=None)[0]
+    return W
+
+
+def stats_pearson(M: np.ndarray, c: np.ndarray, m: np.ndarray, yy: np.ndarray, n_genes: int,
+                  W: np.ndarray) -> np.ndarray:
+    """(n_alpha, n_out) pearson_delta of the predictions X_p W[:, a] + const from per-perturbation statistics: the
+    covariance is c_p . w, the prediction's variance w^T M_p w (both over genes, centred), so no design is formed."""
+    num = c @ W
+    var = np.einsum("psa,sa->pa", np.matmul(M, W), W)
+    mw = m @ W
+    total = var + n_genes * mw * mw
+    den = np.sqrt(np.clip(var, 0.0, None) * yy[:, None])
+    ok = (den > 0) & (var > CONST_REL * total)
+    out = np.zeros(num.shape)
+    out[ok] = np.clip(num[ok] / den[ok], -1.0, 1.0)
+    return out.T
+
+
+def unit_scores(unit: Unit, idx, alphas) -> np.ndarray:
+    """(n_alpha, n_out) pearson_delta of the fit's predictions on columns idx, per alpha."""
+    idx = np.asarray(idx, dtype=int)
+    if idx.size == 0:
+        return np.zeros((len(alphas), unit.n_out))  # the intercept alone is a constant prediction: pearson_delta 0
+    W = ridge_weight_grid(unit.G, unit.b, idx, alphas)
+    if idx.size == unit.G.shape[0] and np.array_equal(idx, np.arange(idx.size)):
+        return stats_pearson(unit.M, unit.c, unit.m, unit.yy, unit.n_genes, W)
+    return stats_pearson(unit.M[:, idx[:, None], idx[None, :]], unit.c[:, idx], unit.m[:, idx], unit.yy,
+                         unit.n_genes, W)
+
+
+def unit_sse(unit: Unit, W: np.ndarray) -> np.ndarray:
+    """(n_w,) sum of squared errors of the predictions X_p W[:, j] + ybar over every predicted row of the unit."""
+    d = unit.ym - unit.ybar
+    A = unit.M.sum(axis=0) + unit.n_genes * unit.m.T @ unit.m
+    v = unit.c.sum(axis=0) + unit.n_genes * unit.m.T @ d
+    s0 = float(unit.yy.sum() + unit.n_genes * d @ d)
+    return s0 - 2.0 * (v @ W) + np.einsum("sa,sa->a", A @ W, W)
+
+
+def seed_matrix(fold_units, val_scores: np.ndarray, idx, alphas, n_train: int) -> np.ndarray:
+    """(n_alpha, n_train + n_val) per-perturbation scores under one fold seed: out of fold for the training
+    perturbations (fold_units: [(Unit, positions of the fold's perturbations)]), then the validation fit's scores."""
+    M = np.empty((len(alphas), n_train + val_scores.shape[1]))
+    M[:, :n_train] = np.nan
+    for unit, rows in fold_units:
+        M[:, np.asarray(rows, dtype=int)] = unit_scores(unit, idx, alphas)
+    if np.isnan(M[:, :n_train]).any():
+        raise ValueError("the folds do not cover every training perturbation")
+    M[:, n_train:] = val_scores
+    return M
+
+
+def honest_choice(mats, n_train: int, alphas, seeds=None) -> tuple[np.ndarray, list[dict]]:
+    """mats[i]: (n_alpha, n) scores under fold seed i, the first n_train entries the training perturbations. For every
+    ordered pair (A, B), A != B, the alpha maximising seed A's mean TRAINING score is chosen (nothing else of A, and
+    nothing of B, is looked at) and seed B's whole vector at that alpha is reported; the result is the mean of the
+    reports, with the choices. Both seeds score the same training perturbations, so only the validation entries are
+    independent of the choice."""
+    if len(mats) < 2:
+        raise ValueError("the honest penalty choice needs at least two fold seeds")
+    seeds = list(range(len(mats))) if seeds is None else list(seeds)
+    reports, chosen = [], []
+    for i, A in enumerate(mats):
+        k = int(np.argmax(np.asarray(A)[:, :n_train].mean(axis=1)))
+        for j, B in enumerate(mats):
+            if j != i:
+                reports.append(np.asarray(B)[k])
+                chosen.append({"select_seed": seeds[i], "report_seed": seeds[j], "alpha": float(alphas[k])})
+    return np.mean(reports, axis=0), chosen
+
+
+def paired(u: np.ndarray, v: np.ndarray) -> dict:
+    """Paired comparison of two per-perturbation vectors: mean of u - v, its standard error (sd / sqrt(n)), and the
+    perturbations where u is higher (wins) or lower (losses)."""
+    d = np.asarray(u, dtype=np.float64) - np.asarray(v, dtype=np.float64)
+    n = int(d.size)
+    return {"diff": float(d.mean()) if n else 0.0, "se": float(d.std(ddof=1) / np.sqrt(n)) if n > 1 else 0.0,
+            "wins": int((d > 0).sum()), "losses": int((d < 0).sum()), "n": n}
+
+
+def vector_summary(v: np.ndarray) -> dict:
+    v = np.asarray(v, dtype=np.float64)
+    return {"mean": float(v.mean()) if v.size else 0.0,
+            "se": float(v.std(ddof=1) / np.sqrt(v.size)) if v.size > 1 else 0.0, "n": int(v.size)}
+
+
+def grid_alpha(chosen_alphas, grid) -> float:
+    """The mean of the chosen alphas, rounded to the nearest grid value on a log scale (0 stays 0)."""
+    m = float(np.mean(chosen_alphas))
+    pos = [float(g) for g in grid if g > 0]
+    if m <= 0 or not pos:
+        return 0.0
+    return min(pos, key=lambda g: (abs(np.log10(g) - np.log10(m)), -g))
+
+
+class Engine:
+    """Honest visible scores of column subsets. seed_units: {fold seed: [(Unit, fold positions), ...]};
+    val_unit: the fit on all training perturbations predicting the visible validation perturbations;
+    columns_of: feature -> its column indices. A score holds the whole visible vector (training perturbations
+    first) and its training and validation parts."""
+
+    def __init__(self, seed_units: dict, val_unit: Unit, n_train: int, alphas, columns_of: dict | None = None):
+        if len(seed_units) < 2:
+            raise ValueError("the honest penalty choice needs at least two fold seeds")
+        self.seed_units = seed_units
+        self.seeds = list(seed_units)
+        self.val_unit = val_unit
+        self.n_train = int(n_train)
+        self.n_val = int(val_unit.n_out)
+        self.alphas = [float(a) for a in alphas]
+        self.columns_of = dict(columns_of or {})
+        self._cache: dict = {}
+
+    def columns(self, features) -> list[int]:
+        return sorted(c for f in features for c in self.columns_of[f])
+
+    def matrices(self, idx, alphas=None) -> dict:
+        alphas = self.alphas if alphas is None else [float(a) for a in alphas]
+        val = unit_scores(self.val_unit, idx, alphas)
+        return {s: seed_matrix(self.seed_units[s], val, idx, alphas, self.n_train) for s in self.seeds}
+
+    def score_idx(self, idx) -> dict:
+        key = tuple(sorted(int(i) for i in idx))
+        if key not in self._cache:
+            mats = self.matrices(key)
+            vec, chosen = honest_choice([mats[s] for s in self.seeds], self.n_train, self.alphas, self.seeds)
+            tr, va = vector_summary(vec[:self.n_train]), vector_summary(vec[self.n_train:])
+            self._cache[key] = {"vector": vec, **vector_summary(vec), "train_mean": tr["mean"], "train_se": tr["se"],
+                                "val_mean": va["mean"], "val_se": va["se"], "chosen": chosen,
+                                "alpha": grid_alpha([c["alpha"] for c in chosen], self.alphas)}
+        return self._cache[key]
+
+    def score(self, features) -> dict:
+        return self.score_idx(self.columns(features))
+
+    def train_part(self, v: np.ndarray) -> np.ndarray:
+        return np.asarray(v)[:self.n_train]
+
+    def val_part(self, v: np.ndarray) -> np.ndarray:
+        return np.asarray(v)[self.n_train:]
+
+
+def static_engine(X: np.ndarray, Y: np.ndarray, X_val: np.ndarray, Y_val: np.ndarray, columns_of: dict, seeds,
+                  k: int, alphas) -> Engine:
+    """An engine over fixed per-perturbation designs (no label-dependent recomputation): X (n_train, n_genes, C),
+    Y (n_train, n_genes), X_val (n_val, n_genes, C), Y_val (n_val, n_genes); folds from cv_folds_of."""
+    n_train, n_genes, C = X.shape
+    names = [f"p{i:04d}" for i in range(n_train)]
+    pos = {p: i for i, p in enumerate(names)}
+    seed_units = {}
+    for s in seeds:
+        units = []
+        for fold in cv_folds_of(names, k, s):
+            rows = np.array([pos[p] for p in fold])
+            tr = np.setdiff1d(np.arange(n_train), rows)
+            units.append((make_unit(X[tr].reshape(-1, C), Y[tr].reshape(-1), X[rows].reshape(-1, C), Y[rows]), rows))
+        seed_units[s] = units
+    val = make_unit(X.reshape(-1, C), Y.reshape(-1), X_val.reshape(-1, C), Y_val)
+    return Engine(seed_units, val, n_train, alphas, columns_of)
+
+
+# ------------------------------------------------------------------ paths and the compact choice
+def _step(engine: Engine, features: list[str], res: dict, **extra) -> dict:
+    return {**extra, "features": list(features), "n_features": len(features),
+            "n_columns": len(engine.columns(features)), "mean": res["mean"], "se": res["se"],
+            "train_mean": res["train_mean"], "val_mean": res["val_mean"],
+            "alphas": [c["alpha"] for c in res["chosen"]], "alpha": res["alpha"]}
+
+
+def _quiet(_msg: str) -> None:
+    return None
+
+
+def forward_path(engine: Engine, features: list[str], log=_quiet, label: str = "forward") -> list[dict]:
+    """Greedy by whole feature from nothing: add the feature that raises the honest TRAINING score most (ties:
+    first); the validation perturbations play no part in the choice."""
+    chosen, remaining, steps, t0 = [], list(features), [], time.perf_counter()
+    while remaining:
+        best = None
+        for f in remaining:
+            r = engine.score(chosen + [f])
+            if best is None or r["train_mean"] > best[0]["train_mean"]:
+                best = (r, f)
+        r, f = best
+        chosen.append(f)
+        remaining.remove(f)
+        steps.append(_step(engine, chosen, r, added=f))
+        log(f"{label} {len(chosen)}/{len(features)}: +{f}, training {r['train_mean']:.4f} "
+            f"({time.perf_counter() - t0:.0f} s)")
+    return steps
+
+
+def backward_path(engine: Engine, features: list[str], log=_quiet, label: str = "backward") -> list[dict]:
+    """Greedy by whole feature from the full model: drop the feature whose removal leaves the highest honest
+    TRAINING score (ties: first), down to one feature; the first step is the full model."""
+    current, t0 = list(features), time.perf_counter()
+    steps = [_step(engine, current, engine.score(current), removed=None)]
+    while len(current) > 1:
+        best = None
+        for f in current:
+            r = engine.score([g for g in current if g != f])
+            if best is None or r["train_mean"] > best[0]["train_mean"]:
+                best = (r, f)
+        r, f = best
+        current = [g for g in current if g != f]
+        steps.append(_step(engine, current, r, removed=f))
+        log(f"{label} {len(current)} left: -{f}, training {r['train_mean']:.4f} ({time.perf_counter() - t0:.0f} s)")
+    return steps
+
+
+def noise_band(se: float, floor: float = NOISE_FLOOR) -> float:
+    """One paired SE, never less than the margin of practical equivalence."""
+    return max(float(se), float(floor))
+
+
+def one_se_choice(vectors: list[np.ndarray], sizes: list, floor: float = NOISE_FLOOR) -> tuple[int, int, list[dict]]:
+    """One-standard-error rule: the best set is the highest mean; a candidate qualifies when its mean is within one
+    paired SE (between the candidate's and the best set's vectors, at least `floor`) of the best; the smallest
+    qualifying set wins (sizes: sortable, e.g. (features, columns)). Returns (chosen index, best index, comparisons
+    best - candidate). The audit passes the training parts of the vectors only."""
+    means = [float(np.mean(v)) for v in vectors]
+    best = int(np.argmax(means))
+    cmp = [paired(vectors[best], v) for v in vectors]
+    ok = [i for i, c in enumerate(cmp) if c["diff"] <= noise_band(c["se"], floor)]
+    pick = min(ok, key=lambda i: (sizes[i], -means[i], i))
+    return pick, best, cmp
+
+
+def classify(diff: float, se: float, floor: float = NOISE_FLOOR) -> str:
+    """A paired difference: 'not_established' (|diff| <= SE), 'below_margin' (beyond one SE but within the margin
+    of practical equivalence), or 'higher' / 'lower' (beyond both)."""
+    if abs(diff) <= se:
+        return "not_established"
+    if abs(diff) <= floor:
+        return "below_margin"
+    return "higher" if diff > 0 else "lower"
+
+
+# ------------------------------------------------------------------ redundancy
+def corr_from_gram(G: np.ndarray, constant=None) -> np.ndarray:
+    """Correlation matrix of standardised (mean-zero) columns from their Gram matrix; constant columns get 0."""
+    d = np.sqrt(np.clip(np.diag(G), 0.0, None))
+    bad = d <= 0
+    if constant is not None:
+        bad = bad | np.asarray(constant, dtype=bool)
+    dd = np.where(bad, 1.0, d)
+    R = G / np.outer(dd, dd)
+    R[bad, :] = 0.0
+    R[:, bad] = 0.0
+    np.fill_diagonal(R, np.where(bad, 0.0, 1.0))
+    return np.clip(R, -1.0, 1.0)
+
+
+def union_find(n: int, edges) -> list[list[int]]:
+    """Connected groups (two or more members) of n items under the given edges, members sorted, groups by first."""
+    parent = list(range(n))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    for i, j in edges:
+        ri, rj = find(int(i)), find(int(j))
+        if ri != rj:
+            parent[max(ri, rj)] = min(ri, rj)
+    groups: dict[int, list[int]] = {}
+    for i in range(n):
+        groups.setdefault(find(i), []).append(i)
+    return sorted((g for g in groups.values() if len(g) > 1), key=lambda g: g[0])
+
+
+def redundancy(X: np.ndarray, columns: list[str], feature_of: list[str], constant=None) -> dict:
+    """Redundancy of a standardised design X (rows x C): constant columns, exact duplicates, highly correlated pairs,
+    clusters at |r| >= 0.9 (union-find), rank, effective rank (participation ratio of the correlation eigenvalues)
+    and condition number of the correlation matrix (None when singular)."""
+    X = np.asarray(X, dtype=np.float64)
+    C = X.shape[1]
+    constant = (X.std(axis=0) <= 1e-12) if constant is None else np.asarray(constant, dtype=bool)
+    R = corr_from_gram(X.T @ X, constant)
+    iu, ju = np.triu_indices(C, 1)
+    ok = ~constant[iu] & ~constant[ju]
+    iu, ju = iu[ok], ju[ok]
+    a = np.abs(R[iu, ju])
+    order = np.lexsort((ju, iu, -a))
+    top = [{"a": columns[iu[k]], "b": columns[ju[k]], "r": float(R[iu[k], ju[k]])} for k in order[:TOP_PAIRS]]
+    dup = union_find(C, [(i, j) for i, j, v in zip(iu, ju, a) if v >= DUPLICATE_R])
+    clus = union_find(C, [(i, j) for i, j, v in zip(iu, ju, a) if v >= CORR_HIGH])
+    nc = np.flatnonzero(~constant)
+    lam = np.clip(np.linalg.eigvalsh(R[np.ix_(nc, nc)]), 0.0, None) if nc.size else np.zeros(0)
+    eff = float(lam.sum() ** 2 / (lam ** 2).sum()) if lam.size and (lam ** 2).sum() > 0 else 0.0
+    cond = float(lam.max() / lam.min()) if lam.size and lam.min() > lam.max() * 1e-12 else None
+
+    def rec(g):
+        sub = np.abs(R[np.ix_(g, g)])[np.triu_indices(len(g), 1)]
+        return {"columns": [columns[i] for i in g], "index": [int(i) for i in g],
+                "features": list(dict.fromkeys(feature_of[i] for i in g)),
+                "min_abs_r": float(sub.min()), "max_abs_r": float(sub.max())}
+    return {"n_columns": C, "constant_columns": [columns[i] for i in np.flatnonzero(constant)],
+            "duplicate_groups": [[columns[i] for i in g] for g in dup],
+            "n_duplicate_columns": int(sum(len(g) - 1 for g in dup)),
+            "n_pairs_above_0.9": int((a >= CORR_HIGH).sum()), "n_pairs_above_0.7": int((a >= CORR_MID).sum()),
+            "top_pairs": top, "clusters": [rec(g) for g in clus],
+            "rank": int(np.linalg.matrix_rank(X)) if X.size else 0, "effective_rank": eff, "condition_number": cond}
+
+
+def strongest_partner(R: np.ndarray, cols_f, others: dict, columns: list[str]) -> dict | None:
+    """The column of another feature (others: feature -> column indices) most correlated with a column of this one."""
+    best = None
+    for g, cols_g in others.items():
+        if not cols_g or not len(cols_f):
+            continue
+        sub = R[np.ix_(cols_f, cols_g)]
+        i, j = np.unravel_index(int(np.argmax(np.abs(sub))), sub.shape)
+        r = float(sub[i, j])
+        if best is None or abs(r) > abs(best["r"]):
+            best = {"feature": g, "column": columns[cols_g[j]], "own_column": columns[cols_f[i]], "r": r}
+    return best
+
+
+# ------------------------------------------------------------------ merge test
+def merge_transform(G: np.ndarray, n: int, clusters) -> tuple[np.ndarray, list[int], list[np.ndarray]]:
+    """T (C x C_new) replacing each cluster's columns by their standardised projection on the first principal
+    component, computed from G alone: the Gram matrix of THIS fit's standardised training rows, so the component
+    never sees the rows the fit predicts. Kept columns come first, then one column per cluster."""
+    C = G.shape[0]
+    inside = {int(c) for cl in clusters for c in cl}
+    keep = [c for c in range(C) if c not in inside]
+    T = np.zeros((C, len(keep) + len(clusters)))
+    for j, c in enumerate(keep):
+        T[c, j] = 1.0
+    loadings = []
+    for m, cl in enumerate(clusters):
+        cl = [int(c) for c in cl]
+        A = G[np.ix_(cl, cl)]
+        v = np.linalg.eigh(A)[1][:, -1]
+        if v[int(np.argmax(np.abs(v)))] < 0:
+            v = -v
+        var = float(v @ A @ v) / max(int(n), 1)
+        T[cl, len(keep) + m] = v / (np.sqrt(var) if var > 0 else 1.0)
+        loadings.append(v)
+    return T, keep, loadings
+
+
+def merge_unit(unit: Unit, clusters) -> tuple[Unit, list[np.ndarray]]:
+    T, _, loadings = merge_transform(unit.G, unit.n, clusters)
+    return unit.transform(T), loadings
+
+
+def merged_engine(engine: Engine, idx, clusters) -> Engine:
+    """The engine of the model on columns idx with each cluster (indices into idx) merged into one column."""
+    seed_units = {s: [(merge_unit(u.subset(idx), clusters)[0], rows) for u, rows in us]
+                  for s, us in engine.seed_units.items()}
+    return Engine(seed_units, merge_unit(engine.val_unit.subset(idx), clusters)[0], engine.n_train, engine.alphas)
+
+
+# ------------------------------------------------------------------ Lasso stability
+def lasso_gram_path(G: np.ndarray, b: np.ndarray, n: int, lambdas) -> np.ndarray:
+    """(C, n_lambda) Lasso coefficients minimising (1/(2n)) |yc - X w|^2 + lambda |w|_1 from G = X^T X and
+    b = X^T yc alone (X: n rows with mean-zero columns, yc centred), by sklearn's coordinate descent on a square
+    root Z of G (Z^T Z = G, Z^T t = b), scaled so that its objective is the same up to a constant."""
+    from sklearn.exceptions import ConvergenceWarning
+    from sklearn.linear_model import lasso_path
+    lambdas = np.asarray(lambdas, dtype=np.float64)
+    C = G.shape[0]
+    lam, V = np.linalg.eigh((G + G.T) / 2.0)
+    keep = lam > max(float(lam.max()) if lam.size else 0.0, 0.0) * 1e-12
+    out = np.zeros((C, lambdas.size))
+    if not keep.any():
+        return out
+    Vk, lk = V[:, keep], lam[keep]
+    Z = np.sqrt(lk)[:, None] * Vk.T
+    t = (Vk.T @ b) / np.sqrt(lk)
+    s = np.sqrt(Z.shape[0] / max(int(n), 1))
+    order = np.argsort(-lambdas, kind="stable")  # sklearn computes the path from the largest lambda down
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", ConvergenceWarning)
+        _, coefs, _ = lasso_path(Z * s, t * s, alphas=lambdas[order], max_iter=100000, tol=1e-10)
+    out[:, order] = coefs
+    return out
+
+
+def lasso_cv(cv_units: list[Unit], grid) -> np.ndarray:
+    """Mean squared error per lambda of the grid, averaged over the folds: each fold's Lasso fitted on its own
+    standardised training design (features recomputed without the fold) and scored on the fold's rows."""
+    mse = np.zeros(len(grid))
+    for u in cv_units:
+        W = lasso_gram_path(u.G, u.b, u.n, grid)
+        mse += unit_sse(u, W) / (u.n_out * u.n_genes) / len(cv_units)
+    return mse
+
+
+def lasso_stability(X: np.ndarray, y: np.ndarray, groups: np.ndarray, cv_units: list[Unit], resamples: int,
+                    seed: int, columns: list[str], feature_of: list[str]) -> dict:
+    """sklearn Lasso on the standardised full-training design X (rows grouped by perturbation, groups[i] in
+    0..n_groups-1). The penalty is chosen once by cross-validation over cv_units, the folds' own designs with every
+    feature recomputed without the fold (minimum mean squared error over a log grid from the smallest lambda that
+    zeroes every column of X); then `resamples` draws of half of the perturbations (seeded, without replacement) are
+    fitted at that penalty and each column's selection frequency is recorded (a feature's frequency is the maximum
+    over its columns). Also a short path: the columns kept at five lambdas spanning the grid."""
+    from sklearn.exceptions import ConvergenceWarning
+    from sklearn.linear_model import lasso_path
+    X = np.asarray(X, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64).reshape(-1)
+    groups = np.asarray(groups, dtype=int)
+    n_groups = int(groups.max()) + 1
+    C = X.shape[1]
+
+    def fit(rows, lams):
+        Xr, yr = X[rows], y[rows]
+        xm, ym = Xr.mean(axis=0), yr.mean()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", ConvergenceWarning)
+            lam, coefs, _ = lasso_path(Xr - xm, yr - ym, alphas=np.asarray(lams, dtype=np.float64), max_iter=10000)
+        return lam, coefs
+
+    Xc = X - X.mean(axis=0)
+    lam_max = float(np.max(np.abs(Xc.T @ (y - y.mean()))) / len(y)) if C else 0.0
+    del Xc
+    if lam_max <= 0:
+        lam_max = 1.0
+    grid = lam_max * np.logspace(0, np.log10(LASSO_RATIO), LASSO_LAMBDAS)
+    mse = lasso_cv(cv_units, grid)
+    k = int(np.argmin(mse))  # ties: the larger lambda
+    chosen = float(grid[k])
+    rng = np.random.default_rng(int(seed))
+    counts = np.zeros(C)
+    mag = np.zeros(C)
+    for _ in range(int(resamples)):
+        sub = rng.choice(n_groups, n_groups // 2, replace=False)
+        _, coefs = fit(np.isin(groups, sub), [chosen])
+        counts += np.abs(coefs[:, 0]) > 1e-12
+        mag += np.abs(coefs[:, 0])
+    freq = counts / max(int(resamples), 1)
+    ranking = sorted(range(C), key=lambda i: (-freq[i], -mag[i], i))
+    path_lams = grid[np.unique(np.round(np.linspace(0, len(grid) - 1, 5)).astype(int))]
+    lam_p, coefs_p = fit(np.ones(len(y), dtype=bool), path_lams)
+    path = [{"lambda": float(lam_p[i]), "n_columns": int((np.abs(coefs_p[:, i]) > 1e-12).sum()),
+             "columns": [columns[c] for c in np.flatnonzero(np.abs(coefs_p[:, i]) > 1e-12)]}
+            for i in range(len(lam_p))]
+    feat_freq: dict[str, float] = {}
+    for i, f in enumerate(feature_of):
+        feat_freq[f] = max(feat_freq.get(f, 0.0), float(freq[i]))
+    return {"lambda": chosen, "lambda_max": lam_max, "grid_min": float(grid[-1]), "n_lambdas": len(grid),
+            "cv_mse": [float(m) for m in mse], "cv_folds": len(cv_units), "resamples": int(resamples),
+            "seed": int(seed), "column_frequency": {columns[i]: float(freq[i]) for i in range(C)},
+            "feature_frequency": feat_freq, "ranking": [columns[i] for i in ranking], "path": path,
+            "stable_features": [f for f, v in feat_freq.items() if v >= STABLE_FREQ], "stable_threshold": STABLE_FREQ}
+
+
+# ------------------------------------------------------------------ verdicts
+def assign_verdicts(features: list[str], kept, n_columns: dict, single: dict, drop_one: dict, partner: dict,
+                    kept_partner: dict, lasso_freq: dict | None, failed: dict) -> list[dict]:
+    """One verdict per feature (the features analysed, then the unrecomputable ones), with its evidence. Order of the
+    rules: unrecomputable, kept, harmful, redundant, substitutable, no_gain (see RULE)."""
+    kept = set(kept)
+    out = []
+    for f in list(features) + [g for g in failed if g not in features]:
+        if f in failed:
+            out.append({"feature": f, "verdict": "unrecomputable", "reason": str(failed[f])[:200],
+                        "evidence": {"columns": None, "single": None, "drop_one": None, "lasso_frequency": None,
+                                     "partner": None}})
+            continue
+        d, s, kp = drop_one[f], single[f], kept_partner.get(f)
+        ev = {"columns": int(n_columns[f]), "single": {"mean": s["mean"], "se": s["se"]},
+              "drop_one": {"diff": d["diff"], "se": d["se"], "wins": d["wins"], "losses": d["losses"], "n": d["n"]},
+              "lasso_frequency": None if lasso_freq is None else lasso_freq.get(f), "partner": partner.get(f)}
+        band = noise_band(d["se"])
+        if f in kept:
+            v, why = "kept", "in the compact set (one-SE rule on the backward path, training scores)"
+        elif d["diff"] < -band:
+            v, why = "harmful", (f"dropping it raises the visible score by {-d['diff']:.4f}, more than max(paired SE "
+                                 f"{d['se']:.4f}, {NOISE_FLOOR:g}); {d['losses']} of {d['n']} perturbations score "
+                                 f"higher without it")
+        elif kp is not None and abs(kp["r"]) >= CORR_HIGH:
+            v, why = "redundant", (f"not in the compact set; its column {kp['own_column']} correlates "
+                                   f"r = {kp['r']:+.3f} with {kp['column']} of kept feature {kp['feature']}")
+        elif d["diff"] > band:
+            v, why = "substitutable", (
+                f"its gain in the full model is established (drop-one {d['diff']:+.4f}, paired SE {d['se']:.4f}), "
+                f"yet the compact set does without it"
+                + (f"; most correlated kept feature {kp['feature']} (r = {kp['r']:+.3f})" if kp else ""))
+        else:
+            v, why = "no_gain", (f"not in the compact set; dropping it from the full model changes the visible score "
+                                 f"by {-d['diff']:+.4f} (paired SE {d['se']:.4f}), within max(SE, {NOISE_FLOOR:g})")
+        out.append({"feature": f, "verdict": v, "reason": why, "evidence": ev})
+    return out
+
+
+def analyse_model(engine: Engine, features: list[str], R: np.ndarray, columns: list[str], failed: dict,
+                  lasso_freq: dict | None = None, log=_quiet, label: str = "") -> dict:
+    """Census, single-feature and drop-one scores, forward and backward paths, the compact choice and verdicts of
+    one feature set on an engine. R: the correlation matrix of the engine's columns (full training design). The
+    paths and the compact set are chosen on the training perturbations; the compact model is compared with the full
+    one on the validation perturbations (and, for reference, on the training ones that chose it)."""
+    full = engine.score(features)
+    single = {f: engine.score([f]) for f in features}
+    drop = {f: paired(full["vector"], engine.score([g for g in features if g != f])["vector"]) for f in features}
+    fwd = forward_path(engine, features, log, f"{label} forward".strip())
+    bwd = backward_path(engine, features, log, f"{label} backward".strip())
+    tvecs = [engine.train_part(engine.score(st["features"])["vector"]) for st in bwd]
+    pick, best, cmp = one_se_choice(tvecs, [(st["n_features"], st["n_columns"]) for st in bwd])
+    for st, c in zip(bwd, cmp):
+        st["vs_best"] = {"diff": c["diff"], "se": c["se"]}
+    comp_feats = bwd[pick]["features"]
+    comp = engine.score(comp_feats)
+    cols_of = {f: engine.columns_of[f] for f in features}
+    partner = {f: strongest_partner(R, cols_of[f], {g: cols_of[g] for g in features if g != f}, columns)
+               for f in features}
+    kept_partner = {f: strongest_partner(R, cols_of[f], {g: cols_of[g] for g in comp_feats if g != f}, columns)
+                    for f in features if f not in comp_feats}
+    verdicts = assign_verdicts(features, comp_feats, {f: len(cols_of[f]) for f in features}, single, drop, partner,
+                               kept_partner, lasso_freq, failed)
+    vs_val = paired(engine.val_part(comp["vector"]), engine.val_part(full["vector"]))
+    vs_val["class"] = classify(vs_val["diff"], vs_val["se"])
+
+    def summ(r):
+        return {"mean": r["mean"], "se": r["se"], "n": r["n"], "train_mean": r["train_mean"],
+                "train_se": r["train_se"], "val_mean": r["val_mean"], "val_se": r["val_se"],
+                "alphas": [c["alpha"] for c in r["chosen"]], "chosen": r["chosen"], "alpha": r["alpha"]}
+    return {
+        "census": {"features": list(features), "columns_per_feature": {f: len(cols_of[f]) for f in features},
+                   "n_features": len(features), "n_columns": len(engine.columns(features))},
+        "full": summ(full),
+        "single": {f: {"mean": r["mean"], "se": r["se"], "alpha": r["alpha"]} for f, r in single.items()},
+        "drop_one": drop, "forward": fwd, "backward": bwd,
+        "compact": {"features": comp_feats, "n_features": len(comp_feats),
+                    "n_columns": len(engine.columns(comp_feats)), **summ(comp),
+                    "backward_step": pick, "best_step": best, "vs_full": vs_val,
+                    "vs_full_train": paired(engine.train_part(comp["vector"]), engine.train_part(full["vector"])),
+                    "vs_best": cmp[pick]},
+        "verdicts": verdicts,
+    }
+
+
+# ================================================================== opening a run, read only
+def open_db_readonly(run_dir: Path, scratch: Path) -> sqlite3.Connection:
+    """lab.db through a read-only URI. With no write-ahead log next to it the file is opened immutable (SQLite
+    creates nothing beside it); with one (an unclean or live run) the database and its log are copied into the
+    tool's scratch directory first and the copy is opened, so nothing is ever created in the run directory."""
+    db = Path(run_dir) / "lab.db"
+    if not db.exists():
+        raise Skip("no lab.db")
+    wal = Path(run_dir) / "lab.db-wal"
+    if wal.exists() and wal.stat().st_size > 0:
+        dst = Path(scratch) / "labdb"
+        dst.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(db, dst / "lab.db")
+        shutil.copyfile(wal, dst / "lab.db-wal")
+        uri = f"file:{quote(str(dst / 'lab.db'))}?mode=ro"
+    else:
+        uri = f"file:{quote(str(db))}?mode=ro&immutable=1"
+    conn = sqlite3.connect(uri, uri=True)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+JSON_COLUMNS = ("feature_set_json", "feature_params_json", "hyperparameters_json", "val_metrics_json",
+                "query_metrics_json")
+
+
+def _rows(conn: sqlite3.Connection, sql: str, params=()) -> list[dict]:
+    out = []
+    for r in conn.execute(sql, params).fetchall():
+        d = dict(r)
+        for k in JSON_COLUMNS:
+            if k in d and isinstance(d[k], str):
+                try:
+                    d[k] = json.loads(d[k])
+                except ValueError:
+                    d[k] = None
+        out.append(d)
+    return out
+
+
+def read_run(run_dir: Path, scratch: Path) -> dict:
+    conn = open_db_readonly(run_dir, scratch)
+    try:
+        runs = _rows(conn, "SELECT * FROM runs LIMIT 1")
+        if not runs:
+            raise Skip("no run recorded in lab.db")
+        cfg = json.loads(runs[0]["config_json"] or "{}")
+        sel = _rows(conn, "SELECT * FROM experiments WHERE status='completed' AND primary_score IS NOT NULL "
+                          "AND COALESCE(kind, '') NOT IN ('baseline', 'ensemble') "
+                          "ORDER BY primary_score DESC, COALESCE(finished_at, 1e300) ASC, experiment_id ASC")
+        sel = [r for r in sel if r.get("feature_set_json")]
+        gains = _rows(conn, "SELECT experiment_id, new_feature, feature_params_json, delta_from_parent, finished_at "
+                            "FROM experiments WHERE status='completed' AND new_feature IS NOT NULL "
+                            "AND new_feature != '' ORDER BY COALESCE(finished_at, 1e300) ASC, experiment_id ASC")
+        try:
+            feats = {r["name"]: r for r in _rows(conn, "SELECT name, code_hash, description FROM features")}
+        except sqlite3.Error:
+            feats = {}
+    finally:
+        conn.close()
+    return {"run_id": runs[0]["run_id"], "split_id": runs[0].get("split_id"), "dataset": runs[0].get("dataset"),
+            "base_commit": runs[0].get("base_commit"), "cfg": cfg, "selected": sel[0] if sel else None,
+            "gains": gains, "features": feats}
+
+
+def _resolve_data_dir(raw) -> Path | None:
+    if not raw:
+        return None
+    p = Path(str(raw))
+    for cand in ([p] if p.is_absolute() else [REPO_ROOT / p, Path.cwd() / p]):
+        if cand.exists():
+            return cand.resolve()
+    return p
+
+
+@contextlib.contextmanager
+def _no_bytecode():
+    """Plugins are imported from the run's feature store: no __pycache__ may be written there."""
+    old = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        yield
+    finally:
+        sys.dont_write_bytecode = old
+
+
+def _err(exc: BaseException) -> str:
+    return f"{type(exc).__name__}: {exc}"[:200]
+
+
+def _module_features() -> dict[str, list[str]]:
+    """Plugin module name -> the registered features whose class it defines."""
+    out: dict[str, list[str]] = {}
+    for name, cls in REGISTRY.items():
+        out.setdefault(getattr(cls, "__module__", ""), []).append(name)
+    return out
+
+
+def load_run_plugins(store: Path) -> dict[str, str]:
+    """The run's feature plugins, afresh and one file at a time: no feature of a previous run survives by name, a file
+    that raises while importing (a missing package, a syntax error) is recorded and skipped while every other file
+    still loads, and reloads before each fold re-execute only this run's modules. Returns {file stem: error}."""
+    for name in list(REGISTRY):
+        if name not in BUILTIN_FEATURES:
+            del REGISTRY[name]
+    registry._LOADED.clear()
+    errors: dict[str, str] = {}
+    for path in sorted(Path(store).glob("*.py")):
+        if path.name.startswith("_"):
+            continue
+        before = set(REGISTRY)
+        try:
+            registry._exec(path)
+        except BaseException as exc:  # noqa: BLE001  (a plugin may even call sys.exit)
+            if isinstance(exc, KeyboardInterrupt):
+                raise
+            errors[path.stem] = _err(exc)
+            for name in set(REGISTRY) - before:  # half-executed module: none of its features is trusted
+                del REGISTRY[name]
+            sys.modules.pop(f"genemila_plugin_{path.stem}", None)
+    return errors
+
+
+def reload_run_plugins() -> dict[str, str]:
+    """Re-execute every loaded plugin module, as registry.reload_plugins does before each fold, so module-level state
+    starts fresh; a module that raises on re-execution makes the features it defines unrecomputable instead of
+    stopping the run. Returns {feature: error}."""
+    owned = _module_features()
+    failed: dict[str, str] = {}
+    for mod_name, path in list(registry._LOADED.items()):
+        if not Path(path).exists():
+            continue
+        try:
+            registry._exec(Path(path))
+        except BaseException as exc:  # noqa: BLE001
+            if isinstance(exc, KeyboardInterrupt):
+                raise
+            for name in owned.get(mod_name, []):
+                failed[name] = f"plugin {Path(path).name} failed on re-execution: {_err(exc)}"[:200]
+    return failed
+
+
+def missing_feature_errors(features: list[str], store: Path, plugin_errors: dict[str, str]) -> dict[str, str]:
+    """Why a feature is not registered after loading: its own plugin file failed to import, or no file defines it."""
+    out = {}
+    for f in features:
+        if f in REGISTRY:
+            continue
+        if f in plugin_errors:
+            out[f] = f"plugin {f}.py failed to import: {plugin_errors[f]}"[:200]
+        elif plugin_errors:
+            out[f] = (f"no imported plugin defines it ({len(plugin_errors)} plugin file(s) failed to import, "
+                      f"e.g. {next(iter(plugin_errors))}.py: {next(iter(plugin_errors.values()))})")[:200]
+        else:
+            out[f] = f"no plugin in {Path(store).name} defines it"
+    return out
+
+
+def _pool(meta: dict, sel_feats: list[str], sel_params: dict) -> tuple[list[str], dict, dict]:
+    """The selected model's features, every new feature of a completed experiment that raised its parent's visible
+    score by more than POOL_MIN_GAIN (largest gain first), and the built-ins; parameters of each, and the experiment
+    that introduced each."""
+    pool, params = list(sel_feats), {f: dict(sel_params.get(f, {})) for f in sel_feats}
+    gains = sorted((g for g in meta["gains"] if (g.get("delta_from_parent") or 0.0) > POOL_MIN_GAIN),
+                   key=lambda g: (-(g["delta_from_parent"]), g["experiment_id"]))
+    for g in gains:
+        f = g["new_feature"]
+        if f not in pool:
+            pool.append(f)
+            params[f] = dict((g.get("feature_params_json") or {}).get(f, {}))
+    for f in BUILTIN_FEATURES:
+        if f not in pool:
+            pool.append(f)
+            params[f] = {}
+    introduced = {}
+    for g in meta["gains"]:
+        introduced.setdefault(g["new_feature"], g["experiment_id"])
+    return pool, params, introduced
+
+
+# ------------------------------------------------------------------ the fits of one run
+class LabelWatch(FeatureContext):
+    """A fresh view of a context (empty memos, the same training set) that counts every read of the training labels,
+    through train_delta or directly through the private _train_delta, also from views a feature derives from it (the
+    counter is shared by copies), so that a feature's label dependence is detected however it reaches the labels."""
+
+    def __init__(self, base: FeatureContext):  # a view of base: FeatureContext.__init__ would reload the data
+        state = dict(base.without_train([]).__dict__)
+        state.pop("label_reads", None)
+        state["_watched_delta"] = state.pop("_train_delta")
+        state["_watch_counter"] = [0]
+        self.__dict__.update(state)
+
+    @property
+    def label_reads(self) -> int:
+        return self.__dict__["_watch_counter"][0]
+
+    @label_reads.setter
+    def label_reads(self, value: int) -> None:
+        self.__dict__["_watch_counter"][0] = int(value)
+
+    @property
+    def _train_delta(self) -> np.ndarray:
+        self.__dict__["_watch_counter"][0] += 1
+        return self.__dict__["_watched_delta"]
+
+    @_train_delta.setter
+    def _train_delta(self, value: np.ndarray) -> None:
+        self.__dict__["_watched_delta"] = value
+
+
+def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: list[int], k: int,
+                 val_perts: list[str], Y_val: np.ndarray, failed: dict | None = None) -> dict:
+    """Feature blocks and engine units of one run, as genemila.pipeline computes them but with label dependence
+    detected per feature on a clean slate: each feature's blocks of the training perturbations and of every
+    perturbation outside the training set are computed on its own fresh view (plugins re-executed first, so neither
+    another feature's memo nor a module-level memo can hide a read of the labels), which counts every read of the
+    training labels. Then, for each fold seed and fold, plugins re-executed and the label-dependent features
+    recomputed on the view without the fold (training rows plus fold rows in one call); a label-free feature's rows
+    are sliced from its full-training block, which no label shaped. Nothing is cached on disk. A feature that raises
+    anywhere is dropped (failed); `failed` may carry features already known to be unrecomputable."""
+    train = list(ctx.train_perts)
+    evals = [p for p in ctx.perts if p not in set(train)]
+    G = ctx.n_genes
+    timings: dict = {}
+    failed = dict(failed or {})
+    label_dep: dict[str, bool] = {}
+    full_tr, full_ev = {}, {}
+
+    def reload_marking():
+        for f, e in reload_run_plugins().items():
+            if f in features and f not in failed:
+                failed[f] = e
+    for f in features:
+        if f in failed:
+            continue
+        reload_marking()
+        if f in failed:
+            continue
+        view = LabelWatch(ctx)
+        try:
+            full_tr[f] = feature_blocks(view, [f], params, train, timings, None, None, label_dep)[f]
+            blk = feature_blocks(view, [f], params, evals, timings, None, None, label_dep)[f]
+            if blk.shape[2] != full_tr[f].shape[2]:
+                raise ValueError(f"feature {f} returned {blk.shape[2]} columns for held-out perturbations, "
+                                 f"{full_tr[f].shape[2]} for training ones")
+            full_ev[f] = blk
+        except Exception as exc:  # missing dependency, bad shape, NaN: unrecomputable
+            failed[f] = _err(exc)
+            full_tr.pop(f, None)
+    _, D = ctx.train_delta()
+    pos = {p: i for i, p in enumerate(train)}
+    raw_units: dict[int, list] = {}
+    for s in seeds:
+        units = []
+        for fold in cv_folds_of(train, k, s):
+            reload_marking()
+            view = ctx.without_train(fold)
+            both = view.train_perts + fold
+            n_tr = len(view.train_perts)
+            fresh = {}
+            for f in features:
+                if f in failed or not label_dep.get(f, True):
+                    continue
+                try:
+                    blk = feature_blocks(view, [f], params, both, timings, None)[f]
+                    if blk.shape[2] != full_tr[f].shape[2]:
+                        raise ValueError(f"feature {f} returned {blk.shape[2]} columns without a fold, "
+                                         f"{full_tr[f].shape[2]} on the full training set")
+                    fresh[f] = blk
+                except Exception as exc:
+                    failed[f] = _err(exc)
+            ok = [f for f in features if f not in failed]
+            if not ok:
+                raise Skip("no feature could be recomputed: " + "; ".join(f"{f}: {e}" for f, e in failed.items())[:300])
+            tr_rows = [pos[p] for p in view.train_perts]
+            fo_rows = [pos[p] for p in fold]
+            Xtr = np.concatenate([fresh[f][:n_tr] if f in fresh else full_tr[f][tr_rows] for f in ok], axis=2)
+            Xfo = np.concatenate([fresh[f][n_tr:] if f in fresh else full_tr[f][fo_rows] for f in ok], axis=2)
+            _, d_tr = view.train_delta()
+            unit = make_unit(Xtr.reshape(n_tr * G, -1), d_tr.reshape(-1), Xfo.reshape(len(fold) * G, -1), D[fo_rows])
+            units.append((unit, np.asarray(fo_rows), ok))
+            del Xtr, Xfo, fresh
+        raw_units[s] = units
+    ok = [f for f in features if f not in failed]
+    if not ok:
+        raise Skip("no feature could be recomputed")
+    dims = {f: int(full_tr[f].shape[2]) for f in ok}
+    columns, feature_of, columns_of = [], [], {}
+    for f in ok:
+        columns_of[f] = list(range(len(columns), len(columns) + dims[f]))
+        columns += [f] if dims[f] == 1 else [f"{f}[{j}]" for j in range(dims[f])]
+        feature_of += [f] * dims[f]
+
+    def final_idx(unit_feats):
+        off, at = {}, 0
+        for f in unit_feats:
+            off[f] = at
+            at += int(full_tr[f].shape[2])
+        return [off[f] + j for f in ok for j in range(dims[f])]
+    seed_units = {s: [(u if fs == ok else u.subset(final_idx(fs)), rows) for u, rows, fs in us]
+                  for s, us in raw_units.items()}
+    Xtr_raw = np.concatenate([full_tr[f] for f in ok], axis=2).reshape(len(train) * G, -1)
+    Xev_raw = np.concatenate([full_ev[f] for f in ok], axis=2).reshape(len(evals) * G, -1)
+    mu, sd_raw = Xtr_raw.mean(axis=0), Xtr_raw.std(axis=0)
+    constant = sd_raw <= 1e-12 * np.maximum(1.0, np.abs(mu))
+    Xtr_s, (Xev_s,), _, _ = standardise(Xtr_raw, Xev_raw)
+    del Xtr_raw, Xev_raw
+    ev_pos = {p: i for i, p in enumerate(evals)}
+    C = len(columns)
+    Xval = Xev_s.reshape(len(evals), G, C)[[ev_pos[p] for p in val_perts]].reshape(-1, C)
+    y = D.reshape(-1)
+    val_unit = unit_from_standardised(Xtr_s, y, Xval, np.asarray(Y_val, dtype=np.float64))
+    return {"features": ok, "columns": columns, "feature_of": feature_of, "columns_of": columns_of,
+            "seed_units": seed_units, "val_unit": val_unit, "Xtr": Xtr_s, "Xev": Xev_s, "y": y, "evals": evals,
+            "constant": constant, "failed": failed, "label_dependent": sorted(f for f in ok if label_dep.get(f, True)),
+            "feature_cpu_s": {f: float(v) for f, v in timings.items()}}
+
+
+def _model_alpha(sel: dict) -> tuple[str, float, int]:
+    model_type = sel.get("model_type") or "ridge"
+    hp = sel.get("hyperparameters_json") or {}
+    alpha = 0.0 if model_type == "ols" else sel.get("best_alpha")
+    if alpha is None:
+        alpha = hp.get("alpha", 1.0)
+    return model_type, float(alpha), int(sel.get("seed") or 0)
+
+
+def _own_grid(sel: dict) -> list[float]:
+    hp = sel.get("hyperparameters_json") or {}
+    if (sel.get("model_type") or "ridge") == "ols":
+        return [0.0]
+    return [float(a) for a in (hp.get("alpha_grid") or [hp.get("alpha", 1.0)])]
+
+
+def visible_reproduction(engine: Engine, idx, sel: dict, run_cv_folds: int, k: int, cv_seed: int) -> dict:
+    """The lab's own visible scores of the selected model, recomputed by the engine at its best alpha: the validation
+    perturbations always, the out-of-fold ones when the run used the same folds."""
+    model_type, alpha, _ = _model_alpha(sel)
+    if model_type not in ("ridge", "ols"):
+        return {"available": False, "reason": f"{model_type} is audited as ridge"}
+    stored = sel.get("val_metrics_json") or {}
+    mats = engine.matrices(idx, [alpha])
+    some = mats[engine.seeds[0]]
+    out = {"available": True, "alpha": alpha,
+           "validation": {"tool": float(some[0, engine.n_train:].mean()), "stored": stored.get("pearson_delta")},
+           "out_of_fold": None}
+    if run_cv_folds > 1 and run_cv_folds == k and cv_seed in mats:
+        out["out_of_fold"] = {"tool": float(mats[cv_seed][0, :engine.n_train].mean()),
+                              "stored": stored.get("pearson_delta_cv")}
+    diffs = []
+    for key in ("validation", "out_of_fold"):
+        part = out[key]
+        if part is not None:
+            part["diff"] = None if part["stored"] is None else float(part["tool"] - part["stored"])
+            if part["diff"] is not None:
+                diffs.append(abs(part["diff"]))
+    out["max_abs_diff"] = max(diffs) if diffs else None
+    out["flag"] = bool(diffs and max(diffs) > REPRO_FLAG)
+    return out
+
+
+# ------------------------------------------------------------------ sealed scoring (off by default)
+def score_sealed(data_dir: Path, selection: str, control_mean: np.ndarray, eval_perts: list[str],
+                 predictions: dict, label: str) -> dict:
+    """The tool's only read of the sealed perturbations, fixed before any result: one oracle instance of the tool's
+    own with a budget of exactly two queries, scoring the two pre-computed predictions ("selected" then "compact",
+    predicted deltas of every perturbation outside the training set) once each. Nothing returned here feeds back
+    into any choice."""
+    from genemila.benchmark.oracle import QueryOracle
+    oracle = QueryOracle(Path(data_dir), max_queries=2, used=None, selection=selection)
+    perts = oracle.perts
+    pos = {p: i for i, p in enumerate(eval_perts)}
+    missing = [p for p in perts if p not in pos]
+    if missing:
+        raise ValueError(f"sealed perturbations {missing[:3]} are not among the predicted ones")
+    rows = [pos[p] for p in perts]
+    out = {}
+    for key in ("selected", "compact"):
+        q = oracle.query(f"feature_audit:{label}:{key}", predictions[key][rows] + control_mean, perts, control_mean)
+        out[key] = float(q["metrics"]["pearson_delta"])
+    out["n_queries"] = len(oracle.queries)
+    return out
+
+
+def sealed_predictions(fits: dict, sel: dict, sel_idx, compact_idx, compact_alpha: float) -> dict:
+    """Predicted deltas of every perturbation outside the training set: (a) the selected model's feature set refitted
+    as the pipeline fits it (its model type, best alpha and seed, on the 50 training perturbations), (b) the compact
+    model by ridge at its visibly chosen alpha; both stored at single precision, as the lab stores predictions."""
+    model_type, alpha, seed = _model_alpha(sel)
+    n_ev, n_genes = len(fits["evals"]), fits["val_unit"].n_genes
+    model = make_model(model_type, alpha, seed)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        model.fit(fits["Xtr"][:, sel_idx], fits["y"])
+    pa = model.predict(fits["Xev"][:, sel_idx]).reshape(n_ev, n_genes)
+    vu = fits["val_unit"]
+    w = ridge_weights(vu.G, vu.b, compact_idx, compact_alpha)
+    pb = (fits["Xev"][:, compact_idx] @ w + vu.ybar).reshape(n_ev, n_genes)
+    return {"selected": pa.astype(np.float32).astype(np.float64), "compact": pb.astype(np.float32).astype(np.float64)}
+
+
+# ------------------------------------------------------------------ one run
+def arm_class(cfg: dict) -> str:
+    """'no_llm' for the scripted controls and no-LLM continuations (fixed template features), else 'agent'."""
+    return "no_llm" if (cfg.get("planner") or {}).get("provider") == "scripted" else "agent"
+
+
+def audit_run(run_dir: Path, fold_seeds: list[int] | None = None, resamples: int = 50, use_pool: bool = True,
+              sealed: bool = False, log=None) -> dict:
+    """The audit of one run. A run that cannot be audited is returned as skipped with its reason (and whatever was
+    known by then, such as its arm); an unexpected error is reported the same way, never raised."""
+    run_dir = Path(run_dir).resolve()
+    say = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+    out = {"run": run_dir.name, "path": str(run_dir), "status": "skipped", "reason": None}
+    try:
+        _audit_run(out, run_dir, fold_seeds, resamples, use_pool, sealed,
+                   lambda msg: say(f"[feature_audit] {run_dir.name}: {msg}"))
+    except Skip as exc:
+        out["status"], out["reason"] = "skipped", str(exc)
+    except Exception as exc:  # one broken run must not lose the others; the traceback goes to stderr
+        print(traceback.format_exc(), file=sys.stderr)
+        out["status"], out["reason"] = "skipped", f"unexpected error: {_err(exc)}"
+    return out
+
+
+def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: bool, sealed: bool, log) -> None:
+    t0 = time.perf_counter()
+    timings: dict[str, float] = {}
+
+    def lap(name, since):
+        timings[name] = round(time.perf_counter() - since, 3)
+        return time.perf_counter()
+    with tempfile.TemporaryDirectory(prefix="feature_audit_db_") as scratch:
+        meta = read_run(run_dir, Path(scratch))
+    cfg = meta["cfg"]
+    if (run_dir / "config.json").exists():
+        try:
+            cfg = json.loads((run_dir / "config.json").read_text())
+        except ValueError:
+            pass
+    summary = {}
+    if (run_dir / "summary.json").exists():
+        try:
+            summary = json.loads((run_dir / "summary.json").read_text())
+        except ValueError:
+            summary = {}
+    out.update(run_id=meta["run_id"], arm=run_arm(cfg, summary), arm_class=arm_class(cfg), dataset=meta["dataset"],
+               split_id=meta["split_id"],
+               selection_rule=str((cfg.get("experiment") or {}).get("selection") or "pearson_delta"))
+    data_dir = _resolve_data_dir((cfg.get("run") or {}).get("data_dir"))
+    out["data_dir"] = None if data_dir is None else str(data_dir)
+    sel = meta["selected"]
+    if data_dir is None or not data_dir.exists():
+        raise Skip(f"data dir {out['data_dir']} is missing")
+    if not (data_dir / "private" / "val1.npz").exists():
+        raise Skip(f"visible validation labels missing under {data_dir}")
+    manifest = json.loads((data_dir / "manifest.json").read_text()) if (data_dir / "manifest.json").exists() else {}
+    if meta["split_id"] and manifest.get("split_id") and manifest["split_id"] != meta["split_id"]:
+        raise Skip(f"data dir {data_dir} holds split {manifest['split_id']}, the run used {meta['split_id']}")
+    if not (run_dir / "public_data" / "public.npz").exists():
+        raise Skip("public_data/public.npz is missing")
+    if not (run_dir / "feature_store").is_dir():
+        raise Skip("feature_store (the run's plugins) is missing")
+    if sel is None:
+        raise Skip("no completed single experiment with a visible score")
+
+    model_type, best_alpha, model_seed = _model_alpha(sel)
+    hp = sel.get("hyperparameters_json") or {}
+    ecfg, rcfg = cfg.get("experiment") or {}, cfg.get("run") or {}
+    run_cv_folds = int(hp.get("cv_folds") or ecfg.get("cv_folds") or 0)
+    k = run_cv_folds if run_cv_folds > 1 else 5
+    cv_seed = int(hp.get("cv_seed", ecfg.get("cv_seed", rcfg.get("seed", 0))) or 0)
+    seeds = list(dict.fromkeys(int(s) for s in (fold_seeds or [cv_seed, cv_seed + 1])))
+    if len(seeds) < 2:
+        raise ValueError("--fold-seeds needs at least two distinct seeds")
+    alphas = sorted({a for a in _own_grid(sel) + list(FIXED_ALPHAS) if a >= 0})
+    sel_feats_all = list(sel["feature_set_json"])
+    sel_params = sel.get("feature_params_json") or {}
+    if use_pool:
+        pool, params, introduced = _pool(meta, sel_feats_all, sel_params)
+    else:
+        pool, params = list(sel_feats_all), {f: dict(sel_params.get(f, {})) for f in sel_feats_all}
+        introduced = {}
+        for g in meta["gains"]:
+            introduced.setdefault(g["new_feature"], g["experiment_id"])
+    out.update(selected={"experiment_id": sel["experiment_id"], "model_type": model_type,
+                         "audited_as": "ridge", "best_alpha": best_alpha, "seed": model_seed,
+                         "primary_score": sel.get("primary_score"), "features": sel_feats_all,
+                         "feature_params": sel_params},
+               folds=k, run_cv_folds=run_cv_folds, run_cv_seed=cv_seed, fold_seeds=seeds, alpha_grid=alphas,
+               pool_features=pool if use_pool else None, introduced_by=introduced,
+               feature_info={f: {"code_hash": (meta["features"].get(f) or {}).get("code_hash"),
+                                 "description": ((meta["features"].get(f) or {}).get("description") or "")[:200]}
+                             for f in pool})
+    log(f"auditing {sel['experiment_id']} ({len(sel_feats_all)} features"
+        + (f", pool of {len(pool)}" if use_pool else "") + f"), {k} folds, seeds {seeds}")
+    t = time.perf_counter()
+    store = run_dir / "feature_store"
+    with _no_bytecode():
+        np.random.seed(model_seed)  # as genemila.pipeline.run seeds before it loads the plugins
+        plugin_errors = load_run_plugins(store)
+        out["plugin_errors"] = plugin_errors
+        if plugin_errors:
+            log(f"{len(plugin_errors)} plugin file(s) failed to import: {', '.join(sorted(plugin_errors))}")
+        ctx = FeatureContext(run_dir / "public_data", None)  # no disk cache: nothing outlives this run's audit
+        val1 = LabelSet.load(data_dir / "private" / "val1.npz")
+        train_set = set(ctx.train_perts)
+        if any(p in train_set or p not in set(ctx.perts) for p in val1.perts) or val1.means.shape[1] != ctx.n_genes:
+            raise Skip("the visible validation labels do not match the run's public data")
+        pre_failed = missing_feature_errors(pool, store, plugin_errors)
+        fits = compute_fits(ctx, pool, params, seeds, k, val1.perts, val1.means - ctx.control_mean, pre_failed)
+    t = lap("features_and_fits", t)
+    log(f"features computed, {len(fits['label_dependent'])} label-dependent ones recomputed for {len(seeds)} x {k} "
+        f"folds, in {timings['features_and_fits']:.0f} s")
+    failed = fits["failed"]
+    out.update(n_train=len(ctx.train_perts), n_val=len(val1.perts), n_genes=ctx.n_genes,
+               unrecomputable=failed, label_dependent=fits["label_dependent"], feature_cpu_s=fits["feature_cpu_s"])
+    engine = Engine(fits["seed_units"], fits["val_unit"], len(ctx.train_perts), alphas, fits["columns_of"])
+    columns, feature_of = fits["columns"], fits["feature_of"]
+    sel_feats = [f for f in sel_feats_all if f in fits["columns_of"]]
+    sel_failed = {f: failed[f] for f in sel_feats_all if f in failed}
+    out["selected_missing"] = sorted(sel_failed)
+    if not sel_feats:
+        out["selected_analysis"] = {"verdicts": assign_verdicts([], [], {}, {}, {}, {}, {}, None, sel_failed)}
+        raise Skip("no feature of the selected model could be recomputed")
+    sel_idx = engine.columns(sel_feats)
+    R_all = corr_from_gram(fits["val_unit"].G, fits["constant"])
+    out["visible_reproduction"] = (visible_reproduction(engine, sel_idx, sel, run_cv_folds, k, cv_seed)
+                                   if not sel_failed else {"available": False, "flag": False,
+                                                           "reason": "a feature of the model is unrecomputable"})
+    # ---- the selected model: everything
+    red = redundancy(fits["Xtr"][:, sel_idx], [columns[i] for i in sel_idx], [feature_of[i] for i in sel_idx],
+                     fits["constant"][sel_idx])
+    t = lap("redundancy", t)
+    n_train, n_genes = len(ctx.train_perts), ctx.n_genes
+    groups = np.repeat(np.arange(n_train), n_genes)
+    cv_units = [u.subset(sel_idx) for u, _ in engine.seed_units[seeds[0]]]
+    lasso = lasso_stability(fits["Xtr"][:, sel_idx], fits["y"], groups, cv_units, resamples, seeds[0],
+                            [columns[i] for i in sel_idx], [feature_of[i] for i in sel_idx])
+    lasso["cv"] = f"the {k} folds of seed {seeds[0]}, every feature recomputed without the fold"
+    t = lap("lasso", t)
+    analysis = analyse_model(engine, sel_feats, R_all, columns, sel_failed, lasso["feature_frequency"], log,
+                             "selected")
+    t = lap("selected_paths", t)
+    analysis["redundancy"] = red
+    analysis["lasso"] = lasso
+    # merge test: clusters at |r| >= 0.9 spanning two or more of the model's features
+    full_vec = engine.score(sel_feats)["vector"]
+    merges, qualifying = [], []
+    for cl in red["clusters"]:
+        if len(cl["features"]) < 2:
+            continue
+        qualifying.append(cl["index"])
+        res = merged_engine(engine, sel_idx, [cl["index"]]).score_idx(range(len(sel_idx) - len(cl["index"]) + 1))
+        merges.append({"columns": cl["columns"], "features": cl["features"], "min_abs_r": cl["min_abs_r"],
+                       "n_columns": len(sel_idx) - len(cl["index"]) + 1, "mean": res["mean"], "se": res["se"],
+                       "alphas": [c["alpha"] for c in res["chosen"]], "vs_full": paired(res["vector"], full_vec)})
+    if len(qualifying) > 1:
+        n_new = len(sel_idx) - sum(len(c) for c in qualifying) + len(qualifying)
+        res = merged_engine(engine, sel_idx, qualifying).score_idx(range(n_new))
+        merges.append({"columns": "all clusters above", "features": sorted({f for m in merges for f in m["features"]}),
+                       "min_abs_r": min(m["min_abs_r"] for m in merges), "n_columns": n_new, "mean": res["mean"],
+                       "se": res["se"], "alphas": [c["alpha"] for c in res["chosen"]],
+                       "vs_full": paired(res["vector"], full_vec)})
+    analysis["merge"] = merges
+    t = lap("merge", t)
+    out["selected_analysis"] = analysis
+    # ---- the pool: census, single and drop-one, paths, compact choice and verdicts
+    if use_pool:
+        pool_ok = [f for f in pool if f in fits["columns_of"]]
+        pool_failed = {f: failed[f] for f in pool if f in failed}
+        out["pool"] = analyse_model(engine, pool_ok, R_all, columns, pool_failed, None, log, "pool")
+        t = lap("pool_paths", t)
+    else:
+        out["pool"] = None
+    marks = []
+    if sel_failed:
+        marks.append(f"{len(sel_failed)} selected feature(s) unrecomputable")
+    if out["visible_reproduction"].get("flag"):
+        marks.append(f"visible reproduction off by {out['visible_reproduction']['max_abs_diff']:.4f}")
+    out["marks"] = marks
+    out["status"] = "audited"
+    out["sealed"] = None
+    if sealed:  # pre-specified: the two models are fixed by now, and nothing below changes any of the above
+        comp = analysis["compact"]
+        comp_alpha = grid_alpha(comp["alphas"], alphas)
+        preds = sealed_predictions(fits, sel, sel_idx, engine.columns(comp["features"]), comp_alpha)
+        res = score_sealed(data_dir, out["selection_rule"], ctx.control_mean, fits["evals"], preds,
+                           f"{run_dir.name}:{sel['experiment_id']}")
+        stored = (sel.get("query_metrics_json") or {}).get("pearson_delta")
+        diff = None if stored is None else float(res["selected"] - stored)
+        out["sealed"] = {"selected": res["selected"], "compact": res["compact"],
+                         "difference": float(res["compact"] - res["selected"]), "n_queries": res["n_queries"],
+                         "selected_model": model_type, "selected_alpha": best_alpha, "compact_alpha": comp_alpha,
+                         "compact_features": comp["features"], "stored_selected": stored, "reproduction_diff": diff,
+                         "reproduction_flag": bool(diff is not None and abs(diff) > SEALED_FLAG),
+                         "selected_features_missing": sorted(sel_failed)}
+        t = lap("sealed", t)
+    timings["total"] = round(time.perf_counter() - t0, 3)
+    out["timings"] = timings
+    log(f"done in {timings['total']:.1f} s")
+
+
+# ================================================================== across runs
+def _family(name: str) -> str:
+    return re.sub(r"_e\d+$", "", str(name))
+
+
+def combined_verdicts(r: dict) -> list[dict]:
+    """One verdict per (run, feature) over both scopes: kept when the feature is kept in the selected model's or the
+    pool's compact set; otherwise the selected model's verdict when the feature is in it, else the pool's. Each
+    entry carries both scopes' verdicts."""
+    scopes = {s: {v["feature"]: v for v in ((r.get(key) or {}).get("verdicts") or [])}
+              for s, key in (("selected", "selected_analysis"), ("pool", "pool"))}
+    out = []
+    for f in dict.fromkeys(list(scopes["selected"]) + list(scopes["pool"])):
+        here = {s: d[f] for s, d in scopes.items() if f in d}
+        kept_in = [s for s, v in here.items() if v["verdict"] == "kept"]
+        scope = kept_in[0] if kept_in else ("selected" if "selected" in here else "pool")
+        v = here[scope]
+        out.append({"feature": f, "verdict": v["verdict"], "reason": v["reason"], "scope": scope, "kept_in": kept_in,
+                    "evidence": v["evidence"], "builtin": f in BUILTIN_FEATURES,
+                    "scopes": {s: {"verdict": x["verdict"], "reason": x["reason"]} for s, x in here.items()}})
+    return out
+
+
+def _median(xs):
+    return float(np.median(xs)) if len(xs) else None
+
+
+def _aggregate_class(runs: list[dict]) -> dict:
+    audited = [r for r in runs if r["status"] == "audited"]
+    counts = {scope: {v: 0 for v in VERDICTS} for scope in ("selected", "pool")}
+    for r in runs:
+        for scope, key in (("selected", "selected_analysis"), ("pool", "pool")):
+            for v in ((r.get(key) or {}).get("verdicts") or []):
+                counts[scope][v["verdict"]] += 1
+    families: dict[str, dict] = {}
+    for r in audited:
+        for v in combined_verdicts(r):
+            if v["builtin"]:
+                continue
+            fam = families.setdefault(_family(v["feature"]), {"n": 0, "kept": 0, "boxed": 0,
+                                                              **{x: 0 for x in VERDICTS if x != "kept"}})
+            fam["n"] += 1
+            if v["verdict"] == "kept":
+                fam["kept"] += 1
+            else:
+                fam["boxed"] += 1
+                fam[v["verdict"]] += 1
+    rows = []
+    for r in audited:
+        a = r["selected_analysis"]
+        c = a["compact"]
+        rows.append({"run": r["run"], "n_features": a["census"]["n_features"], "n_columns": a["census"]["n_columns"],
+                     "compact_features": c["n_features"], "compact_columns": c["n_columns"],
+                     "diff": c["vs_full"]["diff"], "se": c["vs_full"]["se"], "n_val": c["vs_full"]["n"],
+                     "class": classify(c["vs_full"]["diff"], c["vs_full"]["se"]),
+                     "train_diff": c["vs_full_train"]["diff"]})
+    smaller = [x for x in rows if x["compact_features"] < x["n_features"]]
+    cls = {k: sum(1 for x in smaller if x["class"] == k) for k in ("not_established", "below_margin", "higher",
+                                                                    "lower")}
+    kept_fams = sorted((kv for kv in families.items() if kv[1]["kept"]),
+                       key=lambda kv: (-kv[1]["kept"], kv[1]["boxed"], kv[0]))
+    boxed_fams = sorted((kv for kv in families.items() if kv[1]["boxed"]),
+                        key=lambda kv: (-kv[1]["boxed"], kv[1]["kept"], kv[0]))
+    sealed = [r["sealed"] for r in audited if r.get("sealed")]
+    return {
+        "n_runs": len(runs), "n_audited": len(audited), "n_skipped": len(runs) - len(audited),
+        "verdict_counts": counts,
+        "families_kept": [{"family": k, **v} for k, v in kept_fams],
+        "families_boxed": [{"family": k, **v} for k, v in boxed_fams],
+        "compact_vs_full": {"n": len(rows), "n_smaller": len(smaller), **cls,
+                            "below_margin_lower": sum(1 for x in smaller
+                                                      if x["class"] == "below_margin" and x["diff"] < 0),
+                            "mean_diff": float(np.mean([x["diff"] for x in smaller])) if smaller else None,
+                            "median_se": _median([x["se"] for x in smaller]),
+                            "mean_train_diff": float(np.mean([x["train_diff"] for x in smaller])) if smaller else None,
+                            "n_val": _median([x["n_val"] for x in rows]),
+                            "median_features": _median([x["compact_features"] for x in rows]),
+                            "median_full_features": _median([x["n_features"] for x in rows]),
+                            "median_columns": _median([x["compact_columns"] for x in rows]),
+                            "median_full_columns": _median([x["n_columns"] for x in rows])},
+        "sealed": {"n": len(sealed),
+                   "mean_difference": float(np.mean([s["difference"] for s in sealed])) if sealed else None,
+                   "compact_higher": sum(1 for s in sealed if s["difference"] > 0),
+                   "flagged": sum(1 for s in sealed if s["reproduction_flag"])},
+    }
+
+
+def aggregate(runs: list[dict]) -> dict:
+    """Across runs, split by arm class: the agent runs are what the audit is about; the scripted controls and other
+    no-LLM runs repeat the same template features in every run and are kept apart as a reference."""
+    audited = [r for r in runs if r["status"] == "audited"]
+    classes = {c: _aggregate_class([r for r in runs if r.get("arm_class") == c]) for c in ("agent", "no_llm")}
+    primary = "agent" if classes["agent"]["n_audited"] or not classes["no_llm"]["n_audited"] else "no_llm"
+    checked = [r for r in audited if (r.get("visible_reproduction") or {}).get("max_abs_diff") is not None]
+    repro = [r["visible_reproduction"]["max_abs_diff"] for r in checked]
+    best = max(audited, key=lambda r: (r["selected_analysis"]["full"]["mean"], r["run"]))["run"] if audited else None
+    return {
+        "n_runs": len(runs), "n_audited": len(audited), "n_skipped": len(runs) - len(audited),
+        "primary": primary, "classes": classes,
+        "visible_reproduction": {"n_checked": len(checked), "n_within": sum(1 for x in repro if x <= REPRO_FLAG),
+                                 "n_beyond": sum(1 for x in repro if x > REPRO_FLAG),
+                                 "max_abs_diff": max(repro) if repro else None, "threshold": REPRO_FLAG},
+        "n_selected_missing": sum(1 for r in audited if r.get("selected_missing")),
+        "n_marked": sum(1 for r in audited if r.get("marks")),
+        "detail_run": best,
+    }
+
+
+def _checkpoint_key(run_dir: Path, proto: dict) -> str:
+    """Identifies an audit by everything it depends on: this tool's code, the protocol, the run's path, database,
+    configuration and plugins. A run that changed, or a changed tool, is audited afresh."""
+    h = hashlib.sha256()
+    h.update(Path(__file__).read_bytes())
+    h.update(json.dumps(proto, sort_keys=True, default=str).encode())
+    h.update(str(Path(run_dir).resolve()).encode())
+    files = [run_dir / n for n in ("lab.db", "lab.db-wal", "config.json", "summary.json")]
+    files += sorted((run_dir / "feature_store").glob("*.py")) if (run_dir / "feature_store").is_dir() else []
+    for p in files:
+        if p.is_file():
+            h.update(p.name.encode())
+            with open(p, "rb") as fh:
+                for chunk in iter(lambda: fh.read(1 << 20), b""):
+                    h.update(chunk)
+    return h.hexdigest()[:24]
+
+
+def _write_atomic(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
+    with os.fdopen(fd, "w") as fh:
+        fh.write(text)
+    os.replace(tmp, path)
+
+
+def analyse(run_dirs: list[Path], cache_dir: Path, fold_seeds=None, resamples: int = 50, use_pool: bool = True,
+            sealed: bool = False, log=None) -> dict:
+    """Every run, one after the other. Each audited run is written to a checkpoint in cache_dir/audits as soon as it
+    is done, and a run whose checkpoint matches (same tool, protocol and run contents) is taken from it, so an
+    interrupted job resumes where it stopped and never scores a run's sealed models twice."""
+    say = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+    proto_key = {"fold_seeds": list(fold_seeds) if fold_seeds else None, "resamples": int(resamples),
+                 "pool": bool(use_pool), "sealed": bool(sealed)}
+    runs = []
+    for i, d in enumerate(run_dirs):
+        d = Path(d).resolve()
+        ck = None
+        try:
+            if (d / "lab.db").exists():
+                ck = Path(cache_dir) / "audits" / f"{d.name}__{_checkpoint_key(d, proto_key)}.json"
+        except OSError:
+            ck = None
+        if ck is not None and ck.exists():
+            try:
+                runs.append(json.loads(ck.read_text()))
+                say(f"[feature_audit] {d.name}: taken from the checkpoint {ck.name} ({i + 1}/{len(run_dirs)})")
+                continue
+            except ValueError:
+                pass
+        say(f"[feature_audit] run {i + 1}/{len(run_dirs)}: {d}")
+        try:
+            r = _plain(audit_run(d, fold_seeds, resamples, use_pool, sealed, say))
+        except Exception as exc:  # audit_run reports its own errors; this guards the guard
+            print(traceback.format_exc(), file=sys.stderr)
+            r = {"run": d.name, "path": str(d), "status": "skipped", "reason": f"unexpected error: {_err(exc)}"}
+        if ck is not None and r["status"] == "audited":
+            _write_atomic(ck, json.dumps(r, indent=1))
+        runs.append(r)
+    return {"generated_by": "tools/feature_audit.py",
+            "protocol": {"fold_seeds": list(fold_seeds) if fold_seeds else "run cv_seed and cv_seed + 1",
+                         "resamples": int(resamples), "pool": bool(use_pool), "score_sealed": bool(sealed),
+                         "fixed_alphas": list(FIXED_ALPHAS), "pool_min_gain": POOL_MIN_GAIN,
+                         "corr_high": CORR_HIGH, "duplicate_r": DUPLICATE_R, "stable_frequency": STABLE_FREQ,
+                         "sealed_flag": SEALED_FLAG, "reproduction_flag": REPRO_FLAG, "noise_floor": NOISE_FLOOR,
+                         "rule": RULE},
+            "runs": runs, "aggregate": aggregate(runs)}
+
+
+def build_box(rep: dict) -> dict:
+    """Every feature an agent might propose again that the audit did not keep: one entry per (run, feature), with
+    the combined verdict over the selected model's and the pool's analyses (a feature kept in either is not boxed),
+    its reason and evidence (both scopes' verdicts inside). Built-in features are never boxed."""
+    entries = []
+    for r in rep["runs"]:
+        sel = r.get("selected") or {}
+        intro = r.get("introduced_by") or {}
+        info = r.get("feature_info") or {}
+        for v in combined_verdicts(r):
+            if v["verdict"] == "kept" or v["builtin"]:
+                continue
+            f = v["feature"]
+            entries.append({"run": r["run"], "run_id": r.get("run_id"), "arm": r.get("arm"),
+                            "arm_class": r.get("arm_class"), "dataset": r.get("dataset"),
+                            "split_id": r.get("split_id"),
+                            "experiment": (sel.get("experiment_id") if v["scope"] == "selected"
+                                           else intro.get(f) or sel.get("experiment_id")),
+                            "introduced_by": intro.get(f), "scope": v["scope"], "feature": f, "family": _family(f),
+                            "code_hash": (info.get(f) or {}).get("code_hash"),
+                            "description": (info.get(f) or {}).get("description"),
+                            "verdict": v["verdict"], "reason": v["reason"],
+                            "evidence": {**(v["evidence"] or {}), "scopes": v["scopes"]}})
+    return {"generated_by": "tools/feature_audit.py", "rule": RULE, "entries": entries}
+
+
+# ================================================================== rendering
+CLASS_LABEL = {"agent": "agent", "no_llm": "no-LLM"}
+
+
+def _f(x, nd=4):
+    return "n/a" if x is None else f"{x:.{nd}f}"
+
+
+def _d(x, nd=4):
+    return "n/a" if x is None else f"{x:+.{nd}f}"
+
+
+def _a(x):
+    return "n/a" if x is None else f"{x:g}"
+
+
+def _alphas(xs):
+    return "/".join(_a(x) for x in xs) if xs else "n/a"
+
+
+def _pd(p, nd=4):
+    return "n/a" if p is None else f"{p['diff']:+.{nd}f} ({p['se']:.{nd}f})"
+
+
+def _arms(runs: list[dict]) -> dict[str, str]:
+    arms = []
+    for r in runs:
+        if r.get("arm") and r["arm"] not in arms:
+            arms.append(r["arm"])
+    return {a: f"A{i + 1}" for i, a in enumerate(arms)}
+
+
+def _head_tail(n: int, head: int, tail: int) -> list:
+    """Row indices shown of n rows: all when few, else the first `head`, a gap (None) and the last `tail`."""
+    if n <= head + tail + 1:
+        return list(range(n))
+    return list(range(head)) + [None] + list(range(n - tail, n))
+
+
+def _with_gaps(indices: list[int]) -> list:
+    """Sorted row indices with None wherever rows were skipped."""
+    out = []
+    for i in indices:
+        if out and i > out[-1] + 1:
+            out.append(None)
+        out.append(i)
+    return out
+
+
+def _short(x, n: int) -> str:
+    s = str(x)
+    return s if len(s) <= n else s[:n - 1] + "…"
+
+
+def _cell(x) -> str:
+    """Free text in a table cell: a pipe would split the cell."""
+    return str(x).replace("|", "\\|").replace("\n", " ")
+
+
+def _names(xs, k: int = 2) -> str:
+    xs = list(xs)
+    return ", ".join(xs[:k]) + (f" +{len(xs) - k}" if len(xs) > k else "")
+
+
+def _names_within(xs, width: int) -> str:
+    """As many names as fit in about `width` characters (at least one), then how many more."""
+    xs = list(xs)
+    k = 1
+    while k < len(xs) and len(", ".join(xs[:k + 1])) <= width:
+        k += 1
+    return _names(xs, k)
+
+
+def render(rep: dict) -> str:
+    runs, agg, proto = rep["runs"], rep["aggregate"], rep["protocol"]
+    audited = [r for r in runs if r["status"] == "audited"]
+    arms = _arms(runs)
+    n_tr = "/".join(str(x) for x in sorted({r["n_train"] for r in audited})) or "n/a"
+    n_v = "/".join(str(x) for x in sorted({r["n_val"] for r in audited})) or "n/a"
+    ks = "/".join(str(x) for x in sorted({r["folds"] for r in audited})) or "n/a"
+    any_sealed = any(r.get("sealed") for r in audited)
+    nonridge = any(r["selected"]["model_type"] != "ridge" for r in audited)
+    any_marked = any(r.get("marks") for r in audited)
+    floor = proto.get("noise_floor", NOISE_FLOOR)
+    fs = proto.get("fold_seeds")
+    seeds_txt = (f"fold seeds {', '.join(map(str, fs))}" if isinstance(fs, list)
+                 else "two fold seeds (the run's own and the next)")
+    L = ["# Feature audit: redundancy, compact model and the failed-feature box", "",
+         "Protocol, fixed before any result under it was read. Per run: the selected single model (highest visible "
+         "score among completed non-ensemble, non-baseline experiments)"
+         + ("; a pool adds the features that raised their parent's score by more than 0.0005, and the built-ins"
+            if proto.get("pool") else "")
+         + f". Scores are pearson_delta per visible perturbation: out of fold for the {n_tr} training perturbations "
+         f"({ks} folds; features that read training labels, detected per feature on a fresh view, recomputed without "
+         f"each fold) and, from a fit on all of them, for the {n_v} visible validation perturbations; every fit is "
+         "ridge on columns standardised by its training rows"
+         + (" (other model types audited as ridge, marked *)" if nonridge else "")
+         + f". With {seeds_txt}, each subset's penalty is chosen on the training perturbations' out-of-fold scores "
+         "under one fold partition and reported under the other (both ways averaged), so only the validation "
+         "perturbations are independent of it. The greedy paths and the compact model (smallest set on the backward "
+         f"path within max(paired SE, {floor:g}) of its best) are chosen on the training perturbations alone; compact "
+         "and full are compared, paired, on the validation perturbations, untouched by any choice of this tool (the "
+         f"lab chose the selected model partly on them). A difference within max(SE, {floor:g}) is either not "
+         f"established or below {floor:g}, a margin of practical equivalence. Lasso: "
+         f"penalty by cross-validation over the fold-recomputed designs, then {proto.get('resamples')} half-samples; "
+         f"stable = selected in at least {proto.get('stable_frequency', STABLE_FREQ):.0%}. Verdicts, in order: kept, "
+         "harmful, redundant (|r| ≥ 0.9 with a kept feature), substitutable (established drop-one gain the compact "
+         "set does without), no_gain, unrecomputable.", ""]
+    if any_sealed:
+        L += ["Sealed scores, read before the numbers: the sealed perturbations have already been read for dozens of "
+              "finalists across about thirty runs, so these are one more look at a used set, not a clean test; the "
+              "Norman bundle (or a new split) is the clean test. Per run exactly two models, fixed before any sealed "
+              "score was read, are scored once each through the tool's own oracle: the selected model as reproduced "
+              "here and the compact model (ridge at its visibly chosen alpha). Nothing about them feeds back into any "
+              f"choice. !: reproduction off the run's own sealed score by more than "
+              f"{proto.get('sealed_flag', SEALED_FLAG):g}.", ""]
+    head = "| run | arm | feat. | cols | rank | dup. | r≥0.9 | compact f/c | full | compact | Δ val (SE) | Lasso |"
+    sep = "|---|---|---|---|---|---|---|---|---|---|---|---|"
+    if any_sealed:
+        head += " sealed full | sealed compact |"
+        sep += "---|---|"
+    L += ["## Runs", "", head, sep]
+    for r in runs:
+        if r["status"] != "audited":
+            why = _cell(_short(r.get("reason"), 60))
+            L.append(f"| {r['run']} | {arms.get(r.get('arm'), 'n/a')} | skipped: {why} |")
+            continue
+        a, s = r["selected_analysis"], r["selected"]
+        c, red, n_f = a["compact"], a["redundancy"], a["census"]["n_features"]
+        row = (f"| {r['run']}{'*' if s['model_type'] != 'ridge' else ''}{' †' if r.get('marks') else ''} | "
+               f"{arms.get(r['arm'])} | {n_f} | {a['census']['n_columns']} | {red['rank']} | "
+               f"{red['n_duplicate_columns']} | "
+               f"{red['n_pairs_above_0.9']} | {c['n_features']}/{c['n_columns']} | {_f(a['full']['mean'])} | "
+               f"{_f(c['mean'])} | {_pd(c['vs_full'])} | {len(a['lasso']['stable_features'])}/{n_f} |")
+        if any_sealed:
+            sd = r.get("sealed")
+            row += (" n/a | n/a |" if not sd else
+                    f" {_f(sd['selected'])}{' !' if sd['reproduction_flag'] else ''} | {_f(sd['compact'])} |")
+        L.append(row)
+    L += ["", ("Arms: " + "; ".join(f"{code} = {arm}" for arm, code in arms.items()) + ".") if arms else "Arms: none.",
+          "feat./cols: the selected model; dup.: exact duplicate columns; r≥0.9: column pairs with |r| ≥ 0.9; "
+          "compact f/c: the compact set; full, compact: visible scores (the compact set was chosen on the training "
+          "perturbations, which flatter it); Δ val: compact − full on the validation perturbations, paired; Lasso: "
+          "Lasso-stable features."
+          + (" *: the selected model is not ridge (its type is in the JSON) and is audited as ridge on the same "
+             "columns (ols: alpha 0 by least squares)." if nonridge else "")
+          + (f" †: the audited model is not exactly the run's (selected features unrecomputable, or the lab's "
+             f"visible score not reproduced within {proto.get('reproduction_flag', REPRO_FLAG):g})."
+             if any_marked else "")]
+    prim = agg["primary"]
+    shown = [r for r in audited if r.get("arm_class") == prim]
+    if shown:
+        L += ["", f"Compact sets ({CLASS_LABEL[prim]} runs):", ""]
+        for r in shown[:SHOW_COMPACT_RUNS]:
+            L.append(f"- {r['run']}: {_names_within(r['selected_analysis']['compact']['features'], 90)}")
+        if len(shown) > SHOW_COMPACT_RUNS:
+            L.append(f"- … {len(shown) - SHOW_COMPACT_RUNS} more runs")
+    present = [c for c in ("agent", "no_llm") if agg["classes"][c]["n_runs"]] or [agg["primary"]]
+    L += ["", "## Verdicts", "",
+          "| verdict | " + " | ".join(f"{CLASS_LABEL[c]}: selected | {CLASS_LABEL[c]}: pools" for c in present) + " |",
+          "|---|" + "---|---|" * len(present)]
+    for v in VERDICTS:
+        L.append(f"| {v} | " + " | ".join(f"{agg['classes'][c]['verdict_counts']['selected'][v]} | "
+                                         f"{agg['classes'][c]['verdict_counts']['pool'][v]}" for c in present) + " |")
+    pa = agg["classes"][prim]
+    if pa["families_kept"] or pa["families_boxed"]:
+        kept = ", ".join(f"{x['family']} {x['kept']}/{x['n']}" for x in pa["families_kept"][:4]) or "none"
+        boxed = ", ".join(f"{x['family']} {x['boxed']}/{x['n']} ("
+                          + ", ".join(f"{x[v]} {v}" for v in VERDICTS[1:] if x.get(v)) + ")"
+                          for x in pa["families_boxed"][:4]) or "none"
+        L += ["", f"Feature families of the {CLASS_LABEL[prim]} runs (name without its _e<experiment> suffix, "
+              "built-ins left out; one verdict per run and feature, kept in either scope counts as kept), most often "
+              f"kept: {kept}. Most often boxed: {boxed}."]
+    det = next((r for r in audited if r["run"] == agg.get("detail_run")), None)
+    if det is not None:
+        L += _render_detail(det)
+    L += ["", "## Reading", "", _reading(rep)]
+    return "\n".join(L) + "\n"
+
+
+def _render_detail(r: dict) -> list[str]:
+    a, s = r["selected_analysis"], r["selected"]
+    red, comp = a["redundancy"], a["compact"]
+    vr = r.get("visible_reproduction") or {}
+    para = (f"Selected model {s['experiment_id']}: {s['model_type']}"
+            + (" (audited as ridge)" if s["model_type"] != "ridge" else "")
+            + f", best alpha {_a(s['best_alpha'])}, {a['census']['n_features']} features, {a['census']['n_columns']} "
+            f"columns; {r['folds']} folds, seeds {', '.join(map(str, r['fold_seeds']))}; alpha grid "
+            f"{', '.join(_a(x) for x in r['alpha_grid'])}. Full model {_f(a['full']['mean'])} (alphas "
+            f"{_alphas(a['full']['alphas'])}), compact {_f(comp['mean'])} (alphas {_alphas(comp['alphas'])}). "
+            f"Compact − full on the {comp['vs_full']['n']} validation perturbations {_pd(comp['vs_full'])}, "
+            f"{comp['vs_full']['wins']} wins; on the {comp['vs_full_train']['n']} training perturbations that chose it "
+            f"{_pd(comp['vs_full_train'])}.")
+    if vr.get("available"):
+        parts = [f"{k.replace('_', '-')} {_f(vr[k]['tool'])} vs stored {_f(vr[k]['stored'])}"
+                 for k in ("validation", "out_of_fold") if vr.get(k)]
+        para += f" Lab's visible scores recomputed at alpha {_a(vr['alpha'])}: " + "; ".join(parts) + "."
+    if r.get("unrecomputable"):
+        items = list(r["unrecomputable"].items())
+        para += (f" Unrecomputable: {items[0][0]} ({items[0][1][:60]})" + "".join(f"; {f}" for f, _ in items[1:3])
+                 + (f"; +{len(items) - 3} more in the JSON" if len(items) > 3 else "") + ".")
+    L = ["", f"## Detail: {r['run']} (highest visible full score)", "", para]
+    bwd = a["backward"]
+    L += ["", "Backward path (each step drops the feature whose removal leaves the highest training score; ← compact "
+          "set, * best; train: out-of-fold training score, val: validation score):", "",
+          "| feat. | cols | removed | train | best − this (SE) | val | alpha |", "|---|---|---|---|---|---|---|"]
+    keep = set(range(len(bwd))) if len(bwd) <= 8 else {0, comp["backward_step"], comp["best_step"],
+                                                          *range(len(bwd) - 4, len(bwd))}
+    for i in _with_gaps(sorted(keep)):
+        if i is None:
+            L.append("| … | | (steps omitted, in the JSON) | | | | |")
+            continue
+        st = bwd[i]
+        mark = (" ←" if i == comp["backward_step"] else "") + (" *" if i == comp["best_step"] else "")
+        L.append(f"| {st['n_features']}{mark} | {st['n_columns']} | {st['removed'] or '(full model)'} | "
+                 f"{_f(st['train_mean'])} | {_pd(st['vs_best'])} | {_f(st['val_mean'])} | {_alphas(st['alphas'])} |")
+    fwd = a["forward"]
+    L += ["", "Forward path (add the feature that raises the training score most):", "",
+          "| feat. | cols | added | train | val | alpha |", "|---|---|---|---|---|---|"]
+    for i in _head_tail(len(fwd), 3, 1):
+        if i is None:
+            L.append(f"| … | | {len(fwd) - 4} steps in the JSON | | | |")
+            continue
+        st = fwd[i]
+        L.append(f"| {st['n_features']} | {st['n_columns']} | {st['added']} | {_f(st['train_mean'])} | "
+                 f"{_f(st['val_mean'])} | {_alphas(st['alphas'])} |")
+    verdict = {v["feature"]: v["verdict"] for v in a["verdicts"]}
+    order = sorted(a["drop_one"], key=lambda f: (-a["drop_one"][f]["diff"], f))
+    L += ["", "Drop-one (full − without, paired over all visible perturbations; wins = perturbations where the full "
+          "model is higher) and single-feature scores:", "",
+          "| feature | cols | single | full − without (SE) | wins | Lasso | verdict |",
+          "|---|---|---|---|---|---|---|"]
+    for i in _head_tail(len(order), 3, 3):
+        if i is None:
+            L.append(f"| … {len(order) - 6} features in the JSON | | | | | | |")
+            continue
+        f = order[i]
+        d = a["drop_one"][f]
+        L.append(f"| {f} | {a['census']['columns_per_feature'][f]} | {_f(a['single'][f]['mean'])} | {_pd(d)} | "
+                 f"{d['wins']}/{d['n']} | {_f(a['lasso']['feature_frequency'].get(f), 2)} | {verdict.get(f)} |")
+    cond = "singular" if red["condition_number"] is None else f"{red['condition_number']:.3g}"
+    top = "; ".join(f"{p['a']} ~ {p['b']} {p['r']:+.3f}" for p in red["top_pairs"][:1])
+    L += ["", f"Redundancy of the {red['n_columns']} columns: rank {red['rank']}, effective rank "
+          f"{red['effective_rank']:.1f}, condition number {cond}; {len(red['constant_columns'])} constant, "
+          f"{red['n_duplicate_columns']} exact duplicates, {red['n_pairs_above_0.9']} pairs with |r| ≥ 0.9, "
+          f"{red['n_pairs_above_0.7']} with |r| ≥ 0.7" + (f"; most correlated: {top}" if top else "")
+          + f". Lasso penalty {a['lasso']['lambda']:.3g}; {len(a['lasso']['stable_features'])} stable features"
+          + (f": {_names(a['lasso']['stable_features'], 2)}." if a["lasso"]["stable_features"] else ".")]
+    merges = a.get("merge") or []
+    L += ["", "Merge test (a cluster at |r| ≥ 0.9 spanning two or more features replaced by its first principal "
+          "component, fitted on each fit's training rows only):", ""]
+    if merges:
+        L += ["| cluster features | min abs r | cols | merged score | merged − full (SE) |", "|---|---|---|---|---|"]
+        for m in merges[:2]:
+            name = "all clusters" if isinstance(m["columns"], str) else _names_within(m["features"], 60)
+            L.append(f"| {name} | {m['min_abs_r']:.3f} | {m['n_columns']} | {_f(m['mean'])} | {_pd(m['vs_full'])} |")
+        if len(merges) > 2:
+            L.append(f"| … {len(merges) - 2} more in the JSON | | | | |")
+    else:
+        L.append("No cluster at |r| ≥ 0.9 spans two or more features of this model.")
+    return L
+
+
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}{'' if n == 1 else 's'}"
+
+
+def _reading(rep: dict) -> str:
+    agg = rep["aggregate"]
+    if not agg["n_audited"]:
+        return f"No run could be audited ({agg['n_skipped']} skipped); there is nothing to read."
+    band = rep["protocol"].get("noise_floor", NOISE_FLOOR)
+    prim = agg["primary"]
+    other = "no_llm" if prim == "agent" else "agent"
+    A, B = agg["classes"][prim], agg["classes"][other]
+    lab = CLASS_LABEL[prim]
+    parts = [f"{_plural(A['n_audited'], lab + ' run')} audited"
+             + (f", {_plural(B['n_audited'], CLASS_LABEL[other] + ' run')} as a reference" if B["n_audited"] else "")
+             + (f", {agg['n_skipped']} skipped" if agg["n_skipped"] else "") + "."]
+    if prim == "no_llm":
+        parts.append(" No agent run was audited, so what follows describes the scripted, no-LLM runs.")
+    cf = A["compact_vs_full"]
+    if cf["n"]:
+        parts.append(f" The compact model keeps a median of {cf['median_features']:g} of "
+                     f"{cf['median_full_features']:g} features ({cf['median_columns']:g} of "
+                     f"{cf['median_full_columns']:g} columns) and is smaller than the full model in {cf['n_smaller']} "
+                     f"of {cf['n']} runs.")
+    if cf["n_smaller"]:
+        cats = [f"within one paired SE in {cf['not_established']} of {cf['n_smaller']} runs"]
+        if cf["below_margin"]:
+            cats.append(f"beyond one SE but within {band:g} in {cf['below_margin']} "
+                        f"({cf['below_margin_lower']} of them lower)")
+        if cf["higher"]:
+            cats.append(f"higher by more than max(SE, {band:g}) in {cf['higher']}")
+        if cf["lower"]:
+            cats.append(f"lower by more than max(SE, {band:g}) in {cf['lower']}")
+        parts.append(
+            " It was chosen on the training perturbations' out-of-fold scores, which flatter it (mean compact − "
+            f"full there {cf['mean_train_diff']:+.4f}). On the {cf['n_val']:g} validation perturbations of each run, "
+            "which no choice of this tool touched, compact − full is " + ", ".join(cats)
+            + f" (mean {cf['mean_diff']:+.4f}, median paired SE {cf['median_se']:.4f}); the lab chose each selected "
+            "model partly on them, which if anything favours the full model.")
+        if cf["lower"]:
+            parts.append(f" In {_plural(cf['lower'], 'run')} the dropped features carry signal on perturbations "
+                         "outside the choice that the compact set does not.")
+        else:
+            parts.append(f" No run shows a loss beyond max(SE, {band:g}) there"
+                         + (f" ({cf['below_margin_lower']} established but smaller than {band:g})"
+                            if cf["below_margin_lower"] else "")
+                         + "; with so few perturbations per run that band is wide, so this bounds the loss rather "
+                         "than showing it is zero.")
+    elif cf["n"]:
+        parts.append(" No model can be made smaller within that band on the training perturbations.")
+    vc = A["verdict_counts"]["selected"]
+    dropped = vc["redundant"] + vc["substitutable"] + vc["harmful"] + vc["no_gain"]
+    if dropped:
+        share = vc["redundant"] / dropped
+        parts.append(f" Of the {dropped} features of the selected models outside their compact sets, "
+                     f"{vc['redundant']} are redundant (|r| ≥ 0.9 with a kept feature), {vc['substitutable']} "
+                     f"substitutable (an established drop-one gain that kept features take over), {vc['no_gain']} "
+                     f"no_gain and {vc['harmful']} harmful; "
+                     + ("near-duplication explains most of the feature count" if share >= 0.5 else
+                        "near-duplication explains a minority of the count: most dropped features are not copies "
+                        "of kept ones" if share > 0 else
+                        "near-duplication explains none of the count: no dropped feature is a copy of a kept one")
+                     + (f"; a no_gain feature's drop-one effect is within max(paired SE, {band:g}), which is not "
+                        "proof of zero effect." if vc["no_gain"] else "."))
+    if vc["unrecomputable"]:
+        parts.append(f" {vc['unrecomputable']} feature(s) of the selected models could not be recomputed and are "
+                     "boxed as such.")
+    vr = agg["visible_reproduction"]
+    if vr["n_checked"]:
+        parts.append(f" The engine reproduces the lab's stored visible scores within {vr['threshold']:g} for "
+                     f"{vr['n_within']} of {vr['n_checked']} selected models"
+                     + (f"; {vr['n_beyond']} beyond (marked †)" if vr["n_beyond"] else "") + ".")
+    if agg["n_selected_missing"]:
+        parts.append(f" In {_plural(agg['n_selected_missing'], 'run')} features of the selected model could not be "
+                     "recomputed, so the audited model is smaller than the run's (marked †).")
+    if B["n_audited"]:
+        cb = B["compact_vs_full"]
+        ref = CLASS_LABEL[other][0].upper() + CLASS_LABEL[other][1:]
+        parts.append(f" {ref} runs (reference): the compact model keeps a median of {cb['median_features']:g} of "
+                     f"{cb['median_full_features']:g} features"
+                     + (f"; on the validation perturbations it is lower than full by more than max(SE, {band:g}) in "
+                        f"{cb['lower']} of the {cb['n_smaller']} runs where it is smaller." if cb["n_smaller"] else
+                        " and is never smaller than the full model."))
+    sealed = [agg["classes"][c]["sealed"] for c in ("agent", "no_llm") if agg["classes"][c]["sealed"]["n"]]
+    if sealed:
+        n = sum(s["n"] for s in sealed)
+        mean = sum(s["mean_difference"] * s["n"] for s in sealed) / n
+        parts.append(f" On the sealed set (one more look at a used set) the compact model scored {mean:+.4f} relative "
+                     f"to the selected model on average, higher in {sum(s['compact_higher'] for s in sealed)} of {n} "
+                     f"runs; {sum(s['flagged'] for s in sealed)} reproduction(s) flagged. No sealed number entered any "
+                     "choice, and none should be read as a clean test.")
+    parts.append(f" A difference within one paired SE is not established and one below {band:g} is treated as "
+                 "practically nil; single fold-seed differences below about 0.02 never were established.")
+    return "".join(parts)
+
+
+def _plain(obj):
+    """JSON-ready copy: numpy scalars and arrays become Python numbers and lists, so the JSON twin re-renders the
+    markdown byte for byte."""
+    if isinstance(obj, dict):
+        return {str(k): _plain(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_plain(v) for v in obj]
+    if isinstance(obj, np.generic):
+        return obj.item()
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--runs", nargs="*", default=[],
+                    help="finished run directories (lab.db, public_data/, feature_store/)")
+    ap.add_argument("--out", required=True, help="markdown report")
+    ap.add_argument("--json", default=None, help="JSON twin (default: the report's path with .json)")
+    ap.add_argument("--box", default=None, help="failed-feature box (default: <report stem>_feature_box.json)")
+    ap.add_argument("--fold-seeds", nargs="+", type=int, default=None,
+                    help="fold seeds, at least two (default: the run's cv_seed and cv_seed + 1)")
+    ap.add_argument("--resamples", type=int, default=50, help="Lasso half-samples (default 50)")
+    ap.add_argument("--no-pool", action="store_true", help="audit the selected model only")
+    ap.add_argument("--score-sealed", action="store_true",
+                    help="score the selected and the compact model once each on the sealed set (off by default)")
+    ap.add_argument("--cache", default=None,
+                    help="the tool's working directory: one checkpoint per audited run, so an interrupted job "
+                         "resumes (default: a temporary directory, lost on exit; recommended for long jobs)")
+    ap.add_argument("--from-json", default=None, help="re-render the markdown from a JSON twin; no run is opened")
+    args = ap.parse_args(argv)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if args.from_json:
+        rep = json.loads(Path(args.from_json).read_text())
+    else:
+        if not args.runs:
+            ap.error("--runs is required unless --from-json is given")
+        if args.fold_seeds is not None and len(set(args.fold_seeds)) < 2:
+            ap.error("--fold-seeds needs at least two distinct seeds")
+        if args.resamples < 1:
+            ap.error("--resamples must be at least 1")
+        kw = dict(fold_seeds=args.fold_seeds, resamples=args.resamples, use_pool=not args.no_pool,
+                  sealed=args.score_sealed)
+        if args.cache:
+            rep = analyse([Path(r) for r in args.runs], Path(args.cache), **kw)
+        else:
+            if len(args.runs) > 1:
+                print("[feature_audit] no --cache: checkpoints go to a temporary directory, so an interrupted job "
+                      "restarts from the first run", file=sys.stderr, flush=True)
+            with tempfile.TemporaryDirectory(prefix="feature_audit_") as tmp:
+                rep = analyse([Path(r) for r in args.runs], Path(tmp), **kw)
+        rep = _plain(rep)
+        Path(args.json or out.with_suffix(".json")).write_text(json.dumps(rep, indent=1))
+        box = Path(args.box) if args.box else out.with_name(out.stem + "_feature_box.json")
+        box.write_text(json.dumps(_plain(build_box(rep)), indent=1))
+    md = render(rep)
+    out.write_text(md)
+    print(f"wrote {out} ({len(md.encode())} bytes)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
