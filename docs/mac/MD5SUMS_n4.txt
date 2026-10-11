@@ -1,0 +1,10 @@
+2922ea8e3f4689be17745a4541c9438e  docs/mac/STATE.md
+b64cf83fd216d9fb302d847e20e23fc4  docs/mac/norman_ds_from_n2_w4_r0/config.json
+389c88fa1c8134f6577d9cb7704d059d  docs/mac/norman_ds_from_n2_w4_r0/summary.json
+1d64e28b23a18a2310e7cddf6d215efc  docs/mac/norman_ds_from_n2_w4_r0/norman_ds_from_n2_w4_r0.analysis.log
+da7d9164c6f5c7c3331d767576b13ae3  docs/results/norman_n4_sealed_reading.md
+34af6f90e43fbceef6a9baecca167d3e  docs/results/norman_n4_sealed_reading.json
+d84f71ed0bcba7764b5f98d352136a6f  docs/mac/norman_n3.sh
+0494dfd0080b86104b830c1a767f957b  docs/mac/norman_n4.sh
+54b75441e9059647cae4845cc98ca0bf  docs/mac/push_to_github.sh
+3e203837ba856f5b90b3553e89626b1a  docs/mac/pytest_macos_newpath.log

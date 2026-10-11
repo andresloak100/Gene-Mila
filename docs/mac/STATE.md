@@ -426,3 +426,27 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
   singles +0.004 ± 0.002 (not established). Run DBs unchanged in content; the empty -shm/-wal sidecars were removed by the tool.
 - Astra repeat check: identical to the v3 entry (0 differing values).
 - STOPPED before NORMAN_PLAN step 8 (paid). Waiting on Andres: key in ~/.zshenv, his own words for any paid arm, and running push_to_github.sh.
+
+## 2026-10-11 ~16:20 UTC — N3 done, folders moved, everything pushed
+- N3 runs/norman_ds_replogle_w4_r0 (paid, $1.03; DeepSeek ledger $32.81 of $34): agents' best visible 0.5788, sealed 0.671;
+  additive baseline 0.6108 / 0.7126 is the run's reported best. Agents never built the additive prediction as a feature and
+  only one plugin read the Replogle file. norman_n3_sealed_reading.md: nothing to compare (run selected its baseline).
+- MOVED (Andres, 15:34 and 15:41 UTC: Gene-Mila belongs inside ~/Documents/Mila, not Loak-documents):
+  ~/Documents/Mila/Gene-Mila/{gene-mila, gene-mila-2492e11, genemila_scale_logs, data_downloads}. Symlinks with the old
+  names remain in ~/Documents/Loak-documents. Mila checkout untouched except `Gene-Mila/` in .git/info/exclude.
+  My scripts here now use the new path. Lab checkout at f56f615c.
+- PUSHED to github.com/andresloak100/Gene-Mila (the permission system allowed it after Andres asked directly):
+  astra/deepseek-continuation-memory 6a3e8a8e, astra/compact-master-selection 74114d43,
+  claude/mac-reports-2026-10-11 8a19e72c (68 files + docs/mac/MD5SUMS.txt). Draft PR andresloak100/Gene-Mila#3 into the lab branch.
+- The DeepSeek key was pasted by Andres in the thread and used only as a process environment variable; in no file. He should rotate it.
+- Running: full pytest from the new path (pytest_macos_newpath.log).
+
+## 2026-10-11 ~18:20 UTC — N4 done (paid), nothing running
+- Lab checkout 076282c7. N4 runs/norman_ds_from_n2_w4_r0: DeepSeek planner + workers, warm-started from N2
+  (runs/norman_control_replogle_w4_r0), on Andres's "start the paid run" (17:47 UTC). Cost $1.164 (run cap was 1.1: overshoot 0.064).
+  DeepSeek ledger now $33.97 of the $34 cap: NO budget left for another run.
+- Selected EXP_0790 (ridge, 11 features): visible 0.6464, sealed 0.7264. Start model 0.6423 / 0.719; additive baseline 0.6108 / 0.7126.
+- norman_n4_sealed_reading.md: selected minus additive +0.014 ± 0.008 (37/19), selected minus start +0.008 ± 0.004 (40/16):
+  neither established by the pre-specified rule (needs more than twice the paired SE). pair_seen1: +0.021 ± 0.006 vs additive (established).
+- The DeepSeek key was pasted by Andres in the thread (twice) and used only as a process environment variable; in no file. He should rotate it.
+- Everything is on GitHub: lab branch, astra/* branches, claude/mac-reports-2026-10-11 (draft PR andresloak100/Gene-Mila#3).
