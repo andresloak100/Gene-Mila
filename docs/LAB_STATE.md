@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 13:15 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 13:03 UTC.
 
 ## What this is
 
