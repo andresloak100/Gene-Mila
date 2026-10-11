@@ -1,0 +1,103 @@
+# Label matching: ReplogleWeissman2022_K562_gwps.h5ad
+
+X is dense with 1,989,578 cells and 8,248 genes; labels from obs['perturbation'] (9867 distinct), gene symbols from var['gene_name'].
+
+- control labels: ['control'] (75,328 cells)
+- bundle targets found: 85 of 102
+- bundle targets missing: 17: ATL1, CDKN1A, CKS1B, CNNM4, COL1A1, IGDCC3, MAML2, MAP2K6, PRTG, PTPN13, RUNX1T1, S1PR2, SLC4A1, SLC6A9, TGFBR2, UBASH3A, UBASH3B
+- bundle genes measured: 2,028 of 2,083
+- labels naming two or more genes (skipped): 0
+- labels naming a bundle target plus an unrecognised token, possibly a second gene the screen did not measure (ambiguous, skipped): 0
+- other labels (no bundle target): 9781
+- aliases given: 84; genes measured through one: AC006262.5, AES, AP001171.1, APOA1BP, ASNA1, ATP5A1, ATP5B, ATP5C1, ATP5D, ATP5F1, ATP5G1, ATP5G3, ATP5H, ATP5J2, ATP5O, ATPIF1, C11orf31, C11orf73, C14orf166, C14orf2, C16orf13, C17orf89, C19orf24, C19orf43, C19orf60, C19orf70, C20orf24, C22orf29, C6orf48, C7orf73, C8orf59, C9orf142, CCDC109B, FAM173A, FAM195A, FAM60A, FAM96A, FAM96B, GLTSCR2, HN1, ILF3-AS1, KIAA0101, LINC00152, LINC00493, LINC00657, LINC00998, LINC01420, MESDC2, MINOS1, MUM1, MYEOV2, NCBP2-AS2, RP11-1094M14.11, RP11-301G19.1, RP11-544A12.8, RP11-620J15.3, RP11-717F1.1, RP5-1171I10.5, RTFDC1, SELK, SEP15, SEPP1, SEPT11, SEPT2, SEPT6, SEPT7, SEPT9, SEPW1, SGOL1, SHFM1, SKIV2L2, SSSCA1, STRA13, TCEB1, TOPORS-AS1, TROVE2, UFD1L, USMG5, UTP11L, VIMP, WBP5, WBSCR22, WHSC1L1, ZCCHC11
+- targets below --min-cells 20 (no row would be written): 0
+- modality: screen CRISPRi, bundle CRISPRa; sign -1 would be written
+
+| target | external labels | cells |
+|---|---|---|
+| AHR | AHR | 128 |
+| ARID1A | ARID1A | 271 |
+| ARRDC3 | ARRDC3 | 129 |
+| BAK1 | BAK1 | 92 |
+| BCL2L11 | BCL2L11 | 252 |
+| BCORL1 | BCORL1 | 212 |
+| BPGM | BPGM | 167 |
+| CBFA2T3 | CBFA2T3 | 305 |
+| CBL | CBL | 206 |
+| CDKN1B | CDKN1B | 222 |
+| CDKN1C | CDKN1C | 153 |
+| CEBPA | CEBPA | 89 |
+| CEBPB | CEBPB | 172 |
+| CEBPE | CEBPE | 166 |
+| CELF2 | CELF2 | 217 |
+| CITED1 | CITED1 | 166 |
+| CLDN6 | CLDN6 | 101 |
+| CNN1 | CNN1 | 432 |
+| COL2A1 | COL2A1 | 121 |
+| CSRNP1 | CSRNP1 | 216 |
+| DLX2 | DLX2 | 311 |
+| DUSP9 | DUSP9 | 1,351 |
+| EGR1 | EGR1 | 374 |
+| ELMSAN1 | ELMSAN1 | 551 |
+| ETS2 | ETS2 | 91 |
+| FEV | FEV | 314 |
+| FOSB | FOSB | 311 |
+| FOXA1 | FOXA1 | 240 |
+| FOXA3 | FOXA3 | 183 |
+| FOXF1 | FOXF1 | 240 |
+| FOXL2 | FOXL2 | 375 |
+| FOXO4 | FOXO4 | 293 |
+| GLB1L2 | GLB1L2 | 196 |
+| HES7 | HES7 | 117 |
+| HK2 | HK2 | 229 |
+| HNF4A | HNF4A | 347 |
+| HOXA13 | HOXA13 | 156 |
+| HOXB9 | HOXB9 | 273 |
+| HOXC13 | HOXC13 | 103 |
+| IER5L | IER5L | 216 |
+| IKZF3 | IKZF3 | 75 |
+| IRF1 | IRF1 | 274 |
+| ISL2 | ISL2 | 181 |
+| JUN | JUN | 216 |
+| KIF18B | KIF18B | 141 |
+| KIF2C | KIF2C | 209 |
+| KLF1 | KLF1 | 157 |
+| KMT2A | KMT2A | 205 |
+| LHX1 | LHX1 | 177 |
+| LYL1 | LYL1 | 87 |
+| MAP2K3 | MAP2K3 | 174 |
+| MAP4K3 | MAP4K3 | 148 |
+| MAP4K5 | MAP4K5 | 167 |
+| MAP7D1 | MAP7D1 | 62 |
+| MAPK1 | MAPK1 | 305 |
+| MEIS1 | MEIS1 | 284 |
+| MIDN | MIDN | 568 |
+| NCL | NCL | 443 |
+| NIT1 | NIT1 | 237 |
+| OSR2 | OSR2 | 109 |
+| PLK4 | PLK4 | 43 |
+| POU3F2 | POU3F2 | 102 |
+| PRDM1 | PRDM1 | 216 |
+| PTPN1 | PTPN1 | 371 |
+| PTPN12 | PTPN12 | 252 |
+| PTPN9 | PTPN9 | 78 |
+| RHOXF2 | RHOXF2 | 87 |
+| RREB1 | RREB1 | 151 |
+| SAMD1 | SAMD1 | 196 |
+| SET | SET | 54 |
+| SGK1 | SGK1 | 142 |
+| SLC38A2 | SLC38A2 | 140 |
+| SNAI1 | SNAI1 | 178 |
+| SPI1 | SPI1 | 82 |
+| STIL | STIL | 345 |
+| TBX2 | TBX2 | 207 |
+| TBX3 | TBX3 | 263 |
+| TMSB4X | TMSB4X | 173 |
+| TP73 | TP73 | 196 |
+| TSC22D1 | TSC22D1 | 120 |
+| ZBTB1 | ZBTB1 | 283 |
+| ZBTB10 | ZBTB10 | 134 |
+| ZBTB25 | ZBTB25 | 62 |
+| ZC3HAV1 | ZC3HAV1 | 183 |
+| ZNF318 | ZNF318 | 80 |
+

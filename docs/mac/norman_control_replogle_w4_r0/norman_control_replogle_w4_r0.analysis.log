@@ -1,0 +1,1104 @@
+# Scaling analysis: norman_control_replogle_w4_r0 (4 workers, 15.67 min)
+
+## 1. Independence
+- distinct workers used: 4; max concurrent experiments: 4
+- every LLM-written feature in its own worktree commit: True; experiments touched by >1 worker: none
+- W000: ['EXP_0007', 'EXP_0014', 'EXP_0035', 'EXP_0039', 'EXP_0045', 'EXP_0049', 'EXP_0053', 'EXP_0057', 'EXP_0063', 'EXP_0065', 'EXP_0071', 'EXP_0073', 'EXP_0078', 'EXP_0084', 'EXP_0088', 'EXP_0090', 'EXP_0094', 'EXP_0099', 'EXP_0102', 'EXP_0106', 'EXP_0111', 'EXP_0115', 'EXP_0120', 'EXP_0124', 'EXP_0126', 'EXP_0133', 'EXP_0135', 'EXP_0138', 'EXP_0145', 'EXP_0149', 'EXP_0150', 'EXP_0157', 'EXP_0158', 'EXP_0163', 'EXP_0168', 'EXP_0173', 'EXP_0175', 'EXP_0181', 'EXP_0185', 'EXP_0190', 'EXP_0194', 'EXP_0196', 'EXP_0201', 'EXP_0206', 'EXP_0209', 'EXP_0215', 'EXP_0217', 'EXP_0225', 'EXP_0229', 'EXP_0231', 'EXP_0235', 'EXP_0241', 'EXP_0243', 'EXP_0246', 'EXP_0250', 'EXP_0255', 'EXP_0258', 'EXP_0262', 'EXP_0267', 'EXP_0273', 'EXP_0277', 'EXP_0279', 'EXP_0284', 'EXP_0289', 'EXP_0290', 'EXP_0297', 'EXP_0300', 'EXP_0303', 'EXP_0306', 'EXP_0313', 'EXP_0316', 'EXP_0321', 'EXP_0322', 'EXP_0327', 'EXP_0331', 'EXP_0335', 'EXP_0340', 'EXP_0346', 'EXP_0350', 'EXP_0354', 'EXP_0356', 'EXP_0360', 'EXP_0366', 'EXP_0369', 'EXP_0373', 'EXP_0377', 'EXP_0382', 'EXP_0383', 'EXP_0388', 'EXP_0394', 'EXP_0396', 'EXP_0402', 'EXP_0405', 'EXP_0407', 'EXP_0411', 'EXP_0415', 'EXP_0419', 'EXP_0424', 'EXP_0430', 'EXP_0433', 'EXP_0439', 'EXP_0441', 'EXP_0446', 'EXP_0451', 'EXP_0453', 'EXP_0457', 'EXP_0461', 'EXP_0466', 'EXP_0471', 'EXP_0472', 'EXP_0479', 'EXP_0480', 'EXP_0484', 'EXP_0490', 'EXP_0492', 'EXP_0498', 'EXP_0500', 'EXP_0507', 'EXP_0508', 'EXP_0514', 'EXP_0516', 'EXP_0522', 'EXP_0527', 'EXP_0530', 'EXP_0534', 'EXP_0539', 'EXP_0543', 'EXP_0546', 'EXP_0549', 'EXP_0554', 'EXP_0560', 'EXP_0562', 'EXP_0567', 'EXP_0572', 'EXP_0575', 'EXP_0577', 'EXP_0582', 'EXP_0587', 'EXP_0591', 'EXP_0593', 'EXP_0597', 'EXP_0601', 'EXP_0605', 'EXP_0609', 'EXP_0616', 'EXP_0618', 'EXP_0621', 'EXP_0627', 'EXP_0630', 'EXP_0634', 'EXP_0638', 'EXP_0643', 'EXP_0648', 'EXP_0652', 'EXP_0656', 'EXP_0661', 'EXP_0663', 'EXP_0667', 'EXP_0671', 'EXP_0674', 'EXP_0678', 'EXP_0684', 'EXP_0686', 'EXP_0692', 'EXP_0696', 'EXP_0698', 'EXP_0702', 'EXP_0708', 'EXP_0710', 'EXP_0716', 'EXP_0720', 'EXP_0725', 'EXP_0726', 'EXP_0733', 'EXP_0734', 'EXP_0738', 'EXP_0745', 'EXP_0749', 'EXP_0754', 'EXP_0756', 'EXP_0762', 'EXP_0763', 'EXP_0769', 'EXP_0774', 'EXP_0777', 'EXP_0781', 'EXP_0786', 'EXP_0788', 'EXP_0791', 'EXP_0795', 'EXP_0801', 'EXP_0806', 'EXP_0808', 'EXP_0812', 'EXP_0816', 'EXP_0821', 'EXP_0825', 'EXP_0829', 'EXP_0834', 'EXP_0837', 'EXP_0840', 'EXP_0844', 'EXP_0849', 'EXP_0854', 'EXP_0857', 'EXP_0861', 'EXP_0865', 'EXP_0868', 'EXP_0874', 'EXP_0877', 'EXP_0882', 'EXP_0886', 'EXP_0890', 'EXP_0894', 'EXP_0899', 'EXP_0902', 'EXP_0907', 'EXP_0910', 'EXP_0915', 'EXP_0918', 'EXP_0922', 'EXP_0925', 'EXP_0928', 'EXP_0933', 'EXP_0938', 'EXP_0942', 'EXP_0945', 'EXP_0951', 'EXP_0955', 'EXP_0959', 'EXP_0963', 'EXP_0966', 'EXP_0969', 'EXP_0975', 'EXP_0979', 'EXP_0984', 'EXP_0988', 'EXP_0992', 'EXP_0995', 'EXP_0998', 'EXP_1002', 'EXP_1008', 'EXP_1009', 'EXP_1015', 'EXP_1019', 'EXP_1023', 'EXP_1027', 'EXP_1031', 'EXP_1037', 'EXP_1038', 'EXP_1042', 'EXP_1049', 'EXP_1052'] (2 LLM calls)
+- W001: ['EXP_0009', 'EXP_0011', 'EXP_0015', 'EXP_0017', 'EXP_0022', 'EXP_0025', 'EXP_0027', 'EXP_0030', 'EXP_0034', 'EXP_0038', 'EXP_0044', 'EXP_0048', 'EXP_0052', 'EXP_0056', 'EXP_0062', 'EXP_0067', 'EXP_0070', 'EXP_0072', 'EXP_0079', 'EXP_0081', 'EXP_0086', 'EXP_0092', 'EXP_0097', 'EXP_0100', 'EXP_0103', 'EXP_0109', 'EXP_0113', 'EXP_0114', 'EXP_0121', 'EXP_0123', 'EXP_0128', 'EXP_0131', 'EXP_0137', 'EXP_0141', 'EXP_0143', 'EXP_0146', 'EXP_0152', 'EXP_0156', 'EXP_0160', 'EXP_0164', 'EXP_0169', 'EXP_0170', 'EXP_0177', 'EXP_0180', 'EXP_0184', 'EXP_0188', 'EXP_0193', 'EXP_0199', 'EXP_0202', 'EXP_0207', 'EXP_0211', 'EXP_0214', 'EXP_0220', 'EXP_0222', 'EXP_0227', 'EXP_0232', 'EXP_0234', 'EXP_0239', 'EXP_0242', 'EXP_0248', 'EXP_0252', 'EXP_0256', 'EXP_0259', 'EXP_0265', 'EXP_0268', 'EXP_0271', 'EXP_0276', 'EXP_0281', 'EXP_0283', 'EXP_0288', 'EXP_0293', 'EXP_0294', 'EXP_0298', 'EXP_0304', 'EXP_0307', 'EXP_0311', 'EXP_0317', 'EXP_0319', 'EXP_0324', 'EXP_0330', 'EXP_0334', 'EXP_0337', 'EXP_0339', 'EXP_0344', 'EXP_0347', 'EXP_0352', 'EXP_0357', 'EXP_0361', 'EXP_0364', 'EXP_0370', 'EXP_0371', 'EXP_0375', 'EXP_0379', 'EXP_0384', 'EXP_0390', 'EXP_0393', 'EXP_0398', 'EXP_0401', 'EXP_0403', 'EXP_0408', 'EXP_0413', 'EXP_0418', 'EXP_0421', 'EXP_0423', 'EXP_0428', 'EXP_0434', 'EXP_0436', 'EXP_0440', 'EXP_0444', 'EXP_0448', 'EXP_0452', 'EXP_0458', 'EXP_0462', 'EXP_0467', 'EXP_0469', 'EXP_0473', 'EXP_0477', 'EXP_0481', 'EXP_0487', 'EXP_0491', 'EXP_0494', 'EXP_0497', 'EXP_0503', 'EXP_0504', 'EXP_0509', 'EXP_0512', 'EXP_0517', 'EXP_0520', 'EXP_0526', 'EXP_0529', 'EXP_0533', 'EXP_0537', 'EXP_0542', 'EXP_0547', 'EXP_0551', 'EXP_0556', 'EXP_0559', 'EXP_0564', 'EXP_0568', 'EXP_0570', 'EXP_0576', 'EXP_0579', 'EXP_0583', 'EXP_0588', 'EXP_0589', 'EXP_0595', 'EXP_0600', 'EXP_0603', 'EXP_0608', 'EXP_0610', 'EXP_0614', 'EXP_0619', 'EXP_0622', 'EXP_0626', 'EXP_0632', 'EXP_0633', 'EXP_0640', 'EXP_0642', 'EXP_0647', 'EXP_0651', 'EXP_0655', 'EXP_0659', 'EXP_0664', 'EXP_0668', 'EXP_0673', 'EXP_0677', 'EXP_0680', 'EXP_0683', 'EXP_0688', 'EXP_0691', 'EXP_0695', 'EXP_0700', 'EXP_0705', 'EXP_0709', 'EXP_0711', 'EXP_0715', 'EXP_0719', 'EXP_0724', 'EXP_0728', 'EXP_0730', 'EXP_0737', 'EXP_0739', 'EXP_0743', 'EXP_0750', 'EXP_0751', 'EXP_0755', 'EXP_0759', 'EXP_0766', 'EXP_0767', 'EXP_0773', 'EXP_0776', 'EXP_0780', 'EXP_0785', 'EXP_0790', 'EXP_0794', 'EXP_0797', 'EXP_0800', 'EXP_0804', 'EXP_0809', 'EXP_0813', 'EXP_0817', 'EXP_0822', 'EXP_0823', 'EXP_0828', 'EXP_0832', 'EXP_0838', 'EXP_0841', 'EXP_0846', 'EXP_0848', 'EXP_0852', 'EXP_0858', 'EXP_0863', 'EXP_0864', 'EXP_0870', 'EXP_0875', 'EXP_0878', 'EXP_0883', 'EXP_0884', 'EXP_0889', 'EXP_0892', 'EXP_0896', 'EXP_0901', 'EXP_0906', 'EXP_0908', 'EXP_0912', 'EXP_0917', 'EXP_0921', 'EXP_0924', 'EXP_0929', 'EXP_0936', 'EXP_0939', 'EXP_0943', 'EXP_0947', 'EXP_0950', 'EXP_0954', 'EXP_0957', 'EXP_0962', 'EXP_0965', 'EXP_0971', 'EXP_0976', 'EXP_0980', 'EXP_0981', 'EXP_0986', 'EXP_0989', 'EXP_0994', 'EXP_0997', 'EXP_1004', 'EXP_1007', 'EXP_1012', 'EXP_1014', 'EXP_1018', 'EXP_1021', 'EXP_1028', 'EXP_1033', 'EXP_1036', 'EXP_1040', 'EXP_1043', 'EXP_1047', 'EXP_1053'] (4 LLM calls)
+- W002: ['EXP_0008', 'EXP_0013', 'EXP_0016', 'EXP_0018', 'EXP_0020', 'EXP_0021', 'EXP_0024', 'EXP_0026', 'EXP_0029', 'EXP_0033', 'EXP_0037', 'EXP_0042', 'EXP_0047', 'EXP_0050', 'EXP_0054', 'EXP_0061', 'EXP_0066', 'EXP_0068', 'EXP_0074', 'EXP_0080', 'EXP_0082', 'EXP_0085', 'EXP_0091', 'EXP_0095', 'EXP_0101', 'EXP_0105', 'EXP_0108', 'EXP_0112', 'EXP_0116', 'EXP_0119', 'EXP_0122', 'EXP_0127', 'EXP_0130', 'EXP_0134', 'EXP_0140', 'EXP_0144', 'EXP_0147', 'EXP_0153', 'EXP_0155', 'EXP_0159', 'EXP_0162', 'EXP_0166', 'EXP_0172', 'EXP_0174', 'EXP_0178', 'EXP_0183', 'EXP_0186', 'EXP_0189', 'EXP_0192', 'EXP_0197', 'EXP_0203', 'EXP_0205', 'EXP_0210', 'EXP_0213', 'EXP_0218', 'EXP_0223', 'EXP_0226', 'EXP_0233', 'EXP_0236', 'EXP_0238', 'EXP_0245', 'EXP_0249', 'EXP_0253', 'EXP_0254', 'EXP_0260', 'EXP_0264', 'EXP_0266', 'EXP_0270', 'EXP_0275', 'EXP_0280', 'EXP_0285', 'EXP_0287', 'EXP_0292', 'EXP_0296', 'EXP_0299', 'EXP_0302', 'EXP_0308', 'EXP_0312', 'EXP_0315', 'EXP_0320', 'EXP_0323', 'EXP_0329', 'EXP_0333', 'EXP_0336', 'EXP_0342', 'EXP_0345', 'EXP_0348', 'EXP_0351', 'EXP_0355', 'EXP_0362', 'EXP_0365', 'EXP_0367', 'EXP_0374', 'EXP_0376', 'EXP_0381', 'EXP_0386', 'EXP_0389', 'EXP_0391', 'EXP_0395', 'EXP_0400', 'EXP_0406', 'EXP_0409', 'EXP_0414', 'EXP_0416', 'EXP_0422', 'EXP_0425', 'EXP_0427', 'EXP_0431', 'EXP_0437', 'EXP_0442', 'EXP_0447', 'EXP_0449', 'EXP_0454', 'EXP_0459', 'EXP_0460', 'EXP_0464', 'EXP_0468', 'EXP_0475', 'EXP_0476', 'EXP_0482', 'EXP_0485', 'EXP_0488', 'EXP_0493', 'EXP_0496', 'EXP_0501', 'EXP_0506', 'EXP_0511', 'EXP_0515', 'EXP_0518', 'EXP_0521', 'EXP_0525', 'EXP_0531', 'EXP_0532', 'EXP_0538', 'EXP_0544', 'EXP_0548', 'EXP_0552', 'EXP_0555', 'EXP_0557', 'EXP_0561', 'EXP_0565', 'EXP_0569', 'EXP_0573', 'EXP_0578', 'EXP_0581', 'EXP_0585', 'EXP_0592', 'EXP_0594', 'EXP_0599', 'EXP_0602', 'EXP_0607', 'EXP_0612', 'EXP_0613', 'EXP_0617', 'EXP_0623', 'EXP_0628', 'EXP_0631', 'EXP_0635', 'EXP_0639', 'EXP_0644', 'EXP_0646', 'EXP_0653', 'EXP_0654', 'EXP_0660', 'EXP_0665', 'EXP_0666', 'EXP_0672', 'EXP_0675', 'EXP_0681', 'EXP_0685', 'EXP_0687', 'EXP_0690', 'EXP_0697', 'EXP_0699', 'EXP_0704', 'EXP_0707', 'EXP_0712', 'EXP_0717', 'EXP_0718', 'EXP_0722', 'EXP_0729', 'EXP_0731', 'EXP_0735', 'EXP_0740', 'EXP_0744', 'EXP_0747', 'EXP_0752', 'EXP_0757', 'EXP_0760', 'EXP_0764', 'EXP_0768', 'EXP_0772', 'EXP_0778', 'EXP_0782', 'EXP_0783', 'EXP_0787', 'EXP_0793', 'EXP_0796', 'EXP_0799', 'EXP_0805', 'EXP_0807', 'EXP_0814', 'EXP_0815', 'EXP_0819', 'EXP_0826', 'EXP_0830', 'EXP_0831', 'EXP_0836', 'EXP_0842', 'EXP_0847', 'EXP_0850', 'EXP_0855', 'EXP_0859', 'EXP_0860', 'EXP_0866', 'EXP_0869', 'EXP_0873', 'EXP_0879', 'EXP_0881', 'EXP_0885', 'EXP_0888', 'EXP_0893', 'EXP_0898', 'EXP_0900', 'EXP_0904', 'EXP_0909', 'EXP_0914', 'EXP_0916', 'EXP_0923', 'EXP_0927', 'EXP_0931', 'EXP_0935', 'EXP_0937', 'EXP_0944', 'EXP_0948', 'EXP_0952', 'EXP_0953', 'EXP_0958', 'EXP_0961', 'EXP_0967', 'EXP_0970', 'EXP_0974', 'EXP_0977', 'EXP_0983', 'EXP_0987', 'EXP_0990', 'EXP_0996', 'EXP_1000', 'EXP_1001', 'EXP_1005', 'EXP_1010', 'EXP_1016', 'EXP_1017', 'EXP_1022', 'EXP_1026', 'EXP_1032', 'EXP_1034', 'EXP_1041', 'EXP_1044', 'EXP_1048', 'EXP_1051', 'EXP_1054'] (4 LLM calls)
+- W003: ['EXP_0010', 'EXP_0012', 'EXP_0019', 'EXP_0028', 'EXP_0031', 'EXP_0032', 'EXP_0036', 'EXP_0040', 'EXP_0043', 'EXP_0046', 'EXP_0051', 'EXP_0055', 'EXP_0058', 'EXP_0060', 'EXP_0064', 'EXP_0069', 'EXP_0075', 'EXP_0077', 'EXP_0083', 'EXP_0087', 'EXP_0089', 'EXP_0096', 'EXP_0098', 'EXP_0104', 'EXP_0107', 'EXP_0110', 'EXP_0117', 'EXP_0118', 'EXP_0125', 'EXP_0129', 'EXP_0132', 'EXP_0136', 'EXP_0139', 'EXP_0142', 'EXP_0148', 'EXP_0151', 'EXP_0154', 'EXP_0161', 'EXP_0165', 'EXP_0167', 'EXP_0171', 'EXP_0176', 'EXP_0179', 'EXP_0182', 'EXP_0191', 'EXP_0195', 'EXP_0198', 'EXP_0200', 'EXP_0208', 'EXP_0212', 'EXP_0216', 'EXP_0219', 'EXP_0224', 'EXP_0228', 'EXP_0230', 'EXP_0237', 'EXP_0240', 'EXP_0244', 'EXP_0247', 'EXP_0251', 'EXP_0257', 'EXP_0261', 'EXP_0263', 'EXP_0269', 'EXP_0272', 'EXP_0274', 'EXP_0278', 'EXP_0282', 'EXP_0286', 'EXP_0291', 'EXP_0295', 'EXP_0301', 'EXP_0305', 'EXP_0309', 'EXP_0310', 'EXP_0314', 'EXP_0318', 'EXP_0325', 'EXP_0328', 'EXP_0332', 'EXP_0338', 'EXP_0341', 'EXP_0343', 'EXP_0349', 'EXP_0353', 'EXP_0358', 'EXP_0359', 'EXP_0363', 'EXP_0368', 'EXP_0372', 'EXP_0378', 'EXP_0380', 'EXP_0385', 'EXP_0387', 'EXP_0392', 'EXP_0397', 'EXP_0399', 'EXP_0404', 'EXP_0410', 'EXP_0412', 'EXP_0417', 'EXP_0420', 'EXP_0426', 'EXP_0429', 'EXP_0432', 'EXP_0438', 'EXP_0443', 'EXP_0445', 'EXP_0450', 'EXP_0455', 'EXP_0456', 'EXP_0463', 'EXP_0465', 'EXP_0470', 'EXP_0474', 'EXP_0478', 'EXP_0483', 'EXP_0486', 'EXP_0489', 'EXP_0495', 'EXP_0499', 'EXP_0502', 'EXP_0505', 'EXP_0510', 'EXP_0513', 'EXP_0519', 'EXP_0523', 'EXP_0524', 'EXP_0528', 'EXP_0535', 'EXP_0536', 'EXP_0541', 'EXP_0545', 'EXP_0550', 'EXP_0553', 'EXP_0558', 'EXP_0563', 'EXP_0566', 'EXP_0571', 'EXP_0574', 'EXP_0580', 'EXP_0584', 'EXP_0586', 'EXP_0590', 'EXP_0596', 'EXP_0598', 'EXP_0604', 'EXP_0606', 'EXP_0611', 'EXP_0615', 'EXP_0620', 'EXP_0624', 'EXP_0625', 'EXP_0629', 'EXP_0636', 'EXP_0637', 'EXP_0641', 'EXP_0649', 'EXP_0650', 'EXP_0657', 'EXP_0658', 'EXP_0662', 'EXP_0669', 'EXP_0670', 'EXP_0676', 'EXP_0679', 'EXP_0682', 'EXP_0689', 'EXP_0693', 'EXP_0694', 'EXP_0701', 'EXP_0703', 'EXP_0706', 'EXP_0713', 'EXP_0714', 'EXP_0721', 'EXP_0723', 'EXP_0727', 'EXP_0732', 'EXP_0736', 'EXP_0741', 'EXP_0742', 'EXP_0748', 'EXP_0753', 'EXP_0758', 'EXP_0761', 'EXP_0765', 'EXP_0770', 'EXP_0771', 'EXP_0775', 'EXP_0779', 'EXP_0784', 'EXP_0789', 'EXP_0792', 'EXP_0798', 'EXP_0802', 'EXP_0803', 'EXP_0810', 'EXP_0811', 'EXP_0818', 'EXP_0820', 'EXP_0824', 'EXP_0827', 'EXP_0833', 'EXP_0835', 'EXP_0843', 'EXP_0845', 'EXP_0851', 'EXP_0853', 'EXP_0856', 'EXP_0862', 'EXP_0867', 'EXP_0871', 'EXP_0872', 'EXP_0876', 'EXP_0880', 'EXP_0887', 'EXP_0891', 'EXP_0895', 'EXP_0897', 'EXP_0903', 'EXP_0905', 'EXP_0911', 'EXP_0913', 'EXP_0919', 'EXP_0920', 'EXP_0926', 'EXP_0930', 'EXP_0934', 'EXP_0940', 'EXP_0941', 'EXP_0946', 'EXP_0949', 'EXP_0956', 'EXP_0960', 'EXP_0964', 'EXP_0968', 'EXP_0972', 'EXP_0973', 'EXP_0978', 'EXP_0982', 'EXP_0985', 'EXP_0991', 'EXP_0993', 'EXP_0999', 'EXP_1003', 'EXP_1006', 'EXP_1011', 'EXP_1013', 'EXP_1020', 'EXP_1024', 'EXP_1029', 'EXP_1030', 'EXP_1035', 'EXP_1039', 'EXP_1045', 'EXP_1046', 'EXP_1050'] (2 LLM calls)
+
+## 2-3. Experiments
+| id | worker | status | feature / change | score | delta | LLM calls | cost |
+|---|---|---|---|---|---|---|---|
+| EXP_0007 | W000 | completed | coexpr_target_e7 | 0.5425 | +0.0008 | 1 | $0.00000 |
+| EXP_0008 | W002 | completed | prior_network_edge_e8 | 0.5415 | -0.0002 | 1 | $0.00000 |
+| EXP_0009 | W001 | completed | shared_module_e9 | 0.5416 | -0.0001 | 1 | $0.00000 |
+| EXP_0010 | W003 | completed | similar_pert_knn_e10 | 0.5793 | +0.0376 | 1 | $0.00000 |
+| EXP_0011 | W001 | completed | target_level_e11 | 0.5428 | +0.0011 | 1 | $0.00000 |
+| EXP_0012 | W003 | completed | pca_alignment_e12 | 0.5412 | -0.0005 | 1 | $0.00000 |
+| EXP_0013 | W002 | completed | control_variance_e13 | 0.5417 | +0.0001 | 1 | $0.00000 |
+| EXP_0014 | W000 | completed | response_components_e14 | 0.6034 | +0.0617 | 1 | $0.00000 |
+| EXP_0015 | W001 | completed | additive_singles_e15 | 0.6154 | +0.0737 | 1 | $0.00000 |
+| EXP_0016 | W002 | completed | external_direct_replogle2022_k562_e16 | 0.5470 | +0.0053 | 1 | $0.00000 |
+| EXP_0017 | W001 | completed | external_knn_replogle2022_k562_e17 | 0.5570 | +0.0154 | 1 | $0.00000 |
+| EXP_0018 | W002 | completed | external_krr_replogle2022_k562_e18 | 0.5923 | +0.0506 | 1 | $0.00000 |
+| EXP_0019 | W003 | completed | The optimal ridge penalty shifted after features w | 0.5416 | -0.0000 | 0 | $0.00000 |
+| EXP_0020 | W002 | completed | The optimal ridge penalty shifted after features w | 0.5416 | -0.0001 | 0 | $0.00000 |
+| EXP_0021 | W002 | completed | A sparse lasso model on the best feature set gener | 0.5425 | +0.0000 | 0 | $0.00000 |
+| EXP_0022 | W001 | completed | Adding similar_pert_knn_e10 to the current best mo | 0.5793 | +0.0000 | 0 | $0.00000 |
+| EXP_0023 | None | duplicate | Adding similar_pert_knn_e10 to the current best mo |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0022 |  |  |  |  |
+| EXP_0024 | W002 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6182 | +0.0029 | 0 | $0.00000 |
+| EXP_0025 | W001 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6073 | -0.0081 | 0 | $0.00000 |
+| EXP_0026 | W002 | completed | Add external_direct_replogle2022_k562_e16 to the b | 0.6191 | +0.0037 | 0 | $0.00000 |
+| EXP_0027 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6211 | +0.0057 | 0 | $0.00000 |
+| EXP_0028 | W003 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6209 | -0.0002 | 0 | $0.00000 |
+| EXP_0029 | W002 | completed | Add external_direct_replogle2022_k562_e16 to the b | 0.6231 | +0.0020 | 0 | $0.00000 |
+| EXP_0030 | W001 | completed | Add external_knn_replogle2022_k562_e17 and externa | 0.6228 | +0.0017 | 0 | $0.00000 |
+| EXP_0031 | W003 | completed | Refine the ridge penalty around alpha=0.01 for the | 0.6211 | +0.0000 | 0 | $0.00000 |
+| EXP_0032 | W003 | completed | Refine the ridge penalty around alpha=0.01 for the | 0.6231 | +0.0000 | 0 | $0.00000 |
+| EXP_0033 | W002 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6082 | -0.0149 | 0 | $0.00000 |
+| EXP_0034 | W001 | completed | Drop external_krr_replogle2022_k562_e18 from the b | 0.6106 | -0.0125 | 0 | $0.00000 |
+| EXP_0035 | W000 | completed | Drop similar_pert_knn_e10 from the best model (EXP | 0.6201 | -0.0030 | 0 | $0.00000 |
+| EXP_0036 | W003 | completed | Add response_components_e14 to the best model (EXP | 0.6299 | +0.0068 | 0 | $0.00000 |
+| EXP_0037 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6228 | -0.0003 | 0 | $0.00000 |
+| EXP_0038 | W001 | completed | Add response_components_e14 and external_knn_replo | 0.6291 | +0.0060 | 0 | $0.00000 |
+| EXP_0039 | W000 | completed | Refine the ridge penalty around alpha=0.0033 for t | 0.6231 | +0.0000 | 0 | $0.00000 |
+| EXP_0040 | W003 | completed | Adding external_knn_replogle2022_k562_e17 to the c | 0.6291 | -0.0008 | 0 | $0.00000 |
+| EXP_0041 | None | duplicate | Adding external_knn_replogle2022_k562_e17 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0040 |  |  |  |  |
+| EXP_0042 | W002 | completed | Refine the ridge penalty around alpha=0.03 for the | 0.6299 | +0.0000 | 0 | $0.00000 |
+| EXP_0043 | W003 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6193 | -0.0106 | 0 | $0.00000 |
+| EXP_0044 | W001 | completed | Drop external_krr_replogle2022_k562_e18 from the b | 0.6268 | -0.0031 | 0 | $0.00000 |
+| EXP_0045 | W000 | completed | Drop similar_pert_knn_e10 from the best model (EXP | 0.6300 | +0.0001 | 0 | $0.00000 |
+| EXP_0046 | W003 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6285 | -0.0015 | 0 | $0.00000 |
+| EXP_0047 | W002 | completed | Refine the ridge penalty around alpha=0.03 for the | 0.6300 | +0.0000 | 0 | $0.00000 |
+| EXP_0048 | W001 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6112 | -0.0188 | 0 | $0.00000 |
+| EXP_0049 | W000 | completed | Drop external_krr_replogle2022_k562_e18 from the b | 0.6377 | +0.0077 | 0 | $0.00000 |
+| EXP_0050 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6260 | -0.0117 | 0 | $0.00000 |
+| EXP_0051 | W003 | completed | Refine the ridge penalty around alpha=0.0033 for t | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0052 | W001 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6065 | -0.0313 | 0 | $0.00000 |
+| EXP_0053 | W000 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6353 | -0.0024 | 0 | $0.00000 |
+| EXP_0054 | W002 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6300 | -0.0077 | 0 | $0.00000 |
+| EXP_0055 | W003 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6268 | -0.0109 | 0 | $0.00000 |
+| EXP_0056 | W001 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6260 | -0.0117 | 0 | $0.00000 |
+| EXP_0057 | W000 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6299 | -0.0078 | 0 | $0.00000 |
+| EXP_0058 | W003 | completed | Adding external_krr_replogle2022_k562_e18 to the c | 0.6300 | -0.0077 | 0 | $0.00000 |
+| EXP_0059 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0058 |  |  |  |  |
+| EXP_0060 | W003 | completed | Refine the ridge penalty around alpha=0.001089 for | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0061 | W002 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6065 | -0.0313 | 0 | $0.00000 |
+| EXP_0062 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6353 | -0.0024 | 0 | $0.00000 |
+| EXP_0063 | W000 | completed | Drop response_components_e14 from the best model ( | 0.6191 | -0.0186 | 0 | $0.00000 |
+| EXP_0064 | W003 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6300 | -0.0077 | 0 | $0.00000 |
+| EXP_0065 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6268 | -0.0109 | 0 | $0.00000 |
+| EXP_0066 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6260 | -0.0117 | 0 | $0.00000 |
+| EXP_0067 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6299 | -0.0078 | 0 | $0.00000 |
+| EXP_0068 | W002 | completed | Refine the ridge penalty around alpha=0.000359 for | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0069 | W003 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6065 | -0.0313 | 0 | $0.00000 |
+| EXP_0070 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6353 | -0.0024 | 0 | $0.00000 |
+| EXP_0071 | W000 | completed | Drop response_components_e14 from the best model ( | 0.6191 | -0.0186 | 0 | $0.00000 |
+| EXP_0072 | W001 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6300 | -0.0077 | 0 | $0.00000 |
+| EXP_0073 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6268 | -0.0109 | 0 | $0.00000 |
+| EXP_0074 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6260 | -0.0117 | 0 | $0.00000 |
+| EXP_0075 | W003 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6299 | -0.0078 | 0 | $0.00000 |
+| EXP_0076 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0058 |  |  |  |  |
+| EXP_0077 | W003 | completed | Refine the ridge penalty around alpha=0.000118 for | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0078 | W000 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6065 | -0.0313 | 0 | $0.00000 |
+| EXP_0079 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6353 | -0.0024 | 0 | $0.00000 |
+| EXP_0080 | W002 | completed | Drop response_components_e14 from the best model ( | 0.6191 | -0.0186 | 0 | $0.00000 |
+| EXP_0081 | W001 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6300 | -0.0077 | 0 | $0.00000 |
+| EXP_0082 | W002 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6268 | -0.0109 | 0 | $0.00000 |
+| EXP_0083 | W003 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6260 | -0.0117 | 0 | $0.00000 |
+| EXP_0084 | W000 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6299 | -0.0078 | 0 | $0.00000 |
+| EXP_0085 | W002 | completed | Refine the ridge penalty around alpha=7.1e-05 for  | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0086 | W001 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6065 | -0.0313 | 0 | $0.00000 |
+| EXP_0087 | W003 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6353 | -0.0024 | 0 | $0.00000 |
+| EXP_0088 | W000 | completed | Drop response_components_e14 from the best model ( | 0.6191 | -0.0186 | 0 | $0.00000 |
+| EXP_0089 | W003 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6300 | -0.0077 | 0 | $0.00000 |
+| EXP_0090 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6268 | -0.0109 | 0 | $0.00000 |
+| EXP_0091 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6260 | -0.0117 | 0 | $0.00000 |
+| EXP_0092 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6299 | -0.0078 | 0 | $0.00000 |
+| EXP_0093 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0058 |  |  |  |  |
+| EXP_0094 | W000 | completed | Refine the ridge penalty around alpha=0.000121 for | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0095 | W002 | completed | Drop additive_singles_e15 from the best model (EXP | 0.6065 | -0.0313 | 0 | $0.00000 |
+| EXP_0096 | W003 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6353 | -0.0024 | 0 | $0.00000 |
+| EXP_0097 | W001 | completed | Drop response_components_e14 from the best model ( | 0.6191 | -0.0186 | 0 | $0.00000 |
+| EXP_0098 | W003 | completed | Drop control_mean from the best model (EXP_0085) t | 0.6376 | -0.0001 | 0 | $0.00000 |
+| EXP_0099 | W000 | completed | Drop mean_response from the best model (EXP_0085)  | 0.6382 | +0.0005 | 0 | $0.00000 |
+| EXP_0100 | W001 | completed | Drop is_target from the best model (EXP_0085) to t | 0.6296 | -0.0081 | 0 | $0.00000 |
+| EXP_0101 | W002 | completed | Fit the best feature set (EXP_0085) with lasso ins | 0.6377 | -0.0000 | 0 | $0.00000 |
+| EXP_0102 | W000 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6290 | -0.0092 | 0 | $0.00000 |
+| EXP_0103 | W001 | completed | Add similar_pert_knn_e10 to the best model (EXP_00 | 0.6255 | -0.0126 | 0 | $0.00000 |
+| EXP_0104 | W003 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6233 | -0.0148 | 0 | $0.00000 |
+| EXP_0105 | W002 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6297 | -0.0084 | 0 | $0.00000 |
+| EXP_0106 | W000 | completed | Refine the ridge penalty around alpha=2.3e-05 for  | 0.6382 | +0.0000 | 0 | $0.00000 |
+| EXP_0107 | W003 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3746 | -0.2636 | 0 | $0.00000 |
+| EXP_0108 | W002 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6359 | -0.0022 | 0 | $0.00000 |
+| EXP_0109 | W001 | completed | Drop response_components_e14 from the best model ( | 0.6219 | -0.0163 | 0 | $0.00000 |
+| EXP_0110 | W003 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6290 | -0.0092 | 0 | $0.00000 |
+| EXP_0111 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6255 | -0.0126 | 0 | $0.00000 |
+| EXP_0112 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6233 | -0.0148 | 0 | $0.00000 |
+| EXP_0113 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6297 | -0.0084 | 0 | $0.00000 |
+| EXP_0114 | W001 | completed | Refine the ridge penalty around alpha=8e-06 for th | 0.6382 | +0.0000 | 0 | $0.00000 |
+| EXP_0115 | W000 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3746 | -0.2636 | 0 | $0.00000 |
+| EXP_0116 | W002 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6359 | -0.0022 | 0 | $0.00000 |
+| EXP_0117 | W003 | completed | Drop response_components_e14 from the best model ( | 0.6219 | -0.0163 | 0 | $0.00000 |
+| EXP_0118 | W003 | completed | Drop control_mean from the best model (EXP_0106) t | 0.6413 | +0.0031 | 0 | $0.00000 |
+| EXP_0119 | W002 | completed | Drop is_target from the best model (EXP_0106) to t | 0.6300 | -0.0082 | 0 | $0.00000 |
+| EXP_0120 | W000 | completed | Fit the best feature set (EXP_0106) with lasso ins | 0.6382 | +0.0000 | 0 | $0.00000 |
+| EXP_0121 | W001 | completed | Fit the best feature set (EXP_0106) with elasticne | 0.6323 | -0.0059 | 0 | $0.00000 |
+| EXP_0122 | W002 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6290 | -0.0123 | 0 | $0.00000 |
+| EXP_0123 | W001 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6255 | -0.0158 | 0 | $0.00000 |
+| EXP_0124 | W000 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6232 | -0.0181 | 0 | $0.00000 |
+| EXP_0125 | W003 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6296 | -0.0116 | 0 | $0.00000 |
+| EXP_0126 | W000 | completed | Refine the ridge penalty around alpha=3.9e-05 for  | 0.6413 | +0.0000 | 0 | $0.00000 |
+| EXP_0127 | W002 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3196 | -0.3216 | 0 | $0.00000 |
+| EXP_0128 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6390 | -0.0022 | 0 | $0.00000 |
+| EXP_0129 | W003 | completed | Drop response_components_e14 from the best model ( | 0.6237 | -0.0175 | 0 | $0.00000 |
+| EXP_0130 | W002 | completed | Drop is_target from the best model (EXP_0118) to t | 0.6329 | -0.0083 | 0 | $0.00000 |
+| EXP_0131 | W001 | completed | Fit the best feature set (EXP_0118) with lasso ins | 0.6412 | -0.0000 | 0 | $0.00000 |
+| EXP_0132 | W003 | completed | Fit the best feature set (EXP_0118) with elasticne | 0.6324 | -0.0089 | 0 | $0.00000 |
+| EXP_0133 | W000 | completed | Add target_level_e11 to the best model (EXP_0118)  | 0.6422 | +0.0010 | 0 | $0.00000 |
+| EXP_0134 | W002 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6296 | -0.0127 | 0 | $0.00000 |
+| EXP_0135 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6259 | -0.0163 | 0 | $0.00000 |
+| EXP_0136 | W003 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6240 | -0.0183 | 0 | $0.00000 |
+| EXP_0137 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6301 | -0.0121 | 0 | $0.00000 |
+| EXP_0138 | W000 | completed | Refine the ridge penalty around alpha=8e-06 for th | 0.6422 | +0.0000 | 0 | $0.00000 |
+| EXP_0139 | W003 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3203 | -0.3219 | 0 | $0.00000 |
+| EXP_0140 | W002 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6404 | -0.0018 | 0 | $0.00000 |
+| EXP_0141 | W001 | completed | Drop response_components_e14 from the best model ( | 0.6245 | -0.0177 | 0 | $0.00000 |
+| EXP_0142 | W003 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6296 | -0.0127 | 0 | $0.00000 |
+| EXP_0143 | W001 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6259 | -0.0163 | 0 | $0.00000 |
+| EXP_0144 | W002 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6240 | -0.0183 | 0 | $0.00000 |
+| EXP_0145 | W000 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6301 | -0.0121 | 0 | $0.00000 |
+| EXP_0146 | W001 | completed | Refine the ridge penalty around alpha=3e-06 for th | 0.6422 | +0.0000 | 0 | $0.00000 |
+| EXP_0147 | W002 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3203 | -0.3219 | 0 | $0.00000 |
+| EXP_0148 | W003 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6404 | -0.0018 | 0 | $0.00000 |
+| EXP_0149 | W000 | completed | Drop response_components_e14 from the best model ( | 0.6245 | -0.0177 | 0 | $0.00000 |
+| EXP_0150 | W000 | completed | Drop target_level_e11 from the best model (EXP_013 | 0.6413 | -0.0010 | 0 | $0.00000 |
+| EXP_0151 | W003 | completed | Drop is_target from the best model (EXP_0138) to t | 0.6380 | -0.0043 | 0 | $0.00000 |
+| EXP_0152 | W001 | completed | Fit the best feature set (EXP_0138) with lasso ins | 0.6422 | -0.0000 | 0 | $0.00000 |
+| EXP_0153 | W002 | completed | Fit the best feature set (EXP_0138) with elasticne | 0.6324 | -0.0098 | 0 | $0.00000 |
+| EXP_0154 | W003 | completed | Add coexpr_target_e7 to the best model (EXP_0138)  | 0.6415 | -0.0007 | 0 | $0.00000 |
+| EXP_0155 | W002 | completed | Add control_variance_e13 to the best model (EXP_01 | 0.6412 | -0.0010 | 0 | $0.00000 |
+| EXP_0156 | W001 | completed | Add shared_module_e9 to the best model (EXP_0138)  | 0.6422 | -0.0001 | 0 | $0.00000 |
+| EXP_0157 | W000 | completed | Add prior_network_edge_e8 to the best model (EXP_0 | 0.6423 | +0.0000 | 0 | $0.00000 |
+| EXP_0158 | W000 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6296 | -0.0127 | 0 | $0.00000 |
+| EXP_0159 | W002 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6259 | -0.0163 | 0 | $0.00000 |
+| EXP_0160 | W001 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6240 | -0.0183 | 0 | $0.00000 |
+| EXP_0161 | W003 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6301 | -0.0121 | 0 | $0.00000 |
+| EXP_0162 | W002 | completed | Refine the ridge penalty around alpha=3e-06 for th | 0.6423 | +0.0000 | 0 | $0.00000 |
+| EXP_0163 | W000 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3203 | -0.3220 | 0 | $0.00000 |
+| EXP_0164 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6404 | -0.0018 | 0 | $0.00000 |
+| EXP_0165 | W003 | completed | Drop response_components_e14 from the best model ( | 0.6245 | -0.0178 | 0 | $0.00000 |
+| EXP_0166 | W002 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6296 | -0.0127 | 0 | $0.00000 |
+| EXP_0167 | W003 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6259 | -0.0163 | 0 | $0.00000 |
+| EXP_0168 | W000 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6240 | -0.0183 | 0 | $0.00000 |
+| EXP_0169 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6301 | -0.0121 | 0 | $0.00000 |
+| EXP_0170 | W001 | completed | Refine the ridge penalty around alpha=2e-06 for th | 0.6423 | +0.0000 | 0 | $0.00000 |
+| EXP_0171 | W003 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3203 | -0.3220 | 0 | $0.00000 |
+| EXP_0172 | W002 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6404 | -0.0018 | 0 | $0.00000 |
+| EXP_0173 | W000 | completed | Drop response_components_e14 from the best model ( | 0.6245 | -0.0178 | 0 | $0.00000 |
+| EXP_0174 | W002 | completed | Drop target_level_e11 from the best model (EXP_016 | 0.6413 | -0.0010 | 0 | $0.00000 |
+| EXP_0175 | W000 | completed | Drop is_target from the best model (EXP_0162) to t | 0.6381 | -0.0042 | 0 | $0.00000 |
+| EXP_0176 | W003 | completed | Fit the best feature set (EXP_0162) with lasso ins | 0.6422 | -0.0000 | 0 | $0.00000 |
+| EXP_0177 | W001 | completed | Fit the best feature set (EXP_0162) with elasticne | 0.6324 | -0.0099 | 0 | $0.00000 |
+| EXP_0178 | W002 | completed | Add coexpr_target_e7 to the best model (EXP_0162)  | 0.6416 | -0.0007 | 0 | $0.00000 |
+| EXP_0179 | W003 | completed | Add control_variance_e13 to the best model (EXP_01 | 0.6412 | -0.0010 | 0 | $0.00000 |
+| EXP_0180 | W001 | completed | Add shared_module_e9 to the best model (EXP_0162)  | 0.6422 | -0.0001 | 0 | $0.00000 |
+| EXP_0181 | W000 | completed | Add pca_alignment_e12 to the best model (EXP_0162) | 0.6411 | -0.0012 | 0 | $0.00000 |
+| EXP_0182 | W003 | completed | Add external_krr_replogle2022_k562_e18 and externa | 0.6282 | -0.0140 | 0 | $0.00000 |
+| EXP_0183 | W002 | completed | Add external_krr_replogle2022_k562_e18 and coexpr_ | 0.6297 | -0.0125 | 0 | $0.00000 |
+| EXP_0184 | W001 | completed | Add external_krr_replogle2022_k562_e18 and control | 0.6297 | -0.0126 | 0 | $0.00000 |
+| EXP_0185 | W000 | completed | Add external_krr_replogle2022_k562_e18 and shared_ | 0.6295 | -0.0127 | 0 | $0.00000 |
+| EXP_0186 | W002 | completed | Adding external_krr_replogle2022_k562_e18 to the c | 0.6296 | -0.0127 | 0 | $0.00000 |
+| EXP_0187 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0188 | W001 | completed | Add similar_pert_knn_e10 and external_knn_replogle | 0.6297 | -0.0126 | 0 | $0.00000 |
+| EXP_0189 | W002 | completed | Add similar_pert_knn_e10 and coexpr_target_e7 toge | 0.6261 | -0.0161 | 0 | $0.00000 |
+| EXP_0190 | W000 | completed | Add similar_pert_knn_e10 and control_variance_e13  | 0.6260 | -0.0163 | 0 | $0.00000 |
+| EXP_0191 | W003 | completed | Add similar_pert_knn_e10 and shared_module_e9 toge | 0.6258 | -0.0165 | 0 | $0.00000 |
+| EXP_0192 | W002 | completed | Add external_knn_replogle2022_k562_e17 and coexpr_ | 0.6243 | -0.0180 | 0 | $0.00000 |
+| EXP_0193 | W001 | completed | Add external_knn_replogle2022_k562_e17 and control | 0.6240 | -0.0182 | 0 | $0.00000 |
+| EXP_0194 | W000 | completed | Add external_knn_replogle2022_k562_e17 and shared_ | 0.6239 | -0.0183 | 0 | $0.00000 |
+| EXP_0195 | W003 | completed | Add coexpr_target_e7 and control_variance_e13 toge | 0.6406 | -0.0017 | 0 | $0.00000 |
+| EXP_0196 | W000 | completed | Add coexpr_target_e7 and shared_module_e9 together | 0.6415 | -0.0007 | 0 | $0.00000 |
+| EXP_0197 | W002 | completed | Add control_variance_e13 and shared_module_e9 toge | 0.6412 | -0.0011 | 0 | $0.00000 |
+| EXP_0198 | W003 | completed | Try a much wider ridge penalty range around alpha= | 0.6423 | +0.0000 | 0 | $0.00000 |
+| EXP_0199 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6300 | -0.0122 | 0 | $0.00000 |
+| EXP_0200 | W003 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6296 | -0.0127 | 0 | $0.00000 |
+| EXP_0201 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6259 | -0.0163 | 0 | $0.00000 |
+| EXP_0202 | W001 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6240 | -0.0183 | 0 | $0.00000 |
+| EXP_0203 | W002 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6301 | -0.0121 | 0 | $0.00000 |
+| EXP_0204 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0205 | W002 | completed | Refine the ridge penalty around alpha=6e-05 for th | 0.6423 | +0.0000 | 0 | $0.00000 |
+| EXP_0206 | W000 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3203 | -0.3220 | 0 | $0.00000 |
+| EXP_0207 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6404 | -0.0018 | 0 | $0.00000 |
+| EXP_0208 | W003 | completed | Drop response_components_e14 from the best model ( | 0.6245 | -0.0178 | 0 | $0.00000 |
+| EXP_0209 | W000 | completed | Drop target_level_e11 from the best model (EXP_019 | 0.6413 | -0.0010 | 0 | $0.00000 |
+| EXP_0210 | W002 | completed | Drop prior_network_edge_e8 from the best model (EX | 0.6422 | -0.0000 | 0 | $0.00000 |
+| EXP_0211 | W001 | completed | Drop is_target from the best model (EXP_0198) to t | 0.6381 | -0.0042 | 0 | $0.00000 |
+| EXP_0212 | W003 | completed | Add coexpr_target_e7 to the best model (EXP_0198)  | 0.6416 | -0.0007 | 0 | $0.00000 |
+| EXP_0213 | W002 | completed | Add control_variance_e13 to the best model (EXP_01 | 0.6412 | -0.0010 | 0 | $0.00000 |
+| EXP_0214 | W001 | completed | Add shared_module_e9 to the best model (EXP_0198)  | 0.6422 | -0.0001 | 0 | $0.00000 |
+| EXP_0215 | W000 | completed | Add pca_alignment_e12 to the best model (EXP_0198) | 0.6411 | -0.0012 | 0 | $0.00000 |
+| EXP_0216 | W003 | completed | Add external_krr_replogle2022_k562_e18 and externa | 0.6282 | -0.0140 | 0 | $0.00000 |
+| EXP_0217 | W000 | completed | Add external_krr_replogle2022_k562_e18 and coexpr_ | 0.6297 | -0.0125 | 0 | $0.00000 |
+| EXP_0218 | W002 | completed | Add external_krr_replogle2022_k562_e18 and control | 0.6297 | -0.0126 | 0 | $0.00000 |
+| EXP_0219 | W003 | completed | Add external_krr_replogle2022_k562_e18 and shared_ | 0.6295 | -0.0127 | 0 | $0.00000 |
+| EXP_0220 | W001 | completed | Add similar_pert_knn_e10 and external_knn_replogle | 0.6297 | -0.0126 | 0 | $0.00000 |
+| EXP_0221 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0222 | W001 | completed | Add similar_pert_knn_e10 and coexpr_target_e7 toge | 0.6261 | -0.0161 | 0 | $0.00000 |
+| EXP_0223 | W002 | completed | Add similar_pert_knn_e10 and control_variance_e13  | 0.6260 | -0.0163 | 0 | $0.00000 |
+| EXP_0224 | W003 | completed | Add similar_pert_knn_e10 and shared_module_e9 toge | 0.6258 | -0.0165 | 0 | $0.00000 |
+| EXP_0225 | W000 | completed | Add external_knn_replogle2022_k562_e17 and coexpr_ | 0.6243 | -0.0180 | 0 | $0.00000 |
+| EXP_0226 | W002 | completed | Add external_knn_replogle2022_k562_e17 and control | 0.6240 | -0.0182 | 0 | $0.00000 |
+| EXP_0227 | W001 | completed | Add external_knn_replogle2022_k562_e17 and shared_ | 0.6239 | -0.0183 | 0 | $0.00000 |
+| EXP_0228 | W003 | completed | Add coexpr_target_e7 and control_variance_e13 toge | 0.6406 | -0.0017 | 0 | $0.00000 |
+| EXP_0229 | W000 | completed | Add coexpr_target_e7 and shared_module_e9 together | 0.6415 | -0.0007 | 0 | $0.00000 |
+| EXP_0230 | W003 | completed | Add control_variance_e13 and shared_module_e9 toge | 0.6412 | -0.0011 | 0 | $0.00000 |
+| EXP_0231 | W000 | completed | Try a much wider ridge penalty range around alpha= | 0.6423 | -0.0000 | 0 | $0.00000 |
+| EXP_0232 | W001 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6300 | -0.0122 | 0 | $0.00000 |
+| EXP_0233 | W002 | completed | Refine the ridge penalty around alpha=0 for the be | 0.6422 | +0.0000 | 0 | $0.00000 |
+| EXP_0234 | W001 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3250 | -0.3172 | 0 | $0.00000 |
+| EXP_0235 | W000 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6404 | -0.0018 | 0 | $0.00000 |
+| EXP_0236 | W002 | completed | Drop response_components_e14 from the best model ( | 0.6244 | -0.0178 | 0 | $0.00000 |
+| EXP_0237 | W003 | completed | Drop target_level_e11 from the best model (EXP_021 | 0.6412 | -0.0010 | 0 | $0.00000 |
+| EXP_0238 | W002 | completed | Drop prior_network_edge_e8 from the best model (EX | 0.6422 | -0.0000 | 0 | $0.00000 |
+| EXP_0239 | W001 | completed | Drop is_target from the best model (EXP_0214) to t | 0.6380 | -0.0042 | 0 | $0.00000 |
+| EXP_0240 | W003 | completed | Fit the best feature set (EXP_0214) with lasso ins | 0.6422 | -0.0000 | 0 | $0.00000 |
+| EXP_0241 | W000 | completed | Fit the best feature set (EXP_0214) with elasticne | 0.6324 | -0.0098 | 0 | $0.00000 |
+| EXP_0242 | W001 | completed | Add external_krr_replogle2022_k562_e18 to the best | 0.6295 | -0.0126 | 0 | $0.00000 |
+| EXP_0243 | W000 | completed | Add similar_pert_knn_e10 to the best model (EXP_01 | 0.6258 | -0.0164 | 0 | $0.00000 |
+| EXP_0244 | W003 | completed | Add external_knn_replogle2022_k562_e17 to the best | 0.6239 | -0.0182 | 0 | $0.00000 |
+| EXP_0245 | W002 | completed | Add external_krr_replogle2022_k562_e18 and similar | 0.6300 | -0.0121 | 0 | $0.00000 |
+| EXP_0246 | W000 | completed | Refine the ridge penalty around alpha=3e-06 for th | 0.6422 | +0.0000 | 0 | $0.00000 |
+| EXP_0247 | W003 | completed | Drop additive_singles_e15 from the best model (EXP | 0.3249 | -0.3173 | 0 | $0.00000 |
+| EXP_0248 | W001 | completed | Drop external_direct_replogle2022_k562_e16 from th | 0.6403 | -0.0018 | 0 | $0.00000 |
+| EXP_0249 | W002 | completed | Drop response_components_e14 from the best model ( | 0.6245 | -0.0177 | 0 | $0.00000 |
+| EXP_0250 | W000 | completed | Drop target_level_e11 from the best model (EXP_015 | 0.6411 | -0.0010 | 0 | $0.00000 |
+| EXP_0251 | W003 | completed | Drop is_target from the best model (EXP_0156) to t | 0.6379 | -0.0043 | 0 | $0.00000 |
+| EXP_0252 | W001 | completed | Fit the best feature set (EXP_0156) with lasso ins | 0.6422 | -0.0000 | 0 | $0.00000 |
+| EXP_0253 | W002 | completed | Fit the best feature set (EXP_0156) with elasticne | 0.6324 | -0.0098 | 0 | $0.00000 |
+| EXP_0254 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6154 | +0.0000 | 0 | $0.00000 |
+| EXP_0255 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6034 | +0.0000 | 0 | $0.00000 |
+| EXP_0256 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5923 | +0.0000 | 0 | $0.00000 |
+| EXP_0257 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5792 | -0.0001 | 0 | $0.00000 |
+| EXP_0258 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | -0.0001 | 0 | $0.00000 |
+| EXP_0259 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5470 | +0.0000 | 0 | $0.00000 |
+| EXP_0260 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5428 | -0.0000 | 0 | $0.00000 |
+| EXP_0261 | W003 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5425 | +0.0000 | 0 | $0.00000 |
+| EXP_0262 | W000 | completed | Fit ridge on the built-in features plus control_va | 0.5417 | +0.0000 | 0 | $0.00000 |
+| EXP_0263 | W003 | completed | Fit ridge on the built-in features plus shared_mod | 0.5416 | +0.0000 | 0 | $0.00000 |
+| EXP_0264 | W002 | completed | Fit ridge on the built-in features plus prior_netw | 0.5415 | +0.0000 | 0 | $0.00000 |
+| EXP_0265 | W001 | completed | Fit ridge on the built-in features plus pca_alignm | 0.5412 | +0.0000 | 0 | $0.00000 |
+| EXP_0266 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6353 | +0.0000 | 0 | $0.00000 |
+| EXP_0267 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6182 | +0.0000 | 0 | $0.00000 |
+| EXP_0268 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6073 | -0.0000 | 0 | $0.00000 |
+| EXP_0269 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6030 | -0.0124 | 0 | $0.00000 |
+| EXP_0270 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6191 | +0.0000 | 0 | $0.00000 |
+| EXP_0271 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6165 | +0.0011 | 0 | $0.00000 |
+| EXP_0272 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6155 | +0.0002 | 0 | $0.00000 |
+| EXP_0273 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6155 | +0.0001 | 0 | $0.00000 |
+| EXP_0274 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6153 | -0.0001 | 0 | $0.00000 |
+| EXP_0275 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6153 | -0.0000 | 0 | $0.00000 |
+| EXP_0276 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6145 | -0.0009 | 0 | $0.00000 |
+| EXP_0277 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6095 | +0.0061 | 0 | $0.00000 |
+| EXP_0278 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6099 | +0.0065 | 0 | $0.00000 |
+| EXP_0279 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5938 | -0.0096 | 0 | $0.00000 |
+| EXP_0280 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6065 | -0.0000 | 0 | $0.00000 |
+| EXP_0281 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6047 | +0.0014 | 0 | $0.00000 |
+| EXP_0282 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | +0.0002 | 0 | $0.00000 |
+| EXP_0283 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | +0.0002 | 0 | $0.00000 |
+| EXP_0284 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6033 | -0.0001 | 0 | $0.00000 |
+| EXP_0285 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6033 | -0.0001 | 0 | $0.00000 |
+| EXP_0286 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6031 | -0.0002 | 0 | $0.00000 |
+| EXP_0287 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6058 | +0.0135 | 0 | $0.00000 |
+| EXP_0288 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5872 | -0.0051 | 0 | $0.00000 |
+| EXP_0289 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5943 | +0.0020 | 0 | $0.00000 |
+| EXP_0290 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | +0.0004 | 0 | $0.00000 |
+| EXP_0291 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5928 | +0.0006 | 0 | $0.00000 |
+| EXP_0292 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5923 | +0.0001 | 0 | $0.00000 |
+| EXP_0293 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5922 | -0.0001 | 0 | $0.00000 |
+| EXP_0294 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5921 | -0.0001 | 0 | $0.00000 |
+| EXP_0295 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5923 | +0.0000 | 0 | $0.00000 |
+| EXP_0296 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5948 | +0.0156 | 0 | $0.00000 |
+| EXP_0297 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5838 | +0.0046 | 0 | $0.00000 |
+| EXP_0298 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5796 | +0.0004 | 0 | $0.00000 |
+| EXP_0299 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5796 | +0.0004 | 0 | $0.00000 |
+| EXP_0300 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5793 | +0.0001 | 0 | $0.00000 |
+| EXP_0301 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5792 | -0.0001 | 0 | $0.00000 |
+| EXP_0302 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5790 | -0.0002 | 0 | $0.00000 |
+| EXP_0303 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5790 | -0.0002 | 0 | $0.00000 |
+| EXP_0304 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | +0.0025 | 0 | $0.00000 |
+| EXP_0305 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | +0.0009 | 0 | $0.00000 |
+| EXP_0306 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5579 | +0.0009 | 0 | $0.00000 |
+| EXP_0307 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | +0.0000 | 0 | $0.00000 |
+| EXP_0308 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | -0.0000 | 0 | $0.00000 |
+| EXP_0309 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | -0.0001 | 0 | $0.00000 |
+| EXP_0310 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | +0.0000 | 0 | $0.00000 |
+| EXP_0311 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5475 | +0.0005 | 0 | $0.00000 |
+| EXP_0312 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5478 | +0.0008 | 0 | $0.00000 |
+| EXP_0313 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5471 | +0.0001 | 0 | $0.00000 |
+| EXP_0314 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5469 | -0.0001 | 0 | $0.00000 |
+| EXP_0315 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5469 | -0.0001 | 0 | $0.00000 |
+| EXP_0316 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5465 | -0.0005 | 0 | $0.00000 |
+| EXP_0317 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5435 | +0.0007 | 0 | $0.00000 |
+| EXP_0318 | W003 | completed | Fit ridge on the built-in features plus target_lev | 0.5429 | +0.0001 | 0 | $0.00000 |
+| EXP_0319 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5428 | -0.0001 | 0 | $0.00000 |
+| EXP_0320 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5427 | -0.0001 | 0 | $0.00000 |
+| EXP_0321 | W000 | completed | Fit ridge on the built-in features plus target_lev | 0.5420 | -0.0008 | 0 | $0.00000 |
+| EXP_0322 | W000 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5426 | +0.0001 | 0 | $0.00000 |
+| EXP_0323 | W002 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5424 | -0.0001 | 0 | $0.00000 |
+| EXP_0324 | W001 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5423 | -0.0001 | 0 | $0.00000 |
+| EXP_0325 | W003 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5418 | -0.0007 | 0 | $0.00000 |
+| EXP_0326 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0327 | W000 | completed | Fit ridge on the built-in features plus control_va | 0.5417 | -0.0001 | 0 | $0.00000 |
+| EXP_0328 | W003 | completed | Fit ridge on the built-in features plus control_va | 0.5416 | -0.0001 | 0 | $0.00000 |
+| EXP_0329 | W002 | completed | Fit ridge on the built-in features plus control_va | 0.5413 | -0.0005 | 0 | $0.00000 |
+| EXP_0330 | W001 | completed | Fit ridge on the built-in features plus shared_mod | 0.5414 | -0.0001 | 0 | $0.00000 |
+| EXP_0331 | W000 | completed | Fit ridge on the built-in features plus shared_mod | 0.5411 | -0.0005 | 0 | $0.00000 |
+| EXP_0332 | W003 | completed | Fit ridge on the built-in features plus prior_netw | 0.5411 | -0.0004 | 0 | $0.00000 |
+| EXP_0333 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6284 | -0.0069 | 0 | $0.00000 |
+| EXP_0334 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6242 | -0.0111 | 0 | $0.00000 |
+| EXP_0335 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6241 | -0.0112 | 0 | $0.00000 |
+| EXP_0336 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0337 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6364 | +0.0011 | 0 | $0.00000 |
+| EXP_0338 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6353 | +0.0000 | 0 | $0.00000 |
+| EXP_0339 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6354 | +0.0002 | 0 | $0.00000 |
+| EXP_0340 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6352 | -0.0001 | 0 | $0.00000 |
+| EXP_0341 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6353 | -0.0000 | 0 | $0.00000 |
+| EXP_0342 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6349 | -0.0004 | 0 | $0.00000 |
+| EXP_0343 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6211 | +0.0000 | 0 | $0.00000 |
+| EXP_0344 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6169 | -0.0013 | 0 | $0.00000 |
+| EXP_0345 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6201 | +0.0000 | 0 | $0.00000 |
+| EXP_0346 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6189 | +0.0007 | 0 | $0.00000 |
+| EXP_0347 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6187 | +0.0005 | 0 | $0.00000 |
+| EXP_0348 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6183 | +0.0001 | 0 | $0.00000 |
+| EXP_0349 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6182 | -0.0001 | 0 | $0.00000 |
+| EXP_0350 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6183 | +0.0000 | 0 | $0.00000 |
+| EXP_0351 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6181 | -0.0001 | 0 | $0.00000 |
+| EXP_0352 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6171 | +0.0098 | 0 | $0.00000 |
+| EXP_0353 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6106 | -0.0000 | 0 | $0.00000 |
+| EXP_0354 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6078 | +0.0006 | 0 | $0.00000 |
+| EXP_0355 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6077 | +0.0004 | 0 | $0.00000 |
+| EXP_0356 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6074 | +0.0001 | 0 | $0.00000 |
+| EXP_0357 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6072 | -0.0001 | 0 | $0.00000 |
+| EXP_0358 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6072 | -0.0000 | 0 | $0.00000 |
+| EXP_0359 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6070 | -0.0003 | 0 | $0.00000 |
+| EXP_0360 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6052 | +0.0022 | 0 | $0.00000 |
+| EXP_0361 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6040 | +0.0010 | 0 | $0.00000 |
+| EXP_0362 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6037 | +0.0007 | 0 | $0.00000 |
+| EXP_0363 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6031 | +0.0001 | 0 | $0.00000 |
+| EXP_0364 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6030 | -0.0001 | 0 | $0.00000 |
+| EXP_0365 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6030 | +0.0000 | 0 | $0.00000 |
+| EXP_0366 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6028 | -0.0002 | 0 | $0.00000 |
+| EXP_0367 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6198 | +0.0006 | 0 | $0.00000 |
+| EXP_0368 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6193 | +0.0001 | 0 | $0.00000 |
+| EXP_0369 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6192 | +0.0001 | 0 | $0.00000 |
+| EXP_0370 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6190 | -0.0001 | 0 | $0.00000 |
+| EXP_0371 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6191 | -0.0000 | 0 | $0.00000 |
+| EXP_0372 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6182 | -0.0010 | 0 | $0.00000 |
+| EXP_0373 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6166 | +0.0001 | 0 | $0.00000 |
+| EXP_0374 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6166 | +0.0001 | 0 | $0.00000 |
+| EXP_0375 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6164 | -0.0001 | 0 | $0.00000 |
+| EXP_0376 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6164 | -0.0000 | 0 | $0.00000 |
+| EXP_0377 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6154 | -0.0011 | 0 | $0.00000 |
+| EXP_0378 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6156 | +0.0001 | 0 | $0.00000 |
+| EXP_0379 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6155 | -0.0001 | 0 | $0.00000 |
+| EXP_0380 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6155 | -0.0001 | 0 | $0.00000 |
+| EXP_0381 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6148 | -0.0007 | 0 | $0.00000 |
+| EXP_0382 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6154 | -0.0001 | 0 | $0.00000 |
+| EXP_0383 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6154 | -0.0000 | 0 | $0.00000 |
+| EXP_0384 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6146 | -0.0009 | 0 | $0.00000 |
+| EXP_0385 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6152 | -0.0001 | 0 | $0.00000 |
+| EXP_0386 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6144 | -0.0009 | 0 | $0.00000 |
+| EXP_0387 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6144 | -0.0009 | 0 | $0.00000 |
+| EXP_0388 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6172 | +0.0078 | 0 | $0.00000 |
+| EXP_0389 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6050 | -0.0045 | 0 | $0.00000 |
+| EXP_0390 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6112 | -0.0000 | 0 | $0.00000 |
+| EXP_0391 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6102 | +0.0007 | 0 | $0.00000 |
+| EXP_0392 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6097 | +0.0003 | 0 | $0.00000 |
+| EXP_0393 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6096 | +0.0001 | 0 | $0.00000 |
+| EXP_0394 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6094 | -0.0001 | 0 | $0.00000 |
+| EXP_0395 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6094 | -0.0001 | 0 | $0.00000 |
+| EXP_0396 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6090 | -0.0004 | 0 | $0.00000 |
+| EXP_0397 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6121 | +0.0022 | 0 | $0.00000 |
+| EXP_0398 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6133 | +0.0034 | 0 | $0.00000 |
+| EXP_0399 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6106 | +0.0007 | 0 | $0.00000 |
+| EXP_0400 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6100 | +0.0002 | 0 | $0.00000 |
+| EXP_0401 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6101 | +0.0002 | 0 | $0.00000 |
+| EXP_0402 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6098 | -0.0001 | 0 | $0.00000 |
+| EXP_0403 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6098 | -0.0001 | 0 | $0.00000 |
+| EXP_0404 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6097 | -0.0002 | 0 | $0.00000 |
+| EXP_0405 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5960 | +0.0022 | 0 | $0.00000 |
+| EXP_0406 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5948 | +0.0010 | 0 | $0.00000 |
+| EXP_0407 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5942 | +0.0004 | 0 | $0.00000 |
+| EXP_0408 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.5939 | +0.0001 | 0 | $0.00000 |
+| EXP_0409 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5938 | -0.0000 | 0 | $0.00000 |
+| EXP_0410 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.5937 | -0.0001 | 0 | $0.00000 |
+| EXP_0411 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5931 | -0.0006 | 0 | $0.00000 |
+| EXP_0412 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6074 | +0.0009 | 0 | $0.00000 |
+| EXP_0413 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6066 | +0.0002 | 0 | $0.00000 |
+| EXP_0414 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6066 | +0.0002 | 0 | $0.00000 |
+| EXP_0415 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6064 | -0.0001 | 0 | $0.00000 |
+| EXP_0416 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6064 | -0.0001 | 0 | $0.00000 |
+| EXP_0417 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6062 | -0.0002 | 0 | $0.00000 |
+| EXP_0418 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6049 | +0.0001 | 0 | $0.00000 |
+| EXP_0419 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6049 | +0.0002 | 0 | $0.00000 |
+| EXP_0420 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6047 | -0.0000 | 0 | $0.00000 |
+| EXP_0421 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6046 | -0.0001 | 0 | $0.00000 |
+| EXP_0422 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6044 | -0.0004 | 0 | $0.00000 |
+| EXP_0423 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6037 | +0.0002 | 0 | $0.00000 |
+| EXP_0424 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | -0.0001 | 0 | $0.00000 |
+| EXP_0425 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | -0.0001 | 0 | $0.00000 |
+| EXP_0426 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | -0.0000 | 0 | $0.00000 |
+| EXP_0427 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | -0.0001 | 0 | $0.00000 |
+| EXP_0428 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | -0.0001 | 0 | $0.00000 |
+| EXP_0429 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6033 | -0.0002 | 0 | $0.00000 |
+| EXP_0430 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6032 | -0.0001 | 0 | $0.00000 |
+| EXP_0431 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6031 | -0.0002 | 0 | $0.00000 |
+| EXP_0432 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6031 | -0.0002 | 0 | $0.00000 |
+| EXP_0433 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6027 | -0.0032 | 0 | $0.00000 |
+| EXP_0434 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6082 | -0.0000 | 0 | $0.00000 |
+| EXP_0435 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0436 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6063 | +0.0004 | 0 | $0.00000 |
+| EXP_0437 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6063 | +0.0004 | 0 | $0.00000 |
+| EXP_0438 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6059 | +0.0001 | 0 | $0.00000 |
+| EXP_0439 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6058 | -0.0001 | 0 | $0.00000 |
+| EXP_0440 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6057 | -0.0001 | 0 | $0.00000 |
+| EXP_0441 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6058 | -0.0001 | 0 | $0.00000 |
+| EXP_0442 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5891 | +0.0019 | 0 | $0.00000 |
+| EXP_0443 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5877 | +0.0005 | 0 | $0.00000 |
+| EXP_0444 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5878 | +0.0006 | 0 | $0.00000 |
+| EXP_0445 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5873 | +0.0000 | 0 | $0.00000 |
+| EXP_0446 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5872 | -0.0001 | 0 | $0.00000 |
+| EXP_0447 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5871 | -0.0001 | 0 | $0.00000 |
+| EXP_0448 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5872 | -0.0000 | 0 | $0.00000 |
+| EXP_0449 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5945 | +0.0002 | 0 | $0.00000 |
+| EXP_0450 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5948 | +0.0005 | 0 | $0.00000 |
+| EXP_0451 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5944 | +0.0001 | 0 | $0.00000 |
+| EXP_0452 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5942 | -0.0001 | 0 | $0.00000 |
+| EXP_0453 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5942 | -0.0001 | 0 | $0.00000 |
+| EXP_0454 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5943 | +0.0000 | 0 | $0.00000 |
+| EXP_0455 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5932 | +0.0005 | 0 | $0.00000 |
+| EXP_0456 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5928 | +0.0001 | 0 | $0.00000 |
+| EXP_0457 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0000 | 0 | $0.00000 |
+| EXP_0458 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5926 | -0.0001 | 0 | $0.00000 |
+| EXP_0459 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5926 | -0.0001 | 0 | $0.00000 |
+| EXP_0460 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5929 | +0.0001 | 0 | $0.00000 |
+| EXP_0461 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5928 | -0.0001 | 0 | $0.00000 |
+| EXP_0462 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0001 | 0 | $0.00000 |
+| EXP_0463 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0001 | 0 | $0.00000 |
+| EXP_0464 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5923 | -0.0001 | 0 | $0.00000 |
+| EXP_0465 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5922 | -0.0001 | 0 | $0.00000 |
+| EXP_0466 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5924 | +0.0000 | 0 | $0.00000 |
+| EXP_0467 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5921 | -0.0001 | 0 | $0.00000 |
+| EXP_0468 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5922 | +0.0000 | 0 | $0.00000 |
+| EXP_0469 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5922 | +0.0000 | 0 | $0.00000 |
+| EXP_0470 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5976 | +0.0028 | 0 | $0.00000 |
+| EXP_0471 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5954 | +0.0005 | 0 | $0.00000 |
+| EXP_0472 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5952 | +0.0004 | 0 | $0.00000 |
+| EXP_0473 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5949 | +0.0001 | 0 | $0.00000 |
+| EXP_0474 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5948 | -0.0001 | 0 | $0.00000 |
+| EXP_0475 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5947 | -0.0001 | 0 | $0.00000 |
+| EXP_0476 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5945 | -0.0003 | 0 | $0.00000 |
+| EXP_0477 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5840 | +0.0001 | 0 | $0.00000 |
+| EXP_0478 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5842 | +0.0004 | 0 | $0.00000 |
+| EXP_0479 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5839 | +0.0001 | 0 | $0.00000 |
+| EXP_0480 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5837 | -0.0001 | 0 | $0.00000 |
+| EXP_0481 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5837 | -0.0002 | 0 | $0.00000 |
+| EXP_0482 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5836 | -0.0003 | 0 | $0.00000 |
+| EXP_0483 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5800 | +0.0004 | 0 | $0.00000 |
+| EXP_0484 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5797 | +0.0001 | 0 | $0.00000 |
+| EXP_0485 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5796 | -0.0001 | 0 | $0.00000 |
+| EXP_0486 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5795 | -0.0002 | 0 | $0.00000 |
+| EXP_0487 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5794 | -0.0003 | 0 | $0.00000 |
+| EXP_0488 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5798 | +0.0001 | 0 | $0.00000 |
+| EXP_0489 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5796 | -0.0001 | 0 | $0.00000 |
+| EXP_0490 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5794 | -0.0002 | 0 | $0.00000 |
+| EXP_0491 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5793 | -0.0003 | 0 | $0.00000 |
+| EXP_0492 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5793 | -0.0001 | 0 | $0.00000 |
+| EXP_0493 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5792 | -0.0002 | 0 | $0.00000 |
+| EXP_0494 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5791 | -0.0002 | 0 | $0.00000 |
+| EXP_0495 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5789 | -0.0002 | 0 | $0.00000 |
+| EXP_0496 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5789 | -0.0003 | 0 | $0.00000 |
+| EXP_0497 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5788 | -0.0002 | 0 | $0.00000 |
+| EXP_0498 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5601 | +0.0006 | 0 | $0.00000 |
+| EXP_0499 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5604 | +0.0009 | 0 | $0.00000 |
+| EXP_0500 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | -0.0000 | 0 | $0.00000 |
+| EXP_0501 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | -0.0000 | 0 | $0.00000 |
+| EXP_0502 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5594 | -0.0001 | 0 | $0.00000 |
+| EXP_0503 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | +0.0000 | 0 | $0.00000 |
+| EXP_0504 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5587 | +0.0009 | 0 | $0.00000 |
+| EXP_0505 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | +0.0000 | 0 | $0.00000 |
+| EXP_0506 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | +0.0000 | 0 | $0.00000 |
+| EXP_0507 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5577 | -0.0001 | 0 | $0.00000 |
+| EXP_0508 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5577 | -0.0001 | 0 | $0.00000 |
+| EXP_0509 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5579 | -0.0000 | 0 | $0.00000 |
+| EXP_0510 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5579 | -0.0000 | 0 | $0.00000 |
+| EXP_0511 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | -0.0001 | 0 | $0.00000 |
+| EXP_0512 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5576 | -0.0003 | 0 | $0.00000 |
+| EXP_0513 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | -0.0000 | 0 | $0.00000 |
+| EXP_0514 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | -0.0001 | 0 | $0.00000 |
+| EXP_0515 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | +0.0000 | 0 | $0.00000 |
+| EXP_0516 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | -0.0001 | 0 | $0.00000 |
+| EXP_0517 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | +0.0000 | 0 | $0.00000 |
+| EXP_0518 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | +0.0000 | 0 | $0.00000 |
+| EXP_0519 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5482 | +0.0007 | 0 | $0.00000 |
+| EXP_0520 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5476 | +0.0001 | 0 | $0.00000 |
+| EXP_0521 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5474 | -0.0001 | 0 | $0.00000 |
+| EXP_0522 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5474 | -0.0001 | 0 | $0.00000 |
+| EXP_0523 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5468 | -0.0008 | 0 | $0.00000 |
+| EXP_0524 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5478 | +0.0001 | 0 | $0.00000 |
+| EXP_0525 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5477 | -0.0001 | 0 | $0.00000 |
+| EXP_0526 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5477 | -0.0001 | 0 | $0.00000 |
+| EXP_0527 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5471 | -0.0007 | 0 | $0.00000 |
+| EXP_0528 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5470 | -0.0001 | 0 | $0.00000 |
+| EXP_0529 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5470 | -0.0001 | 0 | $0.00000 |
+| EXP_0530 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5465 | -0.0005 | 0 | $0.00000 |
+| EXP_0531 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5468 | -0.0001 | 0 | $0.00000 |
+| EXP_0532 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5464 | -0.0005 | 0 | $0.00000 |
+| EXP_0533 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5464 | -0.0005 | 0 | $0.00000 |
+| EXP_0534 | W000 | completed | Fit ridge on the built-in features plus target_lev | 0.5436 | +0.0001 | 0 | $0.00000 |
+| EXP_0535 | W003 | completed | Fit ridge on the built-in features plus target_lev | 0.5435 | -0.0000 | 0 | $0.00000 |
+| EXP_0536 | W003 | completed | Fit ridge on the built-in features plus target_lev | 0.5434 | -0.0001 | 0 | $0.00000 |
+| EXP_0537 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5427 | -0.0009 | 0 | $0.00000 |
+| EXP_0538 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5428 | -0.0001 | 0 | $0.00000 |
+| EXP_0539 | W000 | completed | Fit ridge on the built-in features plus target_lev | 0.5428 | -0.0001 | 0 | $0.00000 |
+| EXP_0540 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0541 | W003 | completed | Fit ridge on the built-in features plus target_lev | 0.5421 | -0.0008 | 0 | $0.00000 |
+| EXP_0542 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5426 | -0.0001 | 0 | $0.00000 |
+| EXP_0543 | W000 | completed | Fit ridge on the built-in features plus target_lev | 0.5419 | -0.0008 | 0 | $0.00000 |
+| EXP_0544 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5419 | -0.0008 | 0 | $0.00000 |
+| EXP_0545 | W003 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5425 | -0.0001 | 0 | $0.00000 |
+| EXP_0546 | W000 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5424 | -0.0001 | 0 | $0.00000 |
+| EXP_0547 | W001 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5419 | -0.0007 | 0 | $0.00000 |
+| EXP_0548 | W002 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5423 | -0.0001 | 0 | $0.00000 |
+| EXP_0549 | W000 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5417 | -0.0007 | 0 | $0.00000 |
+| EXP_0550 | W003 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5417 | -0.0007 | 0 | $0.00000 |
+| EXP_0551 | W001 | completed | Fit ridge on the built-in features plus control_va | 0.5415 | -0.0001 | 0 | $0.00000 |
+| EXP_0552 | W002 | completed | Fit ridge on the built-in features plus control_va | 0.5412 | -0.0005 | 0 | $0.00000 |
+| EXP_0553 | W003 | completed | Fit ridge on the built-in features plus control_va | 0.5411 | -0.0005 | 0 | $0.00000 |
+| EXP_0554 | W000 | completed | Fit ridge on the built-in features plus shared_mod | 0.5410 | -0.0004 | 0 | $0.00000 |
+| EXP_0555 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6281 | -0.0003 | 0 | $0.00000 |
+| EXP_0556 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6269 | -0.0015 | 0 | $0.00000 |
+| EXP_0557 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6300 | -0.0000 | 0 | $0.00000 |
+| EXP_0558 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6292 | +0.0009 | 0 | $0.00000 |
+| EXP_0559 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6286 | +0.0002 | 0 | $0.00000 |
+| EXP_0560 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6285 | +0.0001 | 0 | $0.00000 |
+| EXP_0561 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6283 | -0.0001 | 0 | $0.00000 |
+| EXP_0562 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6284 | +0.0000 | 0 | $0.00000 |
+| EXP_0563 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6279 | -0.0004 | 0 | $0.00000 |
+| EXP_0564 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6265 | +0.0024 | 0 | $0.00000 |
+| EXP_0565 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6268 | -0.0000 | 0 | $0.00000 |
+| EXP_0566 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6249 | +0.0007 | 0 | $0.00000 |
+| EXP_0567 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6244 | +0.0002 | 0 | $0.00000 |
+| EXP_0568 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6243 | +0.0002 | 0 | $0.00000 |
+| EXP_0569 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6240 | -0.0001 | 0 | $0.00000 |
+| EXP_0570 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6241 | -0.0000 | 0 | $0.00000 |
+| EXP_0571 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6239 | -0.0003 | 0 | $0.00000 |
+| EXP_0572 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6260 | -0.0000 | 0 | $0.00000 |
+| EXP_0573 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6252 | +0.0011 | 0 | $0.00000 |
+| EXP_0574 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6243 | +0.0002 | 0 | $0.00000 |
+| EXP_0575 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6242 | +0.0001 | 0 | $0.00000 |
+| EXP_0576 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6240 | -0.0000 | 0 | $0.00000 |
+| EXP_0577 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6241 | +0.0000 | 0 | $0.00000 |
+| EXP_0578 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6235 | -0.0006 | 0 | $0.00000 |
+| EXP_0579 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6385 | +0.0008 | 0 | $0.00000 |
+| EXP_0580 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6377 | +0.0000 | 0 | $0.00000 |
+| EXP_0581 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6379 | +0.0002 | 0 | $0.00000 |
+| EXP_0582 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6376 | -0.0001 | 0 | $0.00000 |
+| EXP_0583 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6377 | -0.0000 | 0 | $0.00000 |
+| EXP_0584 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6373 | -0.0004 | 0 | $0.00000 |
+| EXP_0585 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6364 | -0.0000 | 0 | $0.00000 |
+| EXP_0586 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6366 | +0.0001 | 0 | $0.00000 |
+| EXP_0587 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6364 | -0.0001 | 0 | $0.00000 |
+| EXP_0588 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6364 | -0.0000 | 0 | $0.00000 |
+| EXP_0589 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6359 | -0.0005 | 0 | $0.00000 |
+| EXP_0590 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6355 | +0.0002 | 0 | $0.00000 |
+| EXP_0591 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6352 | -0.0001 | 0 | $0.00000 |
+| EXP_0592 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6353 | -0.0000 | 0 | $0.00000 |
+| EXP_0593 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6352 | -0.0001 | 0 | $0.00000 |
+| EXP_0594 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6354 | -0.0001 | 0 | $0.00000 |
+| EXP_0595 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6354 | -0.0000 | 0 | $0.00000 |
+| EXP_0596 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6350 | -0.0004 | 0 | $0.00000 |
+| EXP_0597 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6352 | -0.0000 | 0 | $0.00000 |
+| EXP_0598 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6348 | -0.0004 | 0 | $0.00000 |
+| EXP_0599 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6349 | -0.0004 | 0 | $0.00000 |
+| EXP_0600 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6209 | -0.0000 | 0 | $0.00000 |
+| EXP_0601 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6231 | +0.0000 | 0 | $0.00000 |
+| EXP_0602 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6217 | +0.0006 | 0 | $0.00000 |
+| EXP_0603 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6216 | +0.0005 | 0 | $0.00000 |
+| EXP_0604 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6212 | +0.0001 | 0 | $0.00000 |
+| EXP_0605 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6210 | -0.0001 | 0 | $0.00000 |
+| EXP_0606 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6211 | -0.0000 | 0 | $0.00000 |
+| EXP_0607 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6211 | -0.0000 | 0 | $0.00000 |
+| EXP_0608 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6186 | +0.0017 | 0 | $0.00000 |
+| EXP_0609 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6176 | +0.0007 | 0 | $0.00000 |
+| EXP_0610 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6174 | +0.0005 | 0 | $0.00000 |
+| EXP_0611 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6170 | +0.0001 | 0 | $0.00000 |
+| EXP_0612 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6168 | -0.0001 | 0 | $0.00000 |
+| EXP_0613 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6169 | +0.0000 | 0 | $0.00000 |
+| EXP_0614 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6168 | -0.0001 | 0 | $0.00000 |
+| EXP_0615 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6205 | +0.0004 | 0 | $0.00000 |
+| EXP_0616 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6206 | +0.0005 | 0 | $0.00000 |
+| EXP_0617 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6202 | +0.0001 | 0 | $0.00000 |
+| EXP_0618 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6200 | -0.0001 | 0 | $0.00000 |
+| EXP_0619 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6201 | +0.0000 | 0 | $0.00000 |
+| EXP_0620 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6200 | -0.0001 | 0 | $0.00000 |
+| EXP_0621 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6194 | +0.0004 | 0 | $0.00000 |
+| EXP_0622 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6190 | +0.0001 | 0 | $0.00000 |
+| EXP_0623 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6189 | -0.0001 | 0 | $0.00000 |
+| EXP_0624 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6189 | +0.0000 | 0 | $0.00000 |
+| EXP_0625 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6187 | -0.0002 | 0 | $0.00000 |
+| EXP_0626 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6188 | +0.0001 | 0 | $0.00000 |
+| EXP_0627 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6186 | -0.0001 | 0 | $0.00000 |
+| EXP_0628 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6187 | +0.0000 | 0 | $0.00000 |
+| EXP_0629 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6186 | -0.0001 | 0 | $0.00000 |
+| EXP_0630 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6183 | -0.0001 | 0 | $0.00000 |
+| EXP_0631 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6184 | +0.0000 | 0 | $0.00000 |
+| EXP_0632 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6182 | -0.0001 | 0 | $0.00000 |
+| EXP_0633 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6182 | +0.0000 | 0 | $0.00000 |
+| EXP_0634 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6180 | -0.0001 | 0 | $0.00000 |
+| EXP_0635 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6181 | -0.0001 | 0 | $0.00000 |
+| EXP_0636 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6193 | +0.0023 | 0 | $0.00000 |
+| EXP_0637 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6177 | +0.0006 | 0 | $0.00000 |
+| EXP_0638 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6175 | +0.0004 | 0 | $0.00000 |
+| EXP_0639 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6171 | +0.0001 | 0 | $0.00000 |
+| EXP_0640 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6170 | -0.0001 | 0 | $0.00000 |
+| EXP_0641 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6171 | -0.0000 | 0 | $0.00000 |
+| EXP_0642 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6169 | -0.0002 | 0 | $0.00000 |
+| EXP_0643 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6108 | +0.0003 | 0 | $0.00000 |
+| EXP_0644 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6110 | +0.0004 | 0 | $0.00000 |
+| EXP_0645 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0646 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6107 | +0.0001 | 0 | $0.00000 |
+| EXP_0647 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6105 | -0.0001 | 0 | $0.00000 |
+| EXP_0648 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6106 | -0.0000 | 0 | $0.00000 |
+| EXP_0649 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6103 | -0.0003 | 0 | $0.00000 |
+| EXP_0650 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6082 | +0.0004 | 0 | $0.00000 |
+| EXP_0651 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6079 | +0.0001 | 0 | $0.00000 |
+| EXP_0652 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6077 | -0.0001 | 0 | $0.00000 |
+| EXP_0653 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6078 | -0.0000 | 0 | $0.00000 |
+| EXP_0654 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6075 | -0.0003 | 0 | $0.00000 |
+| EXP_0655 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6078 | +0.0001 | 0 | $0.00000 |
+| EXP_0656 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6076 | -0.0001 | 0 | $0.00000 |
+| EXP_0657 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6077 | -0.0000 | 0 | $0.00000 |
+| EXP_0658 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6074 | -0.0003 | 0 | $0.00000 |
+| EXP_0659 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6073 | -0.0001 | 0 | $0.00000 |
+| EXP_0660 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6074 | -0.0000 | 0 | $0.00000 |
+| EXP_0661 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6071 | -0.0003 | 0 | $0.00000 |
+| EXP_0662 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6071 | -0.0000 | 0 | $0.00000 |
+| EXP_0663 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6069 | -0.0003 | 0 | $0.00000 |
+| EXP_0664 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6070 | -0.0003 | 0 | $0.00000 |
+| EXP_0665 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6059 | +0.0007 | 0 | $0.00000 |
+| EXP_0666 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6059 | +0.0007 | 0 | $0.00000 |
+| EXP_0667 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6052 | +0.0000 | 0 | $0.00000 |
+| EXP_0668 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6051 | -0.0001 | 0 | $0.00000 |
+| EXP_0669 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6052 | +0.0000 | 0 | $0.00000 |
+| EXP_0670 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6049 | -0.0003 | 0 | $0.00000 |
+| EXP_0671 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6047 | +0.0006 | 0 | $0.00000 |
+| EXP_0672 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6041 | +0.0000 | 0 | $0.00000 |
+| EXP_0673 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6040 | -0.0000 | 0 | $0.00000 |
+| EXP_0674 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6040 | +0.0000 | 0 | $0.00000 |
+| EXP_0675 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6036 | -0.0004 | 0 | $0.00000 |
+| EXP_0676 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6037 | +0.0000 | 0 | $0.00000 |
+| EXP_0677 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6036 | -0.0001 | 0 | $0.00000 |
+| EXP_0678 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6037 | +0.0000 | 0 | $0.00000 |
+| EXP_0679 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6034 | -0.0003 | 0 | $0.00000 |
+| EXP_0680 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6030 | -0.0001 | 0 | $0.00000 |
+| EXP_0681 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6031 | +0.0000 | 0 | $0.00000 |
+| EXP_0682 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6028 | -0.0003 | 0 | $0.00000 |
+| EXP_0683 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6030 | +0.0000 | 0 | $0.00000 |
+| EXP_0684 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6027 | -0.0003 | 0 | $0.00000 |
+| EXP_0685 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6028 | -0.0002 | 0 | $0.00000 |
+| EXP_0686 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6198 | +0.0001 | 0 | $0.00000 |
+| EXP_0687 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6198 | +0.0001 | 0 | $0.00000 |
+| EXP_0688 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6197 | -0.0001 | 0 | $0.00000 |
+| EXP_0689 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6197 | -0.0000 | 0 | $0.00000 |
+| EXP_0690 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6187 | -0.0011 | 0 | $0.00000 |
+| EXP_0691 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6194 | +0.0001 | 0 | $0.00000 |
+| EXP_0692 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6192 | -0.0001 | 0 | $0.00000 |
+| EXP_0693 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6192 | -0.0000 | 0 | $0.00000 |
+| EXP_0694 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6185 | -0.0007 | 0 | $0.00000 |
+| EXP_0695 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6191 | -0.0001 | 0 | $0.00000 |
+| EXP_0696 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6192 | -0.0000 | 0 | $0.00000 |
+| EXP_0697 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6183 | -0.0010 | 0 | $0.00000 |
+| EXP_0698 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6190 | -0.0000 | 0 | $0.00000 |
+| EXP_0699 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6181 | -0.0010 | 0 | $0.00000 |
+| EXP_0700 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6181 | -0.0010 | 0 | $0.00000 |
+| EXP_0701 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6167 | +0.0001 | 0 | $0.00000 |
+| EXP_0702 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6165 | -0.0001 | 0 | $0.00000 |
+| EXP_0703 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6165 | -0.0001 | 0 | $0.00000 |
+| EXP_0704 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6158 | -0.0008 | 0 | $0.00000 |
+| EXP_0705 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6165 | -0.0001 | 0 | $0.00000 |
+| EXP_0706 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6165 | -0.0000 | 0 | $0.00000 |
+| EXP_0707 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6155 | -0.0011 | 0 | $0.00000 |
+| EXP_0708 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6163 | -0.0001 | 0 | $0.00000 |
+| EXP_0709 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6153 | -0.0011 | 0 | $0.00000 |
+| EXP_0710 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6153 | -0.0011 | 0 | $0.00000 |
+| EXP_0711 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6156 | -0.0001 | 0 | $0.00000 |
+| EXP_0712 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6156 | -0.0000 | 0 | $0.00000 |
+| EXP_0713 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6149 | -0.0007 | 0 | $0.00000 |
+| EXP_0714 | W003 | completed | Fit ridge on the built-in features plus additive_s | 0.6154 | -0.0001 | 0 | $0.00000 |
+| EXP_0715 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6147 | -0.0007 | 0 | $0.00000 |
+| EXP_0716 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6148 | -0.0007 | 0 | $0.00000 |
+| EXP_0717 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6154 | -0.0001 | 0 | $0.00000 |
+| EXP_0718 | W002 | completed | Fit ridge on the built-in features plus additive_s | 0.6145 | -0.0009 | 0 | $0.00000 |
+| EXP_0719 | W001 | completed | Fit ridge on the built-in features plus additive_s | 0.6145 | -0.0009 | 0 | $0.00000 |
+| EXP_0720 | W000 | completed | Fit ridge on the built-in features plus additive_s | 0.6143 | -0.0009 | 0 | $0.00000 |
+| EXP_0721 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6136 | -0.0036 | 0 | $0.00000 |
+| EXP_0722 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6193 | -0.0000 | 0 | $0.00000 |
+| EXP_0723 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6179 | +0.0006 | 0 | $0.00000 |
+| EXP_0724 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6175 | +0.0002 | 0 | $0.00000 |
+| EXP_0725 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6174 | +0.0001 | 0 | $0.00000 |
+| EXP_0726 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6172 | -0.0001 | 0 | $0.00000 |
+| EXP_0727 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6171 | -0.0001 | 0 | $0.00000 |
+| EXP_0728 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6169 | -0.0003 | 0 | $0.00000 |
+| EXP_0729 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6067 | +0.0017 | 0 | $0.00000 |
+| EXP_0730 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6057 | +0.0007 | 0 | $0.00000 |
+| EXP_0731 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6053 | +0.0003 | 0 | $0.00000 |
+| EXP_0732 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6051 | +0.0001 | 0 | $0.00000 |
+| EXP_0733 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6049 | -0.0000 | 0 | $0.00000 |
+| EXP_0734 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6049 | -0.0001 | 0 | $0.00000 |
+| EXP_0735 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6045 | -0.0005 | 0 | $0.00000 |
+| EXP_0736 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6117 | +0.0005 | 0 | $0.00000 |
+| EXP_0737 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6114 | +0.0003 | 0 | $0.00000 |
+| EXP_0738 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6113 | +0.0001 | 0 | $0.00000 |
+| EXP_0739 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6111 | -0.0001 | 0 | $0.00000 |
+| EXP_0740 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6111 | -0.0001 | 0 | $0.00000 |
+| EXP_0741 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6108 | -0.0004 | 0 | $0.00000 |
+| EXP_0742 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6104 | +0.0002 | 0 | $0.00000 |
+| EXP_0743 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6103 | +0.0001 | 0 | $0.00000 |
+| EXP_0744 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6101 | -0.0000 | 0 | $0.00000 |
+| EXP_0745 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6101 | -0.0001 | 0 | $0.00000 |
+| EXP_0746 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0747 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6096 | -0.0006 | 0 | $0.00000 |
+| EXP_0748 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6099 | +0.0001 | 0 | $0.00000 |
+| EXP_0749 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6097 | -0.0001 | 0 | $0.00000 |
+| EXP_0750 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6097 | -0.0001 | 0 | $0.00000 |
+| EXP_0751 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6094 | -0.0003 | 0 | $0.00000 |
+| EXP_0752 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6095 | -0.0001 | 0 | $0.00000 |
+| EXP_0753 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6095 | -0.0001 | 0 | $0.00000 |
+| EXP_0754 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6092 | -0.0004 | 0 | $0.00000 |
+| EXP_0755 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6093 | -0.0001 | 0 | $0.00000 |
+| EXP_0756 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6090 | -0.0004 | 0 | $0.00000 |
+| EXP_0757 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6090 | -0.0004 | 0 | $0.00000 |
+| EXP_0758 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6146 | +0.0025 | 0 | $0.00000 |
+| EXP_0759 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6127 | +0.0007 | 0 | $0.00000 |
+| EXP_0760 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6123 | +0.0002 | 0 | $0.00000 |
+| EXP_0761 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6122 | +0.0001 | 0 | $0.00000 |
+| EXP_0762 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6120 | -0.0000 | 0 | $0.00000 |
+| EXP_0763 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6120 | -0.0001 | 0 | $0.00000 |
+| EXP_0764 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6116 | -0.0005 | 0 | $0.00000 |
+| EXP_0765 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6137 | +0.0004 | 0 | $0.00000 |
+| EXP_0766 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6135 | +0.0002 | 0 | $0.00000 |
+| EXP_0767 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6135 | +0.0002 | 0 | $0.00000 |
+| EXP_0768 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6132 | -0.0001 | 0 | $0.00000 |
+| EXP_0769 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6132 | -0.0001 | 0 | $0.00000 |
+| EXP_0770 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6131 | -0.0002 | 0 | $0.00000 |
+| EXP_0771 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6107 | +0.0002 | 0 | $0.00000 |
+| EXP_0772 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6107 | +0.0002 | 0 | $0.00000 |
+| EXP_0773 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6105 | -0.0001 | 0 | $0.00000 |
+| EXP_0774 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6105 | -0.0001 | 0 | $0.00000 |
+| EXP_0775 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6103 | -0.0002 | 0 | $0.00000 |
+| EXP_0776 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6102 | +0.0002 | 0 | $0.00000 |
+| EXP_0777 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6100 | -0.0001 | 0 | $0.00000 |
+| EXP_0778 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6099 | -0.0001 | 0 | $0.00000 |
+| EXP_0779 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6099 | -0.0001 | 0 | $0.00000 |
+| EXP_0780 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6100 | -0.0001 | 0 | $0.00000 |
+| EXP_0781 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6100 | -0.0001 | 0 | $0.00000 |
+| EXP_0782 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6098 | -0.0002 | 0 | $0.00000 |
+| EXP_0783 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6097 | -0.0001 | 0 | $0.00000 |
+| EXP_0784 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6096 | -0.0002 | 0 | $0.00000 |
+| EXP_0785 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6095 | -0.0002 | 0 | $0.00000 |
+| EXP_0786 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5967 | +0.0007 | 0 | $0.00000 |
+| EXP_0787 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5963 | +0.0003 | 0 | $0.00000 |
+| EXP_0788 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5960 | +0.0001 | 0 | $0.00000 |
+| EXP_0789 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.5959 | -0.0000 | 0 | $0.00000 |
+| EXP_0790 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.5959 | -0.0000 | 0 | $0.00000 |
+| EXP_0791 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5953 | -0.0006 | 0 | $0.00000 |
+| EXP_0792 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.5951 | +0.0003 | 0 | $0.00000 |
+| EXP_0793 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5948 | +0.0001 | 0 | $0.00000 |
+| EXP_0794 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.5948 | -0.0000 | 0 | $0.00000 |
+| EXP_0795 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5947 | -0.0001 | 0 | $0.00000 |
+| EXP_0796 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5939 | -0.0008 | 0 | $0.00000 |
+| EXP_0797 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.5942 | +0.0001 | 0 | $0.00000 |
+| EXP_0798 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.5941 | -0.0000 | 0 | $0.00000 |
+| EXP_0799 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5941 | -0.0001 | 0 | $0.00000 |
+| EXP_0800 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.5936 | -0.0006 | 0 | $0.00000 |
+| EXP_0801 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5938 | -0.0000 | 0 | $0.00000 |
+| EXP_0802 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.5938 | -0.0000 | 0 | $0.00000 |
+| EXP_0803 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.5932 | -0.0006 | 0 | $0.00000 |
+| EXP_0804 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.5937 | -0.0001 | 0 | $0.00000 |
+| EXP_0805 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.5931 | -0.0006 | 0 | $0.00000 |
+| EXP_0806 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.5931 | -0.0006 | 0 | $0.00000 |
+| EXP_0807 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6075 | +0.0001 | 0 | $0.00000 |
+| EXP_0808 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6075 | +0.0002 | 0 | $0.00000 |
+| EXP_0809 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6073 | -0.0000 | 0 | $0.00000 |
+| EXP_0810 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6073 | -0.0001 | 0 | $0.00000 |
+| EXP_0811 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6070 | -0.0004 | 0 | $0.00000 |
+| EXP_0812 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6068 | +0.0002 | 0 | $0.00000 |
+| EXP_0813 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6066 | -0.0001 | 0 | $0.00000 |
+| EXP_0814 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6065 | -0.0001 | 0 | $0.00000 |
+| EXP_0815 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6066 | +0.0000 | 0 | $0.00000 |
+| EXP_0816 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6066 | -0.0001 | 0 | $0.00000 |
+| EXP_0817 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6066 | -0.0001 | 0 | $0.00000 |
+| EXP_0818 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6064 | -0.0002 | 0 | $0.00000 |
+| EXP_0819 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6063 | -0.0001 | 0 | $0.00000 |
+| EXP_0820 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6062 | -0.0002 | 0 | $0.00000 |
+| EXP_0821 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6062 | -0.0002 | 0 | $0.00000 |
+| EXP_0822 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6050 | +0.0002 | 0 | $0.00000 |
+| EXP_0823 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6048 | -0.0000 | 0 | $0.00000 |
+| EXP_0824 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6048 | -0.0001 | 0 | $0.00000 |
+| EXP_0825 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6048 | -0.0001 | 0 | $0.00000 |
+| EXP_0826 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6048 | -0.0000 | 0 | $0.00000 |
+| EXP_0827 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6048 | -0.0001 | 0 | $0.00000 |
+| EXP_0828 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6045 | -0.0004 | 0 | $0.00000 |
+| EXP_0829 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6046 | -0.0001 | 0 | $0.00000 |
+| EXP_0830 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6043 | -0.0004 | 0 | $0.00000 |
+| EXP_0831 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6043 | -0.0004 | 0 | $0.00000 |
+| EXP_0832 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6037 | -0.0001 | 0 | $0.00000 |
+| EXP_0833 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6036 | -0.0001 | 0 | $0.00000 |
+| EXP_0834 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6037 | +0.0000 | 0 | $0.00000 |
+| EXP_0835 | W003 | completed | Fit ridge on the built-in features plus response_c | 0.6034 | -0.0001 | 0 | $0.00000 |
+| EXP_0836 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | -0.0000 | 0 | $0.00000 |
+| EXP_0837 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6035 | +0.0000 | 0 | $0.00000 |
+| EXP_0838 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6034 | -0.0001 | 0 | $0.00000 |
+| EXP_0839 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0840 | W000 | completed | Fit ridge on the built-in features plus response_c | 0.6032 | -0.0002 | 0 | $0.00000 |
+| EXP_0841 | W001 | completed | Fit ridge on the built-in features plus response_c | 0.6032 | -0.0002 | 0 | $0.00000 |
+| EXP_0842 | W002 | completed | Fit ridge on the built-in features plus response_c | 0.6030 | -0.0002 | 0 | $0.00000 |
+| EXP_0843 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6048 | +0.0022 | 0 | $0.00000 |
+| EXP_0844 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6031 | +0.0004 | 0 | $0.00000 |
+| EXP_0845 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6031 | +0.0004 | 0 | $0.00000 |
+| EXP_0846 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6027 | +0.0001 | 0 | $0.00000 |
+| EXP_0847 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6026 | -0.0001 | 0 | $0.00000 |
+| EXP_0848 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6025 | -0.0001 | 0 | $0.00000 |
+| EXP_0849 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6026 | -0.0001 | 0 | $0.00000 |
+| EXP_0850 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6084 | +0.0002 | 0 | $0.00000 |
+| EXP_0851 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6086 | +0.0004 | 0 | $0.00000 |
+| EXP_0852 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6083 | +0.0001 | 0 | $0.00000 |
+| EXP_0853 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6081 | -0.0001 | 0 | $0.00000 |
+| EXP_0854 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6081 | -0.0001 | 0 | $0.00000 |
+| EXP_0855 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6081 | -0.0001 | 0 | $0.00000 |
+| EXP_0856 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6067 | +0.0004 | 0 | $0.00000 |
+| EXP_0857 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6063 | +0.0001 | 0 | $0.00000 |
+| EXP_0858 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6062 | -0.0000 | 0 | $0.00000 |
+| EXP_0859 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6061 | -0.0001 | 0 | $0.00000 |
+| EXP_0860 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6061 | -0.0001 | 0 | $0.00000 |
+| EXP_0861 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6063 | +0.0001 | 0 | $0.00000 |
+| EXP_0862 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6062 | -0.0001 | 0 | $0.00000 |
+| EXP_0863 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6061 | -0.0001 | 0 | $0.00000 |
+| EXP_0864 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6061 | -0.0001 | 0 | $0.00000 |
+| EXP_0865 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6059 | -0.0001 | 0 | $0.00000 |
+| EXP_0866 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6058 | -0.0001 | 0 | $0.00000 |
+| EXP_0867 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.6059 | -0.0001 | 0 | $0.00000 |
+| EXP_0868 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.6056 | -0.0001 | 0 | $0.00000 |
+| EXP_0869 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.6057 | -0.0001 | 0 | $0.00000 |
+| EXP_0870 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.6056 | -0.0001 | 0 | $0.00000 |
+| EXP_0871 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5894 | +0.0003 | 0 | $0.00000 |
+| EXP_0872 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5897 | +0.0006 | 0 | $0.00000 |
+| EXP_0873 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5891 | +0.0000 | 0 | $0.00000 |
+| EXP_0874 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5890 | -0.0001 | 0 | $0.00000 |
+| EXP_0875 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5890 | -0.0001 | 0 | $0.00000 |
+| EXP_0876 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5890 | -0.0000 | 0 | $0.00000 |
+| EXP_0877 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5883 | +0.0006 | 0 | $0.00000 |
+| EXP_0878 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5877 | +0.0000 | 0 | $0.00000 |
+| EXP_0879 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5877 | -0.0000 | 0 | $0.00000 |
+| EXP_0880 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5876 | -0.0001 | 0 | $0.00000 |
+| EXP_0881 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5875 | -0.0002 | 0 | $0.00000 |
+| EXP_0882 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5879 | +0.0000 | 0 | $0.00000 |
+| EXP_0883 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5878 | -0.0001 | 0 | $0.00000 |
+| EXP_0884 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5877 | -0.0001 | 0 | $0.00000 |
+| EXP_0885 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5876 | -0.0002 | 0 | $0.00000 |
+| EXP_0886 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5872 | -0.0001 | 0 | $0.00000 |
+| EXP_0887 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5872 | -0.0001 | 0 | $0.00000 |
+| EXP_0888 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5872 | -0.0000 | 0 | $0.00000 |
+| EXP_0889 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5871 | -0.0001 | 0 | $0.00000 |
+| EXP_0890 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5871 | -0.0000 | 0 | $0.00000 |
+| EXP_0891 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5871 | -0.0000 | 0 | $0.00000 |
+| EXP_0892 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5950 | +0.0005 | 0 | $0.00000 |
+| EXP_0893 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5946 | +0.0001 | 0 | $0.00000 |
+| EXP_0894 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5945 | -0.0000 | 0 | $0.00000 |
+| EXP_0895 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5944 | -0.0001 | 0 | $0.00000 |
+| EXP_0896 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5944 | -0.0001 | 0 | $0.00000 |
+| EXP_0897 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5949 | +0.0001 | 0 | $0.00000 |
+| EXP_0898 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5948 | -0.0001 | 0 | $0.00000 |
+| EXP_0899 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5947 | -0.0001 | 0 | $0.00000 |
+| EXP_0900 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5947 | -0.0001 | 0 | $0.00000 |
+| EXP_0901 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5943 | -0.0001 | 0 | $0.00000 |
+| EXP_0902 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5943 | -0.0001 | 0 | $0.00000 |
+| EXP_0903 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5944 | +0.0000 | 0 | $0.00000 |
+| EXP_0904 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5941 | -0.0001 | 0 | $0.00000 |
+| EXP_0905 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5942 | +0.0000 | 0 | $0.00000 |
+| EXP_0906 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5942 | +0.0000 | 0 | $0.00000 |
+| EXP_0907 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5933 | +0.0000 | 0 | $0.00000 |
+| EXP_0908 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5932 | -0.0000 | 0 | $0.00000 |
+| EXP_0909 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5931 | -0.0001 | 0 | $0.00000 |
+| EXP_0910 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5931 | -0.0002 | 0 | $0.00000 |
+| EXP_0911 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0000 | 0 | $0.00000 |
+| EXP_0912 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0001 | 0 | $0.00000 |
+| EXP_0913 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0001 | 0 | $0.00000 |
+| EXP_0914 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5926 | -0.0001 | 0 | $0.00000 |
+| EXP_0915 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5926 | -0.0001 | 0 | $0.00000 |
+| EXP_0916 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5925 | -0.0001 | 0 | $0.00000 |
+| EXP_0917 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5928 | -0.0001 | 0 | $0.00000 |
+| EXP_0918 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5928 | -0.0001 | 0 | $0.00000 |
+| EXP_0919 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5928 | -0.0001 | 0 | $0.00000 |
+| EXP_0920 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5926 | -0.0001 | 0 | $0.00000 |
+| EXP_0921 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5927 | -0.0001 | 0 | $0.00000 |
+| EXP_0922 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5926 | -0.0001 | 0 | $0.00000 |
+| EXP_0923 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5921 | -0.0001 | 0 | $0.00000 |
+| EXP_0924 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5923 | +0.0000 | 0 | $0.00000 |
+| EXP_0925 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5923 | +0.0000 | 0 | $0.00000 |
+| EXP_0926 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5921 | +0.0000 | 0 | $0.00000 |
+| EXP_0927 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5979 | +0.0003 | 0 | $0.00000 |
+| EXP_0928 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5979 | +0.0003 | 0 | $0.00000 |
+| EXP_0929 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5976 | +0.0000 | 0 | $0.00000 |
+| EXP_0930 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5975 | -0.0001 | 0 | $0.00000 |
+| EXP_0931 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5975 | -0.0001 | 0 | $0.00000 |
+| EXP_0932 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_0933 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5973 | -0.0003 | 0 | $0.00000 |
+| EXP_0934 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5957 | +0.0003 | 0 | $0.00000 |
+| EXP_0935 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5954 | +0.0000 | 0 | $0.00000 |
+| EXP_0936 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5953 | -0.0000 | 0 | $0.00000 |
+| EXP_0937 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5952 | -0.0001 | 0 | $0.00000 |
+| EXP_0938 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5950 | -0.0004 | 0 | $0.00000 |
+| EXP_0939 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5952 | +0.0000 | 0 | $0.00000 |
+| EXP_0940 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5951 | -0.0001 | 0 | $0.00000 |
+| EXP_0941 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5951 | -0.0001 | 0 | $0.00000 |
+| EXP_0942 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5949 | -0.0003 | 0 | $0.00000 |
+| EXP_0943 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5948 | -0.0001 | 0 | $0.00000 |
+| EXP_0944 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5948 | -0.0001 | 0 | $0.00000 |
+| EXP_0945 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5946 | -0.0003 | 0 | $0.00000 |
+| EXP_0946 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5946 | -0.0001 | 0 | $0.00000 |
+| EXP_0947 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5945 | -0.0003 | 0 | $0.00000 |
+| EXP_0948 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5944 | -0.0003 | 0 | $0.00000 |
+| EXP_0949 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5843 | +0.0004 | 0 | $0.00000 |
+| EXP_0950 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5841 | +0.0001 | 0 | $0.00000 |
+| EXP_0951 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5839 | -0.0001 | 0 | $0.00000 |
+| EXP_0952 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5838 | -0.0002 | 0 | $0.00000 |
+| EXP_0953 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5837 | -0.0003 | 0 | $0.00000 |
+| EXP_0954 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5843 | +0.0001 | 0 | $0.00000 |
+| EXP_0955 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5841 | -0.0001 | 0 | $0.00000 |
+| EXP_0956 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5840 | -0.0002 | 0 | $0.00000 |
+| EXP_0957 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5839 | -0.0003 | 0 | $0.00000 |
+| EXP_0958 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5838 | -0.0001 | 0 | $0.00000 |
+| EXP_0959 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5838 | -0.0002 | 0 | $0.00000 |
+| EXP_0960 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5837 | -0.0003 | 0 | $0.00000 |
+| EXP_0961 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5836 | -0.0002 | 0 | $0.00000 |
+| EXP_0962 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5835 | -0.0003 | 0 | $0.00000 |
+| EXP_0963 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5834 | -0.0003 | 0 | $0.00000 |
+| EXP_0964 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5801 | +0.0001 | 0 | $0.00000 |
+| EXP_0965 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5800 | -0.0001 | 0 | $0.00000 |
+| EXP_0966 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5798 | -0.0002 | 0 | $0.00000 |
+| EXP_0967 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5798 | -0.0003 | 0 | $0.00000 |
+| EXP_0968 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5797 | -0.0001 | 0 | $0.00000 |
+| EXP_0969 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5796 | -0.0002 | 0 | $0.00000 |
+| EXP_0970 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5795 | -0.0003 | 0 | $0.00000 |
+| EXP_0971 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5794 | -0.0002 | 0 | $0.00000 |
+| EXP_0972 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5793 | -0.0003 | 0 | $0.00000 |
+| EXP_0973 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5792 | -0.0003 | 0 | $0.00000 |
+| EXP_0974 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5797 | -0.0001 | 0 | $0.00000 |
+| EXP_0975 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5796 | -0.0002 | 0 | $0.00000 |
+| EXP_0976 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5795 | -0.0003 | 0 | $0.00000 |
+| EXP_0977 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5793 | -0.0002 | 0 | $0.00000 |
+| EXP_0978 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5792 | -0.0003 | 0 | $0.00000 |
+| EXP_0979 | W000 | completed | Fit ridge on the built-in features plus similar_pe | 0.5791 | -0.0003 | 0 | $0.00000 |
+| EXP_0980 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5791 | -0.0002 | 0 | $0.00000 |
+| EXP_0981 | W001 | completed | Fit ridge on the built-in features plus similar_pe | 0.5790 | -0.0003 | 0 | $0.00000 |
+| EXP_0982 | W003 | completed | Fit ridge on the built-in features plus similar_pe | 0.5789 | -0.0002 | 0 | $0.00000 |
+| EXP_0983 | W002 | completed | Fit ridge on the built-in features plus similar_pe | 0.5787 | -0.0003 | 0 | $0.00000 |
+| EXP_0984 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5609 | +0.0009 | 0 | $0.00000 |
+| EXP_0985 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5601 | -0.0000 | 0 | $0.00000 |
+| EXP_0986 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5601 | +0.0000 | 0 | $0.00000 |
+| EXP_0987 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5600 | -0.0001 | 0 | $0.00000 |
+| EXP_0988 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5599 | -0.0001 | 0 | $0.00000 |
+| EXP_0989 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5604 | -0.0000 | 0 | $0.00000 |
+| EXP_0990 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5604 | -0.0000 | 0 | $0.00000 |
+| EXP_0991 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5603 | -0.0001 | 0 | $0.00000 |
+| EXP_0992 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5601 | -0.0003 | 0 | $0.00000 |
+| EXP_0993 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | -0.0000 | 0 | $0.00000 |
+| EXP_0994 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5594 | -0.0001 | 0 | $0.00000 |
+| EXP_0995 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | +0.0000 | 0 | $0.00000 |
+| EXP_0996 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5594 | -0.0001 | 0 | $0.00000 |
+| EXP_0997 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | +0.0000 | 0 | $0.00000 |
+| EXP_0998 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5595 | +0.0000 | 0 | $0.00000 |
+| EXP_0999 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5587 | -0.0000 | 0 | $0.00000 |
+| EXP_1000 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5587 | +0.0000 | 0 | $0.00000 |
+| EXP_1001 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5586 | -0.0001 | 0 | $0.00000 |
+| EXP_1002 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5583 | -0.0004 | 0 | $0.00000 |
+| EXP_1003 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | +0.0000 | 0 | $0.00000 |
+| EXP_1004 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5577 | -0.0001 | 0 | $0.00000 |
+| EXP_1005 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5577 | -0.0001 | 0 | $0.00000 |
+| EXP_1006 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5577 | -0.0001 | 0 | $0.00000 |
+| EXP_1007 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5577 | -0.0002 | 0 | $0.00000 |
+| EXP_1008 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5576 | -0.0001 | 0 | $0.00000 |
+| EXP_1009 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5579 | -0.0000 | 0 | $0.00000 |
+| EXP_1010 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | -0.0001 | 0 | $0.00000 |
+| EXP_1011 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5576 | -0.0003 | 0 | $0.00000 |
+| EXP_1012 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5578 | -0.0001 | 0 | $0.00000 |
+| EXP_1013 | W003 | completed | Fit ridge on the built-in features plus external_k | 0.5575 | -0.0004 | 0 | $0.00000 |
+| EXP_1014 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5575 | -0.0003 | 0 | $0.00000 |
+| EXP_1015 | W000 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | -0.0001 | 0 | $0.00000 |
+| EXP_1016 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5570 | +0.0000 | 0 | $0.00000 |
+| EXP_1017 | W002 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | +0.0000 | 0 | $0.00000 |
+| EXP_1018 | W001 | completed | Fit ridge on the built-in features plus external_k | 0.5569 | +0.0000 | 0 | $0.00000 |
+| EXP_1019 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5483 | +0.0000 | 0 | $0.00000 |
+| EXP_1020 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5482 | -0.0000 | 0 | $0.00000 |
+| EXP_1021 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5481 | -0.0001 | 0 | $0.00000 |
+| EXP_1022 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5474 | -0.0009 | 0 | $0.00000 |
+| EXP_1023 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5475 | -0.0001 | 0 | $0.00000 |
+| EXP_1024 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5475 | -0.0001 | 0 | $0.00000 |
+| EXP_1025 | None | duplicate | Adding external_krr_replogle2022_k562_e18 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0186 |  |  |  |  |
+| EXP_1026 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5468 | -0.0008 | 0 | $0.00000 |
+| EXP_1027 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5474 | -0.0001 | 0 | $0.00000 |
+| EXP_1028 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5467 | -0.0008 | 0 | $0.00000 |
+| EXP_1029 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5467 | -0.0008 | 0 | $0.00000 |
+| EXP_1030 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5478 | -0.0001 | 0 | $0.00000 |
+| EXP_1031 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5477 | -0.0001 | 0 | $0.00000 |
+| EXP_1032 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5471 | -0.0007 | 0 | $0.00000 |
+| EXP_1033 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5476 | -0.0001 | 0 | $0.00000 |
+| EXP_1034 | W002 | completed | Fit ridge on the built-in features plus external_d | 0.5470 | -0.0007 | 0 | $0.00000 |
+| EXP_1035 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5470 | -0.0007 | 0 | $0.00000 |
+| EXP_1036 | W001 | completed | Fit ridge on the built-in features plus external_d | 0.5469 | -0.0001 | 0 | $0.00000 |
+| EXP_1037 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5465 | -0.0005 | 0 | $0.00000 |
+| EXP_1038 | W000 | completed | Fit ridge on the built-in features plus external_d | 0.5465 | -0.0005 | 0 | $0.00000 |
+| EXP_1039 | W003 | completed | Fit ridge on the built-in features plus external_d | 0.5463 | -0.0005 | 0 | $0.00000 |
+| EXP_1040 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5436 | -0.0000 | 0 | $0.00000 |
+| EXP_1041 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5435 | -0.0001 | 0 | $0.00000 |
+| EXP_1042 | W000 | completed | Fit ridge on the built-in features plus target_lev | 0.5427 | -0.0009 | 0 | $0.00000 |
+| EXP_1043 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5434 | -0.0001 | 0 | $0.00000 |
+| EXP_1044 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5426 | -0.0009 | 0 | $0.00000 |
+| EXP_1045 | W003 | completed | Fit ridge on the built-in features plus target_lev | 0.5425 | -0.0009 | 0 | $0.00000 |
+| EXP_1046 | W003 | completed | Fit ridge on the built-in features plus target_lev | 0.5427 | -0.0001 | 0 | $0.00000 |
+| EXP_1047 | W001 | completed | Fit ridge on the built-in features plus target_lev | 0.5420 | -0.0008 | 0 | $0.00000 |
+| EXP_1048 | W002 | completed | Fit ridge on the built-in features plus target_lev | 0.5420 | -0.0008 | 0 | $0.00000 |
+| EXP_1049 | W000 | completed | Fit ridge on the built-in features plus target_lev | 0.5418 | -0.0008 | 0 | $0.00000 |
+| EXP_1050 | W003 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5424 | -0.0001 | 0 | $0.00000 |
+| EXP_1051 | W002 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5418 | -0.0007 | 0 | $0.00000 |
+| EXP_1052 | W000 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5418 | -0.0007 | 0 | $0.00000 |
+| EXP_1053 | W001 | completed | Fit ridge on the built-in features plus coexpr_tar | 0.5416 | -0.0007 | 0 | $0.00000 |
+| EXP_1054 | W002 | completed | Fit ridge on the built-in features plus control_va | 0.5411 | -0.0005 | 0 | $0.00000 |
+
+## 4. Tokens
+- workers: 5186 in (0 cached) / 5991 out
+- planner: 0 in (0 cached) / 0 out
+
+## 5-7. Cost and throughput
+- worker LLM cost: $0.00000; planner: $0.00000
+- worker cost per completed experiment: $0.00000
+- completed experiments per minute: 65.865
+
+## 8. Bottlenecks and duplicated work
+- time: {"worker_llm_latency": 0, "experiment_wall": 1548.8, "experiment_cpu": 638.6, "planner_latency": 0, "worker_capacity": 3760.4}
+- LLM latency share of experiment time: 0%; worker utilisation: 41%
+- replicate group ['EXP_0022', 'EXP_0023']: scores [0.5793]
+- replicate group ['EXP_0040', 'EXP_0041']: scores [0.6291]
+- replicate group ['EXP_0058', 'EXP_0059', 'EXP_0076', 'EXP_0093', 'EXP_0186', 'EXP_0187', 'EXP_0204', 'EXP_0221', 'EXP_0326', 'EXP_0435', 'EXP_0540', 'EXP_0645', 'EXP_0746', 'EXP_0839', 'EXP_0932', 'EXP_1025']: scores [0.63, 0.6296]
+- no change vs parent: ['EXP_0022', 'EXP_0031', 'EXP_0032', 'EXP_0039', 'EXP_0051', 'EXP_0060', 'EXP_0068', 'EXP_0077', 'EXP_0085', 'EXP_0094', 'EXP_0106', 'EXP_0114', 'EXP_0126', 'EXP_0138', 'EXP_0146', 'EXP_0162', 'EXP_0170', 'EXP_0198', 'EXP_0205', 'EXP_0231', 'EXP_0233', 'EXP_0246', 'EXP_0255', 'EXP_0256', 'EXP_0259', 'EXP_0260', 'EXP_0261', 'EXP_0262', 'EXP_0263', 'EXP_0264', 'EXP_0265', 'EXP_0266', 'EXP_0280', 'EXP_0336', 'EXP_0343', 'EXP_0601']
+
+## 9. Projection (worker LLM cost)
+- 8 workers 1h: $0.00
+- 8 workers 6h: $0.00
+- 16 workers 1h: $0.00
+- 16 workers 6h: $0.00
+- 44 workers 1h: $0.00
+- 44 workers 6h: $0.00
+- planner: about $0.00/hour at the measured call rate
+- Linear in workers x time from measured worker-LLM spend per worker-minute; the planner is called when the queue runs low, so its cost grows sub-linearly with workers.
