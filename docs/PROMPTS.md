@@ -115,10 +115,10 @@ RISKY: propose bolder, less obvious biological hypotheses than those in flight; 
 The first round of a batch has no focus line and follows the configured mix.
 
 **Norman variant.** When the research state's DATASET line is that of a bundle with pairs (it then contains the key
-rule of section 3), `planner_user` adds one sentence after "Only reference features listed in the state.":
+rule of section 3), `planner_user` adds two sentences after "Only reference features listed in the state.":
 
 ```text
- Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes.
+ Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes. The baselines in the state are reference predictions, not features: no model contains baseline_additive's prediction (a pair's change as the sum of its genes' single-gene training changes) unless one of its features computes it.
 ```
 
 and the shape's `add_features` entry reads `"for combine (a feature-set combination): existing feature names to add"`.
@@ -318,7 +318,12 @@ For the Adamson runs that is 2,055 genes and 50 training perturbations (the 17 v
 scored, not trained on; the 21 query-only perturbations are never mentioned). The KNOWLEDGE AVAILABLE line lists
 the Adamson bundle's prior-knowledge files: `gene_sets` (pathway and module gene sets), `ppi_network`
 (protein-protein interaction edges), `prior_network` (signed regulator-to-target edges), `targets` (which gene each
-perturbation knocks down) and `transcription_factors`.
+perturbation knocks down) and `transcription_factors`. A file that describes itself, an external screen built by
+tools/build_external_screen.py (Replogle 2022 as `replogle2022_k562`), is listed with its whole "description" (up to
+900 characters: what the deltas are, the sign to apply, the source) and its keys, `<name>: <description> (a dict with
+keys description, sign, source, genes, ...)`; the other files keep the short form shown below. Until 11 Oct 2026 the
+screen too was cut to its first 60 characters, and the Norman agents of N3 used it in 1 of 355 features
+(docs/NORMAN_PLAN.md section 8). Workers get the same line.
 
 **Norman variant.** A bundle with pairs of genes or a recorded modality gets its DATASET line from
 `prompts.dataset_line` instead (`lab.data_summary`; the line above, and its older multi-target form "targets of 1 to N
