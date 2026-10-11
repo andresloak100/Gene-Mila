@@ -42,6 +42,8 @@ def render_matching(info: dict) -> str:
          f"- bundle targets missing: {len(m['missing'])}" + (f": {', '.join(m['missing'])}" if m["missing"] else ""),
          f"- bundle genes measured: {info['n_measured']:,} of {len(info['genes']):,}",
          f"- labels naming two or more genes (skipped): {len(m['multi_gene'])}",
+         f"- labels naming a bundle target plus an unrecognised token, possibly a second gene the screen did not "
+         f"measure (ambiguous, skipped): {len(m['ambiguous'])}" + (f": {', '.join(m['ambiguous'])}" if m["ambiguous"] else ""),
          f"- other labels (no bundle target): {m['n_other']}", "",
          "| target | external labels | cells |", "|---|---|---|"]
     for t, labs in m["by_target"].items():
@@ -66,8 +68,10 @@ def render(knowledge: dict) -> str:
          f"Bundle genes measured in the screen: {n_meas:,} of {len(genes):,}. Bundle targets with an external "
          f"response: {len(perts)}; missing: {len(knowledge['bundle_targets_missing'])}"
          + (f" ({', '.join(knowledge['bundle_targets_missing'])})" if knowledge["bundle_targets_missing"] else "")
-         + f". Labels naming two or more genes were skipped: {src['n_labels_multi_gene_skipped']}; labels matching no "
-         f"bundle target: {src['n_labels_other']}.", "",
+         + f". Labels naming two or more genes were skipped: {src['n_labels_multi_gene_skipped']}; labels naming a bundle "
+         f"target plus an unrecognised token were skipped as ambiguous: {src.get('n_labels_ambiguous_skipped', 0)}"
+         + (f" ({', '.join(src['labels_ambiguous_skipped'])})" if src.get("labels_ambiguous_skipped") else "")
+         + f"; labels matching no bundle target: {src['n_labels_other']}.", "",
          "Per target: cells pooled, external labels pooled, mean absolute delta over the measured genes, the delta of "
          "the target gene itself (a knockdown should be negative), and the largest absolute deltas.", "",
          "| target | cells | labels | mean abs delta | own delta | largest deltas |", "|---|---|---|---|---|---|"]
@@ -99,7 +103,8 @@ def main(argv=None) -> int:
     ap.add_argument("--chunk", type=int, default=None, help=f"cells per chunk for CSR and dense X (default "
                     f"{es.DEFAULT_CHUNK_ROWS}), genes per chunk for CSC X (default {es.DEFAULT_CHUNK_COLS})")
     ap.add_argument("--chunk-nnz", type=int, default=es.DEFAULT_CHUNK_NNZ,
-                    help="stored values per CSC chunk; a chunk shrinks below --chunk genes when they are dense")
+                    help="stored values per chunk in every layout: a chunk shrinks below --chunk genes (CSC) or cells "
+                         "(CSR, dense) when they hold more values than this; the memory bound on a small machine")
     ap.add_argument("--already-normalised", action="store_true", help="X is not raw counts: average it as stored")
     ap.add_argument("--no-md5", action="store_true", help="skip the md5 of the h5ad (saves one read of the file)")
     ap.add_argument("--force", action="store_true", help="overwrite an existing knowledge file")

@@ -22,7 +22,7 @@ N_GENES = 100
 
 def test_never_reads_the_sealed_labels():
     src = (ROOT / "tools" / "noise_ceiling.py").read_text().lower()
-    for word in ("val2", "query_only", "oracle"):
+    for word in ("val2", "query_only", "queryoracle", "benchmark.oracle", "lab.oracle", "oracle.query"):
         assert word not in src, word
 
 
@@ -113,6 +113,76 @@ def test_ceiling_is_bounded_and_degenerate_cases_are_handled(tmp_path):
     assert nc._clean({"a": float("nan"), "b": [np.float64("inf"), np.int64(3), 1.5]}) == {"a": None, "b": [None, 3, 1.5]}
 
 
+def _subsampled_bundle(tmp_path, seed=0, n_all=1000, n_stored=300, scale=0.05):
+    """A bundle like a real one: the recorded target of SUB averages n_all cells but only n_stored of them are
+    stored for cell-eval. Returns (dir, true mean expression of SUB, lab control mean)."""
+    rng = np.random.default_rng(seed)
+    genes = [f"G{i:03d}" for i in range(N_GENES)]
+    mu = rng.gamma(4.0, 1.0, N_GENES) + 2.0
+
+    def cells(n, delta):
+        return np.clip(mu + delta + rng.normal(0, 0.5, size=(n, N_GENES)), 0, None).astype(np.float32)
+
+    public_control = cells(500, 0.0)
+    truth = rng.normal(0, scale, N_GENES)
+    every = cells(n_all, truth)
+    stored = every[rng.choice(n_all, size=n_stored, replace=False)]
+    means = {"SUB": every.astype(np.float64).mean(axis=0), "T1": cells(50, 0.0).mean(axis=0),
+             "S1": cells(50, 0.0).mean(axis=0)}
+    ncells = {"SUB": n_all, "T1": 50, "S1": 50}
+    targets = {k: [genes[0]] for k in means}
+    splits = {"train": ["T1"], "val1": ["SUB"], "val2": ["S1"], "seed": 0}
+    splits["split_id"] = split_id_for(splits)
+    out = write_bundle(tmp_path / "sub", "toy", genes, public_control, means, ncells, targets, splits,
+                       eval_cells={"control": cells(100, 0.0), "SUB": stored})
+    return out, mu + truth, public_control.astype(np.float64).mean(axis=0)
+
+
+def test_target_over_more_cells_than_stored_needs_the_cell_count(tmp_path):
+    out, true_mean, control_mean = _subsampled_bundle(tmp_path)
+    z = np.load(out / "private" / "val1.npz", allow_pickle=False)
+    recorded = z["means"][0].astype(np.float64)
+    # what the lab's metric gives a predictor of the true mean expression (both sides subtract the same control mean)
+    perfect = nc.pearson(true_mean - control_mean, recorded - control_mean)
+    # without the count the ceiling is that of the 300 stored cells: a lower bound, and reported as one
+    low = nc.analyse_dataset(out, repeats=30, seed=0)
+    row = low["perturbations"][0]
+    assert row["pert"] == "SUB" and row["n_cells"] == 300 and row["n_target"] is None and row["sb_k"] == 2.0
+    assert not row["target_is_stored_mean"] and row["ceiling"] < perfect - 0.03
+    assert low["overall"]["lower_bound"] and low["overall"]["n_target_unknown"] == 1 and low["overall"]["n_corrected"] == 0
+    md = nc.render(low)
+    assert "can reach at least about" in md and "lower bound" in md and "cannot exceed" not in md
+    assert "| SUB | 300 | unknown (lower bound) |" in md
+    # with the count, Spearman-Brown is carried to the 1000 cells behind the target and the ceiling is right
+    high = nc.analyse_dataset(out, repeats=30, seed=0, ncells={"SUB": 1000, "T1": 50})
+    row = high["perturbations"][0]
+    assert row["n_target"] == 1000 and row["sb_k"] == pytest.approx(2000 / 300)
+    assert abs(row["ceiling"] - perfect) < 0.03 and row["ceiling"] > low["perturbations"][0]["ceiling"]
+    assert row["r_half_mean"] == low["perturbations"][0]["r_half_mean"]  # the split itself is unchanged
+    assert not high["overall"]["lower_bound"] and high["overall"]["n_corrected"] == 1
+    md = nc.render(high)
+    assert "cannot exceed about" in md and "carried to" in md and "| SUB | 300 | 1000 |" in md
+    # a count below the stored cells is a contradiction
+    with pytest.raises(ValueError):
+        nc.analyse_dataset(out, repeats=5, seed=0, ncells={"SUB": 200})
+    # through the CLI, with the JSON twin re-rendering byte-identically
+    nfile = tmp_path / "ncells.json"
+    nfile.write_text(json.dumps({"SUB": 1000}))
+    md_path = tmp_path / "c.md"
+    assert nc.main(["--data", str(out), "--out", str(md_path), "--ncells", str(nfile), "--repeats", "8"]) == 0
+    rep = json.loads(md_path.with_suffix(".json").read_text())
+    assert rep["ncells_file"] == str(nfile) and rep["n_ncells_given"] == 1 and rep["perturbations"][0]["n_target"] == 1000
+    assert str(nfile) in md_path.read_text()
+    again = tmp_path / "again.md"
+    assert nc.main(["--from-json", str(md_path.with_suffix(".json")), "--out", str(again)]) == 0
+    assert again.read_bytes() == md_path.read_bytes()
+    # the generalised step reduces to the familiar one at k = 2 and never leaves [0, 1]
+    assert nc.spearman_brown(0.5, 2.0) == nc.spearman_brown(0.5) == pytest.approx(2 / 3)
+    assert nc.spearman_brown(0.6, 20 / 3) == pytest.approx((20 / 3 * 0.6) / (1 + (17 / 3) * 0.6))
+    assert nc.ceiling_from(-0.3, 20 / 3) == (-1.0, 0.0) and nc.ceiling_from(-0.1, 20 / 3)[1] == 0.0
+    assert nc.ceiling_from(1.0, 20 / 3) == (1.0, 1.0)
+
+
 def test_cli_writes_a_json_twin_that_re_renders_byte_identically(tmp_path):
     out, _, _ = _bundle(tmp_path)
     md = tmp_path / "ceiling.md"
@@ -188,3 +258,21 @@ def test_runs_show_achieved_against_the_ceiling(lab_factory, tmp_path):
     again = tmp_path / "again.md"
     assert nc.main(["--from-json", str(md.with_suffix(".json")), "--out", str(again)]) == 0
     assert again.read_bytes() == md.read_bytes()
+    # a run whose selected model's artifacts are gone (copied from another machine, cleaned up) is a row, not a crash
+    lab.db.update_experiment(other["experiment_id"], artifact_dir=str(tmp_path / "gone"))
+    r3 = nc.analyse_run(lab.run_dir, data)
+    assert r3["error"].startswith("FileNotFoundError") and r3["run_id"] == lab.run_id and r3["arm"] == r["arm"]
+    # predictions that cover none of the visible perturbations are a row too
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    np.savez(foreign / "predictions.npz", perts=np.array(["NOT_A_VALIDATION_PERT"]), alphas=np.array([1.0]),
+             delta=np.zeros((1, 1, len(lab.control_mean))))
+    lab.db.update_experiment(other["experiment_id"], artifact_dir=str(foreign))
+    r4 = nc.analyse_run(lab.run_dir, data)
+    assert "cover none of the visible validation perturbations" in r4["error"]
+    broken = tmp_path / "broken.md"
+    assert nc.main(["--data", str(lab.data_dir), "--out", str(broken), "--runs", str(lab.run_dir), "--repeats", "5"]) == 0
+    text = broken.read_text()
+    assert "Not scored: " in text and "cover none" in text and "## Reading" in text
+    assert json.loads(broken.with_suffix(".json").read_text())["runs"][0]["error"] == r4["error"]
+    assert lab.oracle.used == 0

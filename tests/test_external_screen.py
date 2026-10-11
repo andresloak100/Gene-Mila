@@ -28,7 +28,8 @@ def test_source_never_names_the_sealed_labels():
 def external_screen(tmp_path, dataset, layout, ensembl_index=False, seed=0):
     """A raw-count screen over most of the bundle's genes (shuffled order) plus extra genes, with three bundle
     targets (one pooled over two labels, one written in lower case with a guide suffix, one equal to the
-    target gene), a combinatorial label, an unrelated label, and two control labels."""
+    target gene), a combinatorial label, a label pairing a target with a gene the screen did not measure
+    (ambiguous: it must not be pooled), an unrelated label, and two control labels."""
     import pandas as pd
     import scipy.sparse as sp
     rng = np.random.default_rng(seed)
@@ -58,6 +59,7 @@ def external_screen(tmp_path, dataset, layout, ensembl_index=False, seed=0):
     cells(f"{t2}+guide2", 10, t2, scale=0.7)      # pooled with the one above
     cells(f"{t3}_ctrl", 12, t3)                   # GEARS-style suffix
     cells(f"{t1}_{t3}", 9, t1)                    # two genes: a combinatorial perturbation, skipped
+    cells(f"{t1}_ZZZ9", 6, t1, scale=2.0)         # t1 plus a gene the screen did not measure: ambiguous, skipped
     cells("EXTRA2", 8, "EXTRA2")                  # a gene the bundle does not target: ignored
     cells("NOTAGENE", 5)                          # unknown label: ignored
     X = np.vstack(rows).astype(np.float32)
@@ -131,6 +133,8 @@ def test_deltas_match_a_dense_computation(tmp_path, dataset, layout):
                     assert abs(a - b) < 1e-4, (target, g, a, b)
         assert t["t4"] in k["bundle_targets_missing"] and t["t1"] not in k["bundle_targets_missing"]
         assert k["source"]["n_labels_multi_gene_skipped"] == 1                        # t1_t3
+        assert k["source"]["n_labels_ambiguous_skipped"] == 1                         # t1_ZZZ9, not pooled into t1
+        assert k["source"]["labels_ambiguous_skipped"] == [f"{t['t1']}_ZZZ9"]
         assert k["source"]["n_labels_other"] == 2                                     # EXTRA2, NOTAGENE
         assert k["source"]["n_cells_used"] == 80 + 25 + 25 + 12
         md = cli.render(k)
@@ -148,6 +152,7 @@ def test_dry_run_writes_nothing_and_reports_the_matching(tmp_path, dataset, caps
     out = capsys.readouterr().out
     assert "control labels: ['control', 'non-targeting'] (80 cells)" in out
     assert "bundle targets found: 3 of" in out and t["t4"] in out and "(skipped): 1" in out
+    assert f"(ambiguous, skipped): 1: {t['t1']}_ZZZ9" in out                       # named, not just counted
     assert f"| {t['t2']} |" in out and "| 25 |" in out
 
 
@@ -178,8 +183,16 @@ def test_refuses_non_counts_unless_already_normalised(tmp_path, dataset):
     a.X = sp.csr_matrix(np.log1p(X / 3.0))
     norm = tmp_path / "normalised.h5ad"
     a.write_h5ad(norm)
-    with pytest.raises(ValueError, match="raw counts"):
+    with pytest.raises(ValueError, match="raw counts") as e:
         es.build(norm, dataset, "ext_norm", with_md5=False)
+    assert "pass --already-normalised" in str(e.value)                                 # non-integer: the override applies
+    a.X = sp.csr_matrix(np.minimum(X, 20.0))                                           # integers capped at 20
+    capped = tmp_path / "capped.h5ad"
+    a.write_h5ad(capped)
+    with pytest.raises(ValueError, match="raw counts") as e:
+        es.build(capped, dataset, "ext_capped", with_md5=False)
+    assert "integers" in str(e.value) and "maximum is 20" in str(e.value)
+    assert "pass --already-normalised" not in str(e.value)                             # integer data: not recommended
     out = es.build(norm, dataset, "ext_norm", already_normalised=True, with_md5=False)
     try:
         k = json.loads(out.read_text())
@@ -199,11 +212,14 @@ def test_refuses_non_counts_unless_already_normalised(tmp_path, dataset):
 def test_label_matching_rules():
     targets = ["ATF6", "XBP1", "HSPA5"]
     ext_genes = ["ATF6", "XBP1", "HSPA5", "DDIT3", "ACTB"]
-    cats = ["control", "ATF6", "xbp1_guide2", "HSPA5+ctrl", "ATF6_XBP1", "DDIT3", "ACTB_1", "NOTAGENE", "nt"]
+    cats = ["control", "ATF6", "xbp1_guide2", "HSPA5+ctrl", "ATF6_XBP1", "DDIT3", "ACTB_1", "NOTAGENE", "nt",
+            "ATF6_ZZZ9", "ATF6+UNMEASUREDGENE", "XBP1 (1)", "hspa5_p1p2"]
     m = es.match_labels(cats, targets, ext_genes)
     assert sorted(m["control"]) == ["control", "nt"]
-    assert m["by_target"] == {"ATF6": ["ATF6"], "HSPA5": ["HSPA5+ctrl"], "XBP1": ["xbp1_guide2"]}
+    assert m["by_target"] == {"ATF6": ["ATF6"], "HSPA5": ["HSPA5+ctrl", "hspa5_p1p2"], "XBP1": ["xbp1_guide2", "XBP1 (1)"]}
     assert m["missing"] == [] and m["multi_gene"] == ["ATF6_XBP1"] and m["n_other"] == 3
+    assert m["ambiguous"] == ["ATF6+UNMEASUREDGENE", "ATF6_ZZZ9"]                  # a partner the screen did not measure
+    assert "ATF6_ZZZ9" not in sum(m["by_target"].values(), [])
     m2 = es.match_labels(cats, targets, ext_genes, control=["control"])        # an explicit control list replaces detection
     assert m2["control"] == ["control"] and m2["n_other"] == 4
     with pytest.raises(ValueError, match="not found"):
@@ -220,3 +236,38 @@ def test_column_chunks_respect_both_limits():
     assert batches == [[0, 1], [2], [3, 4], [5], [6]]           # column 2 alone exceeds the budget and still goes
     assert [b.tolist() for b in es._column_chunks(indptr, np.array([1, 2, 4, 5]), max_cols=10, max_nnz=10 ** 9)] == [[1, 2, 4, 5]]
     assert list(es._runs(np.array([1, 2, 4, 5, 9]))) == [(1, 3, 0), (4, 6, 2), (9, 10, 4)]
+
+
+def test_count_detector_samples_the_most_populated_columns(tmp_path):
+    """In a CSC file every spread window sits inside one column; the most populated columns (the highest
+    expressed genes) must be sampled too, or a raw-count file whose sampled genes stay below 21 is refused."""
+    import h5py
+    import pandas as pd
+    import scipy.sparse as sp
+    rng = np.random.default_rng(3)
+    n, g = 400, 40
+    mu = np.full(g, 0.8)
+    mu[23] = 60.0                                                     # one highly expressed gene in the middle
+    X = rng.poisson(mu, size=(n, g)).astype(np.float32)
+    assert X[:, [j for j in range(g) if j != 23]].max() <= 20 < X[:, 23].min()
+    for layout, M in (("csc", sp.csc_matrix), ("csr", sp.csr_matrix)):
+        path = tmp_path / f"probe_{layout}.h5ad"
+        ad.AnnData(X=M(X), obs=pd.DataFrame(index=[f"c{i}" for i in range(n)]),
+                   var=pd.DataFrame(index=[f"g{i}" for i in range(g)])).write_h5ad(path)
+        with h5py.File(path, "r") as f:
+            spread = es._sample_values(f, layout, n_windows=2, window=40, n_top=0)  # two small windows: the start and the end
+            full = es._sample_values(f, layout, n_windows=2, window=40)
+        assert es.integer_valued(spread) and es.integer_valued(full)
+        if layout == "csc":
+            assert not es.looks_like_counts(spread), spread.max()        # the spread windows alone miss the high gene
+        assert es.looks_like_counts(full), (layout, full.max())
+
+
+def test_row_chunks_respect_both_limits():
+    indptr = np.array([0, 5, 5, 100, 101, 110, 200, 200])      # 7 rows
+    chunks = list(es._row_chunks(7, chunk=3, chunk_nnz=50, indptr=indptr))
+    assert chunks == [(0, 2), (2, 3), (3, 5), (5, 6), (6, 7)]  # row 2 alone exceeds the budget and still goes
+    assert list(es._row_chunks(7, chunk=4, chunk_nnz=10 ** 9, indptr=indptr)) == [(0, 4), (4, 7)]
+    assert list(es._row_chunks(7, chunk=4, chunk_nnz=25, n_genes=10)) == [(0, 2), (2, 4), (4, 6), (6, 7)]   # dense
+    assert list(es._row_chunks(3, chunk=4, chunk_nnz=1, n_genes=10)) == [(0, 1), (1, 2), (2, 3)]
+    assert sum(r1 - r0 for r0, r1 in es._row_chunks(1000, chunk=64, chunk_nnz=10, n_genes=3)) == 1000

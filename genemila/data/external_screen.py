@@ -14,8 +14,9 @@ export_public copies every file in knowledge/ into a run's public directory when
 file reaches the agents on the next run without any further step.
 
 Inputs are the raw external h5ad and the bundle's public gene list (public.npz) and target list
-(knowledge/targets.json) only. X is never loaded whole: it is read with h5py in chunks whose memory is bounded
-by chunk size times the number of bundle genes.
+(knowledge/targets.json) only. X is never loaded whole: it is read with h5py in chunks of at most chunk cells
+(CSR, dense) or chunk genes (CSC) holding at most chunk_nnz stored values, whichever limit comes first, so the
+memory of a chunk is bounded in every layout.
 
   CSR   one sweep over row chunks: a chunk's cell totals are known before it is normalised, so the per-label
         sums of log1p(1e4 x / total) over the bundle's columns are accumulated in the same sweep.
@@ -26,10 +27,14 @@ by chunk size times the number of bundle genes.
 Zero entries contribute log1p(0) = 0, so sparse sums are exact. Labels kept are the control labels and every
 label naming exactly one gene that is a bundle target (tokens split on + _ | , ; and space, matched without
 regard to case; a label equal to a target gene also matches). Labels naming two or more genes are
-combinatorial perturbations and are skipped. Several external labels for one target gene are pooled by cell
-count. Raw counts are detected as real.py does (integer values with a maximum above 20, sampled across the
-matrix) and anything else is refused unless already_normalised is set, in which case the stored values are
-averaged as they are.
+combinatorial perturbations and are skipped. A label whose other tokens are neither genes of the screen nor a
+recognised guide suffix (guide1, sg2, g1, p1p2, a number, ctrl, kd, ko, tss) may name a second gene the screen
+perturbed but did not measure, so it is reported as ambiguous and skipped rather than pooled. Several external
+labels for one target gene are pooled by cell count. Raw counts are detected as real.py does (integer values
+with a maximum above 20) from windows spread over the stored values plus the start of the most populated
+columns (CSC: the highest-expressed genes) or rows (CSR: the deepest cells), because in a large CSC file every
+spread window sits inside one column and would inspect only a handful of genes. Anything else is refused
+unless already_normalised is set, in which case the stored values are averaged as they are.
 """
 
 from __future__ import annotations
@@ -50,10 +55,12 @@ LABEL_COLUMNS = ("perturbation", "condition", "target_gene", "gene", "guide_ids"
 GENE_COLUMNS = ("gene_name", "gene_symbol", "gene_symbols", "symbol", "feature_name", "features")
 DEFAULT_CHUNK_ROWS = 20_000        # cells per chunk (CSR and dense)
 DEFAULT_CHUNK_COLS = 500           # genes per chunk (CSC)
-DEFAULT_CHUNK_NNZ = 50_000_000     # stored values per CSC chunk; bounds memory when the columns are dense
+DEFAULT_CHUNK_NNZ = 50_000_000     # stored values per chunk in every layout; bounds memory when columns or rows are dense
 TARGET_SUM = 1e4
 DECIMALS = 5
 _SPLIT = re.compile(r"[+_|,;\s]+")
+# tokens of a perturbation label that name a guide, not a gene (ATF6_guide1, sgATF6, XBP1_1, HSPA5+ctrl, p1p2)
+_SUFFIX = re.compile(r"^[(\[]?(guide\d*|sg\w*|g\d+|p\d+(p\d+)*|\d+|ctrl|kd|ko|tss\d*|crispri|crispra|crispr)[)\]]?$", re.I)
 
 
 def _log(msg: str) -> None:
@@ -141,9 +148,14 @@ def x_layout(f) -> tuple[str, tuple[int, int]]:
     return "dense", (int(X.shape[0]), int(X.shape[1]))
 
 
-def _sample_values(f, layout: str, n_windows: int = 20, window: int = 5000) -> np.ndarray:
-    """Stored values from windows spread over the matrix (the first entries of a CSC file belong to a few
-    low-count genes, as real.py notes, so one window would not do)."""
+def _sample_values(f, layout: str, n_windows: int = 20, window: int = 5000, n_top: int = 5) -> np.ndarray:
+    """Stored values from windows spread over the matrix plus, for sparse X, the first window of the n_top most
+    populated columns (CSC) or rows (CSR). The spread windows alone are not enough: the first entries of a CSC
+    file belong to a few low-count genes, as real.py notes, and in a file of millions of cells every window of
+    5,000 contiguous values sits inside one column, so 20 windows inspect 20 genes drawn with probability
+    proportional to their stored values, and a raw-count file whose sampled genes all stay below 21 counts is
+    refused. The most populated columns are the highest-expressed genes (the deepest cells in CSR), whose counts
+    reach far above 20 whenever X holds raw counts."""
     X = f["X"]
     if layout == "dense":
         n = X.shape[0]
@@ -154,12 +166,20 @@ def _sample_values(f, layout: str, n_windows: int = 20, window: int = 5000) -> n
         n = data.shape[0]
         starts = np.unique(np.linspace(0, max(n - 1, 0), n_windows).astype(int))
         parts = [np.asarray(data[s:min(s + window, n)]) for s in starts]
+        if n_top > 0:
+            indptr = np.asarray(X["indptr"][...], dtype=np.int64)
+            top = np.argsort(np.diff(indptr), kind="stable")[-n_top:]
+            parts += [np.asarray(data[int(indptr[j]):min(int(indptr[j]) + window, n)]) for j in top]
     values = np.concatenate(parts).astype(np.float64) if parts else np.zeros(0)
     return values[values != 0]
 
 
+def integer_valued(values: np.ndarray) -> bool:
+    return values.size > 0 and bool(np.allclose(values, np.round(values)))
+
+
 def looks_like_counts(values: np.ndarray) -> bool:
-    return values.size > 0 and bool(np.allclose(values, np.round(values))) and float(values.max()) > 20
+    return integer_valued(values) and float(values.max()) > 20
 
 
 # ---- label matching ------------------------------------------------------------------------------------------
@@ -167,8 +187,10 @@ def looks_like_counts(values: np.ndarray) -> bool:
 def match_labels(categories: list[str], bundle_targets: list[str], external_genes: list[str],
                  control: list[str] | None = None) -> dict:
     """What each external label is: a control label, one bundle target gene, a combinatorial perturbation
-    (skipped) or something else (skipped). control, when given, replaces the automatic detection of the
-    non-targeting labels (real.CONTROL_LABELS, matched without regard to case)."""
+    (skipped), a bundle target plus a token that is neither a gene of the screen nor a guide suffix (ambiguous:
+    it may name a gene the screen perturbed but did not measure, so it is skipped rather than pooled) or
+    something else (skipped). control, when given, replaces the automatic detection of the non-targeting labels
+    (real.CONTROL_LABELS, matched without regard to case)."""
     lower_target = {t.lower(): t for t in bundle_targets}
     gene_like = {g.lower() for g in external_genes} | set(lower_target)
     if control:
@@ -182,7 +204,7 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
         raise ValueError(f"cannot identify the control label among {sorted(categories)[:20]}; pass --control")
     ctrl_set = set(ctrl)
     by_target: dict[str, list[str]] = {}
-    multi, other = [], []
+    multi, ambiguous, other = [], [], []
     for label in categories:
         if label in ctrl_set:
             continue
@@ -190,13 +212,20 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
         if low in lower_target:
             by_target.setdefault(lower_target[low], []).append(label)
             continue
-        genes = []
+        genes, unknown = [], []
         for tok in _SPLIT.split(label):
             t = tok.lower()
-            if t and t in gene_like and t not in genes:
-                genes.append(t)
-        if len(genes) == 1 and genes[0] in lower_target:
+            if not t:
+                continue
+            if t in gene_like:
+                if t not in genes:
+                    genes.append(t)
+            elif not _SUFFIX.match(tok):
+                unknown.append(tok)
+        if len(genes) == 1 and genes[0] in lower_target and not unknown:
             by_target.setdefault(lower_target[genes[0]], []).append(label)
+        elif len(genes) == 1 and genes[0] in lower_target:
+            ambiguous.append(label)
         elif len(genes) > 1:
             multi.append(label)
         else:
@@ -204,7 +233,7 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
     found = sorted(by_target)
     return {"control": ctrl, "by_target": {t: by_target[t] for t in found},
             "missing": sorted(t for t in bundle_targets if t not in by_target),
-            "multi_gene": sorted(multi), "n_other": len(other)}
+            "multi_gene": sorted(multi), "ambiguous": sorted(ambiguous), "n_other": len(other)}
 
 
 def map_genes(bundle_genes: list[str], external_genes: list[str]) -> np.ndarray:
@@ -238,6 +267,22 @@ def _column_chunks(indptr: np.ndarray, cols: np.ndarray, max_cols: int, max_nnz:
         yield cols[start:]
 
 
+def _row_chunks(n_cells: int, chunk: int, chunk_nnz: int, indptr: np.ndarray | None = None,
+                n_genes: int | None = None):
+    """Row ranges (r0, r1) of at most chunk rows holding at most chunk_nnz stored values (CSR, from indptr) or
+    at most chunk_nnz dense entries (n_genes per row); a range always holds at least one row."""
+    r0 = 0
+    while r0 < n_cells:
+        r1 = min(r0 + chunk, n_cells)
+        if indptr is not None:
+            r1 = min(r1, int(np.searchsorted(indptr, indptr[r0] + chunk_nnz, side="right")) - 1)
+        elif n_genes:
+            r1 = min(r1, r0 + chunk_nnz // max(1, n_genes))
+        r1 = max(r0 + 1, r1)
+        yield r0, r1
+        r0 = r1
+
+
 def _runs(cols: np.ndarray):
     """Maximal runs of consecutive column indices as (first, last + 1, position of first in cols)."""
     start = 0
@@ -255,8 +300,9 @@ def stream_sums(f, layout: str, shape: tuple[int, int], needed_cols: np.ndarray,
                 n_groups: int, normalise: bool = True, chunk: int | None = None,
                 chunk_nnz: int = DEFAULT_CHUNK_NNZ) -> np.ndarray:
     """Sum over the cells of each group (cell_code; -1 = not used) of the normalised expression of the needed
-    columns. Returns (n_groups, len(needed_cols)) float64. Memory is bounded by chunk x len(needed_cols)
-    plus one chunk of stored values."""
+    columns. Returns (n_groups, len(needed_cols)) float64. A chunk holds at most chunk cells (CSR, dense) or
+    chunk genes (CSC) and at most chunk_nnz stored values in every layout, so memory is bounded by the smaller
+    of the two limits times a few words per value, plus n_groups x len(needed_cols)."""
     n_cells, n_genes = shape
     n_needed = len(needed_cols)
     sums = np.zeros((n_groups, n_needed), dtype=np.float64)
@@ -267,10 +313,10 @@ def stream_sums(f, layout: str, shape: tuple[int, int], needed_cols: np.ndarray,
         chunk = chunk or DEFAULT_CHUNK_ROWS
         col_map = np.full(n_genes, -1, dtype=np.int64)
         col_map[needed_cols] = np.arange(n_needed)
+        indptr = None
         if layout == "csr":
             data, indices, indptr = X["data"], X["indices"], np.asarray(X["indptr"][...], dtype=np.int64)
-        for r0 in range(0, n_cells, chunk):
-            r1 = min(r0 + chunk, n_cells)
+        for r0, r1 in _row_chunks(n_cells, chunk, chunk_nnz, indptr=indptr, n_genes=n_genes):
             codes = cell_code[r0:r1]
             if layout == "csr":
                 s, e = int(indptr[r0]), int(indptr[r1])
@@ -412,11 +458,24 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
 
     measured = cols >= 0
     needed_cols = cols[measured]
+    if len(np.unique(needed_cols)) != len(needed_cols):  # two bundle genes on one external column (case-only match)
+        dup = sorted({info["genes"][i] for i in np.flatnonzero(measured)
+                      if np.sum(needed_cols == cols[i]) > 1})
+        raise ValueError(f"bundle genes {dup[:6]} map to the same external gene column; fix the gene symbols first")
     with h5py.File(h5ad, "r") as f:
-        raw = looks_like_counts(_sample_values(f, info["layout"]))
+        sampled = _sample_values(f, info["layout"])
+        raw = looks_like_counts(sampled)
         if not raw and not already_normalised:
-            raise ValueError("X does not look like raw counts (integer values with a maximum above 20); pass "
-                             "--already-normalised to average the stored values as they are")
+            vmax = float(sampled.max()) if sampled.size else 0.0
+            if integer_valued(sampled):
+                raise ValueError(
+                    f"X does not look like raw counts: the {sampled.size:,} sampled non-zero values are integers but "
+                    f"their maximum is {vmax:g}, and raw UMI counts reach well above 20 in the most expressed genes. "
+                    "Check the file (subsampled, capped or binarised counts?) before using it; --already-normalised "
+                    "would average these values without normalising them, which is not the bundle's space")
+            raise ValueError(
+                f"X does not look like raw counts: the sampled values are not integers (maximum {vmax:g}); if X holds "
+                "already normalised expression, pass --already-normalised to average the stored values as they are")
         normalise = not already_normalised
         _log(f"{info['layout']} X of {info['shape'][0]:,} cells x {info['shape'][1]:,} genes; "
              f"{'normalising counts per 10k, log1p' if normalise else 'using the stored values as they are'}; "
@@ -443,7 +502,9 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
             "n_cells": info["shape"][0], "n_genes": info["shape"][1], "encoding": info["layout"],
             "label_col": info["label_col"], "gene_col": info["gene_col"], "control_labels": match["control"],
             "raw_counts": bool(raw), "normalisation": space, "n_labels": len(cats),
-            "n_labels_multi_gene_skipped": len(match["multi_gene"]), "n_labels_other": match["n_other"],
+            "n_labels_multi_gene_skipped": len(match["multi_gene"]),
+            "n_labels_ambiguous_skipped": len(match["ambiguous"]), "labels_ambiguous_skipped": match["ambiguous"],
+            "n_labels_other": match["n_other"],
             "n_cells_used": int(counts.sum()), "date": dt.date.today().isoformat(),
             "seconds": round(time.time() - t0, 1),
         },
@@ -451,8 +512,10 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
         "measured": [bool(m) for m in measured],
         "control": {"n_cells": int(counts[0]), "mean": per_gene(means[0])},
         "perts": {t: {"n_cells": int(counts[g]), "labels": match["by_target"][t],
-                      "delta": per_gene(means[g] - means[0])} for g, t in enumerate(found, start=1)},
-        "bundle_targets_missing": match["missing"],
+                      "delta": per_gene(means[g] - means[0])} for g, t in enumerate(found, start=1) if counts[g] > 0},
+        # a label category with no cells (left behind when an h5ad was subset) is no measurement: listed as missing
+        "bundle_targets_missing": sorted(set(match["missing"]) | {t for g, t in enumerate(found, start=1)
+                                                                   if counts[g] == 0}),
     }
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".tmp")

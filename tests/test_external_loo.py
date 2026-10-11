@@ -1,6 +1,8 @@
 """tools/external_loo.py: the free leave-one-out check of an external screen reads visible data only."""
 
 import json
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,8 +20,48 @@ from genemila.data.bundle import export_public  # noqa: E402
 
 def test_never_reads_the_sealed_labels():
     src = (ROOT / "tools" / "external_loo.py").read_text()
-    for word in ("val2", "query_metrics", "query_only", "oracle", "private/"):
+    for word in ("val1", "val2", "query_metrics", "query_only", "oracle", "private"):
         assert word not in src, word
+
+
+_WATCHED: list[str] = []   # directory prefixes whose opens the audit hook records; empty = dormant
+_OPENED: list[str] = []
+
+
+def _audit(event, args):
+    if event != "open" or not _WATCHED:
+        return
+    try:
+        path = os.fsdecode(args[0]) if isinstance(args[0], (str, bytes, os.PathLike)) else None
+    except Exception:
+        return
+    if path and any(path.startswith(w) for w in _WATCHED):
+        _OPENED.append(path)
+
+
+def test_runtime_never_opens_the_bundle_private_directory(dataset, tmp_path):
+    """The string guard above cannot see a path built as Path(bundle) / 'private' / ..., so the full CLI is run on
+    a bundle copy that does have a private directory, with an audit hook recording every open under the copy."""
+    bundle_dir = tmp_path / "bundle"
+    shutil.copytree(dataset, bundle_dir)
+    sealed = bundle_dir / "private"
+    assert sealed.is_dir() and any(sealed.iterdir())
+    bundle = _bundle(bundle_dir)
+    name = _write_external(bundle_dir, "ext_guard", bundle, "signal")
+    if not getattr(sys, "_external_loo_audit", False):
+        sys.addaudithook(_audit)
+        sys._external_loo_audit = True   # a hook cannot be removed; it is installed once and sleeps otherwise
+    _OPENED.clear()
+    _WATCHED[:] = [str(bundle_dir), str(bundle_dir.resolve())]
+    try:
+        assert external_loo.main(["--bundle", str(bundle_dir), "--knowledge", name, "--out",
+                                  str(tmp_path / "guard.md")]) == 0
+    finally:
+        _WATCHED.clear()
+    opened = {os.path.relpath(x, bundle_dir) if x.startswith(str(bundle_dir)) else
+              os.path.relpath(x, bundle_dir.resolve()) for x in _OPENED}
+    assert "public.npz" in opened and f"knowledge/{name}.json" in opened   # the hook does see the tool's reads
+    assert not [x for x in opened if x.split(os.sep)[0] == "private"], sorted(opened)
 
 
 @pytest.fixture(scope="module")
@@ -32,10 +74,11 @@ def _bundle(public_dir):
     return external_loo.load_bundle(public_dir)
 
 
-def _write_external(public_dir, name, bundle, mode, drop=(), unmeasured_every=10, seed=0):
+def _write_external(public_dir, name, bundle, mode, drop=(), zero_cells=(), unmeasured_every=10, seed=0):
     """A synthetic external screen in the format of tools/build_external_screen.py. mode 'signal': each
     target's external change is the bundle's own change, rescaled, plus small noise; 'noise': unrelated noise.
-    Targets in `drop` get no row; every unmeasured_every-th gene is unmeasured (null)."""
+    Targets in `drop` get no row; targets in `zero_cells` get the row the builder writes for a label no cell
+    carries (n_cells 0, delta = 0 minus the control mean); every unmeasured_every-th gene is unmeasured (null)."""
     rng = np.random.default_rng(seed)
     genes, D = bundle["genes"], bundle["deltas"]
     measured = [j % unmeasured_every != 0 for j in range(len(genes))]
@@ -47,6 +90,9 @@ def _write_external(public_dir, name, bundle, mode, drop=(), unmeasured_every=10
     for i, p in enumerate(bundle["perts"]):
         target = bundle["targets"][p][0]
         if target in drop:
+            continue
+        if target in zero_cells:
+            perts[target] = {"n_cells": 0, "labels": [target], "delta": masked(-bundle["control_mean"])}
             continue
         if mode == "signal":
             d = 1.7 * D[i] + rng.normal(0, 0.1 * D[i].std(), len(genes))
@@ -144,6 +190,40 @@ def test_missing_targets_fall_back_and_are_counted(public_dir):
     assert f"{n - len(drop)} of the {n} training perturbations have a row" in md
     first_missing = next(r for r in rep["per_perturbation"] if r["pert"] in perts[::2])
     assert f"| {first_missing['pert']} | {first_missing['target']} | 40 | – | 0 | – |" in md
+
+
+def test_zero_cell_rows_are_treated_as_missing(public_dir):
+    """A subset h5ad keeps every category of the genome-wide file, so the builder can write a bundle target with
+    n_cells 0 and delta = -control_mean: the largest row in the file and no measurement at all."""
+    bundle = _bundle(public_dir)
+    perts = bundle["perts"]
+    zero = {bundle["targets"][p][0] for p in perts[:3]}
+    drop = {bundle["targets"][perts[3]][0]}
+    name = _write_external(public_dir, "ext_zero", bundle, "signal", drop=drop, zero_cells=zero)
+    raw = json.loads((public_dir / "knowledge" / f"{name}.json").read_text())
+    assert all(raw["perts"][t]["n_cells"] == 0 for t in zero) and len(raw["perts"]) == len(perts) - len(drop)
+    external = external_loo.load_external(public_dir, name, bundle["genes"])
+    assert not (zero & set(external["rows"])) and sorted(external["zero_cell_targets"]) == sorted(zero)
+    assert external["n_perts"] == len(perts) - len(drop) - len(zero)
+    assert external["n_bundle_targets_missing"] == len(drop) + len(zero)
+    rep = external_loo.analyse(bundle, external, k=5)
+    n = rep["n_train"]
+    assert rep["coverage"]["with_external_row"] == n - len(drop) - len(zero)
+    assert sorted(rep["coverage"]["without_external_row"]) == sorted(perts[:4])
+    assert rep["agreement"]["n"] == n - 4 and rep["agreement"]["min"] > 0.95
+    assert rep["fallbacks"]["external_direct_no_row"] == rep["fallbacks"]["external_knn_no_row"] == 4
+    assert sorted(rep["external_file"]["zero_cell_targets"]) == sorted(zero)
+    for r in rep["per_perturbation"][:3]:   # exactly the no-row fallbacks, never a score against -control_mean
+        s = r["scores"]
+        assert s["external_direct"] == s["mean_response"] and s["external_knn"] == s["geneset_knn"]
+        assert r["n_cells_external"] is None and r["agreement"] is None and r["n_genes_shared"] == 0
+    md = external_loo.render(rep)
+    assert f"{n - 4} of the {n} training perturbations have a row" in md
+    assert f"The file also lists {len(zero)} bundle targets with zero cells" in md
+    assert "such a row is no measurement and was treated as missing" in md
+    # a file written without the field (an older twin) still renders
+    rep["external_file"].pop("zero_cell_targets")
+    assert "with zero cells" not in external_loo.render(rep)
 
 
 def test_cli_and_from_json_rerender_byte_identical(public_dir, tmp_path):

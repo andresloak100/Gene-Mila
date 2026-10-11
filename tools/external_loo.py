@@ -96,14 +96,21 @@ def load_external(bundle_dir: Path, knowledge: str, genes: list[str]) -> dict:
         out[~measured] = np.nan
         return out
 
-    rows, cells = {}, {}
+    rows, cells, zero_cell = {}, {}, []
     for target, rec in (raw.get("perts") or {}).items():
+        n_cells = rec.get("n_cells")
+        if n_cells is not None and int(n_cells) <= 0:
+            # a label the file lists but no cell carries (a category a subset file kept): its delta is the
+            # control mean negated, not a measurement, so the target counts as missing from the screen
+            zero_cell.append(str(target))
+            continue
         rows[str(target)] = align(rec["delta"])
-        cells[str(target)] = int(rec.get("n_cells") or 0)
+        cells[str(target)] = int(n_cells or 0)
     return {"name": fname.removesuffix(".json"), "description": str(raw.get("description", "")),
             "source": raw.get("source", {}), "measured": measured, "rows": rows, "n_cells": cells,
             "n_control_cells": int((raw.get("control") or {}).get("n_cells") or 0), "n_perts": len(rows),
-            "n_bundle_targets_missing": len(raw.get("bundle_targets_missing") or [])}
+            "n_bundle_targets_missing": len(raw.get("bundle_targets_missing") or []) + len(zero_cell),
+            "zero_cell_targets": zero_cell}
 
 
 # ------------------------------------------------------------------------------------------- predictors
@@ -289,7 +296,8 @@ def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict
         "k": int(k), "alpha_grid": [float(a) for a in alphas], "n_train": int(n), "n_genes": int(n_genes),
         "n_genes_measured_external": int(external["measured"].sum()),
         "external_file": {"n_perts": external["n_perts"], "n_control_cells": external["n_control_cells"],
-                          "n_bundle_targets_missing": external["n_bundle_targets_missing"]},
+                          "n_bundle_targets_missing": external["n_bundle_targets_missing"],
+                          "zero_cell_targets": list(external.get("zero_cell_targets", []))},
         "coverage": {"with_external_row": n_ext,
                      "without_external_row": [p for p, h in zip(perts, has) if not h]},
         "fallbacks": fallbacks,
@@ -367,6 +375,7 @@ def _reading(rep: dict) -> str:
 
 def render(rep: dict) -> str:
     n = rep["n_train"]
+    zc = rep["external_file"].get("zero_cell_targets") or []
     L = ["# Does an external screen carry information the transfer features lack?", "",
          f"Leave-one-out over the {n} training perturbations of the `{rep['bundle']}` bundle, visible data only: "
          f"each training perturbation is held out in turn, its expression change (pseudobulk mean minus the control "
@@ -381,7 +390,9 @@ def render(rep: dict) -> str:
          f". The file holds {rep['external_file']['n_perts']:,} target genes over "
          f"{rep['external_file']['n_control_cells']:,} control cells; {rep['n_genes_measured_external']:,} of the "
          f"bundle's {rep['n_genes']:,} genes are measured in it, and {rep['coverage']['with_external_row']} of the "
-         f"{n} training perturbations have a row (their first target gene with one).", "",
+         f"{n} training perturbations have a row (their first target gene with one)." +
+         (f" The file also lists {len(zc)} bundle target{'s' if len(zc) != 1 else ''} with zero cells "
+          f"({', '.join(zc)}); such a row is no measurement and was treated as missing." if zc else ""), "",
          "Predictors (k = %d for both neighbour rules):" % rep["k"], "",
          "- `mean_response`: mean change of the other training perturbations, the floor every feature must beat.",
          "- `geneset_knn`: weighted mean of the other perturbations' changes, weights = Jaccard similarity of the "
