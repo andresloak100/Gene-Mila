@@ -599,19 +599,32 @@ def _second_look(rep: dict) -> str:
             f"perturbations have one ({fb['external_krr_too_few_rows']}). external_stack_krr is the ridge stack of "
             f"external_stack over five columns, the four above plus external_krr, each training row's columns (its "
             f"kernel ridge lambda included) computed without that perturbation and without the held-out one, alpha "
-            f"chosen as for external_stack. {against(kr, ek)}; {against(sk, es)}. Kernel ridge lambda chosen per "
+            f"chosen as for external_stack from the same grid {rep['alpha_grid']}"
+            f"{'' if _is_prespecified_grid(rep) else ' (not the pre-specified one, see the note on external_stack)'}"
+            f". {against(kr, ek)}; {against(sk, es)}. Kernel ridge lambda chosen per "
             f"fold: {chosen(rep['krr_lambdas_chosen'])}; five-column stack alpha chosen per fold: "
             f"{chosen(rep['alphas_chosen_stack_krr'])}. Like every number here, a gain must still be confirmed on "
             f"the sealed set by a labelled arm before it counts.")
 
 
+def _is_prespecified_grid(rep: dict) -> bool:
+    return [float(a) for a in rep["alpha_grid"]] == [float(a) for a in ALPHA_GRID]
+
+
 def _grid_note(rep: dict) -> str:
-    """Say so when the stack's grid is not the pre-specified one: its number is then a second look."""
-    if [float(a) for a in rep["alpha_grid"]] == [float(a) for a in ALPHA_GRID]:
+    """Say so when the stack's grid is not the pre-specified one: its number is then a second look. A report with the
+    predictors added after the first reading also says that external_stack_krr picks its alpha from the same grid
+    (an older JSON twin, without them, keeps the note it was written with)."""
+    if _is_prespecified_grid(rep):
         return ""
+    if not rep.get("added_after_first_reading"):
+        return (f" This grid is not the pre-specified one ({list(ALPHA_GRID)}): it was chosen after an earlier "
+                "reading, so the stack's number here is a second look, not a pre-specified result; the other four "
+                "predictors do not depend on it.")
     return (f" This grid is not the pre-specified one ({list(ALPHA_GRID)}): it was chosen after an earlier reading, "
-            "so the stack's number here is a second look, not a pre-specified result; the other four predictors do "
-            "not depend on it.")
+            "so the stack's number here is a second look, not a pre-specified result; the other four pre-specified "
+            "predictors do not depend on it. Of the two predictors added after the first reading (last section), "
+            "external_stack_krr picks its alpha from this same grid and external_krr does not use it.")
 
 
 def render(rep: dict) -> str:

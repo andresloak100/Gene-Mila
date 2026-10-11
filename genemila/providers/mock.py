@@ -433,7 +433,8 @@ class F(Feature):
     dim = 1
 
     def compute(self, ctx, perts, params):
-        unit = _unit(ctx, _rows(ctx))
+        rows = _rows(ctx)
+        unit = _unit(ctx, rows)
         out = np.zeros((len(perts), ctx.n_genes, 1))
         for i, p in enumerate(perts):
             names, d = ctx.train_delta(exclude=p)
@@ -441,11 +442,11 @@ class F(Feature):
                 continue
             ybar = d.mean(axis=0)
             out[i, :, 0] = ybar
-            zp = _first(ctx, unit, p)
-            r = [j for j, q in enumerate(names) if _first(ctx, unit, q) is not None]
+            zp = _row(ctx, rows, unit, p)
+            r = [j for j, q in enumerate(names) if _row(ctx, rows, unit, q) is not None]
             if zp is None or len(r) < 3:
                 continue
-            z = np.array([_first(ctx, unit, names[j]) for j in r])
+            z = np.array([_row(ctx, rows, unit, names[j]) for j in r])
             kern = z @ z.T
             y = d[r]
             ybars = (d.sum(axis=0)[None, :] - y) / (len(names) - 1)  # mean response without p and without row j
@@ -483,11 +484,11 @@ def _choose_lambda(kern, y, ybars):
 def _unit(ctx, rows):
     """Target gene -> its external change centred over its measured genes and scaled to unit norm, 0 elsewhere, so a
     dot product of two is their Pearson correlation; rows with fewer than 3 measured genes or no spread are left out."""
-    key = "external_unit_" + KNOWLEDGE
+    key = "external_krr_unit_" + KNOWLEDGE
     if key not in ctx.cache:
         unit = {{}}
         for g, r in rows.items():
-            ok = ~np.isnan(r)
+            ok = np.isfinite(r)
             if ok.sum() < 3:
                 continue
             x = np.zeros(ctx.n_genes)
@@ -499,26 +500,38 @@ def _unit(ctx, rows):
     return ctx.cache[key]
 
 
-def _first(ctx, rows, p):
+def _row(ctx, rows, unit, p):
+    """p's unit row: that of its first target gene with a row in the file; None when no target has one, or when
+    that first row is unusable (a later target's row never stands in for it)."""
     for g in ctx.target_genes(p):
         if g in rows:
-            return rows[g]
+            return unit.get(g)
     return None
 
 
 def _rows(ctx):
-    """Target gene -> external change over this bundle's genes (nan where the screen did not measure it)."""
-    key = "external_rows_" + KNOWLEDGE
+    """Target gene -> external change over this bundle's genes, nan where the file's "measured" mask says the screen
+    did not measure the gene or the value is null; a target listed with zero cells has no row (a label no cell
+    carries is no measurement). Read as tools/external_loo.py's load_external reads the file, and cached under its
+    own key because the other external templates read the file without the mask."""
+    key = "external_krr_rows_" + KNOWLEDGE
     if key not in ctx.cache:
         ext = ctx.knowledge(KNOWLEDGE) or {{}}
-        cols = np.array([ctx.gene_index.get(str(g), -1) for g in ext.get("genes") or []], dtype=int)
-        ok = cols >= 0
+        genes = [str(g) for g in ext.get("genes") or []]
+        index = {{g: j for j, g in enumerate(genes)}}
+        pos = np.array([index.get(g, -1) for g in ctx.genes], dtype=int)
+        measured = np.array([bool(m) for m in ext.get("measured", [True] * len(genes))], dtype=bool)
+        keep = pos >= 0
+        keep[keep] = measured[pos[keep]]
         rows = {{}}
         for g, r in (ext.get("perts") or {{}}).items():
+            n_cells = r.get("n_cells")
+            if n_cells is not None and int(n_cells) <= 0:
+                continue
             d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
             v = np.full(ctx.n_genes, np.nan)
-            v[cols[ok]] = d[ok]
-            rows[g] = v
+            v[keep] = d[pos[keep]]
+            rows[str(g)] = v
         ctx.cache[key] = rows
     return ctx.cache[key]
 '''

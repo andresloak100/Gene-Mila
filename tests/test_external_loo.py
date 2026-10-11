@@ -260,6 +260,14 @@ def test_cli_and_from_json_rerender_byte_identical(public_dir, tmp_path):
     w = json.loads(wide.with_suffix(".json").read_text())
     assert w["alpha_grid"] == [1000.0, 1e5, 1e7] and sum(w["alphas_chosen"].values()) == w["n_train"]
     assert "not the pre-specified one" in wide.read_text() and "second look" in wide.read_text()
+    # external_stack_krr picks its alpha from that grid too, and both the note and its own section say so
+    assert sum(w["alphas_chosen_stack_krr"].values()) == w["n_train"]
+    note = wide.read_text().split("## Predictors")[0]
+    assert "the other four predictors do not depend on it" not in note
+    assert "external_stack_krr picks its alpha from this same grid and external_krr does not use it" in note
+    assert ("chosen as for external_stack from the same grid [1000.0, 100000.0, 10000000.0] (not the pre-specified "
+            "one" in wide.read_text().split("## Added after the first reading")[1])
+    assert "(not the pre-specified one" not in md.split("## Added after the first reading")[1]
     assert ".." not in md.split("External screen:")[1].split("\n")[0]                # no doubled full stop
 
 
@@ -303,6 +311,11 @@ def test_report_written_before_the_second_look_renders_byte_identical(tmp_path):
     subprocess.run([sys.executable, external_loo.__file__, "--from-json", str(V1 / "report.json"), "--out", str(out)],
                    check=True, capture_output=True)
     assert out.read_bytes() == (V1 / "report.md").read_bytes()
+    # an old twin written with another grid keeps the grid note the old code wrote (the frozen one used the default)
+    wide = external_loo.render({**rep, "alpha_grid": [1000.0, 1e5]})
+    assert ("[1000.0, 100000.0]. This grid is not the pre-specified one ([0.1, 1.0, 10.0, 100.0, 1000.0]): it was "
+            "chosen after an earlier reading, so the stack's number here is a second look, not a pre-specified result; "
+            "the other four predictors do not depend on it.\n") in wide
 
 
 def _latent_case(n=30, n_genes=200, rank=8, ext_noise=0.3, label_noise=0.2, seed=0):

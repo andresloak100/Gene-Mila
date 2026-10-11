@@ -105,37 +105,128 @@ def test_external_features_run_in_the_lab_and_carry_the_screen(dataset, code_rep
         lab.close()
 
 
-def test_krr_template_matches_the_leave_one_out_tool(dataset, tmp_path):
-    """The scripted external_krr feature and tools/external_loo.py's external_krr are the same predictor: for every
-    training perturbation with a row, the template (labels only through ctx.train_delta(exclude=p)) gives the tool's
-    prediction with p held out; without a row it gives the mean training change."""
+def _template_against_tool(pub, knowledge, name):
+    """The external_krr template's feature on every perturbation of the public bundle, training and not, checked
+    against tools/external_loo.py's _krr with the labels the template may read for p: every training perturbation
+    except p (for a perturbation outside training, all of them). Such a perturbation gets a NaN label row in the
+    tool's matrices that no prediction may read. Where the tool falls back, the template gives the mean of those
+    labels. Returns {perturbation: whether kernel ridge was used}."""
     import sys
     from pathlib import Path
 
-    from genemila.data.bundle import export_public
     from genemila.features import registry
     from genemila.features.api import FeatureContext
 
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
     import external_loo
 
-    pub = export_public(_bundle_with_screen(dataset, tmp_path), tmp_path / "pub")
-    plugins = tmp_path / "plugins"
+    plugins = pub.parent / f"plugins_{name}"
     plugins.mkdir()
-    (plugins / "krr_feat.py").write_text(TEMPLATES["external_krr"].format(name="krr_feat", knowledge="ext_screen"))
+    (plugins / f"{name}.py").write_text(TEMPLATES["external_krr"].format(name=name, knowledge=knowledge))
     registry.load_plugins(plugins)
     ctx = FeatureContext(pub)
-    out = registry.get("krr_feat")().compute(ctx, ctx.train_perts, {})
-    assert out.shape == (len(ctx.train_perts), ctx.n_genes, 1) and np.isfinite(out).all()
+    out = registry.get(name)().compute(ctx, ctx.perts, {})
+    assert out.shape == (len(ctx.perts), ctx.n_genes, 1) and np.isfinite(out).all()
 
     bundle = external_loo.load_bundle(pub)
-    S = external_loo._prepare(bundle, external_loo.load_external(pub, "ext_screen", bundle["genes"]))
     assert bundle["perts"] == ctx.train_perts
-    n, used = len(bundle["perts"]), 0
-    for i in range(n):
-        avail = np.arange(n) != i
+    others = [p for p in ctx.perts if p not in set(ctx.train_perts)]
+    assert others   # the sealed set scores perturbations outside training: that path is checked too
+    perts, n_train = ctx.train_perts + others, len(ctx.train_perts)
+    targets = json.loads((pub / "knowledge" / "targets.json").read_text())
+    placeholder = np.full((len(others), ctx.n_genes), np.nan)
+    aug = {**bundle, "perts": perts, "deltas": np.vstack([bundle["deltas"], placeholder]),
+           "targets": {p: [str(t) for t in targets.get(p, [])] for p in perts}}
+    S = external_loo._prepare(aug, external_loo.load_external(pub, knowledge, bundle["genes"]))
+    used = {}
+    for i, p in enumerate(perts):
+        avail = np.arange(len(perts)) < n_train
+        avail[i] = False
         krr = external_loo._krr(i, avail, S)
         want = S["deltas"][avail].mean(axis=0) if krr["pred"] is None else krr["pred"]
-        np.testing.assert_allclose(out[i, :, 0], want, rtol=1e-8, atol=1e-10)
-        used += krr["pred"] is not None
-    assert used == int(S["krr_ok"].sum()) >= n - 1   # the fixture drops one target's row (perhaps a training one)
+        np.testing.assert_allclose(out[ctx.perts.index(p), :, 0], want, rtol=1e-8, atol=1e-10, err_msg=p)
+        used[p] = krr["pred"] is not None
+    return used
+
+
+def _public_with_screen(dataset, tmp_path, edit=None):
+    """The public part of _bundle_with_screen's bundle; edit(screen, targets) may change the knowledge file and
+    targets.json in place before they are written back."""
+    from genemila.data.bundle import export_public
+
+    pub = export_public(_bundle_with_screen(dataset, tmp_path), tmp_path / "pub")
+    kdir = pub / "knowledge"
+    screen = json.loads((kdir / "ext_screen.json").read_text())
+    targets = json.loads((kdir / "targets.json").read_text())
+    if edit is not None:
+        edit(screen, targets)
+        (kdir / "ext_screen.json").write_text(json.dumps(screen))
+        (kdir / "targets.json").write_text(json.dumps(targets))
+    z = np.load(pub / "public.npz")
+    return pub, [str(p) for p in z["train_perts"]], [str(p) for p in z["perts"]], screen, targets
+
+
+def test_krr_template_matches_the_leave_one_out_tool(dataset, tmp_path):
+    """The scripted external_krr feature and tools/external_loo.py's external_krr are the same predictor: for every
+    perturbation, training or not, the template (labels only through ctx.train_delta(exclude=p)) gives the tool's
+    prediction from the other training perturbations; where the tool falls back it gives the mean training change."""
+    pub, train, perts, screen, targets = _public_with_screen(dataset, tmp_path)
+    used = _template_against_tool(pub, "ext_screen", "krr_feat")
+    has_row = {p: targets[p][0] in screen["perts"] for p in perts}
+    assert used == has_row and sum(has_row.values()) == len(perts) - 1   # the fixture drops one target's row
+
+
+def test_krr_template_reads_the_file_as_the_tool_does(dataset, tmp_path):
+    """Files the builder does not write, read the same way by both: a target listed with zero cells has no row,
+    numbers in genes the file marks unmeasured are ignored, and a perturbation whose first target with a row has an
+    unusable (all-null) row falls back rather than reaching for its next target's row."""
+    ghosted, zero = [], []
+
+    def edit(screen, targets):
+        with_row = sorted(g for g in screen["perts"])
+        zero.extend(with_row[:2])
+        for g in zero:                                           # zero cells: no measurement, whatever delta says
+            screen["perts"][g]["n_cells"] = 0
+        rng = np.random.default_rng(7)
+        for r in screen["perts"].values():                       # numbers where the mask says unmeasured
+            r["delta"] = [round(float(rng.normal()), 5) if not m else v for v, m in zip(r["delta"], screen["measured"])]
+        screen["perts"]["GHOST"] = {"n_cells": 50, "labels": ["GHOST"], "delta": [None] * len(screen["genes"])}
+        z = np.load(tmp_path / "pub" / "public.npz")
+        train = [str(p) for p in z["train_perts"]]
+        other = [str(p) for p in z["perts"] if str(p) not in set(train)]
+        for p in ([q for q in train if targets[q][0] in with_row[2:]][:1] +
+                  [q for q in other if targets[q][0] in with_row[2:]][:1]):
+            targets[p] = ["GHOST"] + targets[p]                   # its own row comes second
+            ghosted.append(p)
+
+    pub, train, perts, screen, targets = _public_with_screen(dataset, tmp_path, edit)
+    assert len(ghosted) == 2 and not all(screen["measured"])
+    used = _template_against_tool(pub, "ext_screen", "krr_odd")
+    rows = {g for g, r in screen["perts"].items() if r["n_cells"] > 0}
+    for p in perts:
+        first = next((t for t in targets[p] if t in rows), None)   # the first target with a row, as the tool takes it
+        assert used[p] == (first is not None and first != "GHOST"), p
+    assert not any(used[p] for p in ghosted)
+    assert sum(not used[p] for p in perts if targets[p][0] in zero) == 2
+
+
+def test_krr_template_at_the_three_row_threshold(dataset, tmp_path):
+    """Three training perturbations with an external row: one held out leaves two, so every training perturbation
+    falls back, while a perturbation outside training sees all three and gets kernel ridge; both sides agree."""
+    keep = {}
+
+    def edit(screen, targets):
+        z = np.load(tmp_path / "pub" / "public.npz")
+        train = [str(p) for p in z["train_perts"]]
+        other = [str(p) for p in z["perts"] if str(p) not in set(train)]
+        ours = [targets[p][0] for p in train if targets[p][0] in screen["perts"]][:3]
+        theirs = [targets[p][0] for p in other if targets[p][0] in screen["perts"]]
+        keep.update(train=ours, other=theirs)
+        screen["perts"] = {g: r for g, r in screen["perts"].items() if g in set(ours) | set(theirs)}
+
+    pub, train, perts, screen, targets = _public_with_screen(dataset, tmp_path, edit)
+    assert len(keep["train"]) == 3 and sum(targets[p][0] in screen["perts"] for p in train) == 3
+    used = _template_against_tool(pub, "ext_screen", "krr_three")
+    assert not any(used[p] for p in train)
+    outside = [p for p in perts if p not in set(train) and targets[p][0] in keep["other"]]
+    assert outside and [p for p in perts if p not in set(train) and used[p]] == outside

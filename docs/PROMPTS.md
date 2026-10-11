@@ -488,11 +488,16 @@ external row, K the Pearson correlation between their external rows (each row ce
 scaled to unit norm, so K is positive semidefinite with diagonal 1) and k their correlations with p's row, the feature
 is ybar + k^T (K + lambda I)^-1 (Y_R - ybar), a signed mix of the training responses; lambda is chosen from 0.01, 0.03,
 0.1, 0.3, 1, 3, 10, 30, 100 by an inner leave-one-out over R (each row predicted from the others around a mean that
-leaves it out, scored by pearson_delta; ties to the larger lambda); the mean training change when p's target has no
-row or fewer than 3 training perturbations have one. One column. It computes the same predictor as `external_krr` in
-tools/external_loo.py (tests/test_external_screen_control.py checks the two agree), and it has not been run on real
-data. A scripted control run with an external file from this code on therefore has eleven fixed hypotheses, not ten,
-and is a different arm by code version from control_replogle_w4_r0.
+leaves it out, scored by pearson_delta; ties to the larger lambda); the mean training change when p has no usable row
+or fewer than 3 training perturbations have one (where the tool uses geneset_knn instead). A perturbation's row is
+that of its first target gene with a row in the file, read as tools/external_loo.py reads it: genes the file marks
+unmeasured, and null values, are left out; a target listed with zero cells has no row; and when that first row is
+unusable (fewer than 3 measured values, or no spread) the perturbation has none, rather than taking a later target's
+row. One column. Apart from the fallback it computes the same predictor as `external_krr` in tools/external_loo.py,
+for training perturbations and for those outside training alike (tests/test_external_screen_control.py checks the two
+agree, also on files with zero-cell rows, values in unmeasured genes and an unusable first row, and at the three-row
+threshold), and it has not been run on real data. A scripted control run with an external file from this code on
+therefore has eleven fixed hypotheses, not ten, and is a different arm by code version from control_replogle_w4_r0.
 
 ## 6. What a worker is, and what the worker count changes
 
