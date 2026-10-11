@@ -410,9 +410,123 @@ def _rows(ctx):
 '''
 
 
+TEMPLATES["external_krr"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+KNOWLEDGE = "{knowledge}"
+LAMBDAS = (0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0)
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Kernel transfer through an external screen (knowledge file {knowledge}): kernel ridge regression "
+                   "over the other training perturbations' responses, kernel = Pearson correlation between the "
+                   "external responses of their targets, so p's response is the mean training response plus a "
+                   "signed mix of the others' deviations from it; lambda chosen by leave-one-out over those training "
+                   "perturbations; the mean training response when p's target has no external row or fewer than 3 "
+                   "training perturbations have one.")
+    rationale = ("Targets whose knockdowns look alike, or opposite, in an independent screen of the same cell line "
+                 "respond alike, or opposite, here; kernel ridge mixes the training responses with weights of either "
+                 "sign instead of averaging the closest few.")
+    inputs = ["train_delta", "targets", KNOWLEDGE]
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        unit = _unit(ctx, _rows(ctx))
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            names, d = ctx.train_delta(exclude=p)
+            if not len(names):
+                continue
+            ybar = d.mean(axis=0)
+            out[i, :, 0] = ybar
+            zp = _first(ctx, unit, p)
+            r = [j for j, q in enumerate(names) if _first(ctx, unit, q) is not None]
+            if zp is None or len(r) < 3:
+                continue
+            z = np.array([_first(ctx, unit, names[j]) for j in r])
+            kern = z @ z.T
+            y = d[r]
+            ybars = (d.sum(axis=0)[None, :] - y) / (len(names) - 1)  # mean response without p and without row j
+            lam = _choose_lambda(kern, y, ybars)
+            w = np.linalg.solve(kern + lam * np.eye(len(r)), z @ zp)
+            out[i, :, 0] = ybar * (1.0 - w.sum()) + w @ y
+        return out
+
+
+def _choose_lambda(kern, y, ybars):
+    """Lambda with the best mean leave-one-out pearson_delta over the rows of y (row j predicted by kernel ridge from
+    the other rows, around ybars[j]); ties go to the larger lambda. Closed form: with a the inverse of kern + lam I,
+    row j's refit weights the other rows by -a[:, j] / a[j, j], and the centred prediction's products with the
+    truth and itself need only the Gram matrices of the centred rows."""
+    yc = y - y.mean(axis=1, keepdims=True)
+    bc = ybars - ybars.mean(axis=1, keepdims=True)
+    g, m = yc @ yc.T, yc @ bc.T
+    yy, mb, bb = np.diag(g), np.diag(m), (bc * bc).sum(axis=1)
+    s, v = np.linalg.eigh(kern)
+    s = np.clip(s, 0.0, None)
+    scores = {{}}
+    for lam in LAMBDAS:
+        a = (v / (s + lam)) @ v.T
+        w = -a / np.diag(a)[None, :]
+        np.fill_diagonal(w, 0.0)
+        c = 1.0 - w.sum(axis=0)
+        num = (w * g).sum(axis=0) + c * mb
+        pp = np.maximum(((g @ w) * w).sum(axis=0) + 2.0 * c * (w * m).sum(axis=0) + c * c * bb, 0.0)
+        den = np.sqrt(pp * yy)
+        scores[lam] = float(np.mean(np.where(den > 0, num / np.where(den > 0, den, 1.0), 0.0)))
+    best = max(scores.values())
+    return max(lam for lam in LAMBDAS if scores[lam] >= best - 1e-12)
+
+
+def _unit(ctx, rows):
+    """Target gene -> its external change centred over its measured genes and scaled to unit norm, 0 elsewhere, so a
+    dot product of two is their Pearson correlation; rows with fewer than 3 measured genes or no spread are left out."""
+    key = "external_unit_" + KNOWLEDGE
+    if key not in ctx.cache:
+        unit = {{}}
+        for g, r in rows.items():
+            ok = ~np.isnan(r)
+            if ok.sum() < 3:
+                continue
+            x = np.zeros(ctx.n_genes)
+            x[ok] = r[ok] - r[ok].mean()
+            norm = np.sqrt((x * x).sum())
+            if norm > 0:
+                unit[g] = x / norm
+        ctx.cache[key] = unit
+    return ctx.cache[key]
+
+
+def _first(ctx, rows, p):
+    for g in ctx.target_genes(p):
+        if g in rows:
+            return rows[g]
+    return None
+
+
+def _rows(ctx):
+    """Target gene -> external change over this bundle's genes (nan where the screen did not measure it)."""
+    key = "external_rows_" + KNOWLEDGE
+    if key not in ctx.cache:
+        ext = ctx.knowledge(KNOWLEDGE) or {{}}
+        cols = np.array([ctx.gene_index.get(str(g), -1) for g in ext.get("genes") or []], dtype=int)
+        ok = cols >= 0
+        rows = {{}}
+        for g, r in (ext.get("perts") or {{}}).items():
+            d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
+            v = np.full(ctx.n_genes, np.nan)
+            v[cols[ok]] = d[ok]
+            rows[g] = v
+        ctx.cache[key] = rows
+    return ctx.cache[key]
+'''
+
 def _pick_template(text: str) -> str:
     text = text.lower()
-    for key, words in [("external_knn", ("external screen neighbour",)),
+    for key, words in [("external_krr", ("external screen kernel",)),
+                       ("external_knn", ("external screen neighbour",)),
                        ("external_direct", ("external screen response",)),
                        ("components", ("component", "low-rank", "low rank", "kernel ridge")),
                        ("similar", ("similar", "knn", "neighbor", "neighbour", "transfer")),
@@ -534,9 +648,11 @@ SCRIPTED_HYPOTHESES = [
 
 
 def external_hypotheses(names: list[str] | None) -> list[tuple]:
-    """Two fixed hypotheses per external screen knowledge file a run can read (run.external_knowledge): the same
-    target's external response, and neighbour transfer weighted by external response similarity. They follow the
-    eight fixed hypotheses, so a scripted control on a bundle without such a file is unchanged."""
+    """Three fixed hypotheses per external screen knowledge file a run can read (run.external_knowledge): the same
+    target's external response, neighbour transfer weighted by external response similarity, and kernel transfer
+    (kernel ridge over the training responses with the external correlation as kernel; added after the first
+    leave-one-out reading of the Replogle screen). They follow the eight fixed hypotheses, so a scripted control on a
+    bundle without such a file is unchanged. Each text triggers its own template only (_pick_template)."""
     out = []
     for k in names or []:
         out += [("External screen response", "explore", f"external_direct_{k}",
@@ -545,13 +661,19 @@ def external_hypotheses(names: list[str] | None) -> list[tuple]:
                 ("External screen neighbours", "explore", f"external_knn_{k}",
                  f"external screen neighbour transfer: training responses weighted by how alike their targets' "
                  f"knockdowns look in knowledge file {k}",
-                 "Targets whose knockdowns look alike in an independent screen respond alike here.")]
+                 "Targets whose knockdowns look alike in an independent screen respond alike here."),
+                ("External screen kernel transfer", "explore", f"external_krr_{k}",
+                 f"external screen kernel transfer: kernel ridge weights over training responses from how alike "
+                 f"their targets' knockdowns look in knowledge file {k}",
+                 "Targets whose knockdowns look alike, or opposite, in an independent screen respond alike, or "
+                 "opposite, here; signed kernel ridge weights over all training responses use that beyond the "
+                 "closest few.")]
     return out
 
 
 class ScriptedPlanner(AgentProvider):
     """Deterministic planner used when no LLM planner is available, and in tests. external: the knowledge files a
-    run can read beyond those its bundle was built with (run.external_knowledge); each adds two hypotheses."""
+    run can read beyond those its bundle was built with (run.external_knowledge); each adds three hypotheses."""
     name = "scripted"
 
     def __init__(self, model: str = "scripted", external: list[str] | None = None):

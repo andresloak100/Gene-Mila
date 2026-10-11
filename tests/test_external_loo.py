@@ -251,8 +251,9 @@ def test_cli_and_from_json_rerender_byte_identical(public_dir, tmp_path):
     with pytest.raises(SystemExit):
         external_loo.main(["--from-json", str(twin), "--bundle", str(public_dir), "--knowledge", name,
                            "--out", str(tmp_path / "c.md")])
-    # the pre-specified grid carries no note; another grid is named as a second look
-    assert "second look" not in md and rep["alpha_grid"] == list(external_loo.ALPHA_GRID)
+    # the pre-specified grid carries no note; another grid is named as a second look (the section on the predictors
+    # added after the first reading is always a second look, so the grid note itself is what is checked)
+    assert "This grid is not the pre-specified one" not in md and rep["alpha_grid"] == list(external_loo.ALPHA_GRID)
     wide = tmp_path / "wide.md"
     assert external_loo.main(["--bundle", str(public_dir), "--knowledge", name, "--k", "3", "--out", str(wide),
                               "--alpha-grid", "1000", "1e5", "1e7"]) == 0
@@ -284,3 +285,193 @@ def test_knn_and_stack_helpers():
     flat = [np.stack([c[0], c[1], c[2], np.ones(200)]) for c in cols]
     pred2, _, _ = external_loo._stack(flat, ys, np.stack([test[0], test[1], test[2], np.ones(200)]))
     assert external_loo.pearson_delta(pred2, y_test) > 0.99
+
+
+# ------------------------------------------------- added after the first reading: external_krr, external_stack_krr
+
+V1 = ROOT / "tests" / "data" / "external_loo_v1"
+
+
+def test_report_written_before_the_second_look_renders_byte_identical(tmp_path):
+    """tests/data/external_loo_v1 holds a JSON twin and its markdown written by the code before external_krr existed
+    (see the README there). The current code must render that JSON to exactly that markdown: an old twin re-rendered
+    with --from-json never gains the added rows, columns or section."""
+    rep = json.loads((V1 / "report.json").read_text())
+    assert "added_after_first_reading" not in rep and len(rep["predictors"]) == 5
+    assert external_loo.render(rep) == (V1 / "report.md").read_text()
+    out = tmp_path / "again.md"
+    subprocess.run([sys.executable, external_loo.__file__, "--from-json", str(V1 / "report.json"), "--out", str(out)],
+                   check=True, capture_output=True)
+    assert out.read_bytes() == (V1 / "report.md").read_bytes()
+
+
+def _latent_case(n=30, n_genes=200, rank=8, ext_noise=0.3, label_noise=0.2, seed=0):
+    """A bundle and external screen in memory, in the shapes load_bundle and load_external return. Each perturbation
+    has a hidden unit vector u; its change is u B plus noise and its external row u C plus noise, with B and C
+    unrelated, so the external row of the same target says nothing gene by gene (external_direct is near 0) while
+    the correlation of two external rows tracks u_p . u_q. Any response is then a linear mix of the others with
+    weights of both signs given by external similarity: what kernel ridge can learn and top-k positive neighbours
+    cannot."""
+    rng = np.random.default_rng(seed)
+    U = rng.normal(size=(n, rank))
+    U /= np.linalg.norm(U, axis=1, keepdims=True)
+    B, C = rng.normal(size=(rank, n_genes)), rng.normal(size=(rank, n_genes))
+    genes = [f"G{j:03d}" for j in range(n_genes)]
+    perts = [f"{g}_KO" for g in genes[:n]]
+    measured = np.arange(n_genes) % 10 != 0
+    rows = {}
+    for i in range(n):
+        x = U[i] @ C + rng.normal(0, ext_noise, n_genes)
+        x[~measured] = np.nan
+        rows[genes[i]] = x
+    bundle = {"name": "latent", "genes": genes, "perts": perts,
+              "deltas": U @ B + rng.normal(0, label_noise, (n, n_genes)), "control_mean": np.zeros(n_genes),
+              "n_cells": [50] * n, "targets": {p: [genes[i]] for i, p in enumerate(perts)}, "gene_sets": {}}
+    external = {"name": "ext_latent", "description": "latent test case", "source": {}, "measured": measured,
+                "rows": rows, "n_cells": {g: 50 for g in rows}, "n_control_cells": 100, "n_perts": n,
+                "n_bundle_targets_missing": 0, "zero_cell_targets": []}
+    return bundle, external
+
+
+def test_krr_beats_external_knn_when_responses_mix_with_signed_weights():
+    bundle, external = _latent_case()
+    rep = external_loo.analyse(bundle, external, k=5)
+    n = rep["n_train"]
+    m = _means(rep)
+    P = {p["name"]: p for p in rep["predictors"]}
+    assert abs(m["external_direct"]) < 0.15 and m["mean_response"] < 0.15        # nothing to copy, nothing shared
+    assert m["external_knn"] > 0.6                                              # neighbours do carry information
+    v = P["external_krr"]["vs_external_knn"]
+    assert m["external_krr"] > m["external_knn"] + 0.08 and v["mean_diff"] > 3 * v["se_diff"] and v["wins"] >= 0.8 * n
+    assert m["external_stack_krr"] > m["external_stack"] + 0.08
+    assert P["external_stack_krr"]["vs_external_stack"]["wins"] >= 0.8 * n
+    assert rep["fallbacks"]["external_krr_no_row"] == rep["fallbacks"]["external_krr_too_few_rows"] == 0
+    assert P["external_krr"]["coverage"] == n and sum(rep["krr_lambdas_chosen"].values()) == n
+    for r in rep["per_perturbation"]:
+        assert r["krr_lambda"] in external_loo.LAMBDA_GRID and r["fallbacks"]["external_krr"] is None
+        assert set(r["krr_inner_scores"]) == {str(lam) for lam in external_loo.LAMBDA_GRID}
+        assert r["alpha_stack_krr"] in external_loo.ALPHA_GRID and len(r["stack_krr_weights"]) == 5
+    # the weights kernel ridge puts on the other responses really are of both signs
+    S = external_loo._prepare(bundle, external)
+    Z, R = S["krr_z"], np.arange(1, n)
+    lam = rep["per_perturbation"][0]["krr_lambda"]
+    w = np.linalg.solve(Z[R] @ Z[R].T + lam * np.eye(n - 1), Z[R] @ Z[0])
+    assert (w > 0.05).sum() >= 3 and (w < -0.05).sum() >= 3
+    md = external_loo.render(rep)
+    assert "| external_krr |" in md and "| external_stack_krr |" in md and "| KRR lambda |" in md
+    tail = md.split("## Reading")[1]
+    assert "## Added after the first reading (a second look)" in tail
+    assert "designed after the first result of this check was seen" in tail
+    assert "a second look, not pre-specified results" in tail
+    assert f"better on {v['wins']} of {n}" in tail and "external_stack_krr scores" in tail
+
+
+def test_krr_stays_near_the_mean_on_a_noise_screen(public_dir):
+    bundle = _bundle(public_dir)
+    name = _write_external(public_dir, "ext_noise_krr", bundle, "noise")
+    rep = external_loo.analyse(bundle, external_loo.load_external(public_dir, name, bundle["genes"]), k=5)
+    m = _means(rep)
+    P = {p["name"]: p for p in rep["predictors"]}
+    v = P["external_krr"]["vs_mean_response"]
+    # unrelated external rows: kernel ridge shrinks to the mean change instead of chasing chance correlations
+    assert abs(m["external_krr"] - m["mean_response"]) < 0.05 and abs(v["mean_diff"]) <= 2 * v["se_diff"]
+    assert m["external_krr"] > m["external_knn"]                   # the neighbour rule does chase them
+    assert m["external_stack_krr"] >= m["external_stack"] - 0.03
+    assert sum(c for lam, c in rep["krr_lambdas_chosen"].items() if float(lam) >= 1.0) >= 0.8 * rep["n_train"]
+    tail = external_loo.render(rep).split("## Added after the first reading (a second look)")[1]
+    assert "external_krr scores" in tail
+
+
+def test_krr_lambda_and_training_columns_never_see_the_held_out_label():
+    bundle, external = _latent_case(n=16, n_genes=120, rank=4)
+    S = external_loo._prepare(bundle, external)
+    i = 5
+    base = external_loo._fold(i, S, k=5)
+    D2 = S["deltas"].copy()
+    D2[i] = np.random.default_rng(1).normal(0, 5, D2.shape[1])   # the held-out perturbation's own label, replaced
+    moved = external_loo._fold(i, {**S, "deltas": D2}, k=5)
+    assert base["krr"]["lambda"] == moved["krr"]["lambda"] and base["krr"]["inner"] == moved["krr"]["inner"]
+    assert np.array_equal(base["krr_col"], moved["krr_col"])
+    assert base["train"] == moved["train"] and i not in base["train"]
+    for a, b in zip(base["train_cols5"], moved["train_cols5"]):
+        assert np.array_equal(a, b)
+    assert base["alpha_krr"] == moved["alpha_krr"] and np.array_equal(base["stacked_krr"], moved["stacked_krr"])
+    assert np.array_equal(base["stacked"], moved["stacked"])
+    # the check has teeth: another training perturbation's label does reach the inner selection
+    D3 = S["deltas"].copy()
+    D3[base["train"][0]] = D2[i]
+    other = external_loo._fold(i, {**S, "deltas": D3}, k=5)
+    assert other["krr"]["inner"] != base["krr"]["inner"]
+    assert not np.array_equal(other["train_cols5"][1], base["train_cols5"][1])
+
+
+def test_krr_closed_form_matches_refitting():
+    rng = np.random.default_rng(3)
+    n, g = 12, 40
+    X = rng.normal(size=(n, 3)) @ rng.normal(size=(3, g)) + 0.3 * rng.normal(size=(n, g))
+    X[:, ::7] = np.nan                                             # unmeasured genes
+    X[2, 5] = np.nan                                               # a null inside a measured gene
+    Z, ok = external_loo._unit_rows(X, np.ones(n, dtype=bool))
+    assert ok.all()
+    K = Z @ Z.T
+    np.testing.assert_allclose(np.diag(K), 1.0)
+    assert np.linalg.eigvalsh(K).min() > -1e-10                       # positive semidefinite
+    m = np.isfinite(X[0]) & np.isfinite(X[1])
+    assert abs(K[0, 1] - external_loo.pearson_delta(X[0, m], X[1, m])) < 1e-12   # Pearson where rows share genes
+    Y = rng.normal(size=(n, 30))                                   # labels; any will do for an identity
+    ybars = rng.normal(size=(n, 30)) * 0.1
+    closed = external_loo.krr_loo(K, Y, ybars)
+    scores = external_loo.krr_loo_scores(K, Y, ybars)
+    for lam in external_loo.LAMBDA_GRID:
+        exact = external_loo.krr_loo_exact(K, Y, ybars, lam)
+        np.testing.assert_allclose(closed[lam], exact, rtol=1e-8, atol=1e-10)
+        ref = np.mean([external_loo.pearson_delta(exact[j], Y[j]) for j in range(n)])
+        assert abs(scores[lam] - ref) < 1e-10
+    # ties go to the larger lambda; a row without spread is unusable
+    assert external_loo._choose_lambda({0.1: 0.5, 1.0: 0.5, 10.0: 0.4}) == 1.0
+    flat = np.ones((2, g))
+    flat[1] = np.nan
+    assert not external_loo._unit_rows(flat, np.ones(2, dtype=bool))[1].any()
+
+
+def test_krr_fallbacks_are_counted(public_dir):
+    bundle = _bundle(public_dir)
+    perts = bundle["perts"]
+    n = len(perts)
+    # half the targets without a row: exactly geneset_knn for those, and counted
+    drop = {bundle["targets"][p][0] for p in perts[::2]}
+    name = _write_external(public_dir, "ext_half_krr", bundle, "signal", drop=drop)
+    rep = external_loo.analyse(bundle, external_loo.load_external(public_dir, name, bundle["genes"]), k=5)
+    fb = rep["fallbacks"]
+    assert fb["external_krr_no_row"] == len(drop) and fb["external_krr_too_few_rows"] == 0
+    P = {p["name"]: p for p in rep["predictors"]}
+    assert P["external_krr"]["coverage"] == n - len(drop)
+    for r in rep["per_perturbation"]:
+        if r["pert"] in perts[::2]:
+            assert r["scores"]["external_krr"] == r["scores"]["geneset_knn"]
+            assert r["fallbacks"]["external_krr"] == "no external row" and r["krr_lambda"] is None
+            assert r["krr_inner_scores"] is None
+        else:
+            assert r["fallbacks"]["external_krr"] is None and r["krr_lambda"] in external_loo.LAMBDA_GRID
+    assert sum(rep["krr_lambdas_chosen"].values()) == n - len(drop)
+    tail = external_loo.render(rep).split("## Added after the first reading (a second look)")[1]
+    assert f"no external row ({len(drop)} perturbations)" in tail
+    # three rows in the file: each of the three sees only two others, too few for kernel ridge
+    keep = [bundle["targets"][p][0] for p in perts[:3]]
+    name = _write_external(public_dir, "ext_three_krr", bundle, "signal",
+                           drop={bundle["targets"][p][0] for p in perts} - set(keep))
+    rep = external_loo.analyse(bundle, external_loo.load_external(public_dir, name, bundle["genes"]), k=5)
+    fb = rep["fallbacks"]
+    assert fb["external_krr_no_row"] == n - 3 and fb["external_krr_too_few_rows"] == 3
+    assert all(r["scores"]["external_krr"] == r["scores"]["geneset_knn"] for r in rep["per_perturbation"])
+    assert all(c == 0 for c in rep["krr_lambdas_chosen"].values())
+    tail = external_loo.render(rep).split("## Added after the first reading (a second look)")[1]
+    assert "fewer than 3 other training perturbations have one (3)" in tail
+    assert "Kernel ridge lambda chosen per fold: none (every fold fell back)" in tail
+    # four rows: each sees three, enough
+    keep4 = [bundle["targets"][p][0] for p in perts[:4]]
+    name = _write_external(public_dir, "ext_four_krr", bundle, "signal",
+                           drop={bundle["targets"][p][0] for p in perts} - set(keep4))
+    rep = external_loo.analyse(bundle, external_loo.load_external(public_dir, name, bundle["genes"]), k=5)
+    assert rep["fallbacks"]["external_krr_too_few_rows"] == 0 and rep["fallbacks"]["external_krr_no_row"] == n - 4
+    assert sum(rep["krr_lambdas_chosen"].values()) == 4

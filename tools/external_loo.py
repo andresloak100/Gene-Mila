@@ -22,6 +22,24 @@ perturbation's own label is used by any predictor. Five predictors are compared:
                      statistics), trained on the other perturbations' own leave-one-out columns, alpha picked
                      by an inner leave-one-out over those perturbations from a small grid
 
+Added on 2026-10-11 after the first reading of this check, so a second look and not pre-specified: two predictors
+appended after the five above (which they never change), read in their own section after the pre-specified reading:
+
+    external_krr        kernel ridge through the external screen: mean_response + k^T (K + lambda I)^-1 (Y - mean),
+                        over the other training perturbations with an external row (Y their changes), K the Pearson
+                        correlation between their external rows, k their correlations with the held-out target's
+                        row, so other responses enter with signed weights; lambda from LAMBDA_GRID by an inner
+                        leave-one-out over those perturbations (a closed form, tested equal to refitting); geneset_knn
+                        when the held-out target has no row or fewer than KRR_MIN_ROWS others have one
+    external_stack_krr  the external_stack ridge over five columns, the four stack columns plus external_krr, every
+                        training row's columns (its kernel ridge lambda included) computed without that perturbation
+                        and without the held-out one
+
+A JSON twin written before these were added has no "added_after_first_reading" key, and --from-json renders it to
+exactly the markdown the earlier code wrote (tests/data/external_loo_v1). Runtime for 50 perturbations x 2,055 genes:
+about 12 s in a 4-core cloud container (2 s before the additions), nearly all of it the nested lambda choices of the
+five-column stack's training columns.
+
 The external knowledge file (knowledge/<name>.json, written by tools/build_external_screen.py from the raw
 external h5ad and the bundle's public gene and target lists) is an outside measurement the agents will be given
 as a knowledge file, so it is public. The sealed labels are never read by this tool; the result is a reading on
@@ -52,6 +70,16 @@ PREDICTORS = ["mean_response", "geneset_knn", "external_direct", "external_knn",
 STACK_COLUMNS = PREDICTORS[:4]
 ALPHA_GRID = (0.1, 1.0, 10.0, 100.0, 1000.0)   # the pre-specified grid; --alpha-grid widens it, and the report says so
 MIN_SHARED_GENES = 3   # genes two external rows must share before their correlation is used as a weight
+
+# Added on 2026-10-11 after the first reading of this check, so their numbers are a second look, not pre-specified
+# results: kernel ridge regression through the external screen, and the stack with it as a fifth column. They are
+# appended after the five pre-specified predictors and never change them, their order or their numbers.
+ADDED_PREDICTORS = ["external_krr", "external_stack_krr"]
+ADDED_REFERENCE = {"external_krr": "external_knn", "external_stack_krr": "external_stack"}   # what each is read against
+STACK_KRR_COLUMNS = STACK_COLUMNS + ["external_krr"]
+LAMBDA_GRID = (0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0)   # kernel ridge penalties, fixed
+KRR_MIN_ROWS = 3   # training perturbations with an external row that kernel ridge needs, else geneset_knn
+TIE_TOL = 1e-12    # inner scores this close count as tied; ties go to the larger lambda
 
 
 # ----------------------------------------------------------------------------------------------- inputs
@@ -217,19 +245,124 @@ def _stack(train_cols: list[np.ndarray], train_y: list[np.ndarray], test_cols: n
     return _predict(model, test_cols.T), float(best_alpha), {"inner_scores": inner, "weights": [float(x) for x in model[2]]}
 
 
+# ------------------------------------------------------------- kernel ridge (added after the first reading)
+
+def _unit_rows(E: np.ndarray, has: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Each external row centred over its finite genes and scaled to unit norm, unmeasured or null genes 0, so that
+    Z @ Z.T is the Pearson correlation between rows (exactly when the rows share their finite genes, as they do
+    in a file whose only gaps are its global "measured" mask; a null inside a measured gene counts as the row's
+    mean there). The kernel is positive semidefinite with diagonal 1. A row with fewer than MIN_SHARED_GENES
+    finite genes, or none of their spread, is unusable (ok False) and counts as no row for kernel ridge."""
+    Z = np.zeros_like(E)
+    ok = np.zeros(E.shape[0], dtype=bool)
+    for a in np.flatnonzero(has):
+        m = np.isfinite(E[a])
+        if m.sum() < MIN_SHARED_GENES:
+            continue
+        x = E[a, m] - E[a, m].mean()
+        norm = np.sqrt((x * x).sum())
+        if norm > 0:
+            Z[a, m], ok[a] = x / norm, True
+    return Z, ok
+
+
+def krr_predict(K: np.ndarray, k: np.ndarray, Y: np.ndarray, ybar: np.ndarray, lam: float) -> np.ndarray:
+    """ybar + k^T (K + lam I)^-1 (Y - ybar): kernel ridge over the rows of Y (training changes), K their kernel,
+    k their kernel values with the target, ybar the mean change the residuals are taken from."""
+    w = np.linalg.solve(K + lam * np.eye(len(K)), k)
+    return ybar * (1.0 - w.sum()) + w @ Y
+
+
+def krr_loo_exact(K: np.ndarray, Y: np.ndarray, ybars: np.ndarray, lam: float) -> np.ndarray:
+    """Leave-one-out kernel ridge predictions over the rows of Y, by refitting without each row i; ybars[i] is
+    the mean change computed without row i. The reference the closed forms below are tested against."""
+    n = len(K)
+    out = np.empty_like(Y)
+    for i in range(n):
+        rest = np.flatnonzero(np.arange(n) != i)
+        out[i] = krr_predict(K[np.ix_(rest, rest)], K[rest, i], Y[rest], ybars[i], lam)
+    return out
+
+
+def _loo_weights(K: np.ndarray, lambdas) -> dict:
+    """{lambda: W} with W[j, i] the weight row i's leave-one-out refit puts on row j: with A the inverse of
+    K + lam I, the refit without i solves (K + lam I)_{-i,-i} w = K_{-i,i}, whose solution is -A[-i, i] / A[i, i]
+    (block inversion). One eigendecomposition of K serves every row and every lambda."""
+    s, V = np.linalg.eigh(K)
+    s = np.clip(s, 0.0, None)
+    out = {}
+    for lam in lambdas:
+        A = (V / (s + lam)) @ V.T
+        W = -A / np.diag(A)[None, :]
+        np.fill_diagonal(W, 0.0)
+        out[lam] = W
+    return out
+
+
+def krr_loo(K: np.ndarray, Y: np.ndarray, ybars: np.ndarray, lambdas=LAMBDA_GRID) -> dict:
+    """The predictions of krr_loo_exact for every lambda, in closed form: {lambda: predictions}."""
+    return {lam: W.T @ Y + (1.0 - W.sum(axis=0))[:, None] * ybars for lam, W in _loo_weights(K, lambdas).items()}
+
+
+def krr_loo_scores(K: np.ndarray, Y: np.ndarray, ybars: np.ndarray, lambdas=LAMBDA_GRID) -> dict:
+    """{lambda: mean pearson_delta of krr_loo's predictions against the rows of Y}, without forming them: Pearson
+    ignores a row's shift, so with Yc, Bc the row-centred Y and ybars the centred prediction of row i is
+    sum_j W[j, i] Yc_j + c_i Bc_i (c = 1 - column sums of W), and its products with Yc_i and itself need only
+    the Gram matrices Yc Yc^T and Yc Bc^T. Tested equal to scoring krr_loo_exact's predictions."""
+    Yc = Y - Y.mean(axis=1, keepdims=True)
+    Bc = ybars - ybars.mean(axis=1, keepdims=True)
+    G, M = Yc @ Yc.T, Yc @ Bc.T            # G[j, i] = Yc_j . Yc_i, M[j, i] = Yc_j . Bc_i
+    yy, mb, bb = np.diag(G), np.diag(M), (Bc * Bc).sum(axis=1)
+    out = {}
+    for lam, W in _loo_weights(K, lambdas).items():
+        c = 1.0 - W.sum(axis=0)
+        num = (W * G).sum(axis=0) + c * mb
+        pp = np.maximum(((G @ W) * W).sum(axis=0) + 2.0 * c * (W * M).sum(axis=0) + c * c * bb, 0.0)
+        den = np.sqrt(pp * yy)
+        out[lam] = float(np.mean(np.where(den > 0, num / np.where(den > 0, den, 1.0), 0.0)))
+    return out
+
+
+def _choose_lambda(scores: dict) -> float:
+    """The lambda with the best inner score; scores within TIE_TOL of the best tie, and ties go to the larger."""
+    best = max(scores.values())
+    return max(lam for lam, sc in scores.items() if sc >= best - TIE_TOL)
+
+
+def _krr(i: int, avail: np.ndarray, S: dict, lambdas=LAMBDA_GRID) -> dict:
+    """external_krr for perturbation i from the labels of the perturbations in `avail` only (i is never in avail):
+    ybar = their mean change, R = those with a usable external row, prediction = ybar + k_i^T (K_RR + lam I)^-1
+    (Y_R - ybar), lam chosen by an inner leave-one-out over R (row j predicted from R minus j, its ybar computed
+    without i and j) scored by pearson_delta. pred None (with a flag) when i has no usable row or R has fewer than
+    KRR_MIN_ROWS rows; the caller then falls back."""
+    D, Z, ok = S["deltas"], S["krr_z"], S["krr_ok"]
+    if not ok[i]:
+        return {"pred": None, "lambda": None, "inner": None, "flag": "no external row"}
+    R = np.flatnonzero(avail & ok)
+    if R.size < KRR_MIN_ROWS:
+        return {"pred": None, "lambda": None, "inner": None, "flag": f"fewer than {KRR_MIN_ROWS} rows"}
+    total, n_avail = D[avail].sum(axis=0), int(avail.sum())
+    Y = D[R]
+    K = Z[R] @ Z[R].T
+    ybars = (total - Y) / (n_avail - 1)
+    inner = krr_loo_scores(K, Y, ybars, lambdas)
+    lam = _choose_lambda(inner)
+    pred = krr_predict(K, Z[R] @ Z[i], Y, total / n_avail, lam)
+    return {"pred": pred, "lambda": float(lam), "inner": inner, "flag": None}
+
+
 # --------------------------------------------------------------------------------------------- analysis
 
-def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict:
+def _prepare(bundle: dict, external: dict) -> dict:
+    """The matrices every fold reads: labels, gene-set Jaccard, external rows (a perturbation's row is that of its
+    first target gene with one) and their pairwise correlations, and the unit rows kernel ridge uses."""
     perts, D = bundle["perts"], bundle["deltas"]
     n, n_genes = D.shape
-    if n < 3:
-        raise ValueError("leave-one-out needs at least three training perturbations")
     sets_of: dict[str, set] = {}
     for name, members in bundle["gene_sets"].items():
         for g in members:
             sets_of.setdefault(g, set()).add(name)
     memberships = [set().union(*(sets_of.get(t, set()) for t in bundle["targets"][p])) for p in perts]
-    # a perturbation's external row is that of its first target gene with one
     E = np.full((n, n_genes), np.nan)
     has = np.zeros(n, dtype=bool)
     ext_target: list[str | None] = [None] * n
@@ -238,22 +371,56 @@ def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict
             if t in external["rows"]:
                 E[i], has[i], ext_target[i] = external["rows"][t], True, t
                 break
-    S = {"deltas": D, "jaccard": _jaccard(memberships), "ext_corr": _pairwise_corr(E, has), "ext": E, "has_ext": has}
+    Z, ok = _unit_rows(E, has)
+    return {"deltas": D, "jaccard": _jaccard(memberships), "ext_corr": _pairwise_corr(E, has), "ext": E,
+            "has_ext": has, "ext_target": ext_target, "krr_z": Z, "krr_ok": ok}
+
+
+def _fold(i: int, S: dict, k: int, alphas=ALPHA_GRID, lambdas=LAMBDA_GRID) -> dict:
+    """Everything the leave-one-out computes for held-out perturbation i, from the other perturbations' labels
+    only: the four stack columns and the stack (pre-specified), and external_krr and the five-column stack (added
+    after the first reading). Each training row's columns, its kernel ridge lambda included, are computed without
+    that perturbation and without i."""
+    D = S["deltas"]
+    avail = np.ones(D.shape[0], dtype=bool)
+    avail[i] = False
+    cols, flags = _features(i, avail, S, k)
+    train, train_cols, train_y, train_krr = [], [], [], []
+    for q in np.flatnonzero(avail):
+        inner_avail = avail.copy()
+        inner_avail[q] = False   # q's own columns never see q's label, and never see p's
+        q_cols = _features(int(q), inner_avail, S, k)[0]
+        q_krr = _krr(int(q), inner_avail, S, lambdas)["pred"]
+        train.append(int(q))
+        train_cols.append(q_cols)
+        train_y.append(D[q])
+        train_krr.append(q_cols[1] if q_krr is None else q_krr)   # geneset_knn when kernel ridge falls back
+    stacked, alpha, fit = _stack(train_cols, train_y, cols, alphas)
+    krr = _krr(i, avail, S, lambdas)
+    krr_col = cols[1] if krr["pred"] is None else krr["pred"]
+    train_cols5 = [np.vstack([c, q[None]]) for c, q in zip(train_cols, train_krr)]
+    cols5 = np.vstack([cols, krr_col[None]])
+    stacked_krr, alpha_krr, fit_krr = _stack(train_cols5, train_y, cols5, alphas)
+    return {"cols": cols, "flags": {**flags, "external_krr": krr["flag"]}, "stacked": stacked, "alpha": alpha,
+            "fit": fit, "krr": krr, "krr_col": krr_col, "train": train, "train_cols5": train_cols5,
+            "stacked_krr": stacked_krr, "alpha_krr": alpha_krr, "fit_krr": fit_krr}
+
+
+def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID, lambdas=LAMBDA_GRID) -> dict:
+    perts, D = bundle["perts"], bundle["deltas"]
+    n, n_genes = D.shape
+    if n < 3:
+        raise ValueError("leave-one-out needs at least three training perturbations")
+    S = _prepare(bundle, external)
+    E, has, ext_target = S["ext"], S["has_ext"], S["ext_target"]
 
     rows = []
     for i, p in enumerate(perts):
-        avail = np.ones(n, dtype=bool)
-        avail[i] = False
-        cols, flags = _features(i, avail, S, k)
-        train_cols, train_y = [], []
-        for q in np.flatnonzero(avail):
-            inner_avail = avail.copy()
-            inner_avail[q] = False   # q's own columns never see q's label, and never see p's
-            train_cols.append(_features(int(q), inner_avail, S, k)[0])
-            train_y.append(D[q])
-        stacked, alpha, fit = _stack(train_cols, train_y, cols, alphas)
-        preds = dict(zip(STACK_COLUMNS, cols))
-        preds["external_stack"] = stacked
+        f = _fold(i, S, k, alphas, lambdas)
+        preds = dict(zip(STACK_COLUMNS, f["cols"]))
+        preds["external_stack"] = f["stacked"]
+        preds["external_krr"] = f["krr_col"]
+        preds["external_stack_krr"] = f["stacked_krr"]
         agreement = None
         if has[i]:
             m = np.isfinite(E[i])
@@ -264,8 +431,13 @@ def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict
             "n_cells_external": external["n_cells"].get(ext_target[i]) if has[i] else None,
             "n_genes_shared": int(np.isfinite(E[i]).sum()) if has[i] else 0,
             "agreement": agreement,
-            "scores": {name: float(pearson_delta(preds[name], D[i])) for name in PREDICTORS},
-            "alpha": alpha, "stack_weights": fit["weights"], "fallbacks": flags,
+            "scores": {name: float(pearson_delta(preds[name], D[i])) for name in PREDICTORS + ADDED_PREDICTORS},
+            "alpha": f["alpha"], "stack_weights": f["fit"]["weights"], "fallbacks": f["flags"],
+            # added after the first reading
+            "krr_lambda": f["krr"]["lambda"],
+            "krr_inner_scores": None if f["krr"]["inner"] is None else
+            {str(lam): sc for lam, sc in f["krr"]["inner"].items()},
+            "alpha_stack_krr": f["alpha_krr"], "stack_krr_weights": f["fit_krr"]["weights"],
         })
 
     def paired(name: str, ref: str) -> dict:
@@ -274,15 +446,20 @@ def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict
                 "se_diff": float(d.std(ddof=1) / np.sqrt(len(d))) if len(d) > 1 else None}
 
     n_ext = int(has.sum())
+    n_krr = sum(1 for r in rows if r["fallbacks"]["external_krr"] is None)
     predictors = []
-    for name in PREDICTORS:
+    for name in PREDICTORS + ADDED_PREDICTORS:
         s = np.array([r["scores"][name] for r in rows])
-        predictors.append({
+        entry = {
             "name": name, "mean": float(s.mean()), "sd": float(s.std(ddof=1)) if n > 1 else None,
             "median": float(np.median(s)), "min": float(s.min()), "max": float(s.max()),
             "vs_mean_response": paired(name, "mean_response"), "vs_geneset_knn": paired(name, "geneset_knn"),
-            "coverage": n_ext if name.startswith("external") else n,
-        })
+            "coverage": n_krr if name == "external_krr" else n_ext if name.startswith("external") else n,
+        }
+        if name in ADDED_REFERENCE:
+            entry["added_after_first_reading"] = True
+            entry[f"vs_{ADDED_REFERENCE[name]}"] = paired(name, ADDED_REFERENCE[name])
+        predictors.append(entry)
     agreements = [r["agreement"] for r in rows if r["agreement"] is not None]
     fallbacks = {
         "external_direct_no_row": sum(1 for r in rows if r["fallbacks"]["external_direct"] == "no external row"),
@@ -290,6 +467,9 @@ def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict
         "external_knn_no_positive_neighbour":
             sum(1 for r in rows if r["fallbacks"]["external_knn"] == "no positive neighbour"),
         "geneset_knn_no_positive_similarity": sum(1 for r in rows if r["fallbacks"]["geneset_knn"] is not None),
+        "external_krr_no_row": sum(1 for r in rows if r["fallbacks"]["external_krr"] == "no external row"),
+        "external_krr_too_few_rows":
+            sum(1 for r in rows if r["fallbacks"]["external_krr"] == f"fewer than {KRR_MIN_ROWS} rows"),
     }
     return {
         "bundle": bundle["name"], "knowledge": external["name"], "description": external["description"],
@@ -308,6 +488,13 @@ def analyse(bundle: dict, external: dict, k: int = 5, alphas=ALPHA_GRID) -> dict
         "alphas_chosen": {str(a): sum(1 for r in rows if r["alpha"] == a) for a in alphas},
         "predictors": predictors,
         "per_perturbation": rows,
+        # added after the first reading: a second look, not pre-specified
+        "added_after_first_reading": list(ADDED_PREDICTORS),
+        "krr_lambda_grid": [float(lam) for lam in lambdas],
+        "krr_min_rows": KRR_MIN_ROWS,
+        "stack_krr_columns": list(STACK_KRR_COLUMNS),   # the order of each row's stack_krr_weights
+        "krr_lambdas_chosen": {str(lam): sum(1 for r in rows if r["krr_lambda"] == lam) for lam in lambdas},
+        "alphas_chosen_stack_krr": {str(a): sum(1 for r in rows if r["alpha_stack_krr"] == a) for a in alphas},
     }
 
 
@@ -373,6 +560,51 @@ def _reading(rep: dict) -> str:
     return " ".join(out)
 
 
+def _g(x) -> str:
+    return "–" if x is None else f"{float(x):g}"
+
+
+def _second_look(rep: dict) -> str:
+    """The paragraph after the pre-specified reading on the predictors added after it: each read against the
+    predictor it was built to improve on (paired), and said plainly to be a second look."""
+    n = rep["n_train"]
+    P = {p["name"]: p for p in rep["predictors"]}
+    fb = rep["fallbacks"]
+    kr, sk, ek, es = P["external_krr"], P["external_stack_krr"], P["external_knn"], P["external_stack"]
+
+    def against(new: dict, ref: dict) -> str:
+        v = new[f"vs_{ref['name']}"]
+        size = ""
+        if v["se_diff"] is not None:
+            size = (", within twice its standard error" if abs(v["mean_diff"]) <= 2 * v["se_diff"]
+                    else ", more than twice its standard error")
+        return (f"{new['name']} scores {_f(new['mean'])} against {ref['name']} {_f(ref['mean'])} "
+                f"(paired difference {_signed(v['mean_diff'])} ± {_f(v['se_diff'])}{size}; better on {v['wins']} of "
+                f"{n})")
+
+    def chosen(counts: dict) -> str:
+        return ", ".join(f"{float(a):g} for {c}" for a, c in counts.items() if c) or "none (every fold fell back)"
+
+    return (f"external_krr and external_stack_krr were designed after the first result of this check was seen, to "
+            f"ask whether signed weights on the other perturbations' responses, learned through the external screen, "
+            f"do better than the top-k neighbour weights; their numbers are therefore a second look, not "
+            f"pre-specified results, and the reading above does not rest on them. external_krr is kernel ridge "
+            f"regression through the screen: the mean change of the other training perturbations plus "
+            f"k^T (K + lambda I)^-1 (Y - mean), where K is the Pearson correlation between the external rows of the "
+            f"other training perturbations that have one, k their correlations with the held-out target's row and Y "
+            f"their measured changes, so each response enters with a signed weight; lambda is chosen in every fold "
+            f"by an inner leave-one-out over those perturbations from {rep['krr_lambda_grid']} (ties to the larger), "
+            f"and geneset_knn stands in when the held-out target has no external row "
+            f"({fb['external_krr_no_row']} perturbations) or fewer than {rep['krr_min_rows']} other training "
+            f"perturbations have one ({fb['external_krr_too_few_rows']}). external_stack_krr is the ridge stack of "
+            f"external_stack over five columns, the four above plus external_krr, each training row's columns (its "
+            f"kernel ridge lambda included) computed without that perturbation and without the held-out one, alpha "
+            f"chosen as for external_stack. {against(kr, ek)}; {against(sk, es)}. Kernel ridge lambda chosen per "
+            f"fold: {chosen(rep['krr_lambdas_chosen'])}; five-column stack alpha chosen per fold: "
+            f"{chosen(rep['alphas_chosen_stack_krr'])}. Like every number here, a gain must still be confirmed on "
+            f"the sealed set by a labelled arm before it counts.")
+
+
 def _grid_note(rep: dict) -> str:
     """Say so when the stack's grid is not the pre-specified one: its number is then a second look."""
     if [float(a) for a in rep["alpha_grid"]] == [float(a) for a in ALPHA_GRID]:
@@ -431,6 +663,7 @@ def render(rep: dict) -> str:
         L.append(f"| {p['name']} | {_f(p['mean'])} ± {_f(p['sd'])} | {_f(p['median'])} | {_f(p['min'])} | "
                  f"{_f(p['max'])} | " + " | ".join(cells) + f" | {cov} |")
     fb = rep["fallbacks"]
+    added = rep.get("added_after_first_reading") or []   # absent from a report written before the second look
     L += ["",
           "\"Better than\" counts perturbations whose score is strictly higher, paired; the paired gain is the mean "
           "difference ± its standard error over the perturbations. Fallbacks taken: external_direct used "
@@ -439,21 +672,28 @@ def render(rep: dict) -> str:
           f"{fb['external_knn_no_positive_neighbour']} without a positively correlated neighbour; geneset_knn used "
           f"mean_response for {fb['geneset_knn_no_positive_similarity']} without a positively similar "
           "perturbation. Stack alpha chosen per fold: " +
-          ", ".join(f"{float(a):g} for {c}" for a, c in rep["alphas_chosen"].items() if c) + ".", "",
+          ", ".join(f"{float(a):g} for {c}" for a, c in rep["alphas_chosen"].items() if c) + "." +
+          (f" The last {len(added)} rows ({', '.join(added)}) were added after the first reading; they are defined "
+           "and read in the last section." if added else ""), "",
           "## Per perturbation", "",
           "| perturbation | target | cells (bundle) | cells (external) | genes shared | same-target agreement | "
-          "mean_response | geneset_knn | external_direct | external_knn | external_stack | alpha |",
-          "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+          "mean_response | geneset_knn | external_direct | external_knn | external_stack | alpha |" +
+          (" external_krr | external_stack_krr | KRR lambda | alpha (stack_krr) |" if added else ""),
+          "|---|---|---|---|---|---|---|---|---|---|---|---|" + ("---|---|---|---|" if added else "")]
     for r in rep["per_perturbation"]:
         s = r["scores"]
         L.append(f"| {r['pert']} | {r['target']} | {_int(r['n_cells_bundle'])} | {_int(r['n_cells_external'])} | "
                  f"{r['n_genes_shared']:,} | {_f(r['agreement'])} | {_f(s['mean_response'])} | {_f(s['geneset_knn'])} "
                  f"| {_f(s['external_direct'])} | {_f(s['external_knn'])} | {_f(s['external_stack'])} | "
-                 f"{r['alpha']:g} |")
+                 f"{r['alpha']:g} |" +
+                 (f" {_f(s['external_krr'])} | {_f(s['external_stack_krr'])} | {_g(r['krr_lambda'])} | "
+                  f"{_g(r['alpha_stack_krr'])} |" if added else ""))
     L += ["", "Same-target agreement is the Pearson correlation across the genes measured in both screens between "
           "the bundle's change and the external change for the same target gene; cells are the perturbed cells "
           "behind each side's mean. A dash means no external row.", "",
           "## Reading", "", _reading(rep)]
+    if added:
+        L += ["", "## Added after the first reading (a second look)", "", _second_look(rep)]
     return "\n".join(L) + "\n"
 
 
