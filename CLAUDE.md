@@ -1,5 +1,13 @@
 # Notes for Claude sessions in this repository
 
+## Read AGENTS.md first
+
+`AGENTS.md` holds the rules every agent here follows, Claude sessions and outside agents such as
+Astra alike, and `HANDOFF.md` section 1 holds the shared state that whoever is working keeps
+current. Read both at the start of every session; they win over anything below that conflicts.
+
+@AGENTS.md
+
 ## README and repository presentation
 
 The README, the figures in `docs/assets/` and the GitHub About profile in

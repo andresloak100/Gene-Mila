@@ -1,0 +1,1164 @@
+[
+ {
+  "run_id": "newcode_opus_w4_r0",
+  "dir": "newcode_opus_w4_r0",
+  "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+  "workers": 4,
+  "code": "537344f",
+  "rule_used": "pearson_delta",
+  "n_candidates": 411,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0339",
+     "features": [
+      "is_target",
+      "is_target_x_control_mean_e35",
+      "knn_response_symbol_family_e58",
+      "knn_residual_response_e59",
+      "knn_response_geneset_e12",
+      "normalized_mean_response_e56",
+      "rwr_target_proximity_e14",
+      "knn_two_hop_response_cluster_e137",
+      "shared_geneset_score_e15",
+      "knn_response_ppi_diffusion_e248",
+      "knn_response_target_abundance_e339"
+     ],
+     "model": "ridge",
+     "best_alpha": 10.0,
+     "selection_score": 0.5838663691666839,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5921269490212088,
+      "r2_top": 0.8501724949387688,
+      "mse_top": 0.11094394846559026,
+      "cellforge_mse_de": 0.09929157962902252,
+      "cellforge_pcc_de": 0.962771067064101,
+      "cellforge_r2_de": 0.8708105305289906
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0339",
+     "features": [
+      "is_target",
+      "is_target_x_control_mean_e35",
+      "knn_response_symbol_family_e58",
+      "knn_residual_response_e59",
+      "knn_response_geneset_e12",
+      "normalized_mean_response_e56",
+      "rwr_target_proximity_e14",
+      "knn_two_hop_response_cluster_e137",
+      "shared_geneset_score_e15",
+      "knn_response_ppi_diffusion_e248",
+      "knn_response_target_abundance_e339"
+     ],
+     "model": "ridge",
+     "best_alpha": 10.0,
+     "selection_score": 0.7092814865742971,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5921269490212088,
+      "r2_top": 0.8501724949387688,
+      "mse_top": 0.11094394846559026,
+      "cellforge_mse_de": 0.09929157962902252,
+      "cellforge_pcc_de": 0.962771067064101,
+      "cellforge_r2_de": 0.8708105305289906
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0081",
+     "features": [
+      "is_target",
+      "knn_response_geneset_e11",
+      "shared_geneset_score_e15",
+      "is_target_x_control_mean_e35",
+      "knn_response_symbol_family_e58",
+      "knn_residual_response_e59",
+      "functional_class_centroid_e81"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.6169015665658004,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.5603316652505945,
+      "r2_top": 0.8208286358147525,
+      "mse_top": 0.10972025456174345
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0390",
+     "features": [
+      "is_target",
+      "is_target_x_control_mean_e35",
+      "knn_response_symbol_family_e58",
+      "knn_residual_response_e59",
+      "knn_response_geneset_e12",
+      "normalized_mean_response_e56",
+      "rwr_target_proximity_e14",
+      "knn_two_hop_response_cluster_e137",
+      "shared_geneset_score_e15",
+      "knn_response_ppi_diffusion_e248",
+      "knn_response_reconstruction_weights_e162",
+      "pert_embedding_ridge_response_e390"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.745462536213384,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.5734962147306362,
+      "r2_top": 0.8363925546194128,
+      "mse_top": 0.10057545458421258
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_opus_w4_r1",
+  "dir": "newcode_opus_w4_r1",
+  "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+  "workers": 4,
+  "code": "537344f",
+  "rule_used": "pearson_delta",
+  "n_candidates": 351,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0380",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_knockdown_scaled_e18",
+      "geneset_knn_response_e14",
+      "ppi_kernel_weighted_response_e40",
+      "symbol_family_knn_response_e70",
+      "consensus_similarity_knn_response_e104",
+      "gene_module_smoothed_knn_e205",
+      "learned_metric_knn_response_e305",
+      "pc_projected_knn_deviation_e352",
+      "annotation_reconstruction_response_e380"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.578387711233687,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.6036219957794525,
+      "r2_top": 0.8479379930196143,
+      "mse_top": 0.10977884751964818,
+      "cellforge_mse_de": 0.09854094549619691,
+      "cellforge_pcc_de": 0.9621745501708342,
+      "cellforge_r2_de": 0.8693567717972291
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0295",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_knockdown_scaled_e18",
+      "geneset_knn_response_e14",
+      "ppi_kernel_weighted_response_e40",
+      "symbol_family_knn_response_e70",
+      "consensus_similarity_knn_response_e104",
+      "gene_module_smoothed_knn_e205",
+      "lowrank_program_prediction_e20"
+     ],
+     "model": "ridge",
+     "best_alpha": 900.0,
+     "selection_score": 0.7052097436801311,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.6057616520703641,
+      "r2_top": 0.8632054308284796,
+      "mse_top": 0.10146390353896183,
+      "cellforge_mse_de": 0.08930347139873411,
+      "cellforge_pcc_de": 0.9668991891092685,
+      "cellforge_r2_de": 0.8840157680272274
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0060",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_knockdown_scaled_e18",
+      "geneset_knn_response_e14",
+      "ppi_kernel_weighted_response_e40",
+      "archetype_mixture_response_e45"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.6265745860474677,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.5450266704618593,
+      "r2_top": 0.8239426694198186,
+      "mse_top": 0.10253864969963634
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0056",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_knockdown_scaled_e18",
+      "geneset_knn_response_e14",
+      "learned_metric_knn_response_e56"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.7427095338309198,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.5274576135129372,
+      "r2_top": 0.8074990748648895,
+      "mse_top": 0.10940967319098614
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_ds_w4_r0",
+  "dir": "newcode_ds_w4_r0",
+  "arm": "deepseek:deepseek-v4-pro planner, deepseek:deepseek-flash workers",
+  "workers": 4,
+  "code": "537344f",
+  "rule_used": "pearson_delta",
+  "n_candidates": 672,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0800",
+     "features": [
+      "mean_response",
+      "is_target",
+      "ppi_adjacency_e9",
+      "target_mean_abs_response_e61_e69",
+      "log_target_mean_abs_response_e105",
+      "shared_pathway_mean_abs_response_e123",
+      "ppi_neighbor_weighted_mean_response_e169",
+      "ppi_neighbor_response_variance_e183",
+      "target_response_cv_e221",
+      "shared_tf_count_e239",
+      "target_expression_cv_e304_e307",
+      "gene_degree_times_mean_response_e368",
+      "target_degree_times_gene_response_e521",
+      "signed_ppi_random_projection_e586",
+      "gene_response_entropy_e640_e648"
+     ],
+     "model": "ridge",
+     "best_alpha": 5600.0,
+     "selection_score": 0.4926705210232248,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5624393669962494,
+      "r2_top": 0.8028353140878816,
+      "mse_top": 0.14404507539310857,
+      "cellforge_mse_de": 0.1302379737871631,
+      "cellforge_pcc_de": 0.9501080130733799,
+      "cellforge_r2_de": 0.8239958475742144
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0079",
+     "features": [
+      "mean_response",
+      "is_target",
+      "ppi_adjacency_e9",
+      "target_expression_variance_e37",
+      "target_mean_expression_all_e56",
+      "target_mean_abs_response_e61_e69",
+      "target_mean_response_times_mean_response_e79"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.631763329305061,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5571572173992314,
+      "r2_top": 0.8176200086654455,
+      "mse_top": 0.12802472123902664,
+      "cellforge_mse_de": 0.11663490615537471,
+      "cellforge_pcc_de": 0.9497895888095971,
+      "cellforge_r2_de": 0.8318608371700769
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0722",
+     "features": [
+      "mean_response",
+      "is_target",
+      "ppi_adjacency_e9",
+      "target_mean_abs_response_e61_e69",
+      "log_target_mean_abs_response_e105",
+      "shared_pathway_mean_abs_response_e123",
+      "target_essentiality_score_e137",
+      "ppi_neighbor_weighted_mean_response_e169",
+      "ppi_neighbor_response_variance_e183",
+      "target_response_cv_e221",
+      "shared_tf_count_e239",
+      "target_expression_cv_e304_e307",
+      "gene_degree_times_mean_response_e368",
+      "ppi_neighbor_response_e20",
+      "signed_ppi_random_projection_e586",
+      "gene_response_entropy_e640_e648"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5683543708138478,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4890817893762432,
+      "r2_top": 0.7675776194873627,
+      "mse_top": 0.13749758586435343
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0380",
+     "features": [
+      "mean_response",
+      "is_target",
+      "ppi_adjacency_e9",
+      "target_mean_abs_response_e61_e69",
+      "log_target_mean_abs_response_e105",
+      "shared_pathway_mean_abs_response_e123",
+      "target_essentiality_score_e137",
+      "ppi_neighbor_weighted_mean_response_e169",
+      "ppi_neighbor_response_variance_e183",
+      "target_response_cv_e221",
+      "shared_tf_count_e239",
+      "target_expression_cv_e304_e307",
+      "gene_degree_times_mean_response_e368",
+      "target_essentiality_times_mean_response_e380"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.6928473198714482,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4712532529586902,
+      "r2_top": 0.7730768115596647,
+      "mse_top": 0.13362665815932082
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_ds_w4_r1",
+  "dir": "newcode_ds_w4_r1",
+  "arm": "deepseek:deepseek-v4-pro planner, deepseek:deepseek-flash workers",
+  "workers": 4,
+  "code": "537344f",
+  "rule_used": "pearson_delta",
+  "n_candidates": 559,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0667",
+     "features": [
+      "is_target",
+      "knn_perturbation_response_target_pathway_e125",
+      "prior_network_random_walk_influence_e79",
+      "knn_perturbation_response_sequence_weigh_e451",
+      "target_expression_stability_ratio_e438",
+      "target_ppi_neighbor_expression_variance_e481",
+      "ppr_from_target_e33"
+     ],
+     "model": "ridge",
+     "best_alpha": 30000.0,
+     "selection_score": 0.5739661883331546,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.6150091808768872,
+      "r2_top": 0.8690798195757756,
+      "mse_top": 0.09494453009718251,
+      "cellforge_mse_de": 0.0874451703854764,
+      "cellforge_pcc_de": 0.963957694161887,
+      "cellforge_r2_de": 0.8812569776543535
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0506",
+     "features": [
+      "is_target",
+      "knn_perturbation_response_ppi_weighted_e54",
+      "knn_perturbation_response_target_pathway_e125",
+      "prior_network_random_walk_influence_e79",
+      "knn_perturbation_response_sequence_weigh_e451",
+      "target_expression_stability_ratio_e438",
+      "target_ppi_neighbor_expression_variance_e481",
+      "target_gene_set_embedding_e506"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.7084445727793778,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.6266851058678985,
+      "r2_top": 0.8725130934793109,
+      "mse_top": 0.09629561288593722,
+      "cellforge_mse_de": 0.08835966139813056,
+      "cellforge_pcc_de": 0.9657997159209134,
+      "cellforge_r2_de": 0.8826274130910088
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0519",
+     "features": [
+      "is_target",
+      "knn_perturbation_response_ppi_weighted_e54",
+      "knn_perturbation_response_target_pathway_e125",
+      "prior_network_random_walk_influence_e79",
+      "knn_perturbation_response_sequence_weigh_e451",
+      "target_expression_stability_ratio_e438",
+      "target_ppi_neighbor_expression_variance_e481",
+      "knn_perturbation_response_embedding_simi_e519"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.6280974108066317,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.5602347850290446,
+      "r2_top": 0.8299650334659048,
+      "mse_top": 0.10012019570026633
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0497",
+     "features": [
+      "is_target",
+      "knn_perturbation_response_ppi_weighted_e54",
+      "knn_perturbation_response_target_pathway_e125",
+      "prior_network_random_walk_influence_e79",
+      "knn_perturbation_response_sequence_weigh_e451",
+      "target_expression_stability_ratio_e438",
+      "knn_perturbation_response_gene_set_embed_e480",
+      "knn_perturbation_response_gene_set_embed_e497"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.7542094954270585,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.564934614021761,
+      "r2_top": 0.8375540405083207,
+      "mse_top": 0.09408297304143859
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_control_r0",
+  "dir": "newcode_control_r0",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "72a53c5",
+  "rule_used": "pearson_delta",
+  "n_candidates": 22,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0028",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 41310.0,
+     "selection_score": 0.4862215708308794,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5714283399335992,
+      "r2_top": 0.7969584031496071,
+      "mse_top": 0.14259565904257748,
+      "cellforge_mse_de": 0.12958978125549572,
+      "cellforge_pcc_de": 0.9494416478234605,
+      "cellforge_r2_de": 0.8173127353954571
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0017",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 0.006,
+     "selection_score": 0.6291124837152152,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5710352235798521,
+      "r2_top": 0.8231368893332315,
+      "mse_top": 0.12737619006578618,
+      "cellforge_mse_de": 0.1154073941288384,
+      "cellforge_pcc_de": 0.9564776988953893,
+      "cellforge_r2_de": 0.8410259985691801
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0018",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4855672550552081,
+      "r2_top": 0.7723979599069264,
+      "mse_top": 0.13556955813674335
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4855593292688664,
+      "r2_top": 0.7724543608161308,
+      "mse_top": 0.1355377582681842
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_control_r1",
+  "dir": "newcode_control_r1",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "72a53c5",
+  "rule_used": "pearson_delta",
+  "n_candidates": 23,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0028",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 72900.0,
+     "selection_score": 0.48909604465547146,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5713293060176023,
+      "r2_top": 0.7830586930839495,
+      "mse_top": 0.15089288385358327,
+      "cellforge_mse_de": 0.13717953542867112,
+      "cellforge_pcc_de": 0.9455676195443035,
+      "cellforge_r2_de": 0.8047573075680725
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0010",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "similar_pert_knn_e10"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.6349478925901262,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5152312840102632,
+      "r2_top": 0.8236657638583974,
+      "mse_top": 0.13073781439365542,
+      "cellforge_mse_de": 0.12049108573866996,
+      "cellforge_pcc_de": 0.9466058735199387,
+      "cellforge_r2_de": 0.8321434031891999
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0019",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.48850303773018505,
+      "r2_top": 0.7763142730721281,
+      "mse_top": 0.13223379379630051
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.48849416961227266,
+      "r2_top": 0.7763749592115436,
+      "mse_top": 0.13219808360351584
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_control_r2",
+  "dir": "newcode_control_r2",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "72a53c5",
+  "rule_used": "pearson_delta",
+  "n_candidates": 23,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0028",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 41310.0,
+     "selection_score": 0.4867561191149696,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5714283399335992,
+      "r2_top": 0.7969584031496071,
+      "mse_top": 0.14259565904257748,
+      "cellforge_mse_de": 0.12958978125549572,
+      "cellforge_pcc_de": 0.9494416478234605,
+      "cellforge_r2_de": 0.8173127353954571
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0017",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 0.0033,
+     "selection_score": 0.6297401246380795,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5710352248547432,
+      "r2_top": 0.8231368907627684,
+      "mse_top": 0.12737618930500944,
+      "cellforge_mse_de": 0.11540739324261791,
+      "cellforge_pcc_de": 0.9564776995338368,
+      "cellforge_r2_de": 0.8410260002641614
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0019",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4860657623841124,
+      "r2_top": 0.7731718527286913,
+      "mse_top": 0.13435660618006925
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.48605709331849956,
+      "r2_top": 0.7732277701657368,
+      "mse_top": 0.13432412408742958
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_control_r3",
+  "dir": "newcode_control_r3",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "72a53c5",
+  "rule_used": "pearson_delta",
+  "n_candidates": 23,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0028",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 72900.0,
+     "selection_score": 0.48835872588077145,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5713293060176023,
+      "r2_top": 0.7830586930839495,
+      "mse_top": 0.15089288385358327,
+      "cellforge_mse_de": 0.13717953542867112,
+      "cellforge_pcc_de": 0.9455676195443035,
+      "cellforge_r2_de": 0.8047573075680725
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0017",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 0.006,
+     "selection_score": 0.6317814195229593,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5710352235798521,
+      "r2_top": 0.8231368893332315,
+      "mse_top": 0.12737619006578618,
+      "cellforge_mse_de": 0.1154073941288384,
+      "cellforge_pcc_de": 0.9564776988953893,
+      "cellforge_r2_de": 0.8410259985691801
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0019",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.48750016716312167,
+      "r2_top": 0.7758657716335519,
+      "mse_top": 0.13250931837907934
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4874901765163353,
+      "r2_top": 0.7759244799324463,
+      "mse_top": 0.1324747108479096
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_control_r4",
+  "dir": "newcode_control_r4",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "72a53c5",
+  "rule_used": "pearson_delta",
+  "n_candidates": 23,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0028",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 72900.0,
+     "selection_score": 0.4896616442579741,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5713293060176023,
+      "r2_top": 0.7830586930839495,
+      "mse_top": 0.15089288385358327,
+      "cellforge_mse_de": 0.13717953542867112,
+      "cellforge_pcc_de": 0.9455676195443035,
+      "cellforge_r2_de": 0.8047573075680725
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0017",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 0.0033,
+     "selection_score": 0.633289890661955,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5710352248547432,
+      "r2_top": 0.8231368907627684,
+      "mse_top": 0.12737618930500944,
+      "cellforge_mse_de": 0.11540739324261791,
+      "cellforge_pcc_de": 0.9564776995338368,
+      "cellforge_r2_de": 0.8410260002641614
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0019",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4890147927619373,
+      "r2_top": 0.7773585681638393,
+      "mse_top": 0.13150383043742267
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4890057664452874,
+      "r2_top": 0.7774207829234534,
+      "mse_top": 0.1314672969597138
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode_control_r5",
+  "dir": "newcode_control_r5",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "72a53c5",
+  "rule_used": "pearson_delta",
+  "n_candidates": 23,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0028",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 72900.0,
+     "selection_score": 0.49139843157342733,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5713293060176023,
+      "r2_top": 0.7830586930839495,
+      "mse_top": 0.15089288385358327,
+      "cellforge_mse_de": 0.13717953542867112,
+      "cellforge_pcc_de": 0.9455676195443035,
+      "cellforge_r2_de": 0.8047573075680725
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0017",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 0.0033,
+     "selection_score": 0.6351190656117428,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5710352248547432,
+      "r2_top": 0.8231368907627684,
+      "mse_top": 0.12737618930500944,
+      "cellforge_mse_de": 0.11540739324261791,
+      "cellforge_pcc_de": 0.9564776995338368,
+      "cellforge_r2_de": 0.8410260002641614
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0019",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.49072795168043387,
+      "r2_top": 0.7793388521683552,
+      "mse_top": 0.13082606213126846
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4907186372325487,
+      "r2_top": 0.7794013298875341,
+      "mse_top": 0.13078958824225093
+     }
+    }
+   }
+  }
+ },
+ {
+  "run_id": "newcode2_control_r0",
+  "dir": "newcode2_control_r0",
+  "arm": "scripted control (no LLM)",
+  "workers": 4,
+  "code": "537344f",
+  "rule_used": "pearson_delta",
+  "n_candidates": 126,
+  "skipped": {
+   "no_artifact": 0,
+   "no_oof": 0
+  },
+  "n_val1": 17,
+  "n_train": 50,
+  "picks": {
+   "select on out-of-fold training, score on validation": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0041",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 41310.0,
+     "selection_score": 0.4862215708308794,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5714283399335992,
+      "r2_top": 0.7969584031496071,
+      "mse_top": 0.14259565904257748,
+      "cellforge_mse_de": 0.12958978125549572,
+      "cellforge_pcc_de": 0.9494416478234605,
+      "cellforge_r2_de": 0.8173127353954571
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0017",
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 0.006,
+     "selection_score": 0.6291124837152152,
+     "scored_on": "val1",
+     "scored": {
+      "pearson_delta": 0.5710352235798521,
+      "r2_top": 0.8231368893332315,
+      "mse_top": 0.12737619006578618,
+      "cellforge_mse_de": 0.1154073941288384,
+      "cellforge_pcc_de": 0.9564776988953893,
+      "cellforge_r2_de": 0.8410259985691801
+     }
+    }
+   },
+   "select on validation, score on out-of-fold training": {
+    "pearson_delta": {
+     "experiment_id": "EXP_0018",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "ridge",
+     "best_alpha": 100.0,
+     "selection_score": 0.5716724244537698,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4855672550552081,
+      "r2_top": 0.7723979599069264,
+      "mse_top": 0.13556955813674335
+     }
+    },
+    "pearson_delta+r2_top": {
+     "experiment_id": "EXP_0022",
+     "features": [
+      "mean_response",
+      "is_target",
+      "target_level_e11"
+     ],
+     "model": "lasso",
+     "best_alpha": 1e-05,
+     "selection_score": 0.6973124939109514,
+     "scored_on": "train_oof",
+     "scored": {
+      "pearson_delta": 0.4855593292688664,
+      "r2_top": 0.7724543608161308,
+      "mse_top": 0.1355377582681842
+     }
+    }
+   }
+  }
+ }
+]

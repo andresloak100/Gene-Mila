@@ -1,0 +1,662 @@
+# Scaling analysis: norman_ds_replogle_w4_r0 (4 workers, 20.23 min)
+
+## 1. Independence
+- distinct workers used: 4; max concurrent experiments: 4
+- every LLM-written feature in its own worktree commit: True; experiments touched by >1 worker: none
+- W000: ['EXP_0008', 'EXP_0017', 'EXP_0019', 'EXP_0023', 'EXP_0024', 'EXP_0025', 'EXP_0027', 'EXP_0037', 'EXP_0039', 'EXP_0041', 'EXP_0042', 'EXP_0050', 'EXP_0054', 'EXP_0058', 'EXP_0060', 'EXP_0064', 'EXP_0066', 'EXP_0071', 'EXP_0074', 'EXP_0079', 'EXP_0084', 'EXP_0091', 'EXP_0095', 'EXP_0099', 'EXP_0102', 'EXP_0105', 'EXP_0111', 'EXP_0113', 'EXP_0117', 'EXP_0121', 'EXP_0124', 'EXP_0126', 'EXP_0133', 'EXP_0140', 'EXP_0146', 'EXP_0149', 'EXP_0155', 'EXP_0156', 'EXP_0163', 'EXP_0170', 'EXP_0172', 'EXP_0178', 'EXP_0183', 'EXP_0185', 'EXP_0191', 'EXP_0193', 'EXP_0196', 'EXP_0201', 'EXP_0204', 'EXP_0207', 'EXP_0208', 'EXP_0209', 'EXP_0211', 'EXP_0213', 'EXP_0217', 'EXP_0219', 'EXP_0220', 'EXP_0221', 'EXP_0222', 'EXP_0223', 'EXP_0225', 'EXP_0229', 'EXP_0231', 'EXP_0238', 'EXP_0242', 'EXP_0246', 'EXP_0248', 'EXP_0252', 'EXP_0256', 'EXP_0262', 'EXP_0265', 'EXP_0268', 'EXP_0273', 'EXP_0278', 'EXP_0283', 'EXP_0288', 'EXP_0289', 'EXP_0293', 'EXP_0303', 'EXP_0305', 'EXP_0309', 'EXP_0314', 'EXP_0323', 'EXP_0327', 'EXP_0333', 'EXP_0335', 'EXP_0337', 'EXP_0342', 'EXP_0347', 'EXP_0351', 'EXP_0357', 'EXP_0359', 'EXP_0362', 'EXP_0366', 'EXP_0373', 'EXP_0375', 'EXP_0378', 'EXP_0383', 'EXP_0385', 'EXP_0389', 'EXP_0392', 'EXP_0396', 'EXP_0400', 'EXP_0403', 'EXP_0409', 'EXP_0410', 'EXP_0415', 'EXP_0425', 'EXP_0427', 'EXP_0434', 'EXP_0442', 'EXP_0448', 'EXP_0451', 'EXP_0460', 'EXP_0465', 'EXP_0470', 'EXP_0474', 'EXP_0479', 'EXP_0485', 'EXP_0496', 'EXP_0498', 'EXP_0503'] (117 LLM calls)
+- W001: ['EXP_0007', 'EXP_0016', 'EXP_0018', 'EXP_0020', 'EXP_0022', 'EXP_0030', 'EXP_0035', 'EXP_0038', 'EXP_0040', 'EXP_0044', 'EXP_0049', 'EXP_0053', 'EXP_0061', 'EXP_0062', 'EXP_0067', 'EXP_0072', 'EXP_0073', 'EXP_0081', 'EXP_0082', 'EXP_0087', 'EXP_0089', 'EXP_0093', 'EXP_0096', 'EXP_0106', 'EXP_0108', 'EXP_0112', 'EXP_0120', 'EXP_0122', 'EXP_0127', 'EXP_0129', 'EXP_0130', 'EXP_0138', 'EXP_0142', 'EXP_0144', 'EXP_0148', 'EXP_0152', 'EXP_0159', 'EXP_0162', 'EXP_0168', 'EXP_0173', 'EXP_0174', 'EXP_0176', 'EXP_0181', 'EXP_0186', 'EXP_0192', 'EXP_0199', 'EXP_0202', 'EXP_0235', 'EXP_0239', 'EXP_0245', 'EXP_0250', 'EXP_0254', 'EXP_0255', 'EXP_0264', 'EXP_0267', 'EXP_0271', 'EXP_0276', 'EXP_0279', 'EXP_0286', 'EXP_0287', 'EXP_0292', 'EXP_0301', 'EXP_0308', 'EXP_0312', 'EXP_0317', 'EXP_0324', 'EXP_0328', 'EXP_0345', 'EXP_0353', 'EXP_0418', 'EXP_0419', 'EXP_0429', 'EXP_0430', 'EXP_0433', 'EXP_0440', 'EXP_0441', 'EXP_0445', 'EXP_0452', 'EXP_0456', 'EXP_0461', 'EXP_0464', 'EXP_0466', 'EXP_0473', 'EXP_0475', 'EXP_0480', 'EXP_0482', 'EXP_0486', 'EXP_0497', 'EXP_0501', 'EXP_0505'] (88 LLM calls)
+- W002: ['EXP_0010', 'EXP_0014', 'EXP_0026', 'EXP_0028', 'EXP_0032', 'EXP_0033', 'EXP_0034', 'EXP_0045', 'EXP_0046', 'EXP_0047', 'EXP_0052', 'EXP_0063', 'EXP_0068', 'EXP_0070', 'EXP_0076', 'EXP_0078', 'EXP_0085', 'EXP_0090', 'EXP_0092', 'EXP_0097', 'EXP_0100', 'EXP_0104', 'EXP_0109', 'EXP_0114', 'EXP_0119', 'EXP_0123', 'EXP_0125', 'EXP_0131', 'EXP_0132', 'EXP_0139', 'EXP_0143', 'EXP_0145', 'EXP_0151', 'EXP_0154', 'EXP_0157', 'EXP_0160', 'EXP_0165', 'EXP_0171', 'EXP_0179', 'EXP_0184', 'EXP_0190', 'EXP_0194', 'EXP_0203', 'EXP_0214', 'EXP_0215', 'EXP_0226', 'EXP_0227', 'EXP_0230', 'EXP_0234', 'EXP_0236', 'EXP_0241', 'EXP_0244', 'EXP_0249', 'EXP_0251', 'EXP_0261', 'EXP_0270', 'EXP_0277', 'EXP_0282', 'EXP_0284', 'EXP_0291', 'EXP_0295', 'EXP_0296', 'EXP_0302', 'EXP_0304', 'EXP_0311', 'EXP_0313', 'EXP_0319', 'EXP_0320', 'EXP_0325', 'EXP_0326', 'EXP_0332', 'EXP_0334', 'EXP_0341', 'EXP_0344', 'EXP_0349', 'EXP_0352', 'EXP_0360', 'EXP_0365', 'EXP_0368', 'EXP_0369', 'EXP_0376', 'EXP_0381', 'EXP_0382', 'EXP_0384', 'EXP_0386', 'EXP_0391', 'EXP_0397', 'EXP_0399', 'EXP_0402', 'EXP_0406', 'EXP_0408', 'EXP_0414', 'EXP_0417', 'EXP_0423', 'EXP_0424', 'EXP_0426', 'EXP_0432', 'EXP_0435', 'EXP_0437', 'EXP_0444', 'EXP_0450', 'EXP_0458', 'EXP_0463', 'EXP_0468', 'EXP_0472', 'EXP_0476', 'EXP_0481', 'EXP_0488', 'EXP_0489', 'EXP_0490', 'EXP_0492', 'EXP_0493', 'EXP_0494', 'EXP_0504'] (118 LLM calls)
+- W003: ['EXP_0009', 'EXP_0011', 'EXP_0015', 'EXP_0031', 'EXP_0043', 'EXP_0048', 'EXP_0051', 'EXP_0056', 'EXP_0057', 'EXP_0059', 'EXP_0065', 'EXP_0069', 'EXP_0075', 'EXP_0080', 'EXP_0083', 'EXP_0086', 'EXP_0088', 'EXP_0094', 'EXP_0098', 'EXP_0103', 'EXP_0107', 'EXP_0110', 'EXP_0115', 'EXP_0116', 'EXP_0128', 'EXP_0134', 'EXP_0137', 'EXP_0141', 'EXP_0147', 'EXP_0150', 'EXP_0158', 'EXP_0161', 'EXP_0164', 'EXP_0169', 'EXP_0175', 'EXP_0177', 'EXP_0180', 'EXP_0187', 'EXP_0188', 'EXP_0189', 'EXP_0195', 'EXP_0200', 'EXP_0205', 'EXP_0210', 'EXP_0212', 'EXP_0216', 'EXP_0218', 'EXP_0224', 'EXP_0228', 'EXP_0232', 'EXP_0237', 'EXP_0247', 'EXP_0253', 'EXP_0258', 'EXP_0263', 'EXP_0266', 'EXP_0269', 'EXP_0274', 'EXP_0275', 'EXP_0285', 'EXP_0290', 'EXP_0294', 'EXP_0299', 'EXP_0300', 'EXP_0307', 'EXP_0310', 'EXP_0316', 'EXP_0318', 'EXP_0329', 'EXP_0330', 'EXP_0331', 'EXP_0336', 'EXP_0340', 'EXP_0343', 'EXP_0346', 'EXP_0350', 'EXP_0354', 'EXP_0358', 'EXP_0361', 'EXP_0367', 'EXP_0370', 'EXP_0374', 'EXP_0377', 'EXP_0390', 'EXP_0393', 'EXP_0398', 'EXP_0401', 'EXP_0404', 'EXP_0407', 'EXP_0411', 'EXP_0416', 'EXP_0422', 'EXP_0428', 'EXP_0431', 'EXP_0436', 'EXP_0438', 'EXP_0443', 'EXP_0449', 'EXP_0462', 'EXP_0467', 'EXP_0469', 'EXP_0471', 'EXP_0477', 'EXP_0478', 'EXP_0487', 'EXP_0491', 'EXP_0495', 'EXP_0502'] (109 LLM calls)
+
+## 2-3. Experiments
+| id | worker | status | feature / change | score | delta | LLM calls | cost |
+|---|---|---|---|---|---|---|---|
+| EXP_0007 | W001 | completed | target_coexpression_e7 | 0.5419 | +0.0002 | 1 | $0.00085 |
+| EXP_0008 | W000 | completed | ppi_network_distance_e8 | 0.5408 | -0.0009 | 2 | $0.00257 |
+| EXP_0009 | W003 | completed | prior_network_target_score_e9 | 0.5415 | -0.0002 | 1 | $0.00089 |
+| EXP_0010 | W002 | completed | pair_additivity_departure_e10 | 0.5417 | +0.0001 | 1 | $0.00101 |
+| EXP_0011 | W003 | completed | target_self_effect_e11 | 0.5416 | -0.0001 | 2 | $0.00189 |
+| EXP_0012 | None | duplicate | Adding target co-expression and PPI network distan |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0005 |  |  |  |  |
+| EXP_0013 | None | duplicate | Combining target co-expression, PPI distance, prio |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0005 |  |  |  |  |
+| EXP_0014 | W002 | completed | graph_diffusion_score_e14 | 0.5416 | -0.0001 | 1 | $0.00119 |
+| EXP_0015 | W003 | completed | ppi_diffusion_score_e15 | 0.5412 | -0.0007 | 1 | $0.00093 |
+| EXP_0016 | W001 | completed | prior_direct_target_indicator_e16 | 0.5417 | -0.0001 | 1 | $0.00060 |
+| EXP_0017 | W000 | completed | target_coexpression_e17 | 0.5417 | -0.0002 | 1 | $0.00083 |
+| EXP_0018 | W001 | completed | geneset_overlap_score_e18 | 0.5416 | -0.0003 | 1 | $0.00070 |
+| EXP_0019 | W000 | completed | tf_similarity_e19 | 0.5419 | +0.0000 | 1 | $0.00126 |
+| EXP_0020 | W001 | completed | Combining the additive single-gene response with P | 0.5419 | +0.0000 | 0 | $0.00000 |
+| EXP_0021 | None | duplicate | A ridge model using additive response, PPI diffusi |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0020 |  |  |  |  |
+| EXP_0022 | W001 | completed | ppr_score_e22 | 0.5417 | -0.0002 | 1 | $0.00102 |
+| EXP_0023 | W000 | completed | tf_target_overlap_e23 | 0.5417 | -0.0002 | 1 | $0.00126 |
+| EXP_0024 | W000 | completed | gene_set_overlap_e24 | 0.5418 | -0.0001 | 1 | $0.00077 |
+| EXP_0025 | W000 | completed | control_coexpression_target_e25 | 0.5419 | -0.0000 | 1 | $0.00068 |
+| EXP_0026 | W002 | completed | tf_activity_score_e26 | 0.5418 | -0.0001 | 1 | $0.00086 |
+| EXP_0027 | W000 | completed | ppi_diffusion_score_e27 | 0.5419 | -0.0000 | 1 | $0.00080 |
+| EXP_0028 | W002 | completed | Adding TF target overlap to the additive single-ge | 0.5419 | +0.0000 | 0 | $0.00000 |
+| EXP_0029 | None | duplicate | Adding gene set overlap to the additive single-gen |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0028 |  |  |  |  |
+| EXP_0030 | W001 | completed | perturbation_random_effect_e30 | 0.5420 | +0.0000 | 2 | $0.00092 |
+| EXP_0031 | W003 | completed | control_pca_projection_e31 | 0.5426 | +0.0007 | 1 | $0.00078 |
+| EXP_0032 | W002 | completed | target_control_mean_scaling_e32 | 0.5600 | +0.0180 | 2 | $0.00208 |
+| EXP_0033 | W002 | completed | module_overlap_with_target_e33 | 0.5413 | -0.0006 | 1 | $0.00098 |
+| EXP_0034 | W002 | failed | pair_prior_edge_indicator_e34 |  |  | 2 | $0.00141 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0035 | W001 | completed | tf_activity_modulation_e35 | 0.5420 | +0.0000 | 1 | $0.00113 |
+| EXP_0036 | None | duplicate | Adding the PCA projection features to the additive |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0028 |  |  |  |  |
+| EXP_0037 | W000 | completed | random_perturbation_embedding_e37 | 0.5419 | -0.0001 | 1 | $0.00056 |
+| EXP_0038 | W001 | completed | The optimal ridge alpha for the combined additive+ | 0.5419 | -0.0000 | 0 | $0.00000 |
+| EXP_0039 | W000 | completed | The optimal ridge alpha for the combined additive+ | 0.5419 | -0.0000 | 0 | $0.00000 |
+| EXP_0040 | W001 | completed | The optimal ridge alpha for the combined additive+ | 0.5419 | -0.0000 | 0 | $0.00000 |
+| EXP_0041 | W000 | completed | The optimal ridge alpha for the combined additive+ | 0.5419 | -0.0000 | 0 | $0.00000 |
+| EXP_0042 | W000 | completed | partial_corr_target_gene_e42 | 0.5594 | -0.0006 | 2 | $0.00286 |
+| EXP_0043 | W003 | completed | response_profile_similarity_e43 | 0.5619 | +0.0019 | 2 | $0.00180 |
+| EXP_0044 | W001 | completed | target_control_mean_scaled_e44 | 0.5618 | +0.0018 | 1 | $0.00053 |
+| EXP_0045 | W002 | completed | knn_perturbation_response_e45 | 0.5513 | -0.0087 | 1 | $0.00117 |
+| EXP_0046 | W002 | completed | The additive single-gene response is modulated by  | 0.5598 | -0.0002 | 0 | $0.00000 |
+| EXP_0047 | W002 | completed | Adding the PPI network distance to the additive si | 0.5595 | -0.0005 | 0 | $0.00000 |
+| EXP_0048 | W003 | completed | The mean_response feature is redundant with the ad | 0.4253 | -0.1347 | 0 | $0.00000 |
+| EXP_0049 | W001 | completed | random_projection_target_e49 | 0.5608 | +0.0008 | 2 | $0.00124 |
+| EXP_0050 | W000 | completed | pair_product_response_e50 | 0.5604 | +0.0005 | 2 | $0.00142 |
+| EXP_0051 | W003 | failed | nearest_training_response_similarity_e51 |  |  | 2 | $0.00220 |
+|  |  | ↳ | feature failed after 2 attempts:              Path(args.cache) if args.cache else None)
+  File "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/nor |  |  |  |  |
+| EXP_0052 | W002 | completed | partial_corr_target_response_e52 | 0.5597 | -0.0003 | 1 | $0.00154 |
+| EXP_0053 | W001 | completed | target_control_percentile_e53 | 0.5624 | +0.0025 | 1 | $0.00053 |
+| EXP_0054 | W000 | completed | Adding the target_self_effect_e11 feature to the c | 0.5606 | +0.0006 | 0 | $0.00000 |
+| EXP_0055 | None | duplicate | Adding ppi_network_distance_e8 to the current best |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0047 |  |  |  |  |
+| EXP_0056 | W003 | completed | The optimal ridge alpha for the model with additiv | 0.5600 | -0.0000 | 0 | $0.00000 |
+| EXP_0057 | W003 | completed | The optimal ridge alpha for the model with additiv | 0.5600 | -0.0000 | 0 | $0.00000 |
+| EXP_0058 | W000 | completed | The optimal ridge alpha for the model with additiv | 0.5600 | -0.0000 | 0 | $0.00000 |
+| EXP_0059 | W003 | completed | The optimal ridge alpha for the model with additiv | 0.5600 | +0.0000 | 0 | $0.00000 |
+| EXP_0060 | W000 | completed | The optimal ridge alpha for the model with additiv | 0.5600 | +0.0000 | 0 | $0.00000 |
+| EXP_0061 | W001 | completed | random_fourier_target_embedding_e61 | 0.5616 | +0.0017 | 1 | $0.00057 |
+| EXP_0062 | W001 | completed | target_control_ratio_scaling_e62 | 0.5638 | +0.0013 | 1 | $0.00088 |
+| EXP_0063 | W002 | completed | weighted_geneset_overlap_e63 | 0.5623 | -0.0002 | 1 | $0.00097 |
+| EXP_0064 | W000 | completed | target_ppi_degree_scaling_e64 | 0.5619 | -0.0006 | 1 | $0.00067 |
+| EXP_0065 | W003 | completed | tf_activity_scaling_e65 | 0.5596 | -0.0028 | 1 | $0.00103 |
+| EXP_0066 | W000 | completed | control_variance_scaling_e66 | 0.5627 | +0.0002 | 1 | $0.00052 |
+| EXP_0067 | W001 | completed | pair_target_ppi_distance_e67 | 0.5622 | -0.0002 | 1 | $0.00107 |
+| EXP_0068 | W002 | completed | Adding target_control_mean_scaling_e32 to the addi | 0.5624 | +0.0000 | 0 | $0.00000 |
+| EXP_0069 | W003 | completed | random_fourier_target_embedding_e69 | 0.5616 | -0.0008 | 1 | $0.00091 |
+| EXP_0070 | W002 | completed | target_expression_ratio_e70 | 0.5641 | +0.0003 | 1 | $0.00059 |
+| EXP_0071 | W000 | completed | target_response_similarity_e71 | 0.5638 | +0.0001 | 1 | $0.00072 |
+| EXP_0072 | W001 | completed | control_variance_x_target_mean_e72 | 0.5638 | +0.0001 | 1 | $0.00047 |
+| EXP_0073 | W001 | completed | target_gene_percentile_interaction_e73 | 0.5614 | -0.0010 | 1 | $0.00079 |
+| EXP_0074 | W000 | failed | additive_response_magnitude_e74 |  |  | 2 | $0.00174 |
+|  |  | ↳ | feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR+FEV depend on its own label (use ctx.train_delta(exclude=p)) |  |  |  |  |
+| EXP_0075 | W003 | completed | target_responsive_geneset_score_e75 | 0.5638 | +0.0000 | 1 | $0.00091 |
+| EXP_0076 | W002 | completed | target_expression_random_projection_e76 | 0.5638 | +0.0000 | 1 | $0.00123 |
+| EXP_0077 | None | duplicate | Combining additive single-gene response, target_co |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0068 |  |  |  |  |
+| EXP_0078 | W002 | completed | pair_target_response_product_e78 | 0.5645 | +0.0004 | 2 | $0.00198 |
+| EXP_0079 | W000 | completed | pair_target_response_product_e79 | 0.5645 | +0.0004 | 1 | $0.00075 |
+| EXP_0080 | W003 | completed | pair_target_control_ratio_e80 | 0.5641 | +0.0001 | 1 | $0.00054 |
+| EXP_0081 | W001 | completed | pair_target_control_sum_e81 | 0.5642 | +0.0002 | 1 | $0.00047 |
+| EXP_0082 | W001 | completed | pair_target_control_product_e82 | 0.5639 | -0.0002 | 1 | $0.00053 |
+| EXP_0083 | W003 | failed | pair_target_response_correlation_e83 |  |  | 2 | $0.00164 |
+|  |  | ↳ | IndexError: index 82 is out of bounds for axis 0 with size 82 |  |  |  |  |
+| EXP_0084 | W000 | failed | pair_target_response_correlation_e84 |  |  | 2 | $0.00159 |
+|  |  | ↳ | IndexError: index 82 is out of bounds for axis 0 with size 82 |  |  |  |  |
+| EXP_0085 | W002 | completed | pair_target_percentile_product_e85 | 0.5640 | -0.0001 | 1 | $0.00065 |
+| EXP_0086 | W003 | completed | pair_target_percentile_sum_e86 | 0.5641 | +0.0000 | 1 | $0.00086 |
+| EXP_0087 | W001 | completed | random_fourier_target_pair_embedding_e87 | 0.5641 | +0.0001 | 1 | $0.00100 |
+| EXP_0088 | W003 | completed | pair_sum_target_control_percentile_e88 | 0.5626 | +0.0002 | 1 | $0.00085 |
+| EXP_0089 | W001 | completed | pair_product_target_control_percentile_e89 | 0.5629 | +0.0004 | 1 | $0.00077 |
+| EXP_0090 | W002 | completed | pair_sum_target_control_mean_scaled_e90 | 0.5628 | +0.0029 | 1 | $0.00043 |
+| EXP_0091 | W000 | completed | pair_product_target_control_mean_scaled_e91 | 0.5613 | +0.0013 | 1 | $0.00063 |
+| EXP_0092 | W002 | completed | pair_target_percentile_ratio_e92 | 0.5625 | +0.0000 | 1 | $0.00069 |
+| EXP_0093 | W001 | completed | pair_target_scaled_mean_ratio_e93 | 0.5601 | +0.0001 | 1 | $0.00049 |
+| EXP_0094 | W003 | completed | Combining target_control_mean_scaling_e32 and targ | 0.5645 | +0.0000 | 0 | $0.00000 |
+| EXP_0095 | W000 | completed | pair_random_fourier_target_embedding_e95 | 0.5616 | +0.0000 | 1 | $0.00096 |
+| EXP_0096 | W001 | failed | target_essentiality_score_e96 |  |  | 2 | $0.00216 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0097 | W002 | completed | target_prior_degree_e97 | 0.5644 | -0.0000 | 1 | $0.00061 |
+| EXP_0098 | W003 | completed | target_ppi_degree_e98 | 0.5645 | +0.0000 | 1 | $0.00067 |
+| EXP_0099 | W000 | completed | target_tf_activity_sum_e99 | 0.5643 | -0.0001 | 1 | $0.00133 |
+| EXP_0100 | W002 | completed | target_control_variance_sum_e100 | 0.5645 | +0.0001 | 1 | $0.00056 |
+| EXP_0101 | None | duplicate | Combining target_control_mean_scaling_e32 and targ |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0068 |  |  |  |  |
+| EXP_0102 | W000 | completed | target_control_mean_percentile_product_e102 | 0.5624 | -0.0001 | 1 | $0.00088 |
+| EXP_0103 | W003 | failed | target_control_random_projection_v2_e103 |  |  | 2 | $0.00216 |
+|  |  | ↳ | feature failed after 2 attempts: , out,
+              Path(args.cache) if args.cache else None)
+  File "/Users/andresarriaga/Documents/Loak-documents/gene-mila/ |  |  |  |  |
+| EXP_0104 | W002 | completed | target_essentiality_score_e104 | 0.5645 | +0.0000 | 1 | $0.00122 |
+| EXP_0105 | W000 | completed | target_ppi_degree_x_percentile_e105 | 0.5646 | +0.0001 | 1 | $0.00099 |
+| EXP_0106 | W001 | completed | target_response_variance_scaling_e106 | 0.5645 | -0.0000 | 1 | $0.00084 |
+| EXP_0107 | W003 | completed | target_tf_activity_score_e107 | 0.5645 | +0.0000 | 1 | $0.00129 |
+| EXP_0108 | W001 | completed | target_ppi_degree_e108 | 0.5646 | +0.0001 | 1 | $0.00081 |
+| EXP_0109 | W002 | completed | Adding target_control_mean_scaling_e32, target_con | 0.5645 | -0.0000 | 0 | $0.00000 |
+| EXP_0110 | W003 | completed | target_control_mean_scaling_x_percentile_e110 | 0.5707 | +0.0063 | 1 | $0.00048 |
+| EXP_0111 | W000 | completed | target_control_profile_random_projection_e111 | 0.5646 | +0.0001 | 1 | $0.00101 |
+| EXP_0112 | W001 | completed | target_response_profile_similarity_e104_e112 | 0.5704 | -0.0003 | 1 | $0.00098 |
+| EXP_0113 | W000 | completed | target_essentiality_score_e105_e113 | 0.5708 | +0.0001 | 1 | $0.00095 |
+| EXP_0114 | W002 | completed | target_tf_target_count_e106_e114 | 0.5708 | +0.0000 | 1 | $0.00073 |
+| EXP_0115 | W003 | completed | target_control_cv_e107_e115 | 0.5707 | -0.0000 | 1 | $0.00062 |
+| EXP_0116 | W003 | failed | target_ppi_betweenness_e108_e116 |  |  | 2 | $0.00244 |
+|  |  | ↳ | feature failed after 2 attempts: _replogle_w4_r0/worktrees/_server/genemila/pipeline.py", line 313, in smoke
+    a = np.asarray(cls().compute(ctx, perts, dict(c |  |  |  |  |
+| EXP_0117 | W000 | completed | Adding target_control_mean_scaling_e32, pair_sum_t | 0.5629 | +0.0029 | 0 | $0.00000 |
+| EXP_0118 | None | duplicate | Removing target_control_mean_scaling_e32 from a mo |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0028 |  |  |  |  |
+| EXP_0119 | W002 | completed | target_expression_random_fourier_e109_e119 | 0.5695 | -0.0013 | 2 | $0.00252 |
+| EXP_0120 | W001 | completed | Using target_control_mean_scaling_e32, target_cont | 0.5706 | -0.0002 | 0 | $0.00000 |
+| EXP_0121 | W000 | completed | target_control_variance_e121 | 0.5697 | -0.0011 | 1 | $0.00064 |
+| EXP_0122 | W001 | completed | target_response_similarity_e122 | 0.5692 | -0.0016 | 1 | $0.00084 |
+| EXP_0123 | W002 | completed | pair_sum_mean_x_percentile_product_e123 | 0.5692 | -0.0016 | 1 | $0.00072 |
+| EXP_0124 | W000 | completed | target_control_skewness_e124 | 0.5708 | +0.0000 | 1 | $0.00064 |
+| EXP_0125 | W002 | completed | gene_g_control_percentile_x_target_featu_e125 | 0.5704 | -0.0003 | 1 | $0.00061 |
+| EXP_0126 | W000 | failed | target_expression_random_fourier_e126 |  |  | 2 | $0.00254 |
+|  |  | ↳ | feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p)) |  |  |  |  |
+| EXP_0127 | W001 | completed | pair_target_expression_product_e127 | 0.5708 | +0.0000 | 1 | $0.00052 |
+| EXP_0128 | W003 | completed | pair_product_target_control_mean_scaled_e128 | 0.5706 | -0.0001 | 1 | $0.00057 |
+| EXP_0129 | W001 | completed | target_control_variance_percentile_e129 | 0.5691 | -0.0016 | 1 | $0.00062 |
+| EXP_0130 | W001 | completed | target_mean_scaling_x_gene_percentile_e130 | 0.5699 | -0.0009 | 1 | $0.00073 |
+| EXP_0131 | W002 | completed | target_control_skewness_e131 | 0.5707 | -0.0000 | 1 | $0.00060 |
+| EXP_0132 | W002 | completed | target_mean_scaling_div_gene_percentile_e132 | 0.5694 | -0.0013 | 1 | $0.00080 |
+| EXP_0133 | W000 | completed | pair_target_mean_difference_e133 | 0.5707 | -0.0000 | 1 | $0.00055 |
+| EXP_0134 | W003 | failed | target_rff_embedding_e134 |  |  | 2 | $0.00194 |
+|  |  | ↳ | feature failed after 2 attempts: public), Path(args.plugins), out,
+              Path(args.cache) if args.cache else None)
+  File "/Users/andresarriaga/Document |  |  |  |  |
+| EXP_0135 | None | duplicate | Adding pair_product_target_control_mean_scaled to  |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0120 |  |  |  |  |
+| EXP_0136 | None | duplicate | Adding the product of target_control_mean_scaling_ |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0120 |  |  |  |  |
+| EXP_0137 | W003 | completed | pair_target_control_mean_abs_diff_e137 | 0.5706 | -0.0000 | 1 | $0.00057 |
+| EXP_0138 | W001 | completed | pair_target_control_mean_product_e138 | 0.5693 | -0.0013 | 1 | $0.00057 |
+| EXP_0139 | W002 | completed | target_control_variance_percentile_e139 | 0.5691 | -0.0014 | 1 | $0.00064 |
+| EXP_0140 | W000 | completed | target_control_skewness_e140 | 0.5704 | -0.0001 | 1 | $0.00057 |
+| EXP_0141 | W003 | completed | target_control_kurtosis_e141 | 0.5705 | -0.0000 | 1 | $0.00068 |
+| EXP_0142 | W001 | completed | target_control_entropy_e142 | 0.5689 | -0.0016 | 1 | $0.00082 |
+| EXP_0143 | W002 | completed | target_control_rff_lowdim_e143 | 0.5691 | -0.0015 | 1 | $0.00128 |
+| EXP_0144 | W001 | completed | Adding target_control_mean_scaling_e32, target_con | 0.5708 | -0.0001 | 0 | $0.00000 |
+| EXP_0145 | W002 | completed | target_variance_percentile_e145 | 0.5693 | -0.0016 | 1 | $0.00084 |
+| EXP_0146 | W000 | completed | target_skewness_e146 | 0.5708 | +0.0000 | 1 | $0.00067 |
+| EXP_0147 | W003 | completed | target_kurtosis_e147 | 0.5709 | +0.0000 | 1 | $0.00065 |
+| EXP_0148 | W001 | completed | target_entropy_e148 | 0.5697 | -0.0011 | 1 | $0.00082 |
+| EXP_0149 | W000 | completed | pair_target_control_correlation_e149 | 0.5709 | +0.0001 | 1 | $0.00067 |
+| EXP_0150 | W003 | completed | target_ppi_degree_e150 | 0.5710 | +0.0001 | 1 | $0.00065 |
+| EXP_0151 | W002 | completed | target_random_projection_e151 | 0.5710 | +0.0001 | 1 | $0.00077 |
+| EXP_0152 | W001 | completed | pair_product_log1p_control_mean_e152 | 0.5707 | -0.0003 | 1 | $0.00057 |
+| EXP_0153 | None | duplicate | The sum of log1p(control mean expression) of the t |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0120 |  |  |  |  |
+| EXP_0154 | W002 | completed | pair_geometric_mean_log1p_control_mean_e154 | 0.5708 | -0.0002 | 1 | $0.00072 |
+| EXP_0155 | W000 | completed | pair_harmonic_mean_log1p_control_mean_e155 | 0.5708 | -0.0002 | 1 | $0.00076 |
+| EXP_0156 | W000 | completed | The absolute difference in log1p(control mean expr | 0.5707 | +0.0000 | 0 | $0.00000 |
+| EXP_0157 | W002 | completed | target_control_mean_times_ppi_degree_e157 | 0.5704 | -0.0005 | 1 | $0.00084 |
+| EXP_0158 | W003 | completed | target_control_cv_e158 | 0.5709 | -0.0000 | 1 | $0.00085 |
+| EXP_0159 | W001 | completed | target_percentile_times_cv_e159 | 0.5624 | -0.0001 | 1 | $0.00063 |
+| EXP_0160 | W002 | completed | target_control_variance_percentile_e160 | 0.5691 | -0.0016 | 1 | $0.00087 |
+| EXP_0161 | W003 | completed | target_control_skewness_percentile_e161 | 0.5707 | -0.0001 | 1 | $0.00071 |
+| EXP_0162 | W001 | completed | target_control_kurtosis_percentile_e162 | 0.5699 | -0.0008 | 1 | $0.00072 |
+| EXP_0163 | W000 | completed | pair_target_control_correlation_percenti_e163 | 0.5707 | -0.0000 | 1 | $0.00085 |
+| EXP_0164 | W003 | completed | target_ppi_degree_percentile_e164 | 0.5708 | +0.0001 | 1 | $0.00081 |
+| EXP_0165 | W002 | completed | target_prior_centrality_percentile_e165 | 0.5708 | +0.0001 | 1 | $0.00112 |
+| EXP_0166 | None | duplicate | Combining target_control_mean_scaling_e32, target_ |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0120 |  |  |  |  |
+| EXP_0167 | None | duplicate | Removing pair_sum_target_control_mean_scaled_e90 f |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0156 |  |  |  |  |
+| EXP_0168 | W001 | completed | pair_log_ratio_control_mean_e168 | 0.5710 | +0.0000 | 1 | $0.00064 |
+| EXP_0169 | W003 | completed | target_control_mean_squared_e169 | 0.5626 | +0.0026 | 1 | $0.00053 |
+| EXP_0170 | W000 | completed | target_control_mean_x_pair_indicator_e170 | 0.5661 | +0.0062 | 1 | $0.00047 |
+| EXP_0171 | W002 | completed | target_control_variance_percentile_e171 | 0.5706 | -0.0003 | 1 | $0.00112 |
+| EXP_0172 | W000 | completed | target_control_skewness_percentile_e172 | 0.5710 | +0.0000 | 1 | $0.00067 |
+| EXP_0173 | W001 | completed | Combining target_control_mean_scaling_e32, target_ | 0.5711 | +0.0112 | 0 | $0.00000 |
+| EXP_0174 | W001 | completed | Removing pair_sum_target_control_mean_scaled_e90 f | 0.5710 | +0.0000 | 0 | $0.00000 |
+| EXP_0175 | W003 | completed | target_control_profile_random_projection_e175 | 0.5705 | -0.0004 | 1 | $0.00078 |
+| EXP_0176 | W001 | completed | target_control_variance_percentile_e176 | 0.5679 | -0.0033 | 1 | $0.00074 |
+| EXP_0177 | W003 | completed | target_control_skewness_percentile_e177 | 0.5711 | -0.0001 | 1 | $0.00074 |
+| EXP_0178 | W000 | completed | target_control_kurtosis_percentile_e178 | 0.5694 | -0.0018 | 1 | $0.00065 |
+| EXP_0179 | W002 | completed | target_control_entropy_percentile_e179 | 0.5678 | -0.0034 | 1 | $0.00089 |
+| EXP_0180 | W003 | completed | target_control_bimodality_percentile_e180 | 0.5705 | -0.0007 | 1 | $0.00086 |
+| EXP_0181 | W001 | completed | target_control_autocorr_percentile_e181 | 0.5710 | -0.0001 | 1 | $0.00128 |
+| EXP_0182 | None | duplicate | Combining the four known helpful features (target_ |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0120 |  |  |  |  |
+| EXP_0183 | W000 | completed | target_expr_ppi_degree_product_e183 | 0.5694 | -0.0017 | 1 | $0.00068 |
+| EXP_0184 | W002 | completed | pair_target_mean_abs_diff_e184 | 0.5712 | +0.0000 | 1 | $0.00054 |
+| EXP_0185 | W000 | completed | pair_target_mean_ratio_e185 | 0.5711 | -0.0000 | 1 | $0.00066 |
+| EXP_0186 | W001 | completed | target_expression_entropy_e186 | 0.5684 | -0.0027 | 1 | $0.00082 |
+| EXP_0187 | W003 | completed | target_expression_kurtosis_e187 | 0.5691 | -0.0021 | 1 | $0.00068 |
+| EXP_0188 | W003 | completed | Adding target_control_mean_scaling_x_percentile_e1 | 0.5694 | -0.0018 | 0 | $0.00000 |
+| EXP_0189 | W003 | completed | Removing pair_sum_target_control_mean_scaled_e90 f | 0.5759 | +0.0047 | 0 | $0.00000 |
+| EXP_0190 | W002 | completed | target_expression_bimodality_e190 | 0.5709 | -0.0003 | 1 | $0.00090 |
+| EXP_0191 | W000 | completed | target_expression_morans_i_e191 | 0.5699 | -0.0013 | 1 | $0.00097 |
+| EXP_0192 | W001 | completed | target_control_variance_percentile_e192 | 0.5685 | -0.0074 | 1 | $0.00066 |
+| EXP_0193 | W000 | completed | pair_target_control_correlation_e193 | 0.5764 | +0.0006 | 1 | $0.00061 |
+| EXP_0194 | W002 | completed | target_control_median_percentile_e194 | 0.5725 | -0.0033 | 1 | $0.00063 |
+| EXP_0195 | W003 | completed | target_control_cv_percentile_e195 | 0.5763 | +0.0005 | 1 | $0.00098 |
+| EXP_0196 | W000 | completed | target_control_max_percentile_e196 | 0.5752 | -0.0006 | 1 | $0.00072 |
+| EXP_0197 | None | duplicate | Combining the four most helpful features (target_c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0188 |  |  |  |  |
+| EXP_0198 | None | duplicate | Removing pair_sum_target_control_mean_scaled_e90 f |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0189 |  |  |  |  |
+| EXP_0199 | W001 | completed | target_control_bimodality_percentile_e199 | 0.5765 | +0.0006 | 1 | $0.00098 |
+| EXP_0200 | W003 | completed | target_control_iqr_percentile_e200 | 0.5724 | -0.0041 | 1 | $0.00076 |
+| EXP_0201 | W000 | completed | target_control_skewness_e201 | 0.5741 | -0.0024 | 1 | $0.00068 |
+| EXP_0202 | W001 | completed | target_control_bimodality_index_e202 | 0.5750 | -0.0015 | 1 | $0.00105 |
+| EXP_0203 | W002 | completed | target_control_entropy_e203 | 0.5680 | -0.0085 | 1 | $0.00103 |
+| EXP_0204 | W000 | completed | target_control_cv_e204 | 0.5744 | -0.0021 | 1 | $0.00059 |
+| EXP_0205 | W003 | completed | target_control_mad_e205 | 0.5693 | -0.0071 | 1 | $0.00071 |
+| EXP_0206 | None | duplicate | Adding multiple target gene control distribution s |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0189 |  |  |  |  |
+| EXP_0207 | W000 | completed | Tuning the ridge regularization strength on the cu | 0.5755 | -0.0004 | 0 | $0.00000 |
+| EXP_0208 | W000 | completed | Tuning the ridge regularization strength on the cu | 0.5755 | -0.0004 | 0 | $0.00000 |
+| EXP_0209 | W000 | completed | Tuning the ridge regularization strength on the cu | 0.5755 | -0.0004 | 0 | $0.00000 |
+| EXP_0210 | W003 | completed | Tuning the ridge regularization strength on the cu | 0.5755 | -0.0003 | 0 | $0.00000 |
+| EXP_0211 | W000 | completed | Tuning the ridge regularization strength on the cu | 0.5755 | -0.0003 | 0 | $0.00000 |
+| EXP_0212 | W003 | completed | Tuning the ridge regularization strength on the cu | 0.5757 | -0.0002 | 0 | $0.00000 |
+| EXP_0213 | W000 | completed | Tuning the ridge regularization strength on the cu | 0.5759 | +0.0000 | 0 | $0.00000 |
+| EXP_0214 | W002 | completed | target_control_random_projection_e214 | 0.5717 | -0.0048 | 2 | $0.00198 |
+| EXP_0215 | W002 | completed | target_regulatory_potential_e215 | 0.5773 | +0.0008 | 1 | $0.00077 |
+| EXP_0216 | W003 | completed | target_ppi_degree_e216 | 0.5772 | +0.0007 | 1 | $0.00064 |
+| EXP_0217 | W000 | rejected | target_pathway_count_e217 |  |  | 2 | $0.00155 |
+|  |  | ↳ | iteration over a set of objects (line 35) not allowed: hash() and id() differ between processes (str hashes are salted per process, id() is a memory address), a |  |  |  |  |
+| EXP_0218 | W003 | completed | target_expression_gini_e218 | 0.5703 | -0.0062 | 1 | $0.00083 |
+| EXP_0219 | W000 | completed | Combining the six features that individually help  | 0.5683 | -0.0082 | 0 | $0.00000 |
+| EXP_0220 | W000 | completed | Adding the interaction term between target_control | 0.5755 | -0.0009 | 0 | $0.00000 |
+| EXP_0221 | W000 | completed | Tuning ridge alpha on the combined feature set fro | 0.5761 | -0.0004 | 0 | $0.00000 |
+| EXP_0222 | W000 | completed | Tuning ridge alpha on the combined feature set fro | 0.5761 | -0.0004 | 0 | $0.00000 |
+| EXP_0223 | W000 | completed | Tuning ridge alpha on the combined feature set fro | 0.5762 | -0.0003 | 0 | $0.00000 |
+| EXP_0224 | W003 | completed | Tuning ridge alpha on the combined feature set fro | 0.5765 | +0.0000 | 0 | $0.00000 |
+| EXP_0225 | W000 | completed | Tuning ridge alpha on the combined feature set fro | 0.5788 | +0.0023 | 0 | $0.00000 |
+| EXP_0226 | W002 | completed | target_essentiality_score_e226 | 0.5765 | +0.0000 | 2 | $0.00224 |
+| EXP_0227 | W002 | completed | target_control_variance_e227 | 0.5686 | -0.0102 | 1 | $0.00054 |
+| EXP_0228 | W003 | completed | target_control_entropy_e228 | 0.5681 | -0.0107 | 1 | $0.00104 |
+| EXP_0229 | W000 | failed | target_coexpression_degree_e229 |  |  | 2 | $0.00137 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0230 | W002 | completed | target_outgoing_prior_weight_e230 | 0.5774 | -0.0015 | 1 | $0.00061 |
+| EXP_0231 | W000 | completed | target_is_tf_e231 | 0.5780 | -0.0008 | 1 | $0.00044 |
+| EXP_0232 | W003 | completed | target_geneset_count_e232 | 0.5777 | -0.0011 | 1 | $0.00064 |
+| EXP_0233 | None | duplicate | Combining the six helpful features (target_control |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0234 | W002 | completed | target_bimodality_index_e234 | 0.5753 | -0.0035 | 1 | $0.00132 |
+| EXP_0235 | W001 | completed | target_coregulation_score_e235 | 0.5765 | -0.0023 | 1 | $0.00084 |
+| EXP_0236 | W002 | completed | prior_network_influence_e236 | 0.5763 | -0.0025 | 1 | $0.00117 |
+| EXP_0237 | W003 | completed | geneset_similarity_to_target_e237 | 0.5764 | -0.0024 | 1 | $0.00124 |
+| EXP_0238 | W000 | completed | target_expression_skewness_e238 | 0.5741 | -0.0047 | 1 | $0.00083 |
+| EXP_0239 | W001 | completed | target_expression_bimodality_e239 | 0.5693 | -0.0095 | 1 | $0.00121 |
+| EXP_0240 | None | duplicate | Adding a prior network influence feature to the se |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0241 | W002 | completed | Removing pair-specific features (target_control_me | 0.5765 | -0.0023 | 0 | $0.00000 |
+| EXP_0242 | W000 | completed | target_expression_random_projection_e242 | 0.5768 | -0.0020 | 1 | $0.00064 |
+| EXP_0243 | None | duplicate | Adding all six previously helpful features (target |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0244 | W002 | completed | target_control_median_mad_e244 | 0.5673 | -0.0115 | 1 | $0.00071 |
+| EXP_0245 | W001 | completed | target_control_iqr_e245 | 0.5684 | -0.0104 | 1 | $0.00059 |
+| EXP_0246 | W000 | completed | target_control_cv_e246 | 0.5744 | -0.0044 | 1 | $0.00062 |
+| EXP_0247 | W003 | completed | target_control_skewness_e247 | 0.5742 | -0.0046 | 1 | $0.00073 |
+| EXP_0248 | W000 | completed | pair_target_control_mean_product_e248 | 0.5753 | -0.0035 | 1 | $0.00050 |
+| EXP_0249 | W002 | completed | target_control_mean_sqrt_e249 | 0.5699 | -0.0089 | 1 | $0.00063 |
+| EXP_0250 | W001 | completed | target_count_x_mean_expression_e250 | 0.5715 | -0.0074 | 1 | $0.00047 |
+| EXP_0251 | W002 | completed | target_control_kurtosis_e251 | 0.5757 | -0.0031 | 1 | $0.00074 |
+| EXP_0252 | W000 | completed | pair_target_control_correlation_e252 | 0.5770 | -0.0018 | 1 | $0.00047 |
+| EXP_0253 | W003 | completed | target_control_entropy_e253 | 0.5681 | -0.0107 | 1 | $0.00069 |
+| EXP_0254 | W001 | completed | target_control_zero_fraction_e254 | 0.5684 | -0.0104 | 1 | $0.00051 |
+| EXP_0255 | W001 | completed | pair_target_control_product_e255 | 0.5753 | -0.0035 | 1 | $0.00053 |
+| EXP_0256 | W000 | completed | target_control_range_e256 | 0.5759 | -0.0029 | 1 | $0.00058 |
+| EXP_0257 | None | duplicate | Using all six previously helpful target-control-me |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0258 | W003 | completed | target_control_random_projection_e258 | 0.5760 | -0.0028 | 1 | $0.00104 |
+| EXP_0259 | None | duplicate | Adding all six previously helpful target-control-m |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0260 | None | rejected | Removing the weakest helpful feature (target_contr |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0261 | W002 | completed | target_expression_entropy_e261 | 0.5681 | -0.0107 | 1 | $0.00099 |
+| EXP_0262 | W000 | completed | target_zero_fraction_e262 | 0.5684 | -0.0104 | 1 | $0.00046 |
+| EXP_0263 | W003 | completed | pair_target_coexpression_corr_e263 | 0.5770 | -0.0018 | 1 | $0.00065 |
+| EXP_0264 | W001 | completed | target_expression_kurtosis_e264 | 0.5758 | -0.0031 | 1 | $0.00063 |
+| EXP_0265 | W000 | completed | target_expression_range_e265 | 0.5759 | -0.0029 | 1 | $0.00058 |
+| EXP_0266 | W003 | completed | pair_target_mean_product_x_indicator_e266 | 0.5753 | -0.0035 | 1 | $0.00061 |
+| EXP_0267 | W001 | completed | target_avg_coexpression_e267 | 0.5763 | -0.0025 | 1 | $0.00048 |
+| EXP_0268 | W000 | completed | target_expression_specificity_e268 | 0.5703 | -0.0085 | 1 | $0.00092 |
+| EXP_0269 | W003 | completed | target_prior_network_outdegree_e269 | 0.5774 | -0.0015 | 1 | $0.00087 |
+| EXP_0270 | W002 | failed | target_essentiality_score_e270 |  |  | 2 | $0.00358 |
+|  |  | ↳ | feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p)) |  |  |  |  |
+| EXP_0271 | W001 | completed | target_is_tf_indicator_e271 | 0.5780 | -0.0008 | 1 | $0.00048 |
+| EXP_0272 | None | duplicate | Using all six previously helpful features together |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0273 | W000 | completed | Removing the weakest helpful feature (target_contr | 0.5748 | -0.0040 | 0 | $0.00000 |
+| EXP_0274 | W003 | completed | target_response_random_projection_e274 | 0.5763 | -0.0025 | 2 | $0.00304 |
+| EXP_0275 | W003 | completed | target_control_variance_e275 | 0.5681 | -0.0107 | 1 | $0.00079 |
+| EXP_0276 | W001 | completed | target_control_skewness_e276 | 0.5741 | -0.0047 | 1 | $0.00064 |
+| EXP_0277 | W002 | completed | target_control_cv_e277 | 0.5744 | -0.0044 | 1 | $0.00059 |
+| EXP_0278 | W000 | completed | pair_target_control_mean_product_e278 | 0.5753 | -0.0035 | 1 | $0.00063 |
+| EXP_0279 | W001 | completed | pair_target_percentile_diff_e279 | 0.5734 | -0.0055 | 1 | $0.00087 |
+| EXP_0280 | None | duplicate | Using all six previously helpful target-control-me |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0281 | None | rejected | Removing target_control_percentile_e53 from the se |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0282 | W002 | completed | target_regulatory_outdegree_e282 | 0.5770 | -0.0019 | 1 | $0.00078 |
+| EXP_0283 | W000 | completed | target_control_variance_percentile_e283 | 0.5674 | -0.0114 | 1 | $0.00074 |
+| EXP_0284 | W002 | completed | target_control_skewness_e284 | 0.5741 | -0.0047 | 1 | $0.00056 |
+| EXP_0285 | W003 | completed | target_control_cv_e285 | 0.5760 | -0.0028 | 1 | $0.00049 |
+| EXP_0286 | W001 | completed | pair_target_mean_diff_e286 | 0.5730 | -0.0058 | 1 | $0.00049 |
+| EXP_0287 | W001 | completed | target_control_dispersion_index_e287 | 0.5755 | -0.0033 | 1 | $0.00063 |
+| EXP_0288 | W000 | completed | Using all six previously helpful features together | 0.5696 | -0.0011 | 0 | $0.00000 |
+| EXP_0289 | W000 | completed | Removing target_control_percentile_e53 from the si | 0.5707 | -0.0001 | 0 | $0.00000 |
+| EXP_0290 | W003 | completed | target_control_random_fourier_embedding_e290 | 0.5723 | -0.0065 | 2 | $0.00210 |
+| EXP_0291 | W002 | completed | target_control_random_fourier_embedding_e291 | 0.5746 | -0.0042 | 2 | $0.00227 |
+| EXP_0292 | W001 | completed | target_expression_entropy_e292 | 0.5682 | -0.0106 | 1 | $0.00101 |
+| EXP_0293 | W000 | completed | target_expression_bimodality_e293 | 0.5690 | -0.0098 | 1 | $0.00086 |
+| EXP_0294 | W003 | completed | target_expression_autocorr_e294 | 0.5768 | -0.0020 | 1 | $0.00082 |
+| EXP_0295 | W002 | completed | target_expression_cv_squared_e295 | 0.5759 | -0.0029 | 1 | $0.00060 |
+| EXP_0296 | W002 | completed | target_expression_kurtosis_e296 | 0.5757 | -0.0031 | 1 | $0.00052 |
+| EXP_0297 | None | duplicate | Using all six previously helpful target-control-me |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0298 | None | duplicate | Removing the weakest helpful feature (target_contr |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0299 | W003 | completed | target_response_profile_similarity_e299 | 0.5572 | -0.0216 | 1 | $0.00076 |
+| EXP_0300 | W003 | completed | target_control_bimodality_e300 | 0.5693 | -0.0095 | 1 | $0.00098 |
+| EXP_0301 | W001 | completed | target_control_entropy_e301 | 0.5684 | -0.0104 | 1 | $0.00090 |
+| EXP_0302 | W002 | completed | target_control_autocorr_e302 | 0.5768 | -0.0020 | 1 | $0.00068 |
+| EXP_0303 | W000 | completed | target_control_kurtosis_e303 | 0.5757 | -0.0031 | 1 | $0.00062 |
+| EXP_0304 | W002 | completed | target_control_cv2_e304 | 0.5759 | -0.0029 | 1 | $0.00053 |
+| EXP_0305 | W000 | completed | target_control_dispersion_e305 | 0.5755 | -0.0033 | 1 | $0.00061 |
+| EXP_0306 | None | duplicate | Combining all six previously helpful features in a |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0288 |  |  |  |  |
+| EXP_0307 | W003 | completed | Removing target_control_percentile_e53 from the si | 0.5695 | -0.0001 | 0 | $0.00000 |
+| EXP_0308 | W001 | completed | target_control_rff_e308 | 0.5686 | -0.0102 | 2 | $0.00204 |
+| EXP_0309 | W000 | completed | target_module_expression_rank_e309 | 0.5761 | -0.0028 | 1 | $0.00091 |
+| EXP_0310 | W003 | completed | target_gene_control_mean_product_e310 | 0.5700 | -0.0088 | 1 | $0.00065 |
+| EXP_0311 | W002 | completed | target_fano_factor_e311 | 0.5692 | -0.0096 | 1 | $0.00058 |
+| EXP_0312 | W001 | completed | target_mean_residual_length_e312 | 0.5755 | -0.0034 | 1 | $0.00119 |
+| EXP_0313 | W002 | completed | pair_target_mean_difference_e313 | 0.5730 | -0.0058 | 1 | $0.00057 |
+| EXP_0314 | W000 | completed | Combining the existing target_control_mean_scaling | 0.5661 | +0.0000 | 0 | $0.00000 |
+| EXP_0315 | None | duplicate | Removing the weakest helpful feature (target_contr |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0316 | W003 | completed | random_projection_similarity_e316 | 0.5764 | -0.0024 | 2 | $0.00186 |
+| EXP_0317 | W001 | completed | target_mean_x_coexpression_e317 | 0.5693 | -0.0095 | 1 | $0.00049 |
+| EXP_0318 | W003 | completed | target_mean_over_coexpression_e318 | 0.5717 | -0.0071 | 1 | $0.00064 |
+| EXP_0319 | W002 | completed | pair_target_mean_difference_e319 | 0.5730 | -0.0058 | 1 | $0.00052 |
+| EXP_0320 | W002 | completed | target_control_mean_x_pair_indicator_squ_e320 | 0.5675 | +0.0013 | 1 | $0.00040 |
+| EXP_0321 | None | duplicate | Adding the new pair_target_mean_difference feature |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0322 | None | duplicate | Removing pair_sum_target_control_mean_scaled_e90 f |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0241 |  |  |  |  |
+| EXP_0323 | W000 | completed | target_mean_rank_in_coexpressed_e323 | 0.5766 | -0.0023 | 2 | $0.00340 |
+| EXP_0324 | W001 | completed | target_random_projection_e324 | 0.5690 | -0.0098 | 1 | $0.00081 |
+| EXP_0325 | W002 | completed | target_mean_times_coexpression_e325 | 0.5693 | -0.0095 | 1 | $0.00063 |
+| EXP_0326 | W002 | completed | pair_sum_mean_times_pair_indicator_e326 | 0.5766 | -0.0023 | 1 | $0.00076 |
+| EXP_0327 | W000 | completed | target_mean_times_prior_direct_indicator_e327 | 0.5745 | -0.0043 | 1 | $0.00081 |
+| EXP_0328 | W001 | completed | target_mean_over_ppi_distance_e328 | 0.5727 | -0.0061 | 1 | $0.00132 |
+| EXP_0329 | W003 | completed | target_percentile_times_self_effect_e329 | 0.5695 | -0.0093 | 1 | $0.00056 |
+| EXP_0330 | W003 | completed | pair_target_mean_difference_squared_e330 | 0.5739 | -0.0049 | 1 | $0.00052 |
+| EXP_0331 | W003 | completed | target_mean_times_geneset_overlap_e331 | 0.5764 | -0.0024 | 1 | $0.00109 |
+| EXP_0332 | W002 | completed | target_expression_random_projection_safe_e332 | 0.5764 | -0.0024 | 1 | $0.00073 |
+| EXP_0333 | W000 | failed | target_expression_random_projection_safe_e333 |  |  | 2 | $0.00172 |
+|  |  | ↳ | feature failed after 2 attempts: ne.py", line 393, in main
+    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,
+              Path(args.cache |  |  |  |  |
+| EXP_0334 | W002 | completed | target_essentiality_depmap_e334 | 0.5772 | -0.0016 | 1 | $0.00134 |
+| EXP_0335 | W000 | completed | pair_target_coexpression_e335 | 0.5770 | -0.0018 | 1 | $0.00059 |
+| EXP_0336 | W003 | completed | target_prior_network_degree_e336 | 0.5776 | -0.0012 | 1 | $0.00064 |
+| EXP_0337 | W000 | completed | target_is_tf_e337 | 0.5780 | -0.0008 | 1 | $0.00047 |
+| EXP_0338 | None | duplicate | Adding all six known helpful features to the curre |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0339 | None | duplicate | Removing target_control_percentile_e53 from the se |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0340 | W003 | completed | target_random_projection_e340 | 0.5754 | -0.0034 | 1 | $0.00065 |
+| EXP_0341 | W002 | completed | target_control_variance_e341 | 0.5686 | -0.0102 | 1 | $0.00058 |
+| EXP_0342 | W000 | completed | target_control_variance_e342 | 0.5682 | -0.0106 | 1 | $0.00071 |
+| EXP_0343 | W003 | completed | target_control_cv_e343 | 0.5747 | -0.0041 | 1 | $0.00075 |
+| EXP_0344 | W002 | completed | target_control_skewness_e344 | 0.5749 | -0.0039 | 1 | $0.00081 |
+| EXP_0345 | W001 | completed | target_control_entropy_e345 | 0.5687 | -0.0101 | 1 | $0.00115 |
+| EXP_0346 | W003 | completed | target_control_iqr_e346 | 0.5685 | -0.0103 | 1 | $0.00081 |
+| EXP_0347 | W000 | completed | target_coexpression_module_strength_e347 | 0.5767 | -0.0021 | 1 | $0.00080 |
+| EXP_0348 | None | duplicate | Adding all six known helpful features to the curre |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0349 | W002 | completed | target_control_bimodality_e349 | 0.5763 | -0.0025 | 1 | $0.00154 |
+| EXP_0350 | W003 | completed | target_control_skewness_e350 | 0.5742 | -0.0046 | 1 | $0.00075 |
+| EXP_0351 | W000 | completed | target_control_kurtosis_e351 | 0.5758 | -0.0030 | 1 | $0.00069 |
+| EXP_0352 | W002 | completed | target_control_entropy_e352 | 0.5680 | -0.0108 | 1 | $0.00083 |
+| EXP_0353 | W001 | completed | target_control_bimodality_e353 | 0.5715 | -0.0073 | 2 | $0.00378 |
+| EXP_0354 | W003 | completed | pair_target_control_correlation_e354 | 0.5769 | -0.0019 | 1 | $0.00063 |
+| EXP_0355 | None | duplicate | Adding all six known helpful features (target_cont |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0356 | None | rejected | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0357 | W000 | completed | target_control_gini_e357 | 0.5700 | -0.0088 | 1 | $0.00081 |
+| EXP_0358 | W003 | completed | target_pair_mean_ratio_e358 | 0.5730 | -0.0058 | 1 | $0.00057 |
+| EXP_0359 | W000 | completed | pair_sum_mean_x_target_coexpression_e359 | 0.5757 | -0.0031 | 1 | $0.00080 |
+| EXP_0360 | W002 | completed | target_chromosome_arm_expression_percent_e360 | 0.5775 | -0.0013 | 1 | $0.00092 |
+| EXP_0361 | W003 | completed | target_control_percentile_x_pair_indicat_e361 | 0.5734 | -0.0054 | 1 | $0.00086 |
+| EXP_0362 | W000 | completed | target_control_mean_squared_x_pair_indic_e362 | 0.5735 | -0.0053 | 1 | $0.00050 |
+| EXP_0363 | None | duplicate | A ridge regression using all six known helpful fea |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0364 | None | rejected | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0365 | W002 | completed | target_control_random_projection_e365 | 0.5730 | -0.0058 | 2 | $0.00186 |
+| EXP_0366 | W000 | completed | scaling_x_pair_sum_interaction_e366 | 0.5695 | -0.0093 | 2 | $0.00125 |
+| EXP_0367 | W003 | completed | target_control_variance_e367 | 0.5682 | -0.0106 | 1 | $0.00051 |
+| EXP_0368 | W002 | completed | pair_target_expression_ratio_e368 | 0.5730 | -0.0058 | 1 | $0.00054 |
+| EXP_0369 | W002 | completed | target_percentile_in_geneset_e369 | 0.5742 | -0.0046 | 1 | $0.00096 |
+| EXP_0370 | W003 | completed | target_gene_control_coexpression_e370 | 0.5763 | -0.0025 | 1 | $0.00065 |
+| EXP_0371 | None | duplicate | Using all six known helpful features in a ridge re |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0372 | None | duplicate | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0373 | W000 | failed | target_control_profile_projection_e373 |  |  | 2 | $0.00159 |
+|  |  | ↳ | feature failed after 2 attempts: e_w4_r0/worktrees/_server/genemila/pipeline.py", line 393, in main
+    r = smoke(args.feature, Path(args.public), Path(args.plu |  |  |  |  |
+| EXP_0374 | W003 | completed | target_control_variance_e374 | 0.5677 | -0.0111 | 1 | $0.00059 |
+| EXP_0375 | W000 | completed | target_control_cv_e375 | 0.5744 | -0.0044 | 1 | $0.00062 |
+| EXP_0376 | W002 | completed | target_control_skewness_e376 | 0.5742 | -0.0046 | 1 | $0.00059 |
+| EXP_0377 | W003 | failed | target_control_bimodality_e377 |  |  | 2 | $0.00335 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0378 | W000 | completed | target_control_entropy_e378 | 0.5681 | -0.0107 | 2 | $0.00207 |
+| EXP_0379 | None | duplicate | A ridge regression using all six known helpful fea |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0380 | None | rejected | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0381 | W002 | completed | target_control_random_projection_e381 | 0.5700 | -0.0088 | 1 | $0.00092 |
+| EXP_0382 | W002 | completed | target_control_correlation_e382 | 0.5763 | -0.0025 | 1 | $0.00066 |
+| EXP_0383 | W000 | completed | pathway_overlap_count_e383 | 0.5763 | -0.0025 | 1 | $0.00091 |
+| EXP_0384 | W002 | completed | ppi_shortest_path_distance_e384 | 0.5763 | -0.0025 | 1 | $0.00115 |
+| EXP_0385 | W000 | completed | tf_target_indicator_e385 | 0.5764 | -0.0024 | 1 | $0.00073 |
+| EXP_0386 | W002 | failed | target_essentiality_e386 |  |  | 2 | $0.00219 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0387 | None | duplicate | Using all six known helpful features together in a |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0388 | None | duplicate | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0389 | W000 | completed | target_control_random_fourier_e389 | 0.5728 | -0.0060 | 2 | $0.00211 |
+| EXP_0390 | W003 | completed | target_control_rank_product_e390 | 0.5735 | -0.0053 | 1 | $0.00084 |
+| EXP_0391 | W002 | completed | target_coexpression_degree_e391 | 0.5768 | -0.0021 | 2 | $0.00127 |
+| EXP_0392 | W000 | completed | target_ppi_clustering_e392 | 0.5764 | -0.0024 | 1 | $0.00087 |
+| EXP_0393 | W003 | completed | target_geneset_jaccard_e393 | 0.5767 | -0.0021 | 1 | $0.00064 |
+| EXP_0394 | None | duplicate | Using all six known helpful features together in a |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0395 | None | duplicate | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0396 | W000 | completed | target_control_random_projection_e396 | 0.5713 | -0.0075 | 2 | $0.00181 |
+| EXP_0397 | W002 | completed | target_control_random_projection_e397 | 0.5756 | -0.0032 | 1 | $0.00069 |
+| EXP_0398 | W003 | completed | target_essentiality_depmap_e398 | 0.5763 | -0.0025 | 1 | $0.00142 |
+| EXP_0399 | W002 | completed | target_control_variance_e399 | 0.5686 | -0.0102 | 1 | $0.00045 |
+| EXP_0400 | W000 | completed | target_control_skewness_e400 | 0.5741 | -0.0047 | 1 | $0.00064 |
+| EXP_0401 | W003 | completed | target_control_kurtosis_e401 | 0.5757 | -0.0031 | 1 | $0.00071 |
+| EXP_0402 | W002 | completed | target_control_mad_e402 | 0.5688 | -0.0100 | 1 | $0.00054 |
+| EXP_0403 | W000 | completed | target_control_iqr_e403 | 0.5686 | -0.0102 | 2 | $0.00110 |
+| EXP_0404 | W003 | completed | target_control_entropy_e404 | 0.5681 | -0.0107 | 1 | $0.00090 |
+| EXP_0405 | None | duplicate | Combining the six known helpful features in a ridg |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0406 | W002 | failed | target_control_bimodality_dip_e406 |  |  | 2 | $0.00172 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0407 | W003 | completed | target_coexpression_all_genes_e407 | 0.5765 | -0.0023 | 1 | $0.00069 |
+| EXP_0408 | W002 | rejected | normalized_geneset_overlap_e408 |  |  | 2 | $0.00187 |
+|  |  | ↳ | iteration over a set of objects (line 38) not allowed: hash() and id() differ between processes (str hashes are salted per process, id() is a memory address), a |  |  |  |  |
+| EXP_0409 | W000 | completed | target_control_variance_e409 | 0.5681 | -0.0107 | 1 | $0.00048 |
+| EXP_0410 | W000 | completed | pair_interaction_single_gene_response_e410 | 0.5769 | -0.0019 | 2 | $0.00200 |
+| EXP_0411 | W003 | completed | target_ppi_degree_e411 | 0.5761 | -0.0027 | 1 | $0.00059 |
+| EXP_0412 | None | duplicate | Using all six known helpful features together in a |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0219 |  |  |  |  |
+| EXP_0413 | None | duplicate | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0414 | W002 | failed | target_control_random_projection_e414 |  |  | 2 | $0.00242 |
+|  |  | ↳ | feature failed after 2 attempts: output depends on the order of a pair's target genes: a perturbation's targets are an unordered set (use every target, never on |  |  |  |  |
+| EXP_0415 | W000 | completed | shared_tf_score_e415 | 0.5707 | -0.0000 | 1 | $0.00116 |
+| EXP_0416 | W003 | completed | ppi_neighbor_mean_control_e416 | 0.5707 | -0.0000 | 1 | $0.00072 |
+| EXP_0417 | W002 | completed | pathway_overlap_fraction_e417 | 0.5705 | -0.0002 | 1 | $0.00091 |
+| EXP_0418 | W001 | completed | target_cv_control_e418 | 0.5708 | +0.0001 | 1 | $0.00060 |
+| EXP_0419 | W001 | completed | target_control_mean_x_ppi_distance_e419 | 0.5707 | +0.0000 | 1 | $0.00121 |
+| EXP_0420 | None | duplicate | Using all six features that individually helped (t |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0288 |  |  |  |  |
+| EXP_0421 | None | duplicate | Removing target_control_percentile_e53 from the si |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0289 |  |  |  |  |
+| EXP_0422 | W003 | completed | target_random_projection_e422 | 0.5711 | +0.0004 | 1 | $0.00095 |
+| EXP_0423 | W002 | completed | target_random_projection_e423 | 0.5711 | +0.0004 | 1 | $0.00083 |
+| EXP_0424 | W002 | completed | target_control_mean_x_pair_indicator_squ_e424 | 0.5683 | +0.0022 | 1 | $0.00053 |
+| EXP_0425 | W000 | completed | pair_sum_target_control_mean_x_pair_indi_e425 | 0.5628 | -0.0000 | 1 | $0.00049 |
+| EXP_0426 | W002 | completed | target_control_mean_rank_e426 | 0.5624 | +0.0000 | 1 | $0.00065 |
+| EXP_0427 | W000 | completed | target_geneset_count_e427 | 0.5776 | -0.0012 | 1 | $0.00085 |
+| EXP_0428 | W003 | completed | tf_overlap_score_e428 | 0.5763 | -0.0025 | 1 | $0.00095 |
+| EXP_0429 | W001 | completed | pair_target_coregulation_e429 | 0.5765 | -0.0023 | 1 | $0.00075 |
+| EXP_0430 | W001 | completed | target_control_mean_x_geneset_count_e430 | 0.5755 | -0.0033 | 1 | $0.00082 |
+| EXP_0431 | W003 | failed | target_expression_random_projection_e431 |  |  | 2 | $0.00154 |
+|  |  | ↳ | feature failed after 2 attempts: n
+    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,
+              Path(args.cache) if args.cache else Non |  |  |  |  |
+| EXP_0432 | W002 | completed | target_expression_random_projection_e432 | 0.5714 | -0.0074 | 2 | $0.00200 |
+| EXP_0433 | W001 | completed | target_control_skewness_e433 | 0.5742 | -0.0046 | 1 | $0.00076 |
+| EXP_0434 | W000 | completed | target_control_kurtosis_e434 | 0.5758 | -0.0030 | 1 | $0.00073 |
+| EXP_0435 | W002 | completed | target_control_variance_e435 | 0.5682 | -0.0106 | 1 | $0.00056 |
+| EXP_0436 | W003 | completed | target_control_mean_x_variance_e436 | 0.5693 | -0.0095 | 1 | $0.00062 |
+| EXP_0437 | W002 | completed | target_module_percentile_e437 | 0.5721 | -0.0067 | 1 | $0.00094 |
+| EXP_0438 | W003 | completed | target_pathway_specificity_e438 | 0.5769 | -0.0019 | 1 | $0.00068 |
+| EXP_0439 | None | duplicate | Using all six individually helpful features (targe |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0288 |  |  |  |  |
+| EXP_0440 | W001 | completed | target_control_mean_x_pair_count_e440 | 0.5720 | -0.0068 | 1 | $0.00056 |
+| EXP_0441 | W001 | completed | target_control_mean_rank_e441 | 0.5624 | +0.0000 | 1 | $0.00053 |
+| EXP_0442 | W000 | completed | target_control_mean_x_variance_e442 | 0.5628 | +0.0028 | 1 | $0.00057 |
+| EXP_0443 | W003 | completed | target_control_skewness_e443 | 0.5736 | -0.0052 | 1 | $0.00073 |
+| EXP_0444 | W002 | completed | pair_target_mean_difference_e444 | 0.5730 | -0.0058 | 1 | $0.00052 |
+| EXP_0445 | W001 | completed | target_control_mean_x_ppi_degree_e445 | 0.5614 | +0.0015 | 1 | $0.00077 |
+| EXP_0446 | None | rejected | Using all six individually helpful features in one |  |  | 0 | $0.00000 |
+|  |  | ↳ | 5 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0447 | None | duplicate | Adding the pair target mean difference feature to  |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0241 |  |  |  |  |
+| EXP_0448 | W000 | completed | target_control_kurtosis_e448 | 0.5758 | -0.0030 | 1 | $0.00078 |
+| EXP_0449 | W003 | completed | target_mean_x_ppi_degree_e449 | 0.5712 | -0.0076 | 1 | $0.00090 |
+| EXP_0450 | W002 | completed | target_mean_x_tf_indicator_e450 | 0.5730 | -0.0058 | 1 | $0.00063 |
+| EXP_0451 | W000 | completed | target_mean_over_variance_e451 | 0.5714 | -0.0074 | 1 | $0.00067 |
+| EXP_0452 | W001 | completed | pair_target_mean_diff_x_pair_indicator_e452 | 0.5730 | -0.0058 | 1 | $0.00053 |
+| EXP_0453 | None | rejected | Using all six individually helpful features in a s |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0454 | None | duplicate | Removing target_control_percentile_e53 from the se |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0273 |  |  |  |  |
+| EXP_0455 | None | duplicate | The optimal ridge regularization strength for the  |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0221 |  |  |  |  |
+| EXP_0456 | W001 | completed | The optimal ridge regularization strength for the  | 0.5761 | -0.0027 | 0 | $0.00000 |
+| EXP_0457 | None | duplicate | The optimal ridge regularization strength for the  |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0222 |  |  |  |  |
+| EXP_0458 | W002 | completed | The optimal ridge regularization strength for the  | 0.5761 | -0.0027 | 0 | $0.00000 |
+| EXP_0459 | None | duplicate | The optimal ridge regularization strength for the  |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0223 |  |  |  |  |
+| EXP_0460 | W000 | completed | The optimal ridge regularization strength for the  | 0.5763 | -0.0025 | 0 | $0.00000 |
+| EXP_0461 | W001 | failed | target_random_projection_control_expr_e461 |  |  | 2 | $0.00182 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0462 | W003 | completed | target_control_median_scaled_e462 | 0.5720 | -0.0069 | 1 | $0.00062 |
+| EXP_0463 | W002 | completed | target_control_iqr_scaled_e463 | 0.5687 | -0.0101 | 1 | $0.00071 |
+| EXP_0464 | W001 | completed | target_control_cv_scaled_e464 | 0.5754 | -0.0034 | 1 | $0.00070 |
+| EXP_0465 | W000 | completed | target_control_entropy_scaled_e465 | 0.5685 | -0.0103 | 1 | $0.00090 |
+| EXP_0466 | W001 | completed | target_control_abs_skew_scaled_e466 | 0.5737 | -0.0051 | 1 | $0.00071 |
+| EXP_0467 | W003 | completed | Adding the interaction between target_control_mean | 0.5689 | -0.0099 | 0 | $0.00000 |
+| EXP_0468 | W002 | completed | Adding the interaction between target_control_mean | 0.5724 | -0.0064 | 0 | $0.00000 |
+| EXP_0469 | W003 | completed | target_control_random_projection_e469 | 0.5675 | -0.0113 | 1 | $0.00098 |
+| EXP_0470 | W000 | completed | target_control_skewness_e470 | 0.5741 | -0.0047 | 1 | $0.00070 |
+| EXP_0471 | W003 | completed | target_control_entropy_e471 | 0.5681 | -0.0107 | 1 | $0.00080 |
+| EXP_0472 | W002 | completed | target_control_cv_e472 | 0.5744 | -0.0044 | 1 | $0.00057 |
+| EXP_0473 | W001 | completed | target_control_iqr_e473 | 0.5685 | -0.0103 | 1 | $0.00056 |
+| EXP_0474 | W000 | completed | target_control_median_e474 | 0.5744 | -0.0044 | 1 | $0.00044 |
+| EXP_0475 | W001 | completed | Adding the interaction between target_control_mean | 0.5721 | -0.0067 | 0 | $0.00000 |
+| EXP_0476 | W002 | completed | Adding the interaction between target_control_mean | 0.5732 | -0.0056 | 0 | $0.00000 |
+| EXP_0477 | W003 | completed | target_ppi_degree_e477 | 0.5761 | -0.0027 | 1 | $0.00055 |
+| EXP_0478 | W003 | completed | target_control_percentile_rank_product_e478 | 0.5735 | -0.0053 | 2 | $0.00153 |
+| EXP_0479 | W000 | completed | pair_sum_target_control_mean_squared_e479 | 0.5765 | -0.0023 | 1 | $0.00047 |
+| EXP_0480 | W001 | completed | pair_target_control_mean_abs_diff_e480 | 0.5730 | -0.0058 | 1 | $0.00052 |
+| EXP_0481 | W002 | completed | target_control_mean_harmonic_e481 | 0.5769 | -0.0019 | 1 | $0.00054 |
+| EXP_0482 | W001 | completed | target_control_mean_geometric_e482 | 0.5770 | -0.0018 | 1 | $0.00060 |
+| EXP_0483 | None | rejected | Using all eight individually helpful features toge |  |  | 0 | $0.00000 |
+|  |  | ↳ | 5 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0484 | None | duplicate | Removing pair_sum_target_control_mean_scaled_e90 f |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0241 |  |  |  |  |
+| EXP_0485 | W000 | failed | target_control_bimodality_dip_pvalue_e485 |  |  | 2 | $0.00418 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0486 | W001 | completed | target_phase_specific_mean_e486 | 0.5750 | -0.0038 | 1 | $0.00243 |
+| EXP_0487 | W003 | completed | target_tf_coexpression_e487 | 0.5759 | -0.0029 | 1 | $0.00088 |
+| EXP_0488 | W002 | completed | target_pathway_count_e488 | 0.5774 | -0.0014 | 1 | $0.00051 |
+| EXP_0489 | W002 | completed | target_ppi_weighted_degree_e489 | 0.5766 | -0.0022 | 1 | $0.00067 |
+| EXP_0490 | W002 | completed | The product of log1p(mean control expression) of t | 0.5600 | +0.0000 | 0 | $0.00000 |
+| EXP_0491 | W003 | completed | target_phase_variance_e491 | 0.5725 | -0.0064 | 1 | $0.00133 |
+| EXP_0492 | W002 | completed | Adding interactions between pair_sum_target_contro | 0.5681 | -0.0040 | 0 | $0.00000 |
+| EXP_0493 | W002 | completed | target_random_projection_e493 | 0.5676 | -0.0112 | 1 | $0.00083 |
+| EXP_0494 | W002 | completed | target_pair_percentile_diff_e494 | 0.5734 | -0.0055 | 1 | $0.00071 |
+| EXP_0495 | W003 | completed | target_tf_coexpression_e495 | 0.5759 | -0.0029 | 1 | $0.00080 |
+| EXP_0496 | W000 | completed | target_gene_pathway_count_e496 | 0.5774 | -0.0014 | 1 | $0.00051 |
+| EXP_0497 | W001 | completed | target_ppi_degree_e497 | 0.5761 | -0.0027 | 1 | $0.00058 |
+| EXP_0498 | W000 | completed | target_mean_x_ppi_degree_e498 | 0.5712 | -0.0076 | 1 | $0.00081 |
+| EXP_0499 | None | rejected | Adding target_ppi_degree to the set of helpful fea |  |  | 0 | $0.00000 |
+|  |  | ↳ | 5 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0500 | None | duplicate | Removing target_control_mean_x_variance_e442 from  |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0241 |  |  |  |  |
+| EXP_0501 | W001 | failed | target_expression_random_projection_e501 |  |  | 2 | $0.00159 |
+|  |  | ↳ | feature failed after 2 attempts:  Path(args.public), Path(args.plugins), out,
+              Path(args.cache) if args.cache else None)
+  File "/Users/andresarria |  |  |  |  |
+| EXP_0502 | W003 | completed | target_control_cv_e502 | 0.5744 | -0.0044 | 1 | $0.00064 |
+| EXP_0503 | W000 | completed | target_control_percentile_sum_e503 | 0.5735 | -0.0053 | 1 | $0.00077 |
+| EXP_0504 | W002 | completed | target_control_percentile_max_e504 | 0.5734 | -0.0054 | 1 | $0.00058 |
+| EXP_0505 | W001 | completed | target_control_percentile_min_e505 | 0.5733 | -0.0055 | 1 | $0.00057 |
+| EXP_0507 | None | rejected | A ridge model using all eight individually helpful |  |  | 0 | $0.00000 |
+|  |  | ↳ | 5 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0508 | None | rejected | Removing pair_sum_target_control_mean_scaled_e90 f |  |  | 0 | $0.00000 |
+|  |  | ↳ | 4 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0510 | None | queued | target_control_variance_mean_ratio_e510 |  |  | 0 | $0.00000 |
+| EXP_0511 | None | queued | target_coexpression_degree_e511 |  |  | 0 | $0.00000 |
+| EXP_0512 | None | queued | target_control_entropy_e512 |  |  | 0 | $0.00000 |
+| EXP_0513 | None | queued | target_control_skewness_e513 |  |  | 0 | $0.00000 |
+| EXP_0514 | None | queued | target_top_coexpression_mean_e514 |  |  | 0 | $0.00000 |
+| EXP_0515 | None | queued | target_control_bimodality_e515 |  |  | 0 | $0.00000 |
+| EXP_0516 | None | rejected | Using all eight individually helpful features in a |  |  | 0 | $0.00000 |
+|  |  | ↳ | 5 simultaneous changes vs parent; test one idea at a time |  |  |  |  |
+| EXP_0517 | None | duplicate | Removing pair_sum_target_control_mean_scaled_e90 f |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0241 |  |  |  |  |
+
+## 4. Tokens
+- workers: 627837 in (359680 cached) / 228348 out
+- planner: 261973 in (119936 cached) / 120707 out
+
+## 5-7. Cost and throughput
+- worker LLM cost: $0.35662; planner: $0.67077
+- worker cost per completed experiment: $0.00087
+- completed experiments per minute: 20.265
+
+## 8. Bottlenecks and duplicated work
+- time: {"worker_llm_latency": 1337.5, "experiment_wall": 2733.3, "experiment_cpu": 468.5, "planner_latency": 1153.9, "worker_capacity": 4855.6}
+- LLM latency share of experiment time: 49%; worker utilisation: 56%
+- replicate group ['EXP_0078', 'EXP_0079']: scores [0.5645, 0.5645] (identical outcome: duplicated work)
+- replicate group ['EXP_0083', 'EXP_0084']: scores []
+- replicate group ['EXP_0281', 'EXP_0454']: scores []
+- replicate group ['EXP_0290', 'EXP_0291']: scores [0.5723, 0.5746]
+- replicate group ['EXP_0332', 'EXP_0333']: scores [0.5764]
+- replicate group ['EXP_0387', 'EXP_0394']: scores []
+- replicate group ['EXP_0395', 'EXP_0413']: scores []
+- replicate group ['EXP_0396', 'EXP_0397']: scores [0.5713, 0.5756]
+- replicate group ['EXP_0422', 'EXP_0423']: scores [0.5711, 0.5711] (identical outcome: duplicated work)
+- replicate group ['EXP_0431', 'EXP_0432']: scores [0.5714]
+- no change vs parent: ['EXP_0020', 'EXP_0025', 'EXP_0028', 'EXP_0038', 'EXP_0059', 'EXP_0068', 'EXP_0094', 'EXP_0156', 'EXP_0174', 'EXP_0213', 'EXP_0224', 'EXP_0314', 'EXP_0490']
+
+## 9. Projection (worker LLM cost)
+- 8 workers 1h: $2.12
+- 8 workers 6h: $12.69
+- 16 workers 1h: $4.23
+- 16 workers 6h: $25.38
+- 44 workers 1h: $11.63
+- 44 workers 6h: $69.80
+- planner: about $1.99/hour at the measured call rate
+- Linear in workers x time from measured worker-LLM spend per worker-minute; the planner is called when the queue runs low, so its cost grows sub-linearly with workers.

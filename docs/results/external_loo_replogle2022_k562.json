@@ -1,0 +1,1551 @@
+{
+ "bundle": "adamson_cf",
+ "knowledge": "replogle2022_k562",
+ "description": "External screen deltas: perts[gene].delta = mean over cells of log1p(10,000 x counts / cell total) of that screen's cells of the perturbation minus its own control mean, over this bundle's genes in bundle order (null where unmeasured there); source: Perturb-seq screen ReplogleWeissman2022_K562_gwps.h5ad.",
+ "k": 5,
+ "alpha_grid": [
+  0.1,
+  1.0,
+  10.0,
+  100.0,
+  1000.0
+ ],
+ "n_train": 50,
+ "n_genes": 2055,
+ "n_genes_measured_external": 1938,
+ "external_file": {
+  "n_perts": 82,
+  "n_control_cells": 75328,
+  "n_bundle_targets_missing": 6,
+  "zero_cell_targets": []
+ },
+ "coverage": {
+  "with_external_row": 46,
+  "without_external_row": [
+   "AMIGO3",
+   "KCTD16",
+   "SLMO2",
+   "SRPR"
+  ]
+ },
+ "fallbacks": {
+  "external_direct_no_row": 4,
+  "external_knn_no_row": 4,
+  "external_knn_no_positive_neighbour": 0,
+  "geneset_knn_no_positive_similarity": 8
+ },
+ "agreement": {
+  "n": 46,
+  "mean": 0.47051457013779624,
+  "median": 0.5140661037503858,
+  "min": -0.029867445854011368,
+  "max": 0.7775045081444463
+ },
+ "alphas_chosen": {
+  "0.1": 0,
+  "1.0": 0,
+  "10.0": 0,
+  "100.0": 0,
+  "1000.0": 50
+ },
+ "predictors": [
+  {
+   "name": "mean_response",
+   "mean": 0.47414024800853816,
+   "sd": 0.260952885899089,
+   "median": 0.4322463550315121,
+   "min": -0.13007967873117404,
+   "max": 0.8887280751620174,
+   "vs_mean_response": {
+    "wins": 0,
+    "mean_diff": 0.0,
+    "se_diff": 0.0
+   },
+   "vs_geneset_knn": {
+    "wins": 9,
+    "mean_diff": -0.07075298157811791,
+    "se_diff": 0.01856602565791611
+   },
+   "coverage": 50
+  },
+  {
+   "name": "geneset_knn",
+   "mean": 0.544893229586656,
+   "sd": 0.2640035291190254,
+   "median": 0.557519837321734,
+   "min": -0.10348899146807365,
+   "max": 0.9258845112484022,
+   "vs_mean_response": {
+    "wins": 33,
+    "mean_diff": 0.07075298157811791,
+    "se_diff": 0.01856602565791611
+   },
+   "vs_geneset_knn": {
+    "wins": 0,
+    "mean_diff": 0.0,
+    "se_diff": 0.0
+   },
+   "coverage": 50
+  },
+  {
+   "name": "external_direct",
+   "mean": 0.4606499356770916,
+   "sd": 0.2109372925355181,
+   "median": 0.5035563327896961,
+   "min": -0.014544316578803973,
+   "max": 0.8261214134744871,
+   "vs_mean_response": {
+    "wins": 21,
+    "mean_diff": -0.013490312331446526,
+    "se_diff": 0.03546674350992287
+   },
+   "vs_geneset_knn": {
+    "wins": 17,
+    "mean_diff": -0.08424329390956445,
+    "se_diff": 0.03490753679993937
+   },
+   "coverage": 46
+  },
+  {
+   "name": "external_knn",
+   "mean": 0.5720089220375261,
+   "sd": 0.25657739716134415,
+   "median": 0.5901011234872898,
+   "min": -0.0750999799187863,
+   "max": 0.9656735729876165,
+   "vs_mean_response": {
+    "wins": 36,
+    "mean_diff": 0.09786867402898797,
+    "se_diff": 0.019976802464661294
+   },
+   "vs_geneset_knn": {
+    "wins": 31,
+    "mean_diff": 0.027115692450870046,
+    "se_diff": 0.017248253349228467
+   },
+   "coverage": 46
+  },
+  {
+   "name": "external_stack",
+   "mean": 0.6164643100302151,
+   "sd": 0.23315403286887157,
+   "median": 0.6419881963900922,
+   "min": 0.008946246205939092,
+   "max": 0.9592684415801738,
+   "vs_mean_response": {
+    "wins": 41,
+    "mean_diff": 0.14232406202167694,
+    "se_diff": 0.021825613092279515
+   },
+   "vs_geneset_knn": {
+    "wins": 34,
+    "mean_diff": 0.071571080443559,
+    "se_diff": 0.020440282171909387
+   },
+   "coverage": 46
+  }
+ ],
+ "per_perturbation": [
+  {
+   "pert": "AMIGO3",
+   "target": "AMIGO3",
+   "external_target": null,
+   "n_cells_bundle": 715,
+   "n_cells_external": null,
+   "n_genes_shared": 0,
+   "agreement": null,
+   "scores": {
+    "mean_response": 0.36683704915379356,
+    "geneset_knn": 0.49563724302790535,
+    "external_direct": 0.36683704915379356,
+    "external_knn": 0.49563724302790535,
+    "external_stack": 0.48290181448265207
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0019209285363186379,
+    0.00875402527708181,
+    0.027060945896051583,
+    0.042170003214470474
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": "no external row",
+    "external_knn": "no external row"
+   }
+  },
+  {
+   "pert": "ASCC3",
+   "target": "ASCC3",
+   "external_target": "ASCC3",
+   "n_cells_bundle": 1756,
+   "n_cells_external": 128,
+   "n_genes_shared": 1938,
+   "agreement": 0.6579755446596911,
+   "scores": {
+    "mean_response": 0.24899174039864824,
+    "geneset_knn": 0.25262836507392106,
+    "external_direct": 0.6500185001223402,
+    "external_knn": 0.243825467156962,
+    "external_stack": 0.4958367413979483
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0015754381499719513,
+    0.0094370119926503,
+    0.026642145845931095,
+    0.0410444694539009
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "CAD",
+   "target": "CAD",
+   "external_target": "CAD",
+   "n_cells_bundle": 281,
+   "n_cells_external": 58,
+   "n_genes_shared": 1938,
+   "agreement": 0.5814002381597956,
+   "scores": {
+    "mean_response": 0.035199607975481426,
+    "geneset_knn": -0.04801911703197648,
+    "external_direct": 0.5587733949024757,
+    "external_knn": 0.3113259799996637,
+    "external_stack": 0.5843834570737914
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002289974968738312,
+    0.007845011688111216,
+    0.025784720848308268,
+    0.043153580482134295
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "CARS",
+   "target": "CARS",
+   "external_target": "CARS",
+   "n_cells_bundle": 501,
+   "n_cells_external": 28,
+   "n_genes_shared": 1938,
+   "agreement": 0.6685933489907379,
+   "scores": {
+    "mean_response": 0.8801977625763423,
+    "geneset_knn": 0.8801977625763423,
+    "external_direct": 0.6605783021296603,
+    "external_knn": 0.9033774543192483,
+    "external_stack": 0.9195329740327137
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0021463867835561615,
+    0.009449393921040465,
+    0.025038388126581025,
+    0.03851536503307905
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "CHERP",
+   "target": "CHERP",
+   "external_target": "CHERP",
+   "n_cells_bundle": 479,
+   "n_cells_external": 116,
+   "n_genes_shared": 1938,
+   "agreement": 0.6205545690587327,
+   "scores": {
+    "mean_response": 0.3114187514788615,
+    "geneset_knn": 0.44230800391703307,
+    "external_direct": 0.5947724857608943,
+    "external_knn": 0.2823286002982002,
+    "external_stack": 0.49186413680592517
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0016218144357029892,
+    0.0069350914671208125,
+    0.02616063075380705,
+    0.04322399843028836
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "COPB1",
+   "target": "COPB1",
+   "external_target": "COPB1",
+   "n_cells_bundle": 225,
+   "n_cells_external": 64,
+   "n_genes_shared": 1938,
+   "agreement": 0.3379080625852063,
+   "scores": {
+    "mean_response": 0.6841201973050507,
+    "geneset_knn": 0.8316493194928727,
+    "external_direct": 0.3490703317968271,
+    "external_knn": 0.6308780745154067,
+    "external_stack": 0.6697198185365855
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.001158238328280655,
+    0.005441179156846442,
+    0.02734481936019383,
+    0.043300231562151584
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "COPZ1",
+   "target": "COPZ1",
+   "external_target": "COPZ1",
+   "n_cells_bundle": 282,
+   "n_cells_external": 304,
+   "n_genes_shared": 1938,
+   "agreement": 0.10055112628496941,
+   "scores": {
+    "mean_response": 0.7733349568658818,
+    "geneset_knn": 0.7902315683466793,
+    "external_direct": 0.14196974833126486,
+    "external_knn": 0.6202341115280028,
+    "external_stack": 0.6419987154476388
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002604285184276033,
+    0.006489597557078842,
+    0.02762582809914602,
+    0.043260538781037694
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "DDOST",
+   "target": "DDOST",
+   "external_target": "DDOST",
+   "n_cells_bundle": 382,
+   "n_cells_external": 174,
+   "n_genes_shared": 1938,
+   "agreement": 0.6873275886717943,
+   "scores": {
+    "mean_response": 0.5341501238482449,
+    "geneset_knn": 0.6199561572556224,
+    "external_direct": 0.6807745696258994,
+    "external_knn": 0.5399884130877408,
+    "external_stack": 0.7287756588565785
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0019274744686142815,
+    0.0078057685229441605,
+    0.026986473140858565,
+    0.04221507990792766
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "DDRGK1",
+   "target": "DDRGK1",
+   "external_target": "DDRGK1",
+   "n_cells_bundle": 607,
+   "n_cells_external": 136,
+   "n_genes_shared": 1938,
+   "agreement": 0.3866957106592804,
+   "scores": {
+    "mean_response": 0.4350791464074573,
+    "geneset_knn": 0.602448874892196,
+    "external_direct": 0.38688192129803217,
+    "external_knn": 0.5423304069568082,
+    "external_stack": 0.6054745337408478
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0019315160228992503,
+    0.007405597106844542,
+    0.027161808523854438,
+    0.04281211329028403
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "DERL2",
+   "target": "DERL2",
+   "external_target": "DERL2",
+   "n_cells_bundle": 656,
+   "n_cells_external": 82,
+   "n_genes_shared": 1938,
+   "agreement": 0.5426050430133079,
+   "scores": {
+    "mean_response": 0.6620438539420825,
+    "geneset_knn": 0.4081372485994046,
+    "external_direct": 0.5415052744981621,
+    "external_knn": 0.6351745099612539,
+    "external_stack": 0.7233368077015261
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.001229820955991917,
+    0.0074027373791692224,
+    0.027597233627119716,
+    0.041444233681967924
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "EIF2B2",
+   "target": "EIF2B2",
+   "external_target": "EIF2B2",
+   "n_cells_bundle": 615,
+   "n_cells_external": 123,
+   "n_genes_shared": 1938,
+   "agreement": 0.59367559771066,
+   "scores": {
+    "mean_response": 0.8646619349452013,
+    "geneset_knn": 0.8553589096886988,
+    "external_direct": 0.5888768554967072,
+    "external_knn": 0.9353691291485571,
+    "external_stack": 0.8797267431478505
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0006225423511875371,
+    0.005316112783253867,
+    0.02751334112888934,
+    0.041138926506329165
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "EIF2S1",
+   "target": "EIF2S1",
+   "external_target": "EIF2S1",
+   "n_cells_bundle": 511,
+   "n_cells_external": 89,
+   "n_genes_shared": 1938,
+   "agreement": 0.7775045081444463,
+   "scores": {
+    "mean_response": 0.8478322953504058,
+    "geneset_knn": 0.9258845112484022,
+    "external_direct": 0.7711730991600665,
+    "external_knn": 0.929677614165954,
+    "external_stack": 0.9577731997015865
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    4.8586011010932406e-05,
+    0.006157050627913973,
+    0.02596676560073231,
+    0.038409375155794796
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "ERN1",
+   "target": "ERN1",
+   "external_target": "ERN1",
+   "n_cells_bundle": 83,
+   "n_cells_external": 361,
+   "n_genes_shared": 1938,
+   "agreement": -0.029867445854011368,
+   "scores": {
+    "mean_response": 0.05598483908196461,
+    "geneset_knn": 0.050841959710906354,
+    "external_direct": -0.014544316578803973,
+    "external_knn": 0.06875690902432864,
+    "external_stack": 0.062421951600046266
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0027173771768243147,
+    0.007953170619433009,
+    0.02697669307830386,
+    0.04343966034546868
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "FECH",
+   "target": "FECH",
+   "external_target": "FECH",
+   "n_cells_bundle": 683,
+   "n_cells_external": 6,
+   "n_genes_shared": 1938,
+   "agreement": 0.10925507390855926,
+   "scores": {
+    "mean_response": 0.42351991743540135,
+    "geneset_knn": 0.4457182852891272,
+    "external_direct": 0.11306856955288096,
+    "external_knn": 0.475640569454554,
+    "external_stack": 0.42042635735869877
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0022757139929554604,
+    0.008285224441651669,
+    0.027448379761564296,
+    0.042196960887027055
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "GBF1",
+   "target": "GBF1",
+   "external_target": "GBF1",
+   "n_cells_bundle": 958,
+   "n_cells_external": 82,
+   "n_genes_shared": 1938,
+   "agreement": 0.5288424000072979,
+   "scores": {
+    "mean_response": 0.7219932735501547,
+    "geneset_knn": 0.7244348929262076,
+    "external_direct": 0.5307278129709697,
+    "external_knn": 0.6376245996232045,
+    "external_stack": 0.7050598712915471
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0017467730971457674,
+    0.008263079342286352,
+    0.027660320880119466,
+    0.04164330545806614
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "GMPPB",
+   "target": "GMPPB",
+   "external_target": "GMPPB",
+   "n_cells_bundle": 606,
+   "n_cells_external": 347,
+   "n_genes_shared": 1938,
+   "agreement": 0.3873862114748705,
+   "scores": {
+    "mean_response": 0.17116160745237297,
+    "geneset_knn": 0.26260327538567246,
+    "external_direct": 0.37390441756743187,
+    "external_knn": 0.5278516026097625,
+    "external_stack": 0.5276191581849361
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0029643631647944,
+    0.0074086743655326715,
+    0.027193566784034406,
+    0.04362374436982548
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "GNPNAT1",
+   "target": "GNPNAT1",
+   "external_target": "GNPNAT1",
+   "n_cells_bundle": 503,
+   "n_cells_external": 244,
+   "n_genes_shared": 1938,
+   "agreement": 0.275819767158794,
+   "scores": {
+    "mean_response": -0.13007967873117404,
+    "geneset_knn": -0.10348899146807365,
+    "external_direct": 0.24381468960067462,
+    "external_knn": -0.0750999799187863,
+    "external_stack": 0.008946246205939092
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0008306967377081716,
+    0.006122944042701352,
+    0.026811008347590506,
+    0.04348255274524086
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "HARS",
+   "target": "HARS",
+   "external_target": "HARS",
+   "n_cells_bundle": 325,
+   "n_cells_external": 153,
+   "n_genes_shared": 1938,
+   "agreement": 0.7120427967370389,
+   "scores": {
+    "mean_response": 0.8146185054190076,
+    "geneset_knn": 0.8146185054190076,
+    "external_direct": 0.7046059243356488,
+    "external_knn": 0.8476135637626535,
+    "external_stack": 0.8914394825708956
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0012466780141027233,
+    0.00808827225132884,
+    0.024886448387148406,
+    0.04017349928922273
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "HSD17B12",
+   "target": "HSD17B12",
+   "external_target": "HSD17B12",
+   "n_cells_bundle": 404,
+   "n_cells_external": 137,
+   "n_genes_shared": 1938,
+   "agreement": 0.6330584787368352,
+   "scores": {
+    "mean_response": 0.6145228146618243,
+    "geneset_knn": 0.48963201013222285,
+    "external_direct": 0.6203813001590628,
+    "external_knn": 0.5107244681603956,
+    "external_stack": 0.6169539935667796
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002934546201673953,
+    0.008792827881792946,
+    0.02711388615177581,
+    0.042313908342827077
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "HSPA9",
+   "target": "HSPA9",
+   "external_target": "HSPA9",
+   "n_cells_bundle": 894,
+   "n_cells_external": 212,
+   "n_genes_shared": 1938,
+   "agreement": 0.751632196191864,
+   "scores": {
+    "mean_response": 0.8574375248088969,
+    "geneset_knn": 0.8892930414765018,
+    "external_direct": 0.7445201223631931,
+    "external_knn": 0.9413442954223098,
+    "external_stack": 0.9592684415801738
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -7.352392252921159e-05,
+    0.006836279417271187,
+    0.02667408898224619,
+    0.03815811682278396
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "IARS2",
+   "target": "IARS2",
+   "external_target": "IARS2",
+   "n_cells_bundle": 1111,
+   "n_cells_external": 94,
+   "n_genes_shared": 1938,
+   "agreement": 0.6997261327193336,
+   "scores": {
+    "mean_response": 0.8795097323565318,
+    "geneset_knn": 0.7335472244403014,
+    "external_direct": 0.6946675061235189,
+    "external_knn": 0.9513820500673931,
+    "external_stack": 0.9529512316651896
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0033045642750941444,
+    0.010966277395529956,
+    0.026512044463783947,
+    0.03875041431163416
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "IER3IP1",
+   "target": "IER3IP1",
+   "external_target": "IER3IP1",
+   "n_cells_bundle": 1830,
+   "n_cells_external": 95,
+   "n_genes_shared": 1938,
+   "agreement": 0.5267060598964617,
+   "scores": {
+    "mean_response": 0.5405913108935209,
+    "geneset_knn": 0.8193032927064388,
+    "external_direct": 0.5253712120139203,
+    "external_knn": 0.8210398930306685,
+    "external_stack": 0.8112541739131982
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002925369131191259,
+    0.008188830941115388,
+    0.02697162241344028,
+    0.042764687087198584
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "KCTD16",
+   "target": "KCTD16",
+   "external_target": null,
+   "n_cells_bundle": 464,
+   "n_cells_external": null,
+   "n_genes_shared": 0,
+   "agreement": null,
+   "scores": {
+    "mean_response": 0.3528020644872259,
+    "geneset_knn": 0.3528020644872259,
+    "external_direct": 0.3528020644872259,
+    "external_knn": 0.3528020644872259,
+    "external_stack": 0.3528020644872259
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0016986415832269046,
+    0.008520641234395103,
+    0.02712063238000184,
+    0.0421629449919847
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": "no external row",
+    "external_knn": "no external row"
+   }
+  },
+  {
+   "pert": "MANF",
+   "target": "MANF",
+   "external_target": "MANF",
+   "n_cells_bundle": 554,
+   "n_cells_external": 402,
+   "n_genes_shared": 1938,
+   "agreement": 0.21425363376247014,
+   "scores": {
+    "mean_response": 0.19893323005618802,
+    "geneset_knn": 0.19893323005618802,
+    "external_direct": 0.20322089736696208,
+    "external_knn": 0.29488108960729437,
+    "external_stack": 0.3212066315289324
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002043840568298044,
+    0.008440766409749284,
+    0.026980624724114097,
+    0.042336533469713514
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "MRGBP",
+   "target": "MRGBP",
+   "external_target": "MRGBP",
+   "n_cells_bundle": 570,
+   "n_cells_external": 129,
+   "n_genes_shared": 1938,
+   "agreement": 0.5790767453180649,
+   "scores": {
+    "mean_response": 0.17934930117551148,
+    "geneset_knn": 0.2023161262153747,
+    "external_direct": 0.5675073701998172,
+    "external_knn": 0.29911252010212497,
+    "external_stack": 0.5099641857069042
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0022286851250344557,
+    0.008396759950728206,
+    0.026883512684750924,
+    0.04237838444658096
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "NEDD8",
+   "target": "NEDD8",
+   "external_target": "NEDD8",
+   "n_cells_bundle": 506,
+   "n_cells_external": 122,
+   "n_genes_shared": 1938,
+   "agreement": 0.7047356283813947,
+   "scores": {
+    "mean_response": 0.37724272153431987,
+    "geneset_knn": 0.404881745055746,
+    "external_direct": 0.694236524806042,
+    "external_knn": 0.3762976544943556,
+    "external_stack": 0.6419776773325457
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0027473132456410903,
+    0.009056860102009727,
+    0.02589251955071456,
+    0.04227190871739067
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "P4HB",
+   "target": "P4HB",
+   "external_target": "P4HB",
+   "n_cells_bundle": 560,
+   "n_cells_external": 215,
+   "n_genes_shared": 1938,
+   "agreement": 0.21029156835662968,
+   "scores": {
+    "mean_response": 0.35700930393506247,
+    "geneset_knn": 0.42395131414901466,
+    "external_direct": 0.217839353202608,
+    "external_knn": 0.21094209723907217,
+    "external_stack": 0.243663925204745
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0020553554551881437,
+    0.006111961850815719,
+    0.02601673971107489,
+    0.04543505023756485
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "PPWD1",
+   "target": "PPWD1",
+   "external_target": "PPWD1",
+   "n_cells_bundle": 234,
+   "n_cells_external": 28,
+   "n_genes_shared": 1938,
+   "agreement": 0.07210229609738696,
+   "scores": {
+    "mean_response": 0.5318544265315402,
+    "geneset_knn": 0.5327197859384271,
+    "external_direct": 0.08315699340410886,
+    "external_knn": 0.5322303954982276,
+    "external_stack": 0.5472129642627102
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.001568694922122101,
+    0.005663324919670866,
+    0.027314346750303455,
+    0.0431088156894887
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "PSMD12",
+   "target": "PSMD12",
+   "external_target": "PSMD12",
+   "n_cells_bundle": 60,
+   "n_cells_external": 210,
+   "n_genes_shared": 1938,
+   "agreement": 0.09866251952689875,
+   "scores": {
+    "mean_response": 0.3075279290179077,
+    "geneset_knn": 0.23735258044267651,
+    "external_direct": 0.10986572863116119,
+    "external_knn": 0.2794417548980412,
+    "external_stack": 0.2799826557196214
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0019329006945126611,
+    0.007406931099507127,
+    0.027047457646110263,
+    0.04315402690045217
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SAMM50",
+   "target": "SAMM50",
+   "external_target": "SAMM50",
+   "n_cells_bundle": 817,
+   "n_cells_external": 103,
+   "n_genes_shared": 1938,
+   "agreement": 0.4192567347163038,
+   "scores": {
+    "mean_response": 0.6930578474322109,
+    "geneset_knn": 0.7811951540170642,
+    "external_direct": 0.41754602263190504,
+    "external_knn": 0.8149320198761566,
+    "external_stack": 0.7456128599386178
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.003665367662369122,
+    0.008396274549573847,
+    0.026851373605618702,
+    0.044090559502134
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SEC61A1",
+   "target": "SEC61A1",
+   "external_target": "SEC61A1",
+   "n_cells_bundle": 1191,
+   "n_cells_external": 207,
+   "n_genes_shared": 1938,
+   "agreement": 0.4968095239319114,
+   "scores": {
+    "mean_response": 0.7423211510060626,
+    "geneset_knn": 0.7351577574111747,
+    "external_direct": 0.5093029469469474,
+    "external_knn": 0.7936503127859421,
+    "external_stack": 0.8114610112473651
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.003121536220195125,
+    0.008504703209528494,
+    0.027222330893042983,
+    0.041695369742145334
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SEC63",
+   "target": "SEC63",
+   "external_target": "SEC63",
+   "n_cells_bundle": 654,
+   "n_cells_external": 115,
+   "n_genes_shared": 1938,
+   "agreement": 0.4139361803592728,
+   "scores": {
+    "mean_response": 0.36666477769867767,
+    "geneset_knn": 0.26313173322740163,
+    "external_direct": 0.40607981707396007,
+    "external_knn": 0.5832625369146224,
+    "external_stack": 0.5552499605786562
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0025308990292842825,
+    0.009450162783858015,
+    0.02693552524955225,
+    0.04167289884586826
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SEL1L",
+   "target": "SEL1L",
+   "external_target": "SEL1L",
+   "n_cells_bundle": 443,
+   "n_cells_external": 348,
+   "n_genes_shared": 1938,
+   "agreement": 0.7011560100324025,
+   "scores": {
+    "mean_response": 0.24550463430045816,
+    "geneset_knn": 0.5142567950368919,
+    "external_direct": 0.6810290008848029,
+    "external_knn": 0.670786165468666,
+    "external_stack": 0.7705638967452506
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002484718494184497,
+    0.007038464874103657,
+    0.02719811171446101,
+    0.043257602673188976
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SLC35B1",
+   "target": "SLC35B1",
+   "external_target": "SLC35B1",
+   "n_cells_bundle": 621,
+   "n_cells_external": 112,
+   "n_genes_shared": 1938,
+   "agreement": 0.2688635206906448,
+   "scores": {
+    "mean_response": 0.4476027846684224,
+    "geneset_knn": 0.4476027846684224,
+    "external_direct": 0.26714579799099275,
+    "external_knn": 0.5444687136371518,
+    "external_stack": 0.5277835379858304
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002239272512186098,
+    0.008324070103658583,
+    0.0270831179341503,
+    0.04244698732642515
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SLMO2",
+   "target": "SLMO2",
+   "external_target": null,
+   "n_cells_bundle": 637,
+   "n_cells_external": null,
+   "n_genes_shared": 0,
+   "agreement": null,
+   "scores": {
+    "mean_response": 0.8261214134744871,
+    "geneset_knn": 0.8261214134744871,
+    "external_direct": 0.8261214134744871,
+    "external_knn": 0.8261214134744871,
+    "external_stack": 0.826121413474487
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.003444946595555297,
+    0.007729462877231223,
+    0.026789815680214,
+    0.043107489106433076
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": "no external row",
+    "external_knn": "no external row"
+   }
+  },
+  {
+   "pert": "SRP68",
+   "target": "SRP68",
+   "external_target": "SRP68",
+   "n_cells_bundle": 699,
+   "n_cells_external": 111,
+   "n_genes_shared": 1938,
+   "agreement": 0.6088930734330421,
+   "scores": {
+    "mean_response": 0.5337864034207317,
+    "geneset_knn": 0.7045604198285867,
+    "external_direct": 0.6007883366157131,
+    "external_knn": 0.505937801192723,
+    "external_stack": 0.6404643079745697
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0010918323983680497,
+    0.00720079482111895,
+    0.028135146452935144,
+    0.041412428302100235
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SRPR",
+   "target": "SRPR",
+   "external_target": null,
+   "n_cells_bundle": 591,
+   "n_cells_external": null,
+   "n_genes_shared": 0,
+   "agreement": null,
+   "scores": {
+    "mean_response": 0.022402112703295365,
+    "geneset_knn": 0.022402112703295365,
+    "external_direct": 0.022402112703295365,
+    "external_knn": 0.022402112703295365,
+    "external_stack": 0.02240211270329536
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0013280180516192497,
+    0.008527765732867894,
+    0.02716914981600841,
+    0.04199129805153904
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": "no external row",
+    "external_knn": "no external row"
+   }
+  },
+  {
+   "pert": "SRPRB",
+   "target": "SRPRB",
+   "external_target": "SRPRB",
+   "n_cells_bundle": 703,
+   "n_cells_external": 244,
+   "n_genes_shared": 1938,
+   "agreement": 0.5197622092418627,
+   "scores": {
+    "mean_response": 0.1432013115042694,
+    "geneset_knn": 0.3996444430106322,
+    "external_direct": 0.5068265580939424,
+    "external_knn": 0.2346248879884442,
+    "external_stack": 0.38087582226784883
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.001925066761232898,
+    0.006536936750444147,
+    0.026938284573721206,
+    0.044193795009062016
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "STT3A",
+   "target": "STT3A",
+   "external_target": "STT3A",
+   "n_cells_bundle": 500,
+   "n_cells_external": 66,
+   "n_genes_shared": 1938,
+   "agreement": 0.20291037902641307,
+   "scores": {
+    "mean_response": 0.38833179751457386,
+    "geneset_knn": 0.5380742224253001,
+    "external_direct": 0.2053044029106681,
+    "external_knn": 0.4866048321399248,
+    "external_stack": 0.4675930946789633
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0005520116173591862,
+    0.00577847556104188,
+    0.02772029289091353,
+    0.04243841149533047
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "SYVN1",
+   "target": "SYVN1",
+   "external_target": "SYVN1",
+   "n_cells_bundle": 650,
+   "n_cells_external": 169,
+   "n_genes_shared": 1938,
+   "agreement": 0.4969243725883488,
+   "scores": {
+    "mean_response": 0.28757249453912315,
+    "geneset_knn": 0.5438729044859375,
+    "external_direct": 0.49033571986292335,
+    "external_knn": 0.7113258018127816,
+    "external_stack": 0.7190519994491763
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0009345767349854722,
+    0.005230205433363285,
+    0.02742329006982952,
+    0.04341380931572791
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TARS",
+   "target": "TARS",
+   "external_target": "TARS",
+   "n_cells_bundle": 803,
+   "n_cells_external": 175,
+   "n_genes_shared": 1938,
+   "agreement": 0.47623271400833667,
+   "scores": {
+    "mean_response": 0.7274699790659599,
+    "geneset_knn": 0.7274699790659599,
+    "external_direct": 0.4774618101582567,
+    "external_knn": 0.8186998647375967,
+    "external_stack": 0.7764018312983454
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0023070647073519857,
+    0.007529934346842036,
+    0.026852932771124383,
+    0.04298581542577568
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TELO2",
+   "target": "TELO2",
+   "external_target": "TELO2",
+   "n_cells_bundle": 691,
+   "n_cells_external": 80,
+   "n_genes_shared": 1938,
+   "agreement": 0.4100703706242468,
+   "scores": {
+    "mean_response": 0.40511889288799,
+    "geneset_knn": 0.7569047617714358,
+    "external_direct": 0.40688013509720056,
+    "external_knn": 0.7072198017429403,
+    "external_stack": 0.5903748173619064
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0025445642270367293,
+    0.008216632598759486,
+    0.028269682713261437,
+    0.04189433061155975
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TIMM44",
+   "target": "TIMM44",
+   "external_target": "TIMM44",
+   "n_cells_bundle": 590,
+   "n_cells_external": 63,
+   "n_genes_shared": 1938,
+   "agreement": 0.659919318194009,
+   "scores": {
+    "mean_response": 0.8887280751620174,
+    "geneset_knn": 0.9134570269225813,
+    "external_direct": 0.6561342162772899,
+    "external_knn": 0.9656735729876165,
+    "external_stack": 0.9330749898604987
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0004950121894964883,
+    0.006400946531644137,
+    0.027580157080333182,
+    0.039253377456283954
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TMED10",
+   "target": "TMED10",
+   "external_target": "TMED10",
+   "n_cells_bundle": 626,
+   "n_cells_external": 315,
+   "n_genes_shared": 1938,
+   "agreement": 0.5083699982589088,
+   "scores": {
+    "mean_response": 0.47683260579185577,
+    "geneset_knn": 0.6088045135277008,
+    "external_direct": 0.5002861074854499,
+    "external_knn": 0.6348573084729082,
+    "external_stack": 0.6827868209536346
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002516218402370176,
+    0.008475049759401295,
+    0.027066817411842126,
+    0.04250665231568458
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TMED2",
+   "target": "TMED2",
+   "external_target": "TMED2",
+   "n_cells_bundle": 505,
+   "n_cells_external": 353,
+   "n_genes_shared": 1938,
+   "agreement": 0.5494966993131446,
+   "scores": {
+    "mean_response": 0.3860835450712355,
+    "geneset_knn": 0.5152500797492263,
+    "external_direct": 0.5381726366433554,
+    "external_knn": 0.5906350808616408,
+    "external_stack": 0.663936689962452
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0024167472262599573,
+    0.008494396899915121,
+    0.026957633793475204,
+    0.04246513759552256
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TMEM167A",
+   "target": "TMEM167A",
+   "external_target": "TMEM167A",
+   "n_cells_bundle": 468,
+   "n_cells_external": 77,
+   "n_genes_shared": 1938,
+   "agreement": 0.280079845190677,
+   "scores": {
+    "mean_response": 0.6442076849549994,
+    "geneset_knn": 0.6862259168119489,
+    "external_direct": 0.2910011961196908,
+    "external_knn": 0.805708145025695,
+    "external_stack": 0.7572682987089183
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.002616867379380678,
+    0.007708320150069483,
+    0.027189691785657163,
+    0.042840522218197556
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TTI1",
+   "target": "TTI1",
+   "external_target": "TTI1",
+   "n_cells_bundle": 526,
+   "n_cells_external": 241,
+   "n_genes_shared": 1938,
+   "agreement": 0.746837903324795,
+   "scores": {
+    "mean_response": 0.4294135636555669,
+    "geneset_knn": 0.7261545078029273,
+    "external_direct": 0.7322624096448692,
+    "external_knn": 0.727400598365256,
+    "external_stack": 0.8045212227112719
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.004769419261111343,
+    0.01100519008637303,
+    0.02612000540489091,
+    0.04251617178257803
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "TTI2",
+   "target": "TTI2",
+   "external_target": "TTI2",
+   "n_cells_bundle": 653,
+   "n_cells_external": 93,
+   "n_genes_shared": 1938,
+   "agreement": 0.39596951755017257,
+   "scores": {
+    "mean_response": 0.17377332037034438,
+    "geneset_knn": 0.5711667701575306,
+    "external_direct": 0.39032772736365634,
+    "external_knn": 0.5895671661129388,
+    "external_stack": 0.5936891231487041
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0028519367168207952,
+    0.009121258497374623,
+    0.027053557499878905,
+    0.042398170213406895
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "UFM1",
+   "target": "UFM1",
+   "external_target": "UFM1",
+   "n_cells_bundle": 692,
+   "n_cells_external": 260,
+   "n_genes_shared": 1938,
+   "agreement": 0.608358991919886,
+   "scores": {
+    "mean_response": 0.42775962628508324,
+    "geneset_knn": 0.5782950530667987,
+    "external_direct": 0.5964403995633817,
+    "external_knn": 0.6185273791721506,
+    "external_stack": 0.7171548621562623
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.001991029639122957,
+    0.007743891067754131,
+    0.027164375041297022,
+    0.042427245136210046
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "YIPF5",
+   "target": "YIPF5",
+   "external_target": "YIPF5",
+   "n_cells_bundle": 1400,
+   "n_cells_external": 75,
+   "n_genes_shared": 1938,
+   "agreement": 0.45130746357573553,
+   "scores": {
+    "mean_response": 0.5532121350058337,
+    "geneset_knn": 0.8490339407174322,
+    "external_direct": 0.4542703138292467,
+    "external_knn": 0.8253080346748378,
+    "external_stack": 0.802351215198965
+   },
+   "alpha": 1000.0,
+   "stack_weights": [
+    -0.0023451077124684587,
+    0.00790363659212319,
+    0.027194565965786777,
+    0.04243411376713722
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  }
+ ],
+ "runtime_s": 0.85
+}

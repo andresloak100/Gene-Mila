@@ -719,10 +719,16 @@ class Lab:
                 f"{m['n_train']} training perturbations ({kind}); predict unseen perturbations.")
 
     def knowledge_summary(self) -> str:
+        """One line per knowledge file for the planner and workers. A file that describes itself (an external
+        screen's "description", genemila/data/external_screen.py) is shown with its whole description and its keys:
+        cut to the first 60 characters, the Norman agents of 11 Oct 2026 read the Replogle screen as an unexplained
+        dict and used it in 1 of 355 features."""
         parts = []
         for p in sorted((self.public_dir / "knowledge").glob("*.json")):
             obj = json.loads(p.read_text())
-            if isinstance(obj, dict):
+            if isinstance(obj, dict) and isinstance(obj.get("description"), str):
+                parts.append(f"{p.stem}: {obj['description'][:900]} (a dict with keys {', '.join(map(str, obj))})")
+            elif isinstance(obj, dict):
                 k = next(iter(obj), None)
                 parts.append(f"{p.stem}: dict of {len(obj)} entries, e.g. {k!r}: {str(obj[k])[:60]}")
             else:

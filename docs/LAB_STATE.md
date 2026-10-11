@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 13:51 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 16:15 UTC.
 
 ## What this is
 
@@ -16,20 +16,26 @@ docs/PROMPTS.md.
 
 ## Where things live
 
-- **Code:** branch `claude/autonomous-research-system-3k435s` of github.com/andresloak100/Gene-Mila (there is no
-  `main`, so pull requests target this branch). Draft PR #1 (README design) and draft PR #2 (AGENTS.md and HANDOFF.md,
-  the handoff rules for outside agents) wait on Andres to merge.
-- **Astra's code is not on GitHub yet.** Two branches on the Mac only, both from lab commit 8261c57:
-  `astra/deepseek-continuation-memory` (6a3e8a8e; 28 files, +2,844) in ~/Documents/Codex/2026-10-08/pl/work/gene-mila
-  and `astra/compact-master-selection` (74114d43; 43 files, +5,127, contains the first) in
-  ~/Documents/Codex/2026-10-08/pl/work/gene-mila-compactness. Pushing them needs Andres's approval on the Mac.
-- **Data and runs:** only on Andres's Mac, lab checkout ~/Documents/Loak-documents/gene-mila (.venv inside), run
-  directories under its runs/, logs and Mac-side reports in ~/Documents/Loak-documents/genemila_scale_logs (a STOP
-  file there halts a running driver; progress.md and STATE.md; `python handoff_state.py` prints live state), external
-  downloads in ~/Documents/Loak-documents/data_downloads. Cloud sessions have no data, cannot reach Zenodo or
-  api.deepseek.com, and have no DeepSeek key.
-- **Results files:** generated on the Mac and committed under docs/results/ byte for byte (md5-verified). Reports
-  too large to paste wait in genemila_scale_logs until pushed from the Mac.
+- **Code:** branch `claude/autonomous-research-system-3k435s` of github.com/andresloak100/Gene-Mila, the repository's
+  default branch (there is no `main`, so pull requests target this branch). AGENTS.md and HANDOFF.md (PR #2) are
+  merged; draft PR #1 (README design) is being updated to merge.
+- **Astra's code** is on GitHub as two branches, unchanged, both from lab commit 8261c57:
+  `astra/deepseek-continuation-memory` (6a3e8a8e; 28 files, +2,844) and `astra/compact-master-selection` (74114d43;
+  43 files, +5,127, contains the first); her clones on the Mac are in ~/Documents/Codex/2026-10-08/pl/work/. No pull
+  request; merging is Andres's call.
+- **Data and runs:** only on Andres's Mac, in ~/Documents/Mila/Gene-Mila/ since 11 Oct 2026 (moved out of
+  ~/Documents/Loak-documents at his request; ~/Documents/Mila is his checkout of andresloak100/Mila, whose
+  .git/info/exclude holds `Gene-Mila/`, and nothing else in it may be touched). Lab checkout gene-mila (.venv inside),
+  run directories under its runs/, logs and Mac-side reports in genemila_scale_logs (a STOP file there halts a running
+  driver; progress.md and STATE.md; `python handoff_state.py` prints live state), external downloads in
+  data_downloads, the old-code worktree gene-mila-2492e11. Symlinks with those four names stay in
+  ~/Documents/Loak-documents because run configs, bundle manifests, the .venv's scripts and Astra's runs record the old
+  absolute paths; write nothing new there. Cloud sessions have no data, cannot reach Zenodo or api.deepseek.com, and
+  have no DeepSeek key.
+- **Results files:** generated on the Mac and committed under docs/results/ byte for byte (md5-verified); the
+  Mac-only reports, run summaries and configs are under docs/mac/ (PR #3, md5 list docs/mac/MD5SUMS.txt). New reports
+  reach GitHub by pasting (md5-checked) or by the Mac's push script,
+  `bash ~/Documents/Mila/Gene-Mila/genemila_scale_logs/push_to_github.sh --check-only` first.
 - **Team-facing pages (private claude.ai links):** results page https://claude.ai/artifact/5MsYpCgiUhah3aXuTLYPwg
   (version 8, 28 runs), editable summary https://claude.ai/code/artifact/6668e638-6fec-499d-ad9d-e68c78d95477;
   text source docs/results/summary_for_collaborators.md.
@@ -195,34 +201,24 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## Waiting on Andres
 
-- **A DeepSeek key on the Mac and mains power.** Spending is approved up to a $34 ledger (his 02:39 UTC message;
-  $2.22 left). **Changed 13:55 UTC 11 Oct: the paid run goes to Norman, not Adamson** (Adamson's sealed set is
-  used up; Norman's has had only the pre-specified looks): plan section 6 step 8, N3, one DeepSeek-planned
-  4-worker 20-minute run with the Replogle file in the bundle, no warm start (warm_start refuses another dataset),
+- **N4, the last paid run within the $34 cap: his typed "start the paid run" in the build thread and a key in
+  ~/.zshenv on the Mac** (rotated: the key used for N3 was pasted in the thread at 15:34 UTC 11 Oct; it went only into
+  N3's process environment and is in no file or commit). N3 is done (below): the agents did not beat the additive
+  baseline. N4 continues N2 so the agents start from the model that contains the additive rule and the screen;
+  pre-specified in docs/NORMAN_PLAN.md section 8. Ledger $32.81, so about $1.19 is left:
   `python run_research.py --minutes 20 --workers 4 --dataset norman --planner-provider deepseek --planner-model
-  deepseek-v4-pro --run-dir runs/norman_ds_replogle_w4_r0 --set budget.cumulative_usd.deepseek=34 --set
-  budget.max_total_usd=2.2` (DeepSeek workers as in tools/scale_seq.sh new_ds), no start at a $33.50 ledger.
-  Read with tools/sealed_reading.py against its own additive baseline; N2 sits beside it as a labelled arm, not
-  paired (the tool pairs a run with the screen against one without). It starts on Andres's typed "start the paid run" (asked
-  13:55 UTC) once the key is in ~/.zshenv. Earlier plan, superseded, kept for the record: (A, free) a no-LLM continuation from newcode_opus_w4_r0 with the Replogle
-  hypotheses, runs/control_replogle_from_opus_r0, to combine the agents' best features with the screen; (B, paid,
-  about $1.20) one DeepSeek-planned 4-worker 20-minute run warm-started from the free Replogle run with the highest visible
-  score (never chosen by sealed score; at 03:50 UTC that is control_replogle3_from_opus_r0, visible 0.657), runs/replogle_ds_warm_w4_r0,
-  `--set budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=2.2`, no start at a $33.50 ledger. One full run
-  rather than two runs capped at $1.10, because past DeepSeek-planned runs cost $1.13 to $1.28 and would be cut short.
-  Checked on the Mac at 12:05 UTC 11 Oct under 3d7c519's guard (imported=True), no run started: none of the 23
-  plugins of control_replogle3_from_opus_r0 is refused, so B's warm start is clear (newcode_opus_w4_r0: 3 of 127
-  refused, none in its selected model or named by one; its id() cache-key feature passes; macOS: the four
-  determinism test files, 118 tests, pass). B needs a freshly
-  rotated key exported in ~/.zshenv on the Mac by Andres (the Mac holds none and cannot write
-  that file; never ask him to paste it), and mains power or more than 50% battery.
-- **Run the push script on the Mac** (the feature audit has finished): `bash ~/Documents/Loak-documents/genemila_scale_logs/push_to_github.sh --check-only`
-  (scans for anything that looks like a key, pushes nothing), then the same without the flag. It pushes Astra's two
-  branches unchanged and a branch `claude/mac-reports-2026-10-11` with the Mac's state log, the noise-ceiling and
-  refit reports, the gene-rename table, the Replogle build report, the stacking control, the Replogle control run's
-  config, summary and analysis log, and the feature audit. The 8.8 GB Replogle file and run directories stay off
-  GitHub by design (reports record the source and md5).
-- Merge PR #2 (handoff rules), create a `main` branch, rotate the DeepSeek key and store it in ~/.zshenv.
+  deepseek-v4-pro --continue-from runs/norman_control_replogle_w4_r0 --run-dir runs/norman_ds_from_n2_w4_r0 --set
+  budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=1.1` (workers as in N3), no start at a ledger of
+  $33.00 or more, mains power or more than 50% battery; then `python tools/sealed_reading.py --runs
+  runs/norman_ds_from_n2_w4_r0`. Anything beyond $34 needs his say.
+- **N3 (done 15:54 UTC 11 Oct, $1.03):** DeepSeek planner and workers, 4 workers, 20 minutes, Replogle file, no warm
+  start. It selected its additive baseline (visible 0.611; sealed 0.713); its best agent model scored 0.671 sealed
+  (visible 0.579), below the additive rule and N2's 0.719. No agent built the additive prediction as a feature and
+  only 1 of 355 plugins read the Replogle file; details and the prompt changes made since in NORMAN_PLAN section 8.
+- **Pull requests:** PR #2 (AGENTS.md, HANDOFF.md) merged 11 Oct; PR #3 (the Mac-only reports, docs/mac/ and
+  docs/results/, md5-verified against docs/mac/MD5SUMS.txt) merged 11 Oct; PR #1 (README design) is being brought up
+  to date by its thread and merged after (Andres chose "Merge both" at 15:52 UTC). Astra's two branches are on GitHub
+  unchanged, with no pull request: merging them is his call. Still his: a `main` branch, if he wants one.
 - **Norman 2019: Claude takes it** (Andres chose "Claude now" on the build-thread card at 12:02 UTC 11 Oct; the Mac
   was briefed at 12:05 UTC for section 6 steps 2 to 7, all free; Andres typed "download norman" at 12:04 UTC).
   Steps 2 and 3 done by 12:20 UTC: file verified, every section 2 check passes, bundle built (231

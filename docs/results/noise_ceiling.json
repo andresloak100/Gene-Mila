@@ -1,0 +1,5115 @@
+{
+ "tool": "noise_ceiling",
+ "data_dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/data/adamson_cf",
+ "dataset": "adamson_cf",
+ "split_id": "split_450515be1a0d8d2e",
+ "n_genes": 2055,
+ "n_public_control_cells": 2000,
+ "n_visible": 17,
+ "repeats": 50,
+ "seed": 0,
+ "ncells_file": "../genemila_scale_logs/adamson_cf_ncells.json",
+ "n_ncells_given": 17,
+ "perturbations": [
+  {
+   "pert": "AARS",
+   "n_cells": 300,
+   "n_target": 447,
+   "sb_k": 2.98,
+   "r_half_mean": 0.9445551130613694,
+   "r_half_sd": 0.0029428010387526683,
+   "valid_repeats": 50,
+   "r_full": 0.9806826989348337,
+   "ceiling": 0.9902942486629082,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "ARHGAP22",
+   "n_cells": 300,
+   "n_target": 490,
+   "sb_k": 3.2666666666666666,
+   "r_half_mean": 0.6953723761469343,
+   "r_half_sd": 0.013460444830543044,
+   "valid_repeats": 50,
+   "r_full": 0.8817520775097035,
+   "ceiling": 0.9390165480489168,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "ATP5B",
+   "n_cells": 300,
+   "n_target": 644,
+   "sb_k": 4.293333333333333,
+   "r_half_mean": 0.8639517586159269,
+   "r_half_sd": 0.007384351434013869,
+   "valid_repeats": 50,
+   "r_full": 0.9646194291236392,
+   "ceiling": 0.9821504106416894,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "DARS",
+   "n_cells": 300,
+   "n_target": 664,
+   "sb_k": 4.426666666666667,
+   "r_half_mean": 0.8311745531613903,
+   "r_half_sd": 0.009881811663152475,
+   "valid_repeats": 50,
+   "r_full": 0.9561282460611024,
+   "ceiling": 0.9778181047930654,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "DNAJC19",
+   "n_cells": 300,
+   "n_target": 1525,
+   "sb_k": 10.166666666666666,
+   "r_half_mean": 0.9146733604623356,
+   "r_half_sd": 0.0042500348275942386,
+   "valid_repeats": 50,
+   "r_full": 0.9909077109314451,
+   "ceiling": 0.9954434745034221,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "EIF2B4",
+   "n_cells": 300,
+   "n_target": 625,
+   "sb_k": 4.166666666666667,
+   "r_half_mean": 0.8822710645430706,
+   "r_half_sd": 0.005709892301708414,
+   "valid_repeats": 50,
+   "r_full": 0.9689685475991421,
+   "ceiling": 0.9843620002819806,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "IDH3A",
+   "n_cells": 300,
+   "n_target": 663,
+   "sb_k": 4.42,
+   "r_half_mean": 0.608159626646462,
+   "r_half_sd": 0.01936130301732744,
+   "valid_repeats": 50,
+   "r_full": 0.8727752135509353,
+   "ceiling": 0.9342243914343787,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "MARS",
+   "n_cells": 300,
+   "n_target": 523,
+   "sb_k": 3.486666666666667,
+   "r_half_mean": 0.9381681524492756,
+   "r_half_sd": 0.003922378491648898,
+   "valid_repeats": 50,
+   "r_full": 0.9814480978380872,
+   "ceiling": 0.9906806235301502,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "MRPL39",
+   "n_cells": 300,
+   "n_target": 683,
+   "sb_k": 4.553333333333334,
+   "r_half_mean": 0.7008294646762426,
+   "r_half_sd": 0.01634451779609844,
+   "valid_repeats": 50,
+   "r_full": 0.9142846775874105,
+   "ceiling": 0.9561823453648423,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "PSMD4",
+   "n_cells": 300,
+   "n_target": 625,
+   "sb_k": 4.166666666666667,
+   "r_half_mean": 0.9338365553009047,
+   "r_half_sd": 0.004168381521959231,
+   "valid_repeats": 50,
+   "r_full": 0.9832800222674375,
+   "ceiling": 0.9916047712004201,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "PTDSS1",
+   "n_cells": 300,
+   "n_target": 534,
+   "sb_k": 3.56,
+   "r_half_mean": 0.19516059712307424,
+   "r_half_sd": 0.037102177102576316,
+   "valid_repeats": 50,
+   "r_full": 0.4633012602343903,
+   "ceiling": 0.6806623687514907,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "SEC61B",
+   "n_cells": 300,
+   "n_target": 1668,
+   "sb_k": 11.12,
+   "r_half_mean": 0.6073500926265527,
+   "r_half_sd": 0.022848077272606997,
+   "valid_repeats": 50,
+   "r_full": 0.9450561338772365,
+   "ceiling": 0.9721399764834469,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "SEC61G",
+   "n_cells": 300,
+   "n_target": 650,
+   "sb_k": 4.333333333333333,
+   "r_half_mean": 0.7521618221489514,
+   "r_half_sd": 0.014635102948658081,
+   "valid_repeats": 50,
+   "r_full": 0.9293345835306417,
+   "ceiling": 0.9640200119969718,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "SOCS1",
+   "n_cells": 300,
+   "n_target": 450,
+   "sb_k": 3.0,
+   "r_half_mean": 0.5424278100855738,
+   "r_half_sd": 0.028128443482390218,
+   "valid_repeats": 50,
+   "r_full": 0.7805257181900858,
+   "ceiling": 0.8834736658158441,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "TIMM23",
+   "n_cells": 300,
+   "n_target": 757,
+   "sb_k": 5.046666666666667,
+   "r_half_mean": 0.7684161067570088,
+   "r_half_sd": 0.012857910530699937,
+   "valid_repeats": 50,
+   "r_full": 0.9436470253103879,
+   "ceiling": 0.9714149604110428,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "UFL1",
+   "n_cells": 300,
+   "n_target": 585,
+   "sb_k": 3.9,
+   "r_half_mean": 0.5002133755619352,
+   "r_half_sd": 0.02912490784230777,
+   "valid_repeats": 50,
+   "r_full": 0.7960569686909265,
+   "ceiling": 0.8922202467389576,
+   "target_is_stored_mean": false
+  },
+  {
+   "pert": "XRN1",
+   "n_cells": 300,
+   "n_target": 788,
+   "sb_k": 5.253333333333333,
+   "r_half_mean": 0.6285915006859525,
+   "r_half_sd": 0.02263070185926899,
+   "valid_repeats": 50,
+   "r_full": 0.898898200428856,
+   "ceiling": 0.9481024208538105,
+   "target_is_stored_mean": false
+  }
+ ],
+ "skipped": [],
+ "overall": {
+  "n": 17,
+  "mean_ceiling": 0.944341798206667,
+  "median_ceiling": 0.9714149604110428,
+  "min_ceiling": 0.6806623687514907,
+  "max_ceiling": 0.9954434745034221,
+  "mean_r_half": 0.7239596076501742,
+  "mean_r_full": 0.8971568595097802,
+  "n_target_is_stored_mean": 0,
+  "n_corrected": 17,
+  "n_target_unknown": 0,
+  "lower_bound": false,
+  "mean_cells": 300.0
+ },
+ "control": {
+  "n_cells": 300,
+  "n_public_control_cells": 2000,
+  "r_half_mean": 0.06287246277495623,
+  "r_half_sd": 0.03226547076628207,
+  "valid_repeats": 50,
+  "null_r_full": 0.1183066924338378,
+  "null_ceiling": 0.34395739915553175
+ },
+ "runs": [
+  {
+   "run_id": "newcode_derule_opus_w4_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_derule_opus_w4_r0",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers (selection pearson_delta+r2_top)",
+   "code": "7debddd",
+   "workers": 4,
+   "experiment_id": "EXP_0363",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "is_target",
+    "target_knockdown_level_e16",
+    "coresponse_target_knn_response_e127",
+    "gene_transferability_weighted_knn_e129",
+    "embed_ridge_response_e18",
+    "amplitude_restored_knn_response_e182",
+    "geneset_idf_sharp_knn_response_e81",
+    "ppi_diffusion_knn_response_e201",
+    "lowrank_projected_knn_response_e229",
+    "symbol_family_knn_response_e261",
+    "nnls_reconstruction_response_e280"
+   ],
+   "best_alpha": 17000.0,
+   "primary_score": 0.7131163596442116,
+   "recorded_pearson_delta": 0.609021875598763,
+   "pearson_delta_all_visible": 0.609021875598763,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8671574931288494,
+     "gap": 0.12313675553405878
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.5821411827650259,
+     "gap": 0.35687536528389086
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7933966827078621,
+     "gap": 0.18875372793382728
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6972117111380473,
+     "gap": 0.28060639365501816
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9594772274023164,
+     "gap": 0.03596624710110563
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9299019343559325,
+     "gap": 0.05446006592604813
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.3526822433404197,
+     "gap": 0.5815421480939591
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.6351300236720707,
+     "gap": 0.35555059985807946
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5443469744024557,
+     "gap": 0.41183537096238654
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.2713479695241095,
+     "gap": 0.7202568016763107
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.2322922648877235,
+     "gap": 0.4483701038637672
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5673128879218632,
+     "gap": 0.40482708856158367
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.7935955352284934,
+     "gap": 0.1704244767684785
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.42425466696809633,
+     "gap": 0.45921899884774775
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8480683088336529,
+     "gap": 0.12334665157738989
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7368924097356604,
+     "gap": 0.15532783700329722
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.11816236916639192,
+     "gap": 0.8299400516874186
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.609021875598763,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.335319922607904,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.4877128874043903,
+   "note": null
+  },
+  {
+   "run_id": "scale_w1_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w1_r0",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 1,
+   "experiment_id": "EXP_0096",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "ppi_rwr_response_e10",
+    "geneset_knn_response_e8",
+    "target_knockdown_scaled_e12",
+    "response_cluster_centroid_e18",
+    "loo_kernel_ridge_response_e42",
+    "geneset_source_split_knn_response_e68",
+    "insilico_kd_signature_knn_response_e81",
+    "response_sd_scaled_deviation_e34",
+    "embedding_predicted_program_response_e14"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.6268027443362281,
+   "recorded_pearson_delta": 0.6268027443362281,
+   "pearson_delta_all_visible": 0.6268027443362281,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8719047307943265,
+     "gap": 0.11838951786858165
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6194586866238211,
+     "gap": 0.3195578614250957
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7764613272008385,
+     "gap": 0.2056890834408509
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6998927273774304,
+     "gap": 0.27792537741563506
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9650497588125058,
+     "gap": 0.030393715690916312
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9204071558754681,
+     "gap": 0.06395484440651256
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.55447781448994,
+     "gap": 0.3797465769444387
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.6343838063289039,
+     "gap": 0.3562968172012463
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5627164180083091,
+     "gap": 0.3934659273565332
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.2791003094060758,
+     "gap": 0.7125044617943443
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.2064505895907893,
+     "gap": 0.47421177916070134
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.7064275957884992,
+     "gap": 0.2657123806949476
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8625465022016517,
+     "gap": 0.1014735097953201
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.34168271772092995,
+     "gap": 0.5417909480949141
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8350269293294124,
+     "gap": 0.13638803108163045
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.6411330541399851,
+     "gap": 0.2510871925989725
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.17852653002698873,
+     "gap": 0.7695758908268218
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6268027443362281,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3175390538704389,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5690957909383368,
+   "note": null
+  },
+  {
+   "run_id": "scale_w1_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w1_r1",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 1,
+   "experiment_id": "EXP_0110",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "geneset_knn_response_e7",
+    "ppi_knn_response_e22",
+    "latent_program_prediction_e19",
+    "target_knockdown_magnitude_e38",
+    "coexpr_knn_response_e10",
+    "program_subspace_denoised_knn_e67",
+    "symbol_stem_family_response_e87",
+    "embedding_ridge_loo_prediction_e110"
+   ],
+   "best_alpha": 100.0,
+   "primary_score": 0.6188149535447878,
+   "recorded_pearson_delta": 0.6188149535447878,
+   "pearson_delta_all_visible": 0.6188149535447878,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8830582524836678,
+     "gap": 0.1072359961792404
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6230347954780875,
+     "gap": 0.3159817525708293
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7853130013724244,
+     "gap": 0.19683740926926496
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6866153940192229,
+     "gap": 0.2912027107738425
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9636973067501617,
+     "gap": 0.031746167753260335
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9264888248893813,
+     "gap": 0.057873175392599285
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4876585807188137,
+     "gap": 0.44656581071556506
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.636116198374637,
+     "gap": 0.35456442515551323
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5237284690215699,
+     "gap": 0.43245387634327237
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.2894590361365582,
+     "gap": 0.7021457350638619
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.17245979470882164,
+     "gap": 0.508202574042669
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.6916922039628134,
+     "gap": 0.28044777252063346
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8358632198363573,
+     "gap": 0.1281567921606146
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3690091386145471,
+     "gap": 0.514464527201297
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8415658306001553,
+     "gap": 0.12984912981088748
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.6155451725566727,
+     "gap": 0.2766750741822849
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18854899073750092,
+     "gap": 0.7595534301163096
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6188149535447878,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3255268446618792,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5950292446490488,
+   "note": null
+  },
+  {
+   "run_id": "scale_w4_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w4_r0",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0197",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "geneset_knn_response_e7",
+    "geneset_matched_response_e15",
+    "idf_geneset_knn_residual_e25",
+    "knn_response_lowrank_denoised_e48",
+    "idf_geneset_knn_zresidual_e60",
+    "symbol_family_knn_response_e52",
+    "upstream_responder_weighted_response_e82",
+    "knn_error_transfer_stage2_e101",
+    "on_target_knockdown_scaled_e108",
+    "ppi_diffusion_knn_residual_e118",
+    "geneset_program_activity_transfer_e135",
+    "neighbor_amplitude_scaled_mean_response_e146",
+    "snr_weighted_geneset_knn_residual_e173",
+    "control_pseudo_knockdown_delta_e194",
+    "csls_geneset_knn_residual_e197"
+   ],
+   "best_alpha": 100.0,
+   "primary_score": 0.6284750862506173,
+   "recorded_pearson_delta": 0.6284750862506173,
+   "pearson_delta_all_visible": 0.6284750862506173,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8897048579841329,
+     "gap": 0.10058939067877526
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.5891442228798537,
+     "gap": 0.3498723251690631
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7882847534348172,
+     "gap": 0.1938656572068722
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.7310026019372253,
+     "gap": 0.24681550285584009
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9555904390000745,
+     "gap": 0.03985303550334762
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.936047615344213,
+     "gap": 0.04831438493776763
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4379658273726654,
+     "gap": 0.49625856406171337
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.6379885891030942,
+     "gap": 0.352692034427056
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5629706558133531,
+     "gap": 0.3932116895514891
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.36246932192568015,
+     "gap": 0.62913544927474
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.11355569656491603,
+     "gap": 0.5671066721865746
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.7181838887423193,
+     "gap": 0.25395608774112755
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8649744881707403,
+     "gap": 0.09904552382623155
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3403834631623584,
+     "gap": 0.5430902026534856
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.831586543708048,
+     "gap": 0.13982841670299484
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7185848930987769,
+     "gap": 0.17363535364018068
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.2056386080182268,
+     "gap": 0.7424638128355836
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6284750862506173,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.31586671195604965,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6409423500451954,
+   "note": null
+  },
+  {
+   "run_id": "scale_w4_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w4_r1",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0121",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "geneset_knn_response_e6",
+    "ppi_knn_response_e27",
+    "geneset_idf_program_response_e35",
+    "self_knockdown_magnitude_e60",
+    "geneset_knn_sign_vote_e75",
+    "geneset_namespace_knn_response_e83",
+    "coexpr_smoothed_knn_deviation_e100",
+    "response_mode_transfer_e21",
+    "response_coreg_smoothed_knn_deviation_e121"
+   ],
+   "best_alpha": 100.0,
+   "primary_score": 0.6090697737616908,
+   "recorded_pearson_delta": 0.6090697737616908,
+   "pearson_delta_all_visible": 0.6090697737616908,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8413684628357152,
+     "gap": 0.14892578582719296
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.598579914078043,
+     "gap": 0.34043663397087376
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7613228920731716,
+     "gap": 0.2208275185685178
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6836932710957158,
+     "gap": 0.29412483369734965
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9616419416308636,
+     "gap": 0.03380153287255849
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9223179579500957,
+     "gap": 0.062044042331884874
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.5227210265952587,
+     "gap": 0.4115033648391201
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5915326915018405,
+     "gap": 0.39914793202830967
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.48981109841885767,
+     "gap": 0.4663712469459846
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3546474314197043,
+     "gap": 0.6369573397807158
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.16864424114171495,
+     "gap": 0.5120181276097757
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.6431326048159032,
+     "gap": 0.3290073716675437
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8649295239812755,
+     "gap": 0.09909048801569631
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.2447348341762689,
+     "gap": 0.6387388316395752
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8299482337575218,
+     "gap": 0.141466726653521
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7112190001816563,
+     "gap": 0.18100124655730132
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.1639410282951368,
+     "gap": 0.7841613925586737
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6090697737616908,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.33527202444497617,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5812983163562593,
+   "note": null
+  },
+  {
+   "run_id": "scale_w8_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w8_r0",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 8,
+   "experiment_id": "EXP_0316",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "knn_geneset_response_e8",
+    "knn_pert_response_e23",
+    "target_expr_knockdown_e40",
+    "functional_category_response_e49",
+    "idf_geneset_response_e71",
+    "regulon_smoothed_knn_response_e88",
+    "predicted_magnitude_scaled_mean_e101",
+    "sign_vote_transfer_e112",
+    "unitnorm_knn_response_e133",
+    "consensus_gated_transfer_e150",
+    "max_ic_shared_set_transfer_e154",
+    "geneset_token_tfidf_knn_e173",
+    "curated_stress_program_transfer_e179",
+    "response_cluster_centroid_transfer_e194",
+    "proliferation_axis_shift_e220",
+    "pathway_feedback_transfer_e233",
+    "containment_similarity_transfer_e251",
+    "contrastive_near_far_transfer_e258",
+    "sign_split_transfer_e277",
+    "geneside_pathway_activity_transfer_e285",
+    "expr_quartile_split_transfer_e298",
+    "nnls_reconstruction_transfer_e316"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.6364716792792504,
+   "recorded_pearson_delta": 0.6364716792792504,
+   "pearson_delta_all_visible": 0.6364716792792504,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.874823153478814,
+     "gap": 0.11547109518409415
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.628165419348906,
+     "gap": 0.31085112870001075
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7857043452846193,
+     "gap": 0.1964460653570701
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6800834281738188,
+     "gap": 0.2977346766192466
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.971370629076025,
+     "gap": 0.02407284542739707
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9502663786791867,
+     "gap": 0.03409562160279389
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.5004797328037395,
+     "gap": 0.43374465863063927
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.6217538694503022,
+     "gap": 0.368926754079848
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5711367017748847,
+     "gap": 0.3850456435899575
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3794544522487457,
+     "gap": 0.6121503189516744
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.19616636295497553,
+     "gap": 0.48449600579651514
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.6114512887090869,
+     "gap": 0.3606886877743599
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8893155753247592,
+     "gap": 0.0747044366722126
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3911841770404634,
+     "gap": 0.4922894887753807
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8496590288912603,
+     "gap": 0.12175593151978248
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7319378464792222,
+     "gap": 0.1602824002597354
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.1870661580284476,
+     "gap": 0.7610362628253629
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6364716792792504,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.30787011892741656,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5750740811365066,
+   "note": null
+  },
+  {
+   "run_id": "scale_w8_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w8_r1",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 8,
+   "experiment_id": "EXP_0334",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "lowrank_residual_transfer_e26",
+    "residual_softmax_knn_e63",
+    "expected_knockdown_delta_e65",
+    "response_cluster_centroid_e79",
+    "response_archetype_assignment_e103",
+    "relevance_feedback_residual_e125",
+    "cell_cycle_shift_program_e136",
+    "module_smoothed_knn_residual_e146",
+    "control_program_slope_x_score_e167",
+    "target_readout_weighted_residual_e182",
+    "geneset_name_token_knn_residual_e200",
+    "kernel_ridge_residual_e223",
+    "factor_geneset_bridge_loo_e239",
+    "paralog_compensation_e250",
+    "knockdown_weighted_neighbor_residual_e257",
+    "coresponse_graph_smoothed_residual_e282",
+    "target_coresponse_loo_e283",
+    "compositional_closure_shift_e315",
+    "coherence_weighted_set_neighbor_residual_e334"
+   ],
+   "best_alpha": 10.0,
+   "primary_score": 0.6508821310727342,
+   "recorded_pearson_delta": 0.6508821310727342,
+   "pearson_delta_all_visible": 0.6508821310727342,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.864478619108297,
+     "gap": 0.12581562955461112
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6361392935828734,
+     "gap": 0.3028772544660434
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7873585672879764,
+     "gap": 0.19479184335371302
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.708373472471477,
+     "gap": 0.26944463232158844
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9705853876927028,
+     "gap": 0.024858086810719326
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9447987290388553,
+     "gap": 0.03956327124312531
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.5806305407202051,
+     "gap": 0.3535938507141736
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.6040539865834574,
+     "gap": 0.38662663694669275
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5354984142200099,
+     "gap": 0.4206839311448324
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.49691192308946586,
+     "gap": 0.49469284811095426
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.11368084666174921,
+     "gap": 0.5669815220897414
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.7319373840607796,
+     "gap": 0.24020259242266728
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8610092994397404,
+     "gap": 0.10301071255723149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.4674926941034034,
+     "gap": 0.4159809717124407
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8309931508532269,
+     "gap": 0.1404218095578159
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7087767993339401,
+     "gap": 0.1834434474050175
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.22227711998832234,
+     "gap": 0.7258253008654881
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6508821310727342,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.2934596671339328,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6806142443433602,
+   "note": null
+  },
+  {
+   "run_id": "scale_w16_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w16_r0",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 16,
+   "experiment_id": "EXP_0780",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "ppi_knn_response_e22",
+    "ppi_knn_response_e8",
+    "baseline_interactions_e16",
+    "target_class_mean_response_e86",
+    "er_stress_gate_e121",
+    "shrunken_knn_deviation_e130",
+    "similarity_gated_knn_deviation_e180",
+    "lowrank_denoised_knn_response_e194",
+    "specific_geneset_mate_response_e154",
+    "weighted_median_knn_response_e312",
+    "unit_norm_knn_shape_e335",
+    "loo_embedding_ridge_prediction_e89",
+    "consensus_knn_response_e174",
+    "neighbour_slope_and_residual_e380",
+    "mean_orthogonal_knn_shape_e403",
+    "ppi_neighbourhood_jaccard_knn_e427",
+    "signed_quadratic_knn_response_e439",
+    "annotation_richness_gated_deviation_e462",
+    "target_responsiveness_knn_e498",
+    "geneset_knn_response_e20",
+    "geneset_keyword_tfidf_knn_deviation_e547",
+    "prior_network_knn_deviation_e562",
+    "knockdown_weighted_knn_deviation_e612",
+    "response_propagated_knn_deviation_e727",
+    "response_cluster_posterior_mean_e766"
+   ],
+   "best_alpha": 100.0,
+   "primary_score": 0.6477231264781873,
+   "recorded_pearson_delta": 0.6477231264781873,
+   "pearson_delta_all_visible": 0.6477231264781873,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8882802838385196,
+     "gap": 0.10201396482438851
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.5922721044353937,
+     "gap": 0.3467444436135231
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.80855728402685,
+     "gap": 0.1735931266148394
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.7190356819796652,
+     "gap": 0.25878242281340025
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9597557656173807,
+     "gap": 0.035687708886041336
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9264598264994204,
+     "gap": 0.05790217378256024
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4688679063395504,
+     "gap": 0.46535648509482835
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.6364780578590513,
+     "gap": 0.35420256567109887
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5618019744335037,
+     "gap": 0.3943803709313386
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.46834387521980986,
+     "gap": 0.5232608959806102
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.19630692063660218,
+     "gap": 0.4843554481148885
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.696956866562053,
+     "gap": 0.27518310992139383
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.9042849245206594,
+     "gap": 0.0597350874763124
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.4182788615261328,
+     "gap": 0.4651948042897113
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8304482205022486,
+     "gap": 0.14096673990879416
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7348050364821875,
+     "gap": 0.15741521025677008
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.20035955965015356,
+     "gap": 0.747742861203657
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6477231264781873,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.29661867172847967,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6151643042128525,
+   "note": null
+  },
+  {
+   "run_id": "scale_w16_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_w16_r1",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "2492e11",
+   "workers": 16,
+   "experiment_id": "EXP_0889",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "symbol_family_response_e139",
+    "loo_sign_consensus_e175",
+    "target_knockdown_depth_e76",
+    "geneset_name_token_response_e200",
+    "module_smoothed_knn_deviation_e280",
+    "lowrank_projected_neighbor_deviation_e312",
+    "two_hop_geneset_response_e363",
+    "response_cluster_centroid_deviation_e395",
+    "neighbor_confidence_gated_mean_e438",
+    "baseline_interactions_e33",
+    "per_component_score_transfer_e508",
+    "program_score_transfer_e542",
+    "natural_knockdown_projected_signature_e560",
+    "target_descriptor_program_regression_e578",
+    "regulon_propagated_deviation_e593",
+    "unitnorm_geneset_knn_deviation_e607",
+    "signed_sqrt_knn_deviation_e643",
+    "pathway_pooled_neighbor_deviation_e713",
+    "response_space_analog_refinement_e749",
+    "neighbor_magnitude_scaled_mean_e786",
+    "gene_zscored_knn_deviation_e814",
+    "control_pc_axis_score_transfer_e835",
+    "symbol_ngram_knn_deviation_e856"
+   ],
+   "best_alpha": 0.001,
+   "primary_score": 0.6644342293074104,
+   "recorded_pearson_delta": 0.6644342293074104,
+   "pearson_delta_all_visible": 0.6644342293074104,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8981119428306292,
+     "gap": 0.09218230583227893
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6893551127133055,
+     "gap": 0.24966143533561125
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7344931102003697,
+     "gap": 0.24765730044131973
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.7459576612275071,
+     "gap": 0.23186044356555835
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9427735878675705,
+     "gap": 0.05266988663585159
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9007157865640082,
+     "gap": 0.08364621371797243
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.6343140113010415,
+     "gap": 0.29991038013333726
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.65200975920385,
+     "gap": 0.3386708643263002
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.6408552265314755,
+     "gap": 0.3153271188333667
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.4083362282971256,
+     "gap": 0.5832685429032944
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.27746325099287183,
+     "gap": 0.40319911775861883
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.6788240078895064,
+     "gap": 0.2933159685939405
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8639612069877555,
+     "gap": 0.10005880500921638
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.47849964766416797,
+     "gap": 0.4049740181516761
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8359668067751134,
+     "gap": 0.13544815363592944
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7328520057038573,
+     "gap": 0.15936824103510028
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18089254547582087,
+     "gap": 0.7672098753779896
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6644342293074104,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.2799075688992566,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5463873802424266,
+   "note": null
+  },
+  {
+   "run_id": "newcode_opus_w4_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_opus_w4_r0",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "537344f",
+   "workers": 4,
+   "experiment_id": "EXP_0441",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "is_target",
+    "is_target_x_control_mean_e35",
+    "knn_response_symbol_family_e58",
+    "knn_residual_response_e59",
+    "normalized_mean_response_e56",
+    "rwr_target_proximity_e14",
+    "knn_two_hop_response_cluster_e137",
+    "shared_geneset_score_e15",
+    "knn_response_ppi_diffusion_e248",
+    "knn_response_reconstruction_weights_e162",
+    "gene_reliability_weighted_knn_e413",
+    "kernel_ridge_annotation_embedding_e430"
+   ],
+   "best_alpha": 300.0,
+   "primary_score": 0.5902602202036984,
+   "recorded_pearson_delta": 0.6119668643608602,
+   "pearson_delta_all_visible": 0.6119668643608602,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8200989407497891,
+     "gap": 0.1701953079131191
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.5879151643026123,
+     "gap": 0.3511013837463045
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7475271455458611,
+     "gap": 0.23462326509582832
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6702268705386796,
+     "gap": 0.30759123425438584
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9633842811000403,
+     "gap": 0.032059193403381814
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.926980295934386,
+     "gap": 0.0573817043475946
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.42418470483952436,
+     "gap": 0.5100396865948544
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5735675735794914,
+     "gap": 0.4171130499506588
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5340698169634017,
+     "gap": 0.42211252840144053
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.27426807817081156,
+     "gap": 0.7173366930296086
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.18058570635101823,
+     "gap": 0.5000766624004724
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5951251799851056,
+     "gap": 0.37701479649834124
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.9096562623765284,
+     "gap": 0.054363749620443436
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.37839102796572077,
+     "gap": 0.5050826378501233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8403586332815668,
+     "gap": 0.131056327129476
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7999294633566836,
+     "gap": 0.09229078338227403
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.17716754909340415,
+     "gap": 0.7709348717604063
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6119668643608602,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.33237493384580674,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5119263170163718,
+   "note": null
+  },
+  {
+   "run_id": "newcode_opus_w4_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_opus_w4_r1",
+   "arm": "claude_cli:opus planner, deepseek:deepseek-flash workers",
+   "code": "537344f",
+   "workers": 4,
+   "experiment_id": "EXP_0393",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_knockdown_scaled_e18",
+    "geneset_knn_response_e14",
+    "ppi_kernel_weighted_response_e40",
+    "symbol_family_knn_response_e70",
+    "consensus_similarity_knn_response_e104",
+    "gene_module_smoothed_knn_e205",
+    "learned_metric_knn_response_e305",
+    "pc_projected_knn_deviation_e352"
+   ],
+   "best_alpha": 8000.0,
+   "primary_score": 0.5861484604691772,
+   "recorded_pearson_delta": 0.6113335848287219,
+   "pearson_delta_all_visible": 0.6113335848287219,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8401258752962786,
+     "gap": 0.15016837336662958
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6377915842781138,
+     "gap": 0.301224963770803
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7715127066238955,
+     "gap": 0.21063770401779391
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6847044955843183,
+     "gap": 0.2931136092087471
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9596383816391085,
+     "gap": 0.03580509286431355
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9237411281566519,
+     "gap": 0.06062087212532874
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4001351389808627,
+     "gap": 0.534089252453516
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.596430508412708,
+     "gap": 0.39425011511744223
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5593522795908239,
+     "gap": 0.39683006577401836
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3426921692576865,
+     "gap": 0.6489126019427336
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.1202256046533421,
+     "gap": 0.5604367640981486
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5752664414207355,
+     "gap": 0.3968735350627114
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.8942218686008716,
+     "gap": 0.06979814339610024
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.38220757891398033,
+     "gap": 0.5012660869018637
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8386364142278746,
+     "gap": 0.1327785461831682
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.6740785176490465,
+     "gap": 0.21814172908991114
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.19191024880197377,
+     "gap": 0.7561921720518368
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.6113335848287219,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.33300821337794506,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6085546831363633,
+   "note": null
+  },
+  {
+   "run_id": "newcode_ds_w4_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_ds_w4_r0",
+   "arm": "deepseek:deepseek-v4-pro planner, deepseek:deepseek-flash workers",
+   "code": "537344f",
+   "workers": 4,
+   "experiment_id": "EXP_0776",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "ppi_adjacency_e9",
+    "target_mean_abs_response_e61_e69",
+    "log_target_mean_abs_response_e105",
+    "shared_pathway_mean_abs_response_e123",
+    "target_essentiality_score_e137",
+    "ppi_neighbor_weighted_mean_response_e169",
+    "ppi_neighbor_response_variance_e183",
+    "target_response_cv_e221",
+    "shared_tf_count_e239",
+    "target_expression_cv_e304_e307",
+    "gene_degree_times_mean_response_e368",
+    "target_degree_times_gene_response_e521",
+    "signed_ppi_random_projection_e586",
+    "gene_response_entropy_e640_e648"
+   ],
+   "best_alpha": 5600.0,
+   "primary_score": 0.5104247369189022,
+   "recorded_pearson_delta": 0.5628330035404308,
+   "pearson_delta_all_visible": 0.5628330035404308,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.832260131751179,
+     "gap": 0.1580341169117292
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6117149944638167,
+     "gap": 0.32730155358510005
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.753539927187422,
+     "gap": 0.22861048345426738
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6800994077541238,
+     "gap": 0.2977186970389416
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8703999959963136,
+     "gap": 0.1250434785071085
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8388888768287978,
+     "gap": 0.14547312345318286
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4996771615234846,
+     "gap": 0.4345472299108941
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5872947125876358,
+     "gap": 0.4033859109425144
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5416503163699389,
+     "gap": 0.4145320289949034
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.32332771598424165,
+     "gap": 0.6682770552161785
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12479537429999588,
+     "gap": 0.5558669944514948
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.42538250075171125,
+     "gap": 0.5467574757317356
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6864201300124548,
+     "gap": 0.277599881984517
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3887897324427924,
+     "gap": 0.49468393337305167
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7379366732325546,
+     "gap": 0.23347828717848818
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4817272617525247,
+     "gap": 0.4104929849864329
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18425614724833486,
+     "gap": 0.7638462736054756
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5628330035404308,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3815087946662362,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6398161336676232,
+   "note": null
+  },
+  {
+   "run_id": "newcode_ds_w4_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_ds_w4_r1",
+   "arm": "deepseek:deepseek-v4-pro planner, deepseek:deepseek-flash workers",
+   "code": "537344f",
+   "workers": 4,
+   "experiment_id": "EXP_0725",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "is_target",
+    "knn_perturbation_response_ppi_weighted_e54",
+    "knn_perturbation_response_target_pathway_e125",
+    "prior_network_random_walk_influence_e79",
+    "knn_perturbation_response_sequence_weigh_e451",
+    "target_expression_stability_ratio_e438",
+    "target_ppi_neighbor_expression_variance_e481",
+    "ppr_from_target_e33",
+    "ppi_graph_diffusion_e15"
+   ],
+   "best_alpha": 30000.0,
+   "primary_score": 0.5866769154165882,
+   "recorded_pearson_delta": 0.624850173789533,
+   "pearson_delta_all_visible": 0.624850173789533,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8871247817933724,
+     "gap": 0.10316946686953576
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6182532746982894,
+     "gap": 0.3207632733506274
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7494751115718321,
+     "gap": 0.2326752990698573
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.7308186983713183,
+     "gap": 0.24699940642174711
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9590174997999231,
+     "gap": 0.03642597470349895
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9255581378051652,
+     "gap": 0.05880386247681546
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.42259691301292196,
+     "gap": 0.5116274784214567
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.63612788625864,
+     "gap": 0.35455273727151015
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.545479124585594,
+     "gap": 0.41070322077924826
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.28995782256662944,
+     "gap": 0.7016469486337906
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.15387792528097463,
+     "gap": 0.526784443470516
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.6363015864688442,
+     "gap": 0.3358383900146027
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.9008917415451193,
+     "gap": 0.06312827045185254
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.4016073401395084,
+     "gap": 0.4818663256763357
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8420087278943358,
+     "gap": 0.12940623251670702
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.7286632283457463,
+     "gap": 0.16355701839321135
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.19469315428384462,
+     "gap": 0.7534092665699659
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.624850173789533,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.31949162441713397,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5739682502229866,
+   "note": null
+  },
+  {
+   "run_id": "control_components_from_opus_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/control_components_from_opus_r0",
+   "arm": "no-LLM continuation of newcode_opus_w4_r0",
+   "code": "bee2106",
+   "workers": 4,
+   "experiment_id": "EXP_0053",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "is_target",
+    "is_target_x_control_mean_e35",
+    "knn_response_symbol_family_e58",
+    "knn_residual_response_e59",
+    "normalized_mean_response_e56",
+    "rwr_target_proximity_e14",
+    "knn_two_hop_response_cluster_e137",
+    "shared_geneset_score_e15",
+    "knn_response_ppi_diffusion_e248",
+    "knn_response_reconstruction_weights_e162",
+    "kernel_ridge_annotation_embedding_e430",
+    "target_level_e15"
+   ],
+   "best_alpha": 4590.0,
+   "primary_score": 0.59079170548684,
+   "recorded_pearson_delta": 0.612921815581311,
+   "pearson_delta_all_visible": 0.612921815581311,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8134738517595105,
+     "gap": 0.17682039690339768
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.5913362308774578,
+     "gap": 0.347680317171459
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7467716999083864,
+     "gap": 0.23537871073330296
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6623379587322547,
+     "gap": 0.31548014606081076
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.962186654290771,
+     "gap": 0.033256820212651084
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.9261034806787389,
+     "gap": 0.05825851960324169
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4309465701013881,
+     "gap": 0.5032778213329907
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5677586526361708,
+     "gap": 0.4229219708939794
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5370830806418108,
+     "gap": 0.4190992647230315
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.282924330790047,
+     "gap": 0.7086804404103731
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.18601678162338892,
+     "gap": 0.49464558712810175
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.6008884233325349,
+     "gap": 0.37125155315091196
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.9102395884797936,
+     "gap": 0.053780423517178266
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3839924347247134,
+     "gap": 0.4994812310911307
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.8403758515302775,
+     "gap": 0.1310391088807653
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.8007354465596824,
+     "gap": 0.09148480017927518
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.17649982821536037,
+     "gap": 0.7716025926384501
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.612921815581311,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.331419982625356,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.5094744712336469,
+   "note": null
+  },
+  {
+   "run_id": "scale_control_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_control_r0",
+   "arm": "scripted control (no LLM)",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0010",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "target_level_e10"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.5710352241608613,
+   "recorded_pearson_delta": 0.5710352241608613,
+   "pearson_delta_all_visible": 0.5710352241608613,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8397048872894555,
+     "gap": 0.1505893613734527
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6084586763041276,
+     "gap": 0.3305578717447891
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7586050543583348,
+     "gap": 0.2235453562833546
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6805833730085221,
+     "gap": 0.2972347317845433
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8606306053443039,
+     "gap": 0.13481286915911816
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8431823843601404,
+     "gap": 0.14117961592184025
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.48894772860382923,
+     "gap": 0.4452766628305495
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5902093786292835,
+     "gap": 0.4004712449008667
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5490229715376039,
+     "gap": 0.4071593738272383
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3301644869784897,
+     "gap": 0.6614402842219305
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12254020717829604,
+     "gap": 0.5581221615731946
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5488910678922017,
+     "gap": 0.4232489085912452
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6902197068678569,
+     "gap": 0.2738003051291149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.39605404664702076,
+     "gap": 0.4874196191688233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7424520596738279,
+     "gap": 0.22896290073721492
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4710882815217476,
+     "gap": 0.42113196521721
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18684389453959965,
+     "gap": 0.7612585263142109
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5710352241608613,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3733065740458057,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6666144163164672,
+   "note": null
+  },
+  {
+   "run_id": "scale_control_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_control_r1",
+   "arm": "scripted control (no LLM)",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0010",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "target_level_e10"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.5710352241608613,
+   "recorded_pearson_delta": 0.5710352241608613,
+   "pearson_delta_all_visible": 0.5710352241608613,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8397048872894555,
+     "gap": 0.1505893613734527
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6084586763041276,
+     "gap": 0.3305578717447891
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7586050543583348,
+     "gap": 0.2235453562833546
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6805833730085221,
+     "gap": 0.2972347317845433
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8606306053443039,
+     "gap": 0.13481286915911816
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8431823843601404,
+     "gap": 0.14117961592184025
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.48894772860382923,
+     "gap": 0.4452766628305495
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5902093786292835,
+     "gap": 0.4004712449008667
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5490229715376039,
+     "gap": 0.4071593738272383
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3301644869784897,
+     "gap": 0.6614402842219305
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12254020717829604,
+     "gap": 0.5581221615731946
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5488910678922017,
+     "gap": 0.4232489085912452
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6902197068678569,
+     "gap": 0.2738003051291149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.39605404664702076,
+     "gap": 0.4874196191688233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7424520596738279,
+     "gap": 0.22896290073721492
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4710882815217476,
+     "gap": 0.42113196521721
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18684389453959965,
+     "gap": 0.7612585263142109
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5710352241608613,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3733065740458057,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6666144163164672,
+   "note": null
+  },
+  {
+   "run_id": "scale_control_r2",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_control_r2",
+   "arm": "scripted control (no LLM)",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0010",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "target_level_e10"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.5710352241608613,
+   "recorded_pearson_delta": 0.5710352241608613,
+   "pearson_delta_all_visible": 0.5710352241608613,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8397048872894555,
+     "gap": 0.1505893613734527
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6084586763041276,
+     "gap": 0.3305578717447891
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7586050543583348,
+     "gap": 0.2235453562833546
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6805833730085221,
+     "gap": 0.2972347317845433
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8606306053443039,
+     "gap": 0.13481286915911816
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8431823843601404,
+     "gap": 0.14117961592184025
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.48894772860382923,
+     "gap": 0.4452766628305495
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5902093786292835,
+     "gap": 0.4004712449008667
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5490229715376039,
+     "gap": 0.4071593738272383
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3301644869784897,
+     "gap": 0.6614402842219305
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12254020717829604,
+     "gap": 0.5581221615731946
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5488910678922017,
+     "gap": 0.4232489085912452
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6902197068678569,
+     "gap": 0.2738003051291149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.39605404664702076,
+     "gap": 0.4874196191688233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7424520596738279,
+     "gap": 0.22896290073721492
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4710882815217476,
+     "gap": 0.42113196521721
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18684389453959965,
+     "gap": 0.7612585263142109
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5710352241608613,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3733065740458057,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6666144163164672,
+   "note": null
+  },
+  {
+   "run_id": "scale_control_r3",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_control_r3",
+   "arm": "scripted control (no LLM)",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0010",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "target_level_e10"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.5710352241608613,
+   "recorded_pearson_delta": 0.5710352241608613,
+   "pearson_delta_all_visible": 0.5710352241608613,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8397048872894555,
+     "gap": 0.1505893613734527
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6084586763041276,
+     "gap": 0.3305578717447891
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7586050543583348,
+     "gap": 0.2235453562833546
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6805833730085221,
+     "gap": 0.2972347317845433
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8606306053443039,
+     "gap": 0.13481286915911816
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8431823843601404,
+     "gap": 0.14117961592184025
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.48894772860382923,
+     "gap": 0.4452766628305495
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5902093786292835,
+     "gap": 0.4004712449008667
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5490229715376039,
+     "gap": 0.4071593738272383
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3301644869784897,
+     "gap": 0.6614402842219305
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12254020717829604,
+     "gap": 0.5581221615731946
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5488910678922017,
+     "gap": 0.4232489085912452
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6902197068678569,
+     "gap": 0.2738003051291149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.39605404664702076,
+     "gap": 0.4874196191688233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7424520596738279,
+     "gap": 0.22896290073721492
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4710882815217476,
+     "gap": 0.42113196521721
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18684389453959965,
+     "gap": 0.7612585263142109
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5710352241608613,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3733065740458057,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6666144163164672,
+   "note": null
+  },
+  {
+   "run_id": "scale_control_r4",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_control_r4",
+   "arm": "scripted control (no LLM)",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0010",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "target_level_e10"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.5710352241608613,
+   "recorded_pearson_delta": 0.5710352241608613,
+   "pearson_delta_all_visible": 0.5710352241608613,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8397048872894555,
+     "gap": 0.1505893613734527
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6084586763041276,
+     "gap": 0.3305578717447891
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7586050543583348,
+     "gap": 0.2235453562833546
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6805833730085221,
+     "gap": 0.2972347317845433
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8606306053443039,
+     "gap": 0.13481286915911816
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8431823843601404,
+     "gap": 0.14117961592184025
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.48894772860382923,
+     "gap": 0.4452766628305495
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5902093786292835,
+     "gap": 0.4004712449008667
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5490229715376039,
+     "gap": 0.4071593738272383
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3301644869784897,
+     "gap": 0.6614402842219305
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12254020717829604,
+     "gap": 0.5581221615731946
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5488910678922017,
+     "gap": 0.4232489085912452
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6902197068678569,
+     "gap": 0.2738003051291149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.39605404664702076,
+     "gap": 0.4874196191688233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7424520596738279,
+     "gap": 0.22896290073721492
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4710882815217476,
+     "gap": 0.42113196521721
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18684389453959965,
+     "gap": 0.7612585263142109
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5710352241608613,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3733065740458057,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6666144163164672,
+   "note": null
+  },
+  {
+   "run_id": "scale_control_r5",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/scale_control_r5",
+   "arm": "scripted control (no LLM)",
+   "code": "2492e11",
+   "workers": 4,
+   "experiment_id": "EXP_0010",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "new_feature",
+   "model": "ridge",
+   "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "target_level_e10"
+   ],
+   "best_alpha": 0.01,
+   "primary_score": 0.5710352241608613,
+   "recorded_pearson_delta": 0.5710352241608613,
+   "pearson_delta_all_visible": 0.5710352241608613,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8397048872894555,
+     "gap": 0.1505893613734527
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6084586763041276,
+     "gap": 0.3305578717447891
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7586050543583348,
+     "gap": 0.2235453562833546
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6805833730085221,
+     "gap": 0.2972347317845433
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8606306053443039,
+     "gap": 0.13481286915911816
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8431823843601404,
+     "gap": 0.14117961592184025
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.48894772860382923,
+     "gap": 0.4452766628305495
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5902093786292835,
+     "gap": 0.4004712449008667
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5490229715376039,
+     "gap": 0.4071593738272383
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3301644869784897,
+     "gap": 0.6614402842219305
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.12254020717829604,
+     "gap": 0.5581221615731946
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5488910678922017,
+     "gap": 0.4232489085912452
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6902197068678569,
+     "gap": 0.2738003051291149
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.39605404664702076,
+     "gap": 0.4874196191688233
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7424520596738279,
+     "gap": 0.22896290073721492
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.4710882815217476,
+     "gap": 0.42113196521721
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18684389453959965,
+     "gap": 0.7612585263142109
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5710352241608613,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3733065740458057,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6666144163164672,
+   "note": null
+  },
+  {
+   "run_id": "newcode2_control_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode2_control_r0",
+   "arm": "scripted control (no LLM)",
+   "code": "537344f",
+   "workers": 4,
+   "experiment_id": "EXP_0041",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 41310.0,
+   "primary_score": 0.5078411988121666,
+   "recorded_pearson_delta": 0.5714283399335992,
+   "pearson_delta_all_visible": 0.5714283399335992,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8363633525720521,
+     "gap": 0.15393089609085608
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6072518295395342,
+     "gap": 0.3317647185093826
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7615566788212311,
+     "gap": 0.22059373182045827
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6798816646367698,
+     "gap": 0.2979364401562956
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8593623680118069,
+     "gap": 0.1360811064916152
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8415668803823896,
+     "gap": 0.14279511989959104
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.49022390286284023,
+     "gap": 0.4440004885715385
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5877952504328228,
+     "gap": 0.4028853730973274
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5527858439819393,
+     "gap": 0.40339650138290295
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33003039380014454,
+     "gap": 0.6615743774002756
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13034611468583085,
+     "gap": 0.5503162540656599
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5441001521244211,
+     "gap": 0.42803982435902577
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6908779777572301,
+     "gap": 0.2731420342397417
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3974242508156112,
+     "gap": 0.48604941500023285
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.742951317750701,
+     "gap": 0.2284636426603418
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47535186633635906,
+     "gap": 0.41686838040259855
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18641193435950226,
+     "gap": 0.7616904864943081
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5714283399335992,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.37291345827306777,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6606820827184507,
+   "note": null
+  },
+  {
+   "run_id": "newcode_control_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_control_r0",
+   "arm": "scripted control (no LLM)",
+   "code": "72a53c5",
+   "workers": 4,
+   "experiment_id": "EXP_0028",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 41310.0,
+   "primary_score": 0.5078411988121666,
+   "recorded_pearson_delta": 0.5714283399335992,
+   "pearson_delta_all_visible": 0.5714283399335992,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8363633525720521,
+     "gap": 0.15393089609085608
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6072518295395342,
+     "gap": 0.3317647185093826
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7615566788212311,
+     "gap": 0.22059373182045827
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6798816646367698,
+     "gap": 0.2979364401562956
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8593623680118069,
+     "gap": 0.1360811064916152
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8415668803823896,
+     "gap": 0.14279511989959104
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.49022390286284023,
+     "gap": 0.4440004885715385
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5877952504328228,
+     "gap": 0.4028853730973274
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5527858439819393,
+     "gap": 0.40339650138290295
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33003039380014454,
+     "gap": 0.6615743774002756
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13034611468583085,
+     "gap": 0.5503162540656599
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5441001521244211,
+     "gap": 0.42803982435902577
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6908779777572301,
+     "gap": 0.2731420342397417
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3974242508156112,
+     "gap": 0.48604941500023285
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.742951317750701,
+     "gap": 0.2284636426603418
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47535186633635906,
+     "gap": 0.41686838040259855
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18641193435950226,
+     "gap": 0.7616904864943081
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5714283399335992,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.37291345827306777,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6606820827184507,
+   "note": null
+  },
+  {
+   "run_id": "newcode_control_r1",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_control_r1",
+   "arm": "scripted control (no LLM)",
+   "code": "72a53c5",
+   "workers": 4,
+   "experiment_id": "EXP_0028",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 72900.0,
+   "primary_score": 0.5099612005234748,
+   "recorded_pearson_delta": 0.5713293060176023,
+   "pearson_delta_all_visible": 0.5713293060176023,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8348510889018294,
+     "gap": 0.1554431597610788
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6061374486208716,
+     "gap": 0.33287909942804517
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7613934059520981,
+     "gap": 0.22075700468959125
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6792523953818457,
+     "gap": 0.29856570941121974
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8573436194186337,
+     "gap": 0.1380998550847884
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.84036288966723,
+     "gap": 0.14399911061475057
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4900351312936957,
+     "gap": 0.44418926014068305
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5869142127942975,
+     "gap": 0.40376641073585273
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5532642318983455,
+     "gap": 0.40291811346649675
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33008572111425477,
+     "gap": 0.6615190500861654
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13279098229568856,
+     "gap": 0.5478713864558021
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.547006767125509,
+     "gap": 0.42513320935793786
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6906934160485378,
+     "gap": 0.273326595948434
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3973811311833355,
+     "gap": 0.48609253463250857
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7422456029401431,
+     "gap": 0.22916935747089973
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47587611651795086,
+     "gap": 0.41634413022100675
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18696404114497275,
+     "gap": 0.7611383797088377
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5713293060176023,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3730124921890646,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6599459457037897,
+   "note": null
+  },
+  {
+   "run_id": "newcode_control_r2",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_control_r2",
+   "arm": "scripted control (no LLM)",
+   "code": "72a53c5",
+   "workers": 4,
+   "experiment_id": "EXP_0028",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 41310.0,
+   "primary_score": 0.5082401154420845,
+   "recorded_pearson_delta": 0.5714283399335992,
+   "pearson_delta_all_visible": 0.5714283399335992,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8363633525720521,
+     "gap": 0.15393089609085608
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6072518295395342,
+     "gap": 0.3317647185093826
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7615566788212311,
+     "gap": 0.22059373182045827
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6798816646367698,
+     "gap": 0.2979364401562956
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8593623680118069,
+     "gap": 0.1360811064916152
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.8415668803823896,
+     "gap": 0.14279511989959104
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.49022390286284023,
+     "gap": 0.4440004885715385
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5877952504328228,
+     "gap": 0.4028853730973274
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5527858439819393,
+     "gap": 0.40339650138290295
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33003039380014454,
+     "gap": 0.6615743774002756
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13034611468583085,
+     "gap": 0.5503162540656599
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.5441001521244211,
+     "gap": 0.42803982435902577
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6908779777572301,
+     "gap": 0.2731420342397417
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3974242508156112,
+     "gap": 0.48604941500023285
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.742951317750701,
+     "gap": 0.2284636426603418
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47535186633635906,
+     "gap": 0.41686838040259855
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18641193435950226,
+     "gap": 0.7616904864943081
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5714283399335992,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.37291345827306777,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6606820827184507,
+   "note": null
+  },
+  {
+   "run_id": "newcode_control_r3",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_control_r3",
+   "arm": "scripted control (no LLM)",
+   "code": "72a53c5",
+   "workers": 4,
+   "experiment_id": "EXP_0028",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 72900.0,
+   "primary_score": 0.5094109626319077,
+   "recorded_pearson_delta": 0.5713293060176023,
+   "pearson_delta_all_visible": 0.5713293060176023,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8348510889018294,
+     "gap": 0.1554431597610788
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6061374486208716,
+     "gap": 0.33287909942804517
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7613934059520981,
+     "gap": 0.22075700468959125
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6792523953818457,
+     "gap": 0.29856570941121974
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8573436194186337,
+     "gap": 0.1380998550847884
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.84036288966723,
+     "gap": 0.14399911061475057
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4900351312936957,
+     "gap": 0.44418926014068305
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5869142127942975,
+     "gap": 0.40376641073585273
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5532642318983455,
+     "gap": 0.40291811346649675
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33008572111425477,
+     "gap": 0.6615190500861654
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13279098229568856,
+     "gap": 0.5478713864558021
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.547006767125509,
+     "gap": 0.42513320935793786
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6906934160485378,
+     "gap": 0.273326595948434
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3973811311833355,
+     "gap": 0.48609253463250857
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7422456029401431,
+     "gap": 0.22916935747089973
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47587611651795086,
+     "gap": 0.41634413022100675
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18696404114497275,
+     "gap": 0.7611383797088377
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5713293060176023,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3730124921890646,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6599459457037897,
+   "note": null
+  },
+  {
+   "run_id": "newcode_control_r4",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_control_r4",
+   "arm": "scripted control (no LLM)",
+   "code": "72a53c5",
+   "workers": 4,
+   "experiment_id": "EXP_0028",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 72900.0,
+   "primary_score": 0.5103832897790738,
+   "recorded_pearson_delta": 0.5713293060176023,
+   "pearson_delta_all_visible": 0.5713293060176023,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8348510889018294,
+     "gap": 0.1554431597610788
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6061374486208716,
+     "gap": 0.33287909942804517
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7613934059520981,
+     "gap": 0.22075700468959125
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6792523953818457,
+     "gap": 0.29856570941121974
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8573436194186337,
+     "gap": 0.1380998550847884
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.84036288966723,
+     "gap": 0.14399911061475057
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4900351312936957,
+     "gap": 0.44418926014068305
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5869142127942975,
+     "gap": 0.40376641073585273
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5532642318983455,
+     "gap": 0.40291811346649675
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33008572111425477,
+     "gap": 0.6615190500861654
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13279098229568856,
+     "gap": 0.5478713864558021
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.547006767125509,
+     "gap": 0.42513320935793786
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6906934160485378,
+     "gap": 0.273326595948434
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3973811311833355,
+     "gap": 0.48609253463250857
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7422456029401431,
+     "gap": 0.22916935747089973
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47587611651795086,
+     "gap": 0.41634413022100675
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18696404114497275,
+     "gap": 0.7611383797088377
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5713293060176023,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3730124921890646,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6599459457037897,
+   "note": null
+  },
+  {
+   "run_id": "newcode_control_r5",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_control_r5",
+   "arm": "scripted control (no LLM)",
+   "code": "72a53c5",
+   "workers": 4,
+   "experiment_id": "EXP_0028",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "target_level_e11"
+   ],
+   "best_alpha": 72900.0,
+   "primary_score": 0.5116793997159791,
+   "recorded_pearson_delta": 0.5713293060176023,
+   "pearson_delta_all_visible": 0.5713293060176023,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8348510889018294,
+     "gap": 0.1554431597610788
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6061374486208716,
+     "gap": 0.33287909942804517
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7613934059520981,
+     "gap": 0.22075700468959125
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6792523953818457,
+     "gap": 0.29856570941121974
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.8573436194186337,
+     "gap": 0.1380998550847884
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.84036288966723,
+     "gap": 0.14399911061475057
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4900351312936957,
+     "gap": 0.44418926014068305
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.5869142127942975,
+     "gap": 0.40376641073585273
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5532642318983455,
+     "gap": 0.40291811346649675
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.33008572111425477,
+     "gap": 0.6615190500861654
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.13279098229568856,
+     "gap": 0.5478713864558021
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.547006767125509,
+     "gap": 0.42513320935793786
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.6906934160485378,
+     "gap": 0.273326595948434
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.3973811311833355,
+     "gap": 0.48609253463250857
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7422456029401431,
+     "gap": 0.22916935747089973
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.47587611651795086,
+     "gap": 0.41634413022100675
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.18696404114497275,
+     "gap": 0.7611383797088377
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5713293060176023,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.3730124921890646,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6599459457037897,
+   "note": null
+  },
+  {
+   "run_id": "control_components_w4_r0",
+   "dir": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/control_components_w4_r0",
+   "arm": "scripted control (no LLM)",
+   "code": "74e07ca",
+   "workers": 4,
+   "experiment_id": "EXP_0046",
+   "selected_by": "best visible score among the experiments scored on the sealed set",
+   "kind": "config",
+   "model": "ridge",
+   "features": [
+    "mean_response",
+    "is_target",
+    "response_components_e14",
+    "target_level_e11"
+   ],
+   "best_alpha": 41310.0,
+   "primary_score": 0.5312723607188214,
+   "recorded_pearson_delta": 0.5868131911206248,
+   "pearson_delta_all_visible": 0.5868131911206248,
+   "n_visible": 17,
+   "split_id": "split_450515be1a0d8d2e",
+   "per_perturbation": [
+    {
+     "pert": "AARS",
+     "n_cells": 300,
+     "n_target": 447,
+     "ceiling": 0.9902942486629082,
+     "achieved": 0.8372588241031861,
+     "gap": 0.15303542455972208
+    },
+    {
+     "pert": "ARHGAP22",
+     "n_cells": 300,
+     "n_target": 490,
+     "ceiling": 0.9390165480489168,
+     "achieved": 0.6210892769806147,
+     "gap": 0.3179272710683021
+    },
+    {
+     "pert": "ATP5B",
+     "n_cells": 300,
+     "n_target": 644,
+     "ceiling": 0.9821504106416894,
+     "achieved": 0.7623142375204793,
+     "gap": 0.21983617312121007
+    },
+    {
+     "pert": "DARS",
+     "n_cells": 300,
+     "n_target": 664,
+     "ceiling": 0.9778181047930654,
+     "achieved": 0.6803433343969705,
+     "gap": 0.29747477039609493
+    },
+    {
+     "pert": "DNAJC19",
+     "n_cells": 300,
+     "n_target": 1525,
+     "ceiling": 0.9954434745034221,
+     "achieved": 0.9532488844970289,
+     "gap": 0.04219459000639314
+    },
+    {
+     "pert": "EIF2B4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9843620002819806,
+     "achieved": 0.901546434871691,
+     "gap": 0.08281556541028967
+    },
+    {
+     "pert": "IDH3A",
+     "n_cells": 300,
+     "n_target": 663,
+     "ceiling": 0.9342243914343787,
+     "achieved": 0.4404524875489313,
+     "gap": 0.49377190388544745
+    },
+    {
+     "pert": "MARS",
+     "n_cells": 300,
+     "n_target": 523,
+     "ceiling": 0.9906806235301502,
+     "achieved": 0.588669660323643,
+     "gap": 0.4020109632065072
+    },
+    {
+     "pert": "MRPL39",
+     "n_cells": 300,
+     "n_target": 683,
+     "ceiling": 0.9561823453648423,
+     "achieved": 0.5471316133082978,
+     "gap": 0.4090507320565444
+    },
+    {
+     "pert": "PSMD4",
+     "n_cells": 300,
+     "n_target": 625,
+     "ceiling": 0.9916047712004201,
+     "achieved": 0.3988148315160249,
+     "gap": 0.5927899396843952
+    },
+    {
+     "pert": "PTDSS1",
+     "n_cells": 300,
+     "n_target": 534,
+     "ceiling": 0.6806623687514907,
+     "achieved": 0.14431835668516307,
+     "gap": 0.5363440120663276
+    },
+    {
+     "pert": "SEC61B",
+     "n_cells": 300,
+     "n_target": 1668,
+     "ceiling": 0.9721399764834469,
+     "achieved": 0.536761072017526,
+     "gap": 0.43537890446592087
+    },
+    {
+     "pert": "SEC61G",
+     "n_cells": 300,
+     "n_target": 650,
+     "ceiling": 0.9640200119969718,
+     "achieved": 0.716897867592324,
+     "gap": 0.24712214440464786
+    },
+    {
+     "pert": "SOCS1",
+     "n_cells": 300,
+     "n_target": 450,
+     "ceiling": 0.8834736658158441,
+     "achieved": 0.35085772492561457,
+     "gap": 0.5326159408902296
+    },
+    {
+     "pert": "TIMM23",
+     "n_cells": 300,
+     "n_target": 757,
+     "ceiling": 0.9714149604110428,
+     "achieved": 0.7957770529739452,
+     "gap": 0.17563790743709762
+    },
+    {
+     "pert": "UFL1",
+     "n_cells": 300,
+     "n_target": 585,
+     "ceiling": 0.8922202467389576,
+     "achieved": 0.5253305873236432,
+     "gap": 0.3668896594153144
+    },
+    {
+     "pert": "XRN1",
+     "n_cells": 300,
+     "n_target": 788,
+     "ceiling": 0.9481024208538105,
+     "achieved": 0.17501200246553886,
+     "gap": 0.7730904183882716
+    }
+   ],
+   "n_matched": 17,
+   "mean_achieved": 0.5868131911206248,
+   "mean_ceiling": 0.944341798206667,
+   "headroom": 0.35752860708604217,
+   "ceiling_is_lower_bound": false,
+   "achieved_vs_ceiling_r": 0.6482437158186526,
+   "note": null
+  }
+ ],
+ "transfer_ceiling": {
+  "nonneg": 0.7335361888658979,
+  "any_linear": 0.7803115704630836,
+  "source": "ceiling_analysis.json"
+ }
+}

@@ -2,7 +2,9 @@
 """The pre-specified sealed readings of docs/NORMAN_PLAN.md section 5, over finished runs, free of any LLM: each
 run's selected model against its additive baseline, and, given two runs on the same bundle and split, one recording
 an external knowledge file and the other none, the first's selected model against the second's (N2, the scripted
-control with the external screen, against N1, without), whatever order the runs are given in.
+control with the external screen, against N1, without), whatever order the runs are given in. A run that continued
+another (run.continue_from) is also read against its own starting model, the previous run's best re-fitted as its
+first experiment, so its search's own contribution is read by the same rule.
 
 Each comparison is the oracle's paired query (QueryOracle.query_paired): both models scored on the sealed
 perturbations, the per-perturbation pearson_delta differences summarised as mean, paired standard error, wins and
@@ -93,8 +95,19 @@ def _additive(lab) -> dict | None:
     return rows[0] if rows else None
 
 
+def _start(lab) -> dict | None:
+    """A continued run's starting model (Lab.warm_start queues the previous run's best as hypothesis group
+    warm_start_<its run id>), or None for a run that continues nothing."""
+    if not lab.cfg["run"].get("continue_from"):
+        return None
+    rows = lab.db.query("SELECT * FROM experiments WHERE hypothesis_group LIKE 'warm_start_%' AND status='completed' "
+                        "ORDER BY created_at LIMIT 1")
+    return rows[0] if rows else None
+
+
 def read_run(lab) -> dict:
-    """One run: its selected model against its additive baseline, visible and sealed."""
+    """One run: its selected model against its additive baseline, visible and sealed; for a continued run also
+    against its starting model, which is what the run's own search added (NORMAN_PLAN.md section 8, N4)."""
     sel, add = _selected(lab), _additive(lab)
     out = {"run": lab.run_dir.name, "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id,
            "selection": lab.selection, "external_knowledge": list(lab.cfg["run"].get("external_knowledge") or []),
@@ -109,6 +122,18 @@ def read_run(lab) -> dict:
     else:
         out["visible"] = lab.compare_visible(sel["experiment_id"], add["experiment_id"], metric=METRIC)
         out["sealed"] = _paired_query(lab, sel, lab, add)
+    if lab.cfg["run"].get("continue_from"):
+        start = _start(lab)
+        cont = {"from": Path(lab.cfg["run"]["continue_from"]).name, "start": None if start is None else
+                _model(lab, start), "visible": None, "sealed": None, "note": None}
+        if start is None:
+            cont["note"] = "the run's starting model did not complete: nothing to compare"
+        elif start["experiment_id"] == sel["experiment_id"]:
+            cont["note"] = "the run selected its starting model: its search added nothing it kept"
+        else:
+            cont["visible"] = lab.compare_visible(sel["experiment_id"], start["experiment_id"], metric=METRIC)
+            cont["sealed"] = _paired_query(lab, sel, lab, start)
+        out["continuation"] = cont
     return out
 
 
@@ -151,8 +176,10 @@ def analyse(run_dirs: list[Path]) -> dict:
     finally:
         for lab in labs:
             lab.close()
-    scorings = sum(2 for r in runs if r["sealed"]) + (2 if pair else 0)
+    conts = [(r["run"], r["selected"], r["continuation"]) for r in runs if (r.get("continuation") or {}).get("sealed")]
+    scorings = sum(2 for r in runs if r["sealed"]) + 2 * len(conts) + (2 if pair else 0)
     compared = [(r["run"], r[k]) for r in runs if r["sealed"] for k in ("selected", "additive")]
+    compared += [(run, m) for run, sel, c in conts for m in (sel, c["start"])]
     compared += [(pair[k]["run"], pair[k]) for k in ("a", "b")] if pair else []
     first = sorted({f"{run}:{m['experiment_id']}" for run, m in compared if not m["sealed_before"]})
     return {"generated_by": "tools/sealed_reading.py", "code_commit": _commit(),
@@ -280,6 +307,22 @@ def render(rep: dict) -> str:
         L += _table(r["sealed"], r["visible"], "selected", "additive") + [""]
         line = _other_metrics(r["sealed"], "selected", "additive") + _check(r["sealed"])
         L += ([line.strip(), ""] if line else [])
+    for r in rep["runs"]:
+        c = r.get("continuation")
+        if not c:
+            continue
+        st = c["start"]
+        L += [f"## {r['run']}: selected model against its starting model", "",
+              f"The run continued {c['from']}; its starting model "
+              + (f"{st['experiment_id']} ({len(st['features'] or [])} features, visible {_f(st['visible_score'])})"
+                 if st else "did not complete")
+              + f", selected {r['selected']['experiment_id']}. The difference is what the run's own search added.", ""]
+        if c["sealed"] is None:
+            L += [c["note"] or "No comparison.", ""]
+            continue
+        L += _table(c["sealed"], c["visible"], "selected", "start") + [""]
+        line = _other_metrics(c["sealed"], "selected", "start") + _check(c["sealed"])
+        L += ([line.strip(), ""] if line else [])
     p = rep.get("pair")
     if p:
         a, b = p["a"], p["b"]
@@ -312,6 +355,13 @@ def _reading(rep: dict) -> str:
             pp = r["sealed"]["paired"]
             parts.append(f"{r['run']}, sealed pooled: {_sentence(pp, 'selected', 'additive')}; by category: "
                          f"{_category_sentences(pp, 'selected', 'additive')}.")
+        c = r.get("continuation") or {}
+        if c.get("sealed"):
+            pp = c["sealed"]["paired"]
+            parts.append(f"{r['run']} against its starting model, sealed pooled: {_sentence(pp, 'selected', 'start')}"
+                         f"; by category: {_category_sentences(pp, 'selected', 'start')}.")
+        elif c:
+            parts.append(f"{r['run']} against its starting model: {c['note']}.")
     p = rep.get("pair")
     if p:
         pp = p["sealed"]["paired"]
