@@ -323,7 +323,7 @@ def render(rep: dict) -> str:
         L += ["", "## Achieved vs ceiling", "",
               "The run's selected model re-scored on the visible validation set (pearson_delta per perturbation from its "
               "predictions at its chosen alpha, against the recorded target means) next to the ceiling. The gap is ceiling "
-              "minus achieved; cells are the stored cells."]
+              "minus achieved."]
         L += ["", "| run | arm | selected | mean achieved | headroom | r(achieved, ceiling) |", "|---|---|---|---|---|---|"]
         for run in runs:
             if run.get("error"):
@@ -344,9 +344,11 @@ def render(rep: dict) -> str:
                   "are in the JSON twin."]
             if top.get("note"):
                 L.append(f"Note: {top['note']}.")
-            L += ["", "| perturbation | cells | ceiling | achieved | gap |", "|---|---|---|---|---|"]
+            L += ["", "| perturbation | target cells | ceiling | achieved | gap |", "|---|---|---|---|---|"]
             for t in top["per_perturbation"]:
-                L.append(f"| {t['pert']} | {t['n_cells']} | {_f(t['ceiling'])} | {_f(t['achieved'])} | {t['gap']:+.3f} |")
+                n_t = t.get("n_target")
+                n_txt = f"{t['n_cells']} stored (lower bound)" if n_t is None else str(n_t)
+                L.append(f"| {t['pert']} | {n_txt} | {_f(t['ceiling'])} | {_f(t['achieved'])} | {t['gap']:+.3f} |")
     L += ["", "## Reading", ""]
     if ov:
         spread = (f"(median {ov['median_ceiling']:.3f}, range {ov['min_ceiling']:.3f} to {ov['max_ceiling']:.3f} across "
