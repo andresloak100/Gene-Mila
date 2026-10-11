@@ -340,18 +340,32 @@ recorded the run's end. `handoff_state.py`, `sealed_reading.py` and `arm_reading
 clean run if given it. The record is `genemila_scale_logs/norman_ds_addstart_w4_r1.log` (the WATCHDOG line),
 `genemila_scale_logs/block_after_n4_stopped_r1.txt` and this plan. r1's reading is written as
 `docs/results/norman_b2_r1_killed_sealed_reading.md`, apart from the members' files, and is never passed to
-`arm_reading.py`. It is not renamed `_contaminated`, AGENTS.md's treatment of a broken run: its search ended normally, and whether all five of its sealed queries ran before the kill is
-being checked against the event times in its lab.db; a later commit records the answer.
+`arm_reading.py`. It is not renamed `_contaminated`, AGENTS.md's treatment of a broken run: its search ended normally, and all five of its end-of-run sealed queries ran in the killed process
+before the kill. Its lab.db events, times in UTC: the ensemble built at 22:34:17, the queries at 22:34:46, 22:35:25,
+22:36:05, 22:36:44 and 22:37:23, about 39 s apart. The kill came at about 22:37:40, 1,410 s after the start, which the
+controller's deadline line (22:34:13) places at about 22:14:10. The fallback's summary.json, written at 22:38:13,
+reuses those five stored scores, since the cap left it no new query. The kill cut only the last steps of the
+finishing, after the fifth query.
 
 **The cause, narrowed.** The control and r0 finished within the watchdog's allowance on the same machine, so "the
-watchdog's margin is too short for finishing a Norman run on this machine" says too much. The finishing times of the control, r0 and r1, and whether anything else ran on
-the Mac while r1 ran, are being collected; a later commit records them.
+watchdog's margin is too short for finishing a Norman run on this machine" says too much. The control and r0 took 169 s and 170 s from their controller's deadline line to
+their summary, about 40 s inside what the watchdog leaves after that line (the 30 s grace and 180 s, less the
+seconds of start-up); r1's five queries alone ran until 190 s after its deadline line. The margin was a near miss
+that the control and r0 cleared and r1 did not. The Mac session ran nothing heavy while r1 ran (a polling loop and one
+short status check at 22:27); other processes on the Mac were not checked.
 
 **Disclosure, completed.** Every run's log in `genemila_scale_logs/` ends with the rendered summary, which holds every
 finalist's sealed score; r0's and r1's logs hold them now. Nobody reads the end of a B2 run's log, or a B2 run's
 summary.md, before the readings. r0's selected model and visible score were also seen, printed by the run script
-(EXP_0724, 24 features, visible 0.628). The command that displayed r1's EXP_0003 row is being confirmed with the Mac
-session; a later commit records it.
+(EXP_0724, 24 features, visible 0.628). The command that displayed r1's EXP_0003 row was `tail -12
+genemila_scale_logs/norman_ds_addstart_w4_r1.log | cut -c1-240`, the Mac session's first look after the stop. It
+showed that one table row without its header (five metrics as pairs, taken to be visible / sealed: 0.699 / 0.677,
+0.009 / 0.007, 0.779 / 0.813, 0.557 / 0.480, 0.892 / 0.902), then the run's compute-efficiency block and its
+reproduction command, which names EXP_0875, the selected model. EXP_0003 is the additive baseline, the same
+deterministic model on the same split as in N1 to N4, so its sealed values were already known. No row of the
+selected model, the finalists or the ensemble was shown, and no other command showed a B2 sealed number (the others
+were greps of r1's log for WATCHDOG and errors, its lines 376 to 392, a print of five summary.json fields that hold
+no score, and sqlite counts).
 
 **Reproducibility.** `--no-watchdog` is recorded only in the "command:" lines the run script prints into
 `genemila_scale_logs/block_b2_resume.log`; config.json does not hold it.
