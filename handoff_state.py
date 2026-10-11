@@ -22,7 +22,9 @@ from pathlib import Path
 from genemila import REPO_ROOT
 from genemila.benchmark.table import run_arm
 
-DEFAULT_LOGS = Path.home() / "Documents" / "Loak-documents" / "genemila_scale_logs"
+# The Mac keeps the lab in ~/Documents/Gene-Mila (moved out of ~/Documents/Loak-documents on 11 Oct 2026): the
+# log directory beside this checkout, else the one there.
+LOG_DIRS = (REPO_ROOT.parent / "genemila_scale_logs", Path.home() / "Documents" / "Gene-Mila" / "genemila_scale_logs")
 
 
 def sh(*cmd, cwd=None) -> str:
@@ -149,13 +151,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--runs", default=str(REPO_ROOT / "runs"))
     ap.add_argument("--ledger", default=None, help="shared spend ledger (default: <runs>/spend_ledger.sqlite)")
-    ap.add_argument("--logs", default=None, help="driver log directory with progress.md (default: the Mac's, if present)")
+    ap.add_argument("--logs", default=None, help="driver log directory with progress.md (default: the first of LOG_DIRS that exists)")
     ap.add_argument("--fetch", action="store_true", help="fetch the integration branch first (needs network)")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
     runs_dir = Path(args.runs)
     ledger = Path(args.ledger) if args.ledger else runs_dir / "spend_ledger.sqlite"
-    logs = Path(args.logs) if args.logs else (DEFAULT_LOGS if DEFAULT_LOGS.exists() else None)
+    logs = Path(args.logs) if args.logs else next((d for d in LOG_DIRS if d.exists()), None)
     runs = sorted((run_state(d, ledger) for d in runs_dir.iterdir() if d.is_dir()), key=lambda r: r["dir"]) if runs_dir.exists() else []
     state = {"checked_at": time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()), "repo": str(REPO_ROOT),
              "git": git_state(REPO_ROOT, fetch=args.fetch), "runs": runs, "ledger": ledger_totals(ledger), "ledger_path": str(ledger),

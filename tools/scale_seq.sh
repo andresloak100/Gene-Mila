@@ -10,9 +10,9 @@
 # newcode_ds_w4_r0/_r1 (current code, DeepSeek planner). If the Claude CLI is at its usage
 # limit, the DeepSeek-planned runs go first and the Opus-planned ones are retried afterwards.
 
-L="$HOME/Documents/Loak-documents/genemila_scale_logs"
-MAIN="$HOME/Documents/Loak-documents/gene-mila"
-OLD="$HOME/Documents/Loak-documents/gene-mila-2492e11"
+L="$HOME/Documents/Gene-Mila/genemila_scale_logs"
+MAIN="$HOME/Documents/Gene-Mila/gene-mila"
+OLD="$HOME/Documents/Gene-Mila/gene-mila-2492e11"
 PY="$MAIN/.venv/bin/python"
 LEDGER="$MAIN/runs/spend_ledger.sqlite"
 LEDGER_STOP=14          # start no paid run once DeepSeek spend reaches this
