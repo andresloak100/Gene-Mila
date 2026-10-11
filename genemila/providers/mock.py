@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import json
 import random
+import re
 import threading
 import time
 
+from ..prompts import dataset_flags
 from .base import ProviderError, AgentProvider, LLMResponse, Usage
 
 TEMPLATES = {
@@ -106,11 +108,86 @@ class F(Feature):
             if not t:
                 out[i, :, 0] = d.mean(axis=0)
                 continue
-            sims = np.array([np.abs(ctx.gene_corr[t, ctx.target_indices(q)]).mean() if ctx.target_indices(q) else 0.0
-                             for q in names])
+            # similarity of two target sets: mean absolute correlation over every pair of their genes (the np.ix_
+            # block), so a pair's targets are an unordered set and sets of different sizes compare
+            sims = np.array([np.abs(ctx.gene_corr[np.ix_(t, tq)]).mean() if tq else 0.0
+                             for tq in map(ctx.target_indices, names)])
             top = np.argsort(-sims)[: int(params["k"])]
             w = sims[top] + 1e-6
             out[i, :, 0] = (w[:, None] * d[top]).sum(axis=0) / w.sum()
+        return out
+''',
+    "components": '''import numpy as np
+from genemila.features.api import Feature, register
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Low-rank response components of the training perturbations (leave-one-out SVD of their centred "
+                   "delta profiles); p's weight on each component is predicted by kernel ridge from its target's "
+                   "annotations (gene-set memberships, protein interactions, TF-network partners). One column per component.")
+    rationale = ("A few shared programs make up most responses. Fitting the map from a target's annotations to the "
+                 "programs' weights, instead of copying the closest training perturbations, extrapolates to targets "
+                 "without a close training perturbation.")
+    inputs = ["train_delta", "targets", "gene_sets", "ppi_network", "prior_network"]
+    params = {{"n_components": 4, "alpha": 1.0}}
+    dim = 4
+
+    def _kernel(self, ctx):
+        """Cosine kernel between genes from prior knowledge only (no training labels): shared gene sets,
+        shared interaction partners, shared TF-network partners."""
+        if "components_kernel" in ctx.cache:
+            return ctx.cache["components_kernel"]
+        n, idx = ctx.n_genes, ctx.gene_index
+        parts = []
+        sets = ctx.knowledge("gene_sets") or {{}}
+        if sets:
+            s = np.zeros((n, len(sets)))
+            for c, members in enumerate(sets.values()):
+                for g in members:
+                    j = idx.get(str(g))
+                    if j is not None:
+                        s[j, c] = 1.0
+            parts.append(s @ s.T)
+        for source in ("ppi_network", "prior_network"):
+            edges = ctx.knowledge(source) or []
+            if edges:
+                a = np.zeros((n, n))
+                for e in edges:
+                    i, j = idx.get(str(e[0])), idx.get(str(e[1]))
+                    if i is not None and j is not None and i != j:
+                        a[i, j] = a[j, i] = 1.0
+                parts.append(a @ a.T + a)
+        kern = np.zeros((n, n))
+        for part in parts:
+            d = np.sqrt(np.maximum(np.diag(part), 1e-12))
+            kern += part / np.outer(d, d)
+        kern /= max(len(parts), 1)
+        ctx.cache["components_kernel"] = kern
+        return kern
+
+    def compute(self, ctx, perts, params):
+        nc, alpha = int(params["n_components"]), float(params["alpha"])
+        kern = self._kernel(ctx)
+        out = np.zeros((len(perts), ctx.n_genes, self.dim))
+        for i, p in enumerate(perts):
+            tp = ctx.target_indices(p)
+            names, d = ctx.train_delta(exclude=p)
+            tq = [ctx.target_indices(q) for q in names]
+            rows = [r for r, t in enumerate(tq) if t]
+            if not tp or len(rows) <= nc:
+                continue
+            d = d[rows]
+            m = d.mean(axis=0)
+            _, _, vt = np.linalg.svd(d - m, full_matrices=False)
+            basis = vt[:nc]                                   # components x genes
+            load = (d - m) @ basis.T                          # training weights, n_train x components
+            ktt = np.array([[kern[np.ix_(tq[r], tq[c])].mean() for c in rows] for r in rows])
+            kpt = np.array([kern[np.ix_(tp, tq[r])].mean() for r in rows])
+            w = np.linalg.solve(ktt + alpha * np.eye(len(rows)), load)
+            pred = kpt @ w                                    # p's predicted weight on each component
+            cols = min(nc, self.dim)
+            out[i, :, :cols] = (basis[:cols] * pred[:cols, None]).T
         return out
 ''',
     "pca": '''import numpy as np
@@ -223,9 +300,336 @@ class F(Feature):
 '''
 
 
-def _pick_template(text: str) -> str:
+# External screens (knowledge files added to a bundle after it was built; see ScriptedPlanner). The knowledge file's
+# name comes from the hypothesis text ("... knowledge file <name> ..."), so the code names the file it reads. A
+# perturbation of several genes has an external row only when every one of its genes has one, and that row is their
+# sum (docs/NORMAN_PLAN.md section 4, item 8, as tools/external_loo.py forms it); external_direct multiplies it by the
+# file's top-level sign (-1 when the screen's modality is opposite to the bundle's; absent means +1) before its zero
+# fill, while the similarities of external_knn and external_krr are sign-free. A single's row, and with no sign in the
+# file every output, is what it was.
+TEMPLATES["external_direct"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+KNOWLEDGE = "{knowledge}"
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("External screen response of p's target (knowledge file {knowledge}): the change of gene g measured "
+                   "for the same target gene in another screen of the cell line; 0 where unmeasured or without a row.")
+    rationale = "The same knockdown measured in an independent screen of the same cell line predicts this response."
+    inputs = ["targets", KNOWLEDGE]
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        rows, sign = _rows(ctx), _sign(ctx)
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            r = _row(ctx, rows, p)
+            if r is not None:  # times the file's sign before the zero fill; +1 (or no sign) leaves the row as it is
+                out[i, :, 0] = np.nan_to_num(r if sign == 1 else sign * r)
+        return out
+
+
+def _row(ctx, rows, p):
+    """p's external row: its target's row for a single; for a perturbation of several genes the sum of its targets'
+    rows in sorted order, as tools/external_loo.py forms it (so the order targets.json lists them in does not
+    matter), only when every target has a row, nan where any of them is; None when p has no row."""
+    key = "external_pert_rows_" + KNOWLEDGE
+    memo = ctx.cache.setdefault(key, {{}})
+    if p not in memo:
+        ts = sorted(set(ctx.target_genes(p)))
+        r = None
+        if ts and all(t in rows for t in ts):
+            r = rows[ts[0]]
+            for t in ts[1:]:
+                r = r + rows[t]
+        memo[p] = r
+    return memo[p]
+
+
+def _sign(ctx):
+    """The knowledge file's sign: -1 when the screen's modality is opposite to this bundle's (a CRISPRi screen read
+    for a CRISPRa bundle), +1 when the file has none; anything else is refused, as tools/external_loo.py refuses it."""
+    key = "external_sign_" + KNOWLEDGE
+    if key not in ctx.cache:
+        s = (ctx.knowledge(KNOWLEDGE) or {{}}).get("sign", 1)
+        if isinstance(s, bool) or s not in (-1, 1):
+            raise ValueError(f"knowledge file {{KNOWLEDGE}}: sign is {{s!r}}; a knowledge file's sign is -1 or +1")
+        ctx.cache[key] = int(s)
+    return ctx.cache[key]
+
+
+def _rows(ctx):
+    """Target gene -> external change over this bundle's genes (nan where the screen did not measure it)."""
+    key = "external_rows_" + KNOWLEDGE
+    if key not in ctx.cache:
+        ext = ctx.knowledge(KNOWLEDGE) or {{}}
+        cols = np.array([ctx.gene_index.get(str(g), -1) for g in ext.get("genes") or []], dtype=int)
+        ok = cols >= 0
+        rows = {{}}
+        for g, r in (ext.get("perts") or {{}}).items():
+            d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
+            v = np.full(ctx.n_genes, np.nan)
+            v[cols[ok]] = d[ok]
+            rows[g] = v
+        ctx.cache[key] = rows
+    return ctx.cache[key]
+'''
+TEMPLATES["external_knn"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+KNOWLEDGE = "{knowledge}"
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Neighbour transfer through an external screen (knowledge file {knowledge}): weighted mean of the "
+                   "other training perturbations' responses, weights = correlation between the external responses of "
+                   "their targets and p's target, top k positive; the mean training response when p's target has no "
+                   "external row or no positively correlated neighbour.")
+    rationale = ("Targets whose knockdowns look alike in an independent screen of the same cell line respond alike "
+                 "here, even when their annotations do not say so.")
+    inputs = ["train_delta", "targets", KNOWLEDGE]
+    params = {{"k": 5}}
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        rows = _rows(ctx)
+        k = int(params["k"])
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            names, d = ctx.train_delta(exclude=p)
+            ep = _row(ctx, rows, p)
+            sims = np.full(len(names), -np.inf)
+            if ep is not None:
+                for j, q in enumerate(names):
+                    eq = _row(ctx, rows, q)
+                    if eq is None:
+                        continue
+                    m = ~np.isnan(ep) & ~np.isnan(eq)
+                    if m.sum() >= 3 and ep[m].std() > 0 and eq[m].std() > 0:
+                        sims[j] = float(np.corrcoef(ep[m], eq[m])[0, 1])
+            top = [j for j in np.argsort(-sims)[:k] if sims[j] > 0]
+            if top:
+                w = sims[top]
+                out[i, :, 0] = (w[:, None] * d[top]).sum(axis=0) / w.sum()
+            elif len(names):
+                out[i, :, 0] = d.mean(axis=0)
+        return out
+
+
+def _row(ctx, rows, p):
+    """p's external row: its target's row for a single; for a perturbation of several genes the sum of its targets'
+    rows in sorted order, as tools/external_loo.py forms it, only when every target has a row, nan where any of them
+    is; None when p has no row. A correlation is sign-free, so the file's sign is not read here."""
+    key = "external_pert_rows_" + KNOWLEDGE
+    memo = ctx.cache.setdefault(key, {{}})
+    if p not in memo:
+        ts = sorted(set(ctx.target_genes(p)))
+        r = None
+        if ts and all(t in rows for t in ts):
+            r = rows[ts[0]]
+            for t in ts[1:]:
+                r = r + rows[t]
+        memo[p] = r
+    return memo[p]
+
+
+def _rows(ctx):
+    """Target gene -> external change over this bundle's genes (nan where the screen did not measure it)."""
+    key = "external_rows_" + KNOWLEDGE
+    if key not in ctx.cache:
+        ext = ctx.knowledge(KNOWLEDGE) or {{}}
+        cols = np.array([ctx.gene_index.get(str(g), -1) for g in ext.get("genes") or []], dtype=int)
+        ok = cols >= 0
+        rows = {{}}
+        for g, r in (ext.get("perts") or {{}}).items():
+            d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
+            v = np.full(ctx.n_genes, np.nan)
+            v[cols[ok]] = d[ok]
+            rows[g] = v
+        ctx.cache[key] = rows
+    return ctx.cache[key]
+'''
+
+
+TEMPLATES["external_krr"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+KNOWLEDGE = "{knowledge}"
+LAMBDAS = (0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0)
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Kernel transfer through an external screen (knowledge file {knowledge}): kernel ridge regression "
+                   "over the other training perturbations' responses, kernel = Pearson correlation between the "
+                   "external responses of their targets, so p's response is the mean training response plus a "
+                   "signed mix of the others' deviations from it; lambda chosen by leave-one-out over those training "
+                   "perturbations; the mean training response when p's target has no external row or fewer than 3 "
+                   "training perturbations have one.")
+    rationale = ("Targets whose knockdowns look alike, or opposite, in an independent screen of the same cell line "
+                 "respond alike, or opposite, here; kernel ridge mixes the training responses with weights of either "
+                 "sign instead of averaging the closest few.")
+    inputs = ["train_delta", "targets", KNOWLEDGE]
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        rows = _rows(ctx)
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            names, d = ctx.train_delta(exclude=p)
+            if not len(names):
+                continue
+            ybar = d.mean(axis=0)
+            out[i, :, 0] = ybar
+            zp = _unit(ctx, rows, p)
+            r = [j for j, q in enumerate(names) if _unit(ctx, rows, q) is not None]
+            if zp is None or len(r) < 3:
+                continue
+            z = np.array([_unit(ctx, rows, names[j]) for j in r])
+            kern = z @ z.T
+            y = d[r]
+            ybars = (d.sum(axis=0)[None, :] - y) / (len(names) - 1)  # mean response without p and without row j
+            lam = _choose_lambda(kern, y, ybars)
+            w = np.linalg.solve(kern + lam * np.eye(len(r)), z @ zp)
+            out[i, :, 0] = ybar * (1.0 - w.sum()) + w @ y
+        return out
+
+
+def _choose_lambda(kern, y, ybars):
+    """Lambda with the best mean leave-one-out pearson_delta over the rows of y (row j predicted by kernel ridge from
+    the other rows, around ybars[j]); ties go to the larger lambda. Closed form: with a the inverse of kern + lam I,
+    row j's refit weights the other rows by -a[:, j] / a[j, j], and the centred prediction's products with the
+    truth and itself need only the Gram matrices of the centred rows."""
+    yc = y - y.mean(axis=1, keepdims=True)
+    bc = ybars - ybars.mean(axis=1, keepdims=True)
+    g, m = yc @ yc.T, yc @ bc.T
+    yy, mb, bb = np.diag(g), np.diag(m), (bc * bc).sum(axis=1)
+    s, v = np.linalg.eigh(kern)
+    s = np.clip(s, 0.0, None)
+    scores = {{}}
+    for lam in LAMBDAS:
+        a = (v / (s + lam)) @ v.T
+        w = -a / np.diag(a)[None, :]
+        np.fill_diagonal(w, 0.0)
+        c = 1.0 - w.sum(axis=0)
+        num = (w * g).sum(axis=0) + c * mb
+        pp = np.maximum(((g @ w) * w).sum(axis=0) + 2.0 * c * (w * m).sum(axis=0) + c * c * bb, 0.0)
+        den = np.sqrt(pp * yy)
+        scores[lam] = float(np.mean(np.where(den > 0, num / np.where(den > 0, den, 1.0), 0.0)))
+    best = max(scores.values())
+    return max(lam for lam in LAMBDAS if scores[lam] >= best - 1e-12)
+
+
+def _unit(ctx, rows, p):
+    """p's unit row: its external row (its target's row for a single; for a perturbation of several genes the sum of
+    its targets' rows in sorted order, only when every target has a row, a gene unmeasured in any of them left out)
+    centred over its measured genes and scaled to unit norm, 0 elsewhere, so a dot product of two is their Pearson
+    correlation. None when p has no row, or its row has fewer than 3 measured genes or no spread. Computed per
+    perturbation, as tools/external_loo.py's _prepare and _unit_rows compute it, since the unit vector of a sum is
+    not the sum of its targets' unit vectors; a similarity is sign-free, so the file's sign is not read here."""
+    key = "external_krr_pert_unit_" + KNOWLEDGE
+    memo = ctx.cache.setdefault(key, {{}})
+    if p not in memo:
+        memo[p] = None
+        ts = sorted(set(ctx.target_genes(p)))
+        if ts and all(t in rows for t in ts):
+            r = rows[ts[0]]
+            for t in ts[1:]:
+                r = r + rows[t]
+            ok = np.isfinite(r)
+            if ok.sum() >= 3:
+                x = np.zeros(ctx.n_genes)
+                x[ok] = r[ok] - r[ok].mean()
+                norm = np.sqrt((x * x).sum())
+                if norm > 0:
+                    memo[p] = x / norm
+    return memo[p]
+
+
+def _rows(ctx):
+    """Target gene -> external change over this bundle's genes, nan where the file's "measured" mask says the screen
+    did not measure the gene or the value is null; a target listed with zero cells has no row (a label no cell
+    carries is no measurement). Read as tools/external_loo.py's load_external reads the file, and cached under its
+    own key because the other external templates read the file without the mask."""
+    key = "external_krr_rows_" + KNOWLEDGE
+    if key not in ctx.cache:
+        ext = ctx.knowledge(KNOWLEDGE) or {{}}
+        genes = [str(g) for g in ext.get("genes") or []]
+        index = {{g: j for j, g in enumerate(genes)}}
+        pos = np.array([index.get(g, -1) for g in ctx.genes], dtype=int)
+        measured = np.array([bool(m) for m in ext.get("measured", [True] * len(genes))], dtype=bool)
+        keep = pos >= 0
+        keep[keep] = measured[pos[keep]]
+        rows = {{}}
+        for g, r in (ext.get("perts") or {{}}).items():
+            n_cells = r.get("n_cells")
+            if n_cells is not None and int(n_cells) <= 0:
+                continue
+            d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
+            v = np.full(ctx.n_genes, np.nan)
+            v[keep] = d[pos[keep]]
+            rows[str(g)] = v
+        ctx.cache[key] = rows
+    return ctx.cache[key]
+'''
+
+
+# Bundles with pairs of genes (Norman; docs/NORMAN_PLAN.md section 4, item 11): the additive model of the single-gene
+# responses, the scripted twin of the lab's baseline_additive computed leave-one-out. Its hypothesis (PAIR_HYPOTHESES)
+# is scripted only for a bundle with pairs, and its keywords (_pick_template) come before "similar", which its text
+# would otherwise reach through no keyword at all and fall to `variance`; they are read only for a bundle with pairs,
+# so on any other bundle a text that happens to say "additive model" picks the template it picked before.
+TEMPLATES["additive"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Additive model of single-gene responses: the sum over p's target genes of each gene's single-gene "
+                   "training response (the mean response of the other training perturbations whose one target is that "
+                   "gene), with the mean single-gene training response for a gene without one.")
+    rationale = ("A pair of genes often changes expression by about the sum of its genes' single-gene changes, so the "
+                 "training singles predict pairs whose genes were each perturbed alone.")
+    inputs = ["train_delta", "targets"]
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            names, d = ctx.train_delta(exclude=p)
+            if not len(names):
+                continue
+            single = {{}}
+            for j, q in enumerate(names):
+                tq = ctx.target_genes(q)
+                if len(tq) == 1:
+                    single.setdefault(tq[0], []).append(j)
+            every = [j for rows in single.values() for j in rows]
+            fill = d[every].mean(axis=0) if every else d.mean(axis=0)
+            for g in sorted(set(ctx.target_genes(p))) or [None]:  # unordered: a pair is the same in either order
+                out[i, :, 0] += d[single[g]].mean(axis=0) if g in single else fill
+        return out
+'''
+
+
+def _pick_template(text: str, pairs: bool = False) -> str:
+    """The template a feature's name, description and hint ask for: the first keyword found wins. The additive
+    template's keywords are read only for a bundle with pairs of genes (pairs, from the task's DATASET line), so on
+    any other bundle (Adamson's) the same text picks the template it picked before that template existed."""
     text = text.lower()
-    for key, words in [("similar", ("similar", "knn", "neighbor", "neighbour", "transfer")),
+    for key, words in [("external_krr", ("external screen kernel",)),
+                       ("external_knn", ("external screen neighbour",)),
+                       ("external_direct", ("external screen response",)),
+                       ("components", ("component", "low-rank", "low rank", "kernel ridge")),
+                       *([("additive", ("additive model", "additivity", "additive single"))] if pairs else []),
+                       ("similar", ("similar", "knn", "neighbor", "neighbour", "transfer")),
                        ("network", ("network", "prior", "edge", "regulat", "tf ")),
                        ("module", ("module", "pathway", "gene_set", "gene set")),
                        ("pca", ("pca", "principal", "latent", "svd")),
@@ -235,6 +639,52 @@ def _pick_template(text: str) -> str:
         if any(w in text for w in words):
             return key
     return "variance"
+
+
+def _knowledge_name(text: str) -> str:
+    """The knowledge file a hypothesis names ("... knowledge file replogle2022_k562 ..."), for the external templates."""
+    m = re.search(r"knowledge file (\w+)", text)
+    return m.group(1) if m else ""
+
+
+# Template text worded for any modality, (old, new) per template, put in only for a bundle with pairs of genes or a
+# recorded modality (the task's DATASET line, prompts.dataset_flags): rationales that say knockdown or knockout, and
+# what the external response does with a pair and the file's sign. Any other bundle (Adamson's) gets every template
+# exactly as written above, so its plugin files are unchanged.
+NEUTRAL_TEMPLATE_TEXT = {
+    "coexpr": [("the knocked-out gene", "the perturbed gene")],
+    "network": [("Knocking out a regulator removes its activation", "Perturbing a regulator changes its activation")],
+    "module": [("A knockout perturbs the pathway/module it belongs to.",
+                "A perturbation disturbs the pathway/module its target belongs to.")],
+    "similar": [("co-expressed with p's target (leave-one-out)", "co-expressed with p's targets (leave-one-out)")],
+    "pca": [("move together after knockout.", "move together after a perturbation.")],
+    "target_level": [("Knockdown removes a fixed fraction of the target's expression, so the drop scales with its level.",
+                      "A perturbation moves its target's own expression by an amount that depends on the target's "
+                      "baseline level.")],
+    "external_direct": [("in another screen of the cell line; 0 where",
+                         "in another screen of the cell line (for a pair, the sum of its genes' rows), times the "
+                         "file's sign; 0 where"),
+                        ("The same knockdown measured in an independent screen of the same cell line predicts this "
+                         "response.", "The same target perturbed in an independent screen of the same cell line "
+                         "predicts this response, once the file's sign matches that screen's modality to this one's.")],
+    "external_knn": [("Targets whose knockdowns look alike", "Targets whose perturbations look alike")],
+    "external_krr": [("Targets whose knockdowns look alike", "Targets whose perturbations look alike")],
+}
+
+
+def _neutral(text: str) -> bool:
+    """Whether a DATASET line (or a research state holding one) is that of a bundle with pairs or a modality."""
+    flags = dataset_flags(text or "")
+    return flags["pairs"] or flags["modality"]
+
+
+def _code(hint: str, name: str, data_summary: str = "") -> str:
+    key = _pick_template(hint, dataset_flags(data_summary or "")["pairs"])
+    code = TEMPLATES[key].format(name=name, knowledge=_knowledge_name(hint))
+    if _neutral(data_summary):
+        for old, new in NEUTRAL_TEMPLATE_TEXT.get(key, []):
+            code = code.replace(old, new)
+    return code
 
 
 class MockProvider(AgentProvider):
@@ -292,7 +742,7 @@ class MockProvider(AgentProvider):
         elif "MOCK_BREAK" in hint or (self.fail_rate and self.rng.random() < self.fail_rate):
             code = "import numpy as np\nthis is not python(\n"
         else:
-            code = TEMPLATES[_pick_template(hint)].format(name=nf["name"])
+            code = _code(hint, nf["name"], task.get("data_summary", ""))
         text = f"```python\n{code}```"
         return LLMResponse(text=text, usage=self._usage(json.dumps(task), text), provider=self.name, model=self.model)
 
@@ -305,7 +755,7 @@ class MockProvider(AgentProvider):
         if "MOCK_BREAK_ALWAYS" in hint:
             code = "still broken(\n"
         else:
-            code = TEMPLATES[_pick_template(hint.replace("MOCK_BREAK", ""))].format(name=nf["name"])
+            code = _code(hint.replace("MOCK_BREAK", ""), nf["name"], task.get("data_summary", ""))
         text = f"```python\n{code}```"
         return LLMResponse(text=text, usage=self._usage(error, text), provider=self.name, model=self.model)
 
@@ -325,15 +775,96 @@ SCRIPTED_HYPOTHESES = [
      "Shared latent programs predict co-movement."),
     ("Gene variability", "explore", "control_variance", "control-cell std of gene g (variance)",
      "Variable genes respond more."),
+    ("Response components", "explore", "response_components",
+     "low-rank response components of the training perturbations, with p's weight on each predicted from its "
+     "target's annotations by kernel ridge",
+     "A few shared programs make up most responses; mapping a target's annotations to the programs' weights "
+     "extrapolates to targets without a close training perturbation."),
 ]
 
 
+def external_hypotheses(names: list[str] | None) -> list[tuple]:
+    """Three fixed hypotheses per external screen knowledge file a run can read (run.external_knowledge): the same
+    target's external response, neighbour transfer weighted by external response similarity, and kernel transfer
+    (kernel ridge over the training responses with the external correlation as kernel; added after the first
+    leave-one-out reading of the Replogle screen). They follow the eight fixed hypotheses (and the additive one of a
+    bundle with pairs), so a scripted control on a bundle without such a file is unchanged. Each text triggers its own
+    template only (_pick_template). The templates read a pair's row as the sum of its genes' rows, and the direct
+    response times the file's sign, as tools/external_loo.py does."""
+    out = []
+    for k in names or []:
+        out += [("External screen response", "explore", f"external_direct_{k}",
+                 f"external screen response of the same target gene, from knowledge file {k}",
+                 "The same knockdown measured in an independent screen of the same cell line predicts this response."),
+                ("External screen neighbours", "explore", f"external_knn_{k}",
+                 f"external screen neighbour transfer: training responses weighted by how alike their targets' "
+                 f"knockdowns look in knowledge file {k}",
+                 "Targets whose knockdowns look alike in an independent screen respond alike here."),
+                ("External screen kernel transfer", "explore", f"external_krr_{k}",
+                 f"external screen kernel transfer: kernel ridge weights over training responses from how alike "
+                 f"their targets' knockdowns look in knowledge file {k}",
+                 "Targets whose knockdowns look alike, or opposite, in an independent screen respond alike, or "
+                 "opposite, here; signed kernel ridge weights over all training responses use that beyond the "
+                 "closest few.")]
+    return out
+
+
+# Bundles with pairs of genes (Norman; docs/NORMAN_PLAN.md section 4, item 11): one more fixed hypothesis, after the
+# eight and before any external ones, whose text reaches the `additive` template.
+PAIR_HYPOTHESES = [
+    ("Additive single-gene responses", "explore", "additive_singles",
+     "additive model of the single-gene responses: each target gene's training single response (the mean single-gene "
+     "response for a gene without one), summed over the perturbation's genes",
+     "A pair of genes often changes expression by about the sum of its genes' single-gene changes, so the training "
+     "singles predict pairs whose genes were each perturbed alone."),
+]
+
+# Titles and rationales worded for any modality, (old, new), for a bundle with pairs or a recorded modality; the
+# descriptions, which pick the template and make the hypothesis text, are never changed, and any other bundle
+# (Adamson's) gets every hypothesis exactly as written above.
+NEUTRAL_HYPOTHESIS_TEXT = [
+    ("the knocked-out gene", "the perturbed gene"),
+    ("Knocking out a TF removes its regulation", "Perturbing a TF changes its regulation"),
+    ("Knockouts disturb the pathway they belong to.", "Perturbations disturb the pathway their target belongs to."),
+    ("Target knockdown magnitude", "Target perturbation magnitude"),
+    ("The knockdown drop scales with the target's baseline expression.",
+     "The change of the target's own expression depends on its baseline expression."),
+    ("The same knockdown measured in an independent screen of the same cell line predicts this response.",
+     "The same target perturbed in an independent screen of the same cell line predicts this response, once the "
+     "file's sign matches that screen's modality to this one's."),
+    ("Targets whose knockdowns look alike", "Targets whose perturbations look alike"),
+]
+
+
+def scripted_hypotheses(external: list[str] | None = None, pairs: bool = False, neutral: bool = False) -> list[tuple]:
+    """The scripted planner's fixed list: the eight, the additive one for a bundle with pairs, then three per external
+    file; with neutral, the titles and rationales of NEUTRAL_HYPOTHESIS_TEXT. With neither, exactly the list every
+    run on a single-target bundle without a modality has always had."""
+    hyps = SCRIPTED_HYPOTHESES + (PAIR_HYPOTHESES if pairs else []) + external_hypotheses(external)
+    if not neutral:
+        return hyps
+    out = []
+    for title, cat, name, desc, why in hyps:
+        for old, new in NEUTRAL_HYPOTHESIS_TEXT:
+            title, why = title.replace(old, new), why.replace(old, new)
+        out.append((title, cat, name, desc, why))
+    return out
+
+
 class ScriptedPlanner(AgentProvider):
-    """Deterministic planner used when no LLM planner is available, and in tests."""
+    """Deterministic planner used when no LLM planner is available, and in tests. external: the knowledge files a
+    run can read beyond those its bundle was built with (run.external_knowledge); each adds three hypotheses.
+    pairs / modality: whether the bundle has pairs of genes / records its modality, which adds the additive hypothesis
+    / words the list for any modality (scripted_hypotheses); None, what build_providers passes, reads them from the
+    DATASET line of the first research state the planner is given, before it proposes anything (prompts.dataset_flags),
+    so a bundle with neither (Adamson's) gets the list exactly as before."""
     name = "scripted"
 
-    def __init__(self, model: str = "scripted"):
+    def __init__(self, model: str = "scripted", external: list[str] | None = None, pairs: bool | None = None,
+                 modality: bool | None = None):
         super().__init__(model)
+        self.external, self.pairs, self.modality = list(external or []), pairs, modality
+        self.hypotheses = scripted_hypotheses(self.external, bool(pairs), bool(pairs or modality))
         self.cursor = 0
         self.swept = False
         self.lasso = False
@@ -347,9 +878,14 @@ class ScriptedPlanner(AgentProvider):
             return self._propose(research_state, n)
 
     def _propose(self, research_state: str, n: int) -> LLMResponse:
+        if self.cursor == 0 and (self.pairs is None or self.modality is None):
+            flags = dataset_flags(research_state)
+            self.pairs = flags["pairs"] if self.pairs is None else self.pairs
+            self.modality = flags["modality"] if self.modality is None else self.modality
+            self.hypotheses = scripted_hypotheses(self.external, self.pairs, self.pairs or self.modality)
         hyps = []
-        while len(hyps) < n and self.cursor < len(SCRIPTED_HYPOTHESES):
-            title, cat, name, desc, why = SCRIPTED_HYPOTHESES[self.cursor]
+        while len(hyps) < n and self.cursor < len(self.hypotheses):
+            title, cat, name, desc, why = self.hypotheses[self.cursor]
             hyps.append({"title": title, "hypothesis": f"Adding {desc} improves prediction of unseen perturbations.",
                          "rationale": why, "category": cat, "action": "new_feature", "parent": None,
                          "new_feature": {"name": name, "description": desc, "implementation_hint": desc,

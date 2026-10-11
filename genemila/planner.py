@@ -32,18 +32,39 @@ def parse_json(text: str) -> dict:
     return json.loads(text[start:end + 1])
 
 
+PARSE_FAILURES_BEFORE_SWITCH = 3  # unparseable plans in a row before the planner is treated as down
+
+
 class Planner:
-    def __init__(self, lab: Lab, provider: AgentProvider, fallback: AgentProvider | None = None):
+    """One planner provider at a time, with an ordered chain of fallbacks. A provider that fails (usage
+    limit, API error, budget halt) is replaced by the next one in the chain for the rest of the run: the
+    switch is sticky, logged as a `planner_switch` event, and the summary and the results tables label the
+    run as a mixed-planner arm. When the chain is exhausted the run goes on without a planner (the queue
+    drains and the deterministic exploit engine keeps proposing) and a `planner_exhausted` event says so;
+    an LLM arm never degrades silently to the scripted planner."""
+
+    def __init__(self, lab: Lab, provider: AgentProvider, fallback=None):
         self.lab = lab
         self.provider = provider
-        self.fallback = fallback
+        self.primary = provider
+        self.fallbacks: list[AgentProvider] = list(fallback) if isinstance(fallback, (list, tuple)) else (
+            [fallback] if fallback is not None else [])
         self.cfg = lab.cfg
         self.rounds = 0
         self.last_call = 0.0
         self.last_queued = -1
         self.last_failed = False
         self.empty_rounds = 0  # consecutive rounds that queued nothing
+        self.parse_failures = 0  # consecutive rounds whose response held no usable plan
+        self.switches: list[dict] = []
+        self.exhausted = False
         self._lock = threading.Lock()  # several planner rounds may run concurrently
+        if hasattr(provider, "available") and not provider.available():
+            self._switch(provider, "not usable here")
+
+    @property
+    def fallback(self) -> AgentProvider | None:
+        return self.fallbacks[0] if self.fallbacks else None
 
     def backing_off(self, min_interval_s: float) -> bool:
         """Wait min_interval_s after a round that failed or produced nothing new (never hammer the planner)."""
@@ -52,11 +73,49 @@ class Planner:
                     and time.time() - self.last_call < min_interval_s)
 
     def dry(self) -> bool:
-        """The planner will produce nothing more: a deterministic planner (or the fallback after the planner
-        budget is spent) returned nothing three rounds in a row. An LLM planner is never considered dry."""
+        """The planner will produce nothing more: every provider in the chain failed, or a deterministic
+        planner returned nothing three rounds in a row. A working LLM planner is never considered dry."""
+        if self.exhausted:
+            return True
         llm_usable = self.provider.name not in ("scripted",) and not self.lab.gateway.is_halted("planner",
                                                                                               self.provider.name)
         return self.empty_rounds >= 3 and not llm_usable
+
+    def _switch(self, failed: AgentProvider, reason: str) -> AgentProvider | None:
+        """Replace `failed` by the next provider in the chain, for this and every later round. Returns the
+        provider to use now, or None when the chain is exhausted. A concurrent round may have switched
+        already; then its choice is followed."""
+        with self._lock:
+            if self.provider is not failed:
+                return self.provider
+            self.parse_failures = 0
+            while self.fallbacks:
+                nxt = self.fallbacks.pop(0)
+                if hasattr(nxt, "available") and not nxt.available():
+                    self.lab.db.event("planner_switch", f"{nxt.name}:{nxt.model} skipped: not usable here",
+                                      level="warning")
+                    continue
+                self.provider = nxt
+                self.switches.append({"ts": time.time(), "from": f"{failed.name}:{failed.model}",
+                                      "to": f"{nxt.name}:{nxt.model}", "reason": reason[:300]})
+                self.lab.db.event("planner_switch", f"{failed.name}:{failed.model} -> {nxt.name}:{nxt.model} "
+                                  f"({reason})"[:500], level="warning")
+                return nxt
+            if not self.exhausted:
+                self.exhausted = True
+                self.lab.db.event("planner_exhausted", f"{failed.name}:{failed.model} failed ({reason}) and no "
+                                  "fallback planner is left; the run continues without a planner"[:500],
+                                  level="error")
+            return None
+
+    def _ask(self, provider: AgentProvider, text: str, n: int) -> dict:
+        if provider.name == "scripted":  # deterministic and free: not metered
+            return parse_json(provider.propose(research_state=text, n=n, mix=self.mix(), max_tokens=0).text)
+        resp = self.lab.gateway.call(provider, "propose", role="planner",
+                                     max_tokens=int(self.cfg["planner"]["max_output_tokens"]),
+                                     est_input_tokens=len(text) // 3 + 1500,
+                                     research_state=text, n=n, mix=self.mix())
+        return parse_json(resp.text)
 
     def mix(self) -> dict:
         s = self.cfg["schedule"]
@@ -78,22 +137,33 @@ class Planner:
         (self.lab.run_dir / "planner" / f"state_{rnd:03d}.txt").write_text(text)
         provider = self.provider
         failed = False
-        try:
-            resp = self.lab.gateway.call(provider, "propose", role="planner",
-                                         max_tokens=int(self.cfg["planner"]["max_output_tokens"]),
-                                         est_input_tokens=len(text) // 3 + 1500,
-                                         research_state=text, n=n, mix=self.mix())
-            plan = parse_json(resp.text)
-        except (ProviderError, BudgetExceeded, ValueError, json.JSONDecodeError) as exc:
-            self.lab.db.event("planner_error", f"{provider.name}: {exc}"[:500], level="warning")
-            failed = True
-            if self.fallback is None:
+        if self.exhausted:
+            with self._lock:
+                self.last_failed, self.last_queued = True, 0
+            return []
+        while True:
+            try:
+                plan = self._ask(provider, text, n)
                 with self._lock:
-                    self.last_failed, self.last_queued = True, 0
-                return []
-            provider = self.fallback
-            resp = provider.propose(research_state=text, n=n, mix=self.mix(), max_tokens=0)
-            plan = parse_json(resp.text)
+                    self.parse_failures = 0
+                break
+            except (ProviderError, BudgetExceeded, ValueError, json.JSONDecodeError) as exc:
+                self.lab.db.event("planner_error", f"{provider.name}:{provider.model}: {exc}"[:500], level="warning")
+                failed = True
+                if isinstance(exc, (ValueError, json.JSONDecodeError)) and not isinstance(exc, BudgetExceeded):
+                    with self._lock:  # a malformed answer is not an outage: switch only when it repeats
+                        self.parse_failures += 1
+                        repeated = self.parse_failures >= PARSE_FAILURES_BEFORE_SWITCH
+                    if not repeated:
+                        with self._lock:
+                            self.last_failed, self.last_queued = True, 0
+                        return []
+                nxt = self._switch(provider, f"{type(exc).__name__}: {exc}")
+                if nxt is None:
+                    with self._lock:
+                        self.last_failed, self.last_queued = True, 0
+                    return []
+                provider = nxt
         (self.lab.run_dir / "planner" / f"plan_{rnd:03d}.json").write_text(json.dumps(plan, indent=1))
         specs = self.to_specs(plan.get("hypotheses", []), proposer=f"{provider.name}:{provider.model}", rnd=rnd)
         queued = []

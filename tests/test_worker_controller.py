@@ -295,7 +295,24 @@ def test_python_exploit_fills_the_queue_without_llm(lab_factory):
     best = lab.best()
     for spec in exploit.candidates(lab, best):
         lab.queue(spec)
+    lab.cfg["schedule"]["exploit_depth"] = 1
     assert exploit.propose(lab, 5) == []
+    # deeper tiers: wider additions and next-best parents, then feature subsets; every configuration once
+    lab.cfg["schedule"]["exploit_depth"] = 3
+    seen = set()
+    for _ in range(400):
+        batch = exploit.propose(lab, 7)
+        if not batch:
+            break
+        for spec in batch:
+            ch = lab.config_hash_for(spec)
+            assert ch not in seen
+            seen.add(ch)
+            _, status = lab.queue(spec)
+            assert status == "queued", status
+    assert exploit.propose(lab, 7) == [] and seen  # how many depends on the features the run discovered
+    groups = {r["hypothesis_group"] for r in lab.db.query("SELECT hypothesis_group FROM experiments WHERE proposer='python:exploit'")}
+    assert any(g.startswith("exploit_wide_") or g.startswith("exploit_subset_") for g in groups)
 
 
 def test_exploit_never_reproposes_a_rejected_candidate(lab_factory):

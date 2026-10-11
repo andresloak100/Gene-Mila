@@ -13,6 +13,7 @@ analyze_run.py when present).
 
 import argparse
 import json
+import re
 import math
 from pathlib import Path
 
@@ -20,12 +21,13 @@ from genemila import REPO_ROOT
 from genemila.benchmark.table import run_arm
 
 MEASURES = [  # key, label, how to read it from (summary, analysis)
-    ("best_visible", "best visible", lambda s, a: _visible(s, "best")),
-    ("best_visible_single", "best visible (single model)", lambda s, a: (s.get("best") or {}).get("score")),
-    ("best_sealed", "best sealed", lambda s, a: _sealed(s, "best")),
-    ("best_sealed_single", "best sealed (single model)", lambda s, a: _sealed(s, "single")),
-    ("gain_visible", "gain over start (visible)", lambda s, a: s.get("improvement_over_baseline")),
-    ("gain_sealed", "gain over start (sealed)", lambda s, a: _gain_sealed(s)),
+    ("best_visible", "best visible (selection score)", lambda s, a: _visible(s, "best")),
+    ("best_visible_single", "best visible (single model, selection score)", lambda s, a: (s.get("best") or {}).get("score")),
+    ("best_val1", "best visible (validation set only)", lambda s, a: ((s.get("best") or {}).get("metrics") or {}).get("pearson_delta")),
+    ("best_sealed", "best sealed pearson_delta", lambda s, a: _sealed(s, "best")),
+    ("best_sealed_single", "best sealed pearson_delta (single model)", lambda s, a: _sealed(s, "single")),
+    ("gain_visible", "gain over start (visible)", lambda s, a: _gain_visible(s)),
+    ("gain_sealed", "gain over start (sealed pearson_delta)", lambda s, a: _gain_sealed(s)),
     ("completed", "experiments completed", lambda s, a: s.get("experiments_completed")),
     ("completed_planner", "completed, planner-proposed", lambda s, a: _planner_count(s)),
     ("exploit_share", "share proposed by the exploit engine", lambda s, a: _exploit_share(s)),
@@ -38,7 +40,7 @@ MEASURES = [  # key, label, how to read it from (summary, analysis)
     ("tokens_k", "LLM tokens (k, in+out)", lambda s, a: _tokens(s)),
     ("cached_share", "cached input share", lambda s, a: _cached(s)),
     ("cost_worker", "worker $ (DeepSeek)", lambda s, a: (s.get("llm_usage", {}).get("worker") or {}).get("cost_usd")),
-    ("cost_planner", "planner $ (CLI estimate)", lambda s, a: (s.get("llm_usage", {}).get("planner") or {}).get("cost_usd")),
+    ("cost_planner", "planner $ (API spend, or the Claude CLI's usage estimate)", lambda s, a: (s.get("llm_usage", {}).get("planner") or {}).get("cost_usd")),
     ("exp_per_hour", "experiments / hour", lambda s, a: s.get("compute_efficiency", {}).get("experiments_per_hour")),
     ("planner_exp_per_hour", "planner-proposed experiments / hour",
      lambda s, a: s.get("compute_efficiency", {}).get("planner_experiments_per_hour", s.get("compute_efficiency", {}).get("experiments_per_hour"))),
@@ -59,8 +61,10 @@ def _row(s, which):
 
 
 def _sealed(s, which):
+    """Sealed pearson_delta of the row: the selection score itself under the default rule; a run under another
+    rule (experiment.selection) reports it by name, so arms stay comparable on the same metric."""
     r = _row(s, which)
-    return None if r is None else r.get("query_only_score")
+    return None if r is None else r.get("query_only_pearson_delta", r.get("query_only_score"))
 
 
 def _visible(s, which):
@@ -81,6 +85,17 @@ def _exploit_share(s):
     return None if not done else by.get("python:exploit", 0) / done
 
 
+def _gain_visible(s):
+    """Visible gain on the pearson_delta scale: the run's own improvement when it selected by pearson_delta;
+    for another selection rule, validation-set pearson_delta of best minus start when the summary carries both
+    (summaries since the rule exists do), else None rather than a number on another scale."""
+    if ((s.get("selection") or {}).get("rule") or "pearson_delta") == "pearson_delta":
+        return s.get("improvement_over_baseline")
+    b = ((s.get("best") or {}).get("metrics") or {}).get("pearson_delta")
+    st = ((s.get("baseline") or {}).get("metrics") or {}).get("pearson_delta")
+    return None if b is None or st is None else b - st
+
+
 def _gain_sealed(s):
     b, base = _sealed(s, "best"), _sealed(s, "baseline")
     return None if b is None or base is None else b - base
@@ -88,6 +103,17 @@ def _gain_sealed(s):
 
 def _is_control(arm: str) -> bool:
     return arm.startswith("scripted control (no LLM)")
+
+
+def _is_continuation(arm: str) -> bool:
+    """A warm-started run re-searches another campaign's features: its result is that campaign's, so it is
+    neither a control nor an arm of its own in the comparisons (it stays in the table and the run list)."""
+    return arm.startswith("no-LLM continuation of ") or "(continued from " in arm
+
+
+def _continued_source(arm: str) -> str | None:
+    m = re.search(r"no-LLM continuation of (\S+)|\(continued from (\S+)\)", arm)
+    return (m.group(1) or m.group(2)) if m else None
 
 
 def _tokens(s):
@@ -109,7 +135,7 @@ def load_runs(dirs):
         s = json.loads((d / "summary.json").read_text())
         a = json.loads((d / "analysis.json").read_text()) if (d / "analysis.json").exists() else None
         cfg = json.loads((d / "config.json").read_text()) if (d / "config.json").exists() else {}
-        runs.append({"dir": d.name, "arm": run_arm(cfg), "workers": s.get("workers") or cfg.get("run", {}).get("workers"),
+        runs.append({"dir": d.name, "arm": run_arm(cfg, s), "workers": s.get("workers") or cfg.get("run", {}).get("workers"),
                      "code": (s.get("base_commit") or "")[:7], "values": {k: f(s, a) for k, _, f in MEASURES}})
     # runs on different code versions are different arms, however alike their configs
     if len({r["code"] for r in runs if r["code"]}) > 1:
@@ -154,9 +180,13 @@ def render(runs):
     L = ["# Efficiency across worker counts", "",
          "Same dataset, split and time budget for every run; mean ± sd over repeats (n in the header). "
          "Gain is best model minus the starting model (best linear model on built-in features); "
-         "sealed = query-only held-out perturbations. Planner dollars are the Claude CLI's usage estimate. "
+         "sealed = query-only held-out perturbations, always reported as pearson_delta whatever selection rule the run used. Planner dollars are real API spend for an API planner (DeepSeek) and the Claude CLI's usage estimate for a Claude planner. "
          "'best' rows take the headline finalist (an ensemble when one was kept); 'single model' rows the best "
-         "single model. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
+         "single model. The selection score is what each run optimised: on code with cross-validated selection it "
+         "averages the validation set and out-of-fold training perturbations, so it is lower than, and not "
+         "comparable with, the validation-only score of earlier code; 'validation set only' is comparable across "
+         "code versions, and a run that selected by another score shows its visible gain on the pearson_delta scale "
+         "or not at all. Counts marked planner-proposed exclude the deterministic exploit engine's follow-ups, "
          "which run without an LLM whenever workers would otherwise idle (their share is listed).", "",
          "| measure | " + " | ".join(f"{k[0]}, {k[1]} workers (n={len(groups[k])})" for k in keys) + " |",
          "|---|" + "---|" * len(keys)]
@@ -169,7 +199,8 @@ def render(runs):
     # noise: the control's spread and pairwise tests on the sealed gain between worker counts of the LLM arm
     L += ["## Is the ordering real?", ""]
     ctrl = [k for k in keys if _is_control(k[0])]
-    llm = [k for k in keys if not _is_control(k[0])]
+    cont = [k for k in keys if _is_continuation(k[0])]
+    llm = [k for k in keys if not _is_control(k[0]) and not _is_continuation(k[0])]
     llm_wall = stats([r["values"]["wall_min"] for k in llm for r in groups[k]])
     for k in ctrl:
         st = stats([r["values"]["gain_sealed"] for r in groups[k]])
@@ -178,23 +209,51 @@ def render(runs):
         if not st:
             continue
         short = wall and llm_wall and wall["mean"] < 0.5 * llm_wall["mean"]
+        name = f"{k[0]}, {k[1]} workers"
         if st["n"] > 1 and st["sd"] < 1e-9 and (stv is None or stv["sd"] < 1e-9):  # identical to rounding
-            L.append(f"- No-LLM control ({st['n']} runs): identical results every time, sealed gain {st['mean']:.4f}, "
-                     f"visible gain {stv['mean']:.4f}. The scripted recipe is deterministic on this dataset, so the "
-                     "control is a fixed-recipe reference, not a noise reference; run-to-run noise is estimated from "
-                     "the agent arms' repeats below.")
+            L.append(f"- {name} ({st['n']} run{'' if st['n'] == 1 else 's'}): identical results every time, sealed gain {st['mean']:.4f}, "
+                     f"visible gain {stv['mean']:.4f}. The scripted recipe is deterministic on this dataset, so this "
+                     "control is a fixed-recipe reference, not a noise reference.")
+        elif short:
+            L.append(f"- {name} ({st['n']} run{'' if st['n'] == 1 else 's'}, the same scripted hypotheses every time; what varies is timing, "
+                     f"scheduling order and the exploit follow-ups that order produces): sealed gain {fmt(st, 4)}, "
+                     f"visible gain {fmt(stv, 4)}. Its spread bounds the timing noise of a short deterministic run, "
+                     "not that of the agent arms, whose own repeats are the yardstick below.")
         else:
-            L.append(f"- No-LLM control ({st['n']} runs, the same scripted hypotheses every time; what varies is "
-                     f"timing, scheduling order and the exploit follow-ups that order produces): sealed gain "
-                     f"{fmt(st, 4)}, visible gain {fmt(stv, 4)}. Differences between worker counts smaller than about "
-                     f"2 x this sd ({2 * st['sd']:.4f}) are within that noise.")
+            L.append(f"- {name} ({st['n']} run{'' if st['n'] == 1 else 's'}, the same scripted hypotheses every time; what varies is timing, "
+                     f"scheduling order and the exploit follow-ups that order produces): sealed gain {fmt(st, 4)}, "
+                     f"visible gain {fmt(stv, 4)}. This is the equal-time no-LLM reference: the agents' gain over it "
+                     "is what the LLMs add to the search.")
         if short:
-            L.append(f"- The control ended after {wall['mean']:.1f} min on average (its hypotheses ran out) against "
+            L.append(f"- {name} ended after {wall['mean']:.1f} min on average (its hypotheses ran out) against "
                      f"{llm_wall['mean']:.1f} min for the agent arms, so it is not an equal-time arm: it shows what "
                      "the fixed template features give, not what a no-LLM search of the same length gives.")
+    for k in ctrl:  # each control against the agent arms at its worker count: is the agents' gain over it established?
+        st = stats([r["values"]["gain_sealed"] for r in groups[k]])
+        peers = [(kb, stats([r["values"]["gain_sealed"] for r in groups[kb]])) for kb in llm if kb[1] == k[1]]
+        peers = [(kb, s) for kb, s in peers if s]
+        if not st or not peers:
+            continue
+        lo, hi = min(s["mean"] for _, s in peers), max(s["mean"] for _, s in peers)
+        where = ("above every agent arm" if st["mean"] > hi else
+                 "below every agent arm" if st["mean"] < lo else "within the agents' range")
+        tail = "" if where == "below every agent arm" else (
+            ", so the agents' gain over this control on sealed pearson_delta is not established")
+        L.append(f"- {k[0]}, {k[1]} workers against the agent arms at {k[1]} workers: sealed gain {fmt(st, 4)} vs " +
+                 ", ".join(f"{fmt(s, 4)} ({kb[0]})" for kb, s in peers) + f": {where}{tail}.")
+    for k in cont:  # one sentence per continued run: what it is and what it continued; no comparison
+        src = _continued_source(k[0])
+        for r in groups[k]:
+            srun = next((x for x in runs if x["dir"] == src), None)
+            line = f"- {r['dir']} ({k[0]}, {k[1]} workers): sealed gain {r['values']['gain_sealed']:.4f}"
+            line += (f" against {srun['values']['gain_sealed']:.4f} for the run it continued ({src})" if srun else
+                     f" (the run it continued, {src}, is not in this table)")
+            L.append(line + "; its model is that campaign's, re-searched without an LLM, so it is neither a control "
+                     "nor an arm in the comparisons above and below.")
     for i, ka in enumerate(llm):
         for kb in llm[i + 1:]:
-            if ka[0] != kb[0]:
+            same_arm, same_workers = ka[0] == kb[0], ka[1] == kb[1]
+            if not (same_arm or same_workers):
                 continue
             a = [r["values"]["gain_sealed"] for r in groups[ka]]
             b = [r["values"]["gain_sealed"] for r in groups[kb]]
@@ -205,8 +264,13 @@ def render(runs):
             diff = sb["mean"] - sa["mean"]
             verdict = ("not testable with one run per side" if p is None else
                        f"p = {p:.2f} (Welch), {'exceeds' if p < 0.05 else 'does not exceed'} run-to-run noise")
-            L.append(f"- {ka[1]} vs {kb[1]} workers ({ka[0]}): sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, "
-                     f"difference {diff:+.4f}; {verdict}.")
+            # same arm across worker counts (the scaling question), or two arms at the same worker count
+            # (code versions, or planners): both are pairwise tests on the sealed gain
+            head = (f"{ka[1]} vs {kb[1]} workers ({ka[0]})" if same_arm else
+                    f"{ka[0]} vs {kb[0]} ({ka[1]} workers)")
+            ahead = "tie" if abs(diff) < 5e-5 else ("second ahead" if diff > 0 else "first ahead")
+            L.append(f"- {head}: sealed gain {fmt(sa, 4)} vs {fmt(sb, 4)}, difference {diff:+.4f} "
+                     f"(second minus first; {ahead}); {verdict}.")
     if llm:
         L.append("- A difference that does not exceed noise with two repeats needs more runs before any ordering is "
                  "claimed; each extra 20-minute repeat costs about the worker $ shown above in DeepSeek spend.")
@@ -215,17 +279,22 @@ def render(runs):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--runs", nargs="+", required=True)
+    ap.add_argument("--runs", nargs="+", help="run directories (each with summary.json)")
+    ap.add_argument("--from-json", help="re-render from a scaling.json written by an earlier call, when the run "
+                                        "directories are not at hand (the .json twin is then left as it is)")
     ap.add_argument("--out", default=str(REPO_ROOT / "docs" / "results" / "scaling.md"))
     args = ap.parse_args()
-    runs = load_runs(args.runs)
+    if bool(args.runs) == bool(args.from_json):
+        ap.error("give --runs or --from-json, not both")
+    runs = load_runs(args.runs) if args.runs else json.loads(Path(args.from_json).read_text())
     if not runs:
         raise SystemExit("no run directory with summary.json among --runs")
     md = render(runs)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(md)
-    out.with_suffix(".json").write_text(json.dumps(runs, indent=1, default=str))
+    if args.runs:
+        out.with_suffix(".json").write_text(json.dumps(runs, indent=1, default=str))
     print(md)
     print(f"written to {out}")
 

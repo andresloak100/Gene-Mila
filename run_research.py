@@ -73,7 +73,12 @@ def build_config(args) -> dict:
         except json.JSONDecodeError:
             pass
         set_dotted(cfg, k, v)
-    cfg["run"]["data_dir"] = str(REPO_ROOT / "data" / cfg["run"]["dataset"])
+    if any(item.split("=", 1)[0] == "run.data_dir" for item in args.set):
+        # a bundle outside this checkout (e.g. a clone reading the main checkout's data read-only;
+        # runs write only into their own run directory)
+        cfg["run"]["data_dir"] = str(Path(cfg["run"]["data_dir"]).expanduser().resolve())
+    else:
+        cfg["run"]["data_dir"] = str(REPO_ROOT / "data" / cfg["run"]["dataset"])
     if args.continue_from:
         prev = Path(args.continue_from).resolve()
         if not (prev / "lab.db").exists():
@@ -88,17 +93,24 @@ def child(args) -> int:
     from genemila.report import render_markdown
 
     cfg = json.loads((Path(args.run_dir) / "config.json").read_text())
-    worker, esc, planner, fallback = build_providers(cfg)
+    worker, esc, planner, fallbacks = build_providers(cfg)
     if hasattr(worker, "available") and not worker.available():
         print(f"ERROR: worker provider {worker.name} is not usable here "
               f"(missing {getattr(worker, 'api_key_env', 'credentials')}).", file=sys.stderr)
         return 2
-    if hasattr(planner, "available") and not planner.available():
-        print(f"warning: planner {planner.name} unavailable; using the scripted planner", file=sys.stderr)
-        planner = fallback
+    usable = [p for p in [planner, *fallbacks] if not hasattr(p, "available") or p.available()]
+    if not usable:
+        print(f"ERROR: planner {planner.name}:{planner.model} is not usable here and no fallback in "
+              f"planner.fallback is either. Pass --planner-provider scripted for a no-LLM run, or set "
+              f"--set planner.fallback=provider:model (the controller never falls back to the scripted "
+              f"planner on its own).", file=sys.stderr)
+        return 2
+    if usable[0] is not planner:
+        print(f"warning: planner {planner.name}:{planner.model} is not usable here; starting on the fallback "
+              f"{usable[0].name}:{usable[0].model} (recorded as a planner switch)", file=sys.stderr)
     lab = Lab(cfg, Path(args.run_dir), Path(cfg["run"]["data_dir"]))
     ctl = Controller(lab, int(cfg["run"]["workers"]), float(cfg["run"]["minutes"]) * 60, worker, esc,
-                     planner, fallback, quiet=args.quiet)
+                     planner, fallbacks, quiet=args.quiet)
     summary = ctl.run()
     print("\n" + render_markdown(summary))
     sys.stdout.flush()
@@ -122,6 +134,10 @@ def main(argv=None) -> int:
     run_dir = Path(args.run_dir) if args.run_dir else REPO_ROOT / "runs" / (
         time.strftime("%Y%m%d_%H%M%S") + f"_{cfg['run']['dataset']}_w{cfg['run']['workers']}")
     run_dir.mkdir(parents=True, exist_ok=True)
+    from genemila.data.bundle import added_knowledge
+    cfg["run"]["external_knowledge"] = added_knowledge(data_dir)  # files added after the build: their own arm
+    from genemila.sandbox import HASH_SEED
+    cfg["run"].setdefault("hash_seed", HASH_SEED)  # every experiment process's PYTHONHASHSEED (the lab refuses another)
     (run_dir / "config.json").write_text(json.dumps(cfg, indent=1))
     print(f"run directory: {run_dir}")
     cmd = [sys.executable, str(Path(__file__).resolve()), "--_child", "--run-dir", str(run_dir)]

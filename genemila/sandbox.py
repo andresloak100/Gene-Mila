@@ -1,5 +1,6 @@
 """Subprocess execution with hard limits: wall-clock timeout, CPU seconds,
-address space (Linux) / RSS polling (everywhere), and external kill events."""
+address space (Linux) / RSS polling (everywhere), and external kill events.
+Every experiment process runs with a fixed hash seed (HASH_SEED)."""
 
 from __future__ import annotations
 
@@ -22,6 +23,60 @@ try:
     import psutil
 except ImportError:  # pragma: no cover
     psutil = None
+
+
+# Python salts the hash of every str and bytes per interpreter (PYTHONHASHSEED), so whatever follows those hashes,
+# such as the iteration order of a set of perturbation or gene names, differs from one process to the next, and a
+# feature plugin built on it computes different blocks in every experiment process: its stored scores could not be
+# reproduced. Every process that imports and runs feature plugins therefore starts with this fixed seed, overriding
+# any inherited value: the fresh subprocesses of run_limited and the warm fork server, whose forked children inherit
+# the server's hash secret. hash() and id() themselves are refused by the plugin guard (guard.PROCESS_NOISE); the
+# lab records the seed in the run's config (run.hash_seed). The offline tools that run a run's plugins in their own
+# process (tools/feature_audit.py, refit_visible.py, compact_model_curve.py) re-execute themselves under it from the
+# command line (reexec_under_hash_seed).
+HASH_SEED = 0
+HASH_REEXEC_ENV = "GENEMILA_HASHSEED_REEXEC"  # the pid of a process that re-executed itself under HASH_SEED
+
+
+def python_hash_seed() -> str:
+    """The seed of this process's str hashes: '0' when hash randomisation is off (PYTHONHASHSEED=0 at start-up), the
+    PYTHONHASHSEED it started with when that is another number, else 'random'."""
+    if not sys.flags.hash_randomization:
+        return "0"
+    seed = os.environ.get("PYTHONHASHSEED", "")
+    return seed if seed.isdigit() and not sys.flags.ignore_environment else "random"
+
+
+def reexecuted_under_hash_seed() -> bool:
+    """Whether this very process is the re-execution reexec_under_hash_seed started (exec keeps the pid, which the
+    flag holds; a child that merely inherited the flag is not)."""
+    return os.environ.get(HASH_REEXEC_ENV) == str(os.getpid())
+
+
+def reexec_under_hash_seed(tool: str) -> bool:
+    """For the command line of a tool that runs feature plugins in its own process: unless this process already
+    hashes str with HASH_SEED, replace it by the same command under PYTHONHASHSEED=HASH_SEED, so that a plugin that
+    follows str hashes (hash() of a name in a past run's plugin, the order of a set of names) computes what the lab's
+    experiment processes computed, and the same in every invocation. The command is sys.orig_argv, interpreter
+    options (-X, -W, -B, -u ...) and -m included, after sys.executable; arguments, stdin, cwd and the rest of the
+    environment are kept. It never loops: the flag HASH_REEXEC_ENV holds the pid of the process that re-executed,
+    which exec keeps, so the re-executed process recognises itself and goes on even where the variable did not take
+    effect, and an interpreter that ignores the environment (-E, -I) is not re-executed at all; either says so on
+    stderr and goes on under its own seed. Returns whether this process is the re-execution (for the tool's record)."""
+    if python_hash_seed() == str(HASH_SEED):
+        return reexecuted_under_hash_seed()
+    if reexecuted_under_hash_seed() or sys.flags.ignore_environment or not getattr(sys, "orig_argv", None):
+        print(f"[{tool}] the str hash seed is {python_hash_seed()}, not {HASH_SEED}, and PYTHONHASHSEED cannot set it "
+              "here (" + ("already re-executed" if reexecuted_under_hash_seed() else
+                          "the interpreter ignores the environment" if sys.flags.ignore_environment else
+                          "no command line to re-execute") + "): going on under it, as the record says",
+              file=sys.stderr, flush=True)
+        return reexecuted_under_hash_seed()
+    env = {**os.environ, "PYTHONHASHSEED": str(HASH_SEED), HASH_REEXEC_ENV: str(os.getpid())}
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os.execve(sys.executable, [sys.executable, *sys.orig_argv[1:]], env)
+    return True  # pragma: no cover (exec does not return)
 
 
 @dataclass
@@ -64,7 +119,7 @@ def run_limited(cmd: list[str], cwd: Path, log_dir: Path, timeout_s: float, ram_
                 name: str = "proc") -> ProcResult:
     log_dir.mkdir(parents=True, exist_ok=True)
     out_p, err_p = log_dir / f"{name}.stdout", log_dir / f"{name}.stderr"
-    full_env = {**os.environ, **(env or {})}
+    full_env = {**os.environ, **(env or {}), "PYTHONHASHSEED": str(HASH_SEED)}
     full_env.setdefault("OMP_NUM_THREADS", "1")
     full_env.setdefault("OPENBLAS_NUM_THREADS", "1")
     full_env.setdefault("MKL_NUM_THREADS", "1")
@@ -134,8 +189,11 @@ class ForkServerClient:
             cmd += ["--public", str(public_dir)]
         if cache_dir:
             cmd += ["--cache", str(cache_dir)]
+        # the hash secret is fixed at interpreter start-up and every forked child inherits it: the server itself
+        # must start with the fixed seed
         env = {**os.environ, "PYTHONPATH": str(server_cwd), "OMP_NUM_THREADS": "1",
-               "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "VECLIB_MAXIMUM_THREADS": "1"}
+               "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "VECLIB_MAXIMUM_THREADS": "1",
+               "PYTHONHASHSEED": str(HASH_SEED)}
         self.proc = subprocess.Popen(cmd, cwd=server_cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                      env=env, text=True, bufsize=1, start_new_session=True)
         self._lock = threading.Lock()

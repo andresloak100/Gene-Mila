@@ -30,7 +30,7 @@ def make_provider(kind: str, model: str, cfg: dict | None = None) -> AgentProvid
         return LoadTestPlanner(**{k: v for k, v in cfg.items() if k in ("latency_s", "replicates")})
     if kind == "scripted":
         from .mock import ScriptedPlanner
-        return ScriptedPlanner()
+        return ScriptedPlanner(external=cfg.get("external_knowledge") or [])
     raise ValueError(f"unknown provider {kind!r}")
 
 

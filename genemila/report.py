@@ -66,6 +66,7 @@ def run_query_only(lab, top_k: int, allow_new: bool = True) -> list[dict]:
                "members": ((c.get("diagnostics_json") or {}).get("members") if c["kind"] == "ensemble" else None),
                "visible_score": c["primary_score"], "query_only_score": q["metrics"]["primary"],
                "gap": c["primary_score"] - q["metrics"]["primary"],
+               "query_only_pearson_delta": q["metrics"].get("pearson_delta"),  # by name, whatever the rule
                "comparable": {"val1": {k: v for k, v in (c.get("val_metrics_json") or {}).items()
                                        if k.startswith(COMPARABLE_PREFIXES)},
                               "val2": {k: v for k, v in q["metrics"].items() if k.startswith(COMPARABLE_PREFIXES)}}}
@@ -169,6 +170,28 @@ def ensemble_finalist(lab, members: list[dict]) -> dict | None:
     return lab.db.get_experiment(eid)
 
 
+def planner_health(lab, started_at: float | None) -> dict:
+    """Which planners actually produced the run's plans, in order of first use, with every switch and
+    failure, from the database (so a re-summary of a killed run says the same). A run whose `used` list
+    differs from `configured` ran on a fallback for part or all of its time and is a mixed-planner arm."""
+    db = lab.db
+    p = lab.cfg.get("planner") or {}
+    rounds = db.query("SELECT provider, model, COUNT(*) n, COALESCE(SUM(n_queued), 0) queued FROM planner_rounds "
+                      "GROUP BY provider, model ORDER BY MIN(id)")
+    t0 = started_at or 0.0
+    switches = [{"at_min": round((e["ts"] - t0) / 60, 1), "note": e["message"]}
+                for e in db.query("SELECT ts, message FROM events WHERE kind='planner_switch' ORDER BY ts")]
+    exhausted = db.query("SELECT ts, message FROM events WHERE kind='planner_exhausted' ORDER BY ts LIMIT 1")
+    failed = db.query("SELECT COUNT(*) n FROM events WHERE kind IN ('planner_error', 'planner_crash')")[0]["n"]
+    return {"configured": f"{p.get('provider', '?')}:{p.get('model', '')}",
+            "fallback": p.get("fallback") or [],
+            "used": [f"{r['provider']}:{r['model']}" for r in rounds],
+            "rounds": {f"{r['provider']}:{r['model']}": {"rounds": r["n"], "queued": r["queued"]} for r in rounds},
+            "switches": switches, "failed_rounds": failed,
+            "exhausted_at_min": None if not exhausted else round((exhausted[0]["ts"] - t0) / 60, 1),
+            "mixed": bool(switches) or bool(exhausted)}
+
+
 def build_summary(lab, wall_s: float | None, workers: int | None, generalization: list[dict] | None) -> dict:
     db = lab.db
     exps = db.query("SELECT * FROM experiments WHERE status NOT IN ('reserved')")
@@ -220,12 +243,13 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         by_proposer[e.get("proposer") or "planner"] = by_proposer.get(e.get("proposer") or "planner", 0) + 1
     planner_only = [e for e in counted if not (e.get("proposer") or "").startswith("python:")]
     planner_groups = {e.get("hypothesis_group") for e in proposed if not (e.get("proposer") or "").startswith("python:")}
+    planner = planner_health(lab, run.get("started_at"))
     summary = {
         "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id, "base_commit": lab.base_commit,
         "duration_s": round(wall_s, 1), "duration_note": duration_note, "finished_at": end,
         "workers": workers or run.get("workers"),
         "continued_from": lab.cfg["run"].get("continue_from"),
-        "selection": {"cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
+        "selection": {"rule": lab.selection, "cv_folds": lab.cv_folds, "n_validation": len(lab._val1.perts),
                       "n_visible": len(lab._val1.perts) + (len(lab._train.perts) if lab.cv_folds > 1 else 0)},
         "experiments_proposed": len(proposed),
         "experiments_completed": len(counted),
@@ -238,8 +262,9 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "unique_hypotheses": len(groups), "replicated_hypotheses": len(replicate_groups),
         "cpu_hours": round(cpu_s / 3600, 4),
         "llm_usage": {"all": llm, "worker": llm_w, "planner": llm_p},
+        "planner": planner,
         "baseline": None if not base else {"experiment_id": base["experiment_id"], "score": base["primary_score"],
-                                           "description": base["hypothesis"]},
+                                           "description": base["hypothesis"], "metrics": base.get("val_metrics_json")},
         "best": None if not best else {
             "experiment_id": best["experiment_id"], "score": best["primary_score"], "model": best["model_type"],
             "alpha": best["best_alpha"], "features": best.get("feature_set_json"),
@@ -294,6 +319,11 @@ def render_markdown(s: dict) -> str:
         u = s["llm_usage"][role]
         L.append(f"- LLM ({role}): {u['calls']} calls, {u['input_tokens']} in / {u['output_tokens']} out / "
                  f"{u['cached_tokens']} cached tokens, ${u['cost_usd']:.4f}")
+    ph = s.get("planner") or {}
+    if ph.get("mixed"):
+        L.append(f"- PLANNER CHANGED DURING THE RUN (mixed-planner arm): configured {ph['configured']}, used "
+                 f"{' -> '.join(ph['used']) or 'none'}; " + "; ".join(f"at {sw['at_min']} min: {sw['note']}" for sw in ph["switches"])
+                 + (f"; no planner left after {ph['exhausted_at_min']} min" if ph.get("exhausted_at_min") is not None else ""))
     b, best = s["baseline"], s["best"]
     L += ["", "## BASELINE PERFORMANCE", f"{b['experiment_id']}: {b['description']} pearson_delta = {b['score']:.4f}"
           if b else "n/a", "", "## BEST PERFORMANCE"]

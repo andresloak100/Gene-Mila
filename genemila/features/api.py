@@ -102,6 +102,26 @@ class FeatureContext:
         out.cache = {}
         return out
 
+    def with_extra_train(self, perts: list[str], deltas: np.ndarray) -> "FeatureContext":
+        """A view whose training labels are the public training set plus `perts` with the given delta
+        profiles (expression minus the control mean), for refits on every perturbation whose labels the
+        controller may see. Feature code sees a larger training set and nothing else changes. The view has
+        its own memo caches, and its train_signature differs from the public one, so cached feature blocks
+        of the two training sets never collide."""
+        perts = [str(p) for p in perts]
+        deltas = np.asarray(deltas, dtype=np.float64)
+        if deltas.shape != (len(perts), self.n_genes):
+            raise ValueError(f"deltas must have shape ({len(perts)}, {self.n_genes}), got {deltas.shape}")
+        if len(set(perts)) != len(perts) or any(p in self._train_pos for p in perts):
+            raise ValueError("extra training perturbations must be distinct and outside the training set")
+        out = copy.copy(self)
+        out.train_perts = list(self.train_perts) + perts
+        out._train_delta = np.vstack([self._train_delta, deltas])
+        out._train_pos = {p: i for i, p in enumerate(out.train_perts)}
+        out._feature_cache = {}
+        out.cache = {}
+        return out
+
     # ---- perturbation metadata -------------------------------------------------
     def target_genes(self, pert: str) -> list[str]:
         return list(self._targets.get(pert, []))
