@@ -7,8 +7,12 @@ from genemila.benchmark import celleval
 from genemila.data.bundle import LabelSet
 
 
-def fake_screen(tmp_path, n_genes=200, seed=0):
-    """A tiny scPerturb-style AnnData: raw counts, obs['perturbation'], two guides for one gene."""
+def fake_screen(tmp_path, n_genes=200, seed=0, norman_labels=False):
+    """A tiny scPerturb-style AnnData: raw counts, obs['perturbation'], two guides for one gene.
+
+    norman_labels: also the labels Norman's ingest must read (docs/NORMAN_PLAN.md section 4 item 1), G3_G2 (the
+    double perturbation written in the other order) and G4_NOTAGENE (a measured gene beside a token that is no
+    gene), appended after every other cell so the file is otherwise the default one."""
     ad = pytest.importorskip("anndata")
     import pandas as pd
     import scipy.sparse as sp
@@ -29,6 +33,9 @@ def fake_screen(tmp_path, n_genes=200, seed=0):
     cells("G1_guide2", 30, 1)          # second guide for G1, merged with G1_guide1
     cells("G2+G3", 30, 2)              # a double perturbation
     cells("NOTAGENE", 30)              # unmeasured target, dropped
+    if norman_labels:
+        cells("G3_G2", 30, 2)          # G2+G3 in the other order: one perturbation
+        cells("G4_NOTAGENE", 30, 4)    # pooled into G4 unless labels are strict
     X = sp.csr_matrix(np.vstack(rows).astype(np.float32))
     a = ad.AnnData(X=X, obs=pd.DataFrame({"perturbation": labels}, index=[f"c{i}" for i in range(len(labels))]),
                    var=pd.DataFrame(index=genes))

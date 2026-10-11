@@ -16,6 +16,15 @@ genemila/data/external_screen.py for the exact rules (label matching, pooling, c
 A target with fewer than --min-cells cells in the screen (default 20) gets no row: the mean of a handful of cells
 is mostly noise.
 
+--modality names the screen's modality (docs/NORMAN_PLAN.md section 4 item 8): the file then records it, the
+bundle manifest's modality and a top-level sign, -1 when the two differ (the Replogle CRISPRi screen for the CRISPRa
+Norman bundle) and +1 when they agree or either is unknown, and its description leads with the modality and sign.
+Without --modality the file is written exactly as before. Rows stay per target gene; a perturbation of several
+genes is read as the sum of all its targets' rows, by the consumers.
+
+    python tools/build_external_screen.py --h5ad ReplogleWeissman2022_K562_gwps.h5ad --bundle data/norman \\
+        --name replogle2022_k562 --min-cells 20 --alias-file <table> --modality CRISPRi --dry-run
+
 The knowledge file goes to <bundle>/knowledge/<name>.json; the lab's export_public copies it into a run's
 public directory when the next run starts. The markdown report is rendered from the knowledge file alone, so
 --from-json re-renders it without the h5ad.
@@ -56,8 +65,11 @@ def render_matching(info: dict, min_cells: int = 0) -> str:
          + (f"; targets matched through one: {', '.join(am['targets'])}" if am.get("targets") else "")
          + (f"; genes measured through one: {', '.join(am['genes'])}" if am.get("genes") else ""),
          f"- targets below --min-cells {min_cells} (no row would be written): {len(few)}"
-         + (f": {', '.join(f'{t} ({n})' for t, n in few.items())}" if few else ""), "",
-         "| target | external labels | cells |", "|---|---|---|"]
+         + (f": {', '.join(f'{t} ({n})' for t, n in few.items())}" if few else "")]
+    if info.get("modality"):   # only with --modality, so a dry run without it prints what it always printed
+        L.append(f"- modality: screen {info['modality']}, bundle {info.get('bundle_modality') or 'not recorded'}; "
+                 f"sign {info['sign']:+d} would be written")
+    L += ["", "| target | external labels | cells |", "|---|---|---|"]
     for t, labs in m["by_target"].items():
         L.append(f"| {t} | {', '.join(labs)} | {info['n_cells_by_target'][t]:,} |")
     return "\n".join(L) + "\n"
@@ -78,6 +90,28 @@ def _alias_sentence(src: dict, knowledge: dict) -> str:
     return out
 
 
+def _modality_sentence(src: dict, knowledge: dict) -> str:
+    """Only for a file built with --modality (an older file renders as it always did)."""
+    if not src.get("modality"):
+        return ""
+    sign = int(knowledge.get("sign", 1))
+    out = (f" Screen modality {src['modality']}, bundle modality {src.get('bundle_modality') or 'not recorded'}: "
+           f"sign {sign:+d}")
+    if sign < 0:
+        return out + (", since the two differ: a target's response in the bundle is expected to point against the "
+                      "screen's, so a consumer multiplies a target's own delta by -1 before using it as that target's "
+                      "predicted change (correlations between rows do not depend on the sign).")
+    return out + "."
+
+
+def _own_delta_note(src: dict) -> str:
+    """What the target's own delta should be in the screen: a knockdown lowers it (every file before --modality, and
+    a CRISPRi screen), an activation raises it."""
+    if str(src.get("modality") or "").strip().lower() == "crispra":
+        return "(an activation should be positive)"
+    return "(a knockdown should be negative)"
+
+
 def render(knowledge: dict) -> str:
     """A report for a scientist, rendered from the knowledge file alone (deterministic)."""
     src, genes = knowledge["source"], knowledge["genes"]
@@ -90,7 +124,8 @@ def render(knowledge: dict) -> str:
          f"{src['size_bytes'] / 1e9:.2f} GB, md5 {src['md5'] or 'not computed'}), labels from obs[{src['label_col']!r}] "
          f"({src['n_labels']} distinct), gene symbols from var[{src['gene_col']!r}], built {src['date']} in "
          f"{src['seconds']:.0f} s. Control labels {src['control_labels']} ({knowledge['control']['n_cells']:,} cells); "
-         f"{'raw counts normalised' if src['raw_counts'] else 'stored values used as they are'}: {src['normalisation']}.",
+         f"{'raw counts normalised' if src['raw_counts'] else 'stored values used as they are'}: {src['normalisation']}."
+         + _modality_sentence(src, knowledge),
          "",
          f"Bundle genes measured in the screen: {n_meas:,} of {len(genes):,}. Bundle targets with an external "
          f"response: {len(perts)}; missing: {len(knowledge['bundle_targets_missing'])}"
@@ -101,7 +136,7 @@ def render(knowledge: dict) -> str:
          + f"; labels matching no bundle target: {src['n_labels_other']}."
          + _alias_sentence(src, knowledge), "",
          "Per target: cells pooled, external labels pooled, mean absolute delta over the measured genes, the delta of "
-         "the target gene itself (a knockdown should be negative), and the largest absolute deltas.", "",
+         f"the target gene itself {_own_delta_note(src)}, and the largest absolute deltas.", "",
          "| target | cells | labels | mean abs delta | own delta | largest deltas |", "|---|---|---|---|---|---|"]
     gi = {g: i for i, g in enumerate(genes)}
     for t, p in perts.items():
@@ -115,7 +150,11 @@ def render(knowledge: dict) -> str:
           "A target whose own delta is clearly negative was knocked down in the external screen as it was in the bundle; "
           "a target with a small mean absolute delta had little effect there, and transferring its response adds little. "
           "The deltas are differences within the external screen (its perturbed cells minus its own controls), so "
-          "batch differences between the two screens cancel only to the extent they are additive in log space."]
+          "batch differences between the two screens cancel only to the extent they are additive in log space."
+          + (f" The screen is {src['modality']} and the bundle {src.get('bundle_modality')}, so a target's own "
+             "change in the bundle is expected to point against its delta here: the file's sign of -1 records that, "
+             "and a perturbation of several genes is read as the sum of its targets' rows, present only when every "
+             "target has one." if int(knowledge.get("sign", 1)) < 0 and src.get("modality") else "")]
     return "\n".join(L) + "\n"
 
 
@@ -138,6 +177,10 @@ def main(argv=None) -> int:
     ap.add_argument("--alias-file", default=None, help='JSON object {"OLD": "NEW"} of such aliases')
     ap.add_argument("--min-cells", type=int, default=20,
                     help="targets with fewer cells than this in the screen get no row (default 20)")
+    ap.add_argument("--modality", default=None,
+                    help="the screen's modality (e.g. CRISPRi): recorded in the file with the bundle manifest's "
+                         "modality and a top-level sign, -1 when the two differ, else +1 (default: none, the file is "
+                         "written as before)")
     ap.add_argument("--already-normalised", action="store_true", help="X is not raw counts: average it as stored")
     ap.add_argument("--no-md5", action="store_true", help="skip the md5 of the h5ad (saves one read of the file)")
     ap.add_argument("--force", action="store_true", help="overwrite an existing knowledge file")
@@ -156,11 +199,16 @@ def main(argv=None) -> int:
         aliases = es.parse_aliases(args.alias, args.alias_file)
         if args.dry_run:
             info = es.inspect(h5ad, bundle, args.label_col, args.gene_col, args.control, aliases)
+            if args.modality and args.modality.strip():
+                bundle_mod = es.bundle_modality(bundle)
+                info.update(modality=args.modality.strip(), bundle_modality=bundle_mod,
+                            sign=es.modality_sign(args.modality, bundle_mod))
             print(render_matching(info, args.min_cells))
             return 0
         out = es.build(h5ad, bundle, name, label_col=args.label_col, gene_col=args.gene_col, control=args.control,
                        chunk=args.chunk, chunk_nnz=args.chunk_nnz, already_normalised=args.already_normalised,
-                       force=args.force, with_md5=not args.no_md5, aliases=aliases, min_cells=args.min_cells)
+                       force=args.force, with_md5=not args.no_md5, aliases=aliases, min_cells=args.min_cells,
+                       modality=args.modality)
         md = render(json.loads(out.read_text()))
     if args.report:
         Path(args.report).parent.mkdir(parents=True, exist_ok=True)

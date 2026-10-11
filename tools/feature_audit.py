@@ -60,7 +60,7 @@ from genemila.data.bundle import LabelSet  # noqa: E402  (visible validation lab
 from genemila.features import registry  # noqa: E402
 from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
 from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
-from genemila.pipeline import cv_folds_of, feature_blocks, make_model  # noqa: E402
+from genemila.pipeline import cv_fold_targets, cv_folds_of, feature_blocks, make_model  # noqa: E402
 
 FIXED_ALPHAS = (1.0, 10.0, 100.0, 1e3, 1e4, 3e4, 1e5)
 POOL_MIN_GAIN = 0.0005      # a feature joins the pool when adding it raised its parent's visible score by more
@@ -374,9 +374,9 @@ def static_engine(X: np.ndarray, Y: np.ndarray, X_val: np.ndarray, Y_val: np.nda
     seed_units = {}
     for s in seeds:
         units = []
-        for fold in cv_folds_of(names, k, s):
+        for fold, hide in cv_folds_of(names, k, s):  # random folds over names: hide is the fold itself
             rows = np.array([pos[p] for p in fold])
-            tr = np.setdiff1d(np.arange(n_train), rows)
+            tr = np.setdiff1d(np.arange(n_train), [pos[p] for p in hide])
             units.append((make_unit(X[tr].reshape(-1, C), Y[tr].reshape(-1), X[rows].reshape(-1, C), Y[rows]), rows))
         seed_units[s] = units
     val = make_unit(X.reshape(-1, C), Y.reshape(-1), X_val.reshape(-1, C), Y_val)
@@ -1159,7 +1159,8 @@ class LabelWatch(FeatureContext):
 
 
 def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: list[int], k: int,
-                 val_perts: list[str], Y_val: np.ndarray, failed: dict | None = None) -> dict:
+                 val_perts: list[str], Y_val: np.ndarray, failed: dict | None = None,
+                 groups: str | None = None) -> dict:
     """Feature blocks and engine units of one run, as genemila.pipeline computes them but with label dependence
     detected per feature on a clean slate: each feature's blocks of the training perturbations and of every
     perturbation outside the training set are computed on its own fresh view (plugins re-executed first, so neither
@@ -1169,7 +1170,9 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     fold, plugins re-executed and the label-dependent features recomputed on the view without the fold (training rows
     plus fold rows in one call); a label-free feature's rows are sliced from its full-training block, which no label
     shaped. Nothing is cached on disk. A feature that raises anywhere is dropped (failed), the calls it made before
-    raising still recorded; `failed` may carry features already known to be unrecomputable."""
+    raising still recorded; `failed` may carry features already known to be unrecomputable. The folds are the run's
+    (genemila.pipeline.cv_folds_of under its cv_groups setting, `groups`): a fold's view hides its hidden set and
+    its unit predicts the fold's own perturbations, which under random folds are one and the same."""
     train = list(ctx.train_perts)
     evals = [p for p in ctx.perts if p not in set(train)]
     G = ctx.n_genes
@@ -1207,9 +1210,9 @@ def compute_fits(ctx: FeatureContext, features: list[str], params: dict, seeds: 
     raw_units: dict[int, list] = {}
     for s in seeds:
         units = []
-        for fold in cv_folds_of(train, k, s):
+        for fold, hide in cv_folds_of(train, k, s, cv_fold_targets(ctx, groups)):
             reload_marking()
-            view = ctx.without_train(fold)
+            view = ctx.without_train(hide)
             both = view.train_perts + fold
             n_tr = len(view.train_perts)
             fresh = {}
@@ -1428,6 +1431,7 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
     run_cv_folds = int(hp.get("cv_folds") or ecfg.get("cv_folds") or 0)
     k = run_cv_folds if run_cv_folds > 1 else 5
     cv_seed = int(hp.get("cv_seed", ecfg.get("cv_seed", rcfg.get("seed", 0))) or 0)
+    cv_groups = hp.get("cv_groups")  # the run's fold grouping: "gene" for a bundle with pairs or a gene split
     seeds = list(dict.fromkeys(int(s) for s in (fold_seeds or [cv_seed, cv_seed + 1])))
     if len(seeds) < 2:
         raise ValueError("--fold-seeds needs at least two distinct seeds")
@@ -1466,7 +1470,8 @@ def _audit_run(out: dict, run_dir: Path, fold_seeds, resamples: int, use_pool: b
         if any(p in train_set or p not in set(ctx.perts) for p in val1.perts) or val1.means.shape[1] != ctx.n_genes:
             raise Skip("the visible validation labels do not match the run's public data")
         pre_failed = missing_feature_errors(pool, store, plugin_errors)
-        fits = compute_fits(ctx, pool, params, seeds, k, val1.perts, val1.means - ctx.control_mean, pre_failed)
+        fits = compute_fits(ctx, pool, params, seeds, k, val1.perts, val1.means - ctx.control_mean, pre_failed,
+                            groups=cv_groups)
     t = lap("features_and_fits", t)
     log(f"features computed, {len(fits['label_dependent'])} label-dependent ones recomputed for {len(seeds)} x {k} "
         f"folds, in {timings['features_and_fits']:.0f} s")

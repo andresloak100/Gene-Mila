@@ -15,7 +15,8 @@ import numpy as np
 from . import REPO_ROOT
 from .benchmark import PRIMARY_HIGHER_IS_BETTER, PRIMARY_METRIC, SELECTION_RULES, selection_score
 from .benchmark import comparable, reference
-from .benchmark.evaluator import evaluate
+from .benchmark.evaluator import bundle_strata, categories_of, category_summary, evaluate, metric_values, \
+    paired_summary
 from .benchmark.oracle import QueryOracle
 from .data.bundle import LabelSet, added_knowledge, export_public, verify_bundle
 from .db import Database
@@ -70,9 +71,12 @@ class Lab:
         self.selection = str(cfg["experiment"].get("selection") or PRIMARY_METRIC)
         if self.selection not in SELECTION_RULES:
             raise ValueError(f"experiment.selection must be one of {sorted(SELECTION_RULES)}, not {self.selection!r}")
+        # a paired sealed query spends two of the cap and is recorded as two query_only events by the oracle itself
+        # (on_paired, under its lock), whoever calls it, so a reopened run counts it; a single query is recorded by
+        # query_only as before
         self.oracle = QueryOracle(self.data_dir, max_queries=int(cfg.get("final", {}).get("max_queries", 5)),
                                   used=lambda: self.db.query("SELECT COUNT(*) AS n FROM events WHERE kind='query_only'")[0]["n"],
-                                  selection=self.selection)
+                                  selection=self.selection, on_paired=self._record_paired)
         self.stop_event = threading.Event()   # no new experiments / LLM calls
         self.kill_event = threading.Event()   # terminate running subprocesses
         self.gateway.stop_event = self.stop_event  # waits inside the gateway end at the deadline
@@ -87,6 +91,21 @@ class Lab:
         # validation set, so the selection signal rests on every visible perturbation (0 = validation set only)
         self.cv_folds = int(cfg["experiment"].get("cv_folds", 0) or 0)
         self.cv_seed = int(cfg["run"].get("seed", 0) or 0)
+        # a bundle with pairs, a gene-grouped split or a recorded modality (benchmark.evaluator.bundle_strata; None
+        # for any other bundle, Adamson's included, which keeps every behaviour below exactly as before) is also
+        # scored without each perturbation's own targets and, when grouped, by category; a grouped bundle gets
+        # gene-grouped cross-validation folds (pipeline.cv_folds_of, recorded as the hyperparameter cv_groups),
+        # and one whose targets include a pair the additive baseline
+        self._strata = bundle_strata(self.data_dir)
+        self._targets = self._strata["targets"] if self._strata else {}
+        self.has_pairs = any(len(v) > 1 for v in self._targets.values())
+        self.cv_groups = "gene" if self._strata and self._strata["grouped"] else None
+        self._cv_categories: dict[str, str] = {}  # out-of-fold training perturbations' categories, against their fold
+        if self.cv_groups and self.cv_folds > 1:
+            for fold, hide in self._cv_folds():
+                gone = set(hide)
+                self._cv_categories.update(categories_of(fold, self._targets,
+                                                         [p for p in self._train.perts if p not in gone]))
         self.limits = {k: float(cfg["experiment"][k]) for k in ("cpu_limit_s", "ram_limit_mb", "timeout_s")}
         self._register_builtins()
         self._executor = None
@@ -301,7 +320,7 @@ class Lab:
             return spec.experiment_id, "rejected"
         record["flags_json"] = flags
         if self.cv_folds > 1:  # set by the lab after validation (agents cannot choose it): same folds for all
-            spec.hyperparameters = {**spec.hyperparameters, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
+            spec.hyperparameters = {**spec.hyperparameters, **self._cv_hyperparameters()}
             record["hyperparameters_json"] = spec.hyperparameters
         with self.db.lock:  # the duplicate check and the insert are one step: two proposers cannot both win
             if spec.kind != "new_feature":
@@ -342,11 +361,14 @@ class Lab:
         best, scores = None, []
         for k, alpha in enumerate(z["alphas"]):
             pred = z["delta"][k][rows].astype(np.float64) + self.control_mean
-            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection)
+            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection,
+                           **self._extras("val1"))
             if cv is not None:
                 cv_res = evaluate(cv[k].astype(np.float64) + self.control_mean, self._train.means,
-                                  self.control_mean, self._train.perts, selection=self.selection)
+                                  self.control_mean, self._train.perts, selection=self.selection,
+                                  **self._extras("cv"))
                 self._combine_visible(res["metrics"], cv_res["metrics"])
+                self._combine_strata(res, cv_res)
             scores.append({"alpha": float(alpha), PRIMARY_METRIC: res["metrics"][PRIMARY_METRIC],
                            "primary": res["metrics"]["primary"]})
             better = best is None or (res["metrics"]["primary"] > best[1]["metrics"]["primary"]
@@ -373,18 +395,111 @@ class Lab:
         metrics["n_visible"] = n1 + nt
         metrics["cv_folds"] = self.cv_folds
 
-    def _cv_baseline(self, which: str) -> np.ndarray:
-        """Out-of-fold analytic baseline for the training perturbations, on the run's folds."""
+    def _extras(self, part: str) -> dict:
+        """evaluate()'s extras for this bundle: none without strata (scored exactly as before); else every
+        perturbation's target columns (pearson_delta_nontarget) and the categories of the visible validation
+        perturbations (part "val1", as the split records them) or of the out-of-fold training ones (part "cv",
+        by the same rule against each fold's view)."""
+        if self._strata is None:
+            return {}
+        if part == "val1":  # the visible validation perturbations' own: the split's map also names the sealed ones
+            keep = set(self._val1.perts)
+            cats = {p: c for p, c in self._strata["categories"].items() if p in keep}
+        else:
+            cats = self._cv_categories
+        return {"targets": self._strata["target_idx"], "categories": cats or None}
+
+    def _combine_strata(self, res: dict, cv_res: dict) -> None:
+        """Beside _combine_visible, for a bundle with strata: `pearson_delta_nontarget_cv`, and per category
+        `by_category` (the validation set's, as `<metric>` is), `by_category_cv` (out of fold) and
+        `by_category_visible` (both pooled, each perturbation weighing the same). Selection is untouched."""
+        if self._strata is None:
+            return
+        m, cm = res["metrics"], cv_res["metrics"]
+        if "pearson_delta_nontarget" in cm:
+            m["pearson_delta_nontarget_cv"] = cm["pearson_delta_nontarget"]
+        if "by_category" in cm:
+            m["by_category_cv"] = cm["by_category"]
+            m["by_category_visible"] = category_summary(
+                {**res["per_perturbation"], **cv_res["per_perturbation"]},
+                {**(self._extras("val1")["categories"] or {}), **self._cv_categories})
+        if self.cv_groups:
+            m["cv_groups"] = self.cv_groups
+
+    def _cv_folds(self) -> list[tuple[list[str], list[str]]]:
+        """The run's (predict, hide) folds over the training perturbations, as every experiment's pipeline draws
+        them from its hyperparameters (cv_folds, cv_seed and, for a grouped bundle, cv_groups)."""
         from .pipeline import cv_folds_of
+        targets = None if self.cv_groups is None else {p: list(self._targets.get(p, [])) for p in self._train.perts}
+        return cv_folds_of(self._train.perts, self.cv_folds, self.cv_seed, targets)
+
+    def _cv_hyperparameters(self) -> dict:
+        """The fold settings the lab adds to every experiment's hyperparameters when it cross-validates; cv_groups
+        only for gene-grouped folds, so a random-fold run's hyperparameters and configuration hashes are unchanged."""
+        return {"cv_folds": self.cv_folds, "cv_seed": self.cv_seed,
+                **({"cv_groups": self.cv_groups} if self.cv_groups else {})}
+
+    def _cv_baseline(self, which: str) -> np.ndarray:
+        """Out-of-fold analytic baseline for the training perturbations, on the run's folds: each fold's
+        perturbations predicted from the training perturbations its view keeps."""
         pred = np.tile(self.control_mean, (len(self._train.perts), 1))
-        if which == "baseline_mean_response":
+        if which in ("baseline_mean_response", "baseline_additive"):
             pos = {p: i for i, p in enumerate(self._train.perts)}
             delta = self._train.means - self.control_mean
-            for fold in cv_folds_of(self._train.perts, self.cv_folds, self.cv_seed):
+            for fold, hide in self._cv_folds():
                 rows = [pos[p] for p in fold]
-                rest = np.setdiff1d(np.arange(len(pos)), rows)
-                pred[rows] += delta[rest].mean(axis=0)
+                rest = np.setdiff1d(np.arange(len(pos)), [pos[p] for p in hide])
+                if which == "baseline_mean_response":
+                    pred[rows] += delta[rest].mean(axis=0)
+                else:
+                    pred[rows] += self._additive_delta(fold, [self._train.perts[i] for i in rest], delta[rest])
         return pred
+
+    def _additive_delta(self, perts: list[str], train: list[str], train_delta: np.ndarray) -> np.ndarray:
+        """baseline_additive's predicted change (additive_delta) with the bundle's targets."""
+        return additive_delta(perts, self._targets, train, train_delta)
+
+    def visible_scores(self, experiment_id: str) -> tuple[dict, dict]:
+        """Per-perturbation visible scores of a completed experiment or analytic baseline at its chosen alpha: the
+        visible validation perturbations and, when the run cross-validates, the out-of-fold training ones, as
+        {perturbation: evaluate()'s per-perturbation metrics}, with the categories they fall in ({} for a bundle
+        without them). Trusted controller code over visible labels only."""
+        rec = self.db.get_experiment(experiment_id)
+        if not rec:
+            raise KeyError(f"no experiment {experiment_id}")
+        pred, perts = self._predict(rec, self._val1.perts)
+        idx = {p: i for i, p in enumerate(perts)}
+        missing = [p for p in self._val1.perts if p not in idx]
+        if missing:
+            raise ValueError(f"{experiment_id} has no prediction for validation perturbations {missing[:3]}")
+        res = evaluate(pred[[idx[p] for p in self._val1.perts]], self._val1.means, self.control_mean,
+                       self._val1.perts, selection=self.selection, **self._extras("val1"))
+        scores, cats = dict(res["per_perturbation"]), dict(self._extras("val1").get("categories") or {})
+        if self.cv_folds > 1:
+            if rec["kind"] == "baseline" and not rec.get("artifact_dir"):
+                cv = self._cv_baseline(rec["hypothesis_group"])
+            else:
+                c = np.load(Path(rec["artifact_dir"]) / "cv.npz", allow_pickle=False)
+                if [str(p) for p in c["perts"]] != self._train.perts:
+                    raise ValueError(f"{experiment_id}: cv.npz does not cover the training perturbations")
+                alphas = list(map(float, c["alphas"]))
+                cv = c["delta"][alphas.index(rec["best_alpha"]) if rec["best_alpha"] in alphas else 0]
+                cv = cv.astype(np.float64) + self.control_mean
+            cv_res = evaluate(cv, self._train.means, self.control_mean, self._train.perts, selection=self.selection,
+                              **self._extras("cv"))
+            scores.update(cv_res["per_perturbation"])
+            cats.update(self._cv_categories)
+        return scores, {p: c for p, c in cats.items() if p in scores}
+
+    def compare_visible(self, experiment_a: str, experiment_b: str, metric: str = PRIMARY_METRIC) -> dict:
+        """Paired comparison of two experiments on the visible perturbations (visible_scores), a minus b, by one
+        per-perturbation metric ("primary": the run's selection rule per perturbation): evaluator.paired_summary's
+        mean difference, paired SE, wins and the reading rule's verdict, pooled and per category. Visible labels
+        only; the sealed counterpart is Lab.query_paired."""
+        (a, cats), (b, _) = self.visible_scores(experiment_a), self.visible_scores(experiment_b)
+        return {"experiments": [experiment_a, experiment_b], "metric": metric,
+                **paired_summary(metric_values(a, metric, self.selection), metric_values(b, metric, self.selection),
+                                 cats or None)}
 
     def comparable_val1(self, pred: np.ndarray) -> dict:
         """CellForge and VCWorld metrics on visible validation ({} when the bundle has no held-out cells)."""
@@ -447,6 +562,34 @@ class Lab:
         self.db.event("query_only", f"query-only evaluation of {experiment_id}", experiment_id)
         return out
 
+    def query_paired(self, experiment_a: str, experiment_b: str, metric: str = PRIMARY_METRIC) -> dict:
+        """The sealed paired comparison of two experiments (or analytic baselines), a minus b, through the run's
+        oracle (QueryOracle.query_paired: mean difference, paired SE, wins and verdict, pooled and per category,
+        and each model's aggregate metrics). It scores both models on the sealed set, so it spends two of the
+        run's queries, and the oracle records both in lab.db before it returns (_record_paired), so a reopened run
+        counts them against its cap. The way a run compares two models on the sealed set."""
+        recs = [self.db.get_experiment(e) for e in (experiment_a, experiment_b)]
+        missing = [e for e, r in zip((experiment_a, experiment_b), recs) if not r]
+        if missing:
+            raise KeyError(f"no experiment {missing[0]}")
+        (pa, oa), (pb, ob) = (self._predict(r, self.oracle.perts) for r in recs)
+        return self.oracle.query_paired(experiment_a, pa, oa, experiment_b, pb, ob, self.control_mean, metric=metric)
+
+    def _record_paired(self, out: dict) -> None:
+        """The oracle's on_paired hook, under its lock: one query_only event per model scored (the cap counts these
+        events, so a later process sees the two queries spent), a query_paired event with the paired summary, and
+        the whole answer in query_paired/ beside the run's cell-eval files, so every sealed number is reported."""
+        a, b = (str(e) for e in out["experiments"])
+        for e, other in ((a, b), (b, a)):
+            self.db.event("query_only", f"paired query-only evaluation of {e} against {other}", e)
+        d = self.run_dir / "query_paired"
+        d.mkdir(exist_ok=True)
+        safe = [re.sub(r"[^\w.-]", "_", e) for e in (a, b)]
+        path = d / f"{len(list(d.glob('*.json'))) + 1:02d}_{safe[0]}_vs_{safe[1]}.json"
+        path.write_text(json.dumps(out, indent=1))
+        self.db.event("query_paired", json.dumps({"experiments": [a, b], "metric": out["metric"],
+                                                  "file": path.name, "paired": out["paired"]}), a)
+
     def celleval_val2(self, experiment_id: str) -> dict | None:
         path = self._celleval_path(experiment_id, "val2")
         return json.loads(path.read_text()) if path.exists() else None
@@ -456,21 +599,31 @@ class Lab:
         z = np.load(self.public_dir / "public.npz", allow_pickle=False)
         if which == "baseline_unchanged":
             delta = np.zeros_like(self.control_mean)
+        elif which == "baseline_additive":
+            return self.control_mean + self._additive_delta(perts, self._train.perts,
+                                                            self._train.means - self.control_mean)
         else:  # baseline_mean_response
             delta = z["train_means"].astype(np.float64).mean(axis=0) - self.control_mean
         return np.tile(self.control_mean + delta, (len(perts), 1))
 
     def record_analytic_baselines(self) -> None:
-        for key, hyp in [("baseline_unchanged", "Perturbations do not change expression (predict control mean)."),
-                         ("baseline_mean_response", "Every perturbation produces the average training response.")]:
+        baselines = [("baseline_unchanged", "Perturbations do not change expression (predict control mean)."),
+                     ("baseline_mean_response", "Every perturbation produces the average training response.")]
+        if self.has_pairs:  # only a bundle whose targets include a pair: every other bundle keeps its two baselines
+            baselines.append(("baseline_additive", "A perturbation changes expression by the sum of its genes' "
+                                                   "single-gene changes in training (additive model)."))
+        for key, hyp in baselines:
             if self.db.query("SELECT 1 FROM experiments WHERE hypothesis_group=?", (key,)):
                 continue
             t0 = time.process_time()
             pred = self._analytic_baseline(key, self._val1.perts)
-            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection)
+            res = evaluate(pred, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection,
+                           **self._extras("val1"))
             if self.cv_folds > 1:
-                cv_res = evaluate(self._cv_baseline(key), self._train.means, self.control_mean, self._train.perts, selection=self.selection)
+                cv_res = evaluate(self._cv_baseline(key), self._train.means, self.control_mean, self._train.perts,
+                                  selection=self.selection, **self._extras("cv"))
                 self._combine_visible(res["metrics"], cv_res["metrics"])
+                self._combine_strata(res, cv_res)
             res["metrics"].update(self.comparable_val1(pred))
             eid = self.db.next_experiment_id()
             self.db.insert_experiment({
@@ -502,7 +655,7 @@ class Lab:
         """The configuration hash an experiment gets when queued (includes the run's fold settings)."""
         hp = spec.hyperparameters
         if self.cv_folds > 1:
-            hp = {**hp, "cv_folds": self.cv_folds, "cv_seed": self.cv_seed}
+            hp = {**hp, **self._cv_hyperparameters()}
         return config_hash(replace(spec, hyperparameters=hp), self.feature_code_hashes(), self.split_id)
 
     def best(self) -> dict | None:
@@ -514,8 +667,14 @@ class Lab:
         return rows[0] if rows else None
 
     def data_summary(self) -> str:
+        """The DATASET line of the research state and the worker prompt. A bundle with pairs of genes or a recorded
+        modality gets prompts.dataset_line (training singles and pairs, the key rule, the modality); every other
+        bundle (Adamson's) the line below, exactly as before."""
+        from .prompts import bundle_has_pairs, dataset_line
         m = self.manifest
         targets = json.loads((self.public_dir / "knowledge" / "targets.json").read_text())
+        if bundle_has_pairs(targets) or m.get("modality"):
+            return dataset_line(m, targets, self._train.perts)
         sizes = [len(v) for v in targets.values()] or [1]
         multi = sum(1 for n in sizes if n > 1)
         kind = "single-gene targets" if not multi else (
@@ -536,6 +695,29 @@ class Lab:
 
     def git_head_dirty(self) -> bool:
         return bool(git(self.repo, "status", "--porcelain", "--untracked-files=no"))
+
+
+def additive_delta(perts: list[str], targets: dict, train: list[str], train_delta: np.ndarray) -> np.ndarray:
+    """baseline_additive's predicted change, the one rule the lab and tools/refit_visible.py share: the sum over a
+    perturbation's target genes (targets: perturbation -> its genes; sorted and without repeats, so the order a
+    pair lists them changes nothing) of each gene's single change in `train` (the mean change in train_delta of
+    the training perturbations whose one target it is) or, for a gene without a training single, the mean change of
+    all training singles. A pair is Δ_A + Δ_B, a held-out single the mean single change; a perturbation without a
+    listed target counts as one gene without a single. With no single in training at all, the mean training change
+    stands in for the mean single change."""
+    rows: dict[str, list[int]] = {}
+    for i, p in enumerate(train):
+        tg = targets.get(p) or []
+        if len(tg) == 1:
+            rows.setdefault(tg[0], []).append(i)
+    single = {g: train_delta[r].mean(axis=0) for g, r in rows.items()}
+    every = [i for r in rows.values() for i in r]
+    fill = train_delta[every].mean(axis=0) if every else train_delta.mean(axis=0)
+    out = np.zeros((len(perts), train_delta.shape[1]))
+    for j, p in enumerate(perts):
+        for g in sorted(set(targets.get(p) or [])) or [None]:
+            out[j] += single.get(g, fill)
+    return out
 
 
 def open_run(run_dir: str | Path) -> Lab:

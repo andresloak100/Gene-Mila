@@ -36,7 +36,7 @@ from genemila.benchmark.table import run_arm  # noqa: E402
 from genemila.features import registry  # noqa: E402
 from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
 from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
-from genemila.lab import open_run  # noqa: E402
+from genemila.lab import additive_delta, open_run  # noqa: E402
 from genemila.pipeline import build_matrix, make_model  # noqa: E402
 from genemila.spec import ExperimentSpec  # noqa: E402
 
@@ -124,12 +124,19 @@ def fit_predict(ctx: FeatureContext, feature_set: list[str], feature_params: dic
     return delta[[idx[p] for p in perts_out]]
 
 
-def _analytic_delta(ctx: FeatureContext, group: str, n: int) -> np.ndarray:
-    """The analytic baselines have no code: no change, or the mean training delta (of the context's training set)."""
+def _analytic_delta(ctx: FeatureContext, group: str, perts: list[str]) -> np.ndarray:
+    """The analytic baselines have no code: no change, the mean training delta, or (a bundle with pairs) the lab's
+    additive rule, genemila.lab.additive_delta, each over the context's training set, so a refit on the visible
+    labels counts the visible validation singles as training singles. Any other group is refused rather than
+    refitted as something it is not."""
     if group == "baseline_unchanged":
-        return np.zeros((n, ctx.n_genes))
-    _, d = ctx.train_delta()
-    return np.tile(d.mean(axis=0), (n, 1))
+        return np.zeros((len(perts), ctx.n_genes))
+    train, d = ctx.train_delta()
+    if group == "baseline_mean_response":
+        return np.tile(d.mean(axis=0), (len(perts), 1))
+    if group == "baseline_additive":
+        return additive_delta(perts, {p: ctx.target_genes(p) for p in [*train, *perts]}, train, d)
+    raise ValueError(f"unknown analytic baseline {group!r}")
 
 
 def _model_of(rec: dict) -> tuple[str, float, int]:
@@ -191,7 +198,7 @@ def refit_run(run_dir: Path, cache_dir: Path, seed_repeats: int = 1, augment: bo
                     members = (rec.get("diagnostics_json") or {}).get("members") or []
                     refits[eid] = np.mean([refit_delta(lab.db.get_experiment(m)) for m in members], axis=0)
                 elif rec.get("kind") == "baseline" and not rec.get("artifact_dir"):
-                    refits[eid] = _analytic_delta(ctx, rec.get("hypothesis_group") or "", len(perts))
+                    refits[eid] = _analytic_delta(ctx, rec.get("hypothesis_group") or "", perts)
                 else:
                     spec = ExperimentSpec.from_record(rec)
                     model_type, alpha, seed = _model_of(rec)

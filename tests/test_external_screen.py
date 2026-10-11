@@ -298,6 +298,85 @@ def test_aliases_match_renamed_targets_and_genes(tmp_path):
         es.parse_aliases(None, f)
 
 
+OLD_KEYS = ["description", "source", "genes", "measured", "control", "perts", "bundle_targets_missing",
+            "bundle_targets_below_min_cells"]
+
+
+def test_modality_sign_and_the_bundles_modality(tmp_path):
+    assert es.modality_sign("CRISPRi", "CRISPRa") == -1
+    assert es.modality_sign(" crispri ", "CRISPRi") == 1                          # case and space do not count
+    assert es.modality_sign("CRISPRi", None) == es.modality_sign(None, "CRISPRa") == es.modality_sign(None, None) == 1
+    assert es.bundle_modality(tmp_path) is None                                    # no manifest
+    (tmp_path / "manifest.json").write_text(json.dumps({"name": "x"}))
+    assert es.bundle_modality(tmp_path) is None                                    # a bundle built before the field
+    (tmp_path / "manifest.json").write_text(json.dumps({"name": "x", "modality": "CRISPRa"}))
+    assert es.bundle_modality(tmp_path) == "CRISPRa"
+
+
+def test_build_without_modality_writes_the_file_as_before(tmp_path, dataset):
+    """No --modality: the keys (so the planner's 'dict of N entries' line), the description and the source are
+    those every earlier file had; and every gene of a pair in targets.json is looked up in the screen."""
+    import shutil
+    bundle = tmp_path / "bundle"
+    shutil.copytree(dataset, bundle)
+    path, X, labels, genes, t = external_screen(tmp_path, bundle, "csr")
+    targets = json.loads((bundle / "knowledge" / "targets.json").read_text())
+    other = next(str(g) for g in np.load(bundle / "public.npz")["genes"] if str(g) not in es.bundle_targets(bundle))
+    targets[f"{t['t1']}+{other}"] = [t["t1"], other]                                # a pair whose second gene has no single
+    (bundle / "knowledge" / "targets.json").write_text(json.dumps(targets))
+    assert other in es.bundle_targets(bundle)
+    k = json.loads(es.build(path, bundle, "ext_plain", with_md5=False).read_text())
+    assert list(k) == OLD_KEYS and "sign" not in k and "modality" not in k["source"]
+    assert k["description"] == (
+        "External screen deltas: perts[gene].delta = mean over cells of log1p(10,000 x counts / cell total) of that "
+        "screen's cells of the perturbation minus its own control mean, over this bundle's genes in bundle order (null "
+        f"where unmeasured there); source: Perturb-seq screen {path.name}.")
+    assert other in k["bundle_targets_missing"] and t["t1"] in k["perts"]
+    md = cli.render(k)
+    assert "Screen modality" not in md and "(a knockdown should be negative)" in md
+    assert es.build(path, bundle, "ext_blank", with_md5=False, modality="  ").read_text().count('"sign"') == 0
+
+
+def test_build_with_modality_records_the_sign(tmp_path, dataset, capsys):
+    import shutil
+    bundle = tmp_path / "bundle"
+    shutil.copytree(dataset, bundle)
+    path, X, labels, genes, t = external_screen(tmp_path, bundle, "csr")
+    plain = json.loads(es.build(path, bundle, "ext_plain", with_md5=False).read_text())
+    # the session bundle records no modality: sign +1, and the description says so
+    k = json.loads(es.build(path, bundle, "ext_i", with_md5=False, modality="CRISPRi").read_text())
+    assert list(k) == ["description", "sign"] + OLD_KEYS[1:] and k["sign"] == 1
+    assert k["description"].startswith("CRISPRi screen deltas, sign +1 (bundle modality not recorded): ")
+    assert k["source"]["modality"] == "CRISPRi" and k["source"]["bundle_modality"] is None
+    # a CRISPRa bundle: sign -1, the first 60 characters the planner reads say so, the deltas do not change
+    manifest = json.loads((bundle / "manifest.json").read_text())
+    (bundle / "manifest.json").write_text(json.dumps({**manifest, "modality": "CRISPRa"}))
+    args = ["--h5ad", str(path), "--bundle", str(bundle), "--name", "ext_a", "--no-md5", "--modality", "CRISPRi",
+            "--min-cells", "0"]                                                      # as build() defaults
+    assert cli.main(args + ["--dry-run"]) == 0
+    assert "- modality: screen CRISPRi, bundle CRISPRa; sign -1 would be written" in capsys.readouterr().out
+    assert cli.main(args) == 0
+    md = capsys.readouterr().out
+    out = bundle / "knowledge" / "ext_a.json"
+    k = json.loads(out.read_text())
+    assert list(k)[:2] == ["description", "sign"] and k["sign"] == -1
+    assert k["description"][:60] == "CRISPRi screen deltas, sign -1 (this bundle is CRISPRa): per"
+    assert "multiply a target's delta by sign (-1)" in k["description"]
+    assert k["source"]["modality"] == "CRISPRi" and k["source"]["bundle_modality"] == "CRISPRa"
+    assert k["perts"] == plain["perts"] and k["control"] == plain["control"] and k["genes"] == plain["genes"]
+    assert {**k["source"], "modality": None, "bundle_modality": None, "seconds": 0, "date": 0} == {
+        **plain["source"], "modality": None, "bundle_modality": None, "seconds": 0, "date": 0}
+    assert "Screen modality CRISPRi, bundle modality CRISPRa: sign -1, since the two differ" in md
+    assert "the file's sign of -1 records that" in md
+    again = tmp_path / "again.md"
+    assert cli.main(["--from-json", str(out), "--report", str(again)]) == 0
+    assert again.read_text() + "\n" == md
+    # the leave-one-out tool reads the sign the builder wrote
+    import external_loo
+    assert external_loo.load_external(bundle, "ext_a", k["genes"])["sign"] == -1
+    assert external_loo.load_external(bundle, "ext_plain", k["genes"])["sign"] == 1
+
+
 def test_build_with_an_alias_and_a_cell_minimum(tmp_path, dataset, capsys):
     path, X, labels, genes, t = external_screen(tmp_path, dataset, "csr")
     bundle_genes = [str(g) for g in np.load(dataset / "public.npz")["genes"]]

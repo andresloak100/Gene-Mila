@@ -41,13 +41,77 @@ PLANNER_SCHEMA = {
 }
 
 
+# ----------------------------------------------- bundles with pairs of genes or a recorded modality (Norman 2019)
+# docs/NORMAN_PLAN.md section 4, item 11. A bundle whose perturbations include pairs of genes, or whose manifest records
+# the screen's modality, gets a longer DATASET line (dataset_line, written by lab.data_summary) and, with pairs, a
+# note on pairs in the planner's user message and in the worker's API text. The notes are keyed on the DATASET line
+# the prompts already carry (dataset_flags), and PAIR_KEYS is written by dataset_line alone, so every other bundle
+# (Adamson's: single targets, no modality) gets the prompts above and below byte for byte as before. PLANNER_SYSTEM
+# is a constant the providers send as it is, so the pair note goes in the user message.
+
+PAIR_KEYS = ("a perturbation of several genes is named by its genes in alphabetical order joined by '+' (A+B), a "
+             "single by its gene's name")
+MODALITY_MARK = "; modality "
+MODALITY_TEXT = {"crispra": "CRISPR activation: a perturbation raises its target genes' expression",
+                 "crispri": "CRISPR interference: a perturbation lowers its target genes' expression",
+                 "crisprko": "CRISPR knockout: a perturbation disrupts its target genes"}
+
+
+def bundle_has_pairs(targets: dict) -> bool:
+    """Whether any perturbation of a bundle's targets.json targets more than one gene."""
+    return any(len(set(v or [])) > 1 for v in targets.values())
+
+
+def dataset_line(manifest: dict, targets: dict, train: list[str]) -> str:
+    """The DATASET line of a bundle with pairs or a recorded modality: with pairs, the training perturbations counted
+    by their number of target genes and the key rule (PAIR_KEYS); the modality when the manifest records one, glossed
+    when it is a CRISPR modality the lab knows. Counts are of training perturbations only, so nothing is said about
+    the held-out sets beyond that they hold singles and pairs, as targets.json, public to every feature, shows."""
+    pairs = bundle_has_pairs(targets)
+    if pairs:
+        sizes = [len(set(targets.get(p) or [])) for p in train]
+        counts = [(sum(s == 1 for s in sizes), "single genes"), (sum(s == 2 for s in sizes), "pairs of two genes"),
+                  (sum(s > 2 for s in sizes), "of three or more genes"),
+                  (sum(s == 0 for s in sizes), "without a measured target")]
+        kind = ", ".join(f"{n} {what}" for i, (n, what) in enumerate(counts) if n or i < 2) + f"; {PAIR_KEYS}"
+    else:
+        kind = "single-gene targets"
+    modality = str(manifest.get("modality") or "").strip()
+    gloss = MODALITY_TEXT.get(modality.lower().replace(" ", "").replace("-", ""))
+    mod = f"{MODALITY_MARK}{modality}" + (f" ({gloss})" if gloss else "") if modality else ""
+    unseen = "unseen perturbations, single genes and pairs" if pairs else "unseen perturbations"
+    return (f"{manifest['name']}: {manifest['n_genes']} genes, {manifest['n_control_cells']} control cells, "
+            f"{manifest['n_train']} training perturbations ({kind}){mod}; predict {unseen}.")
+
+
+def dataset_flags(text: str) -> dict:
+    """What the DATASET line in `text` says beyond Adamson's: {"pairs": the bundle has pairs, "modality": it records
+    its modality}, both False for any line dataset_line did not write. `text` is a research state (the line after its
+    "## DATASET" heading is read) or the line itself, as a worker task carries it; nothing else in a state is read,
+    so a hypothesis that happens to quote these words changes nothing."""
+    _, heading, rest = text.partition("## DATASET\n")
+    line = (rest if heading else text).split("\n", 1)[0]
+    return {"pairs": PAIR_KEYS in line, "modality": MODALITY_MARK in line}
+
+
+PAIRS_PLANNER_NOTE = (" Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats "
+                      "a pair, using both of its genes so their order does not matter; the action \"combine\" means "
+                      "a feature-set combination (existing features added to one model), never a combination of "
+                      "genes.")
+PLANNER_SCHEMA_PAIRS = {**PLANNER_SCHEMA, "hypotheses": [
+    {**PLANNER_SCHEMA["hypotheses"][0],
+     "add_features": ["for combine (a feature-set combination): existing feature names to add"]}]}
+
+
 def planner_user(research_state: str, n: int, mix: dict) -> str:
+    pairs = dataset_flags(research_state)["pairs"]
     return (
         f"RESEARCH STATE\n{research_state}\n\n"
         f"Propose {n} experiments. Target mix: about {mix.get('explore', 0):.0%} explore (new ideas), "
         f"{mix.get('exploit', 0):.0%} exploit (refine/combine what works), {mix.get('risky', 0):.0%} risky "
         "(unusual, high-variance ideas). Prefer new_feature actions for exploration. Only reference features "
-        "listed in the state. Return JSON with this shape:\n" + json.dumps(PLANNER_SCHEMA, indent=1)
+        "listed in the state." + (PAIRS_PLANNER_NOTE if pairs else "") + " Return JSON with this shape:\n"
+        + json.dumps(PLANNER_SCHEMA_PAIRS if pairs else PLANNER_SCHEMA, indent=1)
     )
 
 
@@ -104,12 +168,27 @@ class MeanResponse(Feature):
 '''
 
 
+TARGET_API_LINE = "  ctx.target_genes(p) -> list[str]\n"
+PAIRS_API_NOTE = """  PAIRS: perturbations here are single genes and pairs. ctx.target_genes(p) is an unordered set of 1 or 2 genes
+      (the list's order means nothing): use every target (a sum, mean or max over them, or a block of gene_corr),
+      never only [0], so a pair gives the same values whichever order its genes are listed in. Ids: a single is
+      its gene's name, a pair is "A+B" with A and B in alphabetical order; gene g's single, when there is one, is
+      the perturbation whose id equals g.
+"""
+
+
+def feature_api_doc(pairs: bool = False) -> str:
+    """FEATURE_API_DOC, with PAIRS_API_NOTE after the target_genes line for a bundle with pairs."""
+    return FEATURE_API_DOC.replace(TARGET_API_LINE, TARGET_API_LINE + PAIRS_API_NOTE, 1) if pairs else FEATURE_API_DOC
+
+
 def worker_implement(task: dict) -> str:
     # Static reference material first, task-specific text last: providers with prefix caching
     # (DeepSeek, OpenAI, Anthropic) then bill the shared prefix at the cache-hit rate.
     nf = task["new_feature"]
+    api = feature_api_doc(dataset_flags(task.get("data_summary") or "")["pairs"])
     return (
-        f"API:\n{FEATURE_API_DOC}\n\nEXAMPLE PLUGIN:\n```python\n{EXAMPLE_FEATURE}```\n\n"
+        f"API:\n{api}\n\nEXAMPLE PLUGIN:\n```python\n{EXAMPLE_FEATURE}```\n\n"
         f"DATA: {task['data_summary']}\n"
         f"Prior knowledge files: {task['knowledge_summary']}\n\n"
         f"EXPERIMENT {task['experiment_id']}\n"
@@ -124,8 +203,9 @@ def worker_implement(task: dict) -> str:
 
 def worker_diagnose(task: dict, code: str, error: str) -> str:
     nf = task["new_feature"]
+    api = feature_api_doc(dataset_flags(task.get("data_summary") or "")["pairs"])
     return (
-        f"API:\n{FEATURE_API_DOC}\n\n"
+        f"API:\n{api}\n\n"
         f"Hypothesis being tested: {task['hypothesis']}\n"
         f"YOUR CODE for feature `{nf['name']}`:\n```python\n{code}```\n\n"
         f"It failed validation with this ERROR:\n{error[-1500:]}\n\n"

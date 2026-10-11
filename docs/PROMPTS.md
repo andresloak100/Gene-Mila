@@ -7,6 +7,13 @@ commit 7787cb7, which is before the first run in the results table, so every arm
 planner and worker prompts; what differs between arms is the planner model, the worker count, the selection code
 and, for the control, that no LLM is called at all.
 
+The paragraphs headed **Norman variant** were written by hand on 2026-10-11 for docs/NORMAN_PLAN.md section 4, items
+8 to 11. They describe the text a bundle gets when its perturbations include pairs of genes or its manifest records
+the screen's modality (Norman 2019, CRISPRa). Every other bundle, Adamson's included, gets the text quoted in this file
+byte for byte as before: tests/test_norman_templates.py renders the planner and worker prompts, the scripted hypothesis
+list and the template choice for a single-target bundle and compares them with the text the code produced at commit
+b63491d, frozen in tests/data/adamson_text_b63491d.json.
+
 ## 1. The loop in one paragraph
 
 A run is one dataset, one split, one time budget (20 minutes in every run reported) and `workers` worker slots. The
@@ -106,6 +113,18 @@ RISKY: propose bolder, less obvious biological hypotheses than those in flight; 
 ```
 
 The first round of a batch has no focus line and follows the configured mix.
+
+**Norman variant.** When the research state's DATASET line is that of a bundle with pairs (it then contains the key
+rule of section 3), `planner_user` adds one sentence after "Only reference features listed in the state.":
+
+```text
+ Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes.
+```
+
+and the shape's `add_features` entry reads `"for combine (a feature-set combination): existing feature names to add"`.
+Only the DATASET line is read for this, so a hypothesis elsewhere in the state that quotes those words changes
+nothing. The system prompt, which says "one combination/ablation", is the same constant for every bundle: the
+providers send `PLANNER_SYSTEM` as it is, so the clarification goes in the user message.
 
 ### 2b. Worker
 
@@ -235,6 +254,26 @@ The worker has no other context: no repository, no experiment history, no access
 `FeatureContext` API, the data summary, the knowledge file names, its hypothesis, and the names of the other
 features in the model.
 
+**Norman variant.** When the task's data summary is the DATASET line of a bundle with pairs, both messages above
+(`worker_implement` and `worker_diagnose`) carry these lines right after `ctx.target_genes(p) -> list[str]`:
+
+```text
+  PAIRS: perturbations here are single genes and pairs. ctx.target_genes(p) is an unordered set of 1 or 2 genes
+      (the list's order means nothing): use every target (a sum, mean or max over them, or a block of gene_corr),
+      never only [0], so a pair gives the same values whichever order its genes are listed in. Ids: a single is
+      its gene's name, a pair is "A+B" with A and B in alphabetical order; gene g's single, when there is one, is
+      the perturbation whose id equals g.
+```
+
+The smoke test the returned file must pass (`genemila/pipeline.py`, `smoke`) changes with it, on such a bundle only:
+besides the first two training and the first two other perturbations in alphabetical order, its sample holds the
+first training pair and the first pair outside training (so a feature that only pairs move is not refused as
+constant); the leakage check also replaces the training pair's own label with noise; and the feature is computed
+again with the sampled perturbations and every other one of the rest listing their targets in reverse order, which
+must not change the output (a feature that reads only `[0]`, or that matches two perturbations' targets by position,
+fails with "output depends on the order of a pair's target genes"). On a single-target bundle the sample and the
+checks are exactly as before.
+
 ### 2c. What the planner returns
 
 The planner answers with JSON of the shape shown in its user message. One hypothesis from the first Opus round of the
@@ -280,6 +319,26 @@ scored, not trained on; the 21 query-only perturbations are never mentioned). Th
 the Adamson bundle's prior-knowledge files: `gene_sets` (pathway and module gene sets), `ppi_network`
 (protein-protein interaction edges), `prior_network` (signed regulator-to-target edges), `targets` (which gene each
 perturbation knocks down) and `transcription_factors`.
+
+**Norman variant.** A bundle with pairs of genes or a recorded modality gets its DATASET line from
+`prompts.dataset_line` instead (`lab.data_summary`; the line above, and its older multi-target form "targets of 1 to N
+genes; M of K perturbations hit more than one gene", are kept for every other bundle). With pairs it counts the
+training perturbations by their number of target genes and states the key rule; with a modality it names it, glossed
+for CRISPRa, CRISPRi and CRISPRko. For a Norman build with 75 training singles and 55 training pairs it would read:
+
+```text
+norman: 2000 genes, 2000 control cells, 130 training perturbations (75 single genes, 55 pairs of two genes; a perturbation of several genes is named by its genes in alphabetical order joined by '+' (A+B), a single by its gene's name); modality CRISPRa (CRISPR activation: a perturbation raises its target genes' expression); predict unseen perturbations, single genes and pairs.
+```
+
+Counts are of training perturbations only. A single-target bundle that records a modality reads "(single-gene
+targets); modality CRISPRi (CRISPR interference: a perturbation lowers its target genes' expression); predict unseen
+perturbations." There, `targets` lists the one or two genes each perturbation targets (activates, for CRISPRa), keyed
+`A+B` for a pair. The UNEXPLORED IDEA AREAS of such a bundle read "target perturbation magnitude (how far p moves its
+own targets)" in place of "target knockdown magnitude" (same keywords), and a bundle with pairs has one more area after
+the similarity one, "additivity of pairs: a pair's response as the sum of its genes' single-gene responses, and
+departures from it". Its keywords (additive_, additivity, additive model of, non-additiv, epista, synerg) leave out
+the bare word "additive", which the combine hypotheses' "additive gains" would match, and the words of the additive
+baseline's own text, which every such run records first.
 
 A complete state from round 3 of the synthetic example run, as the planner received it:
 
@@ -400,6 +459,11 @@ class IsTarget(Feature):
         return out
 ```
 
+This is the file every reported run used. Since 2026-10-11 `IsTarget`'s rationale reads "A perturbation acts first
+on its own targets' expression: a knockdown lowers it, an activation raises it." (stored with the feature, never sent
+in a prompt); its description, which the planner reads in the feature registry, is unchanged, and the feature marks
+both genes of a pair.
+
 The five baselines run first in every arm, control included:
 
 1. EXP_0001, "predict no change": every perturbation predicts the control mean (pearson_delta 0 by construction).
@@ -407,6 +471,10 @@ The five baselines run first in every arm, control included:
 3. EXP_0003, OLS on the three built-in features.
 4. EXP_0004, ridge on the three built-in features (alpha chosen on the visible score from the grid).
 5. EXP_0005, lasso on the three built-in features.
+
+A bundle with pairs also records `baseline_additive` beside the first two (docs/NORMAN_PLAN.md section 4, item 5): a
+perturbation predicted as the control mean plus the sum of its genes' single-gene training changes, the mean training
+single change standing in for a gene without one.
 
 "Gene-Mila starting model (OLS, 3 built-in features)" in the results table is baseline 3, the best of the five on
 this data (0.520 sealed pearson_delta). Everything above that line in a run is a feature an agent wrote, a
@@ -448,6 +516,7 @@ fallback):
 | `external_knn` | external screen neighbour (added after commit 8261c57, see below) |
 | `external_direct` | external screen response (added after commit 8261c57, see below) |
 | `components` | component, low-rank, low rank, kernel ridge |
+| `additive` | additive model, additivity, additive single (Norman variant, see below; no Adamson text contains them) |
 | `similar` | similar, knn, neighbor, neighbour, transfer |
 | `network` | network, prior, edge, regulat, tf |
 | `module` | module, pathway, gene_set, gene set |
@@ -489,15 +558,56 @@ scaled to unit norm, so K is positive semidefinite with diagonal 1) and k their 
 is ybar + k^T (K + lambda I)^-1 (Y_R - ybar), a signed mix of the training responses; lambda is chosen from 0.01, 0.03,
 0.1, 0.3, 1, 3, 10, 30, 100 by an inner leave-one-out over R (each row predicted from the others around a mean that
 leaves it out, scored by pearson_delta; ties to the larger lambda); the mean training change when p has no usable row
-or fewer than 3 training perturbations have one (where the tool uses geneset_knn instead). A perturbation's row is
-that of its first target gene with a row in the file, read as tools/external_loo.py reads it: genes the file marks
-unmeasured, and null values, are left out; a target listed with zero cells has no row; and when that first row is
-unusable (fewer than 3 measured values, or no spread) the perturbation has none, rather than taking a later target's
-row. One column. Apart from the fallback it computes the same predictor as `external_krr` in tools/external_loo.py,
-for training perturbations and for those outside training alike (tests/test_external_screen_control.py checks the two
-agree, also on files with zero-cell rows, values in unmeasured genes and an unusable first row, and at the three-row
-threshold), and it has not been run on real data. A scripted control run with an external file from this code on
-therefore has eleven fixed hypotheses, not ten, and is a different arm by code version from control_replogle_w4_r0.
+or fewer than 3 training perturbations have one (where the tool uses geneset_knn instead). A single's row is that of
+its target gene, read as tools/external_loo.py reads it: genes the file marks unmeasured, and null values, are left
+out; a target listed with zero cells has no row; and a row with fewer than 3 measured values, or no spread, is
+unusable, so the perturbation has none. (Until the Norman changes below, a perturbation of several genes took its
+first target gene with a row; it now takes the sum of its targets' rows.) One column. Apart from the fallback it
+computes the same predictor as `external_krr` in tools/external_loo.py, for training perturbations and for those
+outside training alike (tests/test_external_screen_control.py checks the two agree, also on files with zero-cell
+rows, values in unmeasured genes, an unusable row, pairs, and at the three-row threshold), and it has not been run on
+real data. A scripted control run with an external file from this code on therefore has eleven fixed hypotheses, not
+ten, and is a different arm by code version from control_replogle_w4_r0.
+
+**Norman variant** (docs/NORMAN_PLAN.md section 4, items 8, 9 and 11). On a bundle with pairs of genes, `ScriptedPlanner`
+adds one hypothesis after the eight and before any external ones, so a control has nine fixed hypotheses (twelve with
+an external file):
+
+9. **Additive single-gene responses** (`additive_singles`, category explore). Hypothesis sent to the worker: "Adding additive model of the single-gene responses: each target gene's training single response (the mean single-gene response for a gene without one), summed over the perturbation's genes improves prediction of unseen perturbations." Rationale: "A pair of genes often changes expression by about the sum of its genes' single-gene changes, so the training singles predict pairs whose genes were each perturbed alone."
+
+Its template, `additive`, is the scripted twin of `baseline_additive` computed leave-one-out: for each perturbation p,
+from `ctx.train_delta(exclude=p)`, the sum over p's target genes of each gene's single-gene training change (the mean
+change of the other training perturbations whose one target is that gene), with the mean single-gene training change
+for a gene without one; a pair whose two singles are in training gets exactly their two changes. Its keywords come
+before those of `similar`; before, such a text reached no keyword and fell to `variance`.
+
+On a bundle with pairs or a recorded modality, the scripted titles and rationales, and the template rationales, are
+worded for any modality, and the descriptions, which pick the template and make the hypothesis text, are unchanged:
+"the knocked-out gene" becomes "the perturbed gene", "Knocking out a TF removes its regulation" becomes "Perturbing a TF
+changes its regulation", "Knockouts disturb the pathway they belong to." becomes "Perturbations disturb the pathway
+their target belongs to.", "Target knockdown magnitude" becomes "Target perturbation magnitude", "The knockdown drop
+scales with the target's baseline expression." becomes "The change of the target's own expression depends on its
+baseline expression.", "The same knockdown measured in an independent screen of the same cell line predicts this
+response." becomes "The same target perturbed in an independent screen of the same cell line predicts this response,
+once the file's sign matches that screen's modality to this one's.", and "Targets whose knockdowns look alike" becomes
+"Targets whose perturbations look alike" (`NEUTRAL_HYPOTHESIS_TEXT` and `NEUTRAL_TEMPLATE_TEXT` in mock.py; the
+template edits also say that external_direct sums a pair's rows and applies the file's sign). The scripted planner
+reads the bundle's kind from the DATASET line of the first research state it is given, before it proposes anything,
+and the mock worker from the task's data summary. A single-target bundle without a modality gets every text above.
+
+Every template now treats a perturbation's targets as an unordered set. The external templates read a pair's row as
+tools/external_loo.py does: the sum of its targets' rows in sorted order, present only when every target has one, a
+gene unmeasured in any of them left unmeasured; `external_knn` and `external_krr` compute their correlations, and
+`external_krr` its unit row, from that sum, per perturbation (the unit vector of a sum is not the sum of unit
+vectors). `external_direct` multiplies the row by the knowledge file's top-level `sign` before its zero fill: -1 when
+tools/build_external_screen.py was given a screen modality opposite to the bundle's (`--modality CRISPRi` for Norman),
++1 when the file has none, anything else refused; the similarity weights of the other two are sign-free. `similar`
+compared two target sets position by position (A with C, B with D, never A with D; an IndexError for 2 against 3
+targets) and now takes the mean absolute correlation over the whole block, as `components` does. For single targets
+and a file without a sign each of these templates gives exactly the values it gave before (tests compare them with
+the templates as they were at b63491d); for pairs, tests/test_external_screen_control.py checks the templates against
+the tool and against a sum by hand, that [A, B] and [B, A] give the same values, and that changing B's row changes the
+pair's.
 
 ## 6. What a worker is, and what the worker count changes
 

@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 05:42 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 07:38 UTC.
 
 ## What this is
 
@@ -212,7 +212,10 @@ Conclusion: the limit on this bundle is information about the targets, not searc
   GitHub by design (reports record the source and md5).
 - Merge PR #2 (handoff rules), create a `main` branch, rotate the DeepSeek key and store it in ~/.zshenv.
 - Decide who takes Norman 2019 (Claude or Astra; asked on a card in the build thread at 03:55 UTC 11 Oct, Claude
-  recommended); either follows docs/NORMAN_PLAN.md (gene-grouped split, order-independent pair labels, additive
+  recommended, and Claude proceeding meanwhile: plan items 1 to 13 of section 4 and the `norman_v1` leave-one-out are
+  implemented and reviewed, see the commit after b63491d; every new behaviour is gated on a bundle with pairs, a
+  recorded modality or a gene split, and a frozen-output test (tests/data/adamson_text_b63491d.json) pins Adamson's
+  prompts, scripted hypotheses and templates; next on the Mac: section 6 steps 2 to 7, free); either follows docs/NORMAN_PLAN.md (gene-grouped split, order-independent pair labels, additive
   baseline, sign-aware Replogle features for CRISPRa, a pre-specified leave-one-out, run order). The download needs
   his words in the build thread. Srivatsan needs new drug and dose ingestion.
 - Answer the comment in the summary doc.

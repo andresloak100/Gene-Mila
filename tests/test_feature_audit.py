@@ -306,7 +306,7 @@ def test_lasso_stability_ranks_the_informative_columns_first():
     Xs = fa.standardise(X)[0]
     groups = np.repeat(np.arange(n_p), n_g)
     names = [f"c{i}" for i in range(8)]
-    folds = [[int(s.lstrip("p")) for s in f] for f in cv_folds_of([f"p{i:02d}" for i in range(n_p)], 5, 0)]
+    folds = [[int(s.lstrip("p")) for s in f] for f, _ in cv_folds_of([f"p{i:02d}" for i in range(n_p)], 5, 0)]
     units = _row_units(Xs, y, n_p, n_g, folds)
     res = fa.lasso_stability(Xs, y, groups, units, 20, 0, names, ["f" + n for n in names])
     assert set(res["ranking"][:2]) == {"c2", "c5"}
@@ -615,8 +615,8 @@ def test_label_dependence_is_detected_per_feature_and_those_features_are_recompu
         fa.load_run_plugins(tmp_path / "empty")
     assert fits["label_dependent"] == ["memo_a", "memo_b", "private_d"] and not fits["failed"]
     for s in (0, 1):
-        for fold in cv_folds_of(ctx.train_perts, 5, s):
-            sig = ctx.without_train(fold).train_signature
+        for fold, hide in cv_folds_of(ctx.train_perts, 5, s):
+            sig = ctx.without_train(hide).train_signature
             done = {names[0] for names, signature, _ in calls if signature == sig}
             assert done == {"memo_a", "memo_b", "private_d"}, (s, fold, done)
     # the old, shared-context detection misses memo_b: the reason the detection runs on a fresh view per feature

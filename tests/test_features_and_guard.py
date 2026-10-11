@@ -55,8 +55,8 @@ def _write_plugin(tmp_path, code, name="feat"):
     return d
 
 
-def run_smoke(dataset, tmp_path, code, name="feat"):
-    pub = public(dataset, tmp_path)
+def run_smoke(dataset, tmp_path, code, name="feat", pub=None):
+    pub = pub or public(dataset, tmp_path)
     plugins = _write_plugin(tmp_path, code, name)
     root = Path(__file__).resolve().parent.parent
     r = subprocess.run([sys.executable, "-m", "genemila.pipeline", "smoke", "--feature", name, "--public", str(pub),
@@ -90,6 +90,24 @@ def test_smoke_detects_bad_shape_and_constant(dataset, tmp_path):
     const = TEMPLATES["variance"].replace("ctx.control_std[None, :, None]", "np.ones((1, ctx.n_genes, 1))")
     r = run_smoke(dataset, tmp_path, const, name="const")
     assert r["status"] == "failed" and "constant" in r["problems"][0]
+
+
+def test_smoke_samples_pairs_only_on_a_bundle_with_pairs(dataset, tmp_path):
+    """The smoke test as the worker runs it (a subprocess), docs/NORMAN_PLAN.md section 4, item 10: a feature zero on
+    every single passes on a bundle with pairs, whose sample adds a training and a held-out pair, and is refused as
+    constant on a single-target bundle, whose sample is the first two training and held-out perturbations as before;
+    a feature reading only a pair's first target is refused on the bundle with pairs alone."""
+    from test_norman_templates import FIRST_TARGET, PAIR_ONLY, make_pairs_bundle
+    from genemila.data.bundle import export_public
+
+    pairs = export_public(make_pairs_bundle(tmp_path / "pairs_bundle"), tmp_path / "pairs" / "pub")
+    assert run_smoke(dataset, tmp_path / "pairs", PAIR_ONLY, pub=pairs)["status"] == "ok"
+    (tmp_path / "single").mkdir()
+    r = run_smoke(dataset, tmp_path / "single", PAIR_ONLY)
+    assert r["status"] == "failed" and r["problems"] == ["feature is constant across all rows (no information)"]
+    (tmp_path / "first").mkdir()
+    r = run_smoke(dataset, tmp_path / "first", FIRST_TARGET, pub=pairs)
+    assert r["status"] == "failed" and "order of a pair's target genes" in r["problems"][0]
 
 
 @pytest.mark.parametrize("snippet", [

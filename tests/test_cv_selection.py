@@ -14,13 +14,15 @@ from genemila.pipeline import cv_folds_of, run
 
 def test_fold_view_hides_the_fold_and_leaves_the_original_alone(dataset, tmp_path):
     ctx = FeatureContext(export_public(dataset, tmp_path / "pub"))
-    folds = cv_folds_of(ctx.train_perts, 3, seed=0)
+    pairs = cv_folds_of(ctx.train_perts, 3, seed=0)
+    assert all(hide == fold for fold, hide in pairs)  # random folds (no targets): a fold hides exactly itself
+    folds = [fold for fold, _ in pairs]
     assert sorted(sum(folds, [])) == sorted(ctx.train_perts)
     assert all(len(f) in (len(ctx.train_perts) // 3, len(ctx.train_perts) // 3 + 1) for f in folds)
-    assert cv_folds_of(ctx.train_perts, 3, seed=0) == folds  # deterministic
-    assert cv_folds_of(ctx.train_perts, 3, seed=1) != folds
+    assert cv_folds_of(ctx.train_perts, 3, seed=0) == pairs  # deterministic
+    assert cv_folds_of(ctx.train_perts, 3, seed=1) != pairs
     full_n = len(ctx.train_perts)
-    view = ctx.without_train(folds[0])
+    view = ctx.without_train(pairs[0][1])
     assert not set(view.train_perts) & set(folds[0])
     assert len(view.train_perts) == full_n - len(folds[0])
     perts, d = view.train_delta(exclude=view.train_perts[0])

@@ -35,6 +35,19 @@ with a maximum above 20) from windows spread over the stored values plus the sta
 columns (CSC: the highest-expressed genes) or rows (CSR: the deepest cells), because in a large CSC file every
 spread window sits inside one column and would inspect only a handful of genes. Anything else is refused
 unless already_normalised is set, in which case the stored values are averaged as they are.
+
+Rows are per target gene, so a bundle perturbation of several genes (a Norman pair, CEBPE+KLF1) reads the rows of
+all its targets: consumers sum them, and a pair has an external row only when every target has one. The file is
+built over every gene named by any bundle perturbation (bundle_targets), so a pair's genes are all looked up.
+
+modality, when given (build(modality=...), tools/build_external_screen.py --modality), names the screen's
+modality (CRISPRi for Replogle 2022) and the file then records it in source.modality, the bundle manifest's own
+modality in source.bundle_modality, and a top-level sign: -1 when both modalities are known and differ (a CRISPRi
+screen read for a CRISPRa bundle, whose same-target response is expected to point the other way), +1 when they
+agree or either is unknown. Consumers multiply a target's own delta by sign before using it as that target's
+predicted change; similarities between rows do not depend on it. The description then starts with the screen's
+modality and the sign, as the planner sees only its first 60 characters. Without modality the file is written
+exactly as before (no sign key, absent meaning +1).
 """
 
 from __future__ import annotations
@@ -453,6 +466,47 @@ def bundle_genes(bundle_dir: Path) -> list[str]:
     return [str(g) for g in z["genes"]]
 
 
+def bundle_modality(bundle_dir: Path) -> str | None:
+    """The modality the bundle's manifest records (prepare_data.py --modality), None for a bundle that records
+    none (every bundle built before the field existed, Adamson's included) or has no manifest."""
+    path = Path(bundle_dir) / "manifest.json"
+    if not path.exists():
+        return None
+    value = json.loads(path.read_text()).get("modality")
+    if value is None:
+        return None
+    return str(value).strip() or None
+
+
+def modality_sign(screen_modality: str | None, bundle_modality_: str | None) -> int:
+    """-1 when the screen's and the bundle's modalities are both known and differ (compared without regard to case
+    or surrounding space: a CRISPRi screen for a CRISPRa bundle), else +1 (the same modality, or either unknown)."""
+    a, b = (str(m).strip().lower() if m is not None else "" for m in (screen_modality, bundle_modality_))
+    return -1 if a and b and a != b else 1
+
+
+def _description(space: str, file_name: str, modality: str | None, bundle_mod: str | None, sign: int) -> str:
+    """The knowledge file's description. Without a modality it is the sentence every earlier file carries; with one it
+    leads with the screen's modality and the sign (the planner reads the first 60 characters, lab.knowledge_summary)
+    and says what the sign is for."""
+    body = (f"perts[gene].delta = {space} of that screen's cells of the perturbation minus its own control mean, over "
+            "this bundle's genes in bundle order (null where unmeasured there)")
+    if not modality:
+        return f"External screen deltas: {body}; source: Perturb-seq screen {file_name}."
+    where = f"this bundle is {bundle_mod}" if bundle_mod else "bundle modality not recorded"
+    if sign < 0:
+        why = (f"The screen's modality ({modality}) differs from this bundle's ({bundle_mod}), so a target's response "
+               "here is expected to point the other way: multiply a target's delta by sign (-1) before using it as "
+               "that target's predicted change")
+    elif bundle_mod:
+        why = f"The screen and this bundle share a modality ({modality}), so sign is +1"
+    else:
+        why = "The bundle records no modality, so sign is +1"
+    return (f"{modality} screen deltas, sign {sign:+d} ({where}): {body}; source: {modality} Perturb-seq screen "
+            f"{file_name}. {why}; correlations between rows do not depend on the sign. A perturbation of several "
+            "genes has a row only when every target has one: the sum of its targets' deltas.")
+
+
 def inspect(h5ad: Path, bundle_dir: Path, label_col: str | None = None, gene_col: str | None = None,
             control: list[str] | None = None, aliases: dict[str, str] | None = None) -> dict:
     """Pass 0: obs, var and the X layout only (no X reads). The label matching the build will use."""
@@ -483,15 +537,22 @@ def inspect(h5ad: Path, bundle_dir: Path, label_col: str | None = None, gene_col
 def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None, gene_col: str | None = None,
           control: list[str] | None = None, chunk: int | None = None, chunk_nnz: int = DEFAULT_CHUNK_NNZ,
           already_normalised: bool = False, force: bool = False, with_md5: bool = True,
-          aliases: dict[str, str] | None = None, min_cells: int = 0) -> Path:
+          aliases: dict[str, str] | None = None, min_cells: int = 0, modality: str | None = None) -> Path:
     """Build knowledge/<name>.json in the bundle directory and return its path. aliases: see match_labels and
     map_genes. A target with fewer than min_cells cells in the screen gets no row (its mean is mostly noise) and
-    is listed in bundle_targets_missing and bundle_targets_below_min_cells."""
+    is listed in bundle_targets_missing and bundle_targets_below_min_cells. modality: the screen's modality; when
+    given, the file records it with the bundle's and a top-level sign (see the module docstring), and the
+    description leads with it. None writes the file exactly as before."""
     import h5py
     h5ad, bundle_dir = Path(h5ad), Path(bundle_dir)
     out = bundle_dir / "knowledge" / f"{name}.json"
     if out.exists() and not force:
         raise FileExistsError(f"{out} exists; pass force=True (--force) to overwrite it")
+    modality = (str(modality).strip() or None) if modality is not None else None
+    bundle_mod = bundle_modality(bundle_dir) if modality else None
+    sign = modality_sign(modality, bundle_mod)
+    if modality:
+        _log(f"screen modality {modality}, bundle modality {bundle_mod or 'not recorded'}: sign {sign:+d}")
     t0 = time.time()
     info = inspect(h5ad, bundle_dir, label_col, gene_col, control, aliases)
     match, cats, codes, cols = info["match"], info["categories"], info["codes"], info["cols"]
@@ -553,9 +614,7 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
              "mean over cells of the stored (already normalised) values")
     # the planner sees the first 60 characters of this sentence (lab.knowledge_summary), so it leads with the content
     knowledge = {
-        "description": (f"External screen deltas: perts[gene].delta = {space} of that screen's cells of the "
-                        "perturbation minus its own control mean, over this bundle's genes in bundle order (null where "
-                        f"unmeasured there); source: Perturb-seq screen {h5ad.name}."),
+        "description": _description(space, h5ad.name, modality, bundle_mod, sign),
         "source": {
             "file": h5ad.name, "size_bytes": h5ad.stat().st_size, "md5": md5_file(h5ad) if with_md5 else None,
             "n_cells": info["shape"][0], "n_genes": info["shape"][1], "encoding": info["layout"],
@@ -581,6 +640,11 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
         "bundle_targets_below_min_cells": {t: int(counts[g]) for g, t in enumerate(found, start=1)
                                            if 0 < counts[g] < min_cells},
     }
+    if modality:
+        # only with a modality: a file built without one keeps the keys (and so the planner's "dict of N entries"
+        # line) it always had. sign follows the description, the first key the planner reads.
+        knowledge = {"description": knowledge.pop("description"), "sign": int(sign), **knowledge}
+        knowledge["source"].update(modality=modality, bundle_modality=bundle_mod)
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".tmp")
     tmp.write_text(json.dumps(knowledge, separators=(",", ":"), allow_nan=False))

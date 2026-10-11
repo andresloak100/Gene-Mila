@@ -6,7 +6,9 @@ target mean averages every cell of that perturbation in the source file. The noi
 to carry its Spearman-Brown step to the target. This tool re-reads only the obs and var tables of the source h5ad
 recorded in the bundle's manifest (backed mode, X is never loaded) and groups the labels exactly as the ingestion
 did (genemila.data.real: the manifest's condition_key, control labels and collapse_by_target, targets parsed by
-parse_targets against the source's gene names). Nothing else is read; the output is {perturbation: cells}.
+parse_label against the source's gene names from the manifest's gene_name_key, keyed by perturbation_key so either
+order of a combination pools, and a label with an unknown token skipped when the manifest records strict_labels).
+Nothing else is read; the output is {perturbation: cells}.
 
     python tools/count_target_cells.py --bundle data/adamson_cf --out data/adamson_cf/ncells.json
 """
@@ -21,15 +23,19 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from genemila.data.real import parse_targets  # noqa: E402
+from genemila.data.real import parse_label, perturbation_key  # noqa: E402
 
 
-def count_cells(manifest: dict, h5ad: Path | None = None, gene_name_key: str = "gene_name") -> dict[str, int]:
+def count_cells(manifest: dict, h5ad: Path | None = None, gene_name_key: str | None = None) -> dict[str, int]:
+    """gene_name_key: the var column with gene symbols; None takes the one the manifest records, else gene_name
+    (var_names when the file has no such column, as the ingest does)."""
     import anndata as ad
     sources = [Path(p) for p in manifest["source"]] if h5ad is None else [Path(h5ad)]
     controls = manifest["control_value"]
     controls = [controls] if isinstance(controls, str) else list(controls)
     collapse = bool(manifest.get("collapse_by_target", True))
+    strict = bool(manifest.get("strict_labels", False))
+    gene_name_key = gene_name_key or manifest.get("gene_name_key") or "gene_name"
     counts: dict[str, int] = {}
     for path in sources:
         a = ad.read_h5ad(path, backed="r")
@@ -43,10 +49,10 @@ def count_cells(manifest: dict, h5ad: Path | None = None, gene_name_key: str = "
         for c, k in zip(labels, n):
             if c in controls:
                 continue
-            tg = parse_targets(str(c), genes)
-            if not tg:
+            tg, unknown = parse_label(str(c), genes)
+            if not tg or (strict and unknown):
                 continue
-            key = "+".join(tg) if collapse else str(c)
+            key = perturbation_key(tg) if collapse else str(c)
             counts[key] = counts.get(key, 0) + int(k)
     return dict(sorted(counts.items()))
 
@@ -56,7 +62,8 @@ def main(argv=None) -> int:
     ap.add_argument("--bundle", required=True, help="bundle directory (its manifest.json names the source h5ad)")
     ap.add_argument("--out", required=True, help="output JSON {perturbation: cells}")
     ap.add_argument("--h5ad", default=None, help="the source h5ad, when it moved since the bundle was built")
-    ap.add_argument("--gene-name-key", default="gene_name", help="var column with gene symbols (default gene_name)")
+    ap.add_argument("--gene-name-key", default=None,
+                    help="var column with gene symbols (default: the manifest's gene_name_key, else gene_name)")
     args = ap.parse_args(argv)
     manifest = json.loads((Path(args.bundle) / "manifest.json").read_text())
     if len(manifest.get("source", [])) != 1 and args.h5ad:

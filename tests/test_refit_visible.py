@@ -80,6 +80,64 @@ def test_seed_repeats_recompute_the_features_under_every_seed(lab_factory, tmp_p
         REGISTRY.pop("refit_test_noisy", None)
 
 
+def test_analytic_baselines_are_refit_by_their_own_rule(lab_factory, tmp_path, code_repo):
+    """An analytic baseline is refit as itself: the additive baseline of a bundle with pairs by the lab's additive
+    rule over the refit's training set (the visible validation singles count as training singles), never as the mean
+    response; the two other baselines exactly as before; any other group is refused."""
+    from conftest import make_cfg
+    from test_norman_lab import make_pair_bundle
+    from genemila.lab import Lab, additive_delta
+    bundle = make_pair_bundle(tmp_path / "norman_toy")
+    cfg = make_cfg(tmp_path)
+    cfg["run"]["data_dir"] = str(bundle)
+    lab = Lab(cfg, tmp_path / "run", bundle, repo=code_repo)
+    try:
+        public = rv.training_context(lab, tmp_path / "cache", augment=False)
+        held = [p for p in public.perts if p not in set(public.train_perts)]
+        got = rv._analytic_delta(public, "baseline_additive", held)
+        assert np.allclose(got, lab._analytic_baseline("baseline_additive", held) - lab.control_mean, rtol=0,
+                           atol=1e-12)
+        names, d = public.train_delta()
+        single = {public.target_genes(q)[0]: d[i] for i, q in enumerate(names) if len(public.target_genes(q)) == 1}
+        both = [p for p in held if len(public.target_genes(p)) == 2 and all(g in single for g in
+                                                                            public.target_genes(p))]
+        assert both
+        for p in both:   # A and B trained: Δ_A + Δ_B, not the mean training delta
+            a, b = public.target_genes(p)
+            assert np.allclose(got[held.index(p)], single[a] + single[b], rtol=0, atol=1e-12)
+            assert not np.allclose(got[held.index(p)], d.mean(axis=0))
+        # on all visible labels the visible validation singles join the training singles
+        ctx = rv.training_context(lab, tmp_path / "cache")
+        out = [p for p in ctx.perts if p not in set(ctx.train_perts)]
+        names, d = ctx.train_delta()
+        rows = {}
+        for i, q in enumerate(names):
+            if len(ctx.target_genes(q)) == 1:
+                rows.setdefault(ctx.target_genes(q)[0], []).append(i)
+        fill = d[[i for r in rows.values() for i in r]].mean(axis=0)
+        want = np.array([sum(d[rows[g]].mean(axis=0) if g in rows else fill for g in ctx.target_genes(p))
+                         for p in out])
+        refit = rv._analytic_delta(ctx, "baseline_additive", out)
+        assert np.allclose(refit, want, rtol=0, atol=1e-12)
+        val1_genes = {ctx.target_genes(p)[0] for p in lab._val1.perts if len(ctx.target_genes(p)) == 1}
+        uses = [p for p in out if set(ctx.target_genes(p)) & val1_genes]
+        assert uses and not np.allclose(refit[[out.index(p) for p in uses]], got[[held.index(p) for p in uses]])
+        assert np.array_equal(refit, additive_delta(out, {p: ctx.target_genes(p) for p in ctx.perts}, names, d))
+        with pytest.raises(ValueError, match="unknown analytic baseline"):
+            rv._analytic_delta(ctx, "baseline_something", out)
+        with pytest.raises(ValueError, match="unknown analytic baseline"):
+            rv._analytic_delta(ctx, "", out)
+    finally:
+        lab.close()
+    # a single-target bundle: no change and the mean training delta, as the code before computed them
+    lab = lab_factory()
+    ctx = rv.training_context(lab, tmp_path / "c3")
+    out = [p for p in ctx.perts if p not in set(ctx.train_perts)]
+    _, d = ctx.train_delta()
+    assert np.array_equal(rv._analytic_delta(ctx, "baseline_mean_response", out), np.tile(d.mean(axis=0), (len(out), 1)))
+    assert np.array_equal(rv._analytic_delta(ctx, "baseline_unchanged", out), np.zeros((len(out), ctx.n_genes)))
+
+
 def test_cache_is_keyed_by_the_bundle_not_the_run_directory(dataset, tmp_path):
     """Two run directories of the same name on different bundles never share a feature or gene_corr cache."""
     from genemila.data.synthetic import generate

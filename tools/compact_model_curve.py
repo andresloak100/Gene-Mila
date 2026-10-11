@@ -24,7 +24,7 @@ REPO = Path(__file__).resolve().parents[1]  # the repository root (the original 
 sys.path.insert(0, str(REPO))
 from genemila.features import registry  # noqa: E402
 from genemila.features.api import FeatureContext  # noqa: E402
-from genemila.pipeline import cv_folds_of, feature_blocks  # noqa: E402
+from genemila.pipeline import cv_fold_targets, cv_folds_of, feature_blocks  # noqa: E402
 
 run = Path(sys.argv[1]).resolve()
 import sqlite3  # noqa: E402
@@ -55,9 +55,13 @@ def pear_rows(P, Y):
 # ---- per fold: standardised training matrix, fold matrix, Gram matrices
 folds = []
 cols = None
-for fold in cv_folds_of(train, 5, 0):
+# the run's fold grouping, as the lab recorded it in its experiments' hyperparameters (absent, as for every bundle
+# without pairs or a gene split: random folds over names); a fold's view hides its hidden set, predicts the fold
+groups = next((json.loads(h).get("cv_groups") for (h,) in db.execute(
+    "select hyperparameters_json from experiments where hyperparameters_json like '%cv_groups%' limit 1")), None)
+for fold, hide in cv_folds_of(train, 5, 0, cv_fold_targets(ctx, groups)):
     registry.reload_plugins()
-    view = ctx.without_train(fold)
+    view = ctx.without_train(hide)
     both = view.train_perts + fold
     blocks = feature_blocks(view, pool, {}, both, {}, None, {})
     n_tr = len(view.train_perts)
