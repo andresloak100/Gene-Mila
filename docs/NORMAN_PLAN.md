@@ -312,7 +312,7 @@ at the time: 02e7021. Nothing below read an expression value beyond the 500 cont
   split_a391fa9e7b4eccb7, modality CRISPRa. Training 112 (71 singles, 41 pairs); visible validation 63 (15 singles;
   pairs 8 pair_seen0, 35 pair_seen1, 5 pair_seen2); sealed 56 (16 singles; pairs 8, 27, 5). No held-out single's
   gene appears in any training perturbation. The sealed pair_seen0 (8) and pair_seen2 (5) categories are under 10,
-  so they are reported and not read (section 5). Committed byte for byte from the Mac (md5-verified):
+  so they are reported and not read (section 3). Committed byte for byte from the Mac (md5-verified):
   docs/results/norman_splits.json (fb7cbbd7f2d292ae4d428523c936462e), norman_manifest.json
   (880dfa94e3289d368595ab747f7a29f2) and norman_check.txt (93aa1389c68e0f684f083f1463547cb1, the section 2
   output with unrelated paths under ~/Documents omitted). The split was reproduced from the labels alone with
@@ -336,3 +336,34 @@ symbol (Ensembl ids add none; the 17 without are ATL1, CDKN1A, CKS1B, CNNM4, COL
 PTPN13, RUNX1T1, S1PR2, SLC4A1, SLC6A9, TGFBR2, UBASH3A, UBASH3B, mostly silent in K562); 139 of 2,083 bundle genes
 lack a symbol match and 84 of them match by Ensembl id (rename table, 84 aliases). The section 5 gate is judged on
 step 5's dry-run counts for training perturbations.
+
+Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged at $31.78):
+
+- **N1** (runs/norman_control_w4_r0; scripted planner, mock workers, 4 workers; no Replogle file in the bundle;
+  run.external_knowledge [], run.hash_seed 0): ended on its own after 440 s with 368 experiments completed, none
+  failed. Selected EXP_0076 (ridge, alpha 24,300; is_target, additive_singles_e15, response_components_e14,
+  target_level_e11, prior_network_edge_e8), visible 0.641 against 0.611 for the additive baseline (EXP_0003) and 0.528
+  to 0.542 for the other baselines. Sealed, pooled, as the run reported its finalists: selected 0.717 pearson_delta,
+  additive 0.713; MSE_DE 0.119 against 0.102, PCC_DE 0.934 against 0.941, R²_DE 0.833 against 0.846, all-gene PCC
+  0.988 both. Visible by category, selected against additive: single 0.657 / 0.533 (n 15), pair_seen0 0.768 / 0.733
+  (8), pair_seen1 0.808 / 0.780 (35), pair_seen2 0.908 / 0.915 (5). The paired sealed reading of section 5 is
+  produced by tools/sealed_reading.py, written for it after N1 (no run's code reported per-category or paired
+  sealed scores); until then nothing is read from the pooled sealed numbers. Files (push list): summary.json md5
+  3d545d5e0450356076de6a0ad99ec55b, config.json 9fbb436ecd45d2f7a66d1759f7676ec0, analysis log
+  1926c30ef71bb2fc4f04bef80187a836.
+- **Rename table and gate** (step 5): norman_replogle_aliases.json, 84 aliases (md5 e9eea32ff4f117583e7a699e0a7d8828);
+  dry run (md5 0db98aeabbc1e462498f6e959c62f487): 85 of 102 targets with a Replogle row, none under 20 cells; 2,028
+  of 2,083 genes measured (84 through an alias); sign -1 (CRISPRi screen, CRISPRa bundle). Training perturbations
+  with a row 91 of 112 (81%), training singles 60: the gate passes. Coverage is lower on the sealed set, 35 of 56
+  (62%), mostly because TGFBR2 and UBASH3A are sealed genes without a row and sit in 12 sealed pairs. Built
+  data/norman/knowledge/replogle2022_k562.json (md5 d9eff528143dcd4d72c87393df724084, 85 targets); every Norman run
+  from here on is an external-knowledge arm.
+- **norman_v1 leave-one-out** (step 6, 35 s; external_loo_norman_v1.md md5 fb646f9c1df7ff571054d7f11849f520, JSON
+  c78d707f70badc7a06f961b0e40c205a, push list): primary comparison external_stack 0.627 against stack_inbundle 0.604,
+  **+0.023 ± 0.006 paired SE, better on 68 and worse on 44 of 112: passes the reading rule**; without each
+  perturbation's own targets +0.023 ± 0.006 (69 of 112). Secondary: external_krr is the best single predictor (0.617,
+  +0.072 ± 0.016 over geneset_knn), external_direct with the sign flipped is poor (0.188; unflipped 0.048), same-target
+  agreement median -0.056 (negative as expected, near zero): what transfers from the CRISPRi screen to CRISPRa is which
+  targets resemble each other, not the response itself. Gain by stratum: singles +0.027 ± 0.009 (43 of 71), pairs
+  +0.015 ± 0.008 (25 of 41), targets expressed in control +0.029 ± 0.008, silent +0.003 ± 0.013. Stack alpha 0.1 in 99
+  of 112 folds (external_stack) and 111 (stack_inbundle), the smallest of the fixed grid.
