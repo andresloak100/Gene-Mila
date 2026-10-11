@@ -556,3 +556,13 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
   validation perturbations); its sealed score is 0.723.
 - Seed 1 (own arm, killed while finishing): +0.0113 ± 0.0045 vs its start; reported beside, in no arm reading.
 - Ledger unchanged by the readings: $43.589781. Main checkout still pinned at ce1b5304 until the lab-code owner lifts the pin.
+
+## 2026-10-11 23:58 UTC — end of tonight's block; nothing running
+- The pin is lifted: main checkout pulled to the lab head 4562af5b (fast-forward, no untracked file was in the way).
+- Nothing is running on the Mac. The STOP file is in place and stays there. DeepSeek ledger $43.589781.
+- B2 is done and read (draft pull request 7). B3 is dropped from this block.
+- Delivered Norman model: still B1's combined model (0.723 sealed; chosen on visible validation, 0.7801 vs B2's 0.7505).
+  B2's combined model scores 0.727 sealed, +0.0143 ± 0.0025 over the additive baseline (0.713).
+- NEXT (free): whether ridge shrinkage costs the selected models the most-changed genes (their MSE_DE and R2_DE are worse
+  than the additive baseline's although pearson_delta is better). Wait for the lab-code owner's brief.
+- No paid run starts without a new pre-specified block in the repository and Andres's own word.
