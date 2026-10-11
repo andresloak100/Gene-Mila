@@ -20,18 +20,22 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (20:30):** B1's second repeat, `runs/norman_ds_from_n2_w4_r2` (seed 2, code 076282c, from the worktree
-`~/Documents/Mila/Gene-Mila/gene-mila-076282c`), started 20:13 UTC; the ledger read $35.41 at its start. The first
-repeat, `runs/norman_ds_from_n2_w4_r1`, ended cleanly ($1.436) and was read at 203a1bd: its selected model EXP_0681
-scores 0.719 sealed, against its start +0.0004 ± 0.0011 (better on 27 of 56 sealed perturbations), so its own search
-added nothing; against the additive rule +0.007 ± 0.008. A review of the reading tools then found the plan's gene-
-clustering ratio biased upwards; the plan's dated amendment of 20:30 UTC replaces it and the tools are fixed, so
-every B1 run, r1 included, is read again with them. Exact next steps, in order: pull the lab branch in the main
-checkout; when r2 has ended, read r1 again with `tools/sealed_reading.py --runs runs/norman_ds_from_n2_w4_r1 --out
-docs/results/norman_b1_r1_sealed_reading_amended.md` (the 203a1bd reading stays as `norman_b1_r1_sealed_reading.md`),
-and r2 the same way into `norman_b1_r2_sealed_reading.md`; run r3 with the command in the plan's B1 (seed 3) only if
-the ledger is at most $41.37 and r2 ended cleanly at most $2.00; read r3; then `tools/arm_reading.py rule` and
-`combine` as the plan says; then B2 and B3. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+**On the Mac (20:55):** B1's third repeat, `runs/norman_ds_from_n2_w4_r3` (seed 3, code 076282c, from the worktree
+`~/Documents/Mila/Gene-Mila/gene-mila-076282c`), started 20:48 UTC with the ledger at $36.83; it ends about 21:09.
+The main checkout is at d0fb635 (437 tests pass there). The first two repeats ended cleanly with their planner
+unchanged and are read with the amended tools (plan amendment of 20:30 UTC): `runs/norman_ds_from_n2_w4_r1` ($1.436;
+selected EXP_0681, 13 features, 0.719 sealed; against its start +0.0004 ± 0.0011, 27 of 56; against the additive rule
++0.007 ± 0.008) and `runs/norman_ds_from_n2_w4_r2` ($1.425; one malformed planner reply skipped, 59 rounds; selected
+EXP_0729, 23 features, 0.726 sealed; against its start +0.007 ± 0.003, 36 of 56; against the additive rule +0.013 ±
+0.006, 38 of 56; both pass the per-run rule, while the arm reading also counts run-to-run spread and the gene-
+clustering ratio, 1.34 on r2's additive comparison). The readings,
+`docs/results/norman_b1_r1_sealed_reading{,_amended}.md` and `norman_b1_r2_sealed_reading.md`, come to GitHub with
+r3's. Exact next steps, in order: when r3 has ended, check the stop rule (failed, over $2.00, or planner.mixed), read
+it into `docs/results/norman_b1_r3_sealed_reading.md`, then `tools/arm_reading.py rule --against start` (the primary
+reading) and `--against additive` over the three readings' JSON twins, and `tools/arm_reading.py combine` with
+members r1 to r3 against `runs/norman_control_replogle_w4_r0` and against `runs/norman_ds_from_n2_w4_r1:additive`
+(into `docs/results/norman_b1_arm_vs_start.md`, `norman_b1_arm_vs_additive.md`, `norman_b1_combined_vs_n2.md` and
+`norman_b1_combined_vs_additive.md`); then stop and report before B2 and B3. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). Two paid Norman runs today
