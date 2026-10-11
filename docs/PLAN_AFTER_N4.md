@@ -242,3 +242,17 @@ amended tools; the arm tool refuses a reading made before this amendment.
   a `--versus` arm has one reference model that is never itself a member.
 - A run with no summary.json or no planner record is left out like a run whose planner changed, and named; `combine`
   refuses both as members.
+
+## Note, 2026-10-11 21:35 UTC: how B2 is run (operations only; no reading changes)
+
+B1 ended cleanly and is read (docs/NORMAN_PLAN.md section 8; PR #6). Andres wrote "continue" at 20:56 UTC, and B2
+runs as specified above, unattended, from scripts in `docs/mac/block_after_n4/` reviewed before use:
+`block_b2_chain.sh` starts `block_b2_control.sh` (the free control) and then `block_b2_run.sh 0`, `1` and `2`, each
+only after the step before passed its checks. The scripts enforce this plan's money rules (the $45.50 ledger gate, the
+caps, one run at a time, the stop rule after every run) and add operational checks that only ever stop the block,
+never change a reading: the control pins the commit (the lab branch head when it starts) and every later B2 and B3
+run refuses another; each step leaves a pass marker the next step requires; a stopped script, a STOP file or the
+scaling driver halts the chain; and the control stops the block if its best modelled baseline is not
+`baseline_ridge_additive`, the start B2 is about. The best baseline overall (which the exploit engine refines, and
+which can be the analytic additive rule) is recorded beside each run's start. B2's readings and B3 follow as above;
+HANDOFF.md section 1 holds the exact commands.
