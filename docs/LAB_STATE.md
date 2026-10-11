@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 02:50 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:00 UTC.
 
 ## What this is
 
@@ -60,7 +60,8 @@ Sealed pearson_delta (Pearson correlation of predicted and measured expression c
 | scripted control plus a hand-written transfer feature | 0.593 | docs/NEXT_LEVER.md |
 | agent arms, 1 / 4 / 8 / 16 workers (Opus planner) | 0.566 / 0.602 / 0.584 / 0.577 | docs/results/scaling.md |
 | Astra's two DeepSeek continuation campaigns (8 workers, 2 h each) | 0.599 to 0.602 | Astra's notes on the Mac |
-| best of any run | under 0.604 | |
+| scripted no-LLM control with the Replogle 2022 screen (control_replogle_w4_r0, one run, labelled arm) | 0.621 | Mac report, 11 Oct 02:55 UTC; files on the push list |
+| best of any run without an external screen | under 0.604 | |
 | noise ceiling (a perfect predictor, limited by cell sampling) | 0.89 (training) / 0.94 (visible validation) | docs/results/ceiling_analysis.md, docs/results/noise_ceiling.md |
 | transfer ceiling (best mix of other perturbations' responses, with hindsight) | 0.73 to 0.78 | same |
 
@@ -118,8 +119,16 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    Mac: rebuild with the aliases, rerun the leave-one-out with a wider grid, then one scripted control run with the
    file (a labelled arm; one more look at the used sealed set). The rebuild and both leave-one-out readings are done
    (02:30 UTC; knowledge file md5 2a1b40429977ed9be1239dc48c883515, alias table genemila_scale_logs/replogle_aliases.json
-   on the Mac); the control run started 02:31 UTC. A paid agent arm with the file needs Andres's words (card posted
-   02:22 UTC in the build thread).
+   on the Mac). **Control result (control_replogle_w4_r0, code 074c239, 264 s, 348 experiments, no LLM, ledger
+   unchanged):** selected model EXP_0076 (ridge, alpha 23,409; features mean_response, is_target, external_knn,
+   external_direct, target_level, response_components, shared_module) scores visible 0.625, sealed pearson_delta 0.621,
+   MSE_DE 0.084, PCC_DE 0.964, R2_DE 0.848, against 0.593 / 0.142 / 0.943 / 0.755 for the control without the file
+   and 0.599 / 0.117 / 0.955 / 0.803 for the Opus agent run newcode_opus_w4_r0; three finalists agree (0.6214 to
+   0.6217); each external feature alone lifts the visible score from 0.501 to 0.570 (direct) and 0.582 (kNN). How far
+   to trust it: one run on a sealed set already read many times; the pearson_delta gain over the agents (about 0.02)
+   is the size of the run-to-run spread, the DE-gene gains are larger; Norman, or a fresh split, is the clean test.
+   summary.json md5 6a79a78d33e030a2fb08fa6d60a4972c (on the push list). A paid agent arm with the file needs
+   Andres's words (card posted 02:22 UTC in the build thread).
 2. **Compact model rules (Andres's ask, 11 Oct 00:32 UTC):** a box of failed features that agents cannot re-propose; an
    admission rule (a feature joins only if its gain beats the fold noise, checked under two fold seeds); a redundancy
    check that rejects a feature correlating above 0.9 with one already in the model before it is fitted; a
