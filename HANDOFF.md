@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-11 22:55, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
+**Last updated:** 2026-10-11 23:45, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
 (22:55). `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
@@ -20,7 +20,7 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (23:00):** ledger $41.03 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
+**On the Mac (23:45):** ledger $43.59 of the block's $48. B2's paid runs are done: seeds 2 (`runs/norman_ds_addstart_w4_r2`, $1.369, selected EXP_0715) and 3 (`_r3`, $1.194, EXP_0625) passed the stop rule (22:52 to 23:39 UTC, no backstop fired); B2's readings run on the Mac by `docs/mac/block_after_n4/block_b2_read.sh` (0a750e0, md5 16d6ef10…, run from `genemila_scale_logs/b2_resume/`), and the Mac pushes them with the runs' summaries on `claude/mac-b2-2026-10-11` as a draft PR. What follows is the state before that. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
 readings and the three runs' summaries are in draft PR #6, waiting for Andres to merge): the agents' search adds
 nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of the three repeats scores 0.723 sealed,
 +0.0041 ± 0.0011 over N2's selected model, not established over the additive rule; it is the delivered Norman model
