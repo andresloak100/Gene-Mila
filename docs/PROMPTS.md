@@ -444,6 +444,8 @@ fallback):
 
 | template | chosen when the hypothesis text contains |
 |---|---|
+| `external_knn` | external screen neighbour (added after commit 8261c57, see below) |
+| `external_direct` | external screen response (added after commit 8261c57, see below) |
 | `components` | component, low-rank, low rank, kernel ridge |
 | `similar` | similar, knn, neighbor, neighbour, transfer |
 | `network` | network, prior, edge, regulat, tf |
@@ -456,6 +458,17 @@ fallback):
 The template code is in `TEMPLATES` in the same file (control-cell co-expression with the target, signed prior-network
 edges, gene-set co-membership, kNN response transfer by target similarity, target expression level, PCA loading
 products, control-cell variance, and the low-rank response components with kernel ridge).
+
+Added on 2026-10-11, after every run above: when a run can read an external screen knowledge file added to its bundle
+after the build (run.external_knowledge, for example knowledge/replogle2022_k562.json built by
+tools/build_external_screen.py), `ScriptedPlanner` appends two hypotheses per such file after the eight above,
+`external_direct_<file>` ("external screen response of the same target gene, from knowledge file <file>") and
+`external_knn_<file>` ("external screen neighbour transfer: training responses weighted by how alike their targets'
+knockdowns look in knowledge file <file>"). Their templates read the file named in the hypothesis: the first one
+copies the screen's change for the same target gene (0 where unmeasured or without a row); the second averages the
+other training perturbations' changes weighted by the correlation of their targets' external changes with the
+target's (top 5 positive; the mean training change otherwise). A bundle without such a file gets the unchanged list,
+and a run with one is its own arm, "scripted control (no LLM) (external knowledge: <file>)".
 
 ## 6. What a worker is, and what the worker count changes
 

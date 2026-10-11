@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 01:05 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 02:40 UTC.
 
 ## What this is
 
@@ -64,6 +64,19 @@ Sealed pearson_delta (Pearson correlation of predicted and measured expression c
 | noise ceiling (a perfect predictor, limited by cell sampling) | 0.89 (training) / 0.94 (visible validation) | docs/results/ceiling_analysis.md, docs/results/noise_ceiling.md |
 | transfer ceiling (best mix of other perturbations' responses, with hindsight) | 0.73 to 0.78 | same |
 
+The first lever with evidence of new information is an external screen (visible data only, leave-one-out over the
+50 training perturbations, docs/results/external_loo_replogle2022_k562.md):
+
+| predictor (leave-one-out, training perturbations) | pearson_delta mean ± sd | paired gain vs gene-set kNN |
+|---|---|---|
+| mean response of the other perturbations | 0.474 ± 0.261 | -0.071 ± 0.019 |
+| gene-set kNN (close to what the agents found) | 0.545 ± 0.264 | |
+| Replogle 2022 response of the same target | 0.461 ± 0.211 | -0.084 ± 0.035 |
+| kNN weighted by Replogle response similarity | 0.572 ± 0.257 | +0.027 ± 0.017 |
+| ridge stack of the four | 0.616 ± 0.233 | +0.072 ± 0.020 (better for 34 of 50) |
+
+The same stack without the two external columns scored 0.543 on the Mac, so the gain comes from the screen.
+
 Readings: only "4 workers beats 8" is significant (p = 0.01); cost rises linearly with workers; Opus and DeepSeek V4
 Pro plan equally well when DeepSeek finds response transfer (it did in one of two runs). The whole gain over the
 start is one feature family, transfer of responses from related knockdowns. Agents beat every baseline on all six
@@ -92,11 +105,18 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## In progress (2026-10-11)
 
-1. **External K562 screen (Andres chose Replogle 2022 on 11 Oct).** Tools committed: genemila/data/external_screen.py,
-   tools/build_external_screen.py (streams the h5ad into knowledge/replogle2022_k562.json for a bundle) and
-   tools/external_loo.py (free leave-one-out test against gene-set kNN before any paid arm). Next: download
-   ReplogleWeissman2022_K562_gwps.h5ad (Zenodo 13350497, 8,805,466,154 bytes, md5 13db594f8f1d2ccb88fec44a13e414dc)
-   on the Mac, dry run, build, leave-one-out test, report. A paid arm with the knowledge file needs Andres's words.
+1. **External K562 screen (Andres chose Replogle 2022 on 11 Oct).** Downloaded on the Mac
+   (ReplogleWeissman2022_K562_gwps.h5ad, Zenodo 13350497, md5 13db594f8f1d2ccb88fec44a13e414dc) and built into
+   data/adamson_cf/knowledge/replogle2022_k562.json there: 82 bundle targets with a row, 1,938 of 2,055 genes
+   measured. Leave-one-out result above. Done in code since: a run whose bundle holds knowledge files added after the
+   build records them (run.external_knowledge) and is its own arm, "... (external knowledge: replogle2022_k562)", so
+   it is never pooled with earlier runs; the builder takes gene renames (--alias SLMO2=PRELID3B, SRPR=SRPRA,
+   ATP5B=ATP5F1B; the first build missed SLMO2 and SRPR for that reason) and drops targets with fewer than 20 cells
+   (--min-cells; FECH had 6); tools/external_loo.py takes --alpha-grid (the stack chose the largest pre-specified alpha,
+   1000, in all 50 folds, so a wider grid is a second look and the report says so); the scripted no-LLM control adds
+   two fixed hypotheses per external screen (same-target response, kNN by external similarity). Next, all free on the
+   Mac: rebuild with the aliases, rerun the leave-one-out with a wider grid, then one scripted control run with the
+   file (a labelled arm; one more look at the used sealed set). A paid agent arm with the file needs Andres's words.
 2. **Compact model rules (Andres's ask, 11 Oct 00:32 UTC):** a box of failed features that agents cannot re-propose; an
    admission rule (a feature joins only if its gain beats the fold noise, checked under two fold seeds); a redundancy
    check that rejects a feature correlating above 0.9 with one already in the model before it is fitted; a
@@ -107,7 +127,8 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    threshold, the second fold seed, the redundancy pre-check and the monitor. Plan: push Astra's branch, review and
    merge it into the lab branch, add the four missing rules, then audit every run with tools/feature_audit.py.
 3. **Files to push from the Mac** (genemila_scale_logs/push_to_github.sh, Andres runs it): noise_ceiling.json,
-   refit_visible.{md,json}, the Mac's STATE.md and notes, adamson_cf_ncells.json, and Astra's two branches.
+   refit_visible.{md,json}, the Mac's STATE.md and notes, adamson_cf_ncells.json, the Replogle build report,
+   external_loo JSON and the stack control without external columns, and Astra's two branches.
 
 ## Waiting on Andres
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import random
+import re
 import threading
 import time
 
@@ -296,9 +297,124 @@ class F(Feature):
 '''
 
 
+# External screens (knowledge files added to a bundle after it was built; see ScriptedPlanner). The knowledge file's
+# name comes from the hypothesis text ("... knowledge file <name> ..."), so the code names the file it reads.
+TEMPLATES["external_direct"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+KNOWLEDGE = "{knowledge}"
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("External screen response of p's target (knowledge file {knowledge}): the change of gene g measured "
+                   "for the same target gene in another screen of the cell line; 0 where unmeasured or without a row.")
+    rationale = "The same knockdown measured in an independent screen of the same cell line predicts this response."
+    inputs = ["targets", KNOWLEDGE]
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        rows = _rows(ctx)
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            for g in ctx.target_genes(p):  # the first target gene with a row
+                if g in rows:
+                    out[i, :, 0] = np.nan_to_num(rows[g])
+                    break
+        return out
+
+
+def _rows(ctx):
+    """Target gene -> external change over this bundle's genes (nan where the screen did not measure it)."""
+    key = "external_rows_" + KNOWLEDGE
+    if key not in ctx.cache:
+        ext = ctx.knowledge(KNOWLEDGE) or {{}}
+        cols = np.array([ctx.gene_index.get(str(g), -1) for g in ext.get("genes") or []], dtype=int)
+        ok = cols >= 0
+        rows = {{}}
+        for g, r in (ext.get("perts") or {{}}).items():
+            d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
+            v = np.full(ctx.n_genes, np.nan)
+            v[cols[ok]] = d[ok]
+            rows[g] = v
+        ctx.cache[key] = rows
+    return ctx.cache[key]
+'''
+TEMPLATES["external_knn"] = '''import numpy as np
+from genemila.features.api import Feature, register
+
+KNOWLEDGE = "{knowledge}"
+
+
+@register
+class F(Feature):
+    name = "{name}"
+    description = ("Neighbour transfer through an external screen (knowledge file {knowledge}): weighted mean of the "
+                   "other training perturbations' responses, weights = correlation between the external responses of "
+                   "their targets and p's target, top k positive; the mean training response when p's target has no "
+                   "external row or no positively correlated neighbour.")
+    rationale = ("Targets whose knockdowns look alike in an independent screen of the same cell line respond alike "
+                 "here, even when their annotations do not say so.")
+    inputs = ["train_delta", "targets", KNOWLEDGE]
+    params = {{"k": 5}}
+    dim = 1
+
+    def compute(self, ctx, perts, params):
+        rows = _rows(ctx)
+        k = int(params["k"])
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            names, d = ctx.train_delta(exclude=p)
+            ep = _first(ctx, rows, p)
+            sims = np.full(len(names), -np.inf)
+            if ep is not None:
+                for j, q in enumerate(names):
+                    eq = _first(ctx, rows, q)
+                    if eq is None:
+                        continue
+                    m = ~np.isnan(ep) & ~np.isnan(eq)
+                    if m.sum() >= 3 and ep[m].std() > 0 and eq[m].std() > 0:
+                        sims[j] = float(np.corrcoef(ep[m], eq[m])[0, 1])
+            top = [j for j in np.argsort(-sims)[:k] if sims[j] > 0]
+            if top:
+                w = sims[top]
+                out[i, :, 0] = (w[:, None] * d[top]).sum(axis=0) / w.sum()
+            elif len(names):
+                out[i, :, 0] = d.mean(axis=0)
+        return out
+
+
+def _first(ctx, rows, p):
+    for g in ctx.target_genes(p):
+        if g in rows:
+            return rows[g]
+    return None
+
+
+def _rows(ctx):
+    """Target gene -> external change over this bundle's genes (nan where the screen did not measure it)."""
+    key = "external_rows_" + KNOWLEDGE
+    if key not in ctx.cache:
+        ext = ctx.knowledge(KNOWLEDGE) or {{}}
+        cols = np.array([ctx.gene_index.get(str(g), -1) for g in ext.get("genes") or []], dtype=int)
+        ok = cols >= 0
+        rows = {{}}
+        for g, r in (ext.get("perts") or {{}}).items():
+            d = np.array([np.nan if v is None else float(v) for v in r["delta"]])
+            v = np.full(ctx.n_genes, np.nan)
+            v[cols[ok]] = d[ok]
+            rows[g] = v
+        ctx.cache[key] = rows
+    return ctx.cache[key]
+'''
+
+
 def _pick_template(text: str) -> str:
     text = text.lower()
-    for key, words in [("components", ("component", "low-rank", "low rank", "kernel ridge")),
+    for key, words in [("external_knn", ("external screen neighbour",)),
+                       ("external_direct", ("external screen response",)),
+                       ("components", ("component", "low-rank", "low rank", "kernel ridge")),
                        ("similar", ("similar", "knn", "neighbor", "neighbour", "transfer")),
                        ("network", ("network", "prior", "edge", "regulat", "tf ")),
                        ("module", ("module", "pathway", "gene_set", "gene set")),
@@ -309,6 +425,16 @@ def _pick_template(text: str) -> str:
         if any(w in text for w in words):
             return key
     return "variance"
+
+
+def _knowledge_name(text: str) -> str:
+    """The knowledge file a hypothesis names ("... knowledge file replogle2022_k562 ..."), for the external templates."""
+    m = re.search(r"knowledge file (\w+)", text)
+    return m.group(1) if m else ""
+
+
+def _code(hint: str, name: str) -> str:
+    return TEMPLATES[_pick_template(hint)].format(name=name, knowledge=_knowledge_name(hint))
 
 
 class MockProvider(AgentProvider):
@@ -366,7 +492,7 @@ class MockProvider(AgentProvider):
         elif "MOCK_BREAK" in hint or (self.fail_rate and self.rng.random() < self.fail_rate):
             code = "import numpy as np\nthis is not python(\n"
         else:
-            code = TEMPLATES[_pick_template(hint)].format(name=nf["name"])
+            code = _code(hint, nf["name"])
         text = f"```python\n{code}```"
         return LLMResponse(text=text, usage=self._usage(json.dumps(task), text), provider=self.name, model=self.model)
 
@@ -379,7 +505,7 @@ class MockProvider(AgentProvider):
         if "MOCK_BREAK_ALWAYS" in hint:
             code = "still broken(\n"
         else:
-            code = TEMPLATES[_pick_template(hint.replace("MOCK_BREAK", ""))].format(name=nf["name"])
+            code = _code(hint.replace("MOCK_BREAK", ""), nf["name"])
         text = f"```python\n{code}```"
         return LLMResponse(text=text, usage=self._usage(error, text), provider=self.name, model=self.model)
 
@@ -407,12 +533,30 @@ SCRIPTED_HYPOTHESES = [
 ]
 
 
+def external_hypotheses(names: list[str] | None) -> list[tuple]:
+    """Two fixed hypotheses per external screen knowledge file a run can read (run.external_knowledge): the same
+    target's external response, and neighbour transfer weighted by external response similarity. They follow the
+    eight fixed hypotheses, so a scripted control on a bundle without such a file is unchanged."""
+    out = []
+    for k in names or []:
+        out += [("External screen response", "explore", f"external_direct_{k}",
+                 f"external screen response of the same target gene, from knowledge file {k}",
+                 "The same knockdown measured in an independent screen of the same cell line predicts this response."),
+                ("External screen neighbours", "explore", f"external_knn_{k}",
+                 f"external screen neighbour transfer: training responses weighted by how alike their targets' "
+                 f"knockdowns look in knowledge file {k}",
+                 "Targets whose knockdowns look alike in an independent screen respond alike here.")]
+    return out
+
+
 class ScriptedPlanner(AgentProvider):
-    """Deterministic planner used when no LLM planner is available, and in tests."""
+    """Deterministic planner used when no LLM planner is available, and in tests. external: the knowledge files a
+    run can read beyond those its bundle was built with (run.external_knowledge); each adds two hypotheses."""
     name = "scripted"
 
-    def __init__(self, model: str = "scripted"):
+    def __init__(self, model: str = "scripted", external: list[str] | None = None):
         super().__init__(model)
+        self.hypotheses = SCRIPTED_HYPOTHESES + external_hypotheses(external)
         self.cursor = 0
         self.swept = False
         self.lasso = False
@@ -427,8 +571,8 @@ class ScriptedPlanner(AgentProvider):
 
     def _propose(self, research_state: str, n: int) -> LLMResponse:
         hyps = []
-        while len(hyps) < n and self.cursor < len(SCRIPTED_HYPOTHESES):
-            title, cat, name, desc, why = SCRIPTED_HYPOTHESES[self.cursor]
+        while len(hyps) < n and self.cursor < len(self.hypotheses):
+            title, cat, name, desc, why = self.hypotheses[self.cursor]
             hyps.append({"title": title, "hypothesis": f"Adding {desc} improves prediction of unseen perturbations.",
                          "rationale": why, "category": cat, "action": "new_feature", "parent": None,
                          "new_feature": {"name": name, "description": desc, "implementation_hint": desc,

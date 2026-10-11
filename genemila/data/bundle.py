@@ -159,6 +159,20 @@ def verify_bundle(data_dir: Path) -> list[str]:
     return problems
 
 
+def added_knowledge(data_dir: Path) -> list[str]:
+    """Knowledge files a bundle (or a run's public copy of it) holds beyond those it was built with, by name
+    without ".json". The manifest lists the files written at build time; a file dropped into knowledge/ later
+    (an external screen, say) reaches every run started afterwards through export_public, so such a run saw
+    information the bundle's earlier runs did not and is its own arm (benchmark.table.run_arm)."""
+    data_dir = Path(data_dir)
+    listed = set(json.loads((data_dir / "manifest.json").read_text()).get("knowledge_files") or [])
+    kdir = data_dir / "knowledge"
+    if not kdir.is_dir():
+        return []
+    names = [f.name for f in kdir.iterdir() if f.is_file() and f.name not in listed and not f.name.endswith(".tmp")]
+    return sorted(n[:-5] if n.endswith(".json") else n for n in names)
+
+
 def export_public(data_dir: Path, dest: Path) -> Path:
     """Materialise only the public part of a dataset for experiment subprocesses."""
     data_dir, dest = Path(data_dir), Path(dest)

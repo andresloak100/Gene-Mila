@@ -134,6 +134,8 @@ def main(argv=None) -> int:
     run_dir = Path(args.run_dir) if args.run_dir else REPO_ROOT / "runs" / (
         time.strftime("%Y%m%d_%H%M%S") + f"_{cfg['run']['dataset']}_w{cfg['run']['workers']}")
     run_dir.mkdir(parents=True, exist_ok=True)
+    from genemila.data.bundle import added_knowledge
+    cfg["run"]["external_knowledge"] = added_knowledge(data_dir)  # files added after the build: their own arm
     (run_dir / "config.json").write_text(json.dumps(cfg, indent=1))
     print(f"run directory: {run_dir}")
     cmd = [sys.executable, str(Path(__file__).resolve()), "--_child", "--run-dir", str(run_dir)]

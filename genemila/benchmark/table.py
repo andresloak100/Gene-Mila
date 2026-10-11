@@ -41,7 +41,8 @@ def run_arm(cfg: dict, summary: dict | None = None) -> str:
     control (fixed hypotheses implemented by hand-written template features). With the run's summary, a run
     whose planner was replaced by a fallback during the run is its own arm, named by the planners that
     actually produced its plans ("claude_cli:opus -> deepseek:deepseek-v4-pro planner"), and one that lost
-    every planner says so; neither is pooled with the clean runs of its configured arm."""
+    every planner says so; neither is pooled with the clean runs of its configured arm. A run that could read
+    knowledge files added to the bundle after it was built (run.external_knowledge) is its own arm too."""
     p, w = cfg.get("planner", {}), cfg.get("worker", {})
     src = cfg.get("run", {}).get("continue_from")
     source = Path(str(src)).name if src else ""  # a warm start carries the campaign it continues in its name
@@ -51,6 +52,9 @@ def run_arm(cfg: dict, summary: dict | None = None) -> str:
     rule = str(cfg.get("experiment", {}).get("selection") or "pearson_delta")
     if rule != "pearson_delta":  # another selection rule is another arm
         cont += f" (selection {rule})"
+    extra = cfg.get("run", {}).get("external_knowledge") or []
+    if extra:  # knowledge files added to the bundle after it was built (see data.bundle.added_knowledge)
+        cont += f" (external knowledge: {', '.join(sorted(extra))})"
     if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
         if source:  # re-searches another campaign's features without an LLM: its result is theirs, not a control's
             return f"no-LLM continuation of {source}" + cont

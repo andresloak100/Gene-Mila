@@ -185,13 +185,18 @@ def looks_like_counts(values: np.ndarray) -> bool:
 # ---- label matching ------------------------------------------------------------------------------------------
 
 def match_labels(categories: list[str], bundle_targets: list[str], external_genes: list[str],
-                 control: list[str] | None = None) -> dict:
+                 control: list[str] | None = None, aliases: dict[str, str] | None = None) -> dict:
     """What each external label is: a control label, one bundle target gene, a combinatorial perturbation
     (skipped), a bundle target plus a token that is neither a gene of the screen nor a guide suffix (ambiguous:
     it may name a gene the screen perturbed but did not measure, so it is skipped rather than pooled) or
     something else (skipped). control, when given, replaces the automatic detection of the non-targeting labels
-    (real.CONTROL_LABELS, matched without regard to case)."""
+    (real.CONTROL_LABELS, matched without regard to case). aliases maps a bundle symbol to the symbol the screen
+    uses for the same gene (a renamed gene: SLMO2 is PRELID3B in newer annotations); a label naming the alias
+    counts for the bundle target."""
     lower_target = {t.lower(): t for t in bundle_targets}
+    for t, a in check_aliases(aliases, bundle_targets).items():
+        if t in bundle_targets:
+            lower_target.setdefault(a.lower(), t)
     gene_like = {g.lower() for g in external_genes} | set(lower_target)
     if control:
         missing = [c for c in control if c not in set(categories)]
@@ -204,6 +209,7 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
         raise ValueError(f"cannot identify the control label among {sorted(categories)[:20]}; pass --control")
     ctrl_set = set(ctrl)
     by_target: dict[str, list[str]] = {}
+    via_alias: set[str] = set()  # targets matched through a label naming their alias
     multi, ambiguous, other = [], [], []
     for label in categories:
         if label in ctrl_set:
@@ -211,6 +217,8 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
         low = label.lower()
         if low in lower_target:
             by_target.setdefault(lower_target[low], []).append(label)
+            if low != lower_target[low].lower():
+                via_alias.add(lower_target[low])
             continue
         genes, unknown = [], []
         for tok in _SPLIT.split(label):
@@ -224,6 +232,8 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
                 unknown.append(tok)
         if len(genes) == 1 and genes[0] in lower_target and not unknown:
             by_target.setdefault(lower_target[genes[0]], []).append(label)
+            if genes[0] != lower_target[genes[0]].lower():
+                via_alias.add(lower_target[genes[0]])
         elif len(genes) == 1 and genes[0] in lower_target:
             ambiguous.append(label)
         elif len(genes) > 1:
@@ -233,12 +243,48 @@ def match_labels(categories: list[str], bundle_targets: list[str], external_gene
     found = sorted(by_target)
     return {"control": ctrl, "by_target": {t: by_target[t] for t in found},
             "missing": sorted(t for t in bundle_targets if t not in by_target),
-            "multi_gene": sorted(multi), "ambiguous": sorted(ambiguous), "n_other": len(other)}
+            "multi_gene": sorted(multi), "ambiguous": sorted(ambiguous), "n_other": len(other),
+            "via_alias": sorted(via_alias)}
 
 
-def map_genes(bundle_genes: list[str], external_genes: list[str]) -> np.ndarray:
-    """Column of each bundle gene in the external screen (-1 when unmeasured): exact symbol match first, then a
-    match without regard to case; a symbol listed twice in the screen maps to its first column."""
+def check_aliases(aliases: dict[str, str] | None, bundle_names: list[str]) -> dict[str, str]:
+    """The alias table, refused when an alias is itself another bundle name (two bundle genes would then claim
+    one external gene) or names a gene twice."""
+    aliases = dict(aliases or {})
+    names = set(bundle_names)
+    clash = sorted(f"{k}={v}" for k, v in aliases.items() if v in names and v != k)
+    if clash:
+        raise ValueError(f"alias(es) {clash} name another gene of the bundle; two bundle genes would share one "
+                         "external gene")
+    seen: dict[str, str] = {}
+    for k, v in aliases.items():
+        if v.lower() in seen and seen[v.lower()] != k:
+            raise ValueError(f"aliases {seen[v.lower()]}={v} and {k}={v} name the same external gene")
+        seen[v.lower()] = k
+    return aliases
+
+
+def parse_aliases(pairs: list[str] | None = None, path: str | Path | None = None) -> dict[str, str]:
+    """OLD=NEW pairs (bundle symbol = symbol in the screen) and/or a JSON object file {"OLD": "NEW"}."""
+    out: dict[str, str] = {}
+    if path:
+        data = json.loads(Path(path).read_text())
+        if not isinstance(data, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in data.items()):
+            raise ValueError(f"{path}: an alias file is a JSON object of bundle symbol -> screen symbol")
+        out.update({k.strip(): v.strip() for k, v in data.items()})
+    for pair in pairs or []:
+        old, sep, new = pair.partition("=")
+        if not sep or not old.strip() or not new.strip():
+            raise ValueError(f"alias {pair!r} is not OLD=NEW")
+        out[old.strip()] = new.strip()
+    return out
+
+
+def map_genes(bundle_genes: list[str], external_genes: list[str], aliases: dict[str, str] | None = None) -> np.ndarray:
+    """Column of each bundle gene in the external screen (-1 when unmeasured): exact symbol match first, then the
+    alias's exact match, then either without regard to case; a symbol listed twice in the screen maps to its
+    first column."""
+    aliases = check_aliases(aliases, bundle_genes)
     exact: dict[str, int] = {}
     lower: dict[str, int] = {}
     for j, g in enumerate(external_genes):
@@ -246,7 +292,14 @@ def map_genes(bundle_genes: list[str], external_genes: list[str]) -> np.ndarray:
         lower.setdefault(g.lower(), j)
     out = np.full(len(bundle_genes), -1, dtype=np.int64)
     for i, g in enumerate(bundle_genes):
-        j = exact.get(g, lower.get(g.lower(), -1))
+        a = aliases.get(g)
+        j = exact.get(g, -1)
+        if j < 0 and a:
+            j = exact.get(a, -1)
+        if j < 0:
+            j = lower.get(g.lower(), -1)
+        if j < 0 and a:
+            j = lower.get(a.lower(), -1)
         out[i] = j
     return out
 
@@ -401,7 +454,7 @@ def bundle_genes(bundle_dir: Path) -> list[str]:
 
 
 def inspect(h5ad: Path, bundle_dir: Path, label_col: str | None = None, gene_col: str | None = None,
-            control: list[str] | None = None) -> dict:
+            control: list[str] | None = None, aliases: dict[str, str] | None = None) -> dict:
     """Pass 0: obs, var and the X layout only (no X reads). The label matching the build will use."""
     import h5py
     h5ad, bundle_dir = Path(h5ad), Path(bundle_dir)
@@ -412,8 +465,8 @@ def inspect(h5ad: Path, bundle_dir: Path, label_col: str | None = None, gene_col
         gene_col, symbols = read_gene_symbols(f, gene_col)
     if len(symbols) != shape[1] or codes.shape[0] != shape[0]:
         raise ValueError(f"X is {shape} but var has {len(symbols)} genes and obs {codes.shape[0]} cells")
-    match = match_labels(cats, targets, symbols, control)
-    cols = map_genes(genes, symbols)
+    match = match_labels(cats, targets, symbols, control, aliases)
+    cols = map_genes(genes, symbols, aliases)
     cat_index = {c: i for i, c in enumerate(cats)}
     n_per_cat = np.bincount(codes[codes >= 0], minlength=len(cats))
     n_ctrl = int(sum(n_per_cat[cat_index[c]] for c in match["control"]))
@@ -421,20 +474,26 @@ def inspect(h5ad: Path, bundle_dir: Path, label_col: str | None = None, gene_col
     return {"h5ad": h5ad, "layout": layout, "shape": shape, "label_col": label_col, "gene_col": gene_col,
             "categories": cats, "codes": codes, "symbols": symbols, "match": match, "genes": genes,
             "targets": targets, "cols": cols, "n_control_cells": n_ctrl, "n_cells_by_target": n_by_target,
-            "n_measured": int((cols >= 0).sum())}
+            "n_measured": int((cols >= 0).sum()), "aliases": dict(aliases or {}),
+            "aliases_matched": {"targets": match["via_alias"],
+                                "genes": sorted(g for g, j in zip(genes, cols) if j >= 0 and (aliases or {}).get(g)
+                                                and symbols[j].lower() != g.lower())}}
 
 
 def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None, gene_col: str | None = None,
           control: list[str] | None = None, chunk: int | None = None, chunk_nnz: int = DEFAULT_CHUNK_NNZ,
-          already_normalised: bool = False, force: bool = False, with_md5: bool = True) -> Path:
-    """Build knowledge/<name>.json in the bundle directory and return its path."""
+          already_normalised: bool = False, force: bool = False, with_md5: bool = True,
+          aliases: dict[str, str] | None = None, min_cells: int = 0) -> Path:
+    """Build knowledge/<name>.json in the bundle directory and return its path. aliases: see match_labels and
+    map_genes. A target with fewer than min_cells cells in the screen gets no row (its mean is mostly noise) and
+    is listed in bundle_targets_missing and bundle_targets_below_min_cells."""
     import h5py
     h5ad, bundle_dir = Path(h5ad), Path(bundle_dir)
     out = bundle_dir / "knowledge" / f"{name}.json"
     if out.exists() and not force:
         raise FileExistsError(f"{out} exists; pass force=True (--force) to overwrite it")
     t0 = time.time()
-    info = inspect(h5ad, bundle_dir, label_col, gene_col, control)
+    info = inspect(h5ad, bundle_dir, label_col, gene_col, control, aliases)
     match, cats, codes, cols = info["match"], info["categories"], info["codes"], info["cols"]
     if not match["by_target"]:
         raise ValueError("no external label matches a bundle target gene")
@@ -504,7 +563,8 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
             "raw_counts": bool(raw), "normalisation": space, "n_labels": len(cats),
             "n_labels_multi_gene_skipped": len(match["multi_gene"]),
             "n_labels_ambiguous_skipped": len(match["ambiguous"]), "labels_ambiguous_skipped": match["ambiguous"],
-            "n_labels_other": match["n_other"],
+            "n_labels_other": match["n_other"], "aliases": info["aliases"],
+            "aliases_matched": info["aliases_matched"], "min_cells": int(min_cells),
             "n_cells_used": int(counts.sum()), "date": dt.date.today().isoformat(),
             "seconds": round(time.time() - t0, 1),
         },
@@ -512,10 +572,14 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
         "measured": [bool(m) for m in measured],
         "control": {"n_cells": int(counts[0]), "mean": per_gene(means[0])},
         "perts": {t: {"n_cells": int(counts[g]), "labels": match["by_target"][t],
-                      "delta": per_gene(means[g] - means[0])} for g, t in enumerate(found, start=1) if counts[g] > 0},
-        # a label category with no cells (left behind when an h5ad was subset) is no measurement: listed as missing
+                      "delta": per_gene(means[g] - means[0])} for g, t in enumerate(found, start=1)
+                  if counts[g] > 0 and counts[g] >= min_cells},
+        # a label category with no cells (left behind when an h5ad was subset) is no measurement: listed as missing;
+        # so is a target with fewer than min_cells cells
         "bundle_targets_missing": sorted(set(match["missing"]) | {t for g, t in enumerate(found, start=1)
-                                                                   if counts[g] == 0}),
+                                                                   if counts[g] == 0 or counts[g] < min_cells}),
+        "bundle_targets_below_min_cells": {t: int(counts[g]) for g, t in enumerate(found, start=1)
+                                           if 0 < counts[g] < min_cells},
     }
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".tmp")

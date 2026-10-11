@@ -271,3 +271,61 @@ def test_row_chunks_respect_both_limits():
     assert list(es._row_chunks(7, chunk=4, chunk_nnz=25, n_genes=10)) == [(0, 2), (2, 4), (4, 6), (6, 7)]   # dense
     assert list(es._row_chunks(3, chunk=4, chunk_nnz=1, n_genes=10)) == [(0, 1), (1, 2), (2, 3)]
     assert sum(r1 - r0 for r0, r1 in es._row_chunks(1000, chunk=64, chunk_nnz=10, n_genes=3)) == 1000
+
+
+def test_aliases_match_renamed_targets_and_genes(tmp_path):
+    targets, ext_genes = ["SLMO2", "ATF6"], ["PRELID3B", "ATF6", "ATP5F1B", "ACTB"]
+    cats = ["control", "PRELID3B_guide1", "ATF6", "PRELID3B_ATF6"]
+    m = es.match_labels(cats, targets, ext_genes, aliases={"SLMO2": "PRELID3B", "ATP5B": "ATP5F1B"})
+    assert m["by_target"] == {"ATF6": ["ATF6"], "SLMO2": ["PRELID3B_guide1"]} and m["via_alias"] == ["SLMO2"]
+    assert m["multi_gene"] == ["PRELID3B_ATF6"]                                   # the alias is a gene of the screen
+    assert es.match_labels(cats, targets, ext_genes)["missing"] == ["SLMO2"]      # without it the target is missing
+    # genes: the bundle's own symbol first, then its alias, each exact before case-insensitive
+    assert es.map_genes(["ATP5B", "ACTB", "GONE"], ext_genes, {"ATP5B": "ATP5F1B"}).tolist() == [2, 3, -1]
+    assert es.map_genes(["ACTB"], ext_genes, {"ACTB": "ATF6"}).tolist() == [3]
+    with pytest.raises(ValueError, match="another gene of the bundle"):
+        es.map_genes(["ATP5B", "ATP5F1B"], ext_genes, {"ATP5B": "ATP5F1B"})        # two bundle genes on one column
+    with pytest.raises(ValueError, match="same external gene"):
+        es.map_genes(["A", "B"], ext_genes, {"A": "ACTB", "B": "actb"})
+    f = tmp_path / "aliases.json"
+    f.write_text(json.dumps({"SRPR": "SRPRA"}))
+    assert es.parse_aliases([" SLMO2 = PRELID3B"], f) == {"SRPR": "SRPRA", "SLMO2": "PRELID3B"}
+    for bad in ("SLMO2", "=X", "X="):
+        with pytest.raises(ValueError, match="OLD=NEW"):
+            es.parse_aliases([bad])
+    f.write_text(json.dumps(["SRPR", "SRPRA"]))
+    with pytest.raises(ValueError, match="JSON object"):
+        es.parse_aliases(None, f)
+
+
+def test_build_with_an_alias_and_a_cell_minimum(tmp_path, dataset, capsys):
+    path, X, labels, genes, t = external_screen(tmp_path, dataset, "csr")
+    bundle_genes = [str(g) for g in np.load(dataset / "public.npz")["genes"]]
+    renamed = bundle_genes[3]                                                      # absent from the screen
+    assert renamed not in genes
+    args = ["--h5ad", str(path), "--bundle", str(dataset), "--name", "ext_alias", "--no-md5",
+            "--alias", f"{renamed}=EXTRA0", "--min-cells", "20"]
+    assert cli.main(args + ["--dry-run"]) == 0
+    dry = capsys.readouterr().out
+    assert f"genes measured through one: {renamed}" in dry and f"{t['t3']} (12)" in dry
+    out = dataset / "knowledge" / "ext_alias.json"
+    try:
+        assert cli.main(args) == 0
+        k = json.loads(out.read_text())
+        i = bundle_genes.index(renamed)
+        assert k["measured"][i] is True
+        totals = X.sum(axis=1)
+        N = np.log1p(X * (1e4 / totals)[:, None])
+        j = genes.index("EXTRA0")
+        ctrl = N[np.isin(labels, ["control", "non-targeting"])].mean(axis=0)
+        assert abs(k["perts"][t["t1"]]["delta"][i] - (N[labels == t["t1"]].mean(axis=0)[j] - ctrl[j])) < 1e-4
+        assert t["t3"] not in k["perts"] and k["bundle_targets_below_min_cells"] == {t["t3"]: 12}
+        assert t["t3"] in k["bundle_targets_missing"] and set(k["perts"]) == {t["t1"], t["t2"]}
+        assert k["source"]["aliases"] == {renamed: "EXTRA0"} and k["source"]["min_cells"] == 20
+        assert k["source"]["aliases_matched"] == {"targets": [], "genes": [renamed]}
+        md = capsys.readouterr().out
+        assert f"Aliases (bundle symbol = screen symbol): {renamed}=EXTRA0" in md
+        assert f"fewer than 20 cells in the screen get no row: {t['t3']} (12 cells)" in md
+    finally:
+        if out.exists():
+            out.unlink()

@@ -251,6 +251,15 @@ def test_cli_and_from_json_rerender_byte_identical(public_dir, tmp_path):
     with pytest.raises(SystemExit):
         external_loo.main(["--from-json", str(twin), "--bundle", str(public_dir), "--knowledge", name,
                            "--out", str(tmp_path / "c.md")])
+    # the pre-specified grid carries no note; another grid is named as a second look
+    assert "second look" not in md and rep["alpha_grid"] == list(external_loo.ALPHA_GRID)
+    wide = tmp_path / "wide.md"
+    assert external_loo.main(["--bundle", str(public_dir), "--knowledge", name, "--k", "3", "--out", str(wide),
+                              "--alpha-grid", "1000", "1e5", "1e7"]) == 0
+    w = json.loads(wide.with_suffix(".json").read_text())
+    assert w["alpha_grid"] == [1000.0, 1e5, 1e7] and sum(w["alphas_chosen"].values()) == w["n_train"]
+    assert "not the pre-specified one" in wide.read_text() and "second look" in wide.read_text()
+    assert ".." not in md.split("External screen:")[1].split("\n")[0]                # no doubled full stop
 
 
 def test_knn_and_stack_helpers():

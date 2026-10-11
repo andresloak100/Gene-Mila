@@ -10,6 +10,11 @@ genemila/data/external_screen.py for the exact rules (label matching, pooling, c
         --name replogle2022_k562 --dry-run       # pass 0 over obs: how many targets match, nothing written
     python tools/build_external_screen.py --h5ad ReploglePlus2022_K562_gwps.h5ad --bundle data/adamson_cf \\
         --name replogle2022_k562 --report docs/results/external_replogle2022_k562.md
+    # renamed genes: the bundle symbol on the left, the screen's symbol on the right (repeat, or --alias-file)
+    ... --alias SLMO2=PRELID3B --alias SRPR=SRPRA --alias ATP5B=ATP5F1B --min-cells 20 --force
+
+A target with fewer than --min-cells cells in the screen (default 20) gets no row: the mean of a handful of cells
+is mostly noise.
 
 The knowledge file goes to <bundle>/knowledge/<name>.json; the lab's export_public copies it into a run's
 public directory when the next run starts. The markdown report is rendered from the knowledge file alone, so
@@ -30,9 +35,11 @@ from genemila.data import external_screen as es  # noqa: E402
 TOP_GENES = 5
 
 
-def render_matching(info: dict) -> str:
+def render_matching(info: dict, min_cells: int = 0) -> str:
     """The label matching of pass 0 (what --dry-run prints)."""
     m = info["match"]
+    few = {t: n for t, n in info["n_cells_by_target"].items() if n < min_cells}
+    am = info.get("aliases_matched") or {}
     L = [f"# Label matching: {info['h5ad'].name}", "",
          f"X is {info['layout']} with {info['shape'][0]:,} cells and {info['shape'][1]:,} genes; labels from "
          f"obs[{info['label_col']!r}] ({len(info['categories'])} distinct), gene symbols from var[{info['gene_col']!r}].",
@@ -44,11 +51,31 @@ def render_matching(info: dict) -> str:
          f"- labels naming two or more genes (skipped): {len(m['multi_gene'])}",
          f"- labels naming a bundle target plus an unrecognised token, possibly a second gene the screen did not "
          f"measure (ambiguous, skipped): {len(m['ambiguous'])}" + (f": {', '.join(m['ambiguous'])}" if m["ambiguous"] else ""),
-         f"- other labels (no bundle target): {m['n_other']}", "",
+         f"- other labels (no bundle target): {m['n_other']}",
+         f"- aliases given: {len(info.get('aliases') or {})}"
+         + (f"; targets matched through one: {', '.join(am['targets'])}" if am.get("targets") else "")
+         + (f"; genes measured through one: {', '.join(am['genes'])}" if am.get("genes") else ""),
+         f"- targets below --min-cells {min_cells} (no row would be written): {len(few)}"
+         + (f": {', '.join(f'{t} ({n})' for t, n in few.items())}" if few else ""), "",
          "| target | external labels | cells |", "|---|---|---|"]
     for t, labs in m["by_target"].items():
         L.append(f"| {t} | {', '.join(labs)} | {info['n_cells_by_target'][t]:,} |")
     return "\n".join(L) + "\n"
+
+
+def _alias_sentence(src: dict, knowledge: dict) -> str:
+    out = ""
+    aliases = src.get("aliases") or {}
+    if aliases:
+        am = src.get("aliases_matched") or {}
+        out += (f" Aliases (bundle symbol = screen symbol): {', '.join(f'{k}={v}' for k, v in sorted(aliases.items()))}; "
+                f"targets matched through one: {', '.join(am.get('targets') or []) or 'none'}; genes measured through "
+                f"one: {', '.join(am.get('genes') or []) or 'none'}.")
+    few = knowledge.get("bundle_targets_below_min_cells") or {}
+    if src.get("min_cells"):
+        out += (f" Targets with fewer than {src['min_cells']} cells in the screen get no row: "
+                + (", ".join(f"{t} ({n} cells)" for t, n in few.items()) if few else "none") + ".")
+    return out
 
 
 def render(knowledge: dict) -> str:
@@ -71,7 +98,8 @@ def render(knowledge: dict) -> str:
          + f". Labels naming two or more genes were skipped: {src['n_labels_multi_gene_skipped']}; labels naming a bundle "
          f"target plus an unrecognised token were skipped as ambiguous: {src.get('n_labels_ambiguous_skipped', 0)}"
          + (f" ({', '.join(src['labels_ambiguous_skipped'])})" if src.get("labels_ambiguous_skipped") else "")
-         + f"; labels matching no bundle target: {src['n_labels_other']}.", "",
+         + f"; labels matching no bundle target: {src['n_labels_other']}."
+         + _alias_sentence(src, knowledge), "",
          "Per target: cells pooled, external labels pooled, mean absolute delta over the measured genes, the delta of "
          "the target gene itself (a knockdown should be negative), and the largest absolute deltas.", "",
          "| target | cells | labels | mean abs delta | own delta | largest deltas |", "|---|---|---|---|---|---|"]
@@ -105,6 +133,11 @@ def main(argv=None) -> int:
     ap.add_argument("--chunk-nnz", type=int, default=es.DEFAULT_CHUNK_NNZ,
                     help="stored values per chunk in every layout: a chunk shrinks below --chunk genes (CSC) or cells "
                          "(CSR, dense) when they hold more values than this; the memory bound on a small machine")
+    ap.add_argument("--alias", action="append", default=[], metavar="OLD=NEW",
+                    help="a bundle gene symbol and the screen's symbol for the same gene (a renamed gene); repeatable")
+    ap.add_argument("--alias-file", default=None, help='JSON object {"OLD": "NEW"} of such aliases')
+    ap.add_argument("--min-cells", type=int, default=20,
+                    help="targets with fewer cells than this in the screen get no row (default 20)")
     ap.add_argument("--already-normalised", action="store_true", help="X is not raw counts: average it as stored")
     ap.add_argument("--no-md5", action="store_true", help="skip the md5 of the h5ad (saves one read of the file)")
     ap.add_argument("--force", action="store_true", help="overwrite an existing knowledge file")
@@ -120,13 +153,14 @@ def main(argv=None) -> int:
             ap.error("--h5ad and --bundle are required unless --from-json is given")
         h5ad, bundle = Path(args.h5ad), Path(args.bundle)
         name = args.name or f"external_{h5ad.stem}"
+        aliases = es.parse_aliases(args.alias, args.alias_file)
         if args.dry_run:
-            info = es.inspect(h5ad, bundle, args.label_col, args.gene_col, args.control)
-            print(render_matching(info))
+            info = es.inspect(h5ad, bundle, args.label_col, args.gene_col, args.control, aliases)
+            print(render_matching(info, args.min_cells))
             return 0
         out = es.build(h5ad, bundle, name, label_col=args.label_col, gene_col=args.gene_col, control=args.control,
                        chunk=args.chunk, chunk_nnz=args.chunk_nnz, already_normalised=args.already_normalised,
-                       force=args.force, with_md5=not args.no_md5)
+                       force=args.force, with_md5=not args.no_md5, aliases=aliases, min_cells=args.min_cells)
         md = render(json.loads(out.read_text()))
     if args.report:
         Path(args.report).parent.mkdir(parents=True, exist_ok=True)

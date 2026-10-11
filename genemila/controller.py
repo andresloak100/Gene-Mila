@@ -49,7 +49,8 @@ def build_providers(cfg: dict):
         esc = make_provider(w["escalation_provider"], w["escalation_model"],
                             {**w, **cfg.get("providers", {}).get(w["escalation_provider"], {})})
     p = cfg["planner"]
-    planner = make_provider(p["provider"], p["model"], p)
+    # the scripted planner adds fixed hypotheses for external screens the run can read (run.external_knowledge)
+    planner = make_provider(p["provider"], p["model"], {**p, "external_knowledge": cfg["run"].get("external_knowledge")})
     return worker, esc, planner, planner_fallbacks(cfg)
 
 

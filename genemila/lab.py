@@ -17,7 +17,7 @@ from .benchmark import PRIMARY_HIGHER_IS_BETTER, PRIMARY_METRIC, SELECTION_RULES
 from .benchmark import comparable, reference
 from .benchmark.evaluator import evaluate
 from .benchmark.oracle import QueryOracle
-from .data.bundle import LabelSet, export_public, verify_bundle
+from .data.bundle import LabelSet, added_knowledge, export_public, verify_bundle
 from .db import Database
 from .features.registry import BUILTIN_FEATURES
 from .isolation import WorktreeManager, git, sha256_text
@@ -44,6 +44,16 @@ class Lab:
         # re-opening a live run (status, reproduce) must not rewrite files experiments are reading
         self.public_dir = existing if reopen and (existing / "public.npz").exists() else \
             export_public(self.data_dir, existing)
+        # knowledge files added to the bundle after it was built make this run its own arm: record what the
+        # agents can read (the run's public copy), and refuse a config that recorded something else
+        seen = added_knowledge(self.public_dir)
+        recorded = cfg["run"].get("external_knowledge")
+        if recorded is None:
+            if seen:
+                cfg["run"]["external_knowledge"] = seen
+        elif sorted(recorded) != seen:
+            raise RuntimeError(f"run.external_knowledge {sorted(recorded)} does not match the knowledge files added "
+                               f"to the bundle {seen}; the bundle's knowledge/ changed after the run was configured")
         self.db = Database(self.run_dir / "lab.db")
         self.artifacts = self.run_dir / "artifacts"
         self.store = self.run_dir / "feature_store"

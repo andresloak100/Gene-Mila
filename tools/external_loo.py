@@ -50,7 +50,7 @@ from genemila.benchmark.evaluator import _pearson as pearson_delta  # noqa: E402
 
 PREDICTORS = ["mean_response", "geneset_knn", "external_direct", "external_knn", "external_stack"]
 STACK_COLUMNS = PREDICTORS[:4]
-ALPHA_GRID = (0.1, 1.0, 10.0, 100.0, 1000.0)
+ALPHA_GRID = (0.1, 1.0, 10.0, 100.0, 1000.0)   # the pre-specified grid; --alpha-grid widens it, and the report says so
 MIN_SHARED_GENES = 3   # genes two external rows must share before their correlation is used as a weight
 
 
@@ -373,6 +373,15 @@ def _reading(rep: dict) -> str:
     return " ".join(out)
 
 
+def _grid_note(rep: dict) -> str:
+    """Say so when the stack's grid is not the pre-specified one: its number is then a second look."""
+    if [float(a) for a in rep["alpha_grid"]] == [float(a) for a in ALPHA_GRID]:
+        return ""
+    return (f" This grid is not the pre-specified one ({list(ALPHA_GRID)}): it was chosen after an earlier reading, "
+            "so the stack's number here is a second look, not a pre-specified result; the other four predictors do "
+            "not depend on it.")
+
+
 def render(rep: dict) -> str:
     n = rep["n_train"]
     zc = rep["external_file"].get("zero_cell_targets") or []
@@ -386,7 +395,7 @@ def render(rep: dict) -> str:
          f"below were fixed before the external file was opened, and the result is reported whatever it shows. "
          f"The sealed set is never read; this is a reading on whether the external screen deserves a labelled "
          f"arm, not a benchmark score.", "",
-         f"External screen: `{rep['knowledge']}`" + (f", {rep['description']}" if rep["description"] else "") +
+         f"External screen: `{rep['knowledge']}`" + (f", {rep['description'].rstrip('.')}" if rep["description"] else "") +
          f". The file holds {rep['external_file']['n_perts']:,} target genes over "
          f"{rep['external_file']['n_control_cells']:,} control cells; {rep['n_genes_measured_external']:,} of the "
          f"bundle's {rep['n_genes']:,} genes are measured in it, and {rep['coverage']['with_external_row']} of the "
@@ -407,7 +416,7 @@ def render(rep: dict) -> str:
          "- `external_stack`: ridge over gene rows combining the four columns above (standardised with the "
          "training rows' statistics), trained on the other perturbations' rows, each row's columns computed "
          "without that perturbation and without the held-out one; alpha chosen by an inner leave-one-out over "
-         f"those perturbations from the grid {rep['alpha_grid']}.", "",
+         f"those perturbations from the grid {rep['alpha_grid']}." + _grid_note(rep), "",
          "## Predictors", "",
          "| predictor | pearson_delta, mean ± sd | median | min | max | better than mean_response | paired gain "
          "vs mean_response | better than geneset_knn | paired gain vs geneset_knn | coverage |",
@@ -453,6 +462,9 @@ def main(argv=None) -> int:
     ap.add_argument("--bundle", help="bundle directory (public.npz, knowledge/)")
     ap.add_argument("--knowledge", help="name of the external screen knowledge file, knowledge/<name>.json")
     ap.add_argument("--k", type=int, default=5, help="neighbours for geneset_knn and external_knn (default 5)")
+    ap.add_argument("--alpha-grid", type=float, nargs="+", default=None,
+                    help=f"ridge alphas for the stack (default the pre-specified {list(ALPHA_GRID)}; another grid is "
+                         "named in the report as a second look)")
     ap.add_argument("--out", required=True, help="markdown report")
     ap.add_argument("--json", help="JSON twin of the report (default: --out with a .json suffix)")
     ap.add_argument("--from-json", help="re-render the markdown from a JSON twin written by an earlier call "
@@ -468,7 +480,7 @@ def main(argv=None) -> int:
         t0 = time.time()
         bundle = load_bundle(Path(args.bundle))
         external = load_external(Path(args.bundle), args.knowledge, bundle["genes"])
-        rep = analyse(bundle, external, k=args.k)
+        rep = analyse(bundle, external, k=args.k, alphas=tuple(args.alpha_grid) if args.alpha_grid else ALPHA_GRID)
         rep["runtime_s"] = round(time.time() - t0, 2)
         Path(args.json or out.with_suffix(".json")).write_text(json.dumps(rep, indent=1))
     md = render(rep)
