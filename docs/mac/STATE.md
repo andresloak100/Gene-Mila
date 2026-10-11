@@ -450,3 +450,109 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
   neither established by the pre-specified rule (needs more than twice the paired SE). pair_seen1: +0.021 ± 0.006 vs additive (established).
 - The DeepSeek key was pasted by Andres in the thread (twice) and used only as a process environment variable; in no file. He should rotate it.
 - Everything is on GitHub: lab branch, astra/* branches, claude/mac-reports-2026-10-11 (draft PR andresloak100/Gene-Mila#3).
+
+## 2026-10-11 19:20 UTC — replicates of N4, pre-specified before starting
+- Andres (19:10 and 19:16 UTC, with a screenshot of the DeepSeek console): spend as needed; the account has $33.01 left.
+  The console shows total cost $16.98 for 12,493 requests, where this lab's ledger records $33.97 for 12,492 calls:
+  the ledger's price table overstates real DeepSeek cost about twofold.
+- Plan fixed now, before any result: two replicates of N4 with identical settings except the seed:
+  runs/norman_ds_from_n2_w4_r1 (run.seed=1) and _r2 (run.seed=2), each continued from runs/norman_control_replogle_w4_r0,
+  code 076282c7, budget.max_total_usd=1.3, budget.cumulative_usd.deepseek=40 (ledger terms).
+  Reading: tools/sealed_reading.py on each; report all three seeds' "selected minus additive" and "selected minus start"
+  paired differences side by side, their mean and range. No seed is dropped, none replaces r0, nothing is chosen by a sealed score.
+- 19:16:54 UTC: r1 (seed 1) STARTED from the main checkout at 076282c7 via norman_n4_replicates.sh, caps max_total_usd 1.3, cumulative 40.
+  The coordinator's note (19:17 UTC) asked for no paid start before its plan commit; it arrived after the start. r2 is HELD by
+  genemila_scale_logs/STOP (the driver halts between runs). Remove STOP only after the coordinator confirms r2's caps
+  (its B1: cumulative 44, max_total_usd 0.8, max_planner_usd 0.9, run from worktree ~/Documents/Mila/Gene-Mila/gene-mila-076282c).
+- Correction: max_total_usd caps WORKER spend only; N4 did not overshoot (workers $0.484 of 1.1).
+- run.seed changes the CV folds: the same start model scores 0.6525 visible at seed 1 vs 0.6423 at seed 0.
+
+## 2026-10-11 ~19:45 UTC — r1 ended; BLINDED; r2 held
+- r1 runs/norman_ds_from_n2_w4_r1: full 20 min, rc 0, workers $0.614, planner $0.822, total $1.436; ledger $35.405757.
+  DO NOT open its query-only scores or run sealed_reading on it until the coordinator sends the final commit of
+  docs/PLAN_AFTER_N4.md (the reading rules must be on GitHub first).
+- r2: wait for the coordinator's commit hash and go. Planner spend passed $0.80, so r2 uses r1's caps (max_total_usd 1.3,
+  cumulative 40), run from the worktree ~/Documents/Mila/Gene-Mila/gene-mila-076282c with absolute paths, --set run.seed=2.
+- Key: now in ~/.zshenv as API_KEY (Andres, 19:22 UTC). Launch runs from a login zsh with DEEPSEEK_API_KEY="$API_KEY" as a
+  shell assignment; never print or write it. Do not use the key from the chat any more.
+- genemila_scale_logs/STOP is in place: remove it only when a paid run is approved to start.
+- Free dry check from the worktree passed (runs/drycheck_076282c_worktree_contaminated).
+- Plan after B1 (coordinator's): B2 = three fresh Norman DeepSeek runs starting from the additive rule, after a free control;
+  B3 = fresh Adamson split (gene mode, gene-frac 0.57 0.19 0.24, seed 20261011), free control, two DeepSeek runs.
+
+## 2026-10-11 ~21:30 UTC — B1 done (three repeats of N4), block stopped as planned; nothing running
+- Key now comes from API_KEY in ~/.zshenv (login zsh, DEEPSEEK_API_KEY="$API_KEY" as a shell assignment). STOP file is in place.
+- Main checkout at d0fb6357 (reading tools amended 20:30 UTC); runs r2, r3 ran from the worktree gene-mila-076282c.
+- r1 seed 1: $1.436, selected EXP_0681, sealed 0.719; vs start +0.0004 ± 0.0011; vs additive +0.007 ± 0.008.
+- r2 seed 2: $1.425, selected EXP_0729, sealed 0.726; vs start +0.0071 ± 0.0033; vs additive +0.013 ± 0.006.
+- r3 seed 3: $1.254, selected EXP_0519, sealed 0.711; vs start -0.0075 ± 0.0079; vs additive -0.001 ± 0.012.
+- All three: full 20 min, rc 0, planner unchanged. DeepSeek ledger $38.084345 (block cap 48).
+- ARM (primary, vs start): G -0.0000, SE 0.0071: no difference established. The agents' search adds nothing over the
+  scripted starting model. Vs additive: G +0.0062, SE 0.0128: no difference established.
+- COMBINED model (average of the three): 0.723 sealed; vs N2 +0.0041 ± 0.0011 (38/18, A better); vs additive +0.010 ± 0.007
+  (no difference). Visible validation alone: 0.7801 vs 0.7746 (N2) and 0.7259 (additive).
+- Readings in gene-mila/docs/results/norman_b1_*.md/.json (untracked there). B2 and B3 wait for the coordinator's next note.
+
+## 2026-10-11 21:35 UTC — handoff note written
+- MAC_HANDOFF.md in this folder (docs/mac/MAC_HANDOFF.md on GitHub, pull request 6): where things are on the Mac, the rules,
+  how a paid run is started, how results get to GitHub, where the science stands, what is next. Nothing is running.
+
+## 2026-10-11 21:32 UTC — B2 chain RUNNING unattended
+- Main checkout pinned at ce1b5304 (recorded in block_after_n4_b2b3_commit.txt). DO NOT `git pull` in gene-mila until B3 has
+  ended: every B2/B3 run refuses any other commit.
+- Started 21:31:47 UTC: docs/mac/block_after_n4/block_b2_chain.sh (log: block_b2_chain.log). It runs, one at a time:
+  the free control runs/norman_control_addstart_w4_r0, then paid runs/norman_ds_addstart_w4_r0, _r1, _r2 (DeepSeek, fresh start
+  from baseline_ridge_additive, caps workers $1.00, planner $1.50, ledger cap 48, no start above $45.50). About 85 minutes.
+  Each step runs only if the one before passed (<run>.passed files here). A stop writes block_after_n4_stopped.txt and ends it.
+  The chain removed the STOP file and puts it back when it ends.
+- Key: taken from API_KEY in ~/.zshenv at launch, process environment only.
+- If the chain finished and nobody read it: follow HANDOFF.md section 1 in the repository for B2's readings
+  (sealed readings per run, versus, three arm readings, four combine readings), report the primary reading and the
+  visible-validation numbers, and push as for pull request 6 (docs/mac/<run>/ and docs/results/, md5 list, key scan first).
+- If block_after_n4_stopped.txt exists: start nothing; report that file and the <run>.check.txt next to it.
+- Ledger at chain start: $38.084345. Mac on battery (91% at 21:31 UTC): ask Andres to plug in.
+
+## 2026-10-11 22:38 UTC — B2 chain STOPPED at seed 1; nothing running; start nothing
+- Control runs/norman_control_addstart_w4_r0: passed (start baseline_ridge_additive visible 0.6154; its selected model 0.6423 visible).
+- Seed 0 runs/norman_ds_addstart_w4_r0: passed the stop rule ($1.29; selected EXP_0724, 24 features, visible 0.628).
+- Seed 1 runs/norman_ds_addstart_w4_r1: search ran its full 20 min (1,203.7 s, planner unchanged, workers $0.773, planner $0.877),
+  then run_research.py's external WATCHDOG killed the lab during end-of-run work (exit code 247; log line 388). summary.json exists;
+  5 query_only events and 1 ensemble event recorded. The stop rule counts it as killed: block_after_n4_stopped.txt written.
+- Seed 2 NOT run. STOP file back in place. Ledger $41.026295 of 48. Main checkout pinned at ce1b5304 (do not pull).
+- Sealed results of B2: NOT read. Do not run B2's readings or any run until the lab-code owner decides how seed 1 is treated
+  (reported to the thread at 22:45 UTC with two options: own arm plus a replacement seed, or check its outputs first).
+- Cause to fix in code: watchdog allowance = minutes*60 + shutdown_grace_s + 180 s is too tight when a run has 640+ experiments.
+
+## 2026-10-11 22:52 UTC — B2 RESUMED: seed 2 running, then seed 3 (in place of seed 1)
+- Decision (docs/PLAN_AFTER_N4.md, note of 22:50 UTC, commit 2dcf5f3): seed 1 (runs/norman_ds_addstart_w4_r1) is its OWN ARM,
+  "killed by the watchdog while finishing"; never pooled with seeds 0, 2, 3. B3 is dropped from this block.
+- Running: genemila_scale_logs/b2_resume/block_b2_resume.sh (log block_b2_resume.log), started 22:52:00 UTC, detached.
+  It runs runs/norman_ds_addstart_w4_r2 then _r3 with --no-watchdog and a 5,400 s backstop; each ~25 min.
+  The scripts were brought in with `git show FETCH_HEAD:...` (md5 abf9af19... run, 79d80ef6... resume); the main checkout is
+  STILL pinned at ce1b5304: do not pull, check out or edit it.
+- The first stop record is kept as block_after_n4_stopped_r1.txt.
+- When it ends: report the tails of block_b2_resume.log and each run's .check.txt, each run's cost and the ledger.
+  READ NO SEALED RESULT of any B2 run (seed 1 included) and run no reading until the lab-code owner sends the readings to run.
+- If it stops: start nothing; report the stop line and the end of the run's log.
+
+## 2026-10-11 23:39 UTC — B2's runs are DONE; nothing running; readings NOT yet run
+- Seed 2 runs/norman_ds_addstart_w4_r2: passed (1,202.7 s, $1.369, selected EXP_0715, 16 features, visible 0.6506).
+- Seed 3 runs/norman_ds_addstart_w4_r3: passed (1,231.0 s, $1.194, selected EXP_0625, 11 features, visible 0.6496).
+- Seed 0: passed earlier ($1.293). Seed 1: its own arm (killed by the watchdog while finishing), never pooled.
+- B2's arm = seeds 0, 2, 3. Control = runs/norman_control_addstart_w4_r0. DeepSeek ledger $43.589781 of the block's $48.
+- STOP file is back. Main checkout still pinned at ce1b5304.
+- NEXT: wait for the lab-code owner's message with the exact readings to run. Until then read NO sealed result of any B2 run:
+  do not open the end of genemila_scale_logs/<run>.log (it holds the rendered summary) or any summary.md.
+  Then push the runs' config/summary files and the readings as for pull request 6.
+
+## 2026-10-11 23:50 UTC — B2 READ (free); nothing running
+- Readings by genemila_scale_logs/b2_resume/block_b2_read.sh (tools at the pinned ce1b5304): READ_DONE rc=0, 58 sealed scorings,
+  console in norman_b2_read.console.txt, reports gene-mila/docs/results/norman_b2_*.md/.json (16 pairs).
+- PRIMARY, arm (seeds 0, 2, 3) vs each run's start (baseline_ridge_additive): G +0.0078, SE 0.0056, k 2.11: no difference established.
+- Arm vs additive baseline: G +0.0113, SE 0.0053, k 2.14, wins 117/51: the arm better. Arm vs the control: +0.0051, not established.
+- Combined model of seeds 0, 2, 3: 0.727 sealed. vs additive +0.0143 ± 0.0025 (45/11, A better); vs its start +0.0108 ± 0.0024
+  (A better); vs the control +0.0081 ± 0.0063 (no difference); vs B1's combined +0.0040 ± 0.0060 (no difference).
+- DELIVERED Norman model by the plan's rule (visible validation only): B1's combined model (0.7801 vs B2's 0.7505 on the 63 visible
+  validation perturbations); its sealed score is 0.723.
+- Seed 1 (own arm, killed while finishing): +0.0113 ± 0.0045 vs its start; reported beside, in no arm reading.
+- Ledger unchanged by the readings: $43.589781. Main checkout still pinned at ce1b5304 until the lab-code owner lifts the pin.

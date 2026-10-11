@@ -1,0 +1,114 @@
+ok: block not stopped, no lab run or driver running
+ok: tools at the recorded commit ce1b53043125cad78d060d1155e5ffe6efab5c0a, clean
+ok: none of the 16 reports (docs/results/norman_b2_*.md and .json) exists
+ok: B1's combined reading /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/docs/results/norman_b1_combined_vs_n2.json, md5 9d6bfc3e0c9f2887f01989ce50542625
+ok: the control and seeds 0 2 3 passed their checks on ce1b53043125cad78d060d1155e5ffe6efab5c0a (their .passed markers)
+runs/norman_control_addstart_w4_r0: code ce1b530, norman split_a391fa9e7b4eccb7, planner scripted:opus mixed False, $0.000, selected EXP_0157 (visible 0.6423)
+runs/norman_ds_addstart_w4_r0: code ce1b530, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.293, selected EXP_0724 (visible 0.6280)
+runs/norman_ds_addstart_w4_r2: code ce1b530, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.369, selected EXP_0715 (visible 0.6506)
+runs/norman_ds_addstart_w4_r3: code ce1b530, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.194, selected EXP_0625 (visible 0.6496)
+runs/norman_ds_from_n2_w4_r1: code 076282c, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.436, selected EXP_0681 (visible 0.6543)
+runs/norman_ds_from_n2_w4_r2: code 076282c, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.425, selected EXP_0729 (visible 0.6693)
+runs/norman_ds_from_n2_w4_r3: code 076282c, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.254, selected EXP_0519 (visible 0.6484)
+runs/norman_ds_addstart_w4_r1: code ce1b530, norman split_a391fa9e7b4eccb7, planner deepseek:deepseek-v4-pro mixed False, $1.649, selected EXP_0875 (visible 0.6408); its own arm, not in B2's (duration_note: None)
+ok: the control, seeds 0 2 3 and B1's three repeats ended cleanly on one split; seed 1 checked as its own arm
+ok: docs/results/norman_b2_control_sealed_reading.md and its JSON twin
+ok: docs/results/norman_b2_r0_sealed_reading.md and its JSON twin
+ok: docs/results/norman_b2_r2_sealed_reading.md and its JSON twin
+ok: docs/results/norman_b2_r3_sealed_reading.md and its JSON twin
+norman_control_addstart_w4_r0: start fresh EXP_0007 (baseline_ridge_additive, alpha 0.01, visible 0.6153748998110871)
+norman_ds_addstart_w4_r0: start fresh EXP_0007 (baseline_ridge_additive, alpha 0.01, visible 0.6153748998110871)
+norman_ds_addstart_w4_r2: start fresh EXP_0007 (baseline_ridge_additive, alpha 0.01, visible 0.6364591953699491)
+norman_ds_addstart_w4_r3: start fresh EXP_0007 (baseline_ridge_additive, alpha 0.01, visible 0.6196971827558412)
+ok: every run's start is its own fresh baseline_ridge_additive
+runs/norman_control_addstart_w4_r0: best modelled baseline EXP_0007 baseline_ridge_additive visible 0.6154
+runs/norman_ds_addstart_w4_r0: best modelled baseline EXP_0007 baseline_ridge_additive visible 0.6154
+runs/norman_ds_addstart_w4_r2: best modelled baseline EXP_0007 baseline_ridge_additive visible 0.6365
+runs/norman_ds_addstart_w4_r3: best modelled baseline EXP_0007 baseline_ridge_additive visible 0.6197
+runs/norman_ds_addstart_w4_r1: best modelled baseline EXP_0007 baseline_ridge_additive visible 0.6261
+ok: docs/results/norman_b2_r0_versus_control.md and its JSON twin
+ok: docs/results/norman_b2_r2_versus_control.md and its JSON twin
+ok: docs/results/norman_b2_r3_versus_control.md and its JSON twin
+ok: docs/results/norman_b2_arm_vs_start.md and its JSON twin
+ok: docs/results/norman_b2_arm_vs_additive.md and its JSON twin
+ok: docs/results/norman_b2_arm_vs_control.md and its JSON twin
+ok: docs/results/norman_b2_arm_r0_r2_vs_start_reported.md and its JSON twin (reported, not read)
+ok: docs/results/norman_b2_combined_vs_start.md and its JSON twin
+ok: docs/results/norman_b2_combined_vs_control.md and its JSON twin
+ok: docs/results/norman_b2_combined_vs_additive.md and its JSON twin
+ok: docs/results/norman_b2_combined_vs_b1_combined.md and its JSON twin
+ok: docs/results/norman_b2_r1_killed_sealed_reading.md and its JSON twin (its own arm)
+Sealed scorings (each on an oracle of the tool's own, outside the runs' caps):
+  docs/results/norman_b2_control_sealed_reading.md: 4 (first ever for norman_control_addstart_w4_r0:EXP_0007)
+  docs/results/norman_b2_r0_sealed_reading.md: 4 (first ever for norman_ds_addstart_w4_r0:EXP_0007)
+  docs/results/norman_b2_r2_sealed_reading.md: 4 (first ever for norman_ds_addstart_w4_r2:EXP_0007)
+  docs/results/norman_b2_r3_sealed_reading.md: 4 (first ever for norman_ds_addstart_w4_r3:EXP_0007)
+  docs/results/norman_b2_r0_versus_control.md: 10 (first ever for norman_control_addstart_w4_r0:EXP_0007, norman_ds_addstart_w4_r0:EXP_0007)
+  docs/results/norman_b2_r2_versus_control.md: 10 (first ever for norman_control_addstart_w4_r0:EXP_0007, norman_ds_addstart_w4_r2:EXP_0007)
+  docs/results/norman_b2_r3_versus_control.md: 10 (first ever for norman_control_addstart_w4_r0:EXP_0007, norman_ds_addstart_w4_r3:EXP_0007)
+  docs/results/norman_b2_arm_vs_start.md: 0
+  docs/results/norman_b2_arm_vs_additive.md: 0
+  docs/results/norman_b2_arm_vs_control.md: 0
+  docs/results/norman_b2_arm_r0_r2_vs_start_reported.md: 0
+  docs/results/norman_b2_combined_vs_start.md: 2
+  docs/results/norman_b2_combined_vs_control.md: 2
+  docs/results/norman_b2_combined_vs_additive.md: 2
+  docs/results/norman_b2_combined_vs_b1_combined.md: 2
+  docs/results/norman_b2_r1_killed_sealed_reading.md: 4 (first ever for norman_ds_addstart_w4_r1:EXP_0007, norman_ds_addstart_w4_r1:EXP_0875)
+  in all 58; the arm readings read the JSON twins only and scored nothing.
+The arm over seeds 0, 2, 3 (docs/PLAN_AFTER_N4.md, "The arm reading"; seed 1 is its own arm):
+  PRIMARY, the arm against each run's start (baseline_ridge_additive): R 3, G +0.0078, SE 0.0056 (S 0.0046, sd_g 0.0054), k 2.11, wins 110/58 of 168 pairs: no difference established  [docs/results/norman_b2_arm_vs_start.md]
+  secondary, the arm against the additive baseline: R 3, G +0.0113, SE 0.0053 (S 0.0042, sd_g 0.0054), k 2.14, wins 117/51 of 168 pairs: the arm better  [docs/results/norman_b2_arm_vs_additive.md]
+  secondary, the arm against the control's selected model: R 3, G +0.0051, SE 0.0095 (S 0.0090, sd_g 0.0054), k 2.01, wins 86/82 of 168 pairs: no difference established  [docs/results/norman_b2_arm_vs_control.md]
+  reported, not read: the arm as first specified, seeds 0 and 2, against each run's start: R 2, G +0.0047, SE 0.0027, k 2.02  [docs/results/norman_b2_arm_r0_r2_vs_start_reported.md]
+Everything below is secondary and descriptive.
+Per run, sealed pooled pearson_delta, A minus B with its paired SE, by the per-run rule (A the run's selected model, B its start or its additive baseline; the arm reading inflates the SE by the clustering ratio above 1):
+  norman_control_addstart_w4_r0: selected EXP_0157; start EXP_0007 alpha 0.01 visible 0.6153748998110871; against its start +0.0027 ± 0.0069, A better on 31 and worse on 25 of 56: no difference established (ratio 1.58); against the additive baseline +0.0062 ± 0.0069, A better on 32 and worse on 24 of 56: no difference established (ratio 1.48)
+  norman_ds_addstart_w4_r0: selected EXP_0724; start EXP_0007 alpha 0.01 visible 0.6153748998110871; against its start +0.0055 ± 0.0019, A better on 41 and worse on 15 of 56: A better (ratio 1.24); against the additive baseline +0.0090 ± 0.0018, A better on 41 and worse on 15 of 56: A better (ratio 1.05)
+  norman_ds_addstart_w4_r2: selected EXP_0715; start EXP_0007 alpha 0.01 visible 0.6364591953699491; against its start +0.0039 ± 0.0022, A better on 33 and worse on 23 of 56: no difference established (ratio 1.23); against the additive baseline +0.0074 ± 0.0017, A better on 38 and worse on 18 of 56: A better (ratio 1.29)
+  norman_ds_addstart_w4_r3: selected EXP_0625; start EXP_0007 alpha 0.01 visible 0.6196971827558412; against its start +0.0139 ± 0.0065, A better on 36 and worse on 20 of 56: A better (ratio 1.35); against the additive baseline +0.0175 ± 0.0070, A better on 38 and worse on 18 of 56: A better (ratio 1.22)
+  norman_ds_addstart_w4_r1 [its own arm, killed by the watchdog while finishing (note of 22:50 UTC); in no arm reading]: selected EXP_0875; start EXP_0007 alpha 0.01 visible 0.6261320158309664; against its start +0.0113 ± 0.0045, A better on 46 and worse on 10 of 56: A better (ratio 0.93); against the additive baseline +0.0148 ± 0.0036, A better on 44 and worse on 12 of 56: A better (ratio 0.76)
+  norman_ds_addstart_w4_r0 (A) against the control (B): +0.0028 ± 0.0064, A better on 27 and worse on 29 of 56: no difference established
+  norman_ds_addstart_w4_r2 (A) against the control (B): +0.0012 ± 0.0062, A better on 25 and worse on 31 of 56: no difference established
+  norman_ds_addstart_w4_r3 (A) against the control (B): +0.0113 ± 0.0085, A better on 34 and worse on 22 of 56: no difference established
+The combined model of the arm's runs (A) against each reference (B), read by the per-run rule:
+  against norman_ds_addstart_w4_r0:EXP_0007 (start): sealed +0.0108 ± 0.0024, A better on 44 and worse on 12 of 56: A better; visible validation (n 63, reported, not read) A 0.7505, B 0.7261
+  against norman_control_addstart_w4_r0:EXP_0157 (selected): sealed +0.0081 ± 0.0063, A better on 34 and worse on 22 of 56: no difference established; visible validation (n 63, reported, not read) A 0.7505, B 0.7746
+  against norman_ds_addstart_w4_r0:EXP_0003 (additive): sealed +0.0143 ± 0.0025, A better on 45 and worse on 11 of 56: A better; visible validation (n 63, reported, not read) A 0.7505, B 0.7259
+  against combined model of norman_ds_from_n2_w4_r1:EXP_0681, norman_ds_from_n2_w4_r2:EXP_0729, norman_ds_from_n2_w4_r3:EXP_0519: sealed +0.0040 ± 0.0060, A better on 32 and worse on 24 of 56: no difference established; visible validation (n 63, reported, not read) A 0.7505, B 0.7801
+No reading chose a model: every model compared is a run's summary.json best, its additive baseline or its start, as checked above; the delivered model below is chosen on the visible validation perturbations only.
+Delivered Norman model (docs/PLAN_AFTER_N4.md, fixed before B2): B1's combined model. Pooled pearson_delta over the 63 visible validation perturbations: B2's combined 0.7505, B1's combined 0.7801 (B1's own reading 0.7801); B2's is chosen only if it scores higher.
+md5 of every report:
+9fdaaf48851078d49fccab0c287de568  docs/results/norman_b2_control_sealed_reading.md
+b99aa10f698dd094baacaa75199f05f7  docs/results/norman_b2_control_sealed_reading.json
+4c46f50ca62b29e4b0575fc57191f3e6  docs/results/norman_b2_r0_sealed_reading.md
+6ba3faaee583c14cc3675982babd9311  docs/results/norman_b2_r0_sealed_reading.json
+eb045b0373ea45a656c06f61f75e740b  docs/results/norman_b2_r2_sealed_reading.md
+e3ee953bca7e87807e0d46ef855717b4  docs/results/norman_b2_r2_sealed_reading.json
+dbf63f5b36270636d444df86287b201c  docs/results/norman_b2_r3_sealed_reading.md
+f792b8b06173bb9b0729a6881bbf5927  docs/results/norman_b2_r3_sealed_reading.json
+258db03474bd9bb05600932b4fc4d1c1  docs/results/norman_b2_r1_killed_sealed_reading.md
+f2fcf047c46d1354988db64d486e5c69  docs/results/norman_b2_r1_killed_sealed_reading.json
+25b700eff65b4f7b35347ee684c56ad2  docs/results/norman_b2_arm_r0_r2_vs_start_reported.md
+bdf14b03badad587bd57e955c13a7e93  docs/results/norman_b2_arm_r0_r2_vs_start_reported.json
+56ee8f3e3d79f267aba99a80e2e82f4e  docs/results/norman_b2_r0_versus_control.md
+623233fa58500af50b37d2d6caaa0ae1  docs/results/norman_b2_r0_versus_control.json
+f29b1f1e6d4c1804ac89a404e5d917e8  docs/results/norman_b2_r2_versus_control.md
+3a6b4f84913a573c556220322345622b  docs/results/norman_b2_r2_versus_control.json
+ab375e3284c791d650c717ef11c8f15b  docs/results/norman_b2_r3_versus_control.md
+9aa53f25e65627b0d2541b79de5edff2  docs/results/norman_b2_r3_versus_control.json
+514744bc6944b5c83177f2900598dd53  docs/results/norman_b2_arm_vs_start.md
+9b1349a56f8b9bb925e11e7939c862bb  docs/results/norman_b2_arm_vs_start.json
+a00b9e3667137d75a5406a353c8da3e3  docs/results/norman_b2_arm_vs_additive.md
+2aa83de9984526934802e6c305c7b268  docs/results/norman_b2_arm_vs_additive.json
+f91cb7feae2ee3a03f4b71c82abebaec  docs/results/norman_b2_arm_vs_control.md
+4eca922d7f307cd2a7da16d5eefc0eb8  docs/results/norman_b2_arm_vs_control.json
+687a6a9ee657f5f5d7e02a3e35f71744  docs/results/norman_b2_combined_vs_start.md
+9f514440e2b7ff4200387ba3444dc9ec  docs/results/norman_b2_combined_vs_start.json
+5c2e9d45a1eae7cb37ef771381cbf553  docs/results/norman_b2_combined_vs_control.md
+c2d6c146ef58aeebb4dc1273b056a57d  docs/results/norman_b2_combined_vs_control.json
+da07c3ff2c952c8a7604aad718338267  docs/results/norman_b2_combined_vs_additive.md
+3a7dea18dfb7c4d8a3461bc2360684b5  docs/results/norman_b2_combined_vs_additive.json
+650d1a12400c1ec3a16e1349b61e3a88  docs/results/norman_b2_combined_vs_b1_combined.md
+b303d9c88bb749901a1967531137b760  docs/results/norman_b2_combined_vs_b1_combined.json
+READ_DONE rc=0

@@ -1,0 +1,3400 @@
+{
+ "run_id": "norman_ds_addstart_w4_r2",
+ "dataset": "norman",
+ "split_id": "split_a391fa9e7b4eccb7",
+ "base_commit": "ce1b53043125cad78d060d1155e5ffe6efab5c0a",
+ "duration_s": 1202.7,
+ "duration_note": null,
+ "finished_at": 1791760324.084476,
+ "workers": 4,
+ "continued_from": null,
+ "selection": {
+  "rule": "pearson_delta",
+  "cv_folds": 5,
+  "n_validation": 63,
+  "n_visible": 175
+ },
+ "experiments_proposed": 729,
+ "experiments_completed": 559,
+ "completed_by_proposer": {
+  "python:exploit": 112,
+  "deepseek:deepseek-v4-pro": 331,
+  "sweep(deepseek:deepseek-v4-pro)": 116
+ },
+ "experiments_completed_planner": 447,
+ "unique_hypotheses_planner": 605,
+ "experiments_failed": 110,
+ "experiments_rejected": 4,
+ "experiments_killed": 0,
+ "experiments_cancelled": 0,
+ "duplicate_experiments": 49,
+ "unique_hypotheses": 721,
+ "replicated_hypotheses": 7,
+ "cpu_hours": 0.3377,
+ "llm_usage": {
+  "all": {
+   "calls": 587,
+   "input_tokens": 1197210,
+   "output_tokens": 499979,
+   "cached_tokens": 524416,
+   "cost_usd": 1.369456972,
+   "failed_calls": 0
+  },
+  "worker": {
+   "calls": 525,
+   "input_tokens": 899213,
+   "output_tokens": 378756,
+   "cached_tokens": 449024,
+   "cost_usd": 0.5922580439999999,
+   "failed_calls": 0
+  },
+  "planner": {
+   "calls": 62,
+   "input_tokens": 297997,
+   "output_tokens": 121223,
+   "cached_tokens": 75392,
+   "cost_usd": 0.777198928,
+   "failed_calls": 0
+  }
+ },
+ "planner": {
+  "configured": "deepseek:deepseek-v4-pro",
+  "fallback": [],
+  "used": [
+   "deepseek:deepseek-v4-pro"
+  ],
+  "rounds": {
+   "deepseek:deepseek-v4-pro": {
+    "rounds": 62,
+    "queued": 564
+   }
+  },
+  "switches": [],
+  "failed_rounds": 0,
+  "exhausted_at_min": null,
+  "mixed": false
+ },
+ "baseline": {
+  "experiment_id": "EXP_0003",
+  "score": 0.6313169891186857,
+  "description": "A perturbation changes expression by the sum of its genes' single-gene changes in training (additive model).",
+  "metrics": {
+   "rmse": 0.090324644383865,
+   "mae": 0.05839727564494792,
+   "mse": 0.008158541383071675,
+   "pearson_delta": 0.7259053696935525,
+   "pearson_delta_top": 0.7687834444960926,
+   "direction_acc_top": 0.8984126984126983,
+   "mse_top": 0.18251583096899343,
+   "r2_top": 0.7104523608184208,
+   "pearson_expr": 0.9825186427334031,
+   "pearson_delta_nontarget": 0.7254849238032094,
+   "primary": 0.6313169891186857,
+   "selection_rule": "pearson_delta",
+   "by_category": {
+    "pair_seen0": {
+     "n": 8,
+     "pearson_delta": {
+      "mean": 0.7328538031562001,
+      "sd": 0.08003716475036292
+     },
+     "pearson_delta_top": {
+      "mean": 0.8562500615930326,
+      "sd": 0.060501724260273004
+     },
+     "direction_acc_top": {
+      "mean": 0.9437499999999999,
+      "sd": 0.04955156044825574
+     },
+     "mse_top": {
+      "mean": 0.31418587700491046,
+      "sd": 0.2379667309825293
+     },
+     "r2_top": {
+      "mean": 0.4044768542188171,
+      "sd": 1.0223225416529713
+     },
+     "pearson_expr": {
+      "mean": 0.9779142658575606,
+      "sd": 0.01780524766733868
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.734255750014439,
+      "sd": 0.08021366909536015
+     }
+    },
+    "pair_seen1": {
+     "n": 35,
+     "pearson_delta": {
+      "mean": 0.7798818849165543,
+      "sd": 0.16412128984958227
+     },
+     "pearson_delta_top": {
+      "mean": 0.8379861088711532,
+      "sd": 0.21278100095363284
+     },
+     "direction_acc_top": {
+      "mean": 0.9342857142857144,
+      "sd": 0.1155367452189922
+     },
+     "mse_top": {
+      "mean": 0.152662310698362,
+      "sd": 0.19667461207826142
+     },
+     "r2_top": {
+      "mean": 0.7852012267244598,
+      "sd": 0.2880685451084894
+     },
+     "pearson_expr": {
+      "mean": 0.982255593397042,
+      "sd": 0.014168591831747939
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.7781069412309298,
+      "sd": 0.16531597090492625
+     }
+    },
+    "pair_seen2": {
+     "n": 5,
+     "pearson_delta": {
+      "mean": 0.9145693206474259,
+      "sd": 0.06173958579704434
+     },
+     "pearson_delta_top": {
+      "mean": 0.9694692354639084,
+      "sd": 0.02547641373358182
+     },
+     "direction_acc_top": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "mse_top": {
+      "mean": 0.0773004376343929,
+      "sd": 0.032888300668201566
+     },
+     "r2_top": {
+      "mean": 0.881890196132608,
+      "sd": 0.07348409614760897
+     },
+     "pearson_expr": {
+      "mean": 0.988477613376998,
+      "sd": 0.0062348884136865365
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.913108875601103,
+      "sd": 0.06176941755525626
+     }
+    },
+    "single": {
+     "n": 15,
+     "pearson_delta": {
+      "mean": 0.5333663526751786,
+      "sd": 0.3684136494172096
+     },
+     "pearson_delta_top": {
+      "mean": 0.4937664348466445,
+      "sd": 0.4503854225278445
+     },
+     "direction_acc_top": {
+      "mean": 0.7566666666666667,
+      "sd": 0.2541559326382882
+     },
+     "mse_top": {
+      "mean": 0.21702181815951127,
+      "sd": 0.239674751048973
+     },
+     "r2_top": {
+      "mean": 0.6420793321193886,
+      "sd": 0.3066871765238757
+     },
+     "pearson_expr": {
+      "mean": 0.9836017686374967,
+      "sd": 0.014272778561101087
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.5354811252265754,
+      "sd": 0.37209157598769693
+     }
+    }
+   },
+   "pearson_delta_cv": 0.5781110250453232,
+   "n_visible": 175,
+   "cv_folds": 5,
+   "pearson_delta_nontarget_cv": 0.5831255202607124,
+   "by_category_cv": {
+    "pair_seen0": {
+     "n": 3,
+     "pearson_delta": {
+      "mean": 0.36600371600345283,
+      "sd": 0.2932746270662948
+     },
+     "pearson_delta_top": {
+      "mean": 0.41508840798134067,
+      "sd": 0.4071047694849129
+     },
+     "direction_acc_top": {
+      "mean": 0.6833333333333332,
+      "sd": 0.2362907813126304
+     },
+     "mse_top": {
+      "mean": 0.4755070200625177,
+      "sd": 0.3343649969760692
+     },
+     "r2_top": {
+      "mean": 0.012048846738887694,
+      "sd": 0.7461221232443668
+     },
+     "pearson_expr": {
+      "mean": 0.9683068420666275,
+      "sd": 0.010841036593964013
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.36995980086394376,
+      "sd": 0.2939349015516134
+     }
+    },
+    "pair_seen1": {
+     "n": 38,
+     "pearson_delta": {
+      "mean": 0.7240732793277967,
+      "sd": 0.2113487950787337
+     },
+     "pearson_delta_top": {
+      "mean": 0.7810237762541562,
+      "sd": 0.2257215827602329
+     },
+     "direction_acc_top": {
+      "mean": 0.9092105263157896,
+      "sd": 0.12512440466575156
+     },
+     "mse_top": {
+      "mean": 0.20867677198942491,
+      "sd": 0.2609134434855132
+     },
+     "r2_top": {
+      "mean": 0.7339662597818898,
+      "sd": 0.3396240578913686
+     },
+     "pearson_expr": {
+      "mean": 0.9766062324879643,
+      "sd": 0.025279304455737214
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.7259334809858115,
+      "sd": 0.21532904287994048
+     }
+    },
+    "single": {
+     "n": 71,
+     "pearson_delta": {
+      "mean": 0.5089526625719658,
+      "sd": 0.3284653059565248
+     },
+     "pearson_delta_top": {
+      "mean": 0.4768764857215944,
+      "sd": 0.44755840855046586
+     },
+     "direction_acc_top": {
+      "mean": 0.7683098591549296,
+      "sd": 0.2165046084332549
+     },
+     "mse_top": {
+      "mean": 0.17108047121688139,
+      "sd": 0.17557098005465122
+     },
+     "r2_top": {
+      "mean": 0.701264892729042,
+      "sd": 0.4079092155809133
+     },
+     "pearson_expr": {
+      "mean": 0.9865773914128827,
+      "sd": 0.014500257387660951
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.515700092804889,
+      "sd": 0.33128037998633697
+     }
+    }
+   },
+   "by_category_visible": {
+    "pair_seen0": {
+     "n": 11,
+     "pearson_delta": {
+      "mean": 0.632803779387269,
+      "sd": 0.2259399317218672
+     },
+     "pearson_delta_top": {
+      "mean": 0.7359332469716621,
+      "sd": 0.27959347565872006
+     },
+     "direction_acc_top": {
+      "mean": 0.8727272727272726,
+      "sd": 0.16637853882582987
+     },
+     "mse_top": {
+      "mean": 0.3581825523842579,
+      "sd": 0.26014953574639343
+     },
+     "r2_top": {
+      "mean": 0.29745103399701817,
+      "sd": 0.9362371246014694
+     },
+     "pearson_expr": {
+      "mean": 0.9752940593691243,
+      "sd": 0.016296108534136298
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.6349023093370312,
+      "sd": 0.22525264248217877
+     }
+    },
+    "pair_seen1": {
+     "n": 73,
+     "pearson_delta": {
+      "mean": 0.7508308299525435,
+      "sd": 0.19095120714336944
+     },
+     "pearson_delta_top": {
+      "mean": 0.8083344836732643,
+      "sd": 0.2199637017862497
+     },
+     "direction_acc_top": {
+      "mean": 0.9212328767123288,
+      "sd": 0.12044991127573242
+     },
+     "mse_top": {
+      "mean": 0.1818205234252167,
+      "sd": 0.23247225291857027
+     },
+     "r2_top": {
+      "mean": 0.7585309699598343,
+      "sd": 0.3148414683378261
+     },
+     "pearson_expr": {
+      "mean": 0.9793148301840977,
+      "sd": 0.02076707316616184
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.7509481537060736,
+      "sd": 0.19344668169579274
+     }
+    },
+    "pair_seen2": {
+     "n": 5,
+     "pearson_delta": {
+      "mean": 0.9145693206474259,
+      "sd": 0.06173958579704434
+     },
+     "pearson_delta_top": {
+      "mean": 0.9694692354639084,
+      "sd": 0.02547641373358182
+     },
+     "direction_acc_top": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "mse_top": {
+      "mean": 0.0773004376343929,
+      "sd": 0.032888300668201566
+     },
+     "r2_top": {
+      "mean": 0.881890196132608,
+      "sd": 0.07348409614760897
+     },
+     "pearson_expr": {
+      "mean": 0.988477613376998,
+      "sd": 0.0062348884136865365
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.913108875601103,
+      "sd": 0.06176941755525626
+     }
+    },
+    "single": {
+     "n": 86,
+     "pearson_delta": {
+      "mean": 0.5132108643341542,
+      "sd": 0.33360497407718226
+     },
+     "pearson_delta_top": {
+      "mean": 0.47982240708061474,
+      "sd": 0.4454341985714942
+     },
+     "direction_acc_top": {
+      "mean": 0.7662790697674418,
+      "sd": 0.2219488362432043
+     },
+     "mse_top": {
+      "mean": 0.17909349684640985,
+      "sd": 0.18749477838081166
+     },
+     "r2_top": {
+      "mean": 0.6909418298320094,
+      "sd": 0.39118932718999644
+     },
+     "pearson_expr": {
+      "mean": 0.9860583874404315,
+      "sd": 0.014422059481900357
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.5191502728784391,
+      "sd": 0.3365122828133797
+     }
+    }
+   },
+   "cv_groups": "gene",
+   "cellforge_mse": 0.008158541383071675,
+   "cellforge_pcc": 0.9825186427334032,
+   "cellforge_r2": 0.9612893456814773,
+   "cellforge_mse_de": 0.16286330805465146,
+   "cellforge_pcc_de": 0.908939075136236,
+   "cellforge_r2_de": 0.7638566440351032,
+   "cellforge_mse_deset": 0.027764648556714216,
+   "cellforge_pcc_deset": 0.9511714847173875,
+   "cellforge_r2_deset": 0.8855022750224933,
+   "cellforge_n_perts_deset": 62,
+   "vcworld_de_accuracy": 0.7015065267585671,
+   "vcworld_de_precision": 0.5519058203671688,
+   "vcworld_de_recall": 0.6064910098382902,
+   "vcworld_de_f1": 0.5779123519713802,
+   "vcworld_de_auroc": 0.7317712875708641,
+   "vcworld_de_auprc": 0.5582979928101561,
+   "vcworld_dir_accuracy": 0.9350672848580799,
+   "vcworld_dir_precision": 0.8318187182816004,
+   "vcworld_dir_recall": 0.8297621850718154,
+   "vcworld_dir_f1": 0.8307891789945187,
+   "vcworld_dir_auroc": 0.9628631423131866,
+   "vcworld_dir_auprc": 0.8873176754498778,
+   "vcworld_n_de_pairs": 44215
+  }
+ },
+ "best": {
+  "experiment_id": "EXP_0715",
+  "score": 0.6506136991882857,
+  "model": "ridge",
+  "alpha": 100.0,
+  "features": [
+   "is_target",
+   "additive_response",
+   "signed_replogle_coexpression_e89",
+   "additive_times_target_expression_e148_e157",
+   "additive_response_squared_e78",
+   "additive_response_clipped_e212_e219",
+   "ppi_replogle_propagation_e235",
+   "pair_target_coexpression_product_e250",
+   "ppi_additive_propagation_e276",
+   "random_fourier_additive_replogle_e348",
+   "normalized_geneset_overlap_e394",
+   "additive_times_pair_replogle_delta_produ_e420",
+   "pair_replogle_delta_sum_e432_e441",
+   "additive_times_ppi_distance_e462",
+   "additive_times_pair_replogle_product_e560",
+   "pair_ppi_path_confidence_e715"
+  ],
+  "metrics": {
+   "rmse": 0.08846455714784524,
+   "mae": 0.05658406291012716,
+   "mse": 0.007825977871364374,
+   "pearson_delta": 0.7326085452198821,
+   "pearson_delta_top": 0.7834995811409357,
+   "direction_acc_top": 0.888888888888889,
+   "mse_top": 0.1923905119273362,
+   "r2_top": 0.6961142153446981,
+   "pearson_expr": 0.9829447666842531,
+   "pearson_delta_nontarget": 0.7287422038860675,
+   "primary": 0.6506136991882857,
+   "selection_rule": "pearson_delta",
+   "by_category": {
+    "pair_seen0": {
+     "n": 8,
+     "pearson_delta": {
+      "mean": 0.7420517257885354,
+      "sd": 0.07886839797376159
+     },
+     "pearson_delta_top": {
+      "mean": 0.8617449434338729,
+      "sd": 0.053806072707535325
+     },
+     "direction_acc_top": {
+      "mean": 0.94375,
+      "sd": 0.049551560448255746
+     },
+     "mse_top": {
+      "mean": 0.33635045033394495,
+      "sd": 0.2443806925586991
+     },
+     "r2_top": {
+      "mean": 0.3602989819010612,
+      "sd": 1.1031619145280898
+     },
+     "pearson_expr": {
+      "mean": 0.9773619280825518,
+      "sd": 0.019237132289138016
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.7413514364937928,
+      "sd": 0.07920401467201371
+     }
+    },
+    "pair_seen1": {
+     "n": 35,
+     "pearson_delta": {
+      "mean": 0.7824011589573624,
+      "sd": 0.16275128757943033
+     },
+     "pearson_delta_top": {
+      "mean": 0.8351312520540402,
+      "sd": 0.20789180285256623
+     },
+     "direction_acc_top": {
+      "mean": 0.9328571428571428,
+      "sd": 0.11878233748112128
+     },
+     "mse_top": {
+      "mean": 0.16491727382316185,
+      "sd": 0.191456709959405
+     },
+     "r2_top": {
+      "mean": 0.7630623927780716,
+      "sd": 0.3236649305678057
+     },
+     "pearson_expr": {
+      "mean": 0.9828649070641532,
+      "sd": 0.01432609999335934
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.7803348252220343,
+      "sd": 0.16456449757655797
+     }
+    },
+    "pair_seen2": {
+     "n": 5,
+     "pearson_delta": {
+      "mean": 0.9164215110988845,
+      "sd": 0.05623576673641607
+     },
+     "pearson_delta_top": {
+      "mean": 0.9722268560963432,
+      "sd": 0.019051947771748595
+     },
+     "direction_acc_top": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "mse_top": {
+      "mean": 0.07387979478037117,
+      "sd": 0.09430163912378264
+     },
+     "r2_top": {
+      "mean": 0.9064975349523902,
+      "sd": 0.08576312780872022
+     },
+     "pearson_expr": {
+      "mean": 0.9916577476665547,
+      "sd": 0.004915867578302113
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.9130620709237645,
+      "sd": 0.061830299356286
+     }
+    },
+    "single": {
+     "n": 15,
+     "pearson_delta": {
+      "mean": 0.5501184282361451,
+      "sd": 0.35987251000849274
+     },
+     "pearson_delta_top": {
+      "mean": 0.5583857308023219,
+      "sd": 0.4542983140269283
+     },
+     "direction_acc_top": {
+      "mean": 0.7200000000000001,
+      "sd": 0.26376396374681016
+     },
+     "mse_top": {
+      "mean": 0.2192196727358736,
+      "sd": 0.24563858058511467
+     },
+     "r2_top": {
+      "mean": 0.6488754859675355,
+      "sd": 0.3074826116092401
+     },
+     "pearson_expr": {
+      "mean": 0.9832042927246258,
+      "sd": 0.015527353670942833
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.5401945410321253,
+      "sd": 0.37366474389325643
+     }
+    }
+   },
+   "pearson_delta_cv": 0.6044915982955127,
+   "n_visible": 175,
+   "cv_folds": 5,
+   "pearson_delta_nontarget_cv": 0.5898686182263712,
+   "by_category_cv": {
+    "pair_seen0": {
+     "n": 3,
+     "pearson_delta": {
+      "mean": 0.4872577850587149,
+      "sd": 0.28389887490661986
+     },
+     "pearson_delta_top": {
+      "mean": 0.6237408984746525,
+      "sd": 0.19639103318438245
+     },
+     "direction_acc_top": {
+      "mean": 0.8333333333333334,
+      "sd": 0.07637626158259735
+     },
+     "mse_top": {
+      "mean": 0.2810878879682964,
+      "sd": 0.1878381611175007
+     },
+     "r2_top": {
+      "mean": 0.4066753057959238,
+      "sd": 0.45389488009834145
+     },
+     "pearson_expr": {
+      "mean": 0.9733183594661076,
+      "sd": 0.010080721714122432
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.45321747657811523,
+      "sd": 0.3033753051784865
+     }
+    },
+    "pair_seen1": {
+     "n": 38,
+     "pearson_delta": {
+      "mean": 0.7368641039427934,
+      "sd": 0.19704502188842143
+     },
+     "pearson_delta_top": {
+      "mean": 0.8175763172811398,
+      "sd": 0.17615767253990597
+     },
+     "direction_acc_top": {
+      "mean": 0.9223684210526315,
+      "sd": 0.11780502009507789
+     },
+     "mse_top": {
+      "mean": 0.16112285136757498,
+      "sd": 0.17649202670011216
+     },
+     "r2_top": {
+      "mean": 0.7977123530174545,
+      "sd": 0.2219773642618498
+     },
+     "pearson_expr": {
+      "mean": 0.9782371733924693,
+      "sd": 0.024508537545319602
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.7302355098948302,
+      "sd": 0.20468359829442057
+     }
+    },
+    "single": {
+     "n": 71,
+     "pearson_delta": {
+      "mean": 0.5385978831562692,
+      "sd": 0.3133135944894273
+     },
+     "pearson_delta_top": {
+      "mean": 0.5974618301485913,
+      "sd": 0.36639037072161956
+     },
+     "direction_acc_top": {
+      "mean": 0.7852112676056339,
+      "sd": 0.21420857095650342
+     },
+     "mse_top": {
+      "mean": 0.16617931849291673,
+      "sd": 0.17860132608961163
+     },
+     "r2_top": {
+      "mean": 0.7126761488052653,
+      "sd": 0.400681890016555
+     },
+     "pearson_expr": {
+      "mean": 0.9867365812880988,
+      "sd": 0.0153685679763025
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.520516668107263,
+      "sd": 0.33018845172904043
+     }
+    }
+   },
+   "by_category_visible": {
+    "pair_seen0": {
+     "n": 11,
+     "pearson_delta": {
+      "mean": 0.672562469225857,
+      "sd": 0.18611347180767046
+     },
+     "pearson_delta_top": {
+      "mean": 0.7968347493540855,
+      "sd": 0.14865922105693205
+     },
+     "direction_acc_top": {
+      "mean": 0.9136363636363636,
+      "sd": 0.07446780878644506
+     },
+     "mse_top": {
+      "mean": 0.3212788424160408,
+      "sd": 0.22254953947209247
+     },
+     "r2_top": {
+      "mean": 0.3729470702360237,
+      "sd": 0.9452775871005364
+     },
+     "pearson_expr": {
+      "mean": 0.9762591366417034,
+      "sd": 0.016820780048527228
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.6627694474258807,
+      "sd": 0.20226794127368167
+     }
+    },
+    "pair_seen1": {
+     "n": 73,
+     "pearson_delta": {
+      "mean": 0.7586969385388197,
+      "sd": 0.18161927869745056
+     },
+     "pearson_delta_top": {
+      "mean": 0.8259930668297907,
+      "sd": 0.19087616743328176
+     },
+     "direction_acc_top": {
+      "mean": 0.9273972602739726,
+      "sd": 0.11756827091406499
+     },
+     "mse_top": {
+      "mean": 0.16294209501066456,
+      "sd": 0.18253935143057715
+     },
+     "r2_top": {
+      "mean": 0.781099358382134,
+      "sd": 0.27403406194123797
+     },
+     "pearson_expr": {
+      "mean": 0.9804559498103999,
+      "sd": 0.020273468740005598
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.754255729572257,
+      "sd": 0.18695766272078265
+     }
+    },
+    "pair_seen2": {
+     "n": 5,
+     "pearson_delta": {
+      "mean": 0.9164215110988845,
+      "sd": 0.05623576673641607
+     },
+     "pearson_delta_top": {
+      "mean": 0.9722268560963432,
+      "sd": 0.019051947771748595
+     },
+     "direction_acc_top": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "mse_top": {
+      "mean": 0.07387979478037117,
+      "sd": 0.09430163912378264
+     },
+     "r2_top": {
+      "mean": 0.9064975349523902,
+      "sd": 0.08576312780872022
+     },
+     "pearson_expr": {
+      "mean": 0.9916577476665547,
+      "sd": 0.004915867578302113
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.9130620709237645,
+      "sd": 0.061830299356286
+     }
+    },
+    "single": {
+     "n": 86,
+     "pearson_delta": {
+      "mean": 0.5406072805539219,
+      "sd": 0.3196751536271095
+     },
+     "pearson_delta_top": {
+      "mean": 0.5906462314254048,
+      "sd": 0.3804835915875288
+     },
+     "direction_acc_top": {
+      "mean": 0.7738372093023256,
+      "sd": 0.2233075884733151
+     },
+     "mse_top": {
+      "mean": 0.1754305430701766,
+      "sd": 0.1913563228090715
+     },
+     "r2_top": {
+      "mean": 0.7015481262172892,
+      "sd": 0.38520070276210205
+     },
+     "pearson_expr": {
+      "mean": 0.9861204844456325,
+      "sd": 0.015363591853028161
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.5239488552453203,
+      "sd": 0.33591418609303086
+     }
+    }
+   },
+   "cv_groups": "gene",
+   "cellforge_mse": 0.007825977871364374,
+   "cellforge_pcc": 0.9829447666842533,
+   "cellforge_r2": 0.9626992624073963,
+   "cellforge_mse_de": 0.17277576777100445,
+   "cellforge_pcc_de": 0.9036874268489449,
+   "cellforge_r2_de": 0.7538899681515431,
+   "cellforge_mse_deset": 0.028281435466608013,
+   "cellforge_pcc_deset": 0.9509827872584973,
+   "cellforge_r2_deset": 0.8862261114606045,
+   "cellforge_n_perts_deset": 62,
+   "vcworld_de_accuracy": 0.718034885581693,
+   "vcworld_de_precision": 0.5946314712287791,
+   "vcworld_de_recall": 0.5125409928757209,
+   "vcworld_de_f1": 0.5505429633408643,
+   "vcworld_de_auroc": 0.7318909983097577,
+   "vcworld_de_auprc": 0.5563415493680809,
+   "vcworld_dir_accuracy": 0.9355874703155038,
+   "vcworld_dir_precision": 0.8510320815717484,
+   "vcworld_dir_recall": 0.8057452319284201,
+   "vcworld_dir_f1": 0.8277697145621674,
+   "vcworld_dir_auroc": 0.9642507637102017,
+   "vcworld_dir_auprc": 0.8929917940766406,
+   "vcworld_n_de_pairs": 44215,
+   "alpha_scores": [
+    {
+     "alpha": 0.01,
+     "pearson_delta": 0.7326415024080168,
+     "primary": 0.6500487491876837
+    },
+    {
+     "alpha": 0.1,
+     "pearson_delta": 0.7326414750375774,
+     "primary": 0.6500496651704509
+    },
+    {
+     "alpha": 1.0,
+     "pearson_delta": 0.7326411983706693,
+     "primary": 0.650058758749814
+    },
+    {
+     "alpha": 10.0,
+     "pearson_delta": 0.7326384032698846,
+     "primary": 0.6501435853474007
+    },
+    {
+     "alpha": 100.0,
+     "pearson_delta": 0.7326085452198821,
+     "primary": 0.6506136991882857
+    }
+   ]
+  },
+  "coefficients": {
+   "is_target": 0.00534,
+   "additive_response": 0.08088,
+   "signed_replogle_coexpression_e89": 0.00314,
+   "additive_times_target_expression_e148_e157": -0.0026,
+   "additive_response_squared_e78": -0.04226,
+   "additive_response_clipped_e212_e219": 0.0004,
+   "ppi_replogle_propagation_e235": -0.00121,
+   "pair_target_coexpression_product_e250": -0.00052,
+   "ppi_additive_propagation_e276": 0.00368,
+   "random_fourier_additive_replogle_e348": -0.04393,
+   "normalized_geneset_overlap_e394": -0.00024,
+   "additive_times_pair_replogle_delta_produ_e420": 0.00226,
+   "pair_replogle_delta_sum_e432_e441": 0.00379,
+   "additive_times_ppi_distance_e462": -0.00276,
+   "additive_times_pair_replogle_product_e560": 0.00179,
+   "pair_ppi_path_confidence_e715": -0.0024
+  }
+ },
+ "improvement_over_baseline": 0.019296710069599987,
+ "ensemble": {
+  "experiment_id": "EXP_0729",
+  "members": [
+   "EXP_0715",
+   "EXP_0724",
+   "EXP_0643"
+  ],
+  "score": 0.6507256466361327,
+  "features": [
+   "additive_response",
+   "additive_response_clipped_e212_e219",
+   "additive_response_squared_e78",
+   "additive_times_pair_replogle_delta_produ_e420",
+   "additive_times_pair_replogle_product_e560",
+   "additive_times_ppi_distance_e462",
+   "additive_times_target_expression_e148_e157",
+   "is_target",
+   "normalized_geneset_overlap_e394",
+   "pair_ppi_path_confidence_e715",
+   "pair_replogle_delta_sum_e432_e441",
+   "pair_target_coexpression_product_e250",
+   "ppi_additive_propagation_e276",
+   "ppi_replogle_propagation_e235",
+   "random_fourier_additive_replogle_e348",
+   "signed_replogle_coexpression_e89",
+   "target_control_expression_mean_e167"
+  ],
+  "query_only_score": 0.7201354523261274
+ },
+ "lineage": [
+  {
+   "experiment_id": "EXP_0007",
+   "added": "baseline",
+   "score": 0.6364591953699491,
+   "hypothesis": "RIDGE on the baseline features plus the built-in sum of each target gene's single-gene training change."
+  },
+  {
+   "experiment_id": "EXP_0014",
+   "added": "target_coexpression_e14",
+   "score": 0.6367020679919647,
+   "hypothesis": "Adding a feature that captures the co-expression similarity between the perturbation target gene(s) and the predicted gene g improves prediction of delta."
+  },
+  {
+   "experiment_id": "EXP_0024",
+   "added": "config",
+   "score": 0.6380796385405391,
+   "hypothesis": "Drop mean_response from the best model (EXP_0014) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0036",
+   "added": "config",
+   "score": 0.6395156778172733,
+   "hypothesis": "Drop control_mean from the best model (EXP_0024) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0058",
+   "added": "weighted_target_coexpression_e58",
+   "score": 0.6401942882655806,
+   "hypothesis": "A feature that multiplies target coexpression by the target's replogle magnitude captures stronger downstream effects for strongly activated targets."
+  },
+  {
+   "experiment_id": "EXP_0072",
+   "added": "config",
+   "score": 0.6413042595585307,
+   "hypothesis": "Drop target_coexpression_e14 from the best model (EXP_0058) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0089",
+   "added": "signed_replogle_coexpression_e89",
+   "score": 0.6420602536170434,
+   "hypothesis": "Adding a feature that multiplies the sign-corrected replogle delta of the perturbation target(s) by the coexpression between gene g and the target(s) will improve predictions by capturing whether coexpressed genes are expected to be up- or down-regulated."
+  },
+  {
+   "experiment_id": "EXP_0101",
+   "added": "config",
+   "score": 0.6420673306247553,
+   "hypothesis": "Refine the ridge penalty around alpha=100 for the best model (EXP_0089)."
+  },
+  {
+   "experiment_id": "EXP_0113",
+   "added": "config",
+   "score": 0.6420883540202147,
+   "hypothesis": "Refine the ridge penalty around alpha=300 for the best model (EXP_0101)."
+  },
+  {
+   "experiment_id": "EXP_0121",
+   "added": "additive_times_coexpression_e121",
+   "score": 0.6425492572524794,
+   "hypothesis": "The product of additive_response and weighted_target_coexpression_e58 captures cases where coexpressed genes amplify the additive effect, improving prediction."
+  },
+  {
+   "experiment_id": "EXP_0138",
+   "added": "config",
+   "score": 0.6425715741491308,
+   "hypothesis": "Drop weighted_target_coexpression_e58 from the best model (EXP_0121) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0157",
+   "added": "additive_times_target_expression_e148_e157",
+   "score": 0.6431379070018735,
+   "hypothesis": "The product of additive_response and the mean control expression of the target genes captures whether highly expressed targets produce larger changes."
+  },
+  {
+   "experiment_id": "EXP_0167",
+   "added": "target_control_expression_mean_e167",
+   "score": 0.643241710802947,
+   "hypothesis": "The mean control expression level of the perturbation's target genes is predictive of delta[p,g]."
+  },
+  {
+   "experiment_id": "EXP_0183",
+   "added": "config",
+   "score": 0.6434011867297483,
+   "hypothesis": "Adding the square of additive_response to the current best feature set captures nonlinear scaling of perturbation effects."
+  },
+  {
+   "experiment_id": "EXP_0219",
+   "added": "additive_response_clipped_e212_e219",
+   "score": 0.643497013577008,
+   "hypothesis": "Clipping additive_response to a reasonable range (e.g., [-0.5, 0.5]) reduces influence of outliers and improves generalization."
+  },
+  {
+   "experiment_id": "EXP_0235",
+   "added": "ppi_replogle_propagation_e235",
+   "score": 0.6434972704074965,
+   "hypothesis": "The sum of sign-corrected replogle deltas of PPI neighbors of gene g, weighted by inverse PPI distance or edge weight, is predictive of delta[p,g]."
+  },
+  {
+   "experiment_id": "EXP_0250",
+   "added": "pair_target_coexpression_product_e250",
+   "score": 0.6435199461754604,
+   "hypothesis": "For pair perturbations, the product of coexpression between gene g and each target captures synergistic effects beyond additive response."
+  },
+  {
+   "experiment_id": "EXP_0258",
+   "added": "config",
+   "score": 0.6435199463095407,
+   "hypothesis": "Refine the ridge penalty around alpha=0.01 for the best model (EXP_0250)."
+  },
+  {
+   "experiment_id": "EXP_0276",
+   "added": "ppi_additive_propagation_e276",
+   "score": 0.6435518161508742,
+   "hypothesis": "Propagating additive_response over the PPI network (e.g., one-step weighted average) improves prediction over raw additive_response."
+  },
+  {
+   "experiment_id": "EXP_0296",
+   "added": "additive_times_signed_replogle_coexpress_e296",
+   "score": 0.6439461373192292,
+   "hypothesis": "Interaction between additive_response and signed_replogle_coexpression improves prediction."
+  },
+  {
+   "experiment_id": "EXP_0311",
+   "added": "config",
+   "score": 0.6439475805715726,
+   "hypothesis": "Refine the ridge penalty around alpha=100 for the best model (EXP_0296)."
+  },
+  {
+   "experiment_id": "EXP_0322",
+   "added": "config",
+   "score": 0.6440312306219708,
+   "hypothesis": "Drop additive_times_coexpression_e121 from the best model (EXP_0311) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0348",
+   "added": "random_fourier_additive_replogle_e348",
+   "score": 0.6441108504336682,
+   "hypothesis": "A random Fourier feature projection of additive_response and signed_replogle_coexpression_e89 can capture nonlinear interactions that linear models miss."
+  },
+  {
+   "experiment_id": "EXP_0361",
+   "added": "pair_replogle_delta_product_e361",
+   "score": 0.6463842440796561,
+   "hypothesis": "For pair perturbations A+B, the product of sign-corrected replogle deltas of A and B for gene g captures multiplicative interaction and improves prediction."
+  },
+  {
+   "experiment_id": "EXP_0370",
+   "added": "config",
+   "score": 0.6463883096989973,
+   "hypothesis": "Refine the ridge penalty around alpha=100 for the best model (EXP_0361)."
+  },
+  {
+   "experiment_id": "EXP_0394",
+   "added": "normalized_geneset_overlap_e394",
+   "score": 0.6464068149884258,
+   "hypothesis": "The number of gene sets containing both gene g and any target of p, normalized by total gene sets containing g, improves prediction."
+  },
+  {
+   "experiment_id": "EXP_0420",
+   "added": "additive_times_pair_replogle_delta_produ_e420",
+   "score": 0.6477582669261348,
+   "hypothesis": "Adding the product of additive_response and pair_replogle_delta_product_e361 improves prediction by capturing cases where the additive effect is modulated by the sign-corrected Replogle deltas of both targets."
+  },
+  {
+   "experiment_id": "EXP_0441",
+   "added": "pair_replogle_delta_sum_e432_e441",
+   "score": 0.6480814239146016,
+   "hypothesis": "For pair perturbations, the sum of sign-corrected Replogle deltas of the two targets provides additional predictive power beyond the product."
+  },
+  {
+   "experiment_id": "EXP_0462",
+   "added": "additive_times_ppi_distance_e462",
+   "score": 0.6483592021355071,
+   "hypothesis": "For each (p,g), additive_response multiplied by the inverse of the shortest path length from g to any target in PPI captures distance-dependent effects."
+  },
+  {
+   "experiment_id": "EXP_0518",
+   "added": "config",
+   "score": 0.6484339762338714,
+   "hypothesis": "Removing pair_replogle_delta_product_e361 from the best model does not reduce performance, indicating redundancy."
+  },
+  {
+   "experiment_id": "EXP_0560",
+   "added": "additive_times_pair_replogle_product_e560",
+   "score": 0.6484747252331551,
+   "hypothesis": "Multiplying additive_response by pair_replogle_delta_product_e361 creates an interaction that may capture synergistic effects of target genes."
+  },
+  {
+   "experiment_id": "EXP_0593",
+   "added": "config",
+   "score": 0.6492449724736779,
+   "hypothesis": "Refine the ridge penalty around alpha=100 for the best model (EXP_0560)."
+  },
+  {
+   "experiment_id": "EXP_0606",
+   "added": "config",
+   "score": 0.6496430431701307,
+   "hypothesis": "Refine the ridge penalty around alpha=300 for the best model (EXP_0593)."
+  },
+  {
+   "experiment_id": "EXP_0643",
+   "added": "config",
+   "score": 0.650183321819935,
+   "hypothesis": "Drop additive_times_signed_replogle_coexpress_e296 from the best model (EXP_0606) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0671",
+   "added": "config",
+   "score": 0.6502706712713229,
+   "hypothesis": "Drop target_control_expression_mean_e167 from the best model (EXP_0643) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0715",
+   "added": "pair_ppi_path_confidence_e715",
+   "score": 0.6506136991882857,
+   "hypothesis": "For pair perturbations A+B, the product of PPI edge confidences along the shortest path between A and B (or 0 if disconnected) improves prediction."
+  }
+ ],
+ "most_useful_features": [
+  {
+   "feature": "pair_replogle_delta_product_e361",
+   "experiment_id": "EXP_0361",
+   "delta": 0.0022733936459878867,
+   "description": "Product of sign-corrected Replogle deltas of the target genes for each gene g."
+  },
+  {
+   "feature": "additive_times_pair_replogle_delta_produ_e420",
+   "experiment_id": "EXP_0420",
+   "delta": 0.001351451937709025,
+   "description": "Elementwise product of additive_response and pair_replogle_delta_product_e361 for each (perturbation, gene)."
+  },
+  {
+   "feature": "signed_replogle_coexpression_e89",
+   "experiment_id": "EXP_0089",
+   "delta": 0.0007559940585127878,
+   "description": "Average over p's targets t of sign-corrected replogle delta of t times control Pearson correlation between gene g and t."
+  },
+  {
+   "feature": "weighted_target_coexpression_e58",
+   "experiment_id": "EXP_0058",
+   "delta": 0.0006786104483073041,
+   "description": "Average over p's targets of (control Pearson corr of g with target) times sign-corrected replogle delta of the target."
+  },
+  {
+   "feature": "additive_times_target_expression_e148_e157",
+   "experiment_id": "EXP_0157",
+   "delta": 0.000566332852742657,
+   "description": "Elementwise product of additive_response and the mean control expression of p's target genes."
+  },
+  {
+   "feature": "additive_times_coexpression_e121",
+   "experiment_id": "EXP_0121",
+   "delta": 0.00046090323226466445,
+   "description": "Elementwise product of additive_response and weighted_target_coexpression_e58."
+  },
+  {
+   "feature": "additive_times_signed_replogle_coexpress_e296",
+   "experiment_id": "EXP_0296",
+   "delta": 0.0003943211683550274,
+   "description": "Elementwise product of additive_response and signed_replogle_coexpression_e89."
+  },
+  {
+   "feature": "pair_target_coexpression_product_e76",
+   "experiment_id": "EXP_0076",
+   "delta": 0.00034357576378396537,
+   "description": "Product of control-cell coexpression of gene g with each of p's targets (squared for singles)."
+  },
+  {
+   "feature": "pair_ppi_path_confidence_e715",
+   "experiment_id": "EXP_0715",
+   "delta": 0.00034302791696283474,
+   "description": "For pair perturbations A+B, product of PPI edge confidences along the shortest path between A and B; 1 for singles, 0 if disconnected."
+  },
+  {
+   "feature": "pair_replogle_delta_sum_e432_e441",
+   "experiment_id": "EXP_0441",
+   "delta": 0.000323156988466744,
+   "description": "For pair perturbations, sum of sign-corrected Replogle deltas of the two target genes; for single-gene perturbations, equal to the target's delta."
+  }
+ ],
+ "features_not_helping": [
+  {
+   "feature": "nn_response_e15",
+   "delta": -0.011888715374621328
+  },
+  {
+   "feature": "prior_regulation_score_e16",
+   "delta": -1.1558051540738745e-05
+  },
+  {
+   "feature": "target_centrality_e18",
+   "delta": -1.4538091893001592e-05
+  },
+  {
+   "feature": "additivity_departure_e19",
+   "delta": -0.0010955901086817654
+  },
+  {
+   "feature": "ppi_proximity_e27",
+   "delta": -0.0001826084725223831
+  },
+  {
+   "feature": "replogle_target_magnitude_e29",
+   "delta": -1.2943858365144223e-05
+  },
+  {
+   "feature": "target_ppi_degree_e32",
+   "delta": -4.430685754885921e-05
+  },
+  {
+   "feature": "ppi_shortest_path_e38",
+   "delta": -0.00012968274425662063
+  },
+  {
+   "feature": "pca_projection_score_e40",
+   "delta": -3.3966110560168516e-05
+  },
+  {
+   "feature": "pair_coexpression_product_e41",
+   "delta": -4.890620111408506e-05
+  },
+  {
+   "feature": "random_target_projection_e51",
+   "delta": -0.00017929387365345217
+  },
+  {
+   "feature": "random_target_projection_e52",
+   "delta": -0.00017929387365345217
+  },
+  {
+   "feature": "partial_corr_targets_e59",
+   "delta": -0.0004484457873855652
+  },
+  {
+   "feature": "coexpression_x_control_mean_e77",
+   "delta": -0.0003394446684599206
+  },
+  {
+   "feature": "tanh_weighted_coexpression_e87",
+   "delta": -0.0002526409415494202
+  },
+  {
+   "feature": "target_coexpression_rank_e90",
+   "delta": -0.0005199774541375657
+  },
+  {
+   "feature": "geneset_coexpression_product_e92",
+   "delta": -0.00011922279821896531
+  },
+  {
+   "feature": "weighted_target_coexpression_rank_e91_e105",
+   "delta": -0.0003592502117293339
+  },
+  {
+   "feature": "pair_target_coexpression_mean_e93_e107",
+   "delta": -3.6144067622534415e-05
+  },
+  {
+   "feature": "geneset_similarity_x_coexpression_e95_e109",
+   "delta": -0.0011015988149029043
+  },
+  {
+   "feature": "replogle_x_coexpression_e96_e110",
+   "delta": -0.00013863050275697564
+  },
+  {
+   "feature": "tanh_random_projection_e97_e111",
+   "delta": -0.00014791575922890043
+  },
+  {
+   "feature": "pair_coexpression_times_additive_e117",
+   "delta": -0.0002262482728518922
+  },
+  {
+   "feature": "normalized_additive_response_e118",
+   "delta": -0.0002145726176332463
+  },
+  {
+   "feature": "ppi_neighbor_coexpression_e119",
+   "delta": -0.0012114767192035192
+  },
+  {
+   "feature": "replogle_profile_correlation_e120",
+   "delta": -0.0004532111958496232
+  },
+  {
+   "feature": "additive_response_squared_e122",
+   "delta": -2.3904180393108376e-05
+  },
+  {
+   "feature": "pair_coexpression_product_x_additive_e130",
+   "delta": -0.001245175824434952
+  },
+  {
+   "feature": "replogle_self_x_coexpression_e131",
+   "delta": -0.00011153563367582997
+  },
+  {
+   "feature": "random_tanh_combo_replogle_coexpr_e135",
+   "delta": -0.0003500508480930309
+  },
+  {
+   "feature": "ppi_proximity_x_coexpression_e136",
+   "delta": -8.589145849913216e-05
+  },
+  {
+   "feature": "ppi_neighbor_replogle_delta_e141",
+   "delta": -0.0005215334720081177
+  },
+  {
+   "feature": "target_coexpression_asymmetry_e142",
+   "delta": -0.00010661495990293979
+  },
+  {
+   "feature": "target_coexpression_rank_product_e144",
+   "delta": -2.5076036430871085e-05
+  },
+  {
+   "feature": "random_nonlinear_coexpression_projection_e153",
+   "delta": -0.0014575701914090189
+  },
+  {
+   "feature": "pair_coexpression_asymmetry_e145_e154",
+   "delta": -8.023037798687849e-05
+  },
+  {
+   "feature": "geneset_shared_count_e149_e158",
+   "delta": -1.906554249730963e-05
+  },
+  {
+   "feature": "pair_ppi_distance_asymmetry_e150_e159",
+   "delta": -0.00020786288551055687
+  },
+  {
+   "feature": "random_projection_all_features_e151_e161",
+   "delta": -0.004027166721844333
+  },
+  {
+   "feature": "random_projection_all_features_e151_e162",
+   "delta": -0.00362690993336956
+  },
+  {
+   "feature": "pair_shared_geneset_overlap_with_g_e163",
+   "delta": -2.0130013822283743e-05
+  },
+  {
+   "feature": "pair_coexpression_asymmetry_squared_e165",
+   "delta": -0.00023974896179579375
+  },
+  {
+   "feature": "ppi_distance_asymmetry_e166",
+   "delta": -4.1206559946549426e-05
+  },
+  {
+   "feature": "additive_response_residual_replogle_e171",
+   "delta": -0.00032294195029092254
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e172",
+   "delta": -0.0048897444030001624
+  },
+  {
+   "feature": "random_nonlinear_replogle_coexpression_p_e178",
+   "delta": -0.0008085728212694487
+  },
+  {
+   "feature": "pair_coexpression_asymmetry_e179",
+   "delta": -7.055314666681856e-05
+  },
+  {
+   "feature": "replogle_target_product_e180",
+   "delta": -9.86186650120402e-06
+  },
+  {
+   "feature": "target_expression_range_e181",
+   "delta": -1.68194935767918e-06
+  },
+  {
+   "feature": "additive_times_squared_replogle_coexpres_e190",
+   "delta": -0.0003299255518713906
+  },
+  {
+   "feature": "pair_coexpression_rank_asymmetry_e192",
+   "delta": -0.00041661552759575393
+  },
+  {
+   "feature": "random_projection_coexpression_e200",
+   "delta": -0.0004337848490799656
+  },
+  {
+   "feature": "additive_times_inverse_ppi_distance_e201",
+   "delta": -0.0038915109032565676
+  },
+  {
+   "feature": "pair_coexpression_dispersion_e192_e202",
+   "delta": -1.9365850945307628e-05
+  },
+  {
+   "feature": "target_expression_dispersion_e193_e203",
+   "delta": -1.1611008398415557e-05
+  },
+  {
+   "feature": "additive_times_target_count_e194_e204",
+   "delta": -7.94203591303333e-06
+  },
+  {
+   "feature": "additive_times_coexpression_rank_e195_e205",
+   "delta": -0.004954105004480569
+  },
+  {
+   "feature": "ppi_shortest_path_sum_e196_e206",
+   "delta": -0.0008594322215010886
+  },
+  {
+   "feature": "pair_coexpression_asymmetry_e209_e216",
+   "delta": -1.9365850945307628e-05
+  },
+  {
+   "feature": "additive_times_target_expression_varianc_e217",
+   "delta": -0.019408936018113776
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e21_e218",
+   "delta": -0.004188542309900289
+  },
+  {
+   "feature": "random_projection_coexpression_e214_e221",
+   "delta": -0.006563360484326375
+  },
+  {
+   "feature": "random_projection_coexpression_e214_e222",
+   "delta": -0.006563360484326375
+  },
+  {
+   "feature": "rank_coexpression_times_additive_e227",
+   "delta": -0.0049546811917223765
+  },
+  {
+   "feature": "target_expression_entropy_e228",
+   "delta": -5.312378739819046e-05
+  },
+  {
+   "feature": "clipped_additive_response_e230",
+   "delta": -0.0001220026560702081
+  },
+  {
+   "feature": "pair_coexpression_asymmetry_e231",
+   "delta": -1.9942038187115152e-05
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e232",
+   "delta": -0.000296451948999521
+  },
+  {
+   "feature": "random_projection_coexpression_e233",
+   "delta": -4.210871485232914e-05
+  },
+  {
+   "feature": "coexpression_replogle_projection_e237",
+   "delta": -1.5178644213742487e-05
+  },
+  {
+   "feature": "target_coexpression_rank_sum_e238",
+   "delta": -0.001249521025488587
+  },
+  {
+   "feature": "random_coexpression_projection_e241",
+   "delta": -0.001896365739485928
+  },
+  {
+   "feature": "target_coexpression_std_e242",
+   "delta": -3.2675012758831556e-06
+  },
+  {
+   "feature": "pair_coexpression_product_e243",
+   "delta": -5.976240730365401e-05
+  },
+  {
+   "feature": "pair_target_expression_product_e244",
+   "delta": -5.1451971039395694e-05
+  },
+  {
+   "feature": "pair_replogle_delta_product_e245",
+   "delta": -0.0006360161370545514
+  },
+  {
+   "feature": "pair_geneset_jaccard_e247",
+   "delta": -8.673115730939429e-06
+  },
+  {
+   "feature": "random_coexpression_projection_e249",
+   "delta": -0.0025092238234236675
+  },
+  {
+   "feature": "pair_target_control_expr_product_e252",
+   "delta": -8.315869704622614e-06
+  },
+  {
+   "feature": "pair_target_ppi_distance_e253",
+   "delta": -1.0386411148144425e-05
+  },
+  {
+   "feature": "pair_target_geneset_jaccard_e254",
+   "delta": -1.8789660304774358e-05
+  },
+  {
+   "feature": "target_coexpression_std_e255",
+   "delta": -3.2675012758831556e-06
+  },
+  {
+   "feature": "random_target_coexpression_projection_e257",
+   "delta": -0.0019841727991046776
+  },
+  {
+   "feature": "additive_times_coexpression_rank_e263",
+   "delta": -0.004472168707441604
+  },
+  {
+   "feature": "weighted_geneset_overlap_e264",
+   "delta": -0.0001452514533057947
+  },
+  {
+   "feature": "random_projection_target_coexpression_e269",
+   "delta": -0.0036579292525038554
+  },
+  {
+   "feature": "replogle_additive_correlation_e272",
+   "delta": -1.1295165283531361e-05
+  },
+  {
+   "feature": "pair_target_expression_product_e274",
+   "delta": -1.0016383931610306e-05
+  },
+  {
+   "feature": "target_gene_set_overlap_e275",
+   "delta": -0.0001293862423812353
+  },
+  {
+   "feature": "random_ppi_projection_e286",
+   "delta": -0.0002308054067219345
+  },
+  {
+   "feature": "ppi_neighbor_additive_response_distance__e287",
+   "delta": -0.00010557533152255605
+  },
+  {
+   "feature": "pair_target_coexpression_asymmetry_e288",
+   "delta": -3.1443537660269527e-06
+  },
+  {
+   "feature": "additive_response_times_ppi_degree_e290",
+   "delta": -0.0011422940570239293
+  },
+  {
+   "feature": "random_fourier_additive_coexpression_e294",
+   "delta": -0.003774293017625663
+  },
+  {
+   "feature": "pair_coexpression_times_additive_respons_e299",
+   "delta": -5.7837315076136875e-06
+  },
+  {
+   "feature": "random_fourier_additive_coexpression_e302",
+   "delta": -0.0028989100093311793
+  },
+  {
+   "feature": "ppi_shortest_path_additive_propagation_e303",
+   "delta": -0.0013889127639314935
+  },
+  {
+   "feature": "pair_target_coexpression_times_additive_e304",
+   "delta": -7.052275407892772e-05
+  },
+  {
+   "feature": "additive_times_target_expression_rank_e306",
+   "delta": -0.003069882200546159
+  },
+  {
+   "feature": "geneset_jaccard_additive_propagation_e307",
+   "delta": -0.0028404309613502265
+  },
+  {
+   "feature": "random_fourier_additive_coexpression_e308",
+   "delta": -0.006567131990616426
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e29_e313",
+   "delta": -0.0034522508791481332
+  },
+  {
+   "feature": "pair_coexpression_times_replogle_coexpre_e316",
+   "delta": -0.00015785966479298086
+  },
+  {
+   "feature": "ppi_neighbor_replogle_abs_mean_e336",
+   "delta": -9.226805107065417e-06
+  },
+  {
+   "feature": "target_ppi_neighbor_coexpression_mean_e338",
+   "delta": -0.0011678505585611676
+  },
+  {
+   "feature": "additive_times_ppi_neighbor_replogle_mea_e339",
+   "delta": -0.0001145664571929883
+  },
+  {
+   "feature": "pair_target_coexpression_asymmetry_e349",
+   "delta": -1.8875971710574646e-05
+  },
+  {
+   "feature": "min_ppi_shortest_path_to_target_e350",
+   "delta": -0.0005647208518041458
+  },
+  {
+   "feature": "target_control_expression_dispersion_e352",
+   "delta": -3.958113258040186e-06
+  },
+  {
+   "feature": "shared_geneset_count_e353",
+   "delta": -1.9881815002564807e-05
+  },
+  {
+   "feature": "random_fourier_additive_response_e356",
+   "delta": -0.00022679496839161928
+  },
+  {
+   "feature": "shared_geneset_count_weighted_e363",
+   "delta": -0.00015739750420495913
+  },
+  {
+   "feature": "target_control_expression_variance_e365",
+   "delta": -3.2510486735359834e-05
+  },
+  {
+   "feature": "min_ppi_distance_to_target_e366",
+   "delta": -0.0005769754539172167
+  },
+  {
+   "feature": "pair_target_expression_product_e367",
+   "delta": -5.323947542912322e-05
+  },
+  {
+   "feature": "random_fourier_ppi_additive_e369",
+   "delta": -8.992541266084064e-05
+  },
+  {
+   "feature": "ppi_target_distance_replogle_e373",
+   "delta": -7.502792141345083e-06
+  },
+  {
+   "feature": "normalized_geneset_overlap_e375",
+   "delta": -6.300512232171318e-05
+  },
+  {
+   "feature": "shared_neighbor_replogle_e376",
+   "delta": -9.466818622938522e-05
+  },
+  {
+   "feature": "ppi_neighbor_replogle_weighted_e390",
+   "delta": -4.3331846453220635e-06
+  },
+  {
+   "feature": "target_ppi_neighbor_replogle_sum_e391",
+   "delta": -1.2486068860728672e-05
+  },
+  {
+   "feature": "rank_additive_response_e407",
+   "delta": -0.0031243483265344096
+  },
+  {
+   "feature": "min_ppi_distance_to_target_e409",
+   "delta": -0.0005623872688174103
+  },
+  {
+   "feature": "random_fourier_combined_e348_plus_e410",
+   "delta": -0.00045276819683792713
+  },
+  {
+   "feature": "replogle_delta_product_weighted_coexpres_e415",
+   "delta": -0.00023435873363752968
+  },
+  {
+   "feature": "geneset_overlap_replogle_weighted_e417",
+   "delta": -0.000128388600973528
+  },
+  {
+   "feature": "target_expression_times_replogle_delta_e418",
+   "delta": -2.3559319668908785e-05
+  },
+  {
+   "feature": "random_fourier_ppi_replogle_e419",
+   "delta": -0.002171118975319186
+  },
+  {
+   "feature": "replogle_coexpression_times_geneset_over_e421",
+   "delta": -0.0006396861408990429
+  },
+  {
+   "feature": "target_coexpression_squared_e424",
+   "delta": -0.00036341317246535443
+  },
+  {
+   "feature": "additive_response_rank_within_p_e425",
+   "delta": -0.0031163662675347537
+  },
+  {
+   "feature": "random_ppi_projection_to_targets_e426",
+   "delta": -0.0011032464713279788
+  },
+  {
+   "feature": "ppi_weighted_shortest_path_to_target_e432",
+   "delta": -0.0004111830573894082
+  },
+  {
+   "feature": "ppi_neighbor_geneset_overlap_e433",
+   "delta": -4.6174469471527146e-05
+  },
+  {
+   "feature": "pair_replogle_correlation_e434",
+   "delta": -1.73032982558885e-05
+  },
+  {
+   "feature": "additive_response_times_inverse_ppi_dist_e436",
+   "delta": -0.003931665190349154
+  },
+  {
+   "feature": "random_fourier_ppi_adjacency_to_targets_e439",
+   "delta": -0.00015246295329907067
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e43_e444",
+   "delta": -0.0032129348710138173
+  },
+  {
+   "feature": "additive_times_target_ppi_degree_e436_e445",
+   "delta": -0.0009834423434368356
+  },
+  {
+   "feature": "ppi_propagation_scaled_by_target_degree_e457",
+   "delta": -5.76824493714323e-06
+  },
+  {
+   "feature": "coexpression_replogle_interaction_e458",
+   "delta": -0.0010228335456583526
+  },
+  {
+   "feature": "geneset_replogle_enrichment_e460",
+   "delta": -8.201850414546463e-05
+  },
+  {
+   "feature": "pair_replogle_delta_difference_e461",
+   "delta": -7.071688058657433e-05
+  },
+  {
+   "feature": "target_expression_cv_e456_e468",
+   "delta": -9.742326347872421e-06
+  },
+  {
+   "feature": "pair_replogle_delta_abs_diff_e457_e469",
+   "delta": -0.0002347925083593383
+  },
+  {
+   "feature": "weighted_geneset_overlap_e458_e470",
+   "delta": -0.00019514180141511073
+  },
+  {
+   "feature": "additive_times_target_centrality_e459_e471",
+   "delta": -0.0009631593808090422
+  },
+  {
+   "feature": "pair_target_expression_ratio_e475",
+   "delta": -9.526748063537482e-06
+  },
+  {
+   "feature": "ppi_min_distance_to_target_e476",
+   "delta": -0.000668407707982932
+  },
+  {
+   "feature": "pair_replogle_product_times_ppi_proximit_e477",
+   "delta": -0.0006035969500125526
+  },
+  {
+   "feature": "pair_replogle_delta_sum_squared_e479",
+   "delta": -2.2966814294922422e-05
+  },
+  {
+   "feature": "random_fourier_all_features_e488",
+   "delta": -0.009231667229173124
+  },
+  {
+   "feature": "additive_times_ppi_decay_e493",
+   "delta": -0.0011371005165341508
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e497",
+   "delta": -0.0035234349054674707
+  },
+  {
+   "feature": "ppi_additive_prop_times_target_expr_e498",
+   "delta": -0.015469191466911725
+  },
+  {
+   "feature": "ppi_additive_propagation_target_decay_e505",
+   "delta": -0.00010639718420524247
+  },
+  {
+   "feature": "signed_replogle_times_target_coexpressio_e506",
+   "delta": -0.004233015794957606
+  },
+  {
+   "feature": "target_expression_times_replogle_product_e507",
+   "delta": -0.00013102079583460213
+  },
+  {
+   "feature": "additive_response_over_target_expression_e508",
+   "delta": -0.0001054128719389924
+  },
+  {
+   "feature": "additive_times_ppi_additive_propagation_e520",
+   "delta": -0.00013598673313863774
+  },
+  {
+   "feature": "signed_replogle_times_ppi_additive_e521",
+   "delta": -0.0001512428798065013
+  },
+  {
+   "feature": "pair_replogle_product_times_ppi_distance_e522",
+   "delta": -0.00032380781084262455
+  },
+  {
+   "feature": "additive_times_pair_coexpression_product_e523",
+   "delta": -0.002821721538207478
+  },
+  {
+   "feature": "replogle_product_times_ppi_distance_e536",
+   "delta": -0.0009175645541297239
+  },
+  {
+   "feature": "pair_gene_target_coexpression_product_e539",
+   "delta": -0.0009163066402653186
+  },
+  {
+   "feature": "ppi_additive_squared_propagation_e540",
+   "delta": -0.00041355686946331627
+  },
+  {
+   "feature": "target_control_expression_var_e555_e554",
+   "delta": -2.1919376705370475e-05
+  },
+  {
+   "feature": "pair_target_ppi_distance_e556_e556",
+   "delta": -5.7099470543997555e-05
+  },
+  {
+   "feature": "additive_times_target_coexpression_e557",
+   "delta": -0.0002875425300317147
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e563",
+   "delta": -0.0030794766752010316
+  },
+  {
+   "feature": "random_fourier_additive_target_expr_e564",
+   "delta": -0.003420637534492177
+  },
+  {
+   "feature": "additive_times_pair_replogle_delta_produ_e566",
+   "delta": -0.004669489200356036
+  },
+  {
+   "feature": "target_control_expression_variance_e567",
+   "delta": -0.0005925835782364386
+  },
+  {
+   "feature": "additive_response_times_pair_ppi_distanc_e569",
+   "delta": -0.005681367502364032
+  },
+  {
+   "feature": "signed_replogle_coexpression_squared_e576",
+   "delta": -0.0035212938529001203
+  },
+  {
+   "feature": "target_control_expression_variance_e578",
+   "delta": -0.0005925835782364386
+  },
+  {
+   "feature": "random_fourier_top3_e580",
+   "delta": -0.0005560977211344076
+  },
+  {
+   "feature": "pair_ppi_shortest_path_e581",
+   "delta": -0.0004442055825050195
+  },
+  {
+   "feature": "pair_target_coexpression_e582",
+   "delta": -0.0005575519712851529
+  },
+  {
+   "feature": "additive_times_ppi_distance_squared_e585",
+   "delta": -0.001438141643965496
+  },
+  {
+   "feature": "weighted_geneset_overlap_replogle_e586",
+   "delta": -0.000479257840374836
+  },
+  {
+   "feature": "random_projection_top_features_e587",
+   "delta": -0.0019715798140287344
+  },
+  {
+   "feature": "geneset_jaccard_target_gene_e597",
+   "delta": -0.0006021617883463781
+  },
+  {
+   "feature": "ppi_additive_propagation_decay_e598",
+   "delta": -0.0005163870778037705
+  },
+  {
+   "feature": "pair_target_gene_coexpression_product_e599",
+   "delta": -0.00019243371707955426
+  },
+  {
+   "feature": "pair_replogle_delta_sum_product_combined_e600",
+   "delta": -0.0007584947191732194
+  },
+  {
+   "feature": "random_projection_ppi_replogle_e603",
+   "delta": -0.0026491036253524225
+  },
+  {
+   "feature": "pair_target_expression_variance_e604",
+   "delta": -0.0005265686094955147
+  },
+  {
+   "feature": "additive_times_target_coexpression_e610",
+   "delta": -0.0008129054240478828
+  },
+  {
+   "feature": "ppi_shortest_path_inverse_e611",
+   "delta": -0.0013758352050436962
+  },
+  {
+   "feature": "pair_target_expression_product_e612",
+   "delta": -0.000664940279321069
+  },
+  {
+   "feature": "replogle_target_sum_squared_e613",
+   "delta": -0.0009704738513371947
+  },
+  {
+   "feature": "geneset_overlap_target_expression_weight_e614",
+   "delta": -0.0005888944506480254
+  },
+  {
+   "feature": "pair_target_expression_diff_e621",
+   "delta": -0.0014438070864444263
+  },
+  {
+   "feature": "mean_inv_ppi_distance_to_targets_e623",
+   "delta": -0.0023587340956565672
+  },
+  {
+   "feature": "pair_replogle_delta_sum_squared_e625",
+   "delta": -0.0013024680616157136
+  },
+  {
+   "feature": "additive_response_over_target_variance_e626",
+   "delta": -0.007930342309005467
+  },
+  {
+   "feature": "pair_replogle_delta_ratio_e700_e633",
+   "delta": -0.0017012339835452694
+  },
+  {
+   "feature": "additive_times_pair_replogle_ratio_e703_e636",
+   "delta": -0.001707361430747678
+  },
+  {
+   "feature": "ppi_replogle_propagation_pair_weighted_e_e637",
+   "delta": -0.0017417853225800695
+  },
+  {
+   "feature": "additive_times_pair_replogle_delta_produ_e645",
+   "delta": -0.0020472563353818307
+  },
+  {
+   "feature": "min_ppi_distance_to_targets_e646",
+   "delta": -0.002603846778598151
+  },
+  {
+   "feature": "replogle_weighted_geneset_overlap_e647",
+   "delta": -0.001958258285311709
+  },
+  {
+   "feature": "pair_target_coexpression_difference_e648",
+   "delta": -0.0010268621592384175
+  },
+  {
+   "feature": "random_ppi_projection_e652",
+   "delta": -0.0018111868387540309
+  },
+  {
+   "feature": "pair_target_coexpression_difference_e660",
+   "delta": -0.001089281405271536
+  },
+  {
+   "feature": "replogle_sum_times_ppi_propagation_e661",
+   "delta": -0.0019678500306464786
+  },
+  {
+   "feature": "random_projection_replogle_ppi_e662",
+   "delta": -0.0017302057412531546
+  },
+  {
+   "feature": "ppi_replogle_coexpression_interaction_e675",
+   "delta": -0.0004505426414438407
+  },
+  {
+   "feature": "pair_target_coexpression_asymmetry_e676",
+   "delta": -0.000262906617120251
+  },
+  {
+   "feature": "target_control_expression_variance_e679",
+   "delta": -0.0004529004667822578
+  },
+  {
+   "feature": "ppi_replogle_propagation_squared_e680",
+   "delta": -0.0004824402116847537
+  },
+  {
+   "feature": "additive_response_target_count_penalty_e688",
+   "delta": -0.00615926541589884
+  },
+  {
+   "feature": "replogle_delta_mean_targets_e698",
+   "delta": -0.0014635417935834338
+  },
+  {
+   "feature": "pair_geneset_union_overlap_e700",
+   "delta": -0.0006437940209994553
+  },
+  {
+   "feature": "pair_replogle_product_times_additive_squ_e705",
+   "delta": -0.0003496446971419376
+  },
+  {
+   "feature": "pair_replogle_product_clipped_e706",
+   "delta": -0.001485610320414943
+  },
+  {
+   "feature": "ppi_weighted_pair_replogle_product_e707",
+   "delta": -0.0014882137596359257
+  },
+  {
+   "feature": "pair_target_coexpression_difference_e708",
+   "delta": -0.0003393683519861135
+  },
+  {
+   "feature": "random_fourier_additive_pair_product_e710",
+   "delta": -0.00206899742312161
+  },
+  {
+   "feature": "ppi_neighbor_target_replogle_sum_e714",
+   "delta": -0.00023085916069520707
+  },
+  {
+   "feature": "additive_times_target_coexpression_e717",
+   "delta": -0.0012057814356554175
+  },
+  {
+   "feature": "random_fourier_additive_replogle_product_e728",
+   "delta": -0.0005428812716343767
+  }
+ ],
+ "failed_features": [
+  {
+   "experiment_id": "EXP_0021",
+   "feature": "coexpr_times_additive_e21",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR+FEV depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0030",
+   "feature": "pair_interaction_deviation_e30",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR+FEV depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0057",
+   "feature": "replogle_target_magnitude_pair_e57",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0060",
+   "feature": "pair_additivity_departure_residual_e60",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR+FEV depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0070",
+   "feature": "random_target_projection_e70",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: rt_w4_r2/worktrees/_server/genemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cac"
+  },
+  {
+   "experiment_id": "EXP_0091",
+   "feature": "ppi_replogle_weighted_distance_e91",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0108",
+   "feature": "signed_ppi_proximity_e94_e108",
+   "stage": "guard",
+   "reason": "iteration over a set of objects (line 52) not allowed: hash() and id() differ between processes (str hashes are salted per process, id() is a memory address), and so does the order of a set of objects"
+  },
+  {
+   "experiment_id": "EXP_0129",
+   "feature": "replogle_coexpression_residual_e129",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0132",
+   "feature": "coexpression_rank_x_additive_e132",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/andres"
+  },
+  {
+   "experiment_id": "EXP_0143",
+   "feature": "replogle_additive_profile_correlation_e143",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: ns), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w4_r2/worktre"
+  },
+  {
+   "experiment_id": "EXP_0155",
+   "feature": "replogle_profile_similarity_e146_e155",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: _r2/worktrees/_server/genemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) i"
+  },
+  {
+   "experiment_id": "EXP_0156",
+   "feature": "ppi_neighbor_replogle_magnitude_e147_e156",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0168",
+   "feature": "additive_x_coexpression_rank_e168",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: y\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/an"
+  },
+  {
+   "experiment_id": "EXP_0170",
+   "feature": "random_tanh_replogle_profile_projection_e170",
+   "stage": "experiment",
+   "reason": "IndexError: index 112 is out of bounds for axis 0 with size 112"
+  },
+  {
+   "experiment_id": "EXP_0174",
+   "feature": "additive_response_rank_e174",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0185",
+   "feature": "random_nonlinear_projection_current_e185",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0193",
+   "feature": "additive_response_normalized_e193",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: server/genemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache el"
+  },
+  {
+   "experiment_id": "EXP_0234",
+   "feature": "replogle_weighted_coexpression_e234",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0236",
+   "feature": "geneset_replogle_enrichment_e236",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0262",
+   "feature": "additive_times_ppi_distance_e262",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0265",
+   "feature": "replogle_profile_corr_with_additive_e265",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0266",
+   "feature": "ppi_neighbor_replogle_abs_mean_e266",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0289",
+   "feature": "replogle_coexpression_ppi_weighted_e289",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0291",
+   "feature": "target_expression_times_replogle_coexpre_e291",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0295",
+   "feature": "ppi_additive_propagation_times_coexpress_e295",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts:           Path(args.cache) if args.cache else None)\n  File \"/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w4_r2/worktrees/_server/gen"
+  },
+  {
+   "experiment_id": "EXP_0297",
+   "feature": "additive_response_rank_e297",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0298",
+   "feature": "target_control_expression_mean_rank_e298",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR+FEV depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0305",
+   "feature": "signed_replogle_coexpression_squared_e305",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0312",
+   "feature": "additive_times_target_expr_times_replogl_e312",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: e 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/andresarr"
+  },
+  {
+   "experiment_id": "EXP_0314",
+   "feature": "signed_replogle_coexpression_rank_e296_e314",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0315",
+   "feature": "ppi_shortest_path_additive_propagation_e_e315",
+   "stage": "experiment",
+   "reason": "KeyError: 'weighted_target_coexpression_e58'"
+  },
+  {
+   "experiment_id": "EXP_0317",
+   "feature": "random_projection_additive_replogle_e317",
+   "stage": "experiment",
+   "reason": "KeyError: 'weighted_target_coexpression_e58'"
+  },
+  {
+   "experiment_id": "EXP_0318",
+   "feature": "abs_additive_response_sqrt_e318",
+   "stage": "experiment",
+   "reason": "ValueError: could not broadcast input array from shape (112,2083) into shape (119,2083)"
+  },
+  {
+   "experiment_id": "EXP_0324",
+   "feature": "pair_target_coexpression_difference_e324",
+   "stage": "experiment",
+   "reason": "KeyError: 'weighted_target_coexpression_e58'"
+  },
+  {
+   "experiment_id": "EXP_0325",
+   "feature": "additive_times_target_pair_coexpression_e325",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: ine.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Use"
+  },
+  {
+   "experiment_id": "EXP_0326",
+   "feature": "min_ppi_shortest_path_to_target_e326",
+   "stage": "experiment",
+   "reason": "KeyError: 'weighted_target_coexpression_e58'"
+  },
+  {
+   "experiment_id": "EXP_0327",
+   "feature": "neighbor_replogle_delta_mean_e327",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0328",
+   "feature": "ppi_neighbor_geneset_overlap_fraction_e328",
+   "stage": "experiment",
+   "reason": "KeyError: 'weighted_target_coexpression_e58'"
+  },
+  {
+   "experiment_id": "EXP_0331",
+   "feature": "random_fourier_additive_targetexpr_e331",
+   "stage": "experiment",
+   "reason": "KeyError: 'weighted_target_coexpression_e58'"
+  },
+  {
+   "experiment_id": "EXP_0337",
+   "feature": "ppi_neighbor_weighted_replogle_count_e337",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0368",
+   "feature": "additive_response_rank_e368",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0372",
+   "feature": "target_signed_replogle_weighted_coexpres_e372",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0385",
+   "feature": "random_fourier_network_features_e385",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0392",
+   "feature": "coexpression_replogle_product_e392",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0393",
+   "feature": "target_expression_replogle_product_e393",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0395",
+   "feature": "additive_response_rank_e395",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: enemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)"
+  },
+  {
+   "experiment_id": "EXP_0403",
+   "feature": "random_fourier_all_features_e403",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0404",
+   "feature": "target_ppi_neighbor_replogle_mean_e404",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0405",
+   "feature": "target_coexpr_times_replogle_e405",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0406",
+   "feature": "weighted_geneset_similarity_e406",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0408",
+   "feature": "target_expr_times_replogle_e408",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0416",
+   "feature": "ppi_neighbor_replogle_coexpression_e416",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0422",
+   "feature": "ppi_neighbor_count_high_replogle_e422",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: ees/_server/genemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cac"
+  },
+  {
+   "experiment_id": "EXP_0423",
+   "feature": "target_geneset_high_replogle_enrichment_e423",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0435",
+   "feature": "ppi_replogle_propagation_squared_e435",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0440",
+   "feature": "additive_times_replogle_target_sum_e431_e440",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: ila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  F"
+  },
+  {
+   "experiment_id": "EXP_0443",
+   "feature": "target_expression_times_replogle_delta_e_e443",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0459",
+   "feature": "additive_response_binned_by_replogle_e459",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0474",
+   "feature": "random_projection_all_features_e460_e474",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0478",
+   "feature": "additive_times_target_coexpression_e478",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: .py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/"
+  },
+  {
+   "experiment_id": "EXP_0487",
+   "feature": "random_fourier_all_features_e487",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0494",
+   "feature": "replogle_ppi_propagation_times_target_su_e494",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0496",
+   "feature": "additive_times_pair_target_coexpression_e496",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: emila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n "
+  },
+  {
+   "experiment_id": "EXP_0509",
+   "feature": "ppi_neighbor_high_replogle_count_e509",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0519",
+   "feature": "random_fourier_all_features_e519",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0537",
+   "feature": "coexpression_replogle_propagation_e537",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0538",
+   "feature": "additive_response_binned_by_replogle_mag_e538",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: orman_ds_addstart_w4_r2/worktrees/_server/genemila/pipeline.py\", line 313, in smoke\n    a = np.asarray(cls().compute(ctx, perts, dict(cls.params)), dtype=np.float64)\n "
+  },
+  {
+   "experiment_id": "EXP_0548",
+   "feature": "random_fourier_all_features_e548",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0549",
+   "feature": "ppi_replogle_sum_e550_e549",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0550",
+   "feature": "gene_replogle_delta_e551_e550",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0551",
+   "feature": "pair_replogle_delta_max_e552_e551",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts:  in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/andresarriaga/D"
+  },
+  {
+   "experiment_id": "EXP_0552",
+   "feature": "pair_replogle_delta_min_e553_e552",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: r2/worktrees/_server/genemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if"
+  },
+  {
+   "experiment_id": "EXP_0553",
+   "feature": "additive_times_gene_replogle_e554_e553",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0558",
+   "feature": "ppi_neighbor_replogle_sum_e558",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0559",
+   "feature": "pair_replogle_delta_minmax_e559",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0568",
+   "feature": "additive_response_normalized_by_target_v_e568",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: eline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/U"
+  },
+  {
+   "experiment_id": "EXP_0572",
+   "feature": "random_fourier_all_features_e572",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0575",
+   "feature": "additive_times_replogle_product_e575",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: orktrees/_server/genemila/pipeline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if arg"
+  },
+  {
+   "experiment_id": "EXP_0577",
+   "feature": "pair_ppi_distance_e577",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR+FEV depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0579",
+   "feature": "ppi_replogle_propagation_decay_e579",
+   "stage": "guard",
+   "reason": "top-level Try statement not allowed"
+  },
+  {
+   "experiment_id": "EXP_0615",
+   "feature": "random_projection_additive_ppi_e615",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0622",
+   "feature": "additive_times_target_coexpression_e622",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: peline.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/"
+  },
+  {
+   "experiment_id": "EXP_0624",
+   "feature": "weighted_geneset_overlap_e624",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0628",
+   "feature": "ppi_graph_embedding_e628",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE non-deterministic output; label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p)); output depends on the"
+  },
+  {
+   "experiment_id": "EXP_0634",
+   "feature": "pair_replogle_delta_geomean_e701_e634",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: NaN/inf values"
+  },
+  {
+   "experiment_id": "EXP_0635",
+   "feature": "pair_replogle_delta_diff_e702_e635",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0640",
+   "feature": "random_fourier_top_features_e705_e640",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0649",
+   "feature": "additive_response_per_target_e649",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0658",
+   "feature": "additive_times_pair_replogle_delta_produ_e658",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: ne.py\", line 393, in main\n    r = smoke(args.feature, Path(args.public), Path(args.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/User"
+  },
+  {
+   "experiment_id": "EXP_0659",
+   "feature": "pair_target_ppi_shortest_path_e659",
+   "stage": "guard",
+   "reason": "iteration over a set of objects (line 59) not allowed: hash() and id() differ between processes (str hashes are salted per process, id() is a memory address), and so does the order of a set of objects"
+  },
+  {
+   "experiment_id": "EXP_0677",
+   "feature": "signed_geneset_overlap_replogle_e677",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: NaN/inf values"
+  },
+  {
+   "experiment_id": "EXP_0678",
+   "feature": "pair_replogle_product_ppi_distance_e678",
+   "stage": "guard",
+   "reason": "iteration over a set of objects (line 74) not allowed: hash() and id() differ between processes (str hashes are salted per process, id() is a memory address), and so does the order of a set of objects"
+  },
+  {
+   "experiment_id": "EXP_0682",
+   "feature": "random_fourier_ppi_additive_e682",
+   "stage": "experiment",
+   "reason": "KeyError: 'pair_replogle_delta_product_e361'"
+  },
+  {
+   "experiment_id": "EXP_0687",
+   "feature": "ppi_weighted_pair_replogle_product_e687",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0689",
+   "feature": "pair_signed_replogle_coexpression_produc_e689",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0690",
+   "feature": "ppi_propagated_pair_replogle_product_e690",
+   "stage": "experiment",
+   "reason": "KeyError: 'pair_replogle_delta_product_e361'"
+  },
+  {
+   "experiment_id": "EXP_0691",
+   "feature": "replogle_weighted_pair_geneset_overlap_e691",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0694",
+   "feature": "random_fourier_additive_pair_product_e694",
+   "stage": "experiment",
+   "reason": "KeyError: 'pair_replogle_delta_product_e361'"
+  },
+  {
+   "experiment_id": "EXP_0695",
+   "feature": "random_fourier_additive_pair_product_e695",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: s.plugins), out,\n              Path(args.cache) if args.cache else None)\n  File \"/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w4_r2/"
+  },
+  {
+   "experiment_id": "EXP_0696",
+   "feature": "pair_coexpression_asymmetry_e696",
+   "stage": "experiment",
+   "reason": "KeyError: 'pair_replogle_delta_product_e361'"
+  },
+  {
+   "experiment_id": "EXP_0697",
+   "feature": "pair_target_ppi_distance_e697",
+   "stage": "experiment",
+   "reason": "KeyError: 'pair_replogle_delta_product_e361'"
+  },
+  {
+   "experiment_id": "EXP_0701",
+   "feature": "ppi_pair_replogle_product_propagation_e701",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: NaN/inf values"
+  },
+  {
+   "experiment_id": "EXP_0702",
+   "feature": "random_fourier_additive_pair_product_e702",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AHR depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0709",
+   "feature": "replogle_sum_times_additive_e709",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: NaN/inf values"
+  },
+  {
+   "experiment_id": "EXP_0716",
+   "feature": "pair_replogle_product_ppi_neighbor_jacca_e716",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  }
+ ],
+ "surprising_results": [
+  "nn_response_e15 made the model worse (-0.0119) despite a linear model being able to ignore it (overfitting or scale issue)",
+  "additive_times_target_expression_varianc_e217 made the model worse (-0.0194) despite a linear model being able to ignore it (overfitting or scale issue)",
+  "ppi_additive_prop_times_target_expr_e498 made the model worse (-0.0155) despite a linear model being able to ignore it (overfitting or scale issue)"
+ ],
+ "generalization_query_only": [
+  {
+   "experiment_id": "EXP_0729",
+   "kind": "ensemble",
+   "members": [
+    "EXP_0715",
+    "EXP_0724",
+    "EXP_0643"
+   ],
+   "visible_score": 0.6507256466361327,
+   "query_only_score": 0.7201354523261274,
+   "gap": -0.06940980568999466,
+   "query_only_pearson_delta": 0.7201354523261274,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.007829787056273277,
+     "cellforge_pcc": 0.9829325925568022,
+     "cellforge_r2": 0.9626847105470421,
+     "cellforge_mse_de": 0.17345235508304532,
+     "cellforge_pcc_de": 0.9034922929279149,
+     "cellforge_r2_de": 0.7530489766040827,
+     "cellforge_mse_deset": 0.028245325024373345,
+     "cellforge_pcc_deset": 0.9509209845254522,
+     "cellforge_r2_deset": 0.8864208638250657,
+     "cellforge_n_perts_deset": 62,
+     "vcworld_de_accuracy": 0.7181187085171723,
+     "vcworld_de_precision": 0.5940233236151603,
+     "vcworld_de_recall": 0.5161144408006333,
+     "vcworld_de_f1": 0.5523350800547009,
+     "vcworld_de_auroc": 0.7334096330763679,
+     "vcworld_de_auprc": 0.5580375545475501,
+     "vcworld_dir_accuracy": 0.9363564401221305,
+     "vcworld_dir_precision": 0.8591299949418311,
+     "vcworld_dir_recall": 0.7998587238050389,
+     "vcworld_dir_f1": 0.8284355566394342,
+     "vcworld_dir_auroc": 0.9643247945298693,
+     "vcworld_dir_auprc": 0.8942374696135781,
+     "vcworld_n_de_pairs": 44215
+    },
+    "val2": {
+     "cellforge_mse": 0.005402395893168986,
+     "cellforge_pcc": 0.988568917106442,
+     "cellforge_r2": 0.9744198613113412,
+     "cellforge_mse_de": 0.10826687731452089,
+     "cellforge_pcc_de": 0.9372568837303398,
+     "cellforge_r2_de": 0.8429480204184739,
+     "cellforge_mse_deset": 0.026903794935371258,
+     "cellforge_pcc_deset": 0.9473840203765214,
+     "cellforge_r2_deset": 0.8701894117577694,
+     "cellforge_n_perts_deset": 56,
+     "vcworld_de_accuracy": 0.7526832864686921,
+     "vcworld_de_precision": 0.5397753219472098,
+     "vcworld_de_recall": 0.563536965227894,
+     "vcworld_de_f1": 0.5514002705686607,
+     "vcworld_de_auroc": 0.758491386988135,
+     "vcworld_de_auprc": 0.5240993394772595,
+     "vcworld_dir_accuracy": 0.948445744072214,
+     "vcworld_dir_precision": 0.8915824915824916,
+     "vcworld_dir_recall": 0.8441185846350016,
+     "vcworld_dir_f1": 0.8672015719665956,
+     "vcworld_dir_auroc": 0.9730599180740367,
+     "vcworld_dir_auprc": 0.9244210760568434,
+     "vcworld_n_de_pairs": 31462
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.558524274562509,
+     "overlap_at_50": 0.35010989010989,
+     "overlap_at_100": 0.3540042513532941,
+     "overlap_at_200": 0.39566812313556304,
+     "overlap_at_500": 0.4928592327587178,
+     "precision_at_N": 0.4384662625788581,
+     "precision_at_50": 0.3492063492063491,
+     "precision_at_100": 0.3531746031746032,
+     "precision_at_200": 0.3938095238095239,
+     "precision_at_500": 0.48209523809523797,
+     "de_spearman_sig": 0.17299152689748648,
+     "de_direction_match": 0.8930079014734074,
+     "de_spearman_lfc_sig": 0.6017460658262018,
+     "de_sig_genes_recall": 0.7866022700097375,
+     "de_nsig_counts_real": 757.6031746031746,
+     "de_nsig_counts_pred": 1352.6349206349207,
+     "pr_auc": 0.5330651469300911,
+     "roc_auc": 0.7022657761916147,
+     "pearson_delta": 0.7058419814658543,
+     "mse": 0.00877152644984779,
+     "mae": 0.06226752172150309,
+     "mse_delta": 0.00877152640180337,
+     "mae_delta": 0.06226752172150309,
+     "discrimination_score_l1": 0.7437641723356012,
+     "discrimination_score_l2": 0.7548500881834218,
+     "discrimination_score_cosine": 0.7840765936004033,
+     "pearson_edistance": 0.42945639300886307,
+     "clustering_agreement": 0.16110821104300393
+    },
+    "val2": {
+     "overlap_at_N": 0.48863659769351553,
+     "overlap_at_50": 0.33083601001129204,
+     "overlap_at_100": 0.32782064143448275,
+     "overlap_at_200": 0.3630054785272146,
+     "overlap_at_500": 0.44416876168203945,
+     "precision_at_N": 0.3523108135417181,
+     "precision_at_50": 0.3235714285714287,
+     "precision_at_100": 0.3175,
+     "precision_at_200": 0.3503571428571429,
+     "precision_at_500": 0.4215357142857143,
+     "de_spearman_sig": 0.5100746861204539,
+     "de_direction_match": 0.9026809927832558,
+     "de_spearman_lfc_sig": 0.6130336564896265,
+     "de_sig_genes_recall": 0.8042121693133127,
+     "de_nsig_counts_real": 611.7678571428571,
+     "de_nsig_counts_pred": 1393.3214285714287,
+     "pr_auc": 0.447285560215572,
+     "roc_auc": 0.6982661740880696,
+     "pearson_delta": 0.6840699307088342,
+     "mse": 0.006223417974459673,
+     "mae": 0.0546142239389675,
+     "mse_delta": 0.006223417974459673,
+     "mae_delta": 0.05461422387244446,
+     "discrimination_score_l1": 0.7633928571428571,
+     "discrimination_score_l2": 0.7895408163265307,
+     "discrimination_score_cosine": 0.7315051020408164,
+     "pearson_edistance": 0.5137303426061698,
+     "clustering_agreement": 0.3940463953513946
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0715",
+   "kind": "new_feature",
+   "members": null,
+   "visible_score": 0.6506136991882857,
+   "query_only_score": 0.7199819305118111,
+   "gap": -0.06936823132352543,
+   "query_only_pearson_delta": 0.7199819305118111,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.007825977871364374,
+     "cellforge_pcc": 0.9829447666842533,
+     "cellforge_r2": 0.9626992624073963,
+     "cellforge_mse_de": 0.17277576777100445,
+     "cellforge_pcc_de": 0.9036874268489449,
+     "cellforge_r2_de": 0.7538899681515431,
+     "cellforge_mse_deset": 0.028281435466608013,
+     "cellforge_pcc_deset": 0.9509827872584973,
+     "cellforge_r2_deset": 0.8862261114606045,
+     "cellforge_n_perts_deset": 62,
+     "vcworld_de_accuracy": 0.718034885581693,
+     "vcworld_de_precision": 0.5946314712287791,
+     "vcworld_de_recall": 0.5125409928757209,
+     "vcworld_de_f1": 0.5505429633408643,
+     "vcworld_de_auroc": 0.7318909983097577,
+     "vcworld_de_auprc": 0.5563415493680809,
+     "vcworld_dir_accuracy": 0.9355874703155038,
+     "vcworld_dir_precision": 0.8510320815717484,
+     "vcworld_dir_recall": 0.8057452319284201,
+     "vcworld_dir_f1": 0.8277697145621674,
+     "vcworld_dir_auroc": 0.9642507637102017,
+     "vcworld_dir_auprc": 0.8929917940766406,
+     "vcworld_n_de_pairs": 44215
+    },
+    "val2": {
+     "cellforge_mse": 0.005390014419844988,
+     "cellforge_pcc": 0.9885716360320129,
+     "cellforge_r2": 0.9744781302245835,
+     "cellforge_mse_de": 0.1077181696566918,
+     "cellforge_pcc_de": 0.9374503944757627,
+     "cellforge_r2_de": 0.8435389624389418,
+     "cellforge_mse_deset": 0.026941166336144816,
+     "cellforge_pcc_deset": 0.9476351093614587,
+     "cellforge_r2_deset": 0.8704897513426681,
+     "cellforge_n_perts_deset": 56,
+     "vcworld_de_accuracy": 0.7530776352787875,
+     "vcworld_de_precision": 0.5409291013761044,
+     "vcworld_de_recall": 0.5584832496344797,
+     "vcworld_de_f1": 0.5495660333098756,
+     "vcworld_de_auroc": 0.7566297756038064,
+     "vcworld_de_auprc": 0.5213198442211906,
+     "vcworld_dir_accuracy": 0.9479689784501939,
+     "vcworld_dir_precision": 0.8849410592727877,
+     "vcworld_dir_recall": 0.8495377749442142,
+     "vcworld_dir_f1": 0.8668781003496788,
+     "vcworld_dir_auroc": 0.9730591903618611,
+     "vcworld_dir_auprc": 0.9234363185459867,
+     "vcworld_n_de_pairs": 31462
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.5567466719466774,
+     "overlap_at_50": 0.3466178266178267,
+     "overlap_at_100": 0.35427429876619865,
+     "overlap_at_200": 0.3948084429372585,
+     "overlap_at_500": 0.49153983719884076,
+     "precision_at_N": 0.43941764186526433,
+     "precision_at_50": 0.3457142857142858,
+     "precision_at_100": 0.35349206349206347,
+     "precision_at_200": 0.3934126984126985,
+     "precision_at_500": 0.4814603174603175,
+     "de_spearman_sig": 0.1626678834791667,
+     "de_direction_match": 0.8926411689582249,
+     "de_spearman_lfc_sig": 0.6004202424349914,
+     "de_sig_genes_recall": 0.7851447341408729,
+     "de_nsig_counts_real": 757.6031746031746,
+     "de_nsig_counts_pred": 1347.3333333333333,
+     "pr_auc": 0.5318837217631512,
+     "roc_auc": 0.7020812679398445,
+     "pearson_delta": 0.705789842894153,
+     "mse": 0.008774601684380618,
+     "mae": 0.06233925549756913,
+     "mse_delta": 0.008774601669597721,
+     "mae_delta": 0.06233925549756913,
+     "discrimination_score_l1": 0.7447719828672212,
+     "discrimination_score_l2": 0.7540942302847067,
+     "discrimination_score_cosine": 0.7845804988662132,
+     "pearson_edistance": 0.429021804474882,
+     "clustering_agreement": 0.12997927275637713
+    },
+    "val2": {
+     "overlap_at_N": 0.48783074082971367,
+     "overlap_at_50": 0.32583601001129203,
+     "overlap_at_100": 0.3274634985773398,
+     "overlap_at_200": 0.3621126213843574,
+     "overlap_at_500": 0.4430345632437496,
+     "precision_at_N": 0.3537049819588298,
+     "precision_at_50": 0.3182142857142858,
+     "precision_at_100": 0.3169642857142857,
+     "precision_at_200": 0.34946428571428567,
+     "precision_at_500": 0.4209285714285715,
+     "de_spearman_sig": 0.48811415940421476,
+     "de_direction_match": 0.9017096941547845,
+     "de_spearman_lfc_sig": 0.6112927778168663,
+     "de_sig_genes_recall": 0.8030576742231517,
+     "de_nsig_counts_real": 611.7678571428571,
+     "de_nsig_counts_pred": 1389.75,
+     "pr_auc": 0.4464319517264787,
+     "roc_auc": 0.6984152831449739,
+     "pearson_delta": 0.6838664593441146,
+     "mse": 0.006219307089590335,
+     "mae": 0.05464134272187948,
+     "mse_delta": 0.0062193070729595745,
+     "mae_delta": 0.05464134265535644,
+     "discrimination_score_l1": 0.7598852040816327,
+     "discrimination_score_l2": 0.788265306122449,
+     "discrimination_score_cosine": 0.7321428571428573,
+     "pearson_edistance": 0.5100527496358536,
+     "clustering_agreement": 0.4071114305463771
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0724",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.6505892246610171,
+   "query_only_score": 0.7200939672693102,
+   "gap": -0.06950474260829309,
+   "query_only_pearson_delta": 0.7200939672693102,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.007835972049058613,
+     "cellforge_pcc": 0.9829247997079851,
+     "cellforge_r2": 0.9626560718222843,
+     "cellforge_mse_de": 0.17381723690839723,
+     "cellforge_pcc_de": 0.9033712270641898,
+     "cellforge_r2_de": 0.75260637889525,
+     "cellforge_mse_deset": 0.02824585705904758,
+     "cellforge_pcc_deset": 0.9508815646501034,
+     "cellforge_r2_deset": 0.886446746386428,
+     "cellforge_n_perts_deset": 62,
+     "vcworld_de_accuracy": 0.71854544346143,
+     "vcworld_de_precision": 0.5945356326615416,
+     "vcworld_de_recall": 0.5177428474499605,
+     "vcworld_de_f1": 0.5534883158645536,
+     "vcworld_de_auroc": 0.7337562053943048,
+     "vcworld_de_auprc": 0.5579571367140448,
+     "vcworld_dir_accuracy": 0.9363112066040936,
+     "vcworld_dir_precision": 0.8611959287531806,
+     "vcworld_dir_recall": 0.7969154697433483,
+     "vcworld_dir_f1": 0.8278097101626514,
+     "vcworld_dir_auroc": 0.9642259626275732,
+     "vcworld_dir_auprc": 0.8944858565333184,
+     "vcworld_n_de_pairs": 44215
+    },
+    "val2": {
+     "cellforge_mse": 0.005408652593600215,
+     "cellforge_pcc": 0.988562580325587,
+     "cellforge_r2": 0.9743888974387139,
+     "cellforge_mse_de": 0.10852473444444953,
+     "cellforge_pcc_de": 0.9371547999129088,
+     "cellforge_r2_de": 0.8426662398027666,
+     "cellforge_mse_deset": 0.026902588587386967,
+     "cellforge_pcc_deset": 0.9472420403388103,
+     "cellforge_r2_deset": 0.8699196469942062,
+     "cellforge_n_perts_deset": 56,
+     "vcworld_de_accuracy": 0.7526232768671559,
+     "vcworld_de_precision": 0.5394418210437099,
+     "vcworld_de_recall": 0.5664293433348166,
+     "vcworld_de_f1": 0.5526062823653447,
+     "vcworld_de_auroc": 0.7589272095102574,
+     "vcworld_de_auprc": 0.5233769582753093,
+     "vcworld_dir_accuracy": 0.9488271565698303,
+     "vcworld_dir_precision": 0.8945854483925549,
+     "vcworld_dir_recall": 0.842684093082563,
+     "vcworld_dir_f1": 0.8678594878529219,
+     "vcworld_dir_auroc": 0.97287587650084,
+     "vcworld_dir_auprc": 0.9247051591476065,
+     "vcworld_n_de_pairs": 31462
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.5584494636699975,
+     "overlap_at_50": 0.3504273504273503,
+     "overlap_at_100": 0.35289314024218293,
+     "overlap_at_200": 0.39542265518517705,
+     "overlap_at_500": 0.49304929041372214,
+     "precision_at_N": 0.4384261492338881,
+     "precision_at_50": 0.3495238095238094,
+     "precision_at_100": 0.3520634920634921,
+     "precision_at_200": 0.3937301587301589,
+     "precision_at_500": 0.48241269841269846,
+     "de_spearman_sig": 0.18787129605423894,
+     "de_direction_match": 0.8928043100413331,
+     "de_spearman_lfc_sig": 0.6020561711376021,
+     "de_sig_genes_recall": 0.7866741126691358,
+     "de_nsig_counts_real": 757.6031746031746,
+     "de_nsig_counts_pred": 1354.7619047619048,
+     "pr_auc": 0.5331568088520912,
+     "roc_auc": 0.7020158896423174,
+     "pearson_delta": 0.7058078606450369,
+     "mse": 0.008775453752143279,
+     "mae": 0.06225855743128156,
+     "mse_delta": 0.008775453752143279,
+     "mae_delta": 0.062258557490413154,
+     "discrimination_score_l1": 0.7437641723356012,
+     "discrimination_score_l2": 0.7538422776518017,
+     "discrimination_score_cosine": 0.7845804988662132,
+     "pearson_edistance": 0.42950620802483014,
+     "clustering_agreement": 0.16878850997155934
+    },
+    "val2": {
+     "overlap_at_N": 0.48832472492928874,
+     "overlap_at_50": 0.32869315286843487,
+     "overlap_at_100": 0.32674921286305414,
+     "overlap_at_200": 0.3628269070986431,
+     "overlap_at_500": 0.44344309487182987,
+     "precision_at_N": 0.3519220766480161,
+     "precision_at_50": 0.32178571428571434,
+     "precision_at_100": 0.31642857142857145,
+     "precision_at_200": 0.3501785714285715,
+     "precision_at_500": 0.4206785714285715,
+     "de_spearman_sig": 0.5110913639449716,
+     "de_direction_match": 0.9081360732003984,
+     "de_spearman_lfc_sig": 0.6136228059129791,
+     "de_sig_genes_recall": 0.8042789070715531,
+     "de_nsig_counts_real": 611.7678571428571,
+     "de_nsig_counts_pred": 1393.9107142857142,
+     "pr_auc": 0.44703955057549827,
+     "roc_auc": 0.697692131324409,
+     "pearson_delta": 0.684037732226508,
+     "mse": 0.006226655156102164,
+     "mae": 0.05460294143163732,
+     "mse_delta": 0.006226655160259854,
+     "mae_delta": 0.05460294143163732,
+     "discrimination_score_l1": 0.7649872448979593,
+     "discrimination_score_l2": 0.7901785714285714,
+     "discrimination_score_cosine": 0.7305484693877552,
+     "pearson_edistance": 0.5158389546034596,
+     "clustering_agreement": 0.3940463953513946
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0643",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.650183321819935,
+   "query_only_score": 0.7202965802017385,
+   "gap": -0.07011325838180349,
+   "query_only_pearson_delta": 0.7202965802017385,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.007834771913701617,
+     "cellforge_pcc": 0.9829260158773142,
+     "cellforge_r2": 0.9626643874738222,
+     "cellforge_mse_de": 0.17383814794665475,
+     "cellforge_pcc_de": 0.9033873262540436,
+     "cellforge_r2_de": 0.7525539926219994,
+     "cellforge_mse_deset": 0.028221878459169028,
+     "cellforge_pcc_deset": 0.9508907323999318,
+     "cellforge_r2_deset": 0.8865439229277546,
+     "cellforge_n_perts_deset": 62,
+     "vcworld_de_accuracy": 0.7183701773236099,
+     "vcworld_de_precision": 0.5938251493289892,
+     "vcworld_de_recall": 0.519393870858306,
+     "vcworld_de_f1": 0.5541212238200945,
+     "vcworld_de_auroc": 0.7335797745820737,
+     "vcworld_de_auprc": 0.557341276075573,
+     "vcworld_dir_accuracy": 0.9364242903991858,
+     "vcworld_dir_precision": 0.8635956493921945,
+     "vcworld_dir_recall": 0.7945608664939957,
+     "vcworld_dir_f1": 0.8276411797167207,
+     "vcworld_dir_auroc": 0.9642340110320621,
+     "vcworld_dir_auprc": 0.8946463041409343,
+     "vcworld_n_de_pairs": 44215
+    },
+    "val2": {
+     "cellforge_mse": 0.0054153140632193725,
+     "cellforge_pcc": 0.988570988323873,
+     "cellforge_r2": 0.9743604888933514,
+     "cellforge_mse_de": 0.10859688940394008,
+     "cellforge_pcc_de": 0.9371539837862567,
+     "cellforge_r2_de": 0.8425931479822611,
+     "cellforge_mse_deset": 0.02688820545426909,
+     "cellforge_pcc_deset": 0.9472680137064484,
+     "cellforge_r2_deset": 0.8701103701638934,
+     "cellforge_n_perts_deset": 56,
+     "vcworld_de_accuracy": 0.7521089088539881,
+     "vcworld_de_precision": 0.5383734249713631,
+     "vcworld_de_recall": 0.5676689339520692,
+     "vcworld_de_f1": 0.5526332075004642,
+     "vcworld_de_auroc": 0.7585431570208127,
+     "vcworld_de_auprc": 0.5231726268369415,
+     "vcworld_dir_accuracy": 0.9486046659462208,
+     "vcworld_dir_precision": 0.8958014618391977,
+     "vcworld_dir_recall": 0.8399744979279566,
+     "vcworld_dir_f1": 0.866990211400839,
+     "vcworld_dir_auroc": 0.9728909433068426,
+     "vcworld_dir_auprc": 0.9246724927163494,
+     "vcworld_n_de_pairs": 31462
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.5584645164859362,
+     "overlap_at_50": 0.34661782661782653,
+     "overlap_at_100": 0.3528931402421829,
+     "overlap_at_200": 0.3951051948677166,
+     "overlap_at_500": 0.4927362981221139,
+     "precision_at_N": 0.4382328888690167,
+     "precision_at_50": 0.34571428571428564,
+     "precision_at_100": 0.352063492063492,
+     "precision_at_200": 0.3933333333333333,
+     "precision_at_500": 0.48215873015873006,
+     "de_spearman_sig": 0.18232442033507767,
+     "de_direction_match": 0.8928368073557756,
+     "de_spearman_lfc_sig": 0.6025439241989711,
+     "de_sig_genes_recall": 0.7882566120124956,
+     "de_nsig_counts_real": 757.6031746031746,
+     "de_nsig_counts_pred": 1358.1904761904761,
+     "pr_auc": 0.533370972211252,
+     "roc_auc": 0.7020803750294503,
+     "pearson_delta": 0.7059034346824601,
+     "mse": 0.008771830973851065,
+     "mae": 0.062247794062372235,
+     "mse_delta": 0.008771830973851065,
+     "mae_delta": 0.062247794180635425,
+     "discrimination_score_l1": 0.7432602670697913,
+     "discrimination_score_l2": 0.7545981355505167,
+     "discrimination_score_cosine": 0.7840765936004033,
+     "pearson_edistance": 0.4297232645611156,
+     "clustering_agreement": 0.16878850997155934
+    },
+    "val2": {
+     "overlap_at_N": 0.4877110252831142,
+     "overlap_at_50": 0.32676854969383173,
+     "overlap_at_100": 0.3273246096884509,
+     "overlap_at_200": 0.3623308753526114,
+     "overlap_at_500": 0.4429289464720726,
+     "precision_at_N": 0.35153014109057484,
+     "precision_at_50": 0.32,
+     "precision_at_100": 0.3175,
+     "precision_at_200": 0.3501785714285715,
+     "precision_at_500": 0.4205357142857143,
+     "de_spearman_sig": 0.5124752207518587,
+     "de_direction_match": 0.9026136676102532,
+     "de_spearman_lfc_sig": 0.6139200602710889,
+     "de_sig_genes_recall": 0.8039994804023067,
+     "de_nsig_counts_real": 611.7678571428571,
+     "de_nsig_counts_pred": 1395.892857142857,
+     "pr_auc": 0.4474489074651141,
+     "roc_auc": 0.697997340270625,
+     "pearson_delta": 0.6842713445158941,
+     "mse": 0.006231028160462821,
+     "mae": 0.05464410788512656,
+     "mse_delta": 0.0062310281770935816,
+     "mae_delta": 0.05464410788512656,
+     "discrimination_score_l1": 0.7653061224489797,
+     "discrimination_score_l2": 0.7901785714285714,
+     "discrimination_score_cosine": 0.7305484693877552,
+     "pearson_edistance": 0.5151404951709007,
+     "clustering_agreement": 0.3940463953513946
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0003",
+   "kind": "baseline",
+   "members": null,
+   "visible_score": 0.6313169891186857,
+   "query_only_score": 0.7125920757739331,
+   "gap": -0.08127508665524741,
+   "query_only_pearson_delta": 0.7125920757739331,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.008158541383071675,
+     "cellforge_pcc": 0.9825186427334032,
+     "cellforge_r2": 0.9612893456814773,
+     "cellforge_mse_de": 0.16286330805465146,
+     "cellforge_pcc_de": 0.908939075136236,
+     "cellforge_r2_de": 0.7638566440351032,
+     "cellforge_mse_deset": 0.027764648556714216,
+     "cellforge_pcc_deset": 0.9511714847173875,
+     "cellforge_r2_deset": 0.8855022750224933,
+     "cellforge_n_perts_deset": 62,
+     "vcworld_de_accuracy": 0.7015065267585671,
+     "vcworld_de_precision": 0.5519058203671688,
+     "vcworld_de_recall": 0.6064910098382902,
+     "vcworld_de_f1": 0.5779123519713802,
+     "vcworld_de_auroc": 0.7317712875708641,
+     "vcworld_de_auprc": 0.5582979928101561,
+     "vcworld_dir_accuracy": 0.9350672848580799,
+     "vcworld_dir_precision": 0.8318187182816004,
+     "vcworld_dir_recall": 0.8297621850718154,
+     "vcworld_dir_f1": 0.8307891789945187,
+     "vcworld_dir_auroc": 0.9628631423131866,
+     "vcworld_dir_auprc": 0.8873176754498778,
+     "vcworld_n_de_pairs": 44215
+    },
+    "val2": {
+     "cellforge_mse": 0.005897568631886841,
+     "cellforge_pcc": 0.9879164775328905,
+     "cellforge_r2": 0.9722114708545961,
+     "cellforge_mse_de": 0.10157863005339843,
+     "cellforge_pcc_de": 0.9411594512618892,
+     "cellforge_r2_de": 0.846266496815894,
+     "cellforge_mse_deset": 0.027587174768980517,
+     "cellforge_pcc_deset": 0.9570415421248218,
+     "cellforge_r2_deset": 0.871153035629013,
+     "cellforge_n_perts_deset": 56,
+     "vcworld_de_accuracy": 0.7246588025512654,
+     "vcworld_de_precision": 0.4921632340994887,
+     "vcworld_de_recall": 0.6547263365329604,
+     "vcworld_de_f1": 0.5619237274264827,
+     "vcworld_de_auroc": 0.7600944623738858,
+     "vcworld_de_auprc": 0.5268665018798978,
+     "vcworld_dir_accuracy": 0.9460301315873116,
+     "vcworld_dir_precision": 0.8664317745035234,
+     "vcworld_dir_recall": 0.8622888109658909,
+     "vcworld_dir_f1": 0.8643553283272088,
+     "vcworld_dir_auroc": 0.9696545225046319,
+     "vcworld_dir_auprc": 0.9156659228182613,
+     "vcworld_n_de_pairs": 31462
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.5569368124186218,
+     "overlap_at_50": 0.32126984126984137,
+     "overlap_at_100": 0.3420960074126495,
+     "overlap_at_200": 0.38989100424832646,
+     "overlap_at_500": 0.4911869215726993,
+     "precision_at_N": 0.43455401700413643,
+     "precision_at_50": 0.32126984126984137,
+     "precision_at_100": 0.3422222222222222,
+     "precision_at_200": 0.3896825396825397,
+     "precision_at_500": 0.4824126984126984,
+     "de_spearman_sig": 0.23372621734615248,
+     "de_direction_match": 0.8919100948723233,
+     "de_spearman_lfc_sig": 0.5904133463958323,
+     "de_sig_genes_recall": 0.8066191081254125,
+     "de_nsig_counts_real": 757.6031746031746,
+     "de_nsig_counts_pred": 1404.3174603174602,
+     "pr_auc": 0.5318773652945304,
+     "roc_auc": 0.7043461993759328,
+     "pearson_delta": 0.6992525420491658,
+     "mse": 0.009059974465460058,
+     "mae": 0.06384752371481486,
+     "mse_delta": 0.009059974487634405,
+     "mae_delta": 0.06384752383307805,
+     "discrimination_score_l1": 0.7785336356764929,
+     "discrimination_score_l2": 0.7853363567649283,
+     "discrimination_score_cosine": 0.7734945830183926,
+     "pearson_edistance": 0.430295129722641,
+     "clustering_agreement": 0.14751530157867856
+    },
+    "val2": {
+     "overlap_at_N": 0.4804259935241842,
+     "overlap_at_50": 0.2960175736961452,
+     "overlap_at_100": 0.3108593479764787,
+     "overlap_at_200": 0.34820897203662915,
+     "overlap_at_500": 0.433618894187776,
+     "precision_at_N": 0.348960032193913,
+     "precision_at_50": 0.2967857142857144,
+     "precision_at_100": 0.30910714285714286,
+     "precision_at_200": 0.3434821428571429,
+     "precision_at_500": 0.41878571428571437,
+     "de_spearman_sig": 0.5569159044857814,
+     "de_direction_match": 0.9021269985348471,
+     "de_spearman_lfc_sig": 0.5888678915630463,
+     "de_sig_genes_recall": 0.8234878205857802,
+     "de_nsig_counts_real": 611.7678571428571,
+     "de_nsig_counts_pred": 1438.0,
+     "pr_auc": 0.4430853377300408,
+     "roc_auc": 0.7021716537770314,
+     "pearson_delta": 0.6767959981890661,
+     "mse": 0.006657480869242656,
+     "mae": 0.05709822070119636,
+     "mse_delta": 0.006657480869242656,
+     "mae_delta": 0.05709822070119636,
+     "discrimination_score_l1": 0.8131377551020408,
+     "discrimination_score_l2": 0.8198341836734695,
+     "discrimination_score_cosine": 0.7193877551020409,
+     "pearson_edistance": 0.5255565348998308,
+     "clustering_agreement": 0.3770262390784826
+    }
+   }
+  }
+ ],
+ "compute_efficiency": {
+  "experiments_per_hour": 1673.27,
+  "planner_experiments_per_hour": 1338.02,
+  "mean_cpu_s_per_experiment": 2.17,
+  "gain_per_cpu_hour": 0.057140762159485756,
+  "gain_per_usd": 0.014090775003626757,
+  "cost_per_completed_experiment_usd": 0.0024498335813953487
+ },
+ "reproduction_command": "python reproduce.py --run /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w4_r2 --experiment EXP_0715"
+}

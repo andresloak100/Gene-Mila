@@ -1,0 +1,50 @@
+2026-10-11T22:52:00Z started (seed 2, then seed 3 in place of seed 1; block_b2_run.sh md5 abf9af19703ca4a2ceda2d7dfc79d65e)
+ok: a DeepSeek key is in the environment (not shown)
+ok: block not stopped, no STOP file, norman_ds_addstart_w4_r2 does not exist, no lab run or driver running
+ok: the control and norman_ds_addstart_w4_r0 finished and passed their checks
+ok: code ce1b53043125cad78d060d1155e5ffe6efab5c0a, the recorded commit, clean
+ok: external knowledge replogle2022_k562 only, md5 d9eff528143dcd4d72c87393df724084, the same files as the control's
+command: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python run_research.py --minutes 20 --workers 4 --dataset norman --planner-provider deepseek --planner-model deepseek-v4-pro --worker-provider deepseek --worker-model deepseek-flash --run-dir /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w4_r2 --set run.seed=2 --set budget.ledger=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite --set budget.cumulative_usd.deepseek=48 --set budget.max_total_usd=1.0 --set budget.max_planner_usd=1.5 --no-watchdog
+ok: planner 'deepseek:deepseek-v4-pro'
+ok: planner.fallback []
+ok: workers 'deepseek:deepseek-flash'
+ok: escalation ''
+ok: dataset, data_dir ('norman', '/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman')
+ok: minutes, workers, seed (20.0, 4, 2)
+ok: continue_from None
+ok: budget.ledger '/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite'
+ok: caps: ledger, workers, planner (48, 1.0, 1.5)
+ok: DeepSeek ledger $41.026295 <= $45.50
+run: code ce1b530431, split split_a391fa9e7b4eccb7, 1202.7 s, seed 2, knowledge ['replogle2022_k562'] (norman_control_addstart_w4_r0: ['replogle2022_k562']), planner deepseek:deepseek-v4-pro used ['deepseek:deepseek-v4-pro'], mixed False, exhausted_at_min None
+cost by the run: workers $0.592, planner $0.777
+selected EXP_0715 (ridge, 16 features, alpha 100.0) visible 0.6506136991882857; reported start EXP_0003 0.6313169891186857
+start (best modelled baseline, the planner's default parent): EXP_0007 baseline_ridge_additive visible 0.6365
+best baseline overall (lab.best(), what the exploit engine refines; an analytic one gives it nothing until beaten): EXP_0007 baseline_ridge_additive ridge visible 0.6365
+first planner proposal: EXP_0014 parent EXP_0007 baseline_ridge_additive
+ok: stop rule passed: rc 0, not killed, $1.369457 by the ledger, planner unchanged
+RUN_DONE rc=0
+ok: a DeepSeek key is in the environment (not shown)
+ok: block not stopped, no STOP file, norman_ds_addstart_w4_r3 does not exist, no lab run or driver running
+ok: the control and norman_ds_addstart_w4_r2 finished and passed their checks
+ok: code ce1b53043125cad78d060d1155e5ffe6efab5c0a, the recorded commit, clean
+ok: external knowledge replogle2022_k562 only, md5 d9eff528143dcd4d72c87393df724084, the same files as the control's
+command: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python run_research.py --minutes 20 --workers 4 --dataset norman --planner-provider deepseek --planner-model deepseek-v4-pro --worker-provider deepseek --worker-model deepseek-flash --run-dir /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w4_r3 --set run.seed=3 --set budget.ledger=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite --set budget.cumulative_usd.deepseek=48 --set budget.max_total_usd=1.0 --set budget.max_planner_usd=1.5 --no-watchdog
+ok: planner 'deepseek:deepseek-v4-pro'
+ok: planner.fallback []
+ok: workers 'deepseek:deepseek-flash'
+ok: escalation ''
+ok: dataset, data_dir ('norman', '/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman')
+ok: minutes, workers, seed (20.0, 4, 3)
+ok: continue_from None
+ok: budget.ledger '/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite'
+ok: caps: ledger, workers, planner (48, 1.0, 1.5)
+ok: DeepSeek ledger $42.395752 <= $45.50
+run: code ce1b530431, split split_a391fa9e7b4eccb7, 1231.0 s, seed 3, knowledge ['replogle2022_k562'] (norman_control_addstart_w4_r0: ['replogle2022_k562']), planner deepseek:deepseek-v4-pro used ['deepseek:deepseek-v4-pro'], mixed False, exhausted_at_min None
+cost by the run: workers $0.543, planner $0.651
+selected EXP_0625 (ridge, 11 features, alpha 300000.0) visible 0.6495994618112505; reported start EXP_0003 0.6147895171649029
+start (best modelled baseline, the planner's default parent): EXP_0007 baseline_ridge_additive visible 0.6197
+best baseline overall (lab.best(), what the exploit engine refines; an analytic one gives it nothing until beaten): EXP_0007 baseline_ridge_additive ridge visible 0.6197
+first planner proposal: EXP_0014 parent EXP_0007 baseline_ridge_additive
+ok: stop rule passed: rc 0, not killed, $1.194029 by the ledger, planner unchanged
+RUN_DONE rc=0
+2026-10-11T23:39:23Z finished: seeds 2 and 3 passed; B2's readings are next
