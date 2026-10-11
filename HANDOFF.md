@@ -20,22 +20,22 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (20:55):** B1's third repeat, `runs/norman_ds_from_n2_w4_r3` (seed 3, code 076282c, from the worktree
-`~/Documents/Mila/Gene-Mila/gene-mila-076282c`), started 20:48 UTC with the ledger at $36.83; it ends about 21:09.
-The main checkout is at d0fb635 (437 tests pass there). The first two repeats ended cleanly with their planner
-unchanged and are read with the amended tools (plan amendment of 20:30 UTC): `runs/norman_ds_from_n2_w4_r1` ($1.436;
-selected EXP_0681, 13 features, 0.719 sealed; against its start +0.0004 ± 0.0011, 27 of 56; against the additive rule
-+0.007 ± 0.008) and `runs/norman_ds_from_n2_w4_r2` ($1.425; one malformed planner reply skipped, 59 rounds; selected
-EXP_0729, 23 features, 0.726 sealed; against its start +0.007 ± 0.003, 36 of 56; against the additive rule +0.013 ±
-0.006, 38 of 56; both pass the per-run rule, while the arm reading also counts run-to-run spread and the gene-
-clustering ratio, 1.34 on r2's additive comparison). The readings,
-`docs/results/norman_b1_r1_sealed_reading{,_amended}.md` and `norman_b1_r2_sealed_reading.md`, come to GitHub with
-r3's. Exact next steps, in order: when r3 has ended, check the stop rule (failed, over $2.00, or planner.mixed), read
-it into `docs/results/norman_b1_r3_sealed_reading.md`, then `tools/arm_reading.py rule --against start` (the primary
-reading) and `--against additive` over the three readings' JSON twins, and `tools/arm_reading.py combine` with
-members r1 to r3 against `runs/norman_control_replogle_w4_r0` and against `runs/norman_ds_from_n2_w4_r1:additive`
-(into `docs/results/norman_b1_arm_vs_start.md`, `norman_b1_arm_vs_additive.md`, `norman_b1_combined_vs_n2.md` and
-`norman_b1_combined_vs_additive.md`); then stop and report before B2 and B3. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+**On the Mac (21:30):** nothing running; STOP file in place; ledger $38.08 of the block's $48. B1 is finished and
+read (docs/NORMAN_PLAN.md section 8; the readings and the three runs' summaries are in draft PR #6, waiting for
+Andres to merge): the agents' search adds nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of
+the three repeats scores 0.723 sealed, +0.0041 ± 0.0011 over N2's selected model, not established over the additive
+rule; it is the delivered Norman model unless B2's combined model scores higher on the visible validation
+perturbations. Exact next steps, in order (B2 then B3, docs/PLAN_AFTER_N4.md; Andres said "continue" at 20:56 UTC):
+`git pull --ff-only` the main checkout to the lab branch head, which holds the B2 scripts in
+`docs/mac/block_after_n4/`, and pull nothing more until B3 has ended (every B2 and B3 run checks it runs on the
+commit the control records in `genemila_scale_logs/block_after_n4_b2b3_commit.txt`); `bash
+docs/mac/block_after_n4/block_b2_control.sh` (free, about 20 minutes); then, one at a time,
+`DEEPSEEK_API_KEY="$API_KEY" bash docs/mac/block_after_n4/block_b2_run.sh 0`, then `1`, then `2`, each only after the
+one before printed "stop rule passed"; a stop writes `genemila_scale_logs/block_after_n4_stopped.txt` and halts the
+block until the cause is written up; then B2's readings, then B3. Scripts pushed after the control has started (B2's
+readings, B3) are brought in without moving the checkout: `git fetch origin claude/autonomous-research-system-3k435s`
+and `git show origin/claude/autonomous-research-system-3k435s:docs/mac/block_after_n4/<script> >
+../genemila_scale_logs/<script>`, run from there. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). Two paid Norman runs today

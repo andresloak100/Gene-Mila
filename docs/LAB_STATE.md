@@ -145,7 +145,10 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    any result; amended 20:30 UTC: the gene-clustering ratio of the arm reading is now overlap-robust, since the
    leave-one-gene-out jackknife first specified counts a pair twice and reads about 1.41 where it should read 1).**
    B1: three repeats of N4 on its code 076282c (seeds 1 to 3; r1 started 19:16:54, $1.436, read: selected model
-   0.719 sealed, +0.0004 ± 0.0011 over its start, so its search added nothing; r2 started 20:13); N4 is not in the
+   0.719 sealed; r2 0.726, r3 0.711; the last ended about 21:08 UTC, ledger $38.08). B1's primary reading: the arm
+   against its start G −0.0000, SE 0.0071, no difference established, so the agents' search adds nothing; its
+   combined model scores 0.723 sealed, +0.0041 ± 0.0011 over N2's selected model (better on 38 of 56) and +0.010 ±
+   0.007 over the additive rule (not established); details in docs/NORMAN_PLAN.md section 8 and PR #6; N4 is not in the
    arm because its planner ran out at 18.7 of 20 minutes (the $34 cap bound; summary.json `planner.mixed`), so it
    is its own arm "(lost its planner)". B2: a free no-LLM control on the additive start, then three fresh DeepSeek
    runs from it. B3: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson

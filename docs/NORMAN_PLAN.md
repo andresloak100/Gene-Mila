@@ -497,5 +497,24 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   +0.00038 ± 0.00106, better on 27 of 56 sealed perturbations; against the additive baseline +0.007 ± 0.008, 32 of
   56; no difference established in either. Seed 1's search added nothing measurable, where seed 0 (N4) read +0.008 ±
   0.004. Read at 203a1bd; read again with the tools of the plan's amendment of 20:30 UTC (an overlap-robust gene-
-  clustering ratio replaces the jackknife, which counted each pair twice) before the arm is read. Second repeat r2
-  started 20:13 UTC.
+  clustering ratio replaces the jackknife, which counted each pair twice) before the arm is read.
+  **B1 result (all three repeats ended cleanly with their planner unchanged; read with the tools at d0fb635; the
+  readings and each run's summary are in PR #6, md5s in docs/mac/MD5SUMS_b1.txt).** r2 (seed 2, $1.425, one malformed
+  planner reply skipped): selected EXP_0729, 23 features, 0.726 sealed; against its start +0.0071 ± 0.0033 (36 of
+  56), against the additive baseline +0.0133 ± 0.0056 (38 of 56), both "selected better" by the per-run rule. r3
+  (seed 3, $1.254): selected EXP_0519, 21 features, 0.711 sealed; against its start −0.0075 ± 0.0079 (25 of 56, the
+  loss nearly all in the five pair_seen2 perturbations), against the additive baseline −0.0013 ± 0.0119. **Primary
+  reading, the arm over r1 to r3 against their starting model** (docs/results/norman_b1_arm_vs_start.md): G −0.0000,
+  SE 0.0071 (S 0.0057 after the overlap-robust ratios 1.35, 1.00 and 1.55; sd_g 0.0073), k 2.15; the runs differ in
+  sign, 88 of 168 perturbation-run pairs won: **no difference established; the agents' search adds nothing measurable
+  to its start.** Secondary: the arm against the additive baseline +0.0062, SE 0.0128, no difference established
+  (pair_seen1 +0.0133 with SE 0.0066, just under its threshold once inflated); the arm's selected models, mean ± sd
+  over the three runs, pearson_delta 0.7188 ± 0.0073, MSE_DE 0.1077 ± 0.0068, PCC_DE 0.9387 ± 0.0034, R²_DE 0.8465 ±
+  0.0083; on visible data the arm gains +0.0030 over its start in all three runs, which does not carry to the sealed
+  set. **The combined model** (the plain average of EXP_0681, EXP_0729 and EXP_0519;
+  docs/results/norman_b1_combined_vs_n2.md and _vs_additive.md): 0.723 sealed, against N2's selected model EXP_0198
+  +0.00410 ± 0.00113, better on 38 of 56 (A better; pair_seen1 +0.00305 ± 0.00144), against the additive baseline
+  +0.010 ± 0.007, 36 of 56 (no difference established). On the 63 visible validation perturbations alone, the score
+  that chooses the delivered model: combined 0.7801, N2 0.7746, additive 0.7259. N4 (+0.008 over its start, its own
+  arm) was one draw of a search whose mean contribution is about zero with a spread of 0.007 between seeds; averaging
+  the runs is what helps. The ledger went from $33.97 to $38.08 over the three repeats ($4.11, about $2 billed).
