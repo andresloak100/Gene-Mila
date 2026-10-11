@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 00:50 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 01:05 UTC.
 
 ## What this is
 
@@ -61,7 +61,7 @@ Sealed pearson_delta (Pearson correlation of predicted and measured expression c
 | agent arms, 1 / 4 / 8 / 16 workers (Opus planner) | 0.566 / 0.602 / 0.584 / 0.577 | docs/results/scaling.md |
 | Astra's two DeepSeek continuation campaigns (8 workers, 2 h each) | 0.599 to 0.602 | Astra's notes on the Mac |
 | best of any run | under 0.604 | |
-| noise ceiling (a perfect predictor, limited by cell sampling) | 0.89 to 0.90 | docs/results/ceiling_analysis.md |
+| noise ceiling (a perfect predictor, limited by cell sampling) | 0.89 (training) / 0.94 (visible validation) | docs/results/ceiling_analysis.md, docs/results/noise_ceiling.md |
 | transfer ceiling (best mix of other perturbations' responses, with hindsight) | 0.73 to 0.78 | same |
 
 Readings: only "4 workers beats 8" is significant (p = 0.01); cost rises linearly with workers; Opus and DeepSeek V4
@@ -81,9 +81,10 @@ held-out metrics; against the control with the hand-written transfer feature the
   among the 14 agent-derived runs 6 up, 8 down. More labels of the same kind do not help. Report on the Mac
   (genemila_scale_logs/refit_visible.md, md5 a324302d30d580e6718d9d7029c16e16), not yet pushed.
 - Averaging two runs' predictions (arm ensembles) gains 0.01 to 0.03 on the used sealed set; not a clean result.
-- Noise ceiling on the 17 visible validation perturbations (tools/noise_ceiling.py): 0.902; models reach 0.56 to 0.66
-  there. The largest gaps (XRN1, PSMD4, SOCS1, MARS) are knockdowns with no close relative among the training targets.
-  Report on the Mac (genemila_scale_logs/noise_ceiling.md, md5 16953a5bba9ae46c3399a542c5162dac), not yet pushed.
+- Noise ceiling on the 17 visible validation perturbations (tools/noise_ceiling.py with the cell counts from
+  tools/count_target_cells.py): 0.944 (docs/results/noise_ceiling.md; the first run's 0.902 used only the 300 stored
+  cells and was a lower bound); the 28 runs' selected models reach 0.56 to 0.66 there. The largest gaps (XRN1, PSMD4,
+  SOCS1, MARS) are knockdowns with no close relative among the training targets.
 - Feature count: three features match the twelve-feature model (0.577 against 0.583 out of fold); the pool is
   saturated by near-duplicates (docs/results/compact_model_curve.md).
 
@@ -105,7 +106,8 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    in-fold Lasso screening, a curator and a compact incumbent, never run on real data; it lacks the admission
    threshold, the second fold seed, the redundancy pre-check and the monitor. Plan: push Astra's branch, review and
    merge it into the lab branch, add the four missing rules, then audit every run with tools/feature_audit.py.
-3. **Reports to push from the Mac:** noise_ceiling.{md,json}, refit_visible.{md,json}.
+3. **Files to push from the Mac** (genemila_scale_logs/push_to_github.sh, Andres runs it): noise_ceiling.json,
+   refit_visible.{md,json}, the Mac's STATE.md and notes, adamson_cf_ncells.json, and Astra's two branches.
 
 ## Waiting on Andres
 
