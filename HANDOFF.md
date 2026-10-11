@@ -7,81 +7,134 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-05 01:50, by Claude ("Agent handoff" session), from the lab-code owner's
-replies up to 01:41 and the files committed under `docs/results/` on the integration branch.
+**Last updated:** 2026-10-11 16:00, by Claude ("Agent handoff" session), from `docs/LAB_STATE.md`
+(13:51) and the build thread up to 15:45. `docs/LAB_STATE.md` on the integration branch is the lab-code
+owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
+over this section where they disagree; this section is the short cross-agent view.
 
 **Active agents**
 
 | Agent | Since | Working on | Claim |
 |---|---|---|---|
-| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | regenerating the four results files with the fixed generators (free, on the Mac), then the collaborator summary, the Claude Doc and the results page | (predates claim issues) |
-| Astra (ChatGPT) | not started | Norman (section 8, item 4), once Andres hands it over | |
+| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | Norman 2019 (Andres chose "Claude now", 11 Oct 12:02): the paid Norman run started 15:34; after it, the folder move on the Mac, the push of the Mac-only reports and Astra's branches, then `docs/LAB_STATE.md` and `docs/NORMAN_PLAN.md` | (predates claim issues) |
+| Claude, "Repo description design" | 2026-10-04 | PR #1 (README), to be refreshed to today's results before it merges | |
+| Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (01:41):** nothing is running. Every paid Adamson run is finished: the 1/4/8/16-worker
-comparison (two seeds each), the planner check (`newcode_opus_w4_r0`/`_r1`, `newcode_ds_w4_r0`/`_r1`),
-the no-LLM controls, and tonight's `newcode_derule_opus_w4_r0` (01:07 to 01:29). 26 runs are in the
-tables. Adamson is not to be rerun; the next lever there is a new feature family or longer runs, and
-no paid run starts without Andres's own words.
+**On the Mac (15:45):** the paid Norman run `runs/norman_ds_replogle_w4_r0` (N3 in `docs/NORMAN_PLAN.md`
+section 6: DeepSeek planner `deepseek-v4-pro`, 4 workers, 20 minutes, the Replogle 2022 screen in the
+bundle, no warm start, `--set budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=2.2`) started
+at 15:34 on Andres's words and ends about 15:55; it spends the last $2.20 of the cap. Its sealed reading
+comes from `tools/sealed_reading.py` against the additive baseline. Start nothing else on the Mac while it
+runs. After it, the Mac session moves the lab out of `~/Documents/Loak-documents/` into
+`~/Documents/Mila/Gene-Mila/` (`gene-mila`, `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`;
+shortcuts stay at the old names, so paths recorded in past runs keep working), scans everything for
+key-shaped strings, and pushes Astra's two branches unchanged plus a branch `claude/mac-reports-2026-10-11`
+with the Mac-only reports (noise-ceiling and refit reports, the Replogle build report, the external
+leave-one-out JSON, the Replogle control runs' config, summary and analysis log, the feature-audit JSON
+and box, the N3 sealed reading, with an md5 list); the lab-code owner merges the reports into the
+integration branch. The code at `28a8a37` already names the new folder (`handoff_state.py`,
+`tools/scale_seq.sh`); `docs/LAB_STATE.md` (13:51) still names the old one.
 
-**Results (read the files, not this paragraph; the lab-code owner is still fixing two table cells that
-mixed the two score scales):** `docs/results/summary_for_collaborators.md` (the one-page account),
-`results_table.md` (CellForge's Table 1 layout), `scaling.md` (efficiency by arm) and
-`selection_replay.md`, all on the integration branch and regenerated from the run outputs. In words:
-every agent arm beats every baseline refit on the same split on the top-20 DE genes; more workers raised
-throughput, not the held-out score; the DE-aware selection rule `experiment.selection =
-pearson_delta+r2_top` was tested with one paid run in the exact setup of `newcode_opus_w4_r0` and did
-not help (sealed pearson_delta 0.584 vs 0.601, MSE_DE 0.116 vs 0.118, R²_DE 0.804 vs 0.802, finalist
-ridge alpha 17,000 vs 100 to 510), so the default rule stays and the plateau near 0.60 held-out is not a
-selection problem.
+**Results on Adamson (CellForge's seed-42 split; read the files):** tables over 28 runs in
+`docs/results/results_table.md` and `scaling.md`, the account in `docs/results/summary_for_collaborators.md`,
+the full picture in `docs/LAB_STATE.md`. Sealed pearson_delta: start 0.520; no-LLM control 0.553; agent
+arms 0.566 / 0.602 / 0.584 / 0.577 for 1 / 4 / 8 / 16 workers; best of any run without an external
+screen under 0.604; noise ceiling 0.94 on the visible validation set. Every lever tested since 5 Oct
+(more workers, longer runs, a DE-aware selection rule, a hand-written transfer feature, Astra's
+continuation campaigns, a learned target similarity, refitting on all visible labels, feature pruning)
+is closed: the limit is information about the targets, not search. The one lever with new information
+is an external K562 screen, Replogle 2022 (Andres chose it on 11 Oct), read as knowledge in the bundle:
+leave-one-out over the 50 training perturbations +0.072 ± 0.020 over gene-set kNN
+(`docs/results/external_loo_replogle2022_k562*.md`); no-LLM runs with the screen score 0.621, 0.638 and
+0.646 sealed (`control_replogle_w4_r0`, `control_replogle_from_opus_r0`, `control_replogle3_from_opus_r0`,
+one run each, their files on the push list). The 0.646 is the fourth look at a sealed set already scored
+for dozens of finalists across about 30 runs, so it is not established: Norman, or a fresh split, is the
+clean test. Against CellForge's reported Adamson row nothing is comparable (their evaluation code is
+unpublished, their split holds out guides rather than genes, their spreads exceed the differences), so
+nothing is reported as "beats CellForge" (`docs/LAB_STATE.md`, "Against CellForge"). Two reported models
+(in `scale_w8_r0` and `newcode_ds_w4_r0`) use an agent feature built on Python's salted `hash()`; the
+guard now refuses it (`3d7c519`) and their table rows need a footnote at the next regeneration
+(`docs/results/feature_audit_v3.md`).
 
-**DeepSeek ledger:** $10.25 at 2026-10-05 01:29, of the $15 cap ($4.75 left; the $14 stop leaves $3.75
-that a run may start on). Opus planner dollars are the Claude CLI's estimate of subscription usage, not
-a bill.
+**Norman 2019 (free steps done 11 Oct; `docs/NORMAN_PLAN.md` section 8,
+`docs/results/norman_sealed_reading.md`):** bundle built (231 perturbations, gene-grouped split
+`split_a391fa9e7b4eccb7`); the Replogle gate passes; the pre-specified leave-one-out shows the screen adds
+information on Norman too (+0.023 ± 0.006); but on the sealed set the no-LLM control with the screen
+scores 0.719 pearson_delta against 0.717 without it and 0.713 for the additive baseline: a null so far,
+neither control beats the additive baseline beyond its error, and selection overfits the perturbations it
+chooses on (+0.030 over the baseline on visible data). The paid run above is the first agent arm on Norman.
 
-**Claude usage:** one Claude Max window is shared by the Mac's Claude Code session, the cloud Claude
-threads and the Opus planner. About three 20-minute Opus-planned runs fit in a five-hour window, which
-resets roughly five hours after its first use. When it is exhausted, Opus-planned runs wait for the
-reset; everything else moves to the DeepSeek planner (AGENTS.md, "Money and usage").
+**DeepSeek ledger:** $31.78 before the Norman run (workers $22.85, planner $8.93; Astra's campaigns about
+$21.50), cap **$34** (Andres, 11 Oct 02:39: "we have a max of 34 for deep seek spend it as you think is
+best but we need to have a very good model"), passed as `--set budget.cumulative_usd.deepseek=34`; no paid
+run starts at a $33.50 ledger or above. After the Norman run the cap is spent: further paid work needs a
+new amount from Andres. Opus planner dollars are the Claude CLI's estimate of subscription usage, not a
+bill.
 
-**Code:** integration branch head `f006346`: `experiment.selection` (selection rules that also score
-the DE genes, default unchanged) and `tools/replay_selection.py` (a free, visible-data-only replay of
-selection rules), the planner failover chain `planner.fallback`, `handoff_state.py`, `--set
-run.data_dir`, `tools/scale_seq.sh`, and generators that keep one score scale across arms.
+**Claude usage:** one Claude Max window shared by the Mac's Claude Code session, the cloud Claude threads
+and the Opus planner; nearly spent on 11 Oct. When it is out, Opus-planned runs wait; everything else uses
+the DeepSeek planner (AGENTS.md, "Money and usage").
 
-**Open pull requests:** #1 (README and its checker, Claude), #2 (this file, AGENTS.md, CLAUDE.md).
+**The key:** `DEEPSEEK_API_KEY` is in no file on the Mac; the Claude session there passes it to each paid
+run as a process variable. Andres pasted it in chat again at 15:34 for the Norman run, so it must be
+rotated afterwards. From now on nobody asks him to paste it anywhere: he stores the rotated key himself in
+`~/.zshenv` on the Mac (`export DEEPSEEK_API_KEY=...`), and every agent reads it from the environment.
 
-**Next:** the lab-code owner finishes the regenerated tables, the collaborator summary, the Claude Doc
-and the team results page. A newly arriving agent takes Norman (section 8, item 4): the same Zenodo
-record, CellForge's split, the free control first, the DeepSeek-planned arm only after Andres approves
-an amount. Then Srivatsan, which needs his design decision on drug metadata first.
+**Code:** integration branch head `28a8a37` (361 tests pass at `3d7c519`): Norman 2019 (gene-grouped
+split, order-independent pair labels, additive baseline, CRISPRa-aware Replogle features, the `norman_v1`
+leave-one-out, `tools/sealed_reading.py`), the external-screen arm (`run.external_knowledge` labels the
+run; `tools/build_external_screen.py`, `tools/external_loo.py`), `tools/feature_audit.py`,
+`tools/refit_visible.py`, `tools/noise_ceiling.py`, `tools/time_to_best.py`, `tools/compact_model_curve.py`,
+reproducible feature runs (`PYTHONHASHSEED=0` in every experiment process; the guard refuses `hash()` and
+`id()` in new agent plugins), `pytest.ini`, and the Mac paths above. The repository is public since
+11 Oct: nothing secret goes into any branch, and every push from the Mac is scanned for key-shaped strings
+first.
 
-**Decisions to respect.** Andres's own: a $10 DeepSeek cap for the comparison runs (2026-10-04 00:04);
-no paid run without his word; "go, $15 cap" for the unattended paid sequence (2026-10-04 19:16); "Fix,
-then 1 run" and "go" (2026-10-04 23:21) and "continue wake it up" (2026-10-05 01:05) for the one paid
-confirmation run of the selection rule; CellForge's published rows marked not comparable; no 44-worker
-run; priorities as in section 8. Claude's, under his delegation: the $15 project total with the $14
-ledger stop; the default selection rule stays after the negative confirmation run; the lab-code owner
-maintains the protected benchmark, split and guard code.
+**Open pull requests:** #1 (README and its checker; needs today's results before it merges) and #2 (this
+file, AGENTS.md, CLAUDE.md; brought up to `28a8a37` on 11 Oct). On 11 Oct 15:44 the build thread asked
+Andres on a card whether to merge both; the merge waits on his answer. Andres merges, nobody else.
+
+**Next:** (1) the Norman run's sealed reading, recorded in `docs/LAB_STATE.md` and `docs/NORMAN_PLAN.md`;
+(2) the folder move, the push of the Mac-only reports and Astra's branches, and the reports' merge into
+the integration branch; (3) PR #1 and PR #2 merged on Andres's word; (4) the compact-model rules (Andres's
+ask, 11 Oct 00:32): push Astra's branch, review and merge its feature board, failure archive and curator
+into the lab, then add the admission threshold, the second fold seed, the redundancy pre-check and the
+monitor (`docs/LAB_STATE.md`, "In progress", item 2); (5) Srivatsan sci-Plex 3, which needs drug and dose
+ingestion and Andres's design decision first. An arriving agent that is not the lab-code owner starts
+nothing on the Mac while the Norman run and the move are in progress; free code work on (4) is open, claimed
+with an issue. The timeline given on 5 Oct (three datasets by 10 to 12 Oct) has slipped: Norman started on
+11 Oct, Srivatsan has not.
+
+**Decisions to respect.** Andres's own: the $34 DeepSeek cap with spending inside it delegated (11 Oct
+02:39); Replogle 2022 as the external screen (11 Oct); the compact-model rules (11 Oct 00:32); Norman to
+Claude, "Claude now" (11 Oct 12:02) and "download norman" (12:04); the paid run goes to Norman, not
+Adamson (started on his words, 15:34); the lab lives in `~/Documents/Mila/Gene-Mila` and everything goes
+up to GitHub (15:34 to 15:41); earlier: $10 for the comparison (4 Oct 00:04), "go, $15 cap" (4 Oct 19:16),
+"Fix, then 1 run" (4 Oct 23:21); CellForge's published rows marked not comparable; no 44-worker run.
+Claude's, under his delegation: the default selection rule stays; one full paid Norman run rather than two
+short ones; the lab-code owner maintains the protected benchmark, split and guard code.
 
 **Only Andres can (the blockers for any other agent):**
-- Rotate the DeepSeek key (it was pasted in a chat twice) and put it into the agents' environment:
-  `export DEEPSEEK_API_KEY=...` in `~/.zshenv` on the Mac, or the agent's own secret store. Today the
-  key is in no file on the Mac and the Claude session there passes it to each run as a process variable,
-  so until he does this only that session can start paid runs; any other agent can do free work only.
-- Give outside agents write access to the repository.
-- Merge PR #2.
-- Keep the Mac powered on and awake while anything runs.
+- Rotate the DeepSeek key after the Norman run and store it himself in `~/.zshenv` on the Mac. Until
+  then only the Mac's Claude session can start a paid run, and after this run the $34 cap is spent, so
+  any paid run also needs a new amount from him.
+- Answer the merge card for PR #1 and PR #2 (then merge them), and create a `main` branch.
+- Give outside agents write access to the repository (Astra's branches go up through the Mac session's
+  `gh` login, which is his).
+- Keep the Mac on mains power and awake while anything runs.
+- Answer the comment in the summary doc.
 
-Sections 7 to 9 below were written on 2026-10-04 while the comparison was still running; the files
-under `docs/results/` on the integration branch supersede their numbers.
+Sections 7 to 9 below were written on 4 Oct while the comparison was still running; `docs/LAB_STATE.md`
+and the files under `docs/results/` on the integration branch supersede their numbers and their plan.
 
 **Live sources** (check them; they beat this section when they disagree):
 
 | Question | Live source |
 |---|---|
-| Everything below in one command | `python handoff_state.py --runs ~/Documents/Loak-documents/gene-mila/runs --logs ~/Documents/Loak-documents/genemila_scale_logs` from any clone at the integration branch head (read-only; `--fetch` compares against the remote first, `--json` for machines; `--ledger FILE` if the shared ledger is elsewhere). Prints how far your clone is ahead of or behind the integration branch; every run directory with arm, workers, seed, code and state (finished; in progress with minutes to its deadline; killed before its summary; excluded `_contaminated` / `_interrupted`; planner changed or lost) and headline numbers; ledger totals per provider and role; a WARNING listing paid runs whose `budget.ledger` is not the shared ledger (their spend does not count toward the cap); live `run_research.py` processes; the STOP file; the head of `STATE.md` and the tail of `progress.md` |
-| What is running on the Mac, and what comes next there? | `~/Documents/Loak-documents/genemila_scale_logs/STATE.md` (what is running, every run directory and its status, open decisions, exact next commands; written on the Mac by whoever runs there), `tail -n 30 .../progress.md` (the driver's step log), `pgrep -fl run_research.py` |
-| How much DeepSeek money is spent? | `sqlite3 ~/Documents/Loak-documents/gene-mila/runs/spend_ledger.sqlite "SELECT provider, ROUND(SUM(cost_usd),2) FROM spend GROUP BY provider"` |
+| The whole state in one file | `docs/LAB_STATE.md` on the integration branch (the lab-code owner updates it at every milestone; newest state wins) |
+| Everything below in one command | `python handoff_state.py --runs ~/Documents/Mila/Gene-Mila/gene-mila/runs` from any clone at the integration branch head (read-only; since `28a8a37` it finds `genemila_scale_logs` beside the checkout or under `~/Documents/Mila/Gene-Mila`, else pass `--logs DIR`; `--fetch` compares against the remote first, `--json` for machines; `--ledger FILE` if the shared ledger is elsewhere). Prints how far your clone is ahead of or behind the integration branch; every run directory with arm, workers, seed, code and state (finished; in progress with minutes to its deadline; killed before its summary; excluded `_contaminated` / `_interrupted`; planner changed or lost) and headline numbers; ledger totals per provider and role; a WARNING listing paid runs whose `budget.ledger` is not the shared ledger (their spend does not count toward the cap); live `run_research.py` processes; the STOP file; the head of `STATE.md` and the tail of `progress.md` |
+| What is running on the Mac, and what comes next there? | `~/Documents/Mila/Gene-Mila/genemila_scale_logs/STATE.md` (what is running, every run directory and its status, open decisions, exact next commands; written on the Mac by whoever runs there), `tail -n 30 .../progress.md` (the driver's step log), `pgrep -fl run_research.py` |
+| How much DeepSeek money is spent? | `sqlite3 ~/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite "SELECT provider, ROUND(SUM(cost_usd),2) FROM spend GROUP BY provider"` |
 | What did a run find? | `runs/<run>/summary.md` and `summary.json` (`best`, `generalization_query_only`, `llm_usage`, `completed_by_proposer`, `split_id`) |
 | Who holds which task? | open issues titled `Claim:`, open pull requests |
 | What changed in the code? | `git log origin/claude/autonomous-research-system-3k435s` |
@@ -90,14 +143,14 @@ under `docs/results/` on the integration branch supersede their numbers.
 
 | What | Where |
 |---|---|
-| Repository (private) | `https://github.com/andresloak100/gene-mila` |
+| Repository (public since 2026-10-11, so nothing secret in any branch) | `https://github.com/andresloak100/gene-mila` |
 | Integration branch (pull requests go here; there is no `main` yet) | `claude/autonomous-research-system-3k435s` |
-| Main checkout on Andres's Mac: real data, runs (the key is stored nowhere on the Mac). **Don't touch its files or git state** | `~/Documents/Loak-documents/gene-mila` |
-| Its Python environment | `~/Documents/Loak-documents/gene-mila/.venv` |
+| Main checkout on Andres's Mac: real data, runs (the key is stored nowhere on the Mac). **Don't touch its files or git state** | `~/Documents/Mila/Gene-Mila/gene-mila` (moved there from `~/Documents/Mila/Gene-Mila/gene-mila` on 2026-10-11 after the paid Norman run; a shortcut stays at the old name) |
+| Its Python environment | `~/Documents/Mila/Gene-Mila/gene-mila/.venv` |
 | Data bundle in use (gitignored) | `data/adamson_cf/` in the main checkout |
 | Runs (gitignored) | `runs/<run>/` in the main checkout |
 | Shared spend ledger, cumulative across all runs | `runs/spend_ledger.sqlite` in the main checkout |
-| Comparison driver: state, progress, stop switch | `~/Documents/Loak-documents/genemila_scale_logs/` (`STATE.md`, `progress.md`; a file named `STOP` halts the driver after its current step; the driver script is `tools/scale_seq.sh` on the lab branch, no key inside) |
+| Comparison driver: state, progress, stop switch | `~/Documents/Mila/Gene-Mila/genemila_scale_logs/` (`STATE.md`, `progress.md`; a file named `STOP` halts the driver after its current step; the driver script is `tools/scale_seq.sh` on the lab branch, no key inside) |
 | Raw data | scPerturb archive on Zenodo, record 13350497: `https://zenodo.org/records/13350497/files/<file>?download=1` |
 | CellForge | paper arXiv 2508.02276; code `https://github.com/gersteinlab/CellForge` (it has no evaluation code; we rebuilt the metrics from the paper) |
 | Evaluation package | `https://github.com/ArcInstitute/cell-eval` |
@@ -132,16 +185,16 @@ dataset, record every assumption next to the bundle.
 On the Mac, with your own GitHub access:
 
 ```bash
-cd ~/Documents/Loak-documents
+cd ~/Documents/Mila/Gene-Mila
 git clone https://github.com/andresloak100/gene-mila.git gene-mila-<your-name>
 cd gene-mila-<your-name>
 git checkout -b <your-name>/<topic> origin/claude/autonomous-research-system-3k435s
 python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 # data: either point every run at the main checkout's bundle, read-only (runs write only into their
-# own run directory):   --set run.data_dir=$HOME/Documents/Loak-documents/gene-mila/data/adamson_cf
+# own run directory):   --set run.data_dir=$HOME/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf
 # or copy it once:
 mkdir -p data && cp -R ../gene-mila/data/adamson_cf data/     # a copy; never modify the original
-export LEDGER="$HOME/Documents/Loak-documents/gene-mila/runs/spend_ledger.sqlite"
+export LEDGER="$HOME/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite"
 nice -n 19 python -m pytest -q
 ```
 
@@ -158,7 +211,7 @@ Every script defaults to the newest run under `runs/`; pass `--run runs/<run>` t
 # free: scripted planner, mock workers (no LLM, no money); only when the Mac's driver is idle
 python run_research.py --dataset adamson_cf --minutes 5 --workers 2 \
   --planner-provider scripted --worker-provider mock --run-dir runs/<your-name>_smoke \
-  --set run.data_dir=$HOME/Documents/Loak-documents/gene-mila/data/adamson_cf   # or omit, with data/ copied
+  --set run.data_dir=$HOME/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf   # or omit, with data/ copied
 
 # paid: DeepSeek plans and implements; only with Andres's approval and amount, never next to another paid run
 # (a Claude-planned run, Claude sessions only while usage allows, uses --planner-provider claude_cli
@@ -290,7 +343,7 @@ is available, keep these settings and check `progress.md` first so nothing runs 
 - dataset `adamson_cf`, 20 minutes, the shared ledger, one paid run at a time, and the driver
   stopped (`pgrep -fl run_research.py` shows nothing) before you start;
 - run from your own clone checked out at the arm's code version, with
-  `--run-dir ~/Documents/Loak-documents/gene-mila/runs/<run name>` so the comparison's runs stay
+  `--run-dir ~/Documents/Mila/Gene-Mila/gene-mila/runs/<run name>` so the comparison's runs stay
   together; the main checkout's files and git state stay untouched;
 - the seed-1 repeats `scale_w8_r1` and `scale_w16_r1` run on code `2492e11` with the Opus planner,
   `--set run.seed=1`, worker caps $2 and $3 and `budget.cumulative_usd.deepseek=10`. They need the
@@ -307,7 +360,7 @@ is available, keep these settings and check `progress.md` first so nothing runs 
   environment or it halts; DeepSeek-only ledger gate at $14; a Claude CLI probe before each Opus-planned
   run, with the DeepSeek-planned runs first when the window is out; a contamination check that renames
   an old-code run whose planner fell back). Start it detached,
-  `nohup setsid caffeinate -i -s bash scale_seq.sh > ~/Documents/Loak-documents/genemila_scale_logs/driver.log 2>&1 &`,
+  `nohup setsid caffeinate -i -s bash scale_seq.sh > ~/Documents/Mila/Gene-Mila/genemila_scale_logs/driver.log 2>&1 &`,
   with the key as a process variable; it appends to `progress.md`, waits for any other lab run on the
   machine to finish before each start, and stops when a `STOP` file appears. Update `STATE.md` before
   and after.

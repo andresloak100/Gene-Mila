@@ -5,7 +5,8 @@ Astra (a ChatGPT agent), and any other coding agent. Whichever of them still has
 picks up the work where another stopped, so all of them follow the same rules and keep the same
 state. The rules are here. [`HANDOFF.md`](HANDOFF.md) holds the shared state (section 1, kept
 current by whoever is working), the paths and commands, and the open work. Read both, then
-`README.md`, `docs/ARCHITECTURE.md` and `configs/default.toml`.
+`docs/LAB_STATE.md` (the lab-code owner's full state, newest wins), `README.md`, `docs/ARCHITECTURE.md`
+and `configs/default.toml`.
 
 ## The project
 
@@ -29,7 +30,7 @@ repository: `HANDOFF.md` section 1, GitHub issues and pull requests.
 
 | Agent | Owns | Branches |
 |---|---|---|
-| Claude, "Autonomous research system" | the lab code, the runs on Andres's Mac, `docs/results/` | `claude/autonomous-research-system-3k435s`, the integration branch (there is no `main` yet) |
+| Claude, "Autonomous research system" | the lab code, the runs on Andres's Mac, `docs/results/`, `docs/LAB_STATE.md` | `claude/autonomous-research-system-3k435s`, the integration branch (there is no `main` yet) |
 | Claude, "Repo description design" | `README.md`, `docs/assets/`, the GitHub About box, `tools/readme_check.py` | `claude/repo-description-design-bro3vo` (draft PR #1) |
 | Other Claude sessions | the tasks Andres gives them | `claude/<topic>` |
 | Astra (ChatGPT) | the tasks Andres gives it | `astra/<topic>` |
@@ -45,17 +46,21 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   echo, log, commit or paste it, never write it to a file, never put it on a command line, and
   never ask anyone to send it to you. The code reads it from the environment
   (`genemila/providers/openai_compat.py`). The same goes for every other API key and GitHub token.
-  On the Mac the key is stored in no startup file (the write to `~/.zshenv` was refused): the
-  Claude session there passes it to each run as a process variable, so any other agent's paid run
-  needs Andres to put the rotated key into that agent's environment first.
+  On the Mac the key is in no file today: the Claude session there passes it to each run as a process
+  variable. Andres stores the rotated key himself in `~/.zshenv` on the Mac; nobody asks him to paste it
+  anywhere, and any other agent's paid run waits until the key is in that agent's environment. The
+  repository is public, so a pushed secret is published: scan what you push.
 - Never commit `data/`, `runs/`, `*.h5ad` or `.env` (all are in `.gitignore`; never `git add -f`).
 
 ### Money and usage
 
-- Every paid API call comes out of Andres's money. DeepSeek has a cumulative cap of **$15 for
-  the whole project**, enforced through the shared spend ledger, and runs stop at **$14**.
-  A paid run needs Andres's approval in his own words, with an amount. Runs with
-  `--planner-provider scripted --worker-provider mock` cost nothing and need no approval.
+- Every paid API call comes out of Andres's money. DeepSeek has a cumulative cap of **$34 for
+  the whole project** (Andres, 2026-10-11 02:39; it was $15 until then), enforced through the shared
+  spend ledger: every paid run passes `--set budget.cumulative_usd.deepseek=34`, and no paid run
+  starts once the ledger reads **$33.50** or more. Inside the cap the choice of what to spend on is
+  delegated to the lab-code owner; beyond it, Andres sets a new amount. Every paid run starts only on
+  Andres's own words. Runs with `--planner-provider scripted --worker-provider mock` cost nothing and
+  need no approval.
 - Always pass `--planner-provider` explicitly. The default planner is the Claude CLI (Opus),
   which uses Andres's Claude subscription. Since `9044ece` the lab never falls back to the
   scripted planner on its own: a run whose planner is unusable, with no usable entry in
@@ -86,7 +91,7 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 
 - The worker-scaling comparison runs there, when it runs, as a detached driver
   (`python handoff_state.py`, or `STATE.md` and `progress.md` under
-  `~/Documents/Loak-documents/genemila_scale_logs/` and `pgrep -fl run_research.py`, say whether one
+  `~/Documents/Mila/Gene-Mila/genemila_scale_logs/` and `pgrep -fl run_research.py`, say whether one
   is going; HANDOFF.md section 1 says what is planned). Don't kill the driver, don't create its
   `STOP` file, and don't touch `runs/scale_*`, `runs/newcode*` or that log directory (read them,
   nothing more) unless Andres asks.
@@ -96,7 +101,7 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   system; `gh` there is signed in as `andresloak100` with repo scope, so another agent working on
   the Mac should try to push.
 - Never edit files, commit, pull, check out or switch branches in the main checkout
-  `~/Documents/Loak-documents/gene-mila` unless you own the runs there (the "Autonomous research
+  `~/Documents/Mila/Gene-Mila/gene-mila` unless you own the runs there (the "Autonomous research
   system" session, or whoever Andres hands them to). The driver's next run uses whatever code is
   there. Everyone else works in their own clone (HANDOFF.md, section 4).
 - While the driver is running, start no other lab runs on the Mac: CPU contention would corrupt
