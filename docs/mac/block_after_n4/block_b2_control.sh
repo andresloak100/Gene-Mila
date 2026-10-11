@@ -4,6 +4,7 @@
 # steps 4 and 7) on the lab head, where a bundle with pairs starts from baseline_ridge_additive. It records the one
 # commit every B2 and B3 run uses. Free: no LLM is called and no key reaches it. Start it as  bash block_b2_control.sh
 # (B1_WRITTEN_UP=1 in front only once a B1 run that tripped the stop rule is written up in the repository).
+set +x
 M="$HOME/Documents/Mila/Gene-Mila/gene-mila"; L="$HOME/Documents/Mila/Gene-Mila/genemila_scale_logs"
 PY="$M/.venv/bin/python"; LEDGER="$M/runs/spend_ledger.sqlite"
 COMMIT_FILE="$L/block_after_n4_b2b3_commit.txt"; STOPPED="$L/block_after_n4_stopped.txt"
@@ -14,6 +15,7 @@ ok() { echo "ok: $*"; }
 cd "$M" || no "no checkout at $M"
 [ -e "$STOPPED" ] && no "the block is stopped ($STOPPED); write up the cause first"
 [ -e "$d" ] && no "$d exists; not overwriting"
+[ -e "$L/$n.log" ] && no "$L/$n.log exists; not overwriting"
 pgrep -f run_research.py > /dev/null && no "a lab run is running (pgrep -f run_research.py)"
 [ -e "$L/STOP" ] && no "the STOP file $L/STOP is present (it holds every lab run); remove it for this run only"
 pgrep -f scale_seq.sh > /dev/null && no "the scaling driver is running (pgrep -f scale_seq.sh)"
@@ -61,6 +63,8 @@ ok "DeepSeek ledger \$$spent (a free run leaves it as it is)"
 [ -e "$COMMIT_FILE" ] || echo "$head" > "$COMMIT_FILE"
 ok "B2 and B3 run on $head (recorded in $COMMIT_FILE)"
 echo "- $(date -u +%Y-%m-%dT%H:%MZ) $n started (code $(git rev-parse --short HEAD), free, DeepSeek ledger \$$spent)" >> "$L/progress.md"
+mkdir "$d" || no "$d appeared meanwhile"
+trap 'echo "$(date -u +%Y-%m-%dT%H:%MZ) $n: script interrupted before its checks; the run may still be going" >> "$STOPPED"; exit 4' HUP INT TERM
 "$PY" run_research.py --minutes 20 --workers 4 --dataset norman --worker-provider mock --planner-provider scripted \
   --run-dir "$d" --set run.seed=0 > "$L/$n.log" 2>&1
 rc=$?

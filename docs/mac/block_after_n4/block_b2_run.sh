@@ -6,6 +6,7 @@
 # $48; this run's workers $1.00 and planner $1.50, so it starts only at a ledger of $45.50 or less.
 SEED=$1
 case "$SEED" in 0|1|2) ;; *) echo "usage: DEEPSEEK_API_KEY=\"\$API_KEY\" bash block_b2_run.sh 0|1|2"; exit 1 ;; esac
+set +x
 M="$HOME/Documents/Mila/Gene-Mila/gene-mila"; L="$HOME/Documents/Mila/Gene-Mila/genemila_scale_logs"
 PY="$M/.venv/bin/python"; LEDGER="$M/runs/spend_ledger.sqlite"
 COMMIT_FILE="$L/block_after_n4_b2b3_commit.txt"; STOPPED="$L/block_after_n4_stopped.txt"
@@ -13,11 +14,12 @@ n=norman_ds_addstart_w4_r$SEED; d="$M/runs/$n"; ctl="$M/runs/norman_control_adds
 unset API_KEY  # the lab reads DEEPSEEK_API_KEY only; no second copy goes to its processes
 no() { unset DEEPSEEK_API_KEY; echo "NOT STARTED: $*"; exit 2; }
 ok() { echo "ok: $*"; }
-[ -n "$DEEPSEEK_API_KEY" ] || no "no DEEPSEEK_API_KEY in the environment"
+[ -n "${DEEPSEEK_API_KEY:+set}" ] || no "no DEEPSEEK_API_KEY in the environment"
 ok "a DeepSeek key is in the environment (not shown)"
 cd "$M" || no "no checkout at $M"
 [ -e "$STOPPED" ] && no "the block is stopped ($STOPPED); write up the cause first"
 [ -e "$d" ] && no "$d exists; not overwriting"
+[ -e "$L/$n.log" ] && no "$L/$n.log exists; not overwriting"
 pgrep -f run_research.py > /dev/null && no "a lab run is running (pgrep -f run_research.py)"
 [ -e "$L/STOP" ] && no "the STOP file $L/STOP is present (it holds every lab run); remove it for this run only"
 pgrep -f scale_seq.sh > /dev/null && no "the scaling driver is running (pgrep -f scale_seq.sh)"
@@ -72,6 +74,8 @@ spent=$(sqlite3 "$LEDGER" "select round(coalesce(sum(cost_usd),0),6) from spend 
 [ "$(echo "$spent <= 45.50" | bc)" = 1 ] || no "DeepSeek ledger \$$spent is above \$45.50 (or unreadable)"
 ok "DeepSeek ledger \$$spent <= \$45.50"
 echo "- $(date -u +%Y-%m-%dT%H:%MZ) $n started (code $(git rev-parse --short HEAD), DeepSeek ledger \$$spent)" >> "$L/progress.md"
+mkdir "$d" || no "$d appeared meanwhile"
+trap 'echo "$(date -u +%Y-%m-%dT%H:%MZ) $n: script interrupted before its checks; the run may still be going" >> "$STOPPED"; exit 4' HUP INT TERM
 "$PY" run_research.py "${args[@]}" > "$L/$n.log" 2>&1
 rc=$?
 unset DEEPSEEK_API_KEY
