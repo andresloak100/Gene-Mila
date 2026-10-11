@@ -54,6 +54,7 @@ from genemila.benchmark.evaluator import metric_values, paired_summary  # noqa: 
 from genemila.lab import open_run  # noqa: E402
 
 METRIC = "pearson_delta"
+STORED_KEYS = (METRIC, "cellforge_mse_de", "cellforge_pcc_de", "cellforge_r2_de")   # the run's own sealed scoring
 MIN_READ = 10   # a category with fewer sealed perturbations is reported, not read (NORMAN_PLAN.md section 3)
 EXPECTED = "the run with the external screen above the one without, pooled and on singles"  # NORMAN_PLAN.md s. 5
 
@@ -72,7 +73,10 @@ def _model(lab, rec: dict) -> dict:
     return {"experiment_id": rec["experiment_id"], "kind": rec["kind"], "model_type": rec.get("model_type"),
             "hypothesis_group": rec.get("hypothesis_group"), "alpha": rec.get("best_alpha"),
             "features": rec.get("feature_set_json"), "visible_score": rec.get("primary_score"),
-            "stored_sealed_pearson_delta": stored.get(METRIC), "sealed_before": bool(stored)}
+            "stored_sealed_pearson_delta": stored.get(METRIC), "sealed_before": bool(stored),
+            # the run's own end-of-run sealed scoring (Lab.query_only, with the comparable metrics that the paired
+            # query leaves out): what an arm reports as its selected models' mean ± sd
+            "stored_sealed": {k: stored.get(k) for k in STORED_KEYS} if stored else None}
 
 
 def _paired_query(lab_a, rec_a: dict, lab_b, rec_b: dict) -> dict:
@@ -92,33 +96,43 @@ def _paired_query(lab_a, rec_a: dict, lab_b, rec_b: dict) -> dict:
 
 def _cluster_ratio(lab_a, rec_a: dict, lab_b, rec_b: dict) -> dict | None:
     """How much sharing genes widens the paired standard error, estimated on visible labels only: on the visible
-    validation perturbations, the leave-one-gene-out jackknife standard error of the mean pearson_delta difference
-    (rec_a of lab_a minus rec_b of lab_b, both scored on lab_a's labels) over the plain paired standard error. A
-    perturbation of several genes leaves with each of them; on a bundle of single-gene perturbations the jackknife is
-    the plain standard error and the ratio is 1. docs/PLAN_AFTER_N4.md inflates a Norman run's sealed SE by it in the
-    arm reading. None when there are fewer than three genes or no spread."""
+    validation perturbations, with e the per-perturbation pearson_delta differences (rec_a of lab_a minus rec_b of
+    lab_b, both scored on lab_a's labels) less their mean, ratio = sqrt(sum of e_p * e_q over every ordered pair of
+    perturbations whose target genes overlap, p = q included, / sum of e_p^2): the overlap-robust variance of the mean
+    difference over the plain one. It is exactly 1 when no two perturbations share a gene (always on a bundle of
+    single-gene perturbations), and 0 when the overlap terms sum below zero (the arm reading inflates only above 1).
+    docs/PLAN_AFTER_N4.md, amendment of 2026-10-11 20:30 UTC; the leave-one-gene-out jackknife first specified there
+    counts a pair once per gene and exceeds 1 even for independent perturbations, so it is kept beside as
+    "jackknife_ratio", reported only. None with fewer than three perturbations or no spread."""
     sa, _ = lab_a.score_visible(lab_a.visible_predictions(rec_a["experiment_id"])[0], None)
     sb, _ = lab_a.score_visible(lab_b.visible_predictions(rec_b["experiment_id"])[0], None)
     va, vb = metric_values(sa, METRIC, lab_a.selection), metric_values(sb, METRIC, lab_a.selection)
     perts = [p for p in lab_a._val1.perts if p in va and p in vb]
     d = np.array([va[p] - vb[p] for p in perts], dtype=np.float64)
-    genes_of = {p: set(lab_a._targets.get(p) or [p]) for p in perts}
-    genes = sorted(set().union(*genes_of.values())) if perts else []
-    theta = []
-    for g in genes:
-        keep = np.array([g not in genes_of[p] for p in perts])
-        if keep.any():
-            theta.append(float(d[keep].mean()))
-    plain = float(d.std(ddof=1) / np.sqrt(len(d))) if len(d) > 1 else 0.0
-    if len(theta) < 3 or plain <= 0:
+    if len(d) < 3:
         return None
-    t = np.array(theta)
-    jack = float(np.sqrt((len(t) - 1) / len(t) * ((t - t.mean()) ** 2).sum()))
-    return {"ratio": jack / plain, "jackknife_se": jack, "plain_se": plain, "n_perts": len(perts), "n_genes": len(t)}
+    e = d - d.mean()
+    plain_ss = float((e ** 2).sum())
+    if plain_ss <= 0:
+        return None
+    genes_of = [set(lab_a._targets.get(p) or [p]) for p in perts]
+    overlap = np.array([[bool(gi & gj) for gj in genes_of] for gi in genes_of])
+    robust_ss = float(e @ overlap.astype(np.float64) @ e)
+    # the first estimator, reported only: delete each gene's perturbations, (G-1)/G * sum (theta_g - mean)^2
+    genes = sorted(set().union(*genes_of))
+    theta = np.array([d[[g not in gs for gs in genes_of]].mean() for g in genes
+                      if any(g not in gs for gs in genes_of)])
+    plain = float(d.std(ddof=1) / np.sqrt(len(d)))
+    jack = float(np.sqrt((len(theta) - 1) / len(theta) * ((theta - theta.mean()) ** 2).sum())) if len(theta) > 2 \
+        else None
+    return {"ratio": float(np.sqrt(max(0.0, robust_ss) / plain_ss)), "estimator": "overlap-robust",
+            "jackknife_ratio": None if jack is None else jack / plain, "n_perts": len(perts), "n_genes": len(genes),
+            "n_overlapping_pairs": int(overlap.sum() - len(perts))}
 
 
 def _planner(lab) -> dict | None:
-    """The run's planner record from its summary.json (configured, used, switches, mixed), None without one."""
+    """The run's planner record from its summary.json (configured, used, switches, mixed), None without one (a run
+    killed before its summary, or a summary written before planner records); read_run records which."""
     path = lab.run_dir / "summary.json"
     return json.loads(path.read_text()).get("planner") if path.exists() else None
 
@@ -163,6 +177,21 @@ def _start(lab) -> tuple[dict | None, str | None]:
     return rec, None
 
 
+def _source_model(lab) -> dict | None:
+    """For a continued run, the selected model of the run it continued (its experiment and alpha), which the run
+    re-fitted under its own seed as its start; None when that run cannot be opened here."""
+    try:
+        src = open_run(Path(lab.cfg["run"]["continue_from"]))
+    except (OSError, ValueError, KeyError):
+        return None
+    try:
+        rec = src.db.best()
+        return None if rec is None else {"run": src.run_dir.name, "experiment_id": rec["experiment_id"],
+                                         "alpha": rec.get("best_alpha"), "features": rec.get("feature_set_json")}
+    finally:
+        src.close()
+
+
 def _fresh_start(lab) -> tuple[dict | None, str | None]:
     """A fresh run's starting model, or None and why there is none: the built-in additive start
     (baseline_ridge_additive) when the run has it, the experiment the agents' first proposals build on (lab.py,
@@ -185,6 +214,7 @@ def read_run(lab) -> dict:
     or "fresh" (a reading written before fresh runs were read has no kind and is a warm start's)."""
     sel, add = _selected(lab), _additive(lab)
     out = {"run": lab.run_dir.name, "run_id": lab.run_id, "dataset": lab.dataset, "split_id": lab.split_id,
+           "bundle": str(Path(lab.data_dir).resolve()), "has_summary": (lab.run_dir / "summary.json").exists(),
            "selection": lab.selection, "external_knowledge": list(lab.cfg["run"].get("external_knowledge") or []),
            "hash_seed": lab.cfg["run"].get("hash_seed"), "base_commit": lab.base_commit,
            "run_queries": {"used": int(lab.oracle.used), "cap": int(lab.oracle.max_queries)},
@@ -203,6 +233,7 @@ def read_run(lab) -> dict:
     start, why = _start(lab) if warm else _fresh_start(lab)
     cont = {"kind": "warm_start" if warm else "fresh",
             "from": Path(lab.cfg["run"]["continue_from"]).name if warm else None,
+            "source": _source_model(lab) if warm else None,
             "start": None if start is None else _model(lab, start), "visible": None, "sealed": None,
             "cluster_ratio": None, "note": None}
     if start is None:
@@ -350,8 +381,9 @@ def _cat_mean(metrics: dict, cat: str) -> float | None:
     return (e.get(METRIC) or {}).get("mean")
 
 
-def _table(sealed: dict, visible: dict | None, a: str, b: str) -> list[str]:
-    """Pooled and per-category rows of one paired comparison, a minus b."""
+def _table(sealed: dict, visible: dict | None, a: str, b: str, visible_read: bool = True) -> list[str]:
+    """Pooled and per-category rows of one paired comparison, a minus b. visible_read=False marks the visible rows
+    "not read" (a comparison across runs whose folds differ)."""
     ma, mb, p = sealed["a"]["metrics"], sealed["b"]["metrics"], sealed["paired"]
     L = [f"| set | n | {a} | {b} | {a} − {b} (SE) | wins {a}/{b} | verdict |", "|---|---|---|---|---|---|---|"]
     L.append(f"| sealed, pooled | {p['n']} | {_f(ma.get(METRIC))} | {_f(mb.get(METRIC))} | {_diff(p)} | "
@@ -361,10 +393,10 @@ def _table(sealed: dict, visible: dict | None, a: str, b: str) -> list[str]:
                  f"{_wins(pc)} | {_verdict(pc, a, b, pc['n'])} |")
     if visible:
         L.append(f"| visible and out-of-fold, pooled | {visible['n']} | | | {_diff(visible)} | {_wins(visible)} | "
-                 f"{_verdict(visible, a, b)} |")
+                 f"{_verdict(visible, a, b) if visible_read else 'not read'} |")
         for cat, pc in (visible.get("by_category") or {}).items():
             L.append(f"| visible and out-of-fold, {cat} | {pc['n']} | | | {_diff(pc)} | {_wins(pc)} | "
-                     f"{_verdict(pc, a, b)} |")
+                     f"{_verdict(pc, a, b) if visible_read else 'not read'} |")
     return L
 
 
@@ -378,7 +410,7 @@ def _other_metrics(sealed: dict, a: str, b: str) -> str:
 
 def _planner_line(pl: dict | None) -> str:
     if not pl:
-        return ""
+        return " No planner record (no summary.json, or one written before planner records): no arm counts this run."
     if pl.get("mixed"):
         return (f" PLANNER CHANGED OR RAN OUT DURING THE RUN (used: {' -> '.join(pl.get('used') or []) or 'none'}"
                 + (f"; ran out at minute {pl['exhausted_at_min']}" if pl.get("exhausted_at_min") is not None else "")
@@ -389,9 +421,16 @@ def _planner_line(pl: dict | None) -> str:
 def _ratio_line(cr: dict | None) -> str:
     if not cr:
         return ""
-    return (f" Shared genes: on the visible validation perturbations the leave-one-gene-out jackknife SE is "
-            f"{cr['ratio']:.2f} times the plain paired SE ({cr['n_perts']} perturbations, {cr['n_genes']} genes); "
-            "the arm reading inflates the sealed SE by it when above 1.")
+    if "estimator" not in cr:   # a reading written at 203a1bd: the jackknife only
+        return (f" Shared genes (leave-one-gene-out jackknife, as first specified): {cr['ratio']:.2f} times the plain "
+                f"paired SE ({cr['n_perts']} perturbations, {cr['n_genes']} genes).")
+    jk = "" if cr.get("jackknife_ratio") is None else (
+        f"; the leave-one-gene-out jackknife first specified, which exceeds 1 even for independent pairs, gives "
+        f"{cr['jackknife_ratio']:.2f}")
+    return (f" Shared genes: on the visible validation perturbations the overlap-robust SE is {cr['ratio']:.2f} times "
+            f"the plain paired SE ({cr['n_perts']} perturbations, {cr['n_genes']} genes, "
+            f"{cr['n_overlapping_pairs']} ordered pairs sharing a gene){jk}; the arm reading inflates the sealed SE by "
+            "the first when above 1.")
 
 
 def _check(sealed: dict) -> str:
@@ -463,8 +502,13 @@ def render(rep: dict) -> str:
         if not c or c.get("is_additive"):   # the additive comparison already shown is this one
             continue
         st = c["start"]
+        src = c.get("source")
         how = (f"The run started fresh; its starting model, {_start_kind(st)}, is " if c.get("kind") == "fresh"
-               else f"The run continued {c['from']}; its starting model is ")
+               else f"The run continued {c['from']}"
+               + (f" (whose selected model {src['experiment_id']} had alpha {src['alpha']:g})"
+                  if src and src.get("alpha") is not None else "")
+               + "; its starting model, re-fitted under this run's seed"
+               + (f" (alpha {st['alpha']:g})" if st and st.get("alpha") is not None else "") + ", is ")
         L += [f"## {r['run']}: selected model against its starting model", "",
               how + (f"{st['experiment_id']} ({len(st['features'] or [])} features, visible {_f(st['visible_score'])})"
                      if st else "not available")
@@ -489,7 +533,7 @@ def render(rep: dict) -> str:
               f"A: {a['experiment_id']} (visible {_f(a['visible_score'])}); B: {b['experiment_id']} (visible "
               f"{_f(b['visible_score'])}); external knowledge of both: {', '.join(a['external_knowledge']) or 'none'}; "
               f"{code}. No expected direction was fixed.{folds}", ""]
-        L += _table(p["sealed"], p.get("visible"), "A", "B") + [""]
+        L += _table(p["sealed"], p.get("visible"), "A", "B", visible_read=False) + [""]
         line = _other_metrics(p["sealed"], "A", "B") + _check(p["sealed"]) + _ratio_line(p.get("cluster_ratio"))
         L += ([line.strip(), ""] if line else [])
     elif p:

@@ -26,11 +26,13 @@ perturbations and, out of fold, the training ones, each member's stored predicti
 A model is named only as a run's selected, additive or starting model, so nothing can be picked by a sealed score.
 Run directories are read only in content, as tools/sealed_reading.py reads them.
 
-    python tools/arm_reading.py rule --against start --readings docs/results/norman_n4_sealed_reading.json \\
-        docs/results/norman_n4_r1_sealed_reading.json docs/results/norman_n4_r2_sealed_reading.json \\
+B1 of the plan (N4, runs/norman_ds_from_n2_w4_r0, is its own arm and in neither command):
+
+    python tools/arm_reading.py rule --against start --readings docs/results/norman_b1_r1_sealed_reading.json \\
+        docs/results/norman_b1_r2_sealed_reading.json docs/results/norman_b1_r3_sealed_reading.json \\
         --out docs/results/norman_b1_arm_reading.md
-    python tools/arm_reading.py combine --members runs/norman_ds_from_n2_w4_r0 runs/norman_ds_from_n2_w4_r1 \\
-        runs/norman_ds_from_n2_w4_r2 --reference runs/norman_control_replogle_w4_r0 \\
+    python tools/arm_reading.py combine --members runs/norman_ds_from_n2_w4_r1 runs/norman_ds_from_n2_w4_r2 \\
+        runs/norman_ds_from_n2_w4_r3 --reference runs/norman_control_replogle_w4_r0 \\
         --out docs/results/norman_b1_combined_vs_n2.md
 """
 from __future__ import annotations
@@ -75,52 +77,65 @@ _SELECTED_REFERENCE = ("the run selected its starting model", "the run selected 
 
 
 def _comparison(rep: dict, against: str, source: str) -> dict:
-    """One run's reading against the reference from a sealed_reading JSON twin: the run, its split, code and planner
-    record, the selected model's sealed metrics, the sealed and visible paired summaries and the gene-clustering
-    ratio. A run that selected its reference has no paired summary and is marked "selected_reference"."""
+    """One run's reading against the reference from a sealed_reading JSON twin: the run, what it must share with the
+    other runs of the arm (dataset, split, bundle, selection rule, external knowledge, the kind of start), its code
+    and planner record, its selected model's own sealed scoring, the sealed and visible paired summaries and the
+    gene-clustering ratios. A run that selected its reference has no paired summary and is marked
+    "selected_reference"."""
     if against == "versus":
         p = rep.get("pair") or {}
         if p.get("mode") != "versus":
             raise ValueError(f"{source} holds no --versus reading")
-        run = next((r for r in rep["runs"] if r["run"] == p["a"]["run"]), None)
-        if run is None:
+        r = next((x for x in rep["runs"] if x["run"] == p["a"]["run"]), None)
+        if r is None:
             raise ValueError(f"{source}: the run {p['a']['run']} is not among its runs")
-        r, ref, cmp_, why = run, f"{p['b']['run']}:{p['b']['experiment_id']}", p, None
-        selected_id = p["a"]["experiment_id"]
+        cmp_, why, sel = p, None, p["a"]
+        ref, ref_run = f"{p['b']['run']}:{p['b']['experiment_id']}", p["b"]["run"]
+        start_kind = None
     else:
         runs = rep.get("runs") or []
         if len(runs) != 1:
             raise ValueError(f"{source} reads {len(runs)} runs; the arm reading takes one run's reading per file")
         r = runs[0]
-        selected_id = r["selected"]["experiment_id"]
+        sel, ref_run, start_kind = r["selected"], None, None
         if against == "additive":
             cmp_, ref_rec, why = r, r.get("additive"), r.get("note")
         else:
             c = r.get("continuation")
             if c is None:
                 raise ValueError(f"{source}: the reading has no starting-model comparison")
+            start_kind = c.get("kind", "warm_start")
             if c.get("is_additive"):   # the run's start is its additive baseline: that comparison is this one
                 cmp_, ref_rec, why = r, r.get("additive"), r.get("note")
             else:
                 cmp_, ref_rec, why = c, c.get("start"), c.get("note")
         ref = f"{r['run']}:{(ref_rec or {}).get('experiment_id')}"
-    if "planner" not in r:
-        raise ValueError(f"{source} was written before readings recorded the planner; read the run again with the "
-                         "current tools/sealed_reading.py")
-    out = {"run": r["run"], "reference": ref, "dataset": r["dataset"], "split_id": r["split_id"],
-           "base_commit": r.get("base_commit"), "planner": r.get("planner"), "selected": selected_id,
-           "selected_reference": False}
+    for key, what in (("planner", "the planner"), ("bundle", "the bundle"), ("has_summary", "summary.json")):
+        if key not in r:
+            raise ValueError(f"{source} was written before readings recorded {what}; read the run again with the "
+                             "current tools/sealed_reading.py")
+    if "stored_sealed" not in sel:
+        raise ValueError(f"{source} was written before readings recorded the selected model's own sealed scoring; "
+                         "read the run again with the current tools/sealed_reading.py")
+    cont = r.get("continuation") or {}
+    src, st = cont.get("source") or {}, cont.get("start") or {}
+    out = {"run": r["run"], "reference": ref, "reference_run": ref_run, "dataset": r["dataset"],
+           "split_id": r["split_id"], "bundle": r["bundle"], "selection": r.get("selection"),
+           "external_knowledge": sorted(r.get("external_knowledge") or []), "start_kind": start_kind,
+           "base_commit": r.get("base_commit"), "planner": r.get("planner"), "has_summary": r["has_summary"],
+           "selected": sel["experiment_id"], "stored": sel.get("stored_sealed") or {}, "selected_reference": False,
+           "start_alpha": st.get("alpha") if against == "start" else None,
+           "source_alpha": src.get("alpha") if against == "start" else None}
     if not cmp_.get("sealed"):
         if not any(str(why or "").startswith(x) for x in _SELECTED_REFERENCE):
             raise ValueError(f"{source}: {r['run']} has no {against} comparison ({why}); the arm cannot be read")
-        # the run kept its reference: its difference is zero, with no spread, and its metrics are the reference's
-        return {**out, "selected_reference": True, "metrics": {}, "sealed": None, "visible": None,
-                "cluster_ratio": None}
-    if "cluster_ratio" not in cmp_:
-        raise ValueError(f"{source} was written before readings recorded the gene-clustering ratio; read the run "
-                         "again with the current tools/sealed_reading.py")
-    return {**out, "metrics": cmp_["sealed"]["a"]["metrics"], "sealed": cmp_["sealed"]["paired"],
-            "visible": cmp_.get("visible"), "cluster_ratio": cmp_.get("cluster_ratio")}
+        # the run kept its reference: its difference is zero, with no spread
+        return {**out, "selected_reference": True, "sealed": None, "visible": None, "cluster_ratio": None}
+    if "cluster_ratio" not in cmp_ or (cmp_["cluster_ratio"] and "estimator" not in cmp_["cluster_ratio"]):
+        raise ValueError(f"{source} was written before readings recorded the overlap-robust clustering ratio; read "
+                         "the run again with the current tools/sealed_reading.py")
+    return {**out, "sealed": cmp_["sealed"]["paired"], "visible": cmp_.get("visible"),
+            "cluster_ratio": cmp_.get("cluster_ratio")}
 
 
 def arm_rule(g: list[float], s: list[float], wins: list[tuple[int, int, int]], n: int) -> dict:
@@ -150,28 +165,46 @@ def arm_rule(g: list[float], s: list[float], wins: list[tuple[int, int, int]], n
 
 def _spread(values: list) -> dict | None:
     v = [float(x) for x in values if x is not None]
-    if len(v) != len(values) or not v:
+    if not v:
         return None
-    return {"mean": float(np.mean(v)), "sd": float(np.std(v, ddof=1)) if len(v) > 1 else None, "n": len(v)}
+    return {"mean": float(np.mean(v)), "sd": float(np.std(v, ddof=1)) if len(v) > 1 else None, "n": len(v),
+            "missing": len(values) - len(v)}
 
 
-def _inflation(c: dict) -> float:
+def _inflation(c: dict, key: str = "ratio") -> float:
     cr = c.get("cluster_ratio") or {}
-    return max(1.0, float(cr.get("ratio") or 1.0))
+    return max(1.0, float(cr.get(key) or 1.0))
 
 
-def _rule_over(comps: list[dict], pick, inflate: bool) -> dict | None:
+def _rule_over(comps: list[dict], pick, inflate: str | None) -> dict | None:
     """The arm rule over one summary per run, picked by pick(run) -> paired summary (None for a run that kept its
-    reference: g = 0, s = 0, no wins, as many ties as the other runs compare)."""
+    reference: g = 0, s = 0, no wins, as many ties as the other runs compare). inflate: the clustering ratio that
+    multiplies each run's SE ("ratio", the plan's; "jackknife_ratio", as first specified) or None."""
     per = [pick(c) for c in comps]
     if any(p is not None and "mean_diff" not in p for p in per) or all(p is None for p in per):
         return None
     n = max(p["n"] for p in per if p is not None)
     g = [0.0 if p is None else p["mean_diff"] for p in per]
-    s = [0.0 if p is None else p["se"] * (_inflation(c) if inflate else 1.0) for p, c in zip(per, comps)]
+    s = [0.0 if p is None else p["se"] * (_inflation(c, inflate) if inflate else 1.0) for p, c in zip(per, comps)]
     wins = [(0, 0, n) if p is None else (p.get("wins_a", 0), p.get("wins_b", 0), p["n"]) for p in per]
-    return {**arm_rule(g, s, wins, min(p["n"] for p in per if p is not None)), "n": [n if p is None else p["n"]
-                                                                                       for p in per]}
+    return {**arm_rule(g, s, wins, min(p["n"] for p in per if p is not None)),
+            "n": [n if p is None else p["n"] for p in per]}
+
+
+def _check_one_arm(comps: list[dict], against: str) -> None:
+    """The runs of one arm answer the same question: one dataset, split, bundle, selection rule and external
+    knowledge, one kind of start, and for --versus one reference model that is never itself an arm member."""
+    for key in ("dataset", "split_id", "bundle", "selection", "external_knowledge", "start_kind"):
+        vals = {json.dumps(c[key]) for c in comps}
+        if len(vals) != 1:
+            raise ValueError(f"the runs differ in {key}: {[c[key] for c in comps]}")
+    if against == "versus":
+        refs = {c["reference"] for c in comps}
+        if len(refs) != 1:
+            raise ValueError(f"the --versus readings compare against different models: {sorted(refs)}")
+        members = {c["run"] for c in comps}
+        if any(c["reference_run"] in members for c in comps):
+            raise ValueError("a run is both a member of the arm and the reference of a --versus reading")
 
 
 def read_arm(paths: list[Path], against: str) -> dict:
@@ -181,49 +214,57 @@ def read_arm(paths: list[Path], against: str) -> dict:
     names = [c["run"] for c in all_comps]
     if len(set(names)) != len(names):
         raise ValueError(f"a run appears twice: {names}")
-    for what in ("dataset", "split_id"):
-        if len({c[what] for c in all_comps}) != 1:
-            raise ValueError(f"the runs differ in {what}: {[c[what] for c in all_comps]}")
-    excluded = [{"run": c["run"], "planner": c["planner"]} for c in all_comps if (c["planner"] or {}).get("mixed")]
-    comps = [c for c in all_comps if not (c["planner"] or {}).get("mixed")]
+    _check_one_arm(all_comps, against)
+    excluded = []
+    for c in all_comps:
+        if not c["has_summary"] or c["planner"] is None:
+            excluded.append({"run": c["run"], "why": "no summary.json or no planner record", "planner": c["planner"]})
+        elif c["planner"].get("mixed"):
+            excluded.append({"run": c["run"], "why": "its planner changed or ran out during the run",
+                             "planner": c["planner"]})
+    comps = [c for c in all_comps if c["run"] not in {e["run"] for e in excluded}]
     if len(comps) < 2:
-        raise ValueError(f"an arm reading needs at least two runs whose planner did not change; {len(comps)} of "
-                         f"{len(all_comps)} qualify (left out: {[e['run'] for e in excluded]})")
-    pooled = _rule_over(comps, lambda c: c["sealed"], inflate=True)
+        raise ValueError(f"an arm reading needs at least two runs with a summary.json and an unchanged planner; "
+                         f"{len(comps)} of {len(all_comps)} qualify (left out: {[e['run'] for e in excluded]})")
+    pooled = _rule_over(comps, lambda c: c["sealed"], inflate="ratio")
     if pooled is None:
         raise ValueError("every run kept its reference: there is no difference to read")
-    cats = {}
+    first_spec = _rule_over(comps, lambda c: c["sealed"], inflate="jackknife_ratio")
     with_cats = [c for c in comps if c["sealed"] is not None]
-    names_c = set.intersection(*[set(c["sealed"].get("by_category") or {}) for c in with_cats])
-    for cat in sorted(names_c):
-        per = [c["sealed"]["by_category"][cat] for c in with_cats]
-        ns = [pc.get("n", 0) for pc in per]
+    cats = {}
+    for cat in sorted(set.intersection(*[set(c["sealed"].get("by_category") or {}) for c in with_cats])):
+        ns = [c["sealed"]["by_category"][cat].get("n", 0) for c in with_cats]
         r = (_rule_over(comps, lambda c, cat=cat: None if c["sealed"] is None else c["sealed"]["by_category"][cat],
-                        inflate=True) if min(ns) >= MIN_READ else None)
+                        inflate="ratio") if min(ns) >= MIN_READ else None)
         cats[cat] = {**r, "read": True} if r else {"n": ns, "read": False}
-    visible = None
+    visible, visible_cats = None, {}
     if all(c["selected_reference"] or (c.get("visible") or {}).get("mean_diff") is not None for c in comps):
-        visible = _rule_over(comps, lambda c: None if c["selected_reference"] else c["visible"], inflate=False)
-    with_metrics = [c for c in comps if not c["selected_reference"]]
+        visible = _rule_over(comps, lambda c: None if c["selected_reference"] else c["visible"], inflate=None)
+        vis = [c for c in comps if not c["selected_reference"]]
+        for cat in sorted(set.intersection(*[set(c["visible"].get("by_category") or {}) for c in vis])):
+            r = _rule_over(comps, lambda c, cat=cat: None if c["selected_reference"] else
+                           c["visible"]["by_category"][cat], inflate=None)
+            if r:
+                visible_cats[cat] = r
     return {"generated_by": "tools/arm_reading.py rule", "code_commit": sr._commit(),
             "protocol": {"metric": METRIC, "rule": RULE, "min_read": MIN_READ, "against": against,
-                         "sealed_scorings": 0},
+                         "sealed_scorings": 0, "inflation": "overlap-robust clustering ratio (plan amendment of "
+                                                            "2026-10-11 20:30 UTC)"},
             "readings": [{"path": str(p), "sha256": _sha256(p)} for p in paths],
-            "dataset": comps[0]["dataset"], "split_id": comps[0]["split_id"],
+            "dataset": comps[0]["dataset"], "split_id": comps[0]["split_id"], "bundle": comps[0]["bundle"],
             "same_code": len({c["base_commit"] for c in comps}) == 1, "excluded": excluded,
-            "runs": [{k: c[k] for k in ("run", "reference", "base_commit", "selected", "selected_reference")} |
-                     ({"n": None, "mean_diff": 0.0, "se": 0.0, "inflation": 1.0, "wins_a": 0, "wins_b": 0,
-                       "verdict": None, "metrics": {}} if c["selected_reference"] else
+            "runs": [{k: c[k] for k in ("run", "reference", "base_commit", "selected", "selected_reference",
+                                        "start_alpha", "source_alpha")} |
+                     ({"n": None, "mean_diff": 0.0, "se": 0.0, "inflation": 1.0, "jackknife_inflation": 1.0,
+                       "wins_a": 0, "wins_b": 0, "verdict": None} if c["selected_reference"] else
                       {"n": c["sealed"]["n"], "mean_diff": c["sealed"]["mean_diff"], "se": c["sealed"]["se"],
-                       "inflation": _inflation(c), "wins_a": c["sealed"].get("wins_a"),
-                       "wins_b": c["sealed"].get("wins_b"), "verdict": c["sealed"].get("verdict"),
-                       "metrics": {k: c["metrics"].get(k) for k, _ in ARM_METRICS}}) for c in comps],
-            "pooled": pooled, "by_category": cats, "visible": visible,
-            "selected_spread": {name: _spread([c["metrics"].get(k) for c in with_metrics])
-                                for k, name in ARM_METRICS},
-            "selected_spread_note": (None if len(with_metrics) == len(comps) else
-                                     f"{len(comps) - len(with_metrics)} run(s) kept the reference and are not in "
-                                     "this spread")}
+                       "inflation": _inflation(c), "jackknife_inflation": _inflation(c, "jackknife_ratio"),
+                       "wins_a": c["sealed"].get("wins_a"), "wins_b": c["sealed"].get("wins_b"),
+                       "verdict": c["sealed"].get("verdict")})
+                     | {"stored": {k: c["stored"].get(k) for k, _ in ARM_METRICS}} for c in comps],
+            "pooled": pooled, "pooled_as_first_specified": first_spec, "by_category": cats, "visible": visible,
+            "visible_by_category": visible_cats,
+            "selected_spread": {name: _spread([c["stored"].get(k) for c in comps]) for k, name in ARM_METRICS}}
 
 
 def _arm_verdict(r: dict, what: str) -> str:
@@ -235,28 +276,31 @@ def render_arm(rep: dict) -> str:
     ref = {"additive": "its additive baseline", "start": "its starting model",
            "versus": "the other run of its --versus reading"}[ag]
     L = ["# Arm reading", "",
-         f"Pre-specified (docs/PLAN_AFTER_N4.md, \"The arm reading\"). Each run's selected model against {ref}, "
-         f"metric {pr['metric']} per sealed perturbation, paired, from each run's own sealed reading (sha256 below). "
-         f"Rule: {pr['rule']}. A category is read when it holds at least {pr['min_read']} sealed perturbations in "
-         "every run. The visible and out-of-fold row is reported, not read. This reading scored nothing on the sealed "
-         f"set. Dataset {rep['dataset']}, split {rep['split_id']}"
+         f"Pre-specified (docs/PLAN_AFTER_N4.md, \"The arm reading\" and its amendment of 20:30 UTC). Each run's "
+         f"selected model against {ref}, metric {pr['metric']} per sealed perturbation, paired, from each run's own "
+         f"sealed reading (sha256 below). Rule: {pr['rule']}. Each run's SE is inflated by the {pr['inflation']} when "
+         f"above 1. A category is read when it holds at least {pr['min_read']} sealed perturbations in every run. The "
+         "visible and out-of-fold rows are reported, not read. This reading scored nothing on the sealed set. "
+         f"Dataset {rep['dataset']}, split {rep['split_id']}"
          + ("" if rep["same_code"] else "; the runs ran on different code") + f". Tool code "
          f"{str(rep.get('code_commit') or 'unknown')[:7]}.", ""]
-    if rep.get("excluded"):
-        L += ["Left out, each its own arm because its planner changed or ran out during the run: "
-              + ", ".join(e["run"] for e in rep["excluded"]) + ".", ""]
-    L += ["| run | code | selected | reference | n | difference (paired SE) | SE inflation | wins | per-run verdict |",
-          "|---|---|---|---|---|---|---|---|---|"]
+    for e in rep.get("excluded") or []:
+        L += [f"Left out: {e['run']}, {e['why']}; it is its own arm and is reported beside this one.", ""]
+    warm = any(r.get("source_alpha") is not None for r in rep["runs"])
+    L += ["| run | code | selected | reference | n | difference (paired SE) | SE inflation | wins | per-run verdict |"
+          + (" start alpha / continued run's alpha |" if warm else ""),
+          "|---|---|---|---|---|---|---|---|---|" + ("---|" if warm else "")]
     for r in rep["runs"]:
+        alphas = (f" {sr._f(r.get('start_alpha'), 0)} / {sr._f(r.get('source_alpha'), 0)} |" if warm else "")
         if r["selected_reference"]:
             L.append(f"| {r['run']} | {str(r.get('base_commit') or 'unknown')[:7]} | {r['selected']} | "
-                     f"{r['reference']} | – | 0 (kept its reference) | – | – | – |")
+                     f"{r['reference']} | – | 0 (kept its reference) | – | – | – |" + alphas)
             continue
         v = {"a": "selected better", "b": "reference better", "none": "no difference established"}.get(
             r.get("verdict"), "–")
         L.append(f"| {r['run']} | {str(r.get('base_commit') or 'unknown')[:7]} | {r['selected']} | {r['reference']} | "
                  f"{r['n']} | {r['mean_diff']:+.4f} ± {r['se']:.4f} | {r['inflation']:.2f} | "
-                 f"{r.get('wins_a')}/{r.get('wins_b')} | {v} |")
+                 f"{r.get('wins_a')}/{r.get('wins_b')} | {v} |" + alphas)
     p = rep["pooled"]
     L += ["", "| set | G | S | sd_g | SE | k | k·SE | same sign | wins (selected/reference of pairs) | arm verdict |",
           "|---|---|---|---|---|---|---|---|---|---|", _rule_row("sealed, pooled", p, _arm_verdict(p, "arm"))]
@@ -264,15 +308,23 @@ def render_arm(rep: dict) -> str:
         label = f"sealed, {cat} (n {', '.join(map(str, c['n']))})"
         L.append(_rule_row(label, c, _arm_verdict(c, "arm")) if c["read"] else
                  f"| {label} | | | | | | | | | reported, not read |")
+    fs = rep.get("pooled_as_first_specified")
+    if fs:
+        L.append(_rule_row("sealed, pooled, SE inflated by the jackknife ratio first specified", fs,
+                           _arm_verdict(fs, "arm") + " (reported, not read)"))
     v = rep.get("visible")
     if v:
         L.append(_rule_row("visible and out-of-fold, pooled (SE not inflated)", v, "not read"))
-    L += ["", "The arm's selected models on the sealed set, mean ± sd over its runs"
-          + (f" ({rep['selected_spread_note']})" if rep.get("selected_spread_note") else "") + ":", "",
-          "| metric | mean | sd | runs |", "|---|---|---|---|"]
-    for name, s in rep["selected_spread"].items():
-        if s:
-            L.append(f"| {name} | {s['mean']:.4f} | {sr._f(s['sd'], 4)} | {s['n']} |")
+        for cat, c in (rep.get("visible_by_category") or {}).items():
+            L.append(_rule_row(f"visible and out-of-fold, {cat}", c, "not read"))
+    L += ["", "The arm's selected models on the sealed set (each run's own end-of-run scoring), mean ± sd over its "
+          "runs:", "", "| metric | mean | sd | runs |", "|---|---|---|---|"]
+    for name, sp in rep["selected_spread"].items():
+        if sp:
+            miss = f" ({sp['missing']} without it)" if sp.get("missing") else ""
+            L.append(f"| {name} | {sp['mean']:.4f} | {sr._f(sp['sd'], 4)} | {sp['n']}{miss} |")
+        else:
+            L.append(f"| {name} | not available | | |")
     L += ["", "Readings:", ""] + [f"- {x['path']} (sha256 {x['sha256'][:16]})" for x in rep["readings"]]
     L += ["", "## Reading", "",
           f"Over {p['R']} runs, the arm's selected models against {ref}: G {p['G']:+.4f}, SE {p['SE']:.4f} (S "
@@ -345,6 +397,7 @@ def _side(labs: dict, specs: list[tuple[Path, str]], perts: list[str]) -> dict:
         cv.append(c)
         models.append({"run": lab.run_dir.name, "role": role, "seed": lab.cfg["run"].get("seed"),
                        "base_commit": lab.base_commit, "cv": lab._cv_hyperparameters() if lab.cv_folds > 1 else None,
+                       "has_summary": (lab.run_dir / "summary.json").exists(), "planner": sr._planner(lab),
                        **sr._model(lab, rec)})
     has_cv = all(c is not None for c in cv)
     return {"models": models, "sealed": np.mean(sealed, axis=0), "val1": np.mean(val1, axis=0),
@@ -378,6 +431,16 @@ def combine(members: list[str], reference: list[str]) -> dict:
         perts = list(oracle.perts)
         a = _side(labs, [(p.resolve(), r) for p, r in a_specs], perts)
         b = _side(labs, [(p.resolve(), r) for p, r in b_specs], perts)
+        # an arm's members are runs that finished with their planner unchanged (AGENTS.md: a run whose planner
+        # changed or ran out is its own arm); a reference of several runs is an arm too
+        for side in (a, b) if len(b_specs) > 1 else (a,):
+            for m in side["models"]:
+                if not m["has_summary"] or m["planner"] is None:
+                    raise ValueError(f"{m['run']} has no summary.json or no planner record: it cannot be an arm "
+                                     "member")
+                if m["planner"].get("mixed"):
+                    raise ValueError(f"{m['run']}'s planner changed or ran out during the run: it is its own arm "
+                                     "and cannot be an arm member")
         if [(m["run"], m["experiment_id"]) for m in a["models"]] == [(m["run"], m["experiment_id"])
                                                                      for m in b["models"]]:
             raise ValueError("the reference is the combined model itself")
@@ -392,6 +455,13 @@ def combine(members: list[str], reference: list[str]) -> dict:
         visible = {"metric": METRIC, "out_of_fold": a_cv is not None, "same_folds": same_folds,
                    **paired_summary(metric_values(sa, METRIC, first.selection),
                                     metric_values(sb, METRIC, first.selection), cats or None)}
+        # the visible validation perturbations alone, the same for every run whatever its folds: the score that
+        # chooses the delivered Norman model (docs/PLAN_AFTER_N4.md, "The combined model of an arm")
+        va, _ = first.score_visible(a["val1"], None)
+        vb, _ = first.score_visible(b["val1"], None)
+        ma, mb = metric_values(va, METRIC, first.selection), metric_values(vb, METRIC, first.selection)
+        validation = {"metric": METRIC, "n": len(ma), "a": float(np.mean(list(ma.values()))),
+                      "b": float(np.mean(list(mb.values())))}
         out = {"generated_by": "tools/arm_reading.py combine", "code_commit": sr._commit(),
                "protocol": {"metric": METRIC, "rule": "a gain counts when it exceeds twice its paired standard error "
                                                       "and the better side wins on more than half the perturbations",
@@ -401,7 +471,7 @@ def combine(members: list[str], reference: list[str]) -> dict:
                "a": {"label": la, "models": a["models"]}, "b": {"label": lb, "models": b["models"]},
                "sealed": {"paired": sealed["paired"], "a_metrics": sealed["a"]["metrics"],
                           "b_metrics": sealed["b"]["metrics"]},
-               "visible": visible}
+               "visible": visible, "visible_validation": validation}
     finally:
         for lab in labs.values():
             lab.close()
@@ -427,12 +497,16 @@ def render_combined(rep: dict) -> str:
     sealed = {"a": {"metrics": rep["sealed"]["a_metrics"]}, "b": {"metrics": rep["sealed"]["b_metrics"]},
               "paired": rep["sealed"]["paired"]}
     v = rep["visible"]
-    L += [""] + sr._table(sealed, v, "A", "B") + [""]
+    L += [""] + sr._table(sealed, v, "A", "B", visible_read=False) + [""]
     other = sr._other_metrics(sealed, "A", "B")
     L += ([other, ""] if other else [])
     if v.get("out_of_fold") and not v.get("same_folds"):
         L += ["The models drew different cross-validation folds, so the out-of-fold perturbations count in the "
               "visible row without their categories.", ""]
+    vv = rep.get("visible_validation")
+    if vv:
+        L += [f"Pooled {vv['metric']} on the {vv['n']} visible validation perturbations alone (the score that chooses "
+              f"the delivered model, docs/PLAN_AFTER_N4.md): A {vv['a']:.4f}, B {vv['b']:.4f}.", ""]
     pp = rep["sealed"]["paired"]
     L += ["## Reading", "", f"Sealed pooled: {sr._sentence(pp, 'A', 'B')}; by category: "
           f"{sr._category_sentences(pp, 'A', 'B')}. The visible row is reported, not read."]

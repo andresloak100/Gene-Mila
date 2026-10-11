@@ -487,8 +487,15 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   exploit engine and the queue. By AGENTS.md N4 is therefore its own arm, "deepseek:deepseek-v4-pro planner (lost its
   planner)", and its numbers above stand as that arm's; it is never pooled with its repeats.
 - **The paid block after N4 (docs/PLAN_AFTER_N4.md):** on Andres's go of 19:10 to 19:17 UTC, three repeats of N4 on
-  its code (seeds 1 to 3; r1 started 19:16:54), then three fresh DeepSeek runs from the additive start after a free
+  its code (seeds 1 to 3), then three fresh DeepSeek runs from the additive start after a free
   no-LLM control on it, then an Adamson re-split. Every reading, the arm rule and the combined model are fixed in
   that file; tools/sealed_reading.py now reads a fresh run against its start (`baseline_ridge_additive` on a bundle
   with pairs) and records the planner and a gene-clustering ratio, and tools/arm_reading.py reads arms and combined
   models.
+  First repeat, `runs/norman_ds_from_n2_w4_r1` (seed 1, 19:16:54 to about 19:37 UTC, $1.436, planner unchanged):
+  selected EXP_0681 (alpha 20,000, 13 features), 0.719 sealed pearson_delta. Against its start (N2's EXP_0198, 0.719)
+  +0.00038 ± 0.00106, better on 27 of 56 sealed perturbations; against the additive baseline +0.007 ± 0.008, 32 of
+  56; no difference established in either. Seed 1's search added nothing measurable, where seed 0 (N4) read +0.008 ±
+  0.004. Read at 203a1bd; read again with the tools of the plan's amendment of 20:30 UTC (an overlap-robust gene-
+  clustering ratio replaces the jackknife, which counted each pair twice) before the arm is read. Second repeat r2
+  started 20:13 UTC.

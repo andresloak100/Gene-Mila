@@ -347,9 +347,10 @@ def test_versus_refuses_runs_with_different_knowledge_or_the_same_run(make_lab, 
         sealed_reading.read_versus(without, without)
 
 
-def test_the_gene_clustering_ratio_is_a_leave_one_gene_out_jackknife_on_visible_labels(make_lab, monkeypatch):
-    """docs/PLAN_AFTER_N4.md: the arm reading inflates a run's sealed SE by how much shared genes widen the paired SE
-    on the visible validation perturbations; perturbations of single genes give a ratio of exactly 1."""
+def test_the_gene_clustering_ratio_is_the_overlap_robust_se_on_visible_labels(make_lab, monkeypatch):
+    """docs/PLAN_AFTER_N4.md (amendment of 20:30 UTC): the arm reading inflates a run's sealed SE by how much shared
+    genes widen the paired SE on the visible validation perturbations, the overlap-robust variance over the plain
+    one; the leave-one-gene-out jackknife first specified is kept beside, reported only."""
     import numpy as np
     from genemila.benchmark.evaluator import metric_values
     lab, eid = make_lab()
@@ -359,13 +360,47 @@ def test_the_gene_clustering_ratio_is_a_leave_one_gene_out_jackknife_on_visible_
     sb, _ = lab.score_visible(lab.visible_predictions(add)[0], None)
     a, b = metric_values(sa, "pearson_delta"), metric_values(sb, "pearson_delta")
     perts = list(lab._val1.perts)
-    d = np.array([a[p] - b[p] for p in perts])
-    genes = sorted({g for p in perts for g in lab._targets[p]})
     assert any(len(lab._targets[p]) > 1 for p in perts)
-    t = np.array([d[[g not in lab._targets[p] for p in perts]].mean() for g in genes])
-    jack = np.sqrt((len(t) - 1) / len(t) * ((t - t.mean()) ** 2).sum())
-    plain = d.std(ddof=1) / np.sqrt(len(d))
-    assert cr["ratio"] == pytest.approx(jack / plain) and cr["n_genes"] == len(genes)
+    e = np.array([a[p] - b[p] for p in perts])
+    e -= e.mean()
+    share = np.array([[bool(set(lab._targets[p]) & set(lab._targets[q])) for q in perts] for p in perts])
+    assert cr["estimator"] == "overlap-robust"
+    assert cr["ratio"] == pytest.approx(np.sqrt(max(0.0, e @ share @ e) / (e @ e)))
+    assert cr["n_overlapping_pairs"] == int(share.sum()) - len(perts) and cr["jackknife_ratio"] is not None
     monkeypatch.setattr(lab, "_targets", {})   # every perturbation its own gene: the plain SE
     rec = lab.db.get_experiment
     assert sealed_reading._cluster_ratio(lab, rec(eid), lab, rec(add))["ratio"] == pytest.approx(1.0)
+
+
+class _StubLab:
+    """Just enough of a Lab for _cluster_ratio: given per-perturbation differences and targets."""
+    selection = "pearson_delta"
+
+    def __init__(self, diffs, targets):
+        self._val1 = type("V", (), {"perts": list(diffs)})()
+        self._targets, self._diffs = targets, diffs
+
+    def visible_predictions(self, eid):
+        return eid, None
+
+    def score_visible(self, which, cv):
+        sign = 1.0 if which == "a" else 0.0
+        return {p: {"pearson_delta": sign * d} for p, d in self._diffs.items()}, {}
+
+
+def test_independent_pairs_give_a_ratio_of_one_where_the_jackknife_gives_more():
+    """The review's null case: pairs that share no gene, with independent differences. The overlap-robust ratio is
+    exactly 1; the leave-one-gene-out jackknife is sqrt((2n-1)/(n-1)) whatever the data, counting each pair twice."""
+    import numpy as np
+    rng = np.random.default_rng(0)
+    n = 30
+    diffs = {f"G{2 * i}+G{2 * i + 1}": float(x) for i, x in enumerate(rng.normal(size=n))}
+    targets = {p: p.split("+") for p in diffs}
+    lab = _StubLab(diffs, targets)
+    cr = sealed_reading._cluster_ratio(lab, {"experiment_id": "a"}, lab, {"experiment_id": "b"})
+    assert cr["ratio"] == pytest.approx(1.0) and cr["n_overlapping_pairs"] == 0
+    assert cr["jackknife_ratio"] == pytest.approx(np.sqrt((2 * n - 1) / (n - 1)))
+    shared = {f"A+G{i}": float(x) for i, x in enumerate(np.full(n, 1.0) + rng.normal(scale=0.01, size=n))}
+    shared.update({f"B+H{i}": float(x) for i, x in enumerate(np.full(n, -1.0) + rng.normal(scale=0.01, size=n))})
+    lab = _StubLab(shared, {p: p.split("+") for p in shared})
+    assert sealed_reading._cluster_ratio(lab, {"experiment_id": "a"}, lab, {"experiment_id": "b"})["ratio"] > 5

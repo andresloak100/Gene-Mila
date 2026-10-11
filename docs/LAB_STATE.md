@@ -142,7 +142,10 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 ## In progress (2026-10-11)
 
 0. **The paid block after N4 (docs/PLAN_AFTER_N4.md, written 19:15 to 19:45 UTC, reviewed independently before
-   any result).** B1: three repeats of N4 on its code 076282c (seeds 1 to 3; r1 started 19:16:54); N4 is not in the
+   any result; amended 20:30 UTC: the gene-clustering ratio of the arm reading is now overlap-robust, since the
+   leave-one-gene-out jackknife first specified counts a pair twice and reads about 1.41 where it should read 1).**
+   B1: three repeats of N4 on its code 076282c (seeds 1 to 3; r1 started 19:16:54, $1.436, read: selected model
+   0.719 sealed, +0.0004 ± 0.0011 over its start, so its search added nothing; r2 started 20:13); N4 is not in the
    arm because its planner ran out at 18.7 of 20 minutes (the $34 cap bound; summary.json `planner.mixed`), so it
    is its own arm "(lost its planner)". B2: a free no-LLM control on the additive start, then three fresh DeepSeek
    runs from it. B3: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson

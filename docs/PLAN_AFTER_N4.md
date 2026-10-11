@@ -208,3 +208,37 @@ directory, cost and md5, and to Andres in the build thread before anything more 
 sealed set has been scored for many models and used to decide what to run next, as Adamson's was: from then on,
 statements on it that compare arms ("the best Norman model") are descriptive, and the design of later blocks goes by
 visible results only.
+
+## Amendment, 2026-10-11 20:30 UTC: the gene-clustering ratio, and what the arm tools check
+
+This section changes the plan above; nothing above is edited.
+
+**The ratio.** The leave-one-gene-out jackknife ratio of "The arm reading" is biased upwards. A pair perturbation
+belongs to two gene groups, so the jackknife deletes it twice; with m perturbations and no gene shared between any
+two of them it gives sqrt((2m−1)/(m−1)), about 1.41, where the true ratio is 1. It would have widened every Norman
+run's s_r by up to 41% for clustering that is not there. It is replaced by the overlap-robust ratio, still on the
+visible validation perturbations of the same two models and visible labels only: with e the per-perturbation
+pearson_delta differences less their mean,
+
+ratio = sqrt(max(0, Σ e_p·e_q over every ordered pair p, q whose target genes overlap, p = q included) / Σ e_p²),
+
+the overlap-robust variance of the mean difference over the plain one. It is exactly 1 when no two perturbations
+share a gene, and s_r is still multiplied by it only when it exceeds 1. The jackknife ratio is kept in every reading
+as `jackknife_ratio`, and each arm report adds a row with the arm rule under it, marked reported, not read; the
+overlap-robust row is the primary one.
+
+**Timing, disclosed.** The bias was found by a review of the tools that started at about 19:48 UTC, before any B1
+result was read. The first repeat's sealed reading (r1, with the old ratio) was seen at about 20:10 UTC, before this
+amendment was written. Where genes are not shared the new ratio is 1 and the old one about 1.41, so in the main the
+change makes a gain easier to count; r1's reading shows no gain under either (against its start +0.0004 ± 0.0011,
+better on 27 of its 56 sealed perturbations and worse on 29). Every B1 run, r1 included, is read again with the
+amended tools; the arm tool refuses a reading made before this amendment.
+
+**What the tools now check (no change to the rule).**
+- The arm's mean ± sd of the selected models' sealed pearson_delta, MSE_DE, PCC_DE and R²_DE comes from each selected
+  model's own end-of-run sealed scoring, stored in its run (the paired query returns no comparable DE metrics). It is
+  no new look at the sealed set. A run that kept its reference counts in this mean ± sd.
+- The runs of one arm must share dataset, split, bundle, selection rule, external knowledge and the kind of start;
+  a `--versus` arm has one reference model that is never itself a member.
+- A run with no summary.json or no planner record is left out like a run whose planner changed, and named; `combine`
+  refuses both as members.

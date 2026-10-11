@@ -20,13 +20,18 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (19:50):** nothing running. B1's first repeat, `runs/norman_ds_from_n2_w4_r1` (seed 1, code 076282c),
-ran 19:16:54 to about 19:37 and ended cleanly ($1.436; ledger $35.41); its sealed result is deliberately unread until
-`docs/PLAN_AFTER_N4.md` is on GitHub. The Mac's Claude session then reached its usage limit, so the block waits for
-it to reset (or for another agent Andres hands the Mac runs to). A STOP file in `genemila_scale_logs` holds the run
-driver; a worktree at 076282c, `~/Documents/Mila/Gene-Mila/gene-mila-076282c`, is ready for r2 and r3 (its free dry
-check passed). Exact next steps, in order: read r1 with `tools/sealed_reading.py` from a clone at the commit that
-adds the plan; run r2, then r3, with the command in the plan's B1; read them; then B2 and B3 as the plan says. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+**On the Mac (20:30):** B1's second repeat, `runs/norman_ds_from_n2_w4_r2` (seed 2, code 076282c, from the worktree
+`~/Documents/Mila/Gene-Mila/gene-mila-076282c`), started 20:13 UTC; the ledger read $35.41 at its start. The first
+repeat, `runs/norman_ds_from_n2_w4_r1`, ended cleanly ($1.436) and was read at 203a1bd: its selected model EXP_0681
+scores 0.719 sealed, against its start +0.0004 ± 0.0011 (better on 27 of 56 sealed perturbations), so its own search
+added nothing; against the additive rule +0.007 ± 0.008. A review of the reading tools then found the plan's gene-
+clustering ratio biased upwards; the plan's dated amendment of 20:30 UTC replaces it and the tools are fixed, so
+every B1 run, r1 included, is read again with them. Exact next steps, in order: pull the lab branch in the main
+checkout; when r2 has ended, read r1 again with `tools/sealed_reading.py --runs runs/norman_ds_from_n2_w4_r1 --out
+docs/results/norman_b1_r1_sealed_reading_amended.md` (the 203a1bd reading stays as `norman_b1_r1_sealed_reading.md`),
+and r2 the same way into `norman_b1_r2_sealed_reading.md`; run r3 with the command in the plan's B1 (seed 3) only if
+the ledger is at most $41.37 and r2 ended cleanly at most $2.00; read r3; then `tools/arm_reading.py rule` and
+`combine` as the plan says; then B2 and B3. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). Two paid Norman runs today
