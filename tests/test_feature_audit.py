@@ -1761,3 +1761,12 @@ def test_the_command_line_reexecutes_once_under_hash_seed_zero(tmp_path):
     assert fa.main(["--runs", str(empty), "--out", str(out)]) == 0
     p = json.loads(out.with_suffix(".json").read_text())["protocol"]
     assert p["python_hash_seed"] == fa.python_hash_seed() and p["hash_seed_reexec"] is False
+
+
+def test_lasso_penalty_at_the_grid_edge_is_flagged():
+    """newcode_ds_w4_r0 in audit v3: with its noise feature gone, cross-validation chose the smallest penalty of the
+    grid, so all 15 features came out Lasso-stable; the report marks such a count instead of letting it read as
+    15 stable features."""
+    assert fa._lasso_at_edge({"lambda": 4.29e-6, "grid_min": 4.29e-6})
+    assert not fa._lasso_at_edge({"lambda": 0.00199, "grid_min": 4.29e-6})
+    assert not fa._lasso_at_edge({"lambda": None, "grid_min": 4.29e-6})

@@ -711,6 +711,13 @@ def lasso_cv(cv_units: list[Unit], grid) -> np.ndarray:
     return mse
 
 
+def _lasso_at_edge(lasso: dict) -> bool:
+    """Whether cross-validation chose the smallest penalty of the grid (its error still falling there): the
+    stable count then reflects an almost unpenalised fit and is flagged in the report."""
+    lam, low = lasso.get("lambda"), lasso.get("grid_min")
+    return lam is not None and low is not None and float(lam) <= float(low) * (1 + 1e-9)
+
+
 def lasso_stability(X: np.ndarray, y: np.ndarray, groups: np.ndarray, cv_units: list[Unit], resamples: int,
                     seed: int, columns: list[str], feature_of: list[str]) -> dict:
     """sklearn Lasso on the standardised full-training design X (rows grouped by perturbation, groups[i] in
@@ -2305,7 +2312,8 @@ def render(rep: dict) -> str:
                f"{arms.get(r['arm'])} | {n_f}{_plus_inputs(a['census'])} | {a['census']['n_columns']} | "
                f"{red['rank']} | {red['n_duplicate_columns']} | "
                f"{red['n_pairs_above_0.9']} | {_compact_fc(c)} | {_f(a['full']['mean'])} | "
-               f"{_f(c['mean'])} | {_pd(c['vs_full'])} | {len(a['lasso']['stable_features'])}/{n_f} |")
+               f"{_f(c['mean'])} | {_pd(c['vs_full'])} | {len(a['lasso']['stable_features'])}/{n_f}"
+               f"{' ᵉ' if _lasso_at_edge(a['lasso']) else ''} |")
         if any_sealed:
             sd = r.get("sealed")
             row += (" n/a | n/a |" if not sd else
@@ -2316,6 +2324,9 @@ def render(rep: dict) -> str:
           "compact f/c: the compact set; full, compact: visible scores (the compact set was chosen on the training "
           "perturbations, which flatter it); Δ val: compact − full on the validation perturbations, paired; Lasso: "
           "Lasso-stable features."
+          + (" ᵉ: the cross-validated Lasso penalty is the smallest of its grid, so nearly every column "
+             "survives and the stable count says little." if any(
+                 _lasso_at_edge(r["selected_analysis"]["lasso"]) for r in audited) else "")
           + (" (+k): k required inputs, computed through ctx.feature." if any_inputs else "")
           + (" *: the selected model is not ridge (its type is in the JSON) and is audited as ridge on the same "
              "columns (ols: alpha 0 by least squares)." if nonridge else "")
