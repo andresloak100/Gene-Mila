@@ -20,7 +20,7 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (23:10):** ledger $41.03 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
+**On the Mac (23:00):** ledger $41.03 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
 readings and the three runs' summaries are in draft PR #6, waiting for Andres to merge): the agents' search adds
 nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of the three repeats scores 0.723 sealed,
 +0.0041 ± 0.0011 over N2's selected model, not established over the additive rule; it is the delivered Norman model
@@ -29,7 +29,7 @@ said "continue" at 20:56 UTC) runs on the pinned commit ce1b530 (recorded in
 `genemila_scale_logs/block_after_n4_b2b3_commit.txt`; nobody pulls in the main checkout until B2 has ended). The free
 control `runs/norman_control_addstart_w4_r0` and seed 0 `runs/norman_ds_addstart_w4_r0` ($1.293) passed. Seed 1
 `runs/norman_ds_addstart_w4_r1` ($1.649) was killed by run_research.py's watchdog while finishing, after its full
-search, and stopped the block. The plan's note of 22:50 UTC and its addendum of 23:10 write it up: r1 is its own
+search, and stopped the block. The plan's note of 22:50 UTC and its addendum of 23:00 write it up: r1 is its own
 arm (its kill is recorded only in `genemila_scale_logs/norman_ds_addstart_w4_r1.log` and
 `block_after_n4_stopped_r1.txt`, not in its run directory, so never pass r1 to `arm_reading.py`), and B2 continues
 with seed 2 and then seed 3 in r1's place, run with `--no-watchdog` and a 90-minute backstop by
@@ -51,7 +51,7 @@ the primary reading `tools/arm_reading.py rule --readings docs/results/norman_b2
 docs/results/norman_b2_r2_sealed_reading.json docs/results/norman_b2_r3_sealed_reading.json --against start --out
 docs/results/norman_b2_arm_vs_start.md`, the same with `--against additive`, and `--against versus` over the three
 versus JSON twins; the arm as first specified, `rule --readings` over r0 and r2 only `--against start --out
-docs/results/norman_b2_arm_r0_r2_vs_start_reported.md`, reported and not read (addendum of 23:10); `tools/arm_reading.py combine --members runs/norman_ds_addstart_w4_r0
+docs/results/norman_b2_arm_r0_r2_vs_start_reported.md`, reported and not read (addendum of 23:00); `tools/arm_reading.py combine --members runs/norman_ds_addstart_w4_r0
 runs/norman_ds_addstart_w4_r2 runs/norman_ds_addstart_w4_r3 --reference R --out
 docs/results/norman_b2_combined_vs_<name>.md` for R = `runs/norman_ds_addstart_w4_r0:start` (the start,
 baseline_ridge_additive), `runs/norman_control_addstart_w4_r0`, `runs/norman_ds_addstart_w4_r0:additive`, and the B1

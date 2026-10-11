@@ -311,7 +311,7 @@ starting only at $45.50 or less; at their caps ($2.50 each) the ledger would end
 dropped from this block, as the plan foresaw ("if anything in B1 or B2 stops the block, B3 is what is dropped").
 Whether B3 runs later, under a cap above $48, goes to Andres with B2's results.
 
-## Addendum, 2026-10-11 23:10 UTC, to the note of 22:50 (written before any B2 sealed reading)
+## Addendum, 2026-10-11 23:00 UTC, to the note of 22:50 (written before any B2 sealed reading)
 
 A review of the note found what follows. The note stands except where this section corrects it.
 

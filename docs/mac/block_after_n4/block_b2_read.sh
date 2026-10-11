@@ -1,10 +1,10 @@
 #!/bin/bash
 # B2's readings (docs/PLAN_AFTER_N4.md: B2, "The combined model of an arm", "The arm reading", its amendment of
-# 20:30 UTC, the note of 22:50 UTC and its addendum of 23:10 UTC), once the control and the arm's three paid runs have
+# 20:30 UTC, the note of 22:50 UTC and its addendum of 23:00 UTC), once the control and the arm's three paid runs have
 # passed their checks. The arm is seeds 0, 2 and 3: seed 1 (runs/norman_ds_addstart_w4_r1) was killed by the watchdog
 # while finishing and is its own arm, so it is in no arm reading and no combined model; its own per-run reading is
 # made last, written as norman_b2_r1_killed_sealed_reading, and reported in a row of its own. The arm as first
-# specified (seeds 0 and 2) is read against the start too, reported and not read (addendum of 23:10 UTC). Free: no LLM, no key, no lab run. Start it as  bash block_b2_read.sh
+# specified (seeds 0 and 2) is read against the start too, reported and not read (addendum of 23:00 UTC). Free: no LLM, no key, no lab run. Start it as  bash block_b2_read.sh
 # from anywhere: it works in the main checkout with the tools at the commit block_b2_control.sh recorded, writes
 # docs/results/norman_b2_<what>.md and the JSON twin each tool writes beside it, never over an existing file, and
 # prints every file's md5. The only sealed reads are the tools' paired queries on oracles of their own, which each
@@ -149,7 +149,7 @@ step arm_vs_start tools/arm_reading.py rule --against start --readings $starts
 step arm_vs_additive tools/arm_reading.py rule --against additive --readings $starts
 vs=""; for s in $ARM; do vs="$vs ${P}_r${s}_versus_control.json"; done
 step arm_vs_control tools/arm_reading.py rule --against versus --readings $vs
-# the arm as first specified (seeds 0 and 2; addendum of 23:10 UTC): reported beside the primary reading, not read
+# the arm as first specified (seeds 0 and 2; addendum of 23:00 UTC): reported beside the primary reading, not read
 step arm_r0_r2_vs_start_reported tools/arm_reading.py rule --against start --readings ${P}_r0_sealed_reading.json \
   ${P}_r2_sealed_reading.json
 # the combined model of seeds 0, 2 and 3 against baseline_ridge_additive (r0's start), the control's selected model,
