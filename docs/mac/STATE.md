@@ -450,3 +450,45 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
   neither established by the pre-specified rule (needs more than twice the paired SE). pair_seen1: +0.021 ± 0.006 vs additive (established).
 - The DeepSeek key was pasted by Andres in the thread (twice) and used only as a process environment variable; in no file. He should rotate it.
 - Everything is on GitHub: lab branch, astra/* branches, claude/mac-reports-2026-10-11 (draft PR andresloak100/Gene-Mila#3).
+
+## 2026-10-11 19:20 UTC — replicates of N4, pre-specified before starting
+- Andres (19:10 and 19:16 UTC, with a screenshot of the DeepSeek console): spend as needed; the account has $33.01 left.
+  The console shows total cost $16.98 for 12,493 requests, where this lab's ledger records $33.97 for 12,492 calls:
+  the ledger's price table overstates real DeepSeek cost about twofold.
+- Plan fixed now, before any result: two replicates of N4 with identical settings except the seed:
+  runs/norman_ds_from_n2_w4_r1 (run.seed=1) and _r2 (run.seed=2), each continued from runs/norman_control_replogle_w4_r0,
+  code 076282c7, budget.max_total_usd=1.3, budget.cumulative_usd.deepseek=40 (ledger terms).
+  Reading: tools/sealed_reading.py on each; report all three seeds' "selected minus additive" and "selected minus start"
+  paired differences side by side, their mean and range. No seed is dropped, none replaces r0, nothing is chosen by a sealed score.
+- 19:16:54 UTC: r1 (seed 1) STARTED from the main checkout at 076282c7 via norman_n4_replicates.sh, caps max_total_usd 1.3, cumulative 40.
+  The coordinator's note (19:17 UTC) asked for no paid start before its plan commit; it arrived after the start. r2 is HELD by
+  genemila_scale_logs/STOP (the driver halts between runs). Remove STOP only after the coordinator confirms r2's caps
+  (its B1: cumulative 44, max_total_usd 0.8, max_planner_usd 0.9, run from worktree ~/Documents/Mila/Gene-Mila/gene-mila-076282c).
+- Correction: max_total_usd caps WORKER spend only; N4 did not overshoot (workers $0.484 of 1.1).
+- run.seed changes the CV folds: the same start model scores 0.6525 visible at seed 1 vs 0.6423 at seed 0.
+
+## 2026-10-11 ~19:45 UTC — r1 ended; BLINDED; r2 held
+- r1 runs/norman_ds_from_n2_w4_r1: full 20 min, rc 0, workers $0.614, planner $0.822, total $1.436; ledger $35.405757.
+  DO NOT open its query-only scores or run sealed_reading on it until the coordinator sends the final commit of
+  docs/PLAN_AFTER_N4.md (the reading rules must be on GitHub first).
+- r2: wait for the coordinator's commit hash and go. Planner spend passed $0.80, so r2 uses r1's caps (max_total_usd 1.3,
+  cumulative 40), run from the worktree ~/Documents/Mila/Gene-Mila/gene-mila-076282c with absolute paths, --set run.seed=2.
+- Key: now in ~/.zshenv as API_KEY (Andres, 19:22 UTC). Launch runs from a login zsh with DEEPSEEK_API_KEY="$API_KEY" as a
+  shell assignment; never print or write it. Do not use the key from the chat any more.
+- genemila_scale_logs/STOP is in place: remove it only when a paid run is approved to start.
+- Free dry check from the worktree passed (runs/drycheck_076282c_worktree_contaminated).
+- Plan after B1 (coordinator's): B2 = three fresh Norman DeepSeek runs starting from the additive rule, after a free control;
+  B3 = fresh Adamson split (gene mode, gene-frac 0.57 0.19 0.24, seed 20261011), free control, two DeepSeek runs.
+
+## 2026-10-11 ~21:30 UTC — B1 done (three repeats of N4), block stopped as planned; nothing running
+- Key now comes from API_KEY in ~/.zshenv (login zsh, DEEPSEEK_API_KEY="$API_KEY" as a shell assignment). STOP file is in place.
+- Main checkout at d0fb6357 (reading tools amended 20:30 UTC); runs r2, r3 ran from the worktree gene-mila-076282c.
+- r1 seed 1: $1.436, selected EXP_0681, sealed 0.719; vs start +0.0004 ± 0.0011; vs additive +0.007 ± 0.008.
+- r2 seed 2: $1.425, selected EXP_0729, sealed 0.726; vs start +0.0071 ± 0.0033; vs additive +0.013 ± 0.006.
+- r3 seed 3: $1.254, selected EXP_0519, sealed 0.711; vs start -0.0075 ± 0.0079; vs additive -0.001 ± 0.012.
+- All three: full 20 min, rc 0, planner unchanged. DeepSeek ledger $38.084345 (block cap 48).
+- ARM (primary, vs start): G -0.0000, SE 0.0071: no difference established. The agents' search adds nothing over the
+  scripted starting model. Vs additive: G +0.0062, SE 0.0128: no difference established.
+- COMBINED model (average of the three): 0.723 sealed; vs N2 +0.0041 ± 0.0011 (38/18, A better); vs additive +0.010 ± 0.007
+  (no difference). Visible validation alone: 0.7801 vs 0.7746 (N2) and 0.7259 (additive).
+- Readings in gene-mila/docs/results/norman_b1_*.md/.json (untracked there). B2 and B3 wait for the coordinator's next note.
