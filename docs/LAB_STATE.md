@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 03:15 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:25 UTC.
 
 ## What this is
 
@@ -63,6 +63,7 @@ Sealed pearson_delta (Pearson correlation of predicted and measured expression c
 | agent arms, 1 / 4 / 8 / 16 workers (Opus planner) | 0.566 / 0.602 / 0.584 / 0.577 | docs/results/scaling.md |
 | Astra's two DeepSeek continuation campaigns (8 workers, 2 h each) | 0.599 to 0.602 | Astra's notes on the Mac |
 | scripted no-LLM control with the Replogle 2022 screen (control_replogle_w4_r0, one run, labelled arm) | 0.621 | Mac report, 11 Oct 02:55 UTC; files on the push list |
+| no-LLM continuation of newcode_opus_w4_r0 with the Replogle screen (control_replogle_from_opus_r0, one run) | 0.638 (ensemble 0.640) | Mac report, 11 Oct 03:20 UTC; files on the push list |
 | best of any run without an external screen | under 0.604 | |
 | noise ceiling (a perfect predictor, limited by cell sampling) | 0.89 (training) / 0.94 (visible validation) | docs/results/ceiling_analysis.md, docs/results/noise_ceiling.md |
 | transfer ceiling (best mix of other perturbations' responses, with hindsight) | 0.73 to 0.78 | same |
@@ -140,8 +141,24 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    0.6217); each external feature alone lifts the visible score from 0.501 to 0.570 (direct) and 0.582 (kNN). How far
    to trust it: one run on a sealed set already read many times; the pearson_delta gain over the agents (about 0.02)
    is the size of the run-to-run spread, the DE-gene gains are larger; Norman, or a fresh split, is the clean test.
-   summary.json md5 6a79a78d33e030a2fb08fa6d60a4972c (on the push list). A paid agent arm with the file needs
-   Andres's words (card posted 02:22 UTC in the build thread).
+   summary.json md5 6a79a78d33e030a2fb08fa6d60a4972c (on the push list).
+   **Combination (control_replogle_from_opus_r0, code c903c1a, free, full 1,200 s, 483 experiments):** the scripted
+   control continued from newcode_opus_w4_r0 with the Replogle hypotheses; selected EXP_0416 (ridge, alpha 14,872,
+   13 features: is_target, both Replogle features, target_level, shared_module and eight of the agents' transfer
+   features) scores visible 0.647, sealed pearson_delta 0.638, MSE_DE 0.078, PCC_DE 0.968, R2_DE 0.863, all-gene
+   PCC 0.990; the other finalists 0.640 and 0.641. Same caveats: one run, used sealed set. summary.json md5
+   203d99f4d0fbcaebcccaf135ad9ab39d. It is the warm start for the paid run B (chosen on visible score: 0.647 vs
+   0.625). A paid agent arm with the file needs
+   Andres's words (card posted 02:22 UTC in the build thread). external_krr (kernel ridge through the screen: signed
+   weights on the other training responses, kernel = Pearson correlation of the targets' external rows, lambda by an
+   inner leave-one-out) now exists both as a leave-one-out predictor in tools/external_loo.py, with
+   external_stack_krr (the stack plus that column), both appended after the five pre-specified predictors and
+   reported in their own "second look" section (old JSON twins re-render unchanged; the full analysis took 12 s on a
+   synthetic 50 x 2,055 case in the cloud), and as a third scripted-control template and hypothesis
+   (external_krr_<file>, so a control with the file from this code on is a new arm; docs/PROMPTS.md section 5); it
+   was added after the first reading and is untested on real data until the Mac runs `python tools/external_loo.py
+   --bundle data/adamson_cf --knowledge replogle2022_k562 --out
+   genemila_scale_logs/external_loo_replogle2022_k562_krr.md`.
 2. **Compact model rules (Andres's ask, 11 Oct 00:32 UTC):** a box of failed features that agents cannot re-propose; an
    admission rule (a feature joins only if its gain beats the fold noise, checked under two fold seeds); a redundancy
    check that rejects a feature correlating above 0.9 with one already in the model before it is fitted; a
