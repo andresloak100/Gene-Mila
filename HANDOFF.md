@@ -25,9 +25,9 @@ over this section where they disagree; this section is the short cross-agent vie
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). The paid Norman run N3
 (`runs/norman_ds_replogle_w4_r0`, $1.03, ledger $32.81 of $34) selected its additive baseline: the agents' best
-model scored 0.671 sealed against 0.713 for the additive rule and 0.719 for the no-LLM control, because no agent
-built the additive prediction as a feature and almost none used the Replogle file (`docs/NORMAN_PLAN.md`
-section 8). Astra's two branches and the Mac-only reports are on GitHub (reports merged as PR #3, under
+model scored 0.671 sealed against 0.713 for the additive rule and 0.719 for the no-LLM control,
+because no agent fed the plain additive prediction to the model (the best feature scales it by a
+per-perturbation factor) and almost none used the Replogle file (`docs/NORMAN_PLAN.md` section 8). Astra's two branches and the Mac-only reports are on GitHub (reports merged as PR #3, under
 `docs/mac/` and `docs/results/`). Next paid step, N4 (pre-specified in `docs/NORMAN_PLAN.md` section 8): the
 same agents continuing the no-LLM control N2, about $1.10, only on Andres's typed "start the paid run" in the
 build thread with a key in `~/.zshenv`.

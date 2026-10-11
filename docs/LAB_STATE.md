@@ -213,8 +213,9 @@ Conclusion: the limit on this bundle is information about the targets, not searc
   runs/norman_ds_from_n2_w4_r0`. Anything beyond $34 needs his say.
 - **N3 (done 15:54 UTC 11 Oct, $1.03):** DeepSeek planner and workers, 4 workers, 20 minutes, Replogle file, no warm
   start. It selected its additive baseline (visible 0.611; sealed 0.713); its best agent model scored 0.671 sealed
-  (visible 0.579), below the additive rule and N2's 0.719. No agent built the additive prediction as a feature and
-  only 1 of 355 plugins read the Replogle file; details and the prompt changes made since in NORMAN_PLAN section 8.
+  (visible 0.579; ridge, alpha 1000), below the additive rule and N2's 0.719. No agent fed the plain additive
+  prediction to the model (the best feature multiplies it by a per-perturbation factor) and only 1 of 355 plugins read
+  the Replogle file; details and the prompt changes made since in NORMAN_PLAN section 8.
 - **Pull requests:** PR #2 (AGENTS.md, HANDOFF.md) merged 11 Oct; PR #3 (the Mac-only reports, docs/mac/ and
   docs/results/, md5-verified against docs/mac/MD5SUMS.txt) merged 11 Oct; PR #1 (README design) is being brought up
   to date by its thread and merged after (Andres chose "Merge both" at 15:52 UTC). Astra's two branches are on GitHub

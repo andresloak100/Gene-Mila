@@ -408,10 +408,16 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   0.846; best agent model EXP_0225 (ridge, 9 features, visible 0.579) 0.671 / 0.157 / 0.784; N2 for reference 0.719 /
   0.110 / 0.842. The section 5 reading (docs/results/norman_n3_sealed_reading.md, md5
   735c1743ac5ccd42700b598f39265bbc) has nothing to compare, since the selected model is the baseline; it made no
-  sealed scoring. **Why:** no agent built the additive prediction as a feature (88 hypotheses used additive wording,
-  all about departures from additivity on top of the three built-in features, whose visible score is 0.542; the
-  agents took "the additive baseline" for part of the model), and only 1 of 355 plugins read the Replogle file (as an
-  essentiality score). The planner saw the file as the first 60 characters of its description (lab.knowledge_summary)
+  sealed scoring. **Why:** no agent fed the plain additive prediction to the model. The agents' best feature,
+  target_control_mean_scaling_e32 (+0.018 visible), is the sum of the targets' single-gene training responses
+  multiplied by log1p of the targets' control expression, a factor that differs per perturbation, so the ridge cannot
+  undo it; the rest of the 88 hypotheses with additive wording were about departures from additivity, on top of the
+  three built-in features (visible 0.542; the agents took "the additive baseline" for part of the model). All 411
+  agent models were ridge; the best, EXP_0225 (alpha 1000 by 5-fold gene-grouped cross-validation), has the three
+  built-in features plus e32, target_control_mean_scaling_x_percentile_e110, target_control_percentile_e53,
+  target_control_bimodality_percentile_e199, target_coexpression_e7 and tf_similarity_e19; 21 of the 355 working
+  features raised the visible score by more than 0.0005. Only 1 of 355 plugins read the Replogle file (as an
+  essentiality score). (Corrected 16:45 UTC: the first account said no agent used the additive sum at all.) The planner saw the file as the first 60 characters of its description (lab.knowledge_summary)
   and the baselines only as a list. The scripted control leads because a hand-written template puts the additive rule
   into its ridge. Reading: on Norman this agent run is about 0.04 below a rule that needs no model; it says how the
   agents were started, not anything about the biology.
