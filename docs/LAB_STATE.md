@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 03:10 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:15 UTC.
 
 ## What this is
 
@@ -84,6 +84,17 @@ Readings: only "4 workers beats 8" is significant (p = 0.01); cost rises linearl
 Pro plan equally well when DeepSeek finds response transfer (it did in one of two runs). The whole gain over the
 start is one feature family, transfer of responses from related knockdowns. Agents beat every baseline on all six
 held-out metrics; against the control with the hand-written transfer feature they lead only on the DE genes.
+
+**Against CellForge (asked by Andres 11 Oct 02:48 UTC).** Side by side with CellForge's reported Adamson row
+(arXiv 2508.02276v2 Table 1), tonight's best model (the scripted control with the Replogle screen) reads PCC all genes
+0.990 vs 0.988 ± 0.046, MSE_DE 0.084 vs 0.201 ± 0.044, PCC_DE 0.964 vs 0.947 ± 0.060, R²_DE 0.848 vs 0.891 ± 0.052.
+This is not a valid comparison and must not be reported as "beats CellForge": their evaluation code is unpublished
+and no metric definition reproduces their own baseline rows (docs/results/results_table.md), their split holds out
+guides, not genes (6 of 21 test genes have another guide in training), their spreads exceed the differences, and
+all-gene PCC is saturated (our 3-feature start already scores 0.984). The comparable statement is against baselines
+rerun on our split with our code: DE-gene MSE 0.084 vs 0.160 and R² 0.85 vs 0.71 for linear regression. A real
+claim needs CellForge's model run through our evaluation on our split (a GPU). pearson_delta cannot reach 0.99 for
+any model here (noise ceiling 0.94).
 
 ## Levers tested and closed (all free unless noted)
 
