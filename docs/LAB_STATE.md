@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 02:45 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 02:50 UTC.
 
 ## What this is
 
@@ -75,7 +75,7 @@ The first lever with evidence of new information is an external screen (visible 
 | kNN weighted by Replogle response similarity | 0.572 ± 0.257 | +0.027 ± 0.017 |
 | ridge stack of the four | 0.616 ± 0.233 | +0.072 ± 0.020 (better for 34 of 50) |
 
-The same stack without the two external columns scored 0.543 on the Mac, so the gain comes from the screen.
+The same stack without the two external columns scored 0.543 on the Mac, so the gain comes from the screen. Rebuilt with 97 gene renames matched by Ensembl id (83 targets with a row, 2,035 of 2,055 genes; FECH dropped under the 20-cell minimum; ATP5B and SLMO2 rescued), the result holds: stack 0.616, +0.071 ± 0.021 over gene-set kNN, better for 35 of 50 (docs/results/external_loo_replogle2022_k562_v2.md); with the wider alpha grid, a second look, 0.620, +0.075 ± 0.020, 37 of 50, alpha 10,000 in every fold (..._v2_widegrid.md).
 
 Readings: only "4 workers beats 8" is significant (p = 0.01); cost rises linearly with workers; Opus and DeepSeek V4
 Pro plan equally well when DeepSeek finds response transfer (it did in one of two runs). The whole gain over the
@@ -116,7 +116,10 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    1000, in all 50 folds, so a wider grid is a second look and the report says so); the scripted no-LLM control adds
    two fixed hypotheses per external screen (same-target response, kNN by external similarity). Next, all free on the
    Mac: rebuild with the aliases, rerun the leave-one-out with a wider grid, then one scripted control run with the
-   file (a labelled arm; one more look at the used sealed set). A paid agent arm with the file needs Andres's words.
+   file (a labelled arm; one more look at the used sealed set). The rebuild and both leave-one-out readings are done
+   (02:30 UTC; knowledge file md5 2a1b40429977ed9be1239dc48c883515, alias table genemila_scale_logs/replogle_aliases.json
+   on the Mac); the control run started 02:31 UTC. A paid agent arm with the file needs Andres's words (card posted
+   02:22 UTC in the build thread).
 2. **Compact model rules (Andres's ask, 11 Oct 00:32 UTC):** a box of failed features that agents cannot re-propose; an
    admission rule (a feature joins only if its gain beats the fold noise, checked under two fold seeds); a redundancy
    check that rejects a feature correlating above 0.9 with one already in the model before it is fitted; a
