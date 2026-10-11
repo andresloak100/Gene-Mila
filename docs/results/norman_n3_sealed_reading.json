@@ -1,0 +1,56 @@
+{
+ "generated_by": "tools/sealed_reading.py",
+ "code_commit": "5fe6e76abe761b637479e4e8ec1aa70949fdb509",
+ "protocol": {
+  "metric": "pearson_delta",
+  "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+  "min_read": 10,
+  "expected": null,
+  "sealed_scorings": 0,
+  "first_sealed_scorings": []
+ },
+ "runs": [
+  {
+   "run": "norman_ds_replogle_w4_r0",
+   "run_id": "norman_ds_replogle_w4_r0",
+   "dataset": "norman",
+   "split_id": "split_a391fa9e7b4eccb7",
+   "selection": "pearson_delta",
+   "external_knowledge": [
+    "replogle2022_k562"
+   ],
+   "hash_seed": 0,
+   "base_commit": "5fe6e76abe761b637479e4e8ec1aa70949fdb509",
+   "run_queries": {
+    "used": 4,
+    "cap": 5
+   },
+   "selected": {
+    "experiment_id": "EXP_0003",
+    "kind": "baseline",
+    "model_type": "none",
+    "hypothesis_group": "baseline_additive",
+    "alpha": null,
+    "features": [],
+    "visible_score": 0.6108130082135729,
+    "stored_sealed_pearson_delta": 0.7125920757739331,
+    "sealed_before": true
+   },
+   "additive": {
+    "experiment_id": "EXP_0003",
+    "kind": "baseline",
+    "model_type": "none",
+    "hypothesis_group": "baseline_additive",
+    "alpha": null,
+    "features": [],
+    "visible_score": 0.6108130082135729,
+    "stored_sealed_pearson_delta": 0.7125920757739331,
+    "sealed_before": true
+   },
+   "visible": null,
+   "sealed": null,
+   "note": "the run selected its additive baseline: nothing to compare"
+  }
+ ],
+ "pair": null
+}

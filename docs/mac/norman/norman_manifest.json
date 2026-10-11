@@ -1,0 +1,84 @@
+{
+ "name": "norman",
+ "n_genes": 2083,
+ "n_control_cells": 2000,
+ "n_perturbations": 231,
+ "n_train": 112,
+ "n_val1": 63,
+ "n_val2": 56,
+ "split_id": "split_a391fa9e7b4eccb7",
+ "knowledge_files": [
+  "gene_sets.json",
+  "ppi_network.json",
+  "prior_network.json",
+  "targets.json",
+  "transcription_factors.json"
+ ],
+ "file_sha256": {
+  "knowledge/gene_sets.json": "585818466eeecd97ba0946b8ad20df6532af255d618c6351fc4066d280d768c4",
+  "knowledge/ppi_network.json": "5231823a453eac2e233dce3e9c0a7b7a4cbfda8ea1539521b46f7ac8d8a511e2",
+  "knowledge/prior_network.json": "f16a9ff0c5e2468f356bbf5fc22bc83d1d7547e6ddbd4bb7efcaf00c0dca5e60",
+  "knowledge/targets.json": "f02c03f13588ea93b8a14a7979e9c31b8bc317d6cb18b9c24e38362b3bb7662c",
+  "knowledge/transcription_factors.json": "09ba9bf4fa864172b884239cf9eda3f27d6ee2478de9aa41a7c7994021e63923",
+  "private/perturbations.json": "3547c7594074a40b60d15e4cf11be9181e4ed09dcab16a6ad108c485f0c31537",
+  "private/val1.npz": "4662c225fdd5c8920b5deebf46b9618b663662b5733e083173d52418ff112371",
+  "private/val1_cells.npz": "a7be2e67fbf86961ea5e7acd13ff5b7e5e49808173fdea28d29ef22013adbc45",
+  "private/val1_cells_labels.npy": "22ac4d6d8903ae0c2bb99ea2419f496ecd0078b2776514ceca2f21729693e8d7",
+  "private/val1_de.npz": "33a4676c30bf3efd218e6dcf449407f8c318cc02a21aef09dc250cb7d1bad7e3",
+  "private/val2.npz": "e31a3ceff09b3566e919548542cfc518e0f8bde63cfb4cfe5d19e832e7a26979",
+  "private/val2_cells.npz": "435effdbe937b8bc69585acd289544e3be8f18e9860a4bbccf10d229b83a2aa1",
+  "private/val2_cells_labels.npy": "cecf96b81614487f47bffe636d4c0e6f9a5065d8ae7b7f66b3d21584234a3959",
+  "private/val2_de.npz": "ad6422722c38c5792bb2e163e4be4c180a6b9cc3de0683f1e5e3f3e0ec6c568d",
+  "public.npz": "b2c7eb3d34806a8d05b3a7719670833aa547d235e9d00767acce4126cbdc5411",
+  "splits.json": "80a00a011e394ad6016cb5f4632951b51ecb7e721c7f7d2034f202ee3ed8a79b"
+ },
+ "source": [
+  "/Users/andresarriaga/Documents/Loak-documents/data_downloads/NormanWeissman2019_filtered.h5ad"
+ ],
+ "condition_key": "perturbation",
+ "control_value": [
+  "control"
+ ],
+ "raw_counts_normalised": true,
+ "n_hvg": 2000,
+ "collapse_by_target": true,
+ "dropped_labels": [
+  "C19orf26",
+  "C3orf72",
+  "KIAA1804"
+ ],
+ "n_dropped_labels": 3,
+ "knowledge": {
+  "source_dir": "data/raw/knowledge",
+  "files": {
+   "gene_sets": 3518,
+   "prior_network": 1502,
+   "transcription_factors": 121,
+   "ppi_network": 8434
+  }
+ },
+ "modality": "CRISPRa",
+ "source_md5": [
+  "c870e6967d91c017d9da827bab183cd6"
+ ],
+ "code_commit": "02e702159258c8e75d95cbdb566634702617c3a9",
+ "code_dirty": false,
+ "gene_name_key": null,
+ "strict_labels": true,
+ "partial_labels": {},
+ "n_partial_labels": 0,
+ "strict_dropped_labels": {
+  "C3orf72_FOXL2": [
+   "C3orf72"
+  ],
+  "TGFBR2_C19orf26": [
+   "C19orf26"
+  ]
+ },
+ "n_strict_dropped_labels": 2,
+ "min_cells": 20,
+ "dropped_min_cells": {},
+ "split_mode": "gene",
+ "gene_selection": "control+train",
+ "backed": false
+}

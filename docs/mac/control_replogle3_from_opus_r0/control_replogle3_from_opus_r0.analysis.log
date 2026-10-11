@@ -1,0 +1,543 @@
+# Scaling analysis: control_replogle3_from_opus_r0 (4 workers, 20.01 min)
+
+## 1. Independence
+- distinct workers used: 4; max concurrent experiments: 4
+- every LLM-written feature in its own worktree commit: True; experiments touched by >1 worker: none
+- W000: ['EXP_0009', 'EXP_0016', 'EXP_0017', 'EXP_0020', 'EXP_0034', 'EXP_0037', 'EXP_0042', 'EXP_0046', 'EXP_0049', 'EXP_0055', 'EXP_0058', 'EXP_0062', 'EXP_0066', 'EXP_0069', 'EXP_0076', 'EXP_0079', 'EXP_0082', 'EXP_0086', 'EXP_0089', 'EXP_0095', 'EXP_0098', 'EXP_0102', 'EXP_0105', 'EXP_0109', 'EXP_0115', 'EXP_0120', 'EXP_0124', 'EXP_0127', 'EXP_0130', 'EXP_0134', 'EXP_0140', 'EXP_0144', 'EXP_0145', 'EXP_0151', 'EXP_0154', 'EXP_0157', 'EXP_0162', 'EXP_0168', 'EXP_0170', 'EXP_0175', 'EXP_0179', 'EXP_0182', 'EXP_0185', 'EXP_0191', 'EXP_0196', 'EXP_0200', 'EXP_0203', 'EXP_0208', 'EXP_0214', 'EXP_0216', 'EXP_0220', 'EXP_0226', 'EXP_0229', 'EXP_0237', 'EXP_0240', 'EXP_0245', 'EXP_0248', 'EXP_0251', 'EXP_0257', 'EXP_0260', 'EXP_0263', 'EXP_0272', 'EXP_0274', 'EXP_0277', 'EXP_0283', 'EXP_0286', 'EXP_0292', 'EXP_0296', 'EXP_0300', 'EXP_0304', 'EXP_0311', 'EXP_0314', 'EXP_0317', 'EXP_0322', 'EXP_0328', 'EXP_0332', 'EXP_0335', 'EXP_0340', 'EXP_0343', 'EXP_0348', 'EXP_0354', 'EXP_0357', 'EXP_0364', 'EXP_0367', 'EXP_0372', 'EXP_0378', 'EXP_0382', 'EXP_0386', 'EXP_0390', 'EXP_0395', 'EXP_0397', 'EXP_0400', 'EXP_0405', 'EXP_0411', 'EXP_0414', 'EXP_0418', 'EXP_0423', 'EXP_0430', 'EXP_0433', 'EXP_0436', 'EXP_0440', 'EXP_0447', 'EXP_0450', 'EXP_0457', 'EXP_0458', 'EXP_0462', 'EXP_0467', 'EXP_0469', 'EXP_0472', 'EXP_0477', 'EXP_0484', 'EXP_0488'] (4 LLM calls)
+- W001: ['EXP_0010', 'EXP_0012', 'EXP_0013', 'EXP_0018', 'EXP_0027', 'EXP_0029', 'EXP_0033', 'EXP_0036', 'EXP_0041', 'EXP_0045', 'EXP_0048', 'EXP_0054', 'EXP_0057', 'EXP_0061', 'EXP_0065', 'EXP_0072', 'EXP_0075', 'EXP_0078', 'EXP_0081', 'EXP_0088', 'EXP_0092', 'EXP_0096', 'EXP_0099', 'EXP_0103', 'EXP_0106', 'EXP_0111', 'EXP_0113', 'EXP_0117', 'EXP_0121', 'EXP_0128', 'EXP_0131', 'EXP_0135', 'EXP_0137', 'EXP_0141', 'EXP_0148', 'EXP_0152', 'EXP_0155', 'EXP_0158', 'EXP_0163', 'EXP_0166', 'EXP_0171', 'EXP_0174', 'EXP_0178', 'EXP_0181', 'EXP_0188', 'EXP_0192', 'EXP_0194', 'EXP_0197', 'EXP_0199', 'EXP_0202', 'EXP_0204', 'EXP_0209', 'EXP_0211', 'EXP_0217', 'EXP_0223', 'EXP_0227', 'EXP_0231', 'EXP_0235', 'EXP_0238', 'EXP_0244', 'EXP_0247', 'EXP_0254', 'EXP_0258', 'EXP_0261', 'EXP_0264', 'EXP_0267', 'EXP_0270', 'EXP_0276', 'EXP_0280', 'EXP_0284', 'EXP_0287', 'EXP_0290', 'EXP_0297', 'EXP_0298', 'EXP_0305', 'EXP_0308', 'EXP_0315', 'EXP_0319', 'EXP_0321', 'EXP_0327', 'EXP_0330', 'EXP_0336', 'EXP_0341', 'EXP_0344', 'EXP_0350', 'EXP_0352', 'EXP_0358', 'EXP_0362', 'EXP_0368', 'EXP_0369', 'EXP_0373', 'EXP_0376', 'EXP_0379', 'EXP_0383', 'EXP_0389', 'EXP_0394', 'EXP_0396', 'EXP_0403', 'EXP_0404', 'EXP_0410', 'EXP_0417', 'EXP_0420', 'EXP_0425', 'EXP_0426', 'EXP_0431', 'EXP_0434', 'EXP_0439', 'EXP_0442', 'EXP_0449', 'EXP_0453', 'EXP_0454', 'EXP_0461', 'EXP_0466', 'EXP_0468', 'EXP_0475', 'EXP_0478', 'EXP_0485', 'EXP_0487'] (2 LLM calls)
+- W002: ['EXP_0007', 'EXP_0008', 'EXP_0011', 'EXP_0014', 'EXP_0015', 'EXP_0019', 'EXP_0021', 'EXP_0022', 'EXP_0023', 'EXP_0024', 'EXP_0025', 'EXP_0028', 'EXP_0030', 'EXP_0031', 'EXP_0038', 'EXP_0039', 'EXP_0047', 'EXP_0050', 'EXP_0052', 'EXP_0059', 'EXP_0063', 'EXP_0067', 'EXP_0070', 'EXP_0073', 'EXP_0080', 'EXP_0084', 'EXP_0085', 'EXP_0091', 'EXP_0094', 'EXP_0097', 'EXP_0101', 'EXP_0107', 'EXP_0112', 'EXP_0114', 'EXP_0119', 'EXP_0123', 'EXP_0126', 'EXP_0129', 'EXP_0133', 'EXP_0139', 'EXP_0143', 'EXP_0147', 'EXP_0150', 'EXP_0153', 'EXP_0160', 'EXP_0161', 'EXP_0167', 'EXP_0172', 'EXP_0176', 'EXP_0177', 'EXP_0184', 'EXP_0187', 'EXP_0190', 'EXP_0195', 'EXP_0206', 'EXP_0207', 'EXP_0213', 'EXP_0219', 'EXP_0222', 'EXP_0225', 'EXP_0228', 'EXP_0234', 'EXP_0241', 'EXP_0243', 'EXP_0246', 'EXP_0252', 'EXP_0255', 'EXP_0259', 'EXP_0266', 'EXP_0271', 'EXP_0273', 'EXP_0279', 'EXP_0282', 'EXP_0289', 'EXP_0293', 'EXP_0294', 'EXP_0301', 'EXP_0307', 'EXP_0310', 'EXP_0312', 'EXP_0318', 'EXP_0323', 'EXP_0325', 'EXP_0331', 'EXP_0333', 'EXP_0337', 'EXP_0339', 'EXP_0345', 'EXP_0347', 'EXP_0353', 'EXP_0359', 'EXP_0363', 'EXP_0366', 'EXP_0371', 'EXP_0377', 'EXP_0380', 'EXP_0384', 'EXP_0387', 'EXP_0393', 'EXP_0399', 'EXP_0402', 'EXP_0406', 'EXP_0412', 'EXP_0415', 'EXP_0421', 'EXP_0422', 'EXP_0429', 'EXP_0435', 'EXP_0437', 'EXP_0443', 'EXP_0444', 'EXP_0446', 'EXP_0451', 'EXP_0455', 'EXP_0459', 'EXP_0464', 'EXP_0470', 'EXP_0473', 'EXP_0479', 'EXP_0483', 'EXP_0486'] (6 LLM calls)
+- W003: ['EXP_0006', 'EXP_0032', 'EXP_0035', 'EXP_0040', 'EXP_0044', 'EXP_0051', 'EXP_0053', 'EXP_0056', 'EXP_0064', 'EXP_0068', 'EXP_0071', 'EXP_0074', 'EXP_0077', 'EXP_0083', 'EXP_0087', 'EXP_0090', 'EXP_0093', 'EXP_0100', 'EXP_0104', 'EXP_0108', 'EXP_0110', 'EXP_0116', 'EXP_0118', 'EXP_0122', 'EXP_0125', 'EXP_0132', 'EXP_0136', 'EXP_0138', 'EXP_0142', 'EXP_0146', 'EXP_0149', 'EXP_0156', 'EXP_0159', 'EXP_0164', 'EXP_0165', 'EXP_0169', 'EXP_0173', 'EXP_0180', 'EXP_0183', 'EXP_0186', 'EXP_0189', 'EXP_0193', 'EXP_0201', 'EXP_0205', 'EXP_0210', 'EXP_0212', 'EXP_0218', 'EXP_0221', 'EXP_0224', 'EXP_0230', 'EXP_0232', 'EXP_0236', 'EXP_0239', 'EXP_0242', 'EXP_0249', 'EXP_0253', 'EXP_0256', 'EXP_0262', 'EXP_0265', 'EXP_0269', 'EXP_0275', 'EXP_0278', 'EXP_0281', 'EXP_0288', 'EXP_0291', 'EXP_0295', 'EXP_0299', 'EXP_0302', 'EXP_0306', 'EXP_0309', 'EXP_0313', 'EXP_0316', 'EXP_0324', 'EXP_0326', 'EXP_0329', 'EXP_0334', 'EXP_0342', 'EXP_0346', 'EXP_0349', 'EXP_0351', 'EXP_0355', 'EXP_0360', 'EXP_0361', 'EXP_0365', 'EXP_0370', 'EXP_0375', 'EXP_0381', 'EXP_0385', 'EXP_0388', 'EXP_0392', 'EXP_0398', 'EXP_0401', 'EXP_0407', 'EXP_0408', 'EXP_0413', 'EXP_0416', 'EXP_0419', 'EXP_0424', 'EXP_0428', 'EXP_0432', 'EXP_0438', 'EXP_0441', 'EXP_0448', 'EXP_0452', 'EXP_0456', 'EXP_0460', 'EXP_0465', 'EXP_0471', 'EXP_0474', 'EXP_0476', 'EXP_0480', 'EXP_0482', 'EXP_0489'] (0 LLM calls)
+
+## 2-3. Experiments
+| id | worker | status | feature / change | score | delta | LLM calls | cost |
+|---|---|---|---|---|---|---|---|
+| EXP_0006 | W003 | completed | Warm start: the best model of run newcode_opus_w4_ | 0.5903 |  | 0 | $0.00000 |
+| EXP_0007 | W002 | completed | Fit the best feature set (EXP_0003) with elasticne | 0.4938 | -0.0072 | 0 | $0.00000 |
+| EXP_0008 | W002 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.5011 | +0.0001 | 0 | $0.00000 |
+| EXP_0009 | W000 | completed | coexpr_target_e9 | 0.4943 | -0.0067 | 1 | $0.00000 |
+| EXP_0010 | W001 | completed | Add is_target_x_control_mean_e35 to the best model | 0.5069 | +0.0059 | 0 | $0.00000 |
+| EXP_0011 | W002 | failed | prior_network_edge_e11 |  |  | 2 | $0.00000 |
+|  |  | ↳ | feature failed after 2 attempts: feature is constant across all rows (no information) |  |  |  |  |
+| EXP_0012 | W001 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.5533 | +0.0523 | 0 | $0.00000 |
+| EXP_0013 | W001 | completed | shared_module_e13 | 0.5006 | -0.0004 | 1 | $0.00000 |
+| EXP_0014 | W002 | completed | similar_pert_knn_e14 | 0.4865 | -0.0145 | 1 | $0.00000 |
+| EXP_0015 | W002 | completed | target_level_e15 | 0.5069 | +0.0059 | 1 | $0.00000 |
+| EXP_0016 | W000 | completed | pca_alignment_e16 | 0.4859 | -0.0151 | 1 | $0.00000 |
+| EXP_0017 | W000 | completed | control_variance_e17 | 0.5010 | +0.0000 | 1 | $0.00000 |
+| EXP_0018 | W001 | completed | response_components_e18 | 0.5210 | +0.0200 | 1 | $0.00000 |
+| EXP_0019 | W002 | completed | external_direct_replogle2022_k562_e19 | 0.5704 | +0.0694 | 1 | $0.00000 |
+| EXP_0020 | W000 | completed | external_knn_replogle2022_k562_e20 | 0.5820 | +0.0810 | 1 | $0.00000 |
+| EXP_0021 | W002 | completed | external_krr_replogle2022_k562_e21 | 0.6032 | +0.1022 | 1 | $0.00000 |
+| EXP_0022 | W002 | completed | The optimal ridge penalty shifted after features w | 0.5010 | +0.0000 | 0 | $0.00000 |
+| EXP_0023 | W002 | completed | The optimal ridge penalty shifted after features w | 0.5010 | -0.0000 | 0 | $0.00000 |
+| EXP_0024 | W002 | completed | Adding external_direct_replogle2022_k562_e19 to th | 0.6161 | +0.0340 | 0 | $0.00000 |
+| EXP_0025 | W002 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6036 | +0.0004 | 0 | $0.00000 |
+| EXP_0026 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0025 |  |  |  |  |
+| EXP_0027 | W001 | completed | Add external_krr_replogle2022_k562_e21 to the best | 0.6351 | +0.0191 | 0 | $0.00000 |
+| EXP_0028 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6145 | -0.0016 | 0 | $0.00000 |
+| EXP_0029 | W001 | completed | Add target_level_e15 to the best model (EXP_0024): | 0.6215 | +0.0054 | 0 | $0.00000 |
+| EXP_0030 | W002 | completed | Add external_krr_replogle2022_k562_e21 and respons | 0.6265 | +0.0105 | 0 | $0.00000 |
+| EXP_0031 | W002 | completed | Add target_level_e15 to the best model (EXP_0027): | 0.6408 | +0.0056 | 0 | $0.00000 |
+| EXP_0032 | W003 | completed | Add response_components_e18 and target_level_e15 t | 0.6322 | -0.0029 | 0 | $0.00000 |
+| EXP_0033 | W001 | completed | Refine the ridge penalty around alpha=100 for the  | 0.6354 | +0.0002 | 0 | $0.00000 |
+| EXP_0034 | W000 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6350 | -0.0002 | 0 | $0.00000 |
+| EXP_0035 | W003 | completed | Refine the ridge penalty around alpha=100 for the  | 0.6410 | +0.0002 | 0 | $0.00000 |
+| EXP_0036 | W001 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6406 | -0.0002 | 0 | $0.00000 |
+| EXP_0037 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6116 | -0.0291 | 0 | $0.00000 |
+| EXP_0038 | W002 | completed | Drop control_mean from the best model (EXP_0031) t | 0.6407 | -0.0001 | 0 | $0.00000 |
+| EXP_0039 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6329 | -0.0082 | 0 | $0.00000 |
+| EXP_0040 | W003 | completed | Refine the ridge penalty around alpha=300 for the  | 0.6416 | +0.0006 | 0 | $0.00000 |
+| EXP_0041 | W001 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6409 | -0.0001 | 0 | $0.00000 |
+| EXP_0042 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6120 | -0.0290 | 0 | $0.00000 |
+| EXP_0043 | None | duplicate | Adding response_components_e18 to the current best |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0032 |  |  |  |  |
+| EXP_0044 | W003 | completed | Add response_components_e18 to the best model (EXP | 0.6344 | -0.0072 | 0 | $0.00000 |
+| EXP_0045 | W001 | completed | Refine the ridge penalty around alpha=900 for the  | 0.6427 | +0.0011 | 0 | $0.00000 |
+| EXP_0046 | W000 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6418 | +0.0002 | 0 | $0.00000 |
+| EXP_0047 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6131 | -0.0285 | 0 | $0.00000 |
+| EXP_0048 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6375 | -0.0052 | 0 | $0.00000 |
+| EXP_0049 | W000 | completed | Refine the ridge penalty around alpha=2700 for the | 0.6438 | +0.0011 | 0 | $0.00000 |
+| EXP_0050 | W002 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6436 | +0.0009 | 0 | $0.00000 |
+| EXP_0051 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6153 | -0.0274 | 0 | $0.00000 |
+| EXP_0052 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6409 | -0.0029 | 0 | $0.00000 |
+| EXP_0053 | W003 | completed | Refine the ridge penalty around alpha=8100 for the | 0.6438 | +0.0000 | 0 | $0.00000 |
+| EXP_0054 | W001 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6453 | +0.0015 | 0 | $0.00000 |
+| EXP_0055 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6179 | -0.0259 | 0 | $0.00000 |
+| EXP_0056 | W003 | completed | Add response_components_e18 to the best model (EXP | 0.6431 | -0.0023 | 0 | $0.00000 |
+| EXP_0057 | W001 | completed | Refine the ridge penalty around alpha=8100 for the | 0.6453 | +0.0000 | 0 | $0.00000 |
+| EXP_0058 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6195 | -0.0259 | 0 | $0.00000 |
+| EXP_0059 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.5747 | -0.0707 | 0 | $0.00000 |
+| EXP_0060 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0031 |  |  |  |  |
+| EXP_0061 | W001 | completed | Drop target_level_e15 from the best model (EXP_005 | 0.6396 | -0.0057 | 0 | $0.00000 |
+| EXP_0062 | W000 | completed | Drop control_mean from the best model (EXP_0054) t | 0.6452 | -0.0001 | 0 | $0.00000 |
+| EXP_0063 | W002 | completed | Drop mean_response from the best model (EXP_0054)  | 0.6456 | +0.0003 | 0 | $0.00000 |
+| EXP_0064 | W003 | completed | Drop is_target from the best model (EXP_0054) to t | 0.6452 | -0.0002 | 0 | $0.00000 |
+| EXP_0065 | W001 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6458 | +0.0002 | 0 | $0.00000 |
+| EXP_0066 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6432 | -0.0024 | 0 | $0.00000 |
+| EXP_0067 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6433 | -0.0023 | 0 | $0.00000 |
+| EXP_0068 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6195 | -0.0261 | 0 | $0.00000 |
+| EXP_0069 | W000 | completed | Refine the ridge penalty around alpha=1620 for the | 0.6458 | +0.0000 | 0 | $0.00000 |
+| EXP_0070 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6198 | -0.0260 | 0 | $0.00000 |
+| EXP_0071 | W003 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6215 | -0.0243 | 0 | $0.00000 |
+| EXP_0072 | W001 | completed | Drop target_level_e15 from the best model (EXP_006 | 0.6401 | -0.0057 | 0 | $0.00000 |
+| EXP_0073 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6433 | -0.0025 | 0 | $0.00000 |
+| EXP_0074 | W003 | completed | Refine the ridge penalty around alpha=972 for the  | 0.6458 | +0.0000 | 0 | $0.00000 |
+| EXP_0075 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6198 | -0.0260 | 0 | $0.00000 |
+| EXP_0076 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6215 | -0.0243 | 0 | $0.00000 |
+| EXP_0077 | W003 | completed | Drop target_level_e15 from the best model (EXP_006 | 0.6401 | -0.0057 | 0 | $0.00000 |
+| EXP_0078 | W001 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6456 | -0.0002 | 0 | $0.00000 |
+| EXP_0079 | W000 | completed | Drop control_mean from the best model (EXP_0069) t | 0.6455 | -0.0004 | 0 | $0.00000 |
+| EXP_0080 | W002 | completed | Drop is_target from the best model (EXP_0069) to t | 0.6458 | -0.0000 | 0 | $0.00000 |
+| EXP_0081 | W001 | completed | Fit the best feature set (EXP_0069) with lasso ins | 0.6457 | -0.0002 | 0 | $0.00000 |
+| EXP_0082 | W000 | completed | Fit the best feature set (EXP_0069) with elasticne | 0.6382 | -0.0076 | 0 | $0.00000 |
+| EXP_0083 | W003 | completed | Add control_variance_e17 to the best model (EXP_00 | 0.6458 | -0.0000 | 0 | $0.00000 |
+| EXP_0084 | W002 | completed | Add shared_module_e13 to the best model (EXP_0069) | 0.6458 | +0.0000 | 0 | $0.00000 |
+| EXP_0085 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6434 | -0.0025 | 0 | $0.00000 |
+| EXP_0086 | W000 | completed | Refine the ridge penalty around alpha=972 for the  | 0.6458 | +0.0000 | 0 | $0.00000 |
+| EXP_0087 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6198 | -0.0261 | 0 | $0.00000 |
+| EXP_0088 | W001 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6216 | -0.0242 | 0 | $0.00000 |
+| EXP_0089 | W000 | completed | Drop target_level_e15 from the best model (EXP_008 | 0.6400 | -0.0058 | 0 | $0.00000 |
+| EXP_0090 | W003 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6456 | -0.0002 | 0 | $0.00000 |
+| EXP_0091 | W002 | completed | Drop control_mean from the best model (EXP_0084) t | 0.6456 | -0.0003 | 0 | $0.00000 |
+| EXP_0092 | W001 | completed | Drop is_target from the best model (EXP_0084) to t | 0.6458 | -0.0000 | 0 | $0.00000 |
+| EXP_0093 | W003 | completed | Fit the best feature set (EXP_0084) with lasso ins | 0.6457 | -0.0002 | 0 | $0.00000 |
+| EXP_0094 | W002 | completed | Fit the best feature set (EXP_0084) with elasticne | 0.6382 | -0.0076 | 0 | $0.00000 |
+| EXP_0095 | W000 | completed | Add control_variance_e17 to the best model (EXP_00 | 0.6458 | -0.0000 | 0 | $0.00000 |
+| EXP_0096 | W001 | completed | Add coexpr_target_e9 to the best model (EXP_0084)  | 0.6455 | -0.0003 | 0 | $0.00000 |
+| EXP_0097 | W002 | completed | Add similar_pert_knn_e14 to the best model (EXP_00 | 0.6450 | -0.0008 | 0 | $0.00000 |
+| EXP_0098 | W000 | completed | Add pca_alignment_e16 to the best model (EXP_0084) | 0.6447 | -0.0011 | 0 | $0.00000 |
+| EXP_0099 | W001 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6457 | -0.0002 | 0 | $0.00000 |
+| EXP_0100 | W003 | completed | Add is_target_x_control_mean_e35 to the best model | 0.6459 | +0.0000 | 0 | $0.00000 |
+| EXP_0101 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6434 | -0.0025 | 0 | $0.00000 |
+| EXP_0102 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6198 | -0.0260 | 0 | $0.00000 |
+| EXP_0103 | W001 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6216 | -0.0243 | 0 | $0.00000 |
+| EXP_0104 | W003 | completed | Drop target_level_e15 from the best model (EXP_010 | 0.6458 | -0.0000 | 0 | $0.00000 |
+| EXP_0105 | W000 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6457 | -0.0002 | 0 | $0.00000 |
+| EXP_0106 | W001 | completed | Drop shared_module_e13 from the best model (EXP_01 | 0.6459 | -0.0000 | 0 | $0.00000 |
+| EXP_0107 | W002 | completed | Drop control_mean from the best model (EXP_0100) t | 0.6456 | -0.0003 | 0 | $0.00000 |
+| EXP_0108 | W003 | completed | Drop is_target from the best model (EXP_0100) to t | 0.6459 | -0.0000 | 0 | $0.00000 |
+| EXP_0109 | W000 | completed | Fit the best feature set (EXP_0100) with lasso ins | 0.6457 | -0.0002 | 0 | $0.00000 |
+| EXP_0110 | W003 | completed | Fit the best feature set (EXP_0100) with elasticne | 0.6382 | -0.0076 | 0 | $0.00000 |
+| EXP_0111 | W001 | completed | Add control_variance_e17 to the best model (EXP_01 | 0.6458 | -0.0000 | 0 | $0.00000 |
+| EXP_0112 | W002 | completed | Add coexpr_target_e9 to the best model (EXP_0100)  | 0.6455 | -0.0003 | 0 | $0.00000 |
+| EXP_0113 | W001 | completed | Add similar_pert_knn_e14 to the best model (EXP_01 | 0.6450 | -0.0008 | 0 | $0.00000 |
+| EXP_0114 | W002 | completed | Add pca_alignment_e16 to the best model (EXP_0100) | 0.6448 | -0.0011 | 0 | $0.00000 |
+| EXP_0115 | W000 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6457 | -0.0002 | 0 | $0.00000 |
+| EXP_0116 | W003 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6468 | +0.0009 | 0 | $0.00000 |
+| EXP_0117 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6463 | -0.0004 | 0 | $0.00000 |
+| EXP_0118 | W003 | completed | Refine the ridge penalty around alpha=4860 for the | 0.6468 | +0.0000 | 0 | $0.00000 |
+| EXP_0119 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6215 | -0.0252 | 0 | $0.00000 |
+| EXP_0120 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6260 | -0.0208 | 0 | $0.00000 |
+| EXP_0121 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6464 | -0.0004 | 0 | $0.00000 |
+| EXP_0122 | W003 | completed | Refine the ridge penalty around alpha=2916 for the | 0.6468 | +0.0000 | 0 | $0.00000 |
+| EXP_0123 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6215 | -0.0252 | 0 | $0.00000 |
+| EXP_0124 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6260 | -0.0208 | 0 | $0.00000 |
+| EXP_0125 | W003 | completed | Drop target_level_e15 from the best model (EXP_011 | 0.6467 | -0.0001 | 0 | $0.00000 |
+| EXP_0126 | W002 | completed | Drop external_knn_replogle2022_k562_e20 from the b | 0.6471 | +0.0003 | 0 | $0.00000 |
+| EXP_0127 | W000 | completed | Drop shared_module_e13 from the best model (EXP_01 | 0.6467 | -0.0001 | 0 | $0.00000 |
+| EXP_0128 | W001 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6467 | -0.0001 | 0 | $0.00000 |
+| EXP_0129 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6465 | -0.0006 | 0 | $0.00000 |
+| EXP_0130 | W000 | completed | Refine the ridge penalty around alpha=14580 for th | 0.6471 | +0.0000 | 0 | $0.00000 |
+| EXP_0131 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6215 | -0.0255 | 0 | $0.00000 |
+| EXP_0132 | W003 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.4755 | -0.1715 | 0 | $0.00000 |
+| EXP_0133 | W002 | completed | Drop target_level_e15 from the best model (EXP_012 | 0.6467 | -0.0004 | 0 | $0.00000 |
+| EXP_0134 | W000 | completed | Drop shared_module_e13 from the best model (EXP_01 | 0.6470 | -0.0001 | 0 | $0.00000 |
+| EXP_0135 | W001 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6467 | -0.0004 | 0 | $0.00000 |
+| EXP_0136 | W003 | completed | Drop kernel_ridge_annotation_embedding_e430 from t | 0.6457 | -0.0014 | 0 | $0.00000 |
+| EXP_0137 | W001 | completed | Drop control_mean from the best model (EXP_0126) t | 0.6472 | +0.0002 | 0 | $0.00000 |
+| EXP_0138 | W003 | completed | Drop is_target from the best model (EXP_0126) to t | 0.6469 | -0.0002 | 0 | $0.00000 |
+| EXP_0139 | W002 | completed | Fit the best feature set (EXP_0126) with lasso ins | 0.6461 | -0.0009 | 0 | $0.00000 |
+| EXP_0140 | W000 | completed | Fit the best feature set (EXP_0126) with elasticne | 0.6370 | -0.0100 | 0 | $0.00000 |
+| EXP_0141 | W001 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6467 | -0.0006 | 0 | $0.00000 |
+| EXP_0142 | W003 | completed | Add response_components_e18 to the best model (EXP | 0.6466 | -0.0006 | 0 | $0.00000 |
+| EXP_0143 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6461 | -0.0011 | 0 | $0.00000 |
+| EXP_0144 | W000 | completed | Refine the ridge penalty around alpha=14580 for th | 0.6475 | +0.0002 | 0 | $0.00000 |
+| EXP_0145 | W000 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6467 | -0.0008 | 0 | $0.00000 |
+| EXP_0146 | W003 | completed | Add response_components_e18 to the best model (EXP | 0.6466 | -0.0008 | 0 | $0.00000 |
+| EXP_0147 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6461 | -0.0013 | 0 | $0.00000 |
+| EXP_0148 | W001 | completed | Refine the ridge penalty around alpha=24786 for th | 0.6475 | +0.0000 | 0 | $0.00000 |
+| EXP_0149 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6226 | -0.0249 | 0 | $0.00000 |
+| EXP_0150 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.4753 | -0.1721 | 0 | $0.00000 |
+| EXP_0151 | W000 | completed | Drop target_level_e15 from the best model (EXP_014 | 0.6469 | -0.0006 | 0 | $0.00000 |
+| EXP_0152 | W001 | completed | Drop shared_module_e13 from the best model (EXP_01 | 0.6473 | -0.0001 | 0 | $0.00000 |
+| EXP_0153 | W002 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6469 | -0.0006 | 0 | $0.00000 |
+| EXP_0154 | W000 | completed | Drop kernel_ridge_annotation_embedding_e430 from t | 0.6456 | -0.0019 | 0 | $0.00000 |
+| EXP_0155 | W001 | completed | Drop is_target from the best model (EXP_0144) to t | 0.6472 | -0.0002 | 0 | $0.00000 |
+| EXP_0156 | W003 | completed | Fit the best feature set (EXP_0144) with lasso ins | 0.6460 | -0.0015 | 0 | $0.00000 |
+| EXP_0157 | W000 | completed | Fit the best feature set (EXP_0144) with elasticne | 0.6370 | -0.0104 | 0 | $0.00000 |
+| EXP_0158 | W001 | completed | Add control_variance_e17 to the best model (EXP_01 | 0.6472 | -0.0003 | 0 | $0.00000 |
+| EXP_0159 | W003 | completed | Add coexpr_target_e9 to the best model (EXP_0144)  | 0.6472 | -0.0002 | 0 | $0.00000 |
+| EXP_0160 | W002 | completed | Add similar_pert_knn_e14 to the best model (EXP_01 | 0.6456 | -0.0018 | 0 | $0.00000 |
+| EXP_0161 | W002 | completed | Add pca_alignment_e16 to the best model (EXP_0144) | 0.6459 | -0.0015 | 0 | $0.00000 |
+| EXP_0162 | W000 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6465 | -0.0010 | 0 | $0.00000 |
+| EXP_0163 | W001 | completed | Add knn_residual_response_e59 to the best model (E | 0.6474 | -0.0001 | 0 | $0.00000 |
+| EXP_0164 | W003 | completed | Add knn_response_geneset_e11 to the best model (EX | 0.6496 | +0.0022 | 0 | $0.00000 |
+| EXP_0165 | W003 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6486 | -0.0010 | 0 | $0.00000 |
+| EXP_0166 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6488 | -0.0008 | 0 | $0.00000 |
+| EXP_0167 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6478 | -0.0018 | 0 | $0.00000 |
+| EXP_0168 | W000 | completed | Refine the ridge penalty around alpha=43740 for th | 0.6496 | +0.0000 | 0 | $0.00000 |
+| EXP_0169 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6243 | -0.0253 | 0 | $0.00000 |
+| EXP_0170 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6085 | -0.0411 | 0 | $0.00000 |
+| EXP_0171 | W001 | completed | Drop target_level_e15 from the best model (EXP_016 | 0.6488 | -0.0008 | 0 | $0.00000 |
+| EXP_0172 | W002 | completed | Drop shared_module_e13 from the best model (EXP_01 | 0.6496 | -0.0000 | 0 | $0.00000 |
+| EXP_0173 | W003 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6488 | -0.0008 | 0 | $0.00000 |
+| EXP_0174 | W001 | completed | Drop kernel_ridge_annotation_embedding_e430 from t | 0.6513 | +0.0017 | 0 | $0.00000 |
+| EXP_0175 | W000 | completed | Drop is_target from the best model (EXP_0164) to t | 0.6493 | -0.0004 | 0 | $0.00000 |
+| EXP_0176 | W002 | completed | Fit the best feature set (EXP_0164) with lasso ins | 0.6447 | -0.0049 | 0 | $0.00000 |
+| EXP_0177 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6499 | -0.0014 | 0 | $0.00000 |
+| EXP_0178 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6495 | -0.0018 | 0 | $0.00000 |
+| EXP_0179 | W000 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6480 | -0.0033 | 0 | $0.00000 |
+| EXP_0180 | W003 | completed | Refine the ridge penalty around alpha=24786 for th | 0.6513 | +0.0000 | 0 | $0.00000 |
+| EXP_0181 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6268 | -0.0245 | 0 | $0.00000 |
+| EXP_0182 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6096 | -0.0417 | 0 | $0.00000 |
+| EXP_0183 | W003 | completed | Drop target_level_e15 from the best model (EXP_017 | 0.6508 | -0.0005 | 0 | $0.00000 |
+| EXP_0184 | W002 | completed | Drop shared_module_e13 from the best model (EXP_01 | 0.6512 | -0.0001 | 0 | $0.00000 |
+| EXP_0185 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6508 | -0.0005 | 0 | $0.00000 |
+| EXP_0186 | W003 | completed | Drop is_target from the best model (EXP_0174) to t | 0.6511 | -0.0002 | 0 | $0.00000 |
+| EXP_0187 | W002 | completed | Fit the best feature set (EXP_0174) with lasso ins | 0.6473 | -0.0040 | 0 | $0.00000 |
+| EXP_0188 | W001 | completed | Fit the best feature set (EXP_0174) with elasticne | 0.6403 | -0.0110 | 0 | $0.00000 |
+| EXP_0189 | W003 | completed | Add control_variance_e17 to the best model (EXP_01 | 0.6511 | -0.0002 | 0 | $0.00000 |
+| EXP_0190 | W002 | completed | Add coexpr_target_e9 to the best model (EXP_0174)  | 0.6511 | -0.0002 | 0 | $0.00000 |
+| EXP_0191 | W000 | completed | Add similar_pert_knn_e14 to the best model (EXP_01 | 0.6482 | -0.0031 | 0 | $0.00000 |
+| EXP_0192 | W001 | completed | Add pca_alignment_e16 to the best model (EXP_0174) | 0.6495 | -0.0018 | 0 | $0.00000 |
+| EXP_0193 | W003 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6504 | -0.0009 | 0 | $0.00000 |
+| EXP_0194 | W001 | completed | Add knn_residual_response_e59 to the best model (E | 0.6516 | +0.0003 | 0 | $0.00000 |
+| EXP_0195 | W002 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6509 | -0.0004 | 0 | $0.00000 |
+| EXP_0196 | W000 | completed | Add knn_response_ppi_diffusion_e248 to the best mo | 0.6507 | -0.0006 | 0 | $0.00000 |
+| EXP_0197 | W001 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6412 | -0.0104 | 0 | $0.00000 |
+| EXP_0198 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0197 |  |  |  |  |
+| EXP_0199 | W001 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6503 | -0.0014 | 0 | $0.00000 |
+| EXP_0200 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6503 | -0.0014 | 0 | $0.00000 |
+| EXP_0201 | W003 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6485 | -0.0031 | 0 | $0.00000 |
+| EXP_0202 | W001 | completed | Refine the ridge penalty around alpha=43740 for th | 0.6517 | +0.0000 | 0 | $0.00000 |
+| EXP_0203 | W000 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6503 | -0.0014 | 0 | $0.00000 |
+| EXP_0204 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6503 | -0.0014 | 0 | $0.00000 |
+| EXP_0205 | W003 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6488 | -0.0029 | 0 | $0.00000 |
+| EXP_0206 | W002 | completed | Refine the ridge penalty around alpha=26244 for th | 0.6517 | +0.0000 | 0 | $0.00000 |
+| EXP_0207 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6278 | -0.0239 | 0 | $0.00000 |
+| EXP_0208 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.5987 | -0.0530 | 0 | $0.00000 |
+| EXP_0209 | W001 | completed | Drop target_level_e15 from the best model (EXP_020 | 0.6511 | -0.0006 | 0 | $0.00000 |
+| EXP_0210 | W003 | completed | Drop shared_module_e13 from the best model (EXP_02 | 0.6516 | -0.0001 | 0 | $0.00000 |
+| EXP_0211 | W001 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6511 | -0.0006 | 0 | $0.00000 |
+| EXP_0212 | W003 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6489 | -0.0027 | 0 | $0.00000 |
+| EXP_0213 | W002 | completed | Drop knn_residual_response_e59 from the best model | 0.6513 | -0.0003 | 0 | $0.00000 |
+| EXP_0214 | W000 | completed | Drop is_target from the best model (EXP_0202) to t | 0.6514 | -0.0003 | 0 | $0.00000 |
+| EXP_0215 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0197 |  |  |  |  |
+| EXP_0216 | W000 | completed | Fit the best feature set (EXP_0202) with lasso ins | 0.6444 | -0.0072 | 0 | $0.00000 |
+| EXP_0217 | W001 | completed | Fit the best feature set (EXP_0202) with elasticne | 0.6403 | -0.0114 | 0 | $0.00000 |
+| EXP_0218 | W003 | completed | Add control_variance_e17 to the best model (EXP_02 | 0.6515 | -0.0002 | 0 | $0.00000 |
+| EXP_0219 | W002 | completed | Add coexpr_target_e9 to the best model (EXP_0202)  | 0.6515 | -0.0002 | 0 | $0.00000 |
+| EXP_0220 | W000 | completed | Add similar_pert_knn_e14 to the best model (EXP_02 | 0.6468 | -0.0049 | 0 | $0.00000 |
+| EXP_0221 | W003 | completed | Add pca_alignment_e16 to the best model (EXP_0202) | 0.6498 | -0.0019 | 0 | $0.00000 |
+| EXP_0222 | W002 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6507 | -0.0010 | 0 | $0.00000 |
+| EXP_0223 | W001 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6498 | -0.0019 | 0 | $0.00000 |
+| EXP_0224 | W003 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6512 | -0.0005 | 0 | $0.00000 |
+| EXP_0225 | W002 | completed | Add knn_response_ppi_diffusion_e248 to the best mo | 0.6512 | -0.0005 | 0 | $0.00000 |
+| EXP_0226 | W000 | completed | Add knn_response_reconstruction_weights_e162 to th | 0.6519 | +0.0002 | 0 | $0.00000 |
+| EXP_0227 | W001 | completed | Add knn_response_symbol_family_e58 to the best mod | 0.6536 | +0.0020 | 0 | $0.00000 |
+| EXP_0228 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6517 | -0.0019 | 0 | $0.00000 |
+| EXP_0229 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6517 | -0.0020 | 0 | $0.00000 |
+| EXP_0230 | W003 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6500 | -0.0037 | 0 | $0.00000 |
+| EXP_0231 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6273 | -0.0263 | 0 | $0.00000 |
+| EXP_0232 | W003 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6430 | -0.0106 | 0 | $0.00000 |
+| EXP_0233 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0232 |  |  |  |  |
+| EXP_0234 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6238 | -0.0298 | 0 | $0.00000 |
+| EXP_0235 | W001 | completed | Drop target_level_e15 from the best model (EXP_022 | 0.6527 | -0.0009 | 0 | $0.00000 |
+| EXP_0236 | W003 | completed | Drop shared_module_e13 from the best model (EXP_02 | 0.6536 | -0.0000 | 0 | $0.00000 |
+| EXP_0237 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6527 | -0.0009 | 0 | $0.00000 |
+| EXP_0238 | W001 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6531 | -0.0005 | 0 | $0.00000 |
+| EXP_0239 | W003 | completed | Drop knn_residual_response_e59 from the best model | 0.6526 | -0.0010 | 0 | $0.00000 |
+| EXP_0240 | W000 | completed | Drop is_target from the best model (EXP_0227) to t | 0.6533 | -0.0003 | 0 | $0.00000 |
+| EXP_0241 | W002 | completed | Fit the best feature set (EXP_0227) with lasso ins | 0.6445 | -0.0091 | 0 | $0.00000 |
+| EXP_0242 | W003 | completed | Fit the best feature set (EXP_0227) with elasticne | 0.6404 | -0.0133 | 0 | $0.00000 |
+| EXP_0243 | W002 | completed | Add control_variance_e17 to the best model (EXP_02 | 0.6535 | -0.0002 | 0 | $0.00000 |
+| EXP_0244 | W001 | completed | Add coexpr_target_e9 to the best model (EXP_0227)  | 0.6535 | -0.0002 | 0 | $0.00000 |
+| EXP_0245 | W000 | completed | Add similar_pert_knn_e14 to the best model (EXP_02 | 0.6476 | -0.0060 | 0 | $0.00000 |
+| EXP_0246 | W002 | completed | Add pca_alignment_e16 to the best model (EXP_0227) | 0.6516 | -0.0021 | 0 | $0.00000 |
+| EXP_0247 | W001 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6526 | -0.0010 | 0 | $0.00000 |
+| EXP_0248 | W000 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6522 | -0.0014 | 0 | $0.00000 |
+| EXP_0249 | W003 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6526 | -0.0011 | 0 | $0.00000 |
+| EXP_0250 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0232 |  |  |  |  |
+| EXP_0251 | W000 | completed | Add knn_response_ppi_diffusion_e248 to the best mo | 0.6533 | -0.0003 | 0 | $0.00000 |
+| EXP_0252 | W002 | completed | Add knn_response_reconstruction_weights_e162 to th | 0.6526 | -0.0011 | 0 | $0.00000 |
+| EXP_0253 | W003 | completed | Add knn_two_hop_response_cluster_e137 to the best  | 0.6551 | +0.0015 | 0 | $0.00000 |
+| EXP_0254 | W001 | completed | Add normalized_mean_response_e56 to the best model | 0.6534 | -0.0003 | 0 | $0.00000 |
+| EXP_0255 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6528 | -0.0023 | 0 | $0.00000 |
+| EXP_0256 | W003 | completed | Add response_components_e18 to the best model (EXP | 0.6532 | -0.0019 | 0 | $0.00000 |
+| EXP_0257 | W000 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6509 | -0.0042 | 0 | $0.00000 |
+| EXP_0258 | W001 | completed | Refine the ridge penalty around alpha=26244 for th | 0.6551 | +0.0000 | 0 | $0.00000 |
+| EXP_0259 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6293 | -0.0258 | 0 | $0.00000 |
+| EXP_0260 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6271 | -0.0280 | 0 | $0.00000 |
+| EXP_0261 | W001 | completed | Drop target_level_e15 from the best model (EXP_025 | 0.6545 | -0.0006 | 0 | $0.00000 |
+| EXP_0262 | W003 | completed | Drop shared_module_e13 from the best model (EXP_02 | 0.6550 | -0.0001 | 0 | $0.00000 |
+| EXP_0263 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6545 | -0.0006 | 0 | $0.00000 |
+| EXP_0264 | W001 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6522 | -0.0029 | 0 | $0.00000 |
+| EXP_0265 | W003 | completed | Drop knn_residual_response_e59 from the best model | 0.6554 | +0.0003 | 0 | $0.00000 |
+| EXP_0266 | W002 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6522 | -0.0029 | 0 | $0.00000 |
+| EXP_0267 | W001 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6449 | -0.0104 | 0 | $0.00000 |
+| EXP_0268 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0267 |  |  |  |  |
+| EXP_0269 | W003 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6531 | -0.0023 | 0 | $0.00000 |
+| EXP_0270 | W001 | completed | Add response_components_e18 to the best model (EXP | 0.6535 | -0.0018 | 0 | $0.00000 |
+| EXP_0271 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6512 | -0.0042 | 0 | $0.00000 |
+| EXP_0272 | W000 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6554 | +0.0000 | 0 | $0.00000 |
+| EXP_0273 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6300 | -0.0254 | 0 | $0.00000 |
+| EXP_0274 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6257 | -0.0296 | 0 | $0.00000 |
+| EXP_0275 | W003 | completed | Drop target_level_e15 from the best model (EXP_026 | 0.6550 | -0.0004 | 0 | $0.00000 |
+| EXP_0276 | W001 | completed | Drop shared_module_e13 from the best model (EXP_02 | 0.6553 | -0.0001 | 0 | $0.00000 |
+| EXP_0277 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6550 | -0.0004 | 0 | $0.00000 |
+| EXP_0278 | W003 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6490 | -0.0064 | 0 | $0.00000 |
+| EXP_0279 | W002 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6521 | -0.0032 | 0 | $0.00000 |
+| EXP_0280 | W001 | completed | Drop is_target from the best model (EXP_0265) to t | 0.6552 | -0.0002 | 0 | $0.00000 |
+| EXP_0281 | W003 | completed | Fit the best feature set (EXP_0265) with lasso ins | 0.6484 | -0.0070 | 0 | $0.00000 |
+| EXP_0282 | W002 | completed | Fit the best feature set (EXP_0265) with elasticne | 0.6404 | -0.0150 | 0 | $0.00000 |
+| EXP_0283 | W000 | completed | Add control_variance_e17 to the best model (EXP_02 | 0.6553 | -0.0001 | 0 | $0.00000 |
+| EXP_0284 | W001 | completed | Add coexpr_target_e9 to the best model (EXP_0265)  | 0.6552 | -0.0002 | 0 | $0.00000 |
+| EXP_0285 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0267 |  |  |  |  |
+| EXP_0286 | W000 | completed | Add similar_pert_knn_e14 to the best model (EXP_02 | 0.6520 | -0.0034 | 0 | $0.00000 |
+| EXP_0287 | W001 | completed | Add pca_alignment_e16 to the best model (EXP_0265) | 0.6541 | -0.0012 | 0 | $0.00000 |
+| EXP_0288 | W003 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6549 | -0.0005 | 0 | $0.00000 |
+| EXP_0289 | W002 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6532 | -0.0022 | 0 | $0.00000 |
+| EXP_0290 | W001 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6552 | -0.0001 | 0 | $0.00000 |
+| EXP_0291 | W003 | completed | Add knn_response_ppi_diffusion_e248 to the best mo | 0.6558 | +0.0004 | 0 | $0.00000 |
+| EXP_0292 | W000 | completed | Add knn_response_reconstruction_weights_e162 to th | 0.6555 | +0.0001 | 0 | $0.00000 |
+| EXP_0293 | W002 | completed | Add normalized_mean_response_e56 to the best model | 0.6558 | +0.0004 | 0 | $0.00000 |
+| EXP_0294 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6532 | -0.0025 | 0 | $0.00000 |
+| EXP_0295 | W003 | completed | Add response_components_e18 to the best model (EXP | 0.6538 | -0.0020 | 0 | $0.00000 |
+| EXP_0296 | W000 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6513 | -0.0045 | 0 | $0.00000 |
+| EXP_0297 | W001 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6558 | +0.0000 | 0 | $0.00000 |
+| EXP_0298 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6302 | -0.0256 | 0 | $0.00000 |
+| EXP_0299 | W003 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6241 | -0.0317 | 0 | $0.00000 |
+| EXP_0300 | W000 | completed | Drop target_level_e15 from the best model (EXP_029 | 0.6554 | -0.0004 | 0 | $0.00000 |
+| EXP_0301 | W002 | completed | Drop shared_module_e13 from the best model (EXP_02 | 0.6557 | -0.0001 | 0 | $0.00000 |
+| EXP_0302 | W003 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6446 | -0.0112 | 0 | $0.00000 |
+| EXP_0303 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0302 |  |  |  |  |
+| EXP_0304 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6554 | -0.0004 | 0 | $0.00000 |
+| EXP_0305 | W001 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6501 | -0.0057 | 0 | $0.00000 |
+| EXP_0306 | W003 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6514 | -0.0044 | 0 | $0.00000 |
+| EXP_0307 | W002 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6531 | -0.0026 | 0 | $0.00000 |
+| EXP_0308 | W001 | completed | Drop is_target from the best model (EXP_0291) to t | 0.6556 | -0.0002 | 0 | $0.00000 |
+| EXP_0309 | W003 | completed | Fit the best feature set (EXP_0291) with lasso ins | 0.6484 | -0.0074 | 0 | $0.00000 |
+| EXP_0310 | W002 | completed | Fit the best feature set (EXP_0291) with elasticne | 0.6404 | -0.0154 | 0 | $0.00000 |
+| EXP_0311 | W000 | completed | Add control_variance_e17 to the best model (EXP_02 | 0.6557 | -0.0001 | 0 | $0.00000 |
+| EXP_0312 | W002 | completed | Add coexpr_target_e9 to the best model (EXP_0291)  | 0.6556 | -0.0002 | 0 | $0.00000 |
+| EXP_0313 | W003 | completed | Add similar_pert_knn_e14 to the best model (EXP_02 | 0.6521 | -0.0037 | 0 | $0.00000 |
+| EXP_0314 | W000 | completed | Add pca_alignment_e16 to the best model (EXP_0291) | 0.6545 | -0.0013 | 0 | $0.00000 |
+| EXP_0315 | W001 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6553 | -0.0005 | 0 | $0.00000 |
+| EXP_0316 | W003 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6531 | -0.0027 | 0 | $0.00000 |
+| EXP_0317 | W000 | completed | Add knn_residual_response_e59 to the best model (E | 0.6553 | -0.0005 | 0 | $0.00000 |
+| EXP_0318 | W002 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6557 | -0.0001 | 0 | $0.00000 |
+| EXP_0319 | W001 | completed | Add knn_response_reconstruction_weights_e162 to th | 0.6559 | +0.0001 | 0 | $0.00000 |
+| EXP_0320 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0302 |  |  |  |  |
+| EXP_0321 | W001 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6534 | -0.0025 | 0 | $0.00000 |
+| EXP_0322 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6541 | -0.0018 | 0 | $0.00000 |
+| EXP_0323 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6516 | -0.0043 | 0 | $0.00000 |
+| EXP_0324 | W003 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6559 | +0.0000 | 0 | $0.00000 |
+| EXP_0325 | W002 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6305 | -0.0254 | 0 | $0.00000 |
+| EXP_0326 | W003 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6265 | -0.0294 | 0 | $0.00000 |
+| EXP_0327 | W001 | completed | Drop target_level_e15 from the best model (EXP_031 | 0.6555 | -0.0004 | 0 | $0.00000 |
+| EXP_0328 | W000 | completed | Drop shared_module_e13 from the best model (EXP_03 | 0.6558 | -0.0001 | 0 | $0.00000 |
+| EXP_0329 | W003 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6555 | -0.0004 | 0 | $0.00000 |
+| EXP_0330 | W001 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6529 | -0.0030 | 0 | $0.00000 |
+| EXP_0331 | W002 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6522 | -0.0037 | 0 | $0.00000 |
+| EXP_0332 | W000 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6530 | -0.0029 | 0 | $0.00000 |
+| EXP_0333 | W002 | completed | Drop is_target from the best model (EXP_0319) to t | 0.6558 | -0.0002 | 0 | $0.00000 |
+| EXP_0334 | W003 | completed | Fit the best feature set (EXP_0319) with lasso ins | 0.6486 | -0.0073 | 0 | $0.00000 |
+| EXP_0335 | W000 | completed | Fit the best feature set (EXP_0319) with elasticne | 0.6404 | -0.0156 | 0 | $0.00000 |
+| EXP_0336 | W001 | completed | Add control_variance_e17 to the best model (EXP_03 | 0.6559 | -0.0001 | 0 | $0.00000 |
+| EXP_0337 | W002 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6444 | -0.0115 | 0 | $0.00000 |
+| EXP_0338 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0337 |  |  |  |  |
+| EXP_0339 | W002 | completed | Add coexpr_target_e9 to the best model (EXP_0319)  | 0.6557 | -0.0002 | 0 | $0.00000 |
+| EXP_0340 | W000 | completed | Add similar_pert_knn_e14 to the best model (EXP_03 | 0.6523 | -0.0036 | 0 | $0.00000 |
+| EXP_0341 | W001 | completed | Add pca_alignment_e16 to the best model (EXP_0319) | 0.6546 | -0.0013 | 0 | $0.00000 |
+| EXP_0342 | W003 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6555 | -0.0005 | 0 | $0.00000 |
+| EXP_0343 | W000 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6535 | -0.0025 | 0 | $0.00000 |
+| EXP_0344 | W001 | completed | Add knn_residual_response_e59 to the best model (E | 0.6554 | -0.0005 | 0 | $0.00000 |
+| EXP_0345 | W002 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6558 | -0.0001 | 0 | $0.00000 |
+| EXP_0346 | W003 | completed | Add normalized_mean_response_e56 to the best model | 0.6562 | +0.0003 | 0 | $0.00000 |
+| EXP_0347 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6538 | -0.0024 | 0 | $0.00000 |
+| EXP_0348 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6543 | -0.0019 | 0 | $0.00000 |
+| EXP_0349 | W003 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6520 | -0.0042 | 0 | $0.00000 |
+| EXP_0350 | W001 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6562 | +0.0000 | 0 | $0.00000 |
+| EXP_0351 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6309 | -0.0253 | 0 | $0.00000 |
+| EXP_0352 | W001 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6289 | -0.0273 | 0 | $0.00000 |
+| EXP_0353 | W002 | completed | Drop target_level_e15 from the best model (EXP_034 | 0.6558 | -0.0004 | 0 | $0.00000 |
+| EXP_0354 | W000 | completed | Drop shared_module_e13 from the best model (EXP_03 | 0.6561 | -0.0001 | 0 | $0.00000 |
+| EXP_0355 | W003 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6463 | -0.0099 | 0 | $0.00000 |
+| EXP_0356 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0355 |  |  |  |  |
+| EXP_0357 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6558 | -0.0004 | 0 | $0.00000 |
+| EXP_0358 | W001 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6523 | -0.0038 | 0 | $0.00000 |
+| EXP_0359 | W002 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6541 | -0.0020 | 0 | $0.00000 |
+| EXP_0360 | W003 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6529 | -0.0032 | 0 | $0.00000 |
+| EXP_0361 | W003 | completed | Drop knn_response_ppi_diffusion_e248 from the best | 0.6556 | -0.0006 | 0 | $0.00000 |
+| EXP_0362 | W001 | completed | Drop knn_response_reconstruction_weights_e162 from | 0.6564 | +0.0002 | 0 | $0.00000 |
+| EXP_0363 | W002 | completed | Drop is_target from the best model (EXP_0346) to t | 0.6560 | -0.0002 | 0 | $0.00000 |
+| EXP_0364 | W000 | completed | Fit the best feature set (EXP_0346) with lasso ins | 0.6486 | -0.0075 | 0 | $0.00000 |
+| EXP_0365 | W003 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6539 | -0.0025 | 0 | $0.00000 |
+| EXP_0366 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6543 | -0.0021 | 0 | $0.00000 |
+| EXP_0367 | W000 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6520 | -0.0044 | 0 | $0.00000 |
+| EXP_0368 | W001 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6564 | +0.0000 | 0 | $0.00000 |
+| EXP_0369 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6309 | -0.0255 | 0 | $0.00000 |
+| EXP_0370 | W003 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6283 | -0.0281 | 0 | $0.00000 |
+| EXP_0371 | W002 | completed | Drop target_level_e15 from the best model (EXP_036 | 0.6560 | -0.0004 | 0 | $0.00000 |
+| EXP_0372 | W000 | completed | Drop shared_module_e13 from the best model (EXP_03 | 0.6563 | -0.0001 | 0 | $0.00000 |
+| EXP_0373 | W001 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6466 | -0.0098 | 0 | $0.00000 |
+| EXP_0374 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0373 |  |  |  |  |
+| EXP_0375 | W003 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6560 | -0.0004 | 0 | $0.00000 |
+| EXP_0376 | W001 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6496 | -0.0068 | 0 | $0.00000 |
+| EXP_0377 | W002 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6542 | -0.0022 | 0 | $0.00000 |
+| EXP_0378 | W000 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6533 | -0.0031 | 0 | $0.00000 |
+| EXP_0379 | W001 | completed | Drop is_target from the best model (EXP_0362) to t | 0.6562 | -0.0002 | 0 | $0.00000 |
+| EXP_0380 | W002 | completed | Fit the best feature set (EXP_0362) with lasso ins | 0.6484 | -0.0080 | 0 | $0.00000 |
+| EXP_0381 | W003 | completed | Fit the best feature set (EXP_0362) with elasticne | 0.6404 | -0.0161 | 0 | $0.00000 |
+| EXP_0382 | W000 | completed | Add control_variance_e17 to the best model (EXP_03 | 0.6563 | -0.0001 | 0 | $0.00000 |
+| EXP_0383 | W001 | completed | Add coexpr_target_e9 to the best model (EXP_0362)  | 0.6562 | -0.0002 | 0 | $0.00000 |
+| EXP_0384 | W002 | completed | Add similar_pert_knn_e14 to the best model (EXP_03 | 0.6518 | -0.0046 | 0 | $0.00000 |
+| EXP_0385 | W003 | completed | Add pca_alignment_e16 to the best model (EXP_0362) | 0.6550 | -0.0014 | 0 | $0.00000 |
+| EXP_0386 | W000 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6559 | -0.0005 | 0 | $0.00000 |
+| EXP_0387 | W002 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6541 | -0.0023 | 0 | $0.00000 |
+| EXP_0388 | W003 | completed | Add knn_residual_response_e59 to the best model (E | 0.6559 | -0.0005 | 0 | $0.00000 |
+| EXP_0389 | W001 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6565 | +0.0001 | 0 | $0.00000 |
+| EXP_0390 | W000 | completed | Add rwr_target_proximity_e14 to the best model (EX | 0.6567 | +0.0003 | 0 | $0.00000 |
+| EXP_0391 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0373 |  |  |  |  |
+| EXP_0392 | W003 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6542 | -0.0025 | 0 | $0.00000 |
+| EXP_0393 | W002 | completed | Add response_components_e18 to the best model (EXP | 0.6546 | -0.0021 | 0 | $0.00000 |
+| EXP_0394 | W001 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6523 | -0.0044 | 0 | $0.00000 |
+| EXP_0395 | W000 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6567 | +0.0000 | 0 | $0.00000 |
+| EXP_0396 | W001 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6313 | -0.0254 | 0 | $0.00000 |
+| EXP_0397 | W000 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6279 | -0.0288 | 0 | $0.00000 |
+| EXP_0398 | W003 | completed | Drop target_level_e15 from the best model (EXP_039 | 0.6563 | -0.0004 | 0 | $0.00000 |
+| EXP_0399 | W002 | completed | Drop shared_module_e13 from the best model (EXP_03 | 0.6567 | -0.0000 | 0 | $0.00000 |
+| EXP_0400 | W000 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6563 | -0.0004 | 0 | $0.00000 |
+| EXP_0401 | W003 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6509 | -0.0059 | 0 | $0.00000 |
+| EXP_0402 | W002 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6543 | -0.0025 | 0 | $0.00000 |
+| EXP_0403 | W001 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6538 | -0.0029 | 0 | $0.00000 |
+| EXP_0404 | W001 | completed | Drop knn_response_ppi_diffusion_e248 from the best | 0.6562 | -0.0005 | 0 | $0.00000 |
+| EXP_0405 | W000 | completed | Drop normalized_mean_response_e56 from the best mo | 0.6558 | -0.0009 | 0 | $0.00000 |
+| EXP_0406 | W002 | completed | Drop is_target from the best model (EXP_0390) to t | 0.6566 | -0.0002 | 0 | $0.00000 |
+| EXP_0407 | W003 | completed | Fit the best feature set (EXP_0390) with lasso ins | 0.6485 | -0.0082 | 0 | $0.00000 |
+| EXP_0408 | W003 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6466 | -0.0101 | 0 | $0.00000 |
+| EXP_0409 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0408 |  |  |  |  |
+| EXP_0410 | W001 | completed | Fit the best feature set (EXP_0390) with elasticne | 0.6404 | -0.0164 | 0 | $0.00000 |
+| EXP_0411 | W000 | completed | Add control_variance_e17 to the best model (EXP_03 | 0.6567 | -0.0001 | 0 | $0.00000 |
+| EXP_0412 | W002 | completed | Add coexpr_target_e9 to the best model (EXP_0390)  | 0.6565 | -0.0002 | 0 | $0.00000 |
+| EXP_0413 | W003 | completed | Add similar_pert_knn_e14 to the best model (EXP_03 | 0.6523 | -0.0044 | 0 | $0.00000 |
+| EXP_0414 | W000 | completed | Add pca_alignment_e16 to the best model (EXP_0390) | 0.6554 | -0.0013 | 0 | $0.00000 |
+| EXP_0415 | W002 | completed | Add gene_reliability_weighted_knn_e413 to the best | 0.6562 | -0.0005 | 0 | $0.00000 |
+| EXP_0416 | W003 | completed | Add kernel_ridge_annotation_embedding_e430 to the  | 0.6541 | -0.0026 | 0 | $0.00000 |
+| EXP_0417 | W001 | completed | Add knn_residual_response_e59 to the best model (E | 0.6562 | -0.0005 | 0 | $0.00000 |
+| EXP_0418 | W000 | completed | Add knn_response_geneset_e12 to the best model (EX | 0.6567 | +0.0000 | 0 | $0.00000 |
+| EXP_0419 | W003 | completed | Add knn_response_reconstruction_weights_e162 to th | 0.6565 | -0.0002 | 0 | $0.00000 |
+| EXP_0420 | W001 | completed | Add shared_geneset_score_e15 to the best model (EX | 0.6566 | -0.0001 | 0 | $0.00000 |
+| EXP_0421 | W002 | completed | Add external_knn_replogle2022_k562_e20 and control | 0.6542 | -0.0026 | 0 | $0.00000 |
+| EXP_0422 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6543 | -0.0024 | 0 | $0.00000 |
+| EXP_0423 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6548 | -0.0020 | 0 | $0.00000 |
+| EXP_0424 | W003 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6525 | -0.0043 | 0 | $0.00000 |
+| EXP_0425 | W001 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6567 | +0.0000 | 0 | $0.00000 |
+| EXP_0426 | W001 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6467 | -0.0101 | 0 | $0.00000 |
+| EXP_0427 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0426 |  |  |  |  |
+| EXP_0428 | W003 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6314 | -0.0254 | 0 | $0.00000 |
+| EXP_0429 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6279 | -0.0288 | 0 | $0.00000 |
+| EXP_0430 | W000 | completed | Drop target_level_e15 from the best model (EXP_041 | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0431 | W001 | completed | Drop shared_module_e13 from the best model (EXP_04 | 0.6567 | +0.0000 | 0 | $0.00000 |
+| EXP_0432 | W003 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6543 | -0.0024 | 0 | $0.00000 |
+| EXP_0433 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6548 | -0.0020 | 0 | $0.00000 |
+| EXP_0434 | W001 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6525 | -0.0042 | 0 | $0.00000 |
+| EXP_0435 | W002 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6567 | +0.0000 | 0 | $0.00000 |
+| EXP_0436 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6315 | -0.0253 | 0 | $0.00000 |
+| EXP_0437 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6280 | -0.0288 | 0 | $0.00000 |
+| EXP_0438 | W003 | completed | Drop target_level_e15 from the best model (EXP_043 | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0439 | W001 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0440 | W000 | completed | Drop knn_response_geneset_e11 from the best model  | 0.6568 | +0.0000 | 0 | $0.00000 |
+| EXP_0441 | W003 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6540 | -0.0027 | 0 | $0.00000 |
+| EXP_0442 | W001 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6540 | -0.0027 | 0 | $0.00000 |
+| EXP_0443 | W002 | completed | Drop knn_response_ppi_diffusion_e248 from the best | 0.6562 | -0.0006 | 0 | $0.00000 |
+| EXP_0444 | W002 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6466 | -0.0101 | 0 | $0.00000 |
+| EXP_0445 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0444 |  |  |  |  |
+| EXP_0446 | W002 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6543 | -0.0025 | 0 | $0.00000 |
+| EXP_0447 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6547 | -0.0021 | 0 | $0.00000 |
+| EXP_0448 | W003 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6523 | -0.0044 | 0 | $0.00000 |
+| EXP_0449 | W001 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6568 | +0.0000 | 0 | $0.00000 |
+| EXP_0450 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6315 | -0.0253 | 0 | $0.00000 |
+| EXP_0451 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6280 | -0.0288 | 0 | $0.00000 |
+| EXP_0452 | W003 | completed | Drop target_level_e15 from the best model (EXP_044 | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0453 | W001 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0454 | W001 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6543 | -0.0025 | 0 | $0.00000 |
+| EXP_0455 | W002 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6538 | -0.0030 | 0 | $0.00000 |
+| EXP_0456 | W003 | completed | Drop knn_response_ppi_diffusion_e248 from the best | 0.6562 | -0.0006 | 0 | $0.00000 |
+| EXP_0457 | W000 | completed | Drop normalized_mean_response_e56 from the best mo | 0.6558 | -0.0009 | 0 | $0.00000 |
+| EXP_0458 | W000 | completed | Drop rwr_target_proximity_e14 from the best model  | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0459 | W002 | completed | Drop knn_response_geneset_e12 from the best model  | 0.6508 | -0.0059 | 0 | $0.00000 |
+| EXP_0460 | W003 | completed | Drop is_target from the best model (EXP_0440) to t | 0.6566 | -0.0002 | 0 | $0.00000 |
+| EXP_0461 | W001 | completed | Fit the best feature set (EXP_0440) with lasso ins | 0.6485 | -0.0082 | 0 | $0.00000 |
+| EXP_0462 | W000 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6465 | -0.0102 | 0 | $0.00000 |
+| EXP_0463 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0462 |  |  |  |  |
+| EXP_0464 | W002 | completed | Fit the best feature set (EXP_0440) with elasticne | 0.6404 | -0.0164 | 0 | $0.00000 |
+| EXP_0465 | W003 | completed | Add control_variance_e17 to the best model (EXP_04 | 0.6567 | -0.0001 | 0 | $0.00000 |
+| EXP_0466 | W001 | completed | Add shared_module_e13 to the best model (EXP_0440) | 0.6568 | +0.0000 | 0 | $0.00000 |
+| EXP_0467 | W000 | completed | Add coexpr_target_e9 to the best model (EXP_0440)  | 0.6565 | -0.0002 | 0 | $0.00000 |
+| EXP_0468 | W001 | completed | Add external_knn_replogle2022_k562_e20 to the best | 0.6543 | -0.0025 | 0 | $0.00000 |
+| EXP_0469 | W000 | completed | Add response_components_e18 to the best model (EXP | 0.6547 | -0.0021 | 0 | $0.00000 |
+| EXP_0470 | W002 | completed | Add external_knn_replogle2022_k562_e20 and respons | 0.6523 | -0.0044 | 0 | $0.00000 |
+| EXP_0471 | W003 | completed | Refine the ridge penalty around alpha=14434.2 for  | 0.6568 | +0.0000 | 0 | $0.00000 |
+| EXP_0472 | W000 | completed | Drop external_direct_replogle2022_k562_e19 from th | 0.6314 | -0.0254 | 0 | $0.00000 |
+| EXP_0473 | W002 | completed | Drop external_krr_replogle2022_k562_e21 from the b | 0.6279 | -0.0288 | 0 | $0.00000 |
+| EXP_0474 | W003 | completed | Drop target_level_e15 from the best model (EXP_046 | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0475 | W001 | completed | Drop is_target_x_control_mean_e35 from the best mo | 0.6564 | -0.0004 | 0 | $0.00000 |
+| EXP_0476 | W003 | completed | Drop knn_response_symbol_family_e58 from the best  | 0.6543 | -0.0025 | 0 | $0.00000 |
+| EXP_0477 | W000 | completed | Drop knn_two_hop_response_cluster_e137 from the be | 0.6538 | -0.0029 | 0 | $0.00000 |
+| EXP_0478 | W001 | completed | Drop knn_response_ppi_diffusion_e248 from the best | 0.6562 | -0.0006 | 0 | $0.00000 |
+| EXP_0479 | W002 | completed | Drop normalized_mean_response_e56 from the best mo | 0.6559 | -0.0009 | 0 | $0.00000 |
+| EXP_0480 | W003 | completed | Adding external_knn_replogle2022_k562_e20 to the c | 0.6466 | -0.0101 | 0 | $0.00000 |
+| EXP_0481 | None | duplicate | Adding external_knn_replogle2022_k562_e20 to the c |  |  | 0 | $0.00000 |
+|  |  | ↳ | identical configuration to EXP_0480 |  |  |  |  |
+| EXP_0482 | W003 | completed | Drop rwr_target_proximity_e14 from the best model  | 0.6564 | -0.0003 | 0 | $0.00000 |
+| EXP_0483 | W002 | completed | Drop is_target from the best model (EXP_0466) to t | 0.6566 | -0.0002 | 0 | $0.00000 |
+| EXP_0484 | W000 | completed | Fit the best feature set (EXP_0466) with lasso ins | 0.6485 | -0.0082 | 0 | $0.00000 |
+| EXP_0485 | W001 | completed | Fit the best feature set (EXP_0466) with elasticne | 0.6404 | -0.0164 | 0 | $0.00000 |
+| EXP_0486 | W002 | completed | Add control_variance_e17 to the best model (EXP_04 | 0.6567 | -0.0001 | 0 | $0.00000 |
+| EXP_0487 | W001 | completed | Add coexpr_target_e9 to the best model (EXP_0466)  | 0.6565 | -0.0002 | 0 | $0.00000 |
+| EXP_0488 | W000 | completed | Add similar_pert_knn_e14 to the best model (EXP_04 | 0.6523 | -0.0044 | 0 | $0.00000 |
+| EXP_0489 | W003 | completed | Add pca_alignment_e16 to the best model (EXP_0466) | 0.6554 | -0.0013 | 0 | $0.00000 |
+
+## 4. Tokens
+- workers: 3948 in (0 cached) / 5239 out
+- planner: 0 in (0 cached) / 0 out
+
+## 5-7. Cost and throughput
+- worker LLM cost: $0.00000; planner: $0.00000
+- worker cost per completed experiment: $0.00000
+- completed experiments per minute: 23.143
+
+## 8. Bottlenecks and duplicated work
+- time: {"worker_llm_latency": 0, "experiment_wall": 593.7, "experiment_cpu": 287.2, "planner_latency": 0, "worker_capacity": 4801.4}
+- LLM latency share of experiment time: 0%; worker utilisation: 12%
+- replicate group ['EXP_0025', 'EXP_0026', 'EXP_0060', 'EXP_0197', 'EXP_0198', 'EXP_0215', 'EXP_0232', 'EXP_0233', 'EXP_0250', 'EXP_0267', 'EXP_0268', 'EXP_0285', 'EXP_0302', 'EXP_0303', 'EXP_0320', 'EXP_0337', 'EXP_0338', 'EXP_0355', 'EXP_0356', 'EXP_0373', 'EXP_0374', 'EXP_0391', 'EXP_0408', 'EXP_0409', 'EXP_0426', 'EXP_0427', 'EXP_0444', 'EXP_0445', 'EXP_0462', 'EXP_0463', 'EXP_0480', 'EXP_0481']: scores [0.6036, 0.6412, 0.643, 0.6449, 0.6446, 0.6444, 0.6463, 0.6466, 0.6466, 0.6467, 0.6466, 0.6465, 0.6466]
+- no change vs parent: ['EXP_0022', 'EXP_0057', 'EXP_0074', 'EXP_0086', 'EXP_0122', 'EXP_0130', 'EXP_0148', 'EXP_0168', 'EXP_0180', 'EXP_0206', 'EXP_0258', 'EXP_0272', 'EXP_0297', 'EXP_0324', 'EXP_0350', 'EXP_0368', 'EXP_0395', 'EXP_0425', 'EXP_0435', 'EXP_0449', 'EXP_0471']
+
+## 9. Projection (worker LLM cost)
+- 8 workers 1h: $0.00
+- 8 workers 6h: $0.00
+- 16 workers 1h: $0.00
+- 16 workers 6h: $0.00
+- 44 workers 1h: $0.00
+- 44 workers 6h: $0.00
+- planner: about $0.00/hour at the measured call rate
+- Linear in workers x time from measured worker-LLM spend per worker-minute; the planner is called when the queue runs low, so its cost grows sub-linearly with workers.

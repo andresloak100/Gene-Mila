@@ -1,0 +1,224 @@
+# Nondeterminism scan of feature plugins
+
+Read-only static scan (Python ast) of every plugin in each run's feature_store for calls whose value changes between processes: the builtin hash() and __hash__ (string hashes are salted per process), id(), and random draws without an explicit seed (np.random.* legacy functions, random.*, default_rng() or RandomState() with no seed). A draw in a file that calls np.random.seed or random.seed is counted separately as seeded and not listed. 'In a reported model' is taken from summary.json: the selected model (best), the members of its ensemble, and the other finalists scored on the sealed set. 'Reached through' names reported features that compute the hit feature through ctx.feature. Not covered: iteration over sets of strings, which is also hash-ordered, and thread timing.
+
+## Runs
+
+| run | plugins | plugins with a hit | seeded draws (not listed) | hit plugins in the selected model or its ensemble | selected model features |
+|---|---|---|---|---|---|
+| newcode_derule_opus_w4_r0 | 117 | 3 | 0 | 1 | 12 |
+| scale_w1_r0 | 53 | 0 | 0 | 0 | 12 |
+| scale_w1_r1 | 55 | 1 | 0 | 0 | 11 |
+| scale_w4_r0 | 111 | 0 | 0 | 0 | 18 |
+| scale_w4_r1 | 72 | 3 | 0 | 1 | 12 |
+| scale_w8_r0 | 276 | 5 | 0 | 1 | 25 |
+| scale_w8_r1 | 237 | 5 | 0 | 2 | 22 |
+| scale_w16_r0 | 358 | 9 | 0 | 1 | 28 |
+| scale_w16_r1 | 418 | 7 | 0 | 1 | 25 |
+| newcode_opus_w4_r0 | 127 | 3 | 0 | 1 | 12 |
+| newcode_opus_w4_r1 | 114 | 3 | 0 | 0 | 10 |
+| newcode_ds_w4_r0 | 292 | 4 | 0 | 1 | 16 |
+| newcode_ds_w4_r1 | 242 | 6 | 0 | 0 | 9 |
+| control_components_from_opus_r0 | 20 | 1 | 0 | 1 | 12 |
+| scale_control_r0 | 6 | 0 | 0 | 0 | 4 |
+| scale_control_r1 | 6 | 0 | 0 | 0 | 4 |
+| scale_control_r2 | 6 | 0 | 0 | 0 | 4 |
+| scale_control_r3 | 6 | 0 | 0 | 0 | 4 |
+| scale_control_r4 | 6 | 0 | 0 | 0 | 4 |
+| scale_control_r5 | 6 | 0 | 0 | 0 | 4 |
+| newcode2_control_r0 | 6 | 0 | 0 | 0 | 3 |
+| newcode_control_r0 | 6 | 0 | 0 | 0 | 3 |
+| newcode_control_r1 | 6 | 0 | 0 | 0 | 3 |
+| newcode_control_r2 | 6 | 0 | 0 | 0 | 3 |
+| newcode_control_r3 | 6 | 0 | 0 | 0 | 3 |
+| newcode_control_r4 | 6 | 0 | 0 | 0 | 3 |
+| newcode_control_r5 | 6 | 0 | 0 | 0 | 3 |
+| control_components_w4_r0 | 7 | 0 | 0 | 0 | 4 |
+| control_replogle_w4_r0 | 9 | 0 | 0 | 0 | 7 |
+| control_replogle_from_opus_r0 | 22 | 1 | 0 | 1 | 13 |
+| control_replogle3_from_opus_r0 | 23 | 1 | 0 | 0 | 12 |
+| astra_ds_w8_2h_20261008T165933Z | 1634 | 54 | 0 | 0 | 48 |
+| astra_ds_w8_2h_20261010T135041Z | 1276 | 35 | 0 | 0 | 87 |
+
+## Hits in a reported model (selected, ensemble, other sealed finalist, or reached through one)
+
+| run | feature | line | call | in a reported model | reached through |
+|---|---|---|---|---|---|
+| newcode_derule_opus_w4_r0 | coresponse_target_knn_response_e127 | 38 | id() | selected, ensemble, other sealed finalist |  |
+| scale_w1_r1 | embedding_ridge_loo_prediction_e109 | 75 | id() | other sealed finalist |  |
+| scale_w4_r1 | geneset_idf_program_response_e35 | 31 | id() | selected, other sealed finalist |  |
+| scale_w8_r0 | contrastive_near_far_transfer_e258 | 143 | hash() | selected, other sealed finalist |  |
+| scale_w8_r1 | control_program_slope_x_score_e167 | 34 | id() | selected, other sealed finalist |  |
+| scale_w8_r1 | geneset_name_token_knn_residual_e200 | 90 | id() | selected, other sealed finalist |  |
+| scale_w8_r1 | geneset_name_token_knn_residual_e200 | 105 | id() | selected, other sealed finalist |  |
+| scale_w16_r0 | unit_norm_knn_shape_e335 | 62 | id() | selected, other sealed finalist |  |
+| scale_w16_r1 | control_pc_axis_score_transfer_e835 | 26 | id() | selected, other sealed finalist |  |
+| scale_w16_r1 | control_pc_axis_score_transfer_e835 | 50 | id() | selected, other sealed finalist |  |
+| scale_w16_r1 | control_pc_axis_score_transfer_e835 | 83 | id() | selected, other sealed finalist |  |
+| newcode_opus_w4_r0 | kernel_ridge_annotation_embedding_e430 | 26 | id() | selected, ensemble, other sealed finalist |  |
+| newcode_ds_w4_r0 | target_degree_times_gene_response_e521 | 62 | hash() | selected, other sealed finalist |  |
+| newcode_ds_w4_r0 | target_degree_times_gene_response_e521 | 66 | hash() | selected, other sealed finalist |  |
+| control_components_from_opus_r0 | kernel_ridge_annotation_embedding_e430 | 26 | id() | selected, other sealed finalist |  |
+| control_replogle_from_opus_r0 | kernel_ridge_annotation_embedding_e430 | 26 | id() | ensemble, other sealed finalist |  |
+| astra_ds_w8_2h_20261008T165933Z | kernel_ridge_annotation_embedding_e430 | 26 | id() | no | random_projection_all_features_e2763 |
+| astra_ds_w8_2h_20261010T135041Z | kernel_ridge_annotation_embedding_e430 | 26 | id() | no | random_projection_all_features_e2763 |
+
+## All other hits (features not in any reported model)
+
+| run | feature | line | call |
+|---|---|---|---|
+| newcode_derule_opus_w4_r0 | module_smoothed_knn_response_e76 | 49 | id() |
+| newcode_derule_opus_w4_r0 | module_smoothed_knn_response_e76 | 93 | id() |
+| newcode_derule_opus_w4_r0 | natural_knockdown_contrast_e36 | 41 | id() |
+| scale_w4_r1 | natural_knockdown_contrast_e50 | 27 | id() |
+| scale_w4_r1 | strength_scaled_mean_response_e39 | 53 | hash() |
+| scale_w8_r0 | control_stress_axis_transfer_e314 | 53 | id() |
+| scale_w8_r0 | expr_trend_transfer_e241 | 47 | id() |
+| scale_w8_r0 | expr_trend_transfer_e241 | 49 | id() |
+| scale_w8_r0 | signed_split_response_e149 | 100 | np.random.randn |
+| scale_w8_r0 | tf_program_link_e17 | 144 | hash() |
+| scale_w8_r1 | direct_regulatory_edge_calibrated_e258 | 98 | id() |
+| scale_w8_r1 | keyword_category_mean_residual_e89 | 75 | id() |
+| scale_w8_r1 | tf_activity_bridge_e308 | 202 | id() |
+| scale_w16_r0 | cross_source_sign_agreement_deviation_e772 | 61 | id() |
+| scale_w16_r0 | cross_source_sign_agreement_deviation_e772 | 67 | id() |
+| scale_w16_r0 | gated_pseudo_knockdown_e203 | 26 | id() |
+| scale_w16_r0 | geneset_program_activation_e345 | 107 | id() |
+| scale_w16_r0 | natural_knockdown_contrast_e624 | 23 | id() |
+| scale_w16_r0 | pca_program_affinity_e42 | 22 | id() |
+| scale_w16_r0 | perplexity_calibrated_knn_e497 | 50 | id() |
+| scale_w16_r0 | target_abundance_gate_e196 | 22 | id() |
+| scale_w16_r0 | target_knockdown_magnitude_e401 | 27 | id() |
+| scale_w16_r1 | geneset_member_self_effect_e574 | 81 | id() |
+| scale_w16_r1 | loo_first_singular_gene_loading_e899 | 39 | np.random.randn |
+| scale_w16_r1 | namespace_split_knn_deviation_e553 | 94 | id() |
+| scale_w16_r1 | partial_coexpr_knockdown_slope_e770 | 62 | id() |
+| scale_w16_r1 | ppi_diffusion_centred_deviation_e540 | 44 | id() |
+| scale_w16_r1 | stress_program_interaction_e14 | 52 | id() |
+| scale_w16_r1 | stress_program_interaction_e14 | 60 | id() |
+| newcode_opus_w4_r0 | knn_normalized_response_e300 | 48 | id() |
+| newcode_opus_w4_r0 | prior_regulon_x_control_mean_e392 | 135 | hash() |
+| newcode_opus_w4_r1 | archetype_mixture_response_e45 | 29 | id() |
+| newcode_opus_w4_r1 | denoised_pseudo_knockdown_e108 | 38 | np.random.standard_normal |
+| newcode_opus_w4_r1 | pathway_smoothed_knn_deviation_e301 | 109 | id() |
+| newcode_ds_w4_r0 | ppi_adjacency_random_projection_v2_e513 | 63 | hash() |
+| newcode_ds_w4_r0 | signed_ppi_random_projection_e558 | 118 | hash() |
+| newcode_ds_w4_r0 | target_neighbor_essentiality_skew_e478 | 149 | hash() |
+| newcode_ds_w4_r1 | knn_perturbation_response_coexpression_w_e85 | 96 | id() |
+| newcode_ds_w4_r1 | knn_perturbation_response_random_ensembl_e328 | 74 | hash() |
+| newcode_ds_w4_r1 | pathway_conditioned_mean_response_e712 | 40 | id() |
+| newcode_ds_w4_r1 | pathway_conditioned_mean_response_e713 | 29 | id() |
+| newcode_ds_w4_r1 | ppi_node2vec_cosine_similarity_e244 | 222 | hash() |
+| newcode_ds_w4_r1 | target_essentiality_times_knn_ppi_e694 | 137 | hash() |
+| control_replogle3_from_opus_r0 | kernel_ridge_annotation_embedding_e430 | 26 | id() |
+| astra_ds_w8_2h_20261008T165933Z | bivalent_chromatin_response_e1187 | 158 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | coexpression_neighborhood_target_enrichm_e4747 | 32 | id() |
+| astra_ds_w8_2h_20261008T165933Z | combined_network_rwr_e1532 | 100 | id() |
+| astra_ds_w8_2h_20261008T165933Z | complex_stoichiometry_coupling_response_e4073 | 127 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | complex_stoichiometry_coupling_response_e4073 | 149 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | control_program_similarity_e236 | 23 | id() |
+| astra_ds_w8_2h_20261008T165933Z | deep_kernel_feature_e2168 | 139 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | degron_motif_similarity_response_e3971 | 77 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | distance_corr_target_gene_binned_e1383 | 25 | id() |
+| astra_ds_w8_2h_20261008T165933Z | distance_corr_target_gene_binned_e1383 | 54 | id() |
+| astra_ds_w8_2h_20261008T165933Z | domain_architecture_similarity_e3852_e3883 | 115 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | domain_architecture_similarity_e3852_e3883 | 120 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | domain_interaction_response_e4682 | 176 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | epigenetic_similarity_response_e1065 | 77 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | epigenetic_similarity_response_e1065 | 100 | id() |
+| astra_ds_w8_2h_20261008T165933Z | epigenetic_target_score_e1114 | 156 | id() |
+| astra_ds_w8_2h_20261008T165933Z | essentiality_interaction_e3493 | 87 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | essentiality_profile_similarity_response_e752 | 112 | id() |
+| astra_ds_w8_2h_20261008T165933Z | expression_variance_similarity_e3172 | 151 | id() |
+| astra_ds_w8_2h_20261008T165933Z | geneset_response_variance_e501_e183 | 102 | id() |
+| astra_ds_w8_2h_20261008T165933Z | gnn_neighborhood_embedding_e960 | 57 | id() |
+| astra_ds_w8_2h_20261008T165933Z | grn_motif_response_e4575 | 142 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | histone_modification_similarity_response_e3261 | 64 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | nmd_sensitivity_interaction_response_e1944 | 68 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | pathway_crosstalk_response_e885 | 70 | id() |
+| astra_ds_w8_2h_20261008T165933Z | pathway_crosstalk_response_e885 | 89 | id() |
+| astra_ds_w8_2h_20261008T165933Z | phylogenetic_profile_similarity_e3062 | 94 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | phylogenetic_profile_similarity_e3062 | 105 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | pretrained_response_embedding_e3904 | 44 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | protein_complex_comembership_response_e4185 | 66 | __hash__ |
+| astra_ds_w8_2h_20261008T165933Z | protein_complex_comembership_response_e4185 | 66 | id() |
+| astra_ds_w8_2h_20261008T165933Z | protein_domain_interaction_response_e2588 | 72 | id() |
+| astra_ds_w8_2h_20261008T165933Z | protein_structure_embedding_similarity_e4887 | 53 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | protein_structure_embedding_similarity_e4887 | 69 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | protein_structure_embedding_similarity_e4887 | 79 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ptm_pattern_similarity_response_e4658 | 139 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ptm_pattern_similarity_response_e4658 | 155 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ptm_site_overlap_response_e1676 | 110 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ptm_site_overlap_response_e1676 | 140 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ptm_site_overlap_response_e2116 | 140 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ptm_site_overlap_response_e4808_e4835 | 62 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | random_fourier_target_expression_e157 | 34 | id() |
+| astra_ds_w8_2h_20261008T165933Z | random_gene_set_projection_response_e820 | 53 | id() |
+| astra_ds_w8_2h_20261008T165933Z | random_geneset_projection_response_e4613 | 25 | id() |
+| astra_ds_w8_2h_20261008T165933Z | random_projection_outer_product_e1426 | 40 | id() |
+| astra_ds_w8_2h_20261008T165933Z | rbp_motif_density_response_e3427 | 100 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | rbp_motif_density_response_e3427 | 113 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | rbp_motif_density_response_e3427 | 138 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | rna_processing_factor_response_e4778 | 120 | id() |
+| astra_ds_w8_2h_20261008T165933Z | rna_secondary_structure_similarity_respo_e4742 | 43 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | rna_structure_similarity_response_e4823 | 16 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | shared_mirna_seed_score_e1659 | 59 | id() |
+| astra_ds_w8_2h_20261008T165933Z | shared_ptm_sites_response_e1747 | 62 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | shared_tf_binding_strength_e2277_e2297 | 124 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | subcellular_colocalization_response_e2322 | 220 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | subcellular_colocalization_response_e2322 | 232 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_conservation_score_e624_e649 | 222 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_domain_count_response_e2745 | 86 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_domain_count_response_e2745 | 144 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_expression_entropy_e1559 | 22 | id() |
+| astra_ds_w8_2h_20261008T165933Z | target_mirna_binding_density_response_e2774 | 167 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_pathway_response_correlation_e102 | 70 | id() |
+| astra_ds_w8_2h_20261008T165933Z | target_ppi_degree_e84 | 67 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_ppi_degree_e84 | 71 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_protein_abundance_e625_e650 | 93 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | target_regulatory_centrality_e540 | 164 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | tf_regulatory_motif_response_e4602 | 91 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | tf_regulatory_motif_response_e4602 | 125 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | tissue_specific_coessentiality_response_e3903 | 79 | hash() |
+| astra_ds_w8_2h_20261008T165933Z | ubiquitination_pathway_response_e3045 | 30 | id() |
+| astra_ds_w8_2h_20261010T135041Z | apa_profile_similarity_response_e2576 | 90 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | apa_usage_similarity_e1525 | 101 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | autoencoder_response_latent_similarity_e1619 | 34 | id() |
+| astra_ds_w8_2h_20261010T135041Z | biomedical_embedding_similarity_e1813 | 83 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | cpg_island_promoter_overlap_response_e1728 | 43 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | cpg_island_promoter_overlap_response_e1728 | 52 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | cpg_island_promoter_overlap_response_e1728 | 57 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | disease_association_similarity_e1292 | 56 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | disorder_interaction_score_e2427 | 144 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | disorder_interaction_score_e2427 | 177 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | domain_interaction_propensity_response_e1033 | 131 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | domain_similarity_e74 | 77 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | domain_similarity_e74 | 112 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | flux_coupling_score_response_e2345 | 36 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | grn_diffusion_response_e463 | 24 | id() |
+| astra_ds_w8_2h_20261010T135041Z | histone_modification_correlation_e1482 | 32 | id() |
+| astra_ds_w8_2h_20261010T135041Z | lncrna_coregulation_response_e1064 | 42 | id() |
+| astra_ds_w8_2h_20261010T135041Z | lncrna_coregulation_response_e1064 | 44 | id() |
+| astra_ds_w8_2h_20261010T135041Z | pca_projection_response_e78 | 24 | id() |
+| astra_ds_w8_2h_20261010T135041Z | perturbation_latent_factor_similarity_e1651 | 40 | id() |
+| astra_ds_w8_2h_20261010T135041Z | phylostratum_similarity_e2640 | 108 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | promoter_methylation_correlation_respons_e360 | 81 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | protein_lm_embedding_distance_e1193 | 28 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | protein_lm_embedding_similarity_e1191 | 28 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | protein_lm_embedding_similarity_e1192 | 36 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | protein_localization_similarity_e2254 | 64 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | ptm_motif_density_similarity_response_e1593 | 23 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | ptm_site_overlap_e1397 | 54 | id() |
+| astra_ds_w8_2h_20261010T135041Z | regulatory_region_conservation_score_e2636 | 77 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | rna_secondary_structure_similarity_e2637 | 31 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | shared_kinase_regulation_response_e2877 | 21 | id() |
+| astra_ds_w8_2h_20261010T135041Z | shared_kinase_regulation_response_e2877 | 66 | id() |
+| astra_ds_w8_2h_20261010T135041Z | single_cell_coexpression_response_e521 | 49 | id() |
+| astra_ds_w8_2h_20261010T135041Z | target_codon_bias_response_e180 | 116 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | target_coexpression_score_e31 | 42 | id() |
+| astra_ds_w8_2h_20261010T135041Z | target_geneset_enrichment_response_e2024 | 28 | id() |
+| astra_ds_w8_2h_20261010T135041Z | target_geneset_enrichment_response_e2024 | 39 | id() |
+| astra_ds_w8_2h_20261010T135041Z | target_ptm_density_response_e1177 | 81 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | target_structural_flexibility_response_e1175 | 127 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | tf_knockout_response_score_e2047 | 209 | hash() |
+| astra_ds_w8_2h_20261010T135041Z | weighted_shared_tf_binding_e1828 | 158 | hash() |

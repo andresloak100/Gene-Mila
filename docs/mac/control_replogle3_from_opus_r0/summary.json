@@ -1,0 +1,1178 @@
+{
+ "run_id": "control_replogle3_from_opus_r0",
+ "dataset": "adamson_cf",
+ "split_id": "split_450515be1a0d8d2e",
+ "base_commit": "89ab4fb151b7d84bfccfaf06cfb066108aa37167",
+ "duration_s": 1200.3,
+ "duration_note": null,
+ "finished_at": 1791690223.2725499,
+ "workers": 4,
+ "continued_from": "/Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/newcode_opus_w4_r0",
+ "selection": {
+  "rule": "pearson_delta",
+  "cv_folds": 5,
+  "n_validation": 17,
+  "n_visible": 67
+ },
+ "experiments_proposed": 484,
+ "experiments_completed": 463,
+ "completed_by_proposer": {
+  "python:warm_start": 1,
+  "python:exploit": 436,
+  "scripted:scripted": 24,
+  "sweep(scripted:scripted)": 2
+ },
+ "experiments_completed_planner": 26,
+ "unique_hypotheses_planner": 16,
+ "experiments_failed": 1,
+ "experiments_rejected": 0,
+ "experiments_killed": 0,
+ "experiments_cancelled": 0,
+ "duplicate_experiments": 20,
+ "unique_hypotheses": 453,
+ "replicated_hypotheses": 1,
+ "cpu_hours": 0.0802,
+ "llm_usage": {
+  "all": {
+   "calls": 12,
+   "input_tokens": 3948,
+   "output_tokens": 5239,
+   "cached_tokens": 0,
+   "cost_usd": 0.0,
+   "failed_calls": 0
+  },
+  "worker": {
+   "calls": 12,
+   "input_tokens": 3948,
+   "output_tokens": 5239,
+   "cached_tokens": 0,
+   "cost_usd": 0.0,
+   "failed_calls": 0
+  },
+  "planner": {
+   "calls": 0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "cached_tokens": 0,
+   "cost_usd": 0,
+   "failed_calls": 0
+  }
+ },
+ "planner": {
+  "configured": "scripted:opus",
+  "fallback": [],
+  "used": [
+   "scripted:scripted"
+  ],
+  "rounds": {
+   "scripted:scripted": {
+    "rounds": 37,
+    "queued": 27
+   }
+  },
+  "switches": [],
+  "failed_rounds": 0,
+  "exhausted_at_min": null,
+  "mixed": false
+ },
+ "baseline": {
+  "experiment_id": "EXP_0003",
+  "score": 0.5010002317798699,
+  "description": "OLS on baseline features (control mean, mean response, target indicator).",
+  "metrics": {
+   "rmse": 0.0758774050371239,
+   "mae": 0.049228097636096084,
+   "mse": 0.005757380595167756,
+   "pearson_delta": 0.5560025759775362,
+   "pearson_delta_top": 0.6668892765043213,
+   "direction_acc_top": 0.8323529411764705,
+   "mse_top": 0.13864246014405368,
+   "r2_top": 0.8039599021098659,
+   "pearson_expr": 0.9869740097262661,
+   "primary": 0.5010002317798699,
+   "selection_rule": "pearson_delta",
+   "pearson_delta_cv": 0.48229943475266324,
+   "n_visible": 67,
+   "cv_folds": 5,
+   "cellforge_mse": 0.005757380595167756,
+   "cellforge_pcc": 0.9869740097262664,
+   "cellforge_r2": 0.9726971014420547,
+   "cellforge_mse_de": 0.12685748894186963,
+   "cellforge_pcc_de": 0.9442497033011582,
+   "cellforge_r2_de": 0.8208865795592267,
+   "cellforge_mse_deset": 0.04345378617186623,
+   "cellforge_pcc_deset": 0.9406462919087664,
+   "cellforge_r2_deset": 0.8463663349787499,
+   "cellforge_n_perts_deset": 16,
+   "vcworld_de_accuracy": 0.8068985258336911,
+   "vcworld_de_precision": 0.4469320066334992,
+   "vcworld_de_recall": 0.08144454517981263,
+   "vcworld_de_f1": 0.13778118609406956,
+   "vcworld_de_auroc": 0.658648661236135,
+   "vcworld_de_auprc": 0.314131640253149,
+   "vcworld_dir_accuracy": 0.8895436687821094,
+   "vcworld_dir_precision": 0.8544,
+   "vcworld_dir_recall": 0.7776699029126214,
+   "vcworld_dir_f1": 0.8142312579415502,
+   "vcworld_dir_auroc": 0.9340939008336989,
+   "vcworld_dir_auprc": 0.8726728336770272,
+   "vcworld_n_de_pairs": 6618,
+   "alpha_scores": [
+    {
+     "alpha": 0.0,
+     "pearson_delta": 0.5560025759775362,
+     "primary": 0.5010002317798699
+    }
+   ]
+  }
+ },
+ "best": {
+  "experiment_id": "EXP_0466",
+  "score": 0.6567594525803554,
+  "model": "ridge",
+  "alpha": 14434.2,
+  "features": [
+   "is_target",
+   "external_direct_replogle2022_k562_e19",
+   "external_krr_replogle2022_k562_e21",
+   "target_level_e15",
+   "is_target_x_control_mean_e35",
+   "knn_response_symbol_family_e58",
+   "knn_two_hop_response_cluster_e137",
+   "knn_response_ppi_diffusion_e248",
+   "normalized_mean_response_e56",
+   "rwr_target_proximity_e14",
+   "knn_response_geneset_e12",
+   "shared_module_e13"
+  ],
+  "metrics": {
+   "rmse": 0.062212644162346634,
+   "mae": 0.043344614692968686,
+   "mse": 0.003870413093670763,
+   "pearson_delta": 0.6736567047930067,
+   "pearson_delta_top": 0.7869917299813928,
+   "direction_acc_top": 0.9147058823529411,
+   "mse_top": 0.053999749954681125,
+   "r2_top": 0.9281570986126563,
+   "pearson_expr": 0.9914674090124178,
+   "primary": 0.6567594525803554,
+   "selection_rule": "pearson_delta",
+   "pearson_delta_cv": 0.6510143868280539,
+   "n_visible": 67,
+   "cv_folds": 5,
+   "cellforge_mse": 0.003870413093670762,
+   "cellforge_pcc": 0.9914674090124177,
+   "cellforge_r2": 0.9816601587359908,
+   "cellforge_mse_de": 0.048081710889437954,
+   "cellforge_pcc_de": 0.9773581241729753,
+   "cellforge_r2_de": 0.9336723558001906,
+   "cellforge_mse_deset": 0.021431808518972046,
+   "cellforge_pcc_deset": 0.9732833822267277,
+   "cellforge_r2_deset": 0.9286911994599032,
+   "cellforge_n_perts_deset": 16,
+   "vcworld_de_accuracy": 0.8128238156576499,
+   "vcworld_de_precision": 0.5062391407360607,
+   "vcworld_de_recall": 0.48428528256270775,
+   "vcworld_de_f1": 0.49501892037995215,
+   "vcworld_de_auroc": 0.7667580606143888,
+   "vcworld_de_auprc": 0.49737145096281205,
+   "vcworld_dir_accuracy": 0.9300392867935933,
+   "vcworld_dir_precision": 0.9030792529025744,
+   "vcworld_dir_recall": 0.8684466019417476,
+   "vcworld_dir_f1": 0.8854243999010146,
+   "vcworld_dir_auroc": 0.9734536949863039,
+   "vcworld_dir_auprc": 0.952538385514024,
+   "vcworld_n_de_pairs": 6618,
+   "alpha_scores": [
+    {
+     "alpha": 14434.2,
+     "pearson_delta": 0.6736567047930067,
+     "primary": 0.6567594525803554
+    },
+    {
+     "alpha": 26244.0,
+     "pearson_delta": 0.6731948737856583,
+     "primary": 0.6554813129526765
+    },
+    {
+     "alpha": 43740.0,
+     "pearson_delta": 0.6710742257864456,
+     "primary": 0.6517079159885492
+    },
+    {
+     "alpha": 74358.0,
+     "pearson_delta": 0.6670611828119142,
+     "primary": 0.6454324640434635
+    },
+    {
+     "alpha": 131220.0,
+     "pearson_delta": 0.6611006679950285,
+     "primary": 0.6370849021263196
+    }
+   ]
+  },
+  "coefficients": {
+   "is_target": -0.00058,
+   "external_direct_replogle2022_k562_e19": 0.02152,
+   "external_krr_replogle2022_k562_e21": 0.0405,
+   "target_level_e15": -0.00339,
+   "is_target_x_control_mean_e35": -0.00339,
+   "knn_response_symbol_family_e58[0]": 0.00964,
+   "knn_response_symbol_family_e58[1]": -0.00143,
+   "knn_two_hop_response_cluster_e137": -0.00667,
+   "knn_response_ppi_diffusion_e248": -0.00243,
+   "normalized_mean_response_e56[0]": 0.00076,
+   "normalized_mean_response_e56[1]": 0.00132,
+   "rwr_target_proximity_e14[0]": 0.00092,
+   "rwr_target_proximity_e14[1]": 0.00019,
+   "rwr_target_proximity_e14[2]": -0.00137,
+   "knn_response_geneset_e12[0]": 0.00613,
+   "knn_response_geneset_e12[1]": 0.00066,
+   "knn_response_geneset_e12[2]": 0.00749,
+   "shared_module_e13": 0.00029
+  }
+ },
+ "improvement_over_baseline": 0.15575922080048554,
+ "ensemble": {
+  "experiment_id": "EXP_0490",
+  "members": [
+   "EXP_0466",
+   "EXP_0440",
+   "EXP_0431"
+  ],
+  "score": 0.6567723159545785,
+  "features": [
+   "external_direct_replogle2022_k562_e19",
+   "external_krr_replogle2022_k562_e21",
+   "is_target",
+   "is_target_x_control_mean_e35",
+   "knn_response_geneset_e11",
+   "knn_response_geneset_e12",
+   "knn_response_ppi_diffusion_e248",
+   "knn_response_symbol_family_e58",
+   "knn_two_hop_response_cluster_e137",
+   "normalized_mean_response_e56",
+   "rwr_target_proximity_e14",
+   "shared_module_e13",
+   "target_level_e15"
+  ],
+  "query_only_score": 0.6458207363630866
+ },
+ "lineage": [
+  {
+   "experiment_id": "EXP_0003",
+   "added": "baseline",
+   "score": 0.5010002317798699,
+   "hypothesis": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "experiment_id": "EXP_0020",
+   "added": "external_knn_replogle2022_k562_e20",
+   "score": 0.5820376948154579,
+   "hypothesis": "Adding external screen neighbour transfer: training responses weighted by how alike their targets' knockdowns look in knowledge file replogle2022_k562 improves prediction of unseen perturbations."
+  },
+  {
+   "experiment_id": "EXP_0024",
+   "added": "config",
+   "score": 0.6160827768851881,
+   "hypothesis": "Adding external_direct_replogle2022_k562_e19 to the current best model gives additive gains."
+  },
+  {
+   "experiment_id": "EXP_0027",
+   "added": "config",
+   "score": 0.6351405166187283,
+   "hypothesis": "Add external_krr_replogle2022_k562_e21 to the best model (EXP_0024): it helped elsewhere and the best model lacks it."
+  },
+  {
+   "experiment_id": "EXP_0031",
+   "added": "config",
+   "score": 0.640772764068254,
+   "hypothesis": "Add target_level_e15 to the best model (EXP_0027): it helped elsewhere and the best model lacks it."
+  },
+  {
+   "experiment_id": "EXP_0035",
+   "added": "config",
+   "score": 0.6410157406830727,
+   "hypothesis": "Refine the ridge penalty around alpha=100 for the best model (EXP_0031)."
+  },
+  {
+   "experiment_id": "EXP_0040",
+   "added": "config",
+   "score": 0.6416161849633896,
+   "hypothesis": "Refine the ridge penalty around alpha=300 for the best model (EXP_0035)."
+  },
+  {
+   "experiment_id": "EXP_0045",
+   "added": "config",
+   "score": 0.6427216306725875,
+   "hypothesis": "Refine the ridge penalty around alpha=900 for the best model (EXP_0040)."
+  },
+  {
+   "experiment_id": "EXP_0049",
+   "added": "config",
+   "score": 0.643810112844837,
+   "hypothesis": "Refine the ridge penalty around alpha=2700 for the best model (EXP_0045)."
+  },
+  {
+   "experiment_id": "EXP_0054",
+   "added": "config",
+   "score": 0.6453441381178688,
+   "hypothesis": "Drop external_knn_replogle2022_k562_e20 from the best model (EXP_0049) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0063",
+   "added": "config",
+   "score": 0.6456078455466984,
+   "hypothesis": "Drop mean_response from the best model (EXP_0054) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0065",
+   "added": "config",
+   "score": 0.6458269229573667,
+   "hypothesis": "Add external_knn_replogle2022_k562_e20 to the best model (EXP_0063): it helped elsewhere and the best model lacks it."
+  },
+  {
+   "experiment_id": "EXP_0069",
+   "added": "config",
+   "score": 0.6458289999440184,
+   "hypothesis": "Refine the ridge penalty around alpha=1620 for the best model (EXP_0065)."
+  },
+  {
+   "experiment_id": "EXP_0084",
+   "added": "config",
+   "score": 0.6458408795724098,
+   "hypothesis": "Add shared_module_e13 to the best model (EXP_0069) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0100",
+   "added": "config",
+   "score": 0.6458775215138568,
+   "hypothesis": "Add is_target_x_control_mean_e35 to the best model (EXP_0084) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0116",
+   "added": "config",
+   "score": 0.646768304352153,
+   "hypothesis": "Add kernel_ridge_annotation_embedding_e430 to the best model (EXP_0100) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0118",
+   "added": "config",
+   "score": 0.6467715853239576,
+   "hypothesis": "Refine the ridge penalty around alpha=4860 for the best model (EXP_0116)."
+  },
+  {
+   "experiment_id": "EXP_0126",
+   "added": "config",
+   "score": 0.6470674153916086,
+   "hypothesis": "Drop external_knn_replogle2022_k562_e20 from the best model (EXP_0118) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0137",
+   "added": "config",
+   "score": 0.6472235659403286,
+   "hypothesis": "Drop control_mean from the best model (EXP_0126) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0144",
+   "added": "config",
+   "score": 0.6474562355130511,
+   "hypothesis": "Refine the ridge penalty around alpha=14580 for the best model (EXP_0137)."
+  },
+  {
+   "experiment_id": "EXP_0164",
+   "added": "config",
+   "score": 0.6496263835855742,
+   "hypothesis": "Add knn_response_geneset_e11 to the best model (EXP_0144) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0174",
+   "added": "config",
+   "score": 0.651299458994113,
+   "hypothesis": "Drop kernel_ridge_annotation_embedding_e430 from the best model (EXP_0164) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0194",
+   "added": "config",
+   "score": 0.6516194101793962,
+   "hypothesis": "Add knn_residual_response_e59 to the best model (EXP_0174) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0202",
+   "added": "config",
+   "score": 0.6516650021296932,
+   "hypothesis": "Refine the ridge penalty around alpha=43740 for the best model (EXP_0194)."
+  },
+  {
+   "experiment_id": "EXP_0227",
+   "added": "config",
+   "score": 0.6536460111948037,
+   "hypothesis": "Add knn_response_symbol_family_e58 to the best model (EXP_0202) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0253",
+   "added": "config",
+   "score": 0.6551056621853821,
+   "hypothesis": "Add knn_two_hop_response_cluster_e137 to the best model (EXP_0227) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0265",
+   "added": "config",
+   "score": 0.6553566889135809,
+   "hypothesis": "Drop knn_residual_response_e59 from the best model (EXP_0253) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0291",
+   "added": "config",
+   "score": 0.6557974166706441,
+   "hypothesis": "Add knn_response_ppi_diffusion_e248 to the best model (EXP_0265) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0319",
+   "added": "config",
+   "score": 0.6559140302243698,
+   "hypothesis": "Add knn_response_reconstruction_weights_e162 to the best model (EXP_0291) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0346",
+   "added": "config",
+   "score": 0.6561692784544368,
+   "hypothesis": "Add normalized_mean_response_e56 to the best model (EXP_0319) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0362",
+   "added": "config",
+   "score": 0.6564041036985545,
+   "hypothesis": "Drop knn_response_reconstruction_weights_e162 from the best model (EXP_0346) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0390",
+   "added": "config",
+   "score": 0.6567248174774379,
+   "hypothesis": "Add rwr_target_proximity_e14 to the best model (EXP_0362) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0418",
+   "added": "config",
+   "score": 0.6567452316264477,
+   "hypothesis": "Add knn_response_geneset_e12 to the best model (EXP_0390) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0431",
+   "added": "config",
+   "score": 0.6567457741003242,
+   "hypothesis": "Drop shared_module_e13 from the best model (EXP_0418) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0440",
+   "added": "config",
+   "score": 0.6567576202953066,
+   "hypothesis": "Drop knn_response_geneset_e11 from the best model (EXP_0431) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0466",
+   "added": "config",
+   "score": 0.6567594525803554,
+   "hypothesis": "Add shared_module_e13 to the best model (EXP_0440) although it did not help where it was first tried."
+  }
+ ],
+ "most_useful_features": [
+  {
+   "feature": "external_krr_replogle2022_k562_e21",
+   "experiment_id": "EXP_0021",
+   "delta": 0.10223927361869067,
+   "description": "Kernel transfer through an external screen (knowledge file replogle2022_k562): kernel ridge regression over the other training perturbations' responses, kernel = Pearson correlation between the external responses of their targets, so p's response is the mean training response plus a signed mix of the others' deviations from it; lambda chosen by leave-one-out over those training perturbations; the mean training response when p's target has no external row or fewer than 3 training perturbations have one."
+  },
+  {
+   "feature": "external_knn_replogle2022_k562_e20",
+   "experiment_id": "EXP_0020",
+   "delta": 0.08103746303558801,
+   "description": "Neighbour transfer through an external screen (knowledge file replogle2022_k562): weighted mean of the other training perturbations' responses, weights = correlation between the external responses of their targets and p's target, top k positive; the mean training response when p's target has no external row or no positively correlated neighbour."
+  },
+  {
+   "feature": "external_direct_replogle2022_k562_e19",
+   "experiment_id": "EXP_0019",
+   "delta": 0.0694387825732855,
+   "description": "External screen response of p's target (knowledge file replogle2022_k562): the change of gene g measured for the same target gene in another screen of the cell line; 0 where unmeasured or without a row."
+  },
+  {
+   "feature": "response_components_e18",
+   "experiment_id": "EXP_0018",
+   "delta": 0.020019619467871563,
+   "description": "Low-rank response components of the training perturbations (leave-one-out SVD of their centred delta profiles); p's weight on each component is predicted by kernel ridge from its target's annotations (gene-set memberships, protein interactions, TF-network partners). One column per component."
+  },
+  {
+   "feature": "target_level_e15",
+   "experiment_id": "EXP_0015",
+   "delta": 0.0059255358539268554,
+   "description": "Control mean expression of g if g is the perturbed target, else 0."
+  },
+  {
+   "feature": "control_variance_e17",
+   "experiment_id": "EXP_0017",
+   "delta": 1.76888525412755e-05,
+   "description": "Control-cell standard deviation of gene g."
+  }
+ ],
+ "features_not_helping": [
+  {
+   "feature": "coexpr_target_e9",
+   "delta": -0.006723536266374508
+  },
+  {
+   "feature": "shared_module_e13",
+   "delta": -0.00041589406495246006
+  },
+  {
+   "feature": "similar_pert_knn_e14",
+   "delta": -0.014494333886589994
+  },
+  {
+   "feature": "pca_alignment_e16",
+   "delta": -0.015133632486382664
+  }
+ ],
+ "failed_features": [
+  {
+   "experiment_id": "EXP_0011",
+   "feature": "prior_network_edge_e11",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  }
+ ],
+ "surprising_results": [
+  "Replicates of 'Adding external_knn_replogle2022_k562_e20 to the current bes' diverged: scores 0.6036, 0.6412, 0.6430, 0.6449, 0.6446, 0.6444, 0.6463, 0.6466, 0.6466, 0.6467, 0.6466, 0.6465, 0.6466 (implementation choices matter)",
+  "similar_pert_knn_e14 made the model worse (-0.0145) despite a linear model being able to ignore it (overfitting or scale issue)",
+  "pca_alignment_e16 made the model worse (-0.0151) despite a linear model being able to ignore it (overfitting or scale issue)"
+ ],
+ "generalization_query_only": [
+  {
+   "experiment_id": "EXP_0490",
+   "kind": "ensemble",
+   "members": [
+    "EXP_0466",
+    "EXP_0440",
+    "EXP_0431"
+   ],
+   "visible_score": 0.6567723159545785,
+   "query_only_score": 0.6458207363630866,
+   "gap": 0.010951579591491956,
+   "query_only_pearson_delta": 0.6458207363630866,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.00387716319023426,
+     "cellforge_pcc": 0.9914532998374668,
+     "cellforge_r2": 0.9816288290942987,
+     "cellforge_mse_de": 0.04816705870514636,
+     "cellforge_pcc_de": 0.9773378652947763,
+     "cellforge_r2_de": 0.9335730852918727,
+     "cellforge_mse_deset": 0.021471622746054315,
+     "cellforge_pcc_deset": 0.9732422296376392,
+     "cellforge_r2_deset": 0.9285604998519338,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8127665664806069,
+     "vcworld_de_precision": 0.5060715975398202,
+     "vcworld_de_recall": 0.4848896947718344,
+     "vcworld_de_f1": 0.4952542634462536,
+     "vcworld_de_auroc": 0.7665998871964514,
+     "vcworld_de_auprc": 0.4970511793866156,
+     "vcworld_dir_accuracy": 0.9297370806890299,
+     "vcworld_dir_precision": 0.9029813036887316,
+     "vcworld_dir_recall": 0.8674757281553398,
+     "vcworld_dir_f1": 0.8848724931913841,
+     "vcworld_dir_auroc": 0.9734152477027482,
+     "vcworld_dir_auprc": 0.9524630147069586,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.004440658146081167,
+     "cellforge_pcc": 0.9901717367421463,
+     "cellforge_r2": 0.9787348239703091,
+     "cellforge_mse_de": 0.07350406222698526,
+     "cellforge_pcc_de": 0.9697709083365201,
+     "cellforge_r2_de": 0.8683441332532098,
+     "cellforge_mse_deset": 0.01976904741858542,
+     "cellforge_pcc_deset": 0.9798761871570222,
+     "cellforge_r2_deset": 0.9353022811691508,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8545475611169042,
+     "vcworld_de_precision": 0.6458801498127341,
+     "vcworld_de_recall": 0.44020421186981495,
+     "vcworld_de_f1": 0.5235673624288425,
+     "vcworld_de_auroc": 0.8159378272568208,
+     "vcworld_de_auprc": 0.5687550208650467,
+     "vcworld_dir_accuracy": 0.9582641991065731,
+     "vcworld_dir_precision": 0.8863636363636364,
+     "vcworld_dir_recall": 0.9333333333333333,
+     "vcworld_dir_f1": 0.9092422980849292,
+     "vcworld_dir_auroc": 0.9888780176938071,
+     "vcworld_dir_auprc": 0.9720309798276161,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.41913874626670283,
+     "overlap_at_50": 0.3537543252595156,
+     "overlap_at_100": 0.3376758938869665,
+     "overlap_at_200": 0.3551090489671805,
+     "overlap_at_500": 0.3971328596602851,
+     "precision_at_N": 0.2793588872740455,
+     "precision_at_50": 0.35411764705882354,
+     "precision_at_100": 0.3194117647058823,
+     "precision_at_200": 0.32264705882352945,
+     "precision_at_500": 0.34063630613535734,
+     "de_spearman_sig": 0.6200980392156865,
+     "de_direction_match": 0.9068610014554706,
+     "de_spearman_lfc_sig": 0.7086882080812372,
+     "de_sig_genes_recall": 0.7014650760547371,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1148.0588235294117,
+     "pr_auc": 0.3575433948887793,
+     "roc_auc": 0.6563938389657763,
+     "pearson_delta": 0.611290644196903,
+     "mse": 0.005000396905576482,
+     "mae": 0.05154049878611284,
+     "mse_delta": 0.005000396905576482,
+     "mae_delta": 0.05154049878611284,
+     "discrimination_score_l1": 0.7647058823529411,
+     "discrimination_score_l2": 0.7889273356401384,
+     "discrimination_score_cosine": 0.7058823529411765,
+     "pearson_edistance": 0.5912756906477431,
+     "clustering_agreement": 1.0
+    },
+    "val2": {
+     "overlap_at_N": 0.37802002387011163,
+     "overlap_at_50": 0.29500335813699874,
+     "overlap_at_100": 0.2911938343274748,
+     "overlap_at_200": 0.3036613667950074,
+     "overlap_at_500": 0.3410392135858976,
+     "precision_at_N": 0.25774084116086876,
+     "precision_at_50": 0.2590476190476191,
+     "precision_at_100": 0.23761904761904762,
+     "precision_at_200": 0.23983102918586793,
+     "precision_at_500": 0.2617357910906298,
+     "de_spearman_sig": 0.8078225467858046,
+     "de_direction_match": 0.9451820953327971,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.7078352921933908,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 981.3333333333334,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5802549767707076,
+     "mse": 0.005424861829461796,
+     "mae": 0.05247417917209012,
+     "mse_delta": 0.005424861829461796,
+     "mae_delta": 0.05247417917209012,
+     "discrimination_score_l1": 0.6870748299319728,
+     "discrimination_score_l2": 0.7278911564625851,
+     "discrimination_score_cosine": 0.6938775510204083,
+     "pearson_edistance": 0.6919099906743434,
+     "clustering_agreement": 0.28136839531483354
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0466",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.6567594525803554,
+   "query_only_score": 0.6458164210745164,
+   "gap": 0.010943031505838974,
+   "query_only_pearson_delta": 0.6458164210745164,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.003870413093670762,
+     "cellforge_pcc": 0.9914674090124177,
+     "cellforge_r2": 0.9816601587359908,
+     "cellforge_mse_de": 0.048081710889437954,
+     "cellforge_pcc_de": 0.9773581241729753,
+     "cellforge_r2_de": 0.9336723558001906,
+     "cellforge_mse_deset": 0.021431808518972046,
+     "cellforge_pcc_deset": 0.9732833822267277,
+     "cellforge_r2_deset": 0.9286911994599032,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8128238156576499,
+     "vcworld_de_precision": 0.5062391407360607,
+     "vcworld_de_recall": 0.48428528256270775,
+     "vcworld_de_f1": 0.49501892037995215,
+     "vcworld_de_auroc": 0.7667580606143888,
+     "vcworld_de_auprc": 0.49737145096281205,
+     "vcworld_dir_accuracy": 0.9300392867935933,
+     "vcworld_dir_precision": 0.9030792529025744,
+     "vcworld_dir_recall": 0.8684466019417476,
+     "vcworld_dir_f1": 0.8854243999010146,
+     "vcworld_dir_auroc": 0.9734536949863039,
+     "vcworld_dir_auprc": 0.952538385514024,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.004436120822800135,
+     "cellforge_pcc": 0.9901819767488332,
+     "cellforge_r2": 0.9787565655345208,
+     "cellforge_mse_de": 0.07350995845580435,
+     "cellforge_pcc_de": 0.9697569995679464,
+     "cellforge_r2_de": 0.8683195370832822,
+     "cellforge_mse_deset": 0.019784200600082836,
+     "cellforge_pcc_deset": 0.9798808463141405,
+     "cellforge_r2_deset": 0.9352452315803381,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8546634225466342,
+     "vcworld_de_precision": 0.646595385481148,
+     "vcworld_de_recall": 0.4399489470325463,
+     "vcworld_de_f1": 0.5236214491873006,
+     "vcworld_de_auroc": 0.8162061046744832,
+     "vcworld_de_auprc": 0.5693801439266157,
+     "vcworld_dir_accuracy": 0.9583918315252073,
+     "vcworld_dir_precision": 0.8864250946457545,
+     "vcworld_dir_recall": 0.933903133903134,
+     "vcworld_dir_f1": 0.909544950055494,
+     "vcworld_dir_auroc": 0.988949898785425,
+     "vcworld_dir_auprc": 0.9721989812134825,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.4190843295690849,
+     "overlap_at_50": 0.3549307958477509,
+     "overlap_at_100": 0.3376758938869665,
+     "overlap_at_200": 0.3556972842612981,
+     "overlap_at_500": 0.3973638850167267,
+     "precision_at_N": 0.2791001454720557,
+     "precision_at_50": 0.3552941176470588,
+     "precision_at_100": 0.3194117647058823,
+     "precision_at_200": 0.32323529411764707,
+     "precision_at_500": 0.3408803245436105,
+     "de_spearman_sig": 0.6397058823529413,
+     "de_direction_match": 0.907285658156868,
+     "de_spearman_lfc_sig": 0.7097614805585035,
+     "de_sig_genes_recall": 0.7022822768620688,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1151.0588235294117,
+     "pr_auc": 0.35741516083196895,
+     "roc_auc": 0.6564053407116723,
+     "pearson_delta": 0.6115672702298445,
+     "mse": 0.004993626484921312,
+     "mae": 0.051506746341200435,
+     "mse_delta": 0.004993626443833551,
+     "mae_delta": 0.051506746341200435,
+     "discrimination_score_l1": 0.7612456747404844,
+     "discrimination_score_l2": 0.7923875432525952,
+     "discrimination_score_cosine": 0.7093425605536332,
+     "pearson_edistance": 0.59345072409959,
+     "clustering_agreement": 1.0
+    },
+    "val2": {
+     "overlap_at_N": 0.37790814077757373,
+     "overlap_at_50": 0.29500335813699874,
+     "overlap_at_100": 0.2902414533750939,
+     "overlap_at_200": 0.3031851763188169,
+     "overlap_at_500": 0.3410309320123987,
+     "precision_at_N": 0.25758824037903905,
+     "precision_at_50": 0.2590476190476191,
+     "precision_at_100": 0.2366666666666666,
+     "precision_at_200": 0.23935483870967741,
+     "precision_at_500": 0.2617357910906298,
+     "de_spearman_sig": 0.8078225467858046,
+     "de_direction_match": 0.9452329600326953,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.7091695146600456,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 981.6666666666666,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5804387776269799,
+     "mse": 0.005419761862694507,
+     "mae": 0.05245529017632916,
+     "mse_delta": 0.005419761862694507,
+     "mae_delta": 0.05245529017632916,
+     "discrimination_score_l1": 0.6893424036281179,
+     "discrimination_score_l2": 0.7278911564625851,
+     "discrimination_score_cosine": 0.6938775510204083,
+     "pearson_edistance": 0.6935159895250623,
+     "clustering_agreement": 0.28136839531483354
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0440",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.6567576202953066,
+   "query_only_score": 0.6458030807864804,
+   "gap": 0.010954539508826189,
+   "query_only_pearson_delta": 0.6458030807864804,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.00387105062857761,
+     "cellforge_pcc": 0.9914659828619388,
+     "cellforge_r2": 0.9816572026831354,
+     "cellforge_mse_de": 0.048137544738800025,
+     "cellforge_pcc_de": 0.977345927058258,
+     "cellforge_r2_de": 0.93361890568814,
+     "cellforge_mse_deset": 0.02143523198198038,
+     "cellforge_pcc_deset": 0.9732784194280781,
+     "cellforge_r2_deset": 0.9286786480862479,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.812881064834693,
+     "vcworld_de_precision": 0.5063970936660875,
+     "vcworld_de_recall": 0.4844363856149894,
+     "vcworld_de_f1": 0.4951733724611939,
+     "vcworld_de_auroc": 0.7667119511580635,
+     "vcworld_de_auprc": 0.4968289743403411,
+     "vcworld_dir_accuracy": 0.9298881837413115,
+     "vcworld_dir_precision": 0.9030303030303031,
+     "vcworld_dir_recall": 0.8679611650485437,
+     "vcworld_dir_f1": 0.8851485148514852,
+     "vcworld_dir_auroc": 0.973450393419018,
+     "vcworld_dir_auprc": 0.9525452867666016,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.004437311514597165,
+     "cellforge_pcc": 0.9901816294941513,
+     "cellforge_r2": 0.9787508244163957,
+     "cellforge_mse_de": 0.07351077210806223,
+     "cellforge_pcc_de": 0.9697622639679913,
+     "cellforge_r2_de": 0.8683196202201175,
+     "cellforge_mse_deset": 0.019785460140301275,
+     "cellforge_pcc_deset": 0.9798836341323778,
+     "cellforge_r2_deset": 0.9352346917161142,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8546402502606882,
+     "vcworld_de_precision": 0.6465290806754221,
+     "vcworld_de_recall": 0.43982131461391194,
+     "vcworld_de_f1": 0.5235093049753133,
+     "vcworld_de_auroc": 0.8161197829526163,
+     "vcworld_de_auprc": 0.568815829791632,
+     "vcworld_dir_accuracy": 0.9583918315252073,
+     "vcworld_dir_precision": 0.8864250946457545,
+     "vcworld_dir_recall": 0.933903133903134,
+     "vcworld_dir_f1": 0.909544950055494,
+     "vcworld_dir_auroc": 0.9889358412055781,
+     "vcworld_dir_auprc": 0.9721582191499595,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.4191779039559282,
+     "overlap_at_50": 0.3549307958477509,
+     "overlap_at_100": 0.33708765859284884,
+     "overlap_at_200": 0.35481493132012165,
+     "overlap_at_500": 0.39727802292309544,
+     "precision_at_N": 0.2791103117045459,
+     "precision_at_50": 0.3552941176470588,
+     "precision_at_100": 0.3188235294117647,
+     "precision_at_200": 0.3223529411764706,
+     "precision_at_500": 0.34051865907653384,
+     "de_spearman_sig": 0.6397058823529413,
+     "de_direction_match": 0.9070818726322241,
+     "de_spearman_lfc_sig": 0.7094108153085801,
+     "de_sig_genes_recall": 0.701984622167633,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1151.235294117647,
+     "pr_auc": 0.3573156428537113,
+     "roc_auc": 0.6562798587848769,
+     "pearson_delta": 0.611443908775554,
+     "mse": 0.004994288901798427,
+     "mae": 0.051507337785819,
+     "mse_delta": 0.004994288888102507,
+     "mae_delta": 0.051507337785819,
+     "discrimination_score_l1": 0.7681660899653979,
+     "discrimination_score_l2": 0.7923875432525952,
+     "discrimination_score_cosine": 0.7093425605536332,
+     "pearson_edistance": 0.5932852708734745,
+     "clustering_agreement": 1.0
+    },
+    "val2": {
+     "overlap_at_N": 0.37761483504948534,
+     "overlap_at_50": 0.29405097718461776,
+     "overlap_at_100": 0.2902414533750939,
+     "overlap_at_200": 0.3029470810807217,
+     "overlap_at_500": 0.34091913077016267,
+     "precision_at_N": 0.2576099746612656,
+     "precision_at_50": 0.25809523809523816,
+     "precision_at_100": 0.2366666666666666,
+     "precision_at_200": 0.23911674347158218,
+     "precision_at_500": 0.2617357910906298,
+     "de_spearman_sig": 0.8066215199398046,
+     "de_direction_match": 0.9452329600326953,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.709121018054808,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 981.6666666666666,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5803886592565548,
+     "mse": 0.0054211601104942105,
+     "mae": 0.05246224422894773,
+     "mse_delta": 0.0054211601548429045,
+     "mae_delta": 0.05246224422894773,
+     "discrimination_score_l1": 0.6893424036281179,
+     "discrimination_score_l2": 0.7278911564625851,
+     "discrimination_score_cosine": 0.6938775510204083,
+     "pearson_edistance": 0.6932966699605727,
+     "clustering_agreement": 0.28136839531483354
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0431",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.6567457741003242,
+   "query_only_score": 0.6457858147883652,
+   "gap": 0.010959959311959033,
+   "query_only_pearson_delta": 0.6457858147883652,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.003890712505461975,
+     "cellforge_pcc": 0.9914248942662819,
+     "cellforge_r2": 0.9815658742217283,
+     "cellforge_mse_de": 0.048288287736967334,
+     "cellforge_pcc_de": 0.9773063681107576,
+     "cellforge_r2_de": 0.9334192668181328,
+     "cellforge_mse_deset": 0.02155123697669926,
+     "cellforge_pcc_deset": 0.9731599554799024,
+     "cellforge_r2_deset": 0.92830102282964,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8122513238872191,
+     "vcworld_de_precision": 0.5046289031853131,
+     "vcworld_de_recall": 0.485947416137806,
+     "vcworld_de_f1": 0.495112000615811,
+     "vcworld_de_auroc": 0.7662793941914336,
+     "vcworld_de_auprc": 0.4965747092057464,
+     "vcworld_dir_accuracy": 0.9297370806890299,
+     "vcworld_dir_precision": 0.9025744573447754,
+     "vcworld_dir_recall": 0.8679611650485437,
+     "vcworld_dir_f1": 0.8849294729027468,
+     "vcworld_dir_auroc": 0.9733433587376511,
+     "vcworld_dir_auprc": 0.9522966212174676,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.004449290764857862,
+     "cellforge_pcc": 0.9901498871049622,
+     "cellforge_r2": 0.9786935005955387,
+     "cellforge_mse_de": 0.07349659788735721,
+     "cellforge_pcc_de": 0.9697905922185377,
+     "cellforge_r2_de": 0.8683841920403294,
+     "cellforge_mse_deset": 0.01974145811041808,
+     "cellforge_pcc_deset": 0.9798620497211342,
+     "cellforge_r2_deset": 0.9354154933496757,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8540145985401459,
+     "vcworld_de_precision": 0.6432704872129923,
+     "vcworld_de_recall": 0.43982131461391194,
+     "vcworld_de_f1": 0.5224378411158278,
+     "vcworld_de_auroc": 0.8154240778630026,
+     "vcworld_de_auprc": 0.5676738709433784,
+     "vcworld_dir_accuracy": 0.9582641991065731,
+     "vcworld_dir_precision": 0.8863636363636364,
+     "vcworld_dir_recall": 0.9333333333333333,
+     "vcworld_dir_f1": 0.9092422980849292,
+     "vcworld_dir_auroc": 0.9887372544609386,
+     "vcworld_dir_auprc": 0.9717129027517162,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.421396835854809,
+     "overlap_at_50": 0.3578373702422145,
+     "overlap_at_100": 0.33881776239907724,
+     "overlap_at_200": 0.35802453601761564,
+     "overlap_at_500": 0.39957483686873096,
+     "precision_at_N": 0.27931554235326994,
+     "precision_at_50": 0.3564705882352941,
+     "precision_at_100": 0.31882352941176473,
+     "precision_at_200": 0.32264705882352945,
+     "precision_at_500": 0.34075395319418084,
+     "de_spearman_sig": 0.6192521090362889,
+     "de_direction_match": 0.9063921212141152,
+     "de_spearman_lfc_sig": 0.7079572181360051,
+     "de_sig_genes_recall": 0.7011085584366626,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1148.4705882352941,
+     "pr_auc": 0.35758578489186443,
+     "roc_auc": 0.6565687310015234,
+     "pearson_delta": 0.6108371369978961,
+     "mse": 0.0050139618517064,
+     "mae": 0.05161016719306216,
+     "mse_delta": 0.0050139618517064,
+     "mae_delta": 0.05161016719306216,
+     "discrimination_score_l1": 0.7647058823529411,
+     "discrimination_score_l2": 0.7889273356401384,
+     "discrimination_score_cosine": 0.7058823529411765,
+     "pearson_edistance": 0.5870521328181885,
+     "clustering_agreement": 1.0
+    },
+    "val2": {
+     "overlap_at_N": 0.37527610239131765,
+     "overlap_at_50": 0.2928388559724965,
+     "overlap_at_100": 0.2871245702582108,
+     "overlap_at_200": 0.3017349598686005,
+     "overlap_at_500": 0.3386306638023478,
+     "precision_at_N": 0.257601409643362,
+     "precision_at_50": 0.26,
+     "precision_at_100": 0.23571428571428568,
+     "precision_at_200": 0.24006715506715506,
+     "precision_at_500": 0.26163858363858367,
+     "de_spearman_sig": 0.8048138967046657,
+     "de_direction_match": 0.9450225349807247,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.7077766196894453,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 980.6190476190476,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5798865342069239,
+     "mse": 0.005434412326264594,
+     "mae": 0.05250842895890985,
+     "mse_delta": 0.005434412326264594,
+     "mae_delta": 0.05250842895890985,
+     "discrimination_score_l1": 0.6848072562358277,
+     "discrimination_score_l2": 0.7278911564625851,
+     "discrimination_score_cosine": 0.6938775510204083,
+     "pearson_edistance": 0.6888526029083869,
+     "clustering_agreement": 0.28136839531483354
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0003",
+   "kind": "baseline",
+   "members": null,
+   "visible_score": 0.5010002317798699,
+   "query_only_score": 0.519597358465441,
+   "gap": -0.01859712668557112,
+   "query_only_pearson_delta": 0.519597358465441,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.005757380595167756,
+     "cellforge_pcc": 0.9869740097262664,
+     "cellforge_r2": 0.9726971014420547,
+     "cellforge_mse_de": 0.12685748894186963,
+     "cellforge_pcc_de": 0.9442497033011582,
+     "cellforge_r2_de": 0.8208865795592267,
+     "cellforge_mse_deset": 0.04345378617186623,
+     "cellforge_pcc_deset": 0.9406462919087664,
+     "cellforge_r2_deset": 0.8463663349787499,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8068985258336911,
+     "vcworld_de_precision": 0.4469320066334992,
+     "vcworld_de_recall": 0.08144454517981263,
+     "vcworld_de_f1": 0.13778118609406956,
+     "vcworld_de_auroc": 0.658648661236135,
+     "vcworld_de_auprc": 0.314131640253149,
+     "vcworld_dir_accuracy": 0.8895436687821094,
+     "vcworld_dir_precision": 0.8544,
+     "vcworld_dir_recall": 0.7776699029126214,
+     "vcworld_dir_f1": 0.8142312579415502,
+     "vcworld_dir_auroc": 0.9340939008336989,
+     "vcworld_dir_auprc": 0.8726728336770272,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.007039087039889803,
+     "cellforge_pcc": 0.9846084168233286,
+     "cellforge_r2": 0.966319990734692,
+     "cellforge_mse_de": 0.15355345347474497,
+     "cellforge_pcc_de": 0.9318245289901906,
+     "cellforge_r2_de": 0.73408650246828,
+     "cellforge_mse_deset": 0.09157736929506922,
+     "cellforge_pcc_deset": 0.9020659486249205,
+     "cellforge_r2_deset": 0.7240086015640083,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8080176109373189,
+     "vcworld_de_precision": 0.3487903225806452,
+     "vcworld_de_recall": 0.0662412252712189,
+     "vcworld_de_f1": 0.1113375522900354,
+     "vcworld_de_auroc": 0.6658846314234483,
+     "vcworld_de_auprc": 0.2838275024664566,
+     "vcworld_dir_accuracy": 0.9285258455647735,
+     "vcworld_dir_precision": 0.8241996744438416,
+     "vcworld_dir_recall": 0.8655270655270655,
+     "vcworld_dir_f1": 0.8443579766536965,
+     "vcworld_dir_auroc": 0.9566613716449243,
+     "vcworld_dir_auprc": 0.873957495509999,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.36109682738210974,
+     "overlap_at_50": 0.24953863898500578,
+     "overlap_at_100": 0.2728719723183391,
+     "overlap_at_200": 0.29379888853937297,
+     "overlap_at_500": 0.34200720847065613,
+     "precision_at_N": 0.2637395147052707,
+     "precision_at_50": 0.21999999999999997,
+     "precision_at_100": 0.24,
+     "precision_at_200": 0.25764705882352934,
+     "precision_at_500": 0.2964705882352941,
+     "de_spearman_sig": 0.17588161767036206,
+     "de_direction_match": 0.8629040200712746,
+     "de_spearman_lfc_sig": 0.6429270704687955,
+     "de_sig_genes_recall": 0.576576931654179,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1028.3529411764705,
+     "pr_auc": 0.30613064063805817,
+     "roc_auc": 0.5972167243711713,
+     "pearson_delta": 0.503741575514569,
+     "mse": 0.00706737139262259,
+     "mae": 0.05761213885510669,
+     "mse_delta": 0.00706737139262259,
+     "mae_delta": 0.05761213885510669,
+     "discrimination_score_l1": 0.5363321799307958,
+     "discrimination_score_l2": 0.5674740484429065,
+     "discrimination_score_cosine": 0.5363321799307958,
+     "pearson_edistance": 0.2533221795006345,
+     "clustering_agreement": 0.08435085948823813
+    },
+    "val2": {
+     "overlap_at_N": 0.2804865698847075,
+     "overlap_at_50": 0.16728403189232682,
+     "overlap_at_100": 0.1972840318923268,
+     "overlap_at_200": 0.21894348355177845,
+     "overlap_at_500": 0.26675067816875575,
+     "precision_at_N": 0.237961952615235,
+     "precision_at_50": 0.15714285714285714,
+     "precision_at_100": 0.18047619047619048,
+     "precision_at_200": 0.19714285714285718,
+     "precision_at_500": 0.23545957918050942,
+     "de_spearman_sig": 0.18176295474413393,
+     "de_direction_match": 0.9030165358665794,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.5705216170220488,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 928.8095238095239,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.4773705716998804,
+     "mse": 0.00807690240132312,
+     "mae": 0.0614645935240246,
+     "mse_delta": 0.008076902490020507,
+     "mae_delta": 0.0614645935240246,
+     "discrimination_score_l1": 0.526077097505669,
+     "discrimination_score_l2": 0.5578231292517007,
+     "discrimination_score_cosine": 0.5374149659863946,
+     "pearson_edistance": 0.03729419988509463,
+     "clustering_agreement": 3.18386525485845e-15
+    }
+   }
+  }
+ ],
+ "compute_efficiency": {
+  "experiments_per_hour": 1388.6,
+  "planner_experiments_per_hour": 77.98,
+  "mean_cpu_s_per_experiment": 0.62,
+  "gain_per_cpu_hour": 1.9420823212731904,
+  "gain_per_usd": null,
+  "cost_per_completed_experiment_usd": 0.0
+ },
+ "reproduction_command": "python reproduce.py --run /Users/andresarriaga/Documents/Loak-documents/gene-mila/runs/control_replogle3_from_opus_r0 --experiment EXP_0466"
+}
