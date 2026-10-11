@@ -145,7 +145,7 @@ and the files under `docs/results/` on the integration branch supersede their nu
 |---|---|
 | Repository (public since 2026-10-11, so nothing secret in any branch) | `https://github.com/andresloak100/gene-mila` |
 | Integration branch (pull requests go here; there is no `main` yet) | `claude/autonomous-research-system-3k435s` |
-| Main checkout on Andres's Mac: real data, runs (the key is stored nowhere on the Mac). **Don't touch its files or git state** | `~/Documents/Mila/Gene-Mila/gene-mila` (moved there from `~/Documents/Mila/Gene-Mila/gene-mila` on 2026-10-11 after the paid Norman run; a shortcut stays at the old name) |
+| Main checkout on Andres's Mac: real data, runs (the key is stored nowhere on the Mac). **Don't touch its files or git state** | `~/Documents/Mila/Gene-Mila/gene-mila` (moved there from `~/Documents/Loak-documents/gene-mila` on 2026-10-11 after the paid Norman run; a shortcut stays at the old name) |
 | Its Python environment | `~/Documents/Mila/Gene-Mila/gene-mila/.venv` |
 | Data bundle in use (gitignored) | `data/adamson_cf/` in the main checkout |
 | Runs (gitignored) | `runs/<run>/` in the main checkout |
@@ -174,8 +174,10 @@ Bundle layout: `manifest.json` (source, split id, file hashes; the lab verifies 
 of every run), `public.npz` (all that feature code may see), `private/val1.npz` (evaluator only),
 `private/val2.npz` (query-only oracle only), `splits.json` (protected). Never read the last three.
 
-Not yet loaded: `NormanWeissman2019_filtered.h5ad` (single and double CRISPRa perturbations) and
-`SrivatsanTrapnell2020_sciplex3.h5ad` (drugs; needs drug metadata the lab doesn't model yet).
+Norman 2019 (`NormanWeissman2019_filtered.h5ad`, single and double CRISPRa perturbations) was built
+into its own bundle on the Mac on 2026-10-11 (`docs/NORMAN_PLAN.md` section 8: gene-grouped split, 231
+perturbations, pair labels, an additive baseline). Not yet loaded: `SrivatsanTrapnell2020_sciplex3.h5ad`
+(drugs; needs drug metadata the lab doesn't model yet).
 CellForge's paper states no exact split; it holds out whole perturbations. Its split code (one 20%
 hold-out, fixed seed) disagrees with its documentation (five folds), so whatever you do for a new
 dataset, record every assumption next to the bundle.
@@ -218,7 +220,7 @@ python run_research.py --dataset adamson_cf --minutes 5 --workers 2 \
 #  --planner-model opus --set planner.fallback=deepseek:deepseek-v4-pro instead of the two planner flags below)
 python run_research.py --dataset adamson_cf --minutes 20 --workers 4 --set run.seed=0 \
   --planner-provider deepseek --planner-model deepseek-v4-pro \
-  --set budget.ledger="$LEDGER" --set budget.cumulative_usd.deepseek=<cap, at most 14> \
+  --set budget.ledger="$LEDGER" --set budget.cumulative_usd.deepseek=34 \
   --set budget.max_total_usd=<worker cap> --set budget.max_planner_usd=<planner cap> \
   --run-dir runs/<your-name>_<topic>_r0
 
