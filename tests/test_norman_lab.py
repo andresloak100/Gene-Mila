@@ -574,3 +574,90 @@ def test_feature_audit_folds_follow_the_run_s_grouping(pair_bundle, dataset, tmp
                 assert [f for f, _ in folds] == _old_folds(ctx.train_perts, 3, s)
             else:
                 assert any(f != h for f, h in folds)
+
+
+# ------------------------------------------------------------------ the additive rule in the starting model
+def test_additive_response_is_the_additive_baseline_left_out(pair_lab):
+    """On a bundle with pairs the built-in additive_response is the additive baseline's predicted change: for a
+    validation perturbation exactly that, for a training one the same rule without it, and in a cross-validation
+    fold's view the baseline's out-of-fold twin, so ridge on it starts where the additive baseline is."""
+    from genemila.additive import additive_delta
+    from genemila.features.registry import BUILTIN_FEATURES, get
+    lab = pair_lab(experiment__cv_folds=3)
+    assert lab.builtin_features == BUILTIN_FEATURES + ["additive_response"]
+    assert lab.db.feature("additive_response")["builtin"] and "additive_response" in lab.known_features()
+    assert lab.store_files(["additive_response"]) == {}  # no plugin file: experiment processes have it built in
+    ctx = FeatureContext(lab.public_dir)
+    feat = get("additive_response")()
+    val = lab._val1.perts
+    got = feat.compute(ctx, val, {})[:, :, 0]
+    assert np.allclose(got, lab._analytic_baseline("baseline_additive", val) - lab.control_mean, rtol=0, atol=1e-12)
+    train, delta = lab._train.perts, lab._train.means - lab.control_mean
+    got = feat.compute(ctx, train, {})[:, :, 0]
+    for i, p in enumerate(train):
+        keep = [j for j, q in enumerate(train) if q != p]
+        want = additive_delta([p], lab._targets, [train[j] for j in keep], delta[keep])[0]
+        assert np.allclose(got[i], want, rtol=0, atol=1e-12), p
+    oof = lab._cv_baseline("baseline_additive") - lab.control_mean
+    pos = {p: i for i, p in enumerate(train)}
+    for fold, hide in lab._cv_folds():
+        view = ctx.without_train(hide)
+        got = feat.compute(view, fold, {})[:, :, 0]
+        assert np.allclose(got, oof[[pos[p] for p in fold]], rtol=0, atol=1e-12)
+
+
+def test_pair_bundle_agents_start_from_ridge_on_the_additive_rule(pair_lab):
+    """A bundle with pairs queues ridge on the built-ins plus additive_response beside the three model baselines; on
+    this additive screen it is the best model before any agent idea, so the planner's first features hang off it and
+    carry the rule."""
+    from genemila.controller import Controller
+    from genemila.providers.mock import MockProvider, ScriptedPlanner
+    lab = pair_lab(experiment__cv_folds=3, schedule__max_planner_calls=1)
+    Controller(lab, workers=2, seconds=40, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+               quiet=True).run()
+    base = {r["hypothesis_group"]: r for r in lab.db.query("SELECT * FROM experiments WHERE kind='baseline'")}
+    assert set(base) == {"baseline_unchanged", "baseline_mean_response", "baseline_additive", "baseline_ols",
+                         "baseline_ridge", "baseline_lasso", "baseline_ridge_additive"}
+    start = base["baseline_ridge_additive"]
+    assert start["status"] == "completed" and start["model_type"] == "ridge"
+    assert start["feature_set_json"] == ["control_mean", "mean_response", "is_target", "additive_response"]
+    modelled = [b for b in base.values() if b["model_type"] != "none" and b["status"] == "completed"]
+    assert max(modelled, key=lambda b: b["primary_score"]) is start
+    assert start["primary_score"] > base["baseline_ridge"]["primary_score"]
+    first = lab.db.query("SELECT * FROM experiments WHERE kind!='baseline' AND proposer NOT LIKE 'python%' "
+                         "ORDER BY created_at LIMIT 1")
+    assert first and first[0]["parent_id"] == start["experiment_id"]
+    assert "additive_response" in first[0]["feature_set_json"]
+
+
+def test_single_target_bundle_has_no_additive_built_in(lab_factory):
+    """Adamson's kind of bundle keeps its three built-ins and three model baselines."""
+    from genemila.features.registry import BUILTIN_FEATURES
+    lab = lab_factory()
+    assert lab.builtin_features == BUILTIN_FEATURES and "additive_response" not in lab.known_features()
+    lab.queue_model_baselines()
+    groups = {r["hypothesis_group"] for r in lab.db.query("SELECT hypothesis_group FROM experiments")}
+    assert groups == {"baseline_ols", "baseline_ridge", "baseline_lasso"}
+
+
+def test_reopening_a_pair_run_from_before_the_built_in_writes_nothing(pair_lab, pair_bundle, code_repo):
+    """A pair run made before additive_response existed, reopened for a report or a sealed reading, gets no new feature
+    row; one made with it keeps it."""
+    from genemila.lab import open_run
+    lab = pair_lab()
+    run_dir = lab.run_dir
+    lab.db.execute("DELETE FROM features WHERE name='additive_response'")  # as a run of the old code left it
+    lab.close()
+    old = open_run(run_dir)
+    try:
+        assert "additive_response" not in old.builtin_features and old.db.feature("additive_response") is None
+    finally:
+        old.close()
+    new = pair_lab()
+    new_dir = new.run_dir
+    new.close()
+    again = open_run(new_dir)
+    try:
+        assert "additive_response" in again.builtin_features
+    finally:
+        again.close()

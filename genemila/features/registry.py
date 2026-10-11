@@ -10,6 +10,10 @@ from . import builtin  # noqa: F401  (registers baseline features)
 from .api import REGISTRY, Feature
 
 BUILTIN_FEATURES = ["control_mean", "mean_response", "is_target"]
+# built in on a bundle whose targets include a pair of genes only (Lab.builtin_features), where the starting model
+# carries them; every other bundle (Adamson's) keeps the three above, so its runs, prompts and hashes are unchanged
+PAIR_BUILTIN_FEATURES = ["additive_response"]
+ALL_BUILTIN_FEATURES = BUILTIN_FEATURES + PAIR_BUILTIN_FEATURES  # every feature builtin.py defines: no store file
 _LOADED: dict[str, Path] = {}  # module name -> plugin file, for reloads
 
 

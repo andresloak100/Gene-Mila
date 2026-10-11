@@ -41,7 +41,7 @@ from genemila.benchmark.oracle import QueryOracle  # noqa: E402  (the only seale
 from genemila.benchmark.table import run_arm  # noqa: E402
 from genemila.features import registry  # noqa: E402
 from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
-from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
+from genemila.features.registry import ALL_BUILTIN_FEATURES  # noqa: E402
 from genemila.lab import additive_delta, open_run  # noqa: E402
 from genemila.pipeline import build_matrix, make_model  # noqa: E402
 from genemila.sandbox import python_hash_seed, reexec_under_hash_seed, reexecuted_under_hash_seed  # noqa: E402
@@ -70,7 +70,7 @@ def training_context(lab, cache_dir: Path, augment: bool = True) -> FeatureConte
 def _load_run_plugins(store: Path) -> list[str]:
     """Load the run's feature plugins afresh: features of a previous run must not survive by name."""
     for name in list(REGISTRY):
-        if name not in BUILTIN_FEATURES:
+        if name not in ALL_BUILTIN_FEATURES:
             del REGISTRY[name]
     return registry.load_plugins(store)
 

@@ -73,7 +73,7 @@ from genemila.benchmark.table import run_arm  # noqa: E402
 from genemila.data.bundle import LabelSet  # noqa: E402  (visible validation labels only)
 from genemila.features import registry  # noqa: E402
 from genemila.features.api import REGISTRY, FeatureContext  # noqa: E402
-from genemila.features.registry import BUILTIN_FEATURES  # noqa: E402
+from genemila.features.registry import ALL_BUILTIN_FEATURES, BUILTIN_FEATURES  # noqa: E402
 from genemila.pipeline import cv_fold_targets, cv_folds_of, feature_blocks, make_model  # noqa: E402
 from genemila.sandbox import (HASH_REEXEC_ENV, python_hash_seed, reexec_under_hash_seed,  # noqa: E402
                               reexecuted_under_hash_seed)
@@ -1083,7 +1083,7 @@ def load_run_plugins(store: Path) -> dict[str, str]:
     that raises while importing (a missing package, a syntax error) is recorded and skipped while every other file
     still loads, and reloads before each fold re-execute only this run's modules. Returns {file stem: error}."""
     for name in list(REGISTRY):
-        if name not in BUILTIN_FEATURES:
+        if name not in ALL_BUILTIN_FEATURES:
             del REGISTRY[name]
     registry._LOADED.clear()
     errors: dict[str, str] = {}
@@ -1911,7 +1911,7 @@ def combined_verdicts(r: dict) -> list[dict]:
         scope = (kept_in or needed_in or ["selected" if "selected" in here else "pool"])[0]
         v = here[scope]
         out.append({"feature": f, "verdict": v["verdict"], "reason": v["reason"], "scope": scope, "kept_in": kept_in,
-                    "evidence": v["evidence"], "builtin": f in BUILTIN_FEATURES,
+                    "evidence": v["evidence"], "builtin": f in ALL_BUILTIN_FEATURES,
                     "scopes": {s: {"verdict": x["verdict"], "reason": x["reason"]} for s, x in here.items()}})
     return out
 

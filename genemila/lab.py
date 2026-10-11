@@ -20,7 +20,8 @@ from .benchmark.evaluator import bundle_strata, categories_of, category_summary,
 from .benchmark.oracle import QueryOracle
 from .data.bundle import LabelSet, added_knowledge, export_public, verify_bundle
 from .db import Database
-from .features.registry import BUILTIN_FEATURES
+from .additive import additive_delta  # noqa: F401  (genemila.lab.additive_delta, as tools import it)
+from .features.registry import ALL_BUILTIN_FEATURES, BUILTIN_FEATURES, PAIR_BUILTIN_FEATURES
 from .guard import CodeViolation, check_plugin_source
 from .isolation import WorktreeManager, git, sha256_text
 from .llm import LLMGateway, SpendLedger
@@ -118,7 +119,7 @@ class Lab:
                 self._cv_categories.update(categories_of(fold, self._targets,
                                                          [p for p in self._train.perts if p not in gone]))
         self.limits = {k: float(cfg["experiment"][k]) for k in ("cpu_limit_s", "ram_limit_mb", "timeout_s")}
-        self._register_builtins()
+        self._register_builtins(reopen)
         self._executor = None
         self._exec_lock = threading.Lock()
         self._cache_lock = threading.Lock()
@@ -187,9 +188,14 @@ class Lab:
             self._executor = None
 
     # ----------------------------------------------------------------- features
-    def _register_builtins(self) -> None:
+    def _register_builtins(self, reopen: bool = False) -> None:
+        """Record the bundle's built-in features (builtin_features): the three every bundle has and, on a bundle whose
+        targets include a pair, additive_response, which a reopened run gets only if it already has it, so reopening
+        a run made before it existed (a report, a sealed reading) writes nothing new into its lab.db."""
         from .features.registry import get
-        for name in BUILTIN_FEATURES:
+        pair = [f for f in PAIR_BUILTIN_FEATURES if self.has_pairs and (not reopen or self.db.feature(f))]
+        self.builtin_features = BUILTIN_FEATURES + pair
+        for name in self.builtin_features:
             if not self.db.feature(name):
                 meta = get(name).metadata()
                 self.db.upsert_feature({**meta, "builtin": 1, "implementation_path": "genemila/features/builtin.py",
@@ -204,7 +210,7 @@ class Lab:
     def store_files(self, names: list[str]) -> dict[str, Path]:
         out = {}
         for n in names:
-            if n in BUILTIN_FEATURES:
+            if n in ALL_BUILTIN_FEATURES:
                 continue
             p = self.store / f"{n}.py"
             if p.exists():
@@ -256,7 +262,7 @@ class Lab:
                 "SELECT new_feature, MAX(delta_from_parent) AS d FROM experiments WHERE status='completed' AND "
                 "new_feature IS NOT NULL AND delta_from_parent IS NOT NULL GROUP BY new_feature ORDER BY d DESC")
                 if r["d"] is not None and r["d"] > HELP_THRESHOLD]
-            wanted = [f for f in (best.get("feature_set_json") or []) + helpful if f not in BUILTIN_FEATURES]
+            wanted = [f for f in (best.get("feature_set_json") or []) + helpful if f not in ALL_BUILTIN_FEATURES]
             imported, missing, refused, sources = [], [], {}, {}
             for name in dict.fromkeys(wanted):
                 src = prev_run_dir / "feature_store" / f"{name}.py"
@@ -673,10 +679,14 @@ class Lab:
                 "code_commit": self.base_commit, "seed": 0})
 
     def queue_model_baselines(self) -> None:
+        """OLS, ridge and lasso on the three built-in features and, on a bundle whose targets include a pair, ridge on
+        those plus additive_response (baseline_ridge_additive): the best model the run has before any agent idea, so
+        new features build on the additive rule (the planner's and the exploit engine's default parent is the best
+        completed model) instead of starting below it, as the Norman agents of 11 Oct 2026 (N3) did."""
         if self.db.query("SELECT 1 FROM experiments WHERE kind='baseline' AND model_type!='none'"):
             return
         grid = list(self.cfg["experiment"]["default_alpha_grid"])
-        base = ["control_mean", "mean_response", "is_target"]
+        base = list(BUILTIN_FEATURES)
         for model, hp in [("ols", {}), ("ridge", {"alpha_grid": grid}),
                           ("lasso", {"alpha_grid": [a / 1000 for a in grid]})]:
             self.queue(ExperimentSpec(
@@ -685,6 +695,15 @@ class Lab:
                 kind="baseline", category="baseline", feature_set=list(base), model_type=model,
                 hyperparameters=hp, proposer="python", priority=100.0,
                 hypothesis_group=f"baseline_{model}"))
+        if "additive_response" in self.builtin_features:
+            self.queue(ExperimentSpec(
+                hypothesis="RIDGE on additive_response (the sum of the genes' single-gene changes) and the baseline "
+                           "features.",
+                scientific_rationale="The additive rule as a feature of a linear model: the starting model on a "
+                                     "bundle with pairs, so every new feature is measured on top of the rule.",
+                kind="baseline", category="baseline", feature_set=base + ["additive_response"], model_type="ridge",
+                hyperparameters={"alpha_grid": grid}, proposer="python", priority=100.0,
+                hypothesis_group="baseline_ridge_additive"))
 
     # ------------------------------------------------------------------ helpers
     def config_hash_for(self, spec: ExperimentSpec) -> str:
@@ -737,29 +756,6 @@ class Lab:
 
     def git_head_dirty(self) -> bool:
         return bool(git(self.repo, "status", "--porcelain", "--untracked-files=no"))
-
-
-def additive_delta(perts: list[str], targets: dict, train: list[str], train_delta: np.ndarray) -> np.ndarray:
-    """baseline_additive's predicted change, the one rule the lab and tools/refit_visible.py share: the sum over a
-    perturbation's target genes (targets: perturbation -> its genes; sorted and without repeats, so the order a
-    pair lists them changes nothing) of each gene's single change in `train` (the mean change in train_delta of
-    the training perturbations whose one target it is) or, for a gene without a training single, the mean change of
-    all training singles. A pair is Δ_A + Δ_B, a held-out single the mean single change; a perturbation without a
-    listed target counts as one gene without a single. With no single in training at all, the mean training change
-    stands in for the mean single change."""
-    rows: dict[str, list[int]] = {}
-    for i, p in enumerate(train):
-        tg = targets.get(p) or []
-        if len(tg) == 1:
-            rows.setdefault(tg[0], []).append(i)
-    single = {g: train_delta[r].mean(axis=0) for g, r in rows.items()}
-    every = [i for r in rows.values() for i in r]
-    fill = train_delta[every].mean(axis=0) if every else train_delta.mean(axis=0)
-    out = np.zeros((len(perts), train_delta.shape[1]))
-    for j, p in enumerate(perts):
-        for g in sorted(set(targets.get(p) or [])) or [None]:
-            out[j] += single.get(g, fill)
-    return out
 
 
 def open_run(run_dir: str | Path) -> Lab:

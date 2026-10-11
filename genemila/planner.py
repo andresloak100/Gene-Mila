@@ -217,7 +217,7 @@ class Planner:
         parent = self.lab.db.get_experiment(h["parent"]) if h.get("parent") else None
         if parent is None or parent.get("status") != "completed" or not parent.get("feature_set_json"):
             parent = best
-        base_set = list((parent or {}).get("feature_set_json") or ["control_mean", "mean_response", "is_target"])
+        base_set = list((parent or {}).get("feature_set_json") or self.lab.builtin_features)
         category = h.get("category") if h.get("category") in ("explore", "exploit", "risky") else "explore"
         model = h.get("model_type") or (parent or {}).get("model_type") or ecfg["default_model"]
         if model not in ("ridge", "lasso", "elasticnet", "ols"):

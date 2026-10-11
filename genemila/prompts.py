@@ -99,7 +99,8 @@ PAIRS_PLANNER_NOTE = (" Perturbations here are single genes and pairs of genes (
                       "a feature-set combination (existing features added to one model), never a combination of "
                       "genes. The baselines in the state are reference predictions, not features: no model contains "
                       "the additive baseline's prediction (a perturbation's change as the sum of its genes' single-gene "
-                      "training changes) unless one of its features computes it.")
+                      "training changes) unless one of its features computes it, as the built-in feature "
+                      "additive_response does.")
 PLANNER_SCHEMA_PAIRS = {**PLANNER_SCHEMA, "hypotheses": [
     {**PLANNER_SCHEMA["hypotheses"][0],
      "add_features": ["for combine (a feature-set combination): existing feature names to add"]}]}

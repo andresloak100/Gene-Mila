@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..additive import additive_delta
 from .api import Feature, FeatureContext, register
 
 
@@ -48,4 +49,29 @@ class IsTarget(Feature):
         out = np.zeros((len(perts), ctx.n_genes, 1))
         for i, p in enumerate(perts):
             out[i, ctx.target_indices(p), 0] = 1.0
+        return out
+
+
+@register
+class AdditiveResponse(Feature):
+    # Built in only on a bundle whose targets include a pair of genes (registry.PAIR_BUILTIN_FEATURES; the lab registers
+    # it nowhere else), where the starting model baseline_ridge_additive carries it: the additive baseline's predicted
+    # change, leaving p out, so no agent model starts below the additive rule. The Norman agents of 11 Oct 2026 (N3)
+    # started from the three features above and never rebuilt the plain rule (docs/NORMAN_PLAN.md, section 8).
+    name = "additive_response"
+    description = ("Additive model of single-gene responses: the sum over p's target genes of each gene's single-gene "
+                   "training change (the mean change of the training perturbations whose one target is that gene), "
+                   "with the mean single-gene training change for a gene without one, leaving p out. It is the "
+                   "additive baseline's predicted change.")
+    rationale = ("A pair of genes often changes expression by about the sum of its genes' single-gene changes, so the "
+                 "training singles predict pairs whose genes were each perturbed alone.")
+    inputs = ["train_delta", "targets"]
+
+    def compute(self, ctx: FeatureContext, perts, params):
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            names, d = ctx.train_delta(exclude=p)
+            if not names:
+                continue
+            out[i, :, 0] = additive_delta([p], {q: ctx.target_genes(q) for q in [*names, p]}, names, d)[0]
         return out

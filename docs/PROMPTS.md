@@ -118,7 +118,7 @@ The first round of a batch has no focus line and follows the configured mix.
 rule of section 3), `planner_user` adds two sentences after "Only reference features listed in the state.":
 
 ```text
- Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes. The baselines in the state are reference predictions, not features: no model contains the additive baseline's prediction (a perturbation's change as the sum of its genes' single-gene training changes) unless one of its features computes it.
+ Perturbations here are single genes and pairs of genes (see DATASET): say how a feature treats a pair, using both of its genes so their order does not matter; the action "combine" means a feature-set combination (existing features added to one model), never a combination of genes. The baselines in the state are reference predictions, not features: no model contains the additive baseline's prediction (a perturbation's change as the sum of its genes' single-gene training changes) unless one of its features computes it, as the built-in feature additive_response does.
 ```
 
 and the shape's `add_features` entry reads `"for combine (a feature-set combination): existing feature names to add"`.
@@ -480,6 +480,22 @@ The five baselines run first in every arm, control included:
 A bundle with pairs also records `baseline_additive` beside the first two (docs/NORMAN_PLAN.md section 4, item 5): a
 perturbation predicted as the control mean plus the sum of its genes' single-gene training changes, the mean training
 single change standing in for a gene without one.
+
+Since 2026-10-11, after the Norman run N4, a bundle with pairs also has a fourth built-in feature, `additive_response`
+(`AdditiveResponse` in the same file): the additive baseline's predicted change as a feature, leaving p out, computed
+by the one rule the baseline and the feature share (`genemila/additive.py`). The lab registers it only on such a
+bundle and queues a sixth baseline beside the five, `baseline_ridge_additive`: ridge on the three built-in features
+plus `additive_response`. The planner and the exploit engine take the best completed model as the parent of a new
+feature, so agents' features there are measured on top of the additive rule; the Norman agents of N3 started from the
+three built-ins (visible 0.542) and never rebuilt the plain rule (docs/NORMAN_PLAN.md section 8). The planner reads
+its description in the feature registry:
+
+```text
+Additive model of single-gene responses: the sum over p's target genes of each gene's single-gene training change (the mean change of the training perturbations whose one target is that gene), with the mean single-gene training change for a gene without one, leaving p out. It is the additive baseline's predicted change.
+```
+
+Adamson's bundle and every other bundle without pairs keep the three features and five baselines above, so their
+prompts and configuration hashes are unchanged.
 
 "Gene-Mila starting model (OLS, 3 built-in features)" in the results table is baseline 3, the best of the five on
 this data (0.520 sealed pearson_delta). Everything above that line in a run is a feature an agent wrote, a
