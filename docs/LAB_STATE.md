@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 03:00 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:05 UTC.
 
 ## What this is
 
@@ -144,6 +144,10 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## Waiting on Andres
 
+- The two paid DeepSeek-planned runs with the Replogle file (runs/replogle_ds_w4_r0 and r1, 20 min, 4 workers,
+  about $2.50, no start at a $36 ledger): he chose them on the card at 02:34 UTC 11 Oct, but the Mac starts paid
+  work only on his typed words in the build thread, and it no longer holds a DeepSeek key. Needed: his typed
+  approval, and a freshly rotated key exported in ~/.zshenv on the Mac by him. The Mac should be on mains power.
 - Approve pushing Astra's two branches and the Mac-only reports to GitHub (on the Mac).
 - Merge PR #2 (handoff rules), create a `main` branch, rotate the DeepSeek key and store it in ~/.zshenv.
 - Decide who takes Norman 2019 (Claude or Astra); Srivatsan needs new drug and dose ingestion.
