@@ -135,11 +135,11 @@ EOF
 ok "every run's start is its own fresh baseline_ridge_additive"
 # what the agents actually started from: each run's best modelled baseline on visible data (the planner's default
 # parent). The plan's reference is baseline_ridge_additive whatever this shows; another one here is printed and noted.
-for d in $CTL $RUNS; do
-  b=$(sqlite3 "$d/lab.db" "select experiment_id || ' ' || hypothesis_group || ' visible ' || round(primary_score, 4) from experiments where kind='baseline' and status='completed' and model_type!='none' and primary_score is not null order by primary_score desc limit 1")
+for d in $CTL $RUNS $R1; do
+  b=$(sqlite3 -readonly "$d/lab.db" "select experiment_id || ' ' || hypothesis_group || ' visible ' || round(primary_score, 4) from experiments where kind='baseline' and status='completed' and model_type!='none' and primary_score is not null order by primary_score desc limit 1")
   echo "$d: best modelled baseline $b"
   case "$b" in *" baseline_ridge_additive "*) ;; *) echo "NOTE: $d's agents started from another baseline than baseline_ridge_additive; say so beside its reading" ;; esac
-done
+done 2>&1 | tee -a "$LOG"
 # per arm run: its selected model against the control's (the report repeats both runs' own readings)
 for s in $ARM; do
   step r${s}_versus_control tools/sealed_reading.py --versus --runs runs/norman_ds_addstart_w4_r$s $CTL
@@ -150,8 +150,15 @@ step arm_vs_additive tools/arm_reading.py rule --against additive --readings $st
 vs=""; for s in $ARM; do vs="$vs ${P}_r${s}_versus_control.json"; done
 step arm_vs_control tools/arm_reading.py rule --against versus --readings $vs
 # the arm as first specified (seeds 0 and 2; addendum of 23:00 UTC): reported beside the primary reading, not read
-step arm_r0_r2_vs_start_reported tools/arm_reading.py rule --against start --readings ${P}_r0_sealed_reading.json \
-  ${P}_r2_sealed_reading.json
+# (a failure here is reported and holds nothing up)
+if run_tool arm_r0_r2_vs_start_reported tools/arm_reading.py rule --against start --readings \
+    ${P}_r0_sealed_reading.json ${P}_r2_sealed_reading.json; then
+  printf '\nReported, not read (docs/PLAN_AFTER_N4.md, addendum of 23:00 UTC): the arm as first specified, seeds 0 and 2.\n' \
+    >> "${P}_arm_r0_r2_vs_start_reported.md"
+  ok "${P}_arm_r0_r2_vs_start_reported.md and its JSON twin (reported, not read)"
+else
+  tail -5 "$LOG"; echo "NOTE: ${P}_arm_r0_r2_vs_start_reported failed (output in $LOG): reported as not made"
+fi
 # the combined model of seeds 0, 2 and 3 against baseline_ridge_additive (r0's start), the control's selected model,
 # the additive baseline and B1's combined model
 r0=$(echo $RUNS | awk '{print $1}')
@@ -187,6 +194,7 @@ arms = [("arm_vs_start", "PRIMARY, the arm against each run's start (baseline_ri
 combos = ["start", "control", "additive", "b1_combined"]
 J = lambda n: json.loads(Path(P + n + ".json").read_text())
 r1_read = Path(P + r1n + ".json").exists() and Path(P + r1n + ".md").exists()
+rep_made = Path(P + "arm_r0_r2_vs_start_reported.json").exists()
 bad = []
 def problem(m):
     bad.append(m); print("PROBLEM:", m)
@@ -201,7 +209,7 @@ def ratio(cr):
     return "none" if not cr or cr.get("ratio") is None else f"{cr['ratio']:.2f}"
 print("Sealed scorings (each on an oracle of the tool's own, outside the runs' caps):")
 total = 0
-for n in singles + versus + [a for a, _ in arms] + ["arm_r0_r2_vs_start_reported"] + [f"combined_vs_{x}" for x in combos] + ([r1n] if r1_read else []):
+for n in singles + versus + [a for a, _ in arms] + (["arm_r0_r2_vs_start_reported"] if rep_made else []) + [f"combined_vs_{x}" for x in combos] + ([r1n] if r1_read else []):
     j = J(n)
     pr = j["protocol"]
     total += pr["sealed_scorings"]
@@ -221,12 +229,15 @@ for n, what in arms:
     v = {"a": "the arm better", "b": "the arm worse", "none": "no difference established"}[p["verdict"]]
     print(f"  {what}: R {p['R']}, G {p['G']:+.4f}, SE {p['SE']:.4f} (S {p['S']:.4f}, sd_g {p['sd_g']:.4f}), k "
           f"{p['k']:.2f}, wins {p['wins_selected']}/{p['wins_reference']} of {p['pairs']} pairs: {v}  [{P}{n}.md]")
-j = J("arm_r0_r2_vs_start_reported")
-p = j["pooled"]
-if sorted(x["run"] for x in j["runs"]) != sorted(runs[:2]) or j["protocol"]["sealed_scorings"] != 0 or j["excluded"]:
-    problem(f"arm_r0_r2_vs_start_reported: runs {[x['run'] for x in j['runs']]}, excluded {j['excluded']}")
-print(f"  reported, not read: the arm as first specified, seeds 0 and 2, against each run's start: R {p['R']}, "
-      f"G {p['G']:+.4f}, SE {p['SE']:.4f}, k {p['k']:.2f}  [{P}arm_r0_r2_vs_start_reported.md]")
+if rep_made:
+    j = J("arm_r0_r2_vs_start_reported")
+    p = j["pooled"]
+    if sorted(x["run"] for x in j["runs"]) != sorted(runs[:2]) or j["protocol"]["sealed_scorings"] != 0 or j["excluded"]:
+        problem(f"arm_r0_r2_vs_start_reported: runs {[x['run'] for x in j['runs']]}, excluded {j['excluded']}")
+    print(f"  reported, not read: the arm as first specified, seeds 0 and 2, against each run's start: R {p['R']}, "
+          f"G {p['G']:+.4f}, SE {p['SE']:.4f}, k {p['k']:.2f}  [{P}arm_r0_r2_vs_start_reported.md]")
+else:
+    print("  reported, not read: the arm as first specified, seeds 0 and 2: not made (see the log)")
 print("Everything below is secondary and descriptive.")
 print("Per run, sealed pooled pearson_delta, A minus B with its paired SE, by the per-run rule (A the run's selected "
       "model, B its start or its additive baseline; the arm reading inflates the SE by the clustering ratio above 1):")
