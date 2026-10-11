@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-11 16:00, by Claude ("Agent handoff" session), from `docs/LAB_STATE.md`
-(13:51) and the build thread up to 15:45. `docs/LAB_STATE.md` on the integration branch is the lab-code
+**Last updated:** 2026-10-11 16:05, by Claude ("Agent handoff" session), from `docs/LAB_STATE.md`
+(13:51) and the build thread up to 15:55. `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
 
@@ -90,13 +90,15 @@ reproducible feature runs (`PYTHONHASHSEED=0` in every experiment process; the g
 11 Oct: nothing secret goes into any branch, and every push from the Mac is scanned for key-shaped strings
 first.
 
-**Open pull requests:** #1 (README and its checker; needs today's results before it merges) and #2 (this
-file, AGENTS.md, CLAUDE.md; brought up to `28a8a37` on 11 Oct). On 11 Oct 15:44 the build thread asked
-Andres on a card whether to merge both; the merge waits on his answer. Andres merges, nobody else.
+**Pull requests:** Andres chose "Merge both" on the build thread's card (11 Oct 15:52). PR #2 (this file,
+AGENTS.md, CLAUDE.md) merged into the integration branch at 15:58 as `4356ca2`. PR #1 (README and its
+checker) is being refreshed to today's results in its own thread and merges after it; it also adds
+`CLAUDE.md`, and the resolution keeps the version now on this branch (PR #1's text plus the AGENTS.md
+pointer).
 
 **Next:** (1) the Norman run's sealed reading, recorded in `docs/LAB_STATE.md` and `docs/NORMAN_PLAN.md`;
 (2) the folder move, the push of the Mac-only reports and Astra's branches, and the reports' merge into
-the integration branch; (3) PR #1 and PR #2 merged on Andres's word; (4) the compact-model rules (Andres's
+the integration branch; (3) PR #1 merged (PR #2 is in); (4) the compact-model rules (Andres's
 ask, 11 Oct 00:32): push Astra's branch, review and merge its feature board, failure archive and curator
 into the lab, then add the admission threshold, the second fold seed, the redundancy pre-check and the
 monitor (`docs/LAB_STATE.md`, "In progress", item 2); (5) Srivatsan sci-Plex 3, which needs drug and dose
@@ -118,7 +120,7 @@ short ones; the lab-code owner maintains the protected benchmark, split and guar
 - Rotate the DeepSeek key after the Norman run and store it himself in `~/.zshenv` on the Mac. Until
   then only the Mac's Claude session can start a paid run, and after this run the $34 cap is spent, so
   any paid run also needs a new amount from him.
-- Answer the merge card for PR #1 and PR #2 (then merge them), and create a `main` branch.
+- Create a `main` branch (PR #2 is merged; PR #1 follows on his card answer of 15:52).
 - Give outside agents write access to the repository (Astra's branches go up through the Mac session's
   `gh` login, which is his).
 - Keep the Mac on mains power and awake while anything runs.
