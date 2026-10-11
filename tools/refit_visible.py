@@ -20,6 +20,7 @@ never writes into a run, its database, its cache or its query log, and uses an o
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import tempfile
@@ -67,32 +68,51 @@ def _load_run_plugins(store: Path) -> list[str]:
     return registry.load_plugins(store)
 
 
+def _bundle_key(public_dir: Path, dataset: str, split_id: str) -> str:
+    """Names the cache directory of a run's refits by what the cached contents depend on: the public data
+    (its genes, perturbations, control cells and training labels), never the run directory. Runs on one bundle
+    share their feature blocks and gene correlation; runs on different bundles, even run directories of the
+    same name, never read each other's."""
+    z = np.load(Path(public_dir) / "public.npz", allow_pickle=False)
+    h = hashlib.sha256()
+    for k in ("genes", "perts", "train_perts", "control_cells", "train_means"):
+        h.update(np.ascontiguousarray(z[k]).tobytes())
+    return f"{dataset}__{split_id}__{h.hexdigest()[:12]}"
+
+
 def fit_predict(ctx: FeatureContext, feature_set: list[str], feature_params: dict, model_type: str, alpha: float,
-                seeds: list[int], feature_cache: Path, perts_out: list[str]) -> np.ndarray:
+                seeds: list[int], feature_cache: Path | None, perts_out: list[str],
+                plugin_dir: Path | None = None) -> np.ndarray:
     """Predicted deltas (len(perts_out), n_genes) of one model fitted as genemila.pipeline.run fits it: feature
     blocks for the context's training perturbations and for every perturbation outside the training set,
     standardised with the training mean and standard deviation (a zero deviation becomes 1), one linear model
-    on the flattened training deltas, predictions stored at single precision. With several seeds the
-    prediction is the mean over the seeds' fits (the model types are deterministic given the data, so this
-    only matters for feature code that draws random numbers)."""
+    on the flattened training deltas, predictions stored at single precision. With several seeds the whole
+    computation is repeated under each seed (the run's plugins re-executed from plugin_dir so module-level
+    state starts fresh, the features recomputed without the disk cache, the model refitted) and the predicted
+    deltas averaged; the model types are deterministic given the features, so only feature code that draws
+    random numbers can make the seeds differ. The first seed uses the disk cache, as the pipeline does."""
     train = list(ctx.train_perts)
     evals = [p for p in ctx.perts if p not in set(train)]
     missing = [p for p in perts_out if p not in set(evals)]
     if missing:
         raise ValueError(f"perturbations {missing[:3]} are not outside the training set")
-    timings: dict = {}
-    np.random.seed(int(seeds[0]))
-    X_tr, _ = build_matrix(ctx, feature_set, feature_params, train, timings, feature_cache)
-    X_ev, _ = build_matrix(ctx, feature_set, feature_params, evals, timings, feature_cache)
-    _, d_train = ctx.train_delta()
-    y = d_train.reshape(-1)
-    mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
-    sd[sd == 0] = 1.0
-    X_tr = (X_tr - mu) / sd
-    X_ev = (X_ev - mu) / sd
     preds = []
-    for seed in seeds:
+    for i, seed in enumerate(seeds):
         np.random.seed(int(seed))
+        view, cache = ctx, feature_cache
+        if i > 0:
+            if plugin_dir is not None:
+                _load_run_plugins(plugin_dir)
+            view, cache = ctx.without_train([]), None  # same training set, fresh memo caches, no cached block
+        timings: dict = {}
+        X_tr, _ = build_matrix(view, feature_set, feature_params, train, timings, cache)
+        X_ev, _ = build_matrix(view, feature_set, feature_params, evals, timings, cache)
+        _, d_train = view.train_delta()
+        y = d_train.reshape(-1)
+        mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
+        sd[sd == 0] = 1.0
+        X_tr = (X_tr - mu) / sd
+        X_ev = (X_ev - mu) / sd
         model = make_model(model_type, float(alpha), int(seed))
         model.fit(X_tr, y)
         p = model.predict(X_ev).reshape(len(evals), ctx.n_genes)
@@ -155,7 +175,7 @@ def refit_run(run_dir: Path, cache_dir: Path, seed_repeats: int = 1, augment: bo
         n_queries = len(singles) + (1 if ens else 0) + (1 if base else 0)
         oracle = QueryOracle(lab.data_dir, max_queries=n_queries, used=None, selection=lab.selection)
         perts = oracle.perts  # sealed perturbation ids only
-        cache = Path(cache_dir) / run_dir.name
+        cache = Path(cache_dir) / _bundle_key(lab.public_dir, lab.dataset, lab.split_id)
         feature_cache = cache / "features"
         _load_run_plugins(lab.store)
         public = FeatureContext(lab.public_dir, cache / "shared")
@@ -176,7 +196,8 @@ def refit_run(run_dir: Path, cache_dir: Path, seed_repeats: int = 1, augment: bo
                     spec = ExperimentSpec.from_record(rec)
                     model_type, alpha, seed = _model_of(rec)
                     refits[eid] = fit_predict(ctx, spec.feature_set, spec.feature_params, model_type, alpha,
-                                              [seed + i for i in range(int(seed_repeats))], feature_cache, perts)
+                                              [seed + i for i in range(int(seed_repeats))], feature_cache, perts,
+                                              plugin_dir=lab.store)
             return refits[eid]
 
         rows, arrays = [], {}
@@ -347,7 +368,9 @@ def render(rep: dict) -> str:
          "the selected finalist of a run is its highest visible score among them, and every refit is reported. "
          "The run directories are read only (own oracle instance, own feature cache, no event and no query "
          "charged to the run)."
-         + (f" Each fit is repeated with {seeds} consecutive seeds and the predictions averaged." if seeds > 1 else ""),
+         + (f" Each fit is repeated under {seeds} consecutive seeds, the run's plugins re-executed and the features "
+            "recomputed under each, and the predicted deltas averaged; the model fits are deterministic given the "
+            "features, so only feature code that draws random numbers can make the seeds differ." if seeds > 1 else ""),
          "",
          "Read the numbers as one more look at a sealed set that is no longer fresh: before this protocol was "
          "written, the sealed perturbations had already been scored for dozens of finalists across about thirty "
@@ -447,7 +470,9 @@ def main(argv=None) -> int:
     ap.add_argument("--cache", default=None, help="feature cache directory for the refits (default: a temporary one)")
     ap.add_argument("--arm-ensembles", action="store_true", help="also average the selected finalists over each arm's runs")
     ap.add_argument("--from-json", default=None, help="re-render the markdown from a JSON twin; no run is opened")
-    ap.add_argument("--seed-repeats", type=int, default=1, help="fits per model with consecutive seeds, averaged (default 1)")
+    ap.add_argument("--seed-repeats", type=int, default=1,
+                    help="repeat every fit under N consecutive seeds (features recomputed under each) and average "
+                         "the predicted deltas; only feature code that draws random numbers can differ (default 1)")
     args = ap.parse_args(argv)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

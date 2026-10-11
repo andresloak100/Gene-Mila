@@ -46,6 +46,49 @@ def test_augmented_context_adds_the_visible_validation_labels(lab_factory, tmp_p
         public.with_extra_train(["x"], np.zeros((2, public.n_genes)))
 
 
+def test_seed_repeats_recompute_the_features_under_every_seed(lab_factory, tmp_path):
+    """--seed-repeats is real: a feature that draws random numbers is recomputed under each seed and the
+    multi-seed prediction is the mean of the single-seed ones; deterministic features make every seed agree."""
+    from genemila.features.api import REGISTRY, Feature, register
+
+    @register
+    class Noisy(Feature):
+        name = "refit_test_noisy"
+        description = "draws random numbers (test fixture)"
+        rationale = "tests that seeds are real"
+        dim = 1
+
+        def compute(self, ctx, perts, params):
+            return np.random.rand(len(perts), ctx.n_genes, 1)
+
+    try:
+        ctx = rv.training_context(lab_factory(), tmp_path / "cache")
+        out = [p for p in ctx.perts if p not in set(ctx.train_perts)][:4]
+
+        def noisy(seeds):
+            return rv.fit_predict(ctx, ["control_mean", "refit_test_noisy"], {}, "ridge", 1.0, seeds, None, out)
+
+        a, b, ab = noisy([3]), noisy([4]), noisy([3, 4])
+        assert a.shape == (4, ctx.n_genes) and not np.allclose(a, b)
+        assert np.allclose(ab, (a + b) / 2) and np.allclose(noisy([3]), a)
+
+        def fixed(seeds):
+            return rv.fit_predict(ctx, ["control_mean", "is_target"], {}, "ridge", 1.0, seeds, tmp_path / "f", out)
+
+        assert np.allclose(fixed([3, 4, 5]), fixed([3]))
+    finally:
+        REGISTRY.pop("refit_test_noisy", None)
+
+
+def test_cache_is_keyed_by_the_bundle_not_the_run_directory(dataset, tmp_path):
+    """Two run directories of the same name on different bundles never share a feature or gene_corr cache."""
+    from genemila.data.synthetic import generate
+    other = generate(tmp_path / "other" / "synthetic", n_genes=60, n_perts=20, n_control=200, cells_per_pert=20, seed=2)
+    key = rv._bundle_key(dataset, "synthetic", "s")
+    assert key == rv._bundle_key(dataset, "synthetic", "s") and key.startswith("synthetic__s__")
+    assert len(key) == len("synthetic__s__") + 12 and rv._bundle_key(other, "synthetic", "s") != key
+
+
 @pytest.fixture(scope="module")
 def finished_run(tmp_path_factory, dataset, code_repo):
     """A small finished run with sealed scores: scripted planner, mock workers, under a minute."""
@@ -143,6 +186,9 @@ def test_end_to_end_matches_the_summary_and_leaves_the_run_alone(finished_run, t
     assert "—" not in md
     # the run itself is untouched: no event, no query charged, no sealed score changed, no cache written
     assert _snapshot(run_dir) == before
+    # the tool's own cache is named by the bundle, not by the run directory
+    dirs = [d.name for d in (tmp_path / "cache").iterdir()]
+    assert len(dirs) == 1 and dirs[0].startswith("synthetic__split_") and run_dir.name not in dirs
     # (v) the JSON twin re-renders the markdown byte for byte
     again = tmp_path / "again.md"
     assert rv.main(["--from-json", str(out.with_suffix(".json")), "--out", str(again)]) == 0
