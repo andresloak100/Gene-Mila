@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 03:25 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:26 UTC.
 
 ## What this is
 
@@ -79,7 +79,7 @@ The first lever with evidence of new information is an external screen (visible 
 | kNN weighted by Replogle response similarity | 0.572 ± 0.257 | +0.027 ± 0.017 |
 | ridge stack of the four | 0.616 ± 0.233 | +0.072 ± 0.020 (better for 34 of 50) |
 
-The same stack without the two external columns scored 0.543 on the Mac, so the gain comes from the screen. Rebuilt with 97 gene renames matched by Ensembl id (83 targets with a row, 2,035 of 2,055 genes; FECH dropped under the 20-cell minimum; ATP5B and SLMO2 rescued), the result holds: stack 0.616, +0.071 ± 0.021 over gene-set kNN, better for 35 of 50 (docs/results/external_loo_replogle2022_k562_v2.md); with the wider alpha grid, a second look, 0.620, +0.075 ± 0.020, 37 of 50, alpha 10,000 in every fold (..._v2_widegrid.md).
+The same stack without the two external columns scored 0.543 on the Mac, so the gain comes from the screen. Rebuilt with 97 gene renames matched by Ensembl id (83 targets with a row, 2,035 of 2,055 genes; FECH dropped under the 20-cell minimum; ATP5B and SLMO2 rescued), the result holds: stack 0.616, +0.071 ± 0.021 over gene-set kNN, better for 35 of 50 (docs/results/external_loo_replogle2022_k562_v2.md); with the wider alpha grid, a second look, 0.620, +0.075 ± 0.020, 37 of 50, alpha 10,000 in every fold (..._v2_widegrid.md). Kernel ridge through the screen (external_krr, added after the first reading, so a second look; ..._v3.md, md5 a727c156aed42757b2cdc0578bca2694, code 89ab4fb): 0.590 as a single predictor against 0.568 for the Replogle kNN (+0.022 ± 0.010, better for 29 of 50) and 0.590 against 0.545 for gene-set kNN (+0.045 ± 0.015, 33 of 50), lambda 0.1 or 0.3 in every fold; stacked with the other four columns it adds nothing (0.614 against 0.616, -0.001 ± 0.007): the screen's information is already used by the four-column stack.
 
 Readings: only "4 workers beats 8" is significant (p = 0.01); cost rises linearly with workers; Opus and DeepSeek V4
 Pro plan equally well when DeepSeek finds response transfer (it did in one of two runs). The whole gain over the
@@ -156,9 +156,11 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    reported in their own "second look" section (old JSON twins re-render unchanged; the full analysis took 12 s on a
    synthetic 50 x 2,055 case in the cloud), and as a third scripted-control template and hypothesis
    (external_krr_<file>, so a control with the file from this code on is a new arm; docs/PROMPTS.md section 5); it
-   was added after the first reading and is untested on real data until the Mac runs `python tools/external_loo.py
-   --bundle data/adamson_cf --knowledge replogle2022_k562 --out
-   genemila_scale_logs/external_loo_replogle2022_k562_krr.md`.
+   was added after the first reading. On real data (leave-one-out, visible only, docs/results/
+   external_loo_replogle2022_k562_v3.md) it beats the Replogle kNN as a single column (0.590 vs 0.568) but adds
+   nothing to the stack (0.614 vs 0.616). The free continuation on this code (runs/control_replogle3_from_opus_r0,
+   from newcode_opus_w4_r0 with the 11 hypotheses, no LLM) started on the Mac around 03:27 UTC; the lab's visible
+   selection decides whether external_krr enters the model.
 2. **Compact model rules (Andres's ask, 11 Oct 00:32 UTC):** a box of failed features that agents cannot re-propose; an
    admission rule (a feature joins only if its gain beats the fold noise, checked under two fold seeds); a redundancy
    check that rejects a feature correlating above 0.9 with one already in the model before it is fitted; a
@@ -167,10 +169,12 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    the sealed one. Astra's unpushed branch already has a feature board (master and worker roles), a failure archive,
    in-fold Lasso screening, a curator and a compact incumbent, never run on real data; it lacks the admission
    threshold, the second fold seed, the redundancy pre-check and the monitor. Plan: push Astra's branch, review and
-   merge it into the lab branch, add the four missing rules. tools/feature_audit.py is committed (6a2eb65; visible data only by default; per run: redundancy clusters, single-feature and drop-one scores, Lasso stability, a one-SE compact set chosen on training out-of-fold scores and checked on the visible validation perturbations, and a failed-feature box a lab component can import); the Mac runs it over the 28 runs and Astra's two campaigns after the Replogle control.
+   merge it into the lab branch, add the four missing rules. tools/feature_audit.py is committed (6a2eb65; visible data only by default; per run: redundancy clusters, single-feature and drop-one scores, Lasso stability, a one-SE compact set chosen on training out-of-fold scores and checked on the visible validation perturbations, and a failed-feature box a lab component can import); the Mac runs it over the 28 runs and Astra's two campaigns (28 of 30 checkpointed by 03:27 UTC; paused for the continuation run and resumes after it; Astra's first campaign has 48 features in its selected model).
 3. **Files to push from the Mac** (genemila_scale_logs/push_to_github.sh, Andres runs it): noise_ceiling.json,
    refit_visible.{md,json}, the Mac's STATE.md and notes, adamson_cf_ncells.json, the Replogle build report,
-   external_loo JSON and the stack control without external columns, and Astra's two branches.
+   external_loo JSON and the stack control without external columns, external_loo_replogle2022_k562_v3.json (md5
+   b527a1128ee4166c9e59389b6f1e10a9), the control_replogle3_from_opus_r0 config, summary and analysis log, and Astra's
+   two branches.
 
 ## Waiting on Andres
 
