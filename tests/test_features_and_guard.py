@@ -112,7 +112,7 @@ def test_guard_blocks_imports(imp):
 
 def test_guard_accepts_templates_and_checks_name():
     for key, tpl in TEMPLATES.items():
-        check_plugin_source(tpl.format(name="abc"), "abc")
+        check_plugin_source(tpl.format(name="abc", knowledge="ext_screen"), "abc")  # external templates name a file
     with pytest.raises(CodeViolation):
         check_plugin_source(TEMPLATES["variance"].format(name="abc"), "other")
     with pytest.raises(CodeViolation):
