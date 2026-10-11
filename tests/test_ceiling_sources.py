@@ -15,7 +15,7 @@ def _code_without_docstrings(path: Path) -> str:
 
 
 def test_ceiling_scripts_never_name_sealed_data():
-    for name in ("tools/ceiling_analysis.py", "tools/learned_kernel_experiment.py"):
+    for name in ("tools/ceiling_analysis.py", "tools/learned_kernel_experiment.py", "tools/compact_model_curve.py"):
         code = _code_without_docstrings(ROOT / name)
         for forbidden in ("private", "val2", "query_only", "splits.json", "QueryOracle", "LabelSet"):
             assert forbidden not in code, (name, forbidden)

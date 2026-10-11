@@ -1,0 +1,424 @@
+{
+ "run": "newcode_opus_w4_r0",
+ "pool_features": [
+  "is_target",
+  "is_target_x_control_mean_e35",
+  "knn_response_symbol_family_e58",
+  "knn_residual_response_e59",
+  "normalized_mean_response_e56",
+  "rwr_target_proximity_e14",
+  "knn_two_hop_response_cluster_e137",
+  "shared_geneset_score_e15",
+  "knn_response_ppi_diffusion_e248",
+  "knn_response_reconstruction_weights_e162",
+  "gene_reliability_weighted_knn_e413",
+  "kernel_ridge_annotation_embedding_e430",
+  "knn_response_geneset_e12",
+  "knn_response_geneset_e11",
+  "control_mean",
+  "mean_response"
+ ],
+ "columns": [
+  "is_target",
+  "is_target_x_control_mean_e35",
+  "knn_response_symbol_family_e58[0]",
+  "knn_response_symbol_family_e58[1]",
+  "knn_residual_response_e59",
+  "normalized_mean_response_e56[0]",
+  "normalized_mean_response_e56[1]",
+  "rwr_target_proximity_e14[0]",
+  "rwr_target_proximity_e14[1]",
+  "rwr_target_proximity_e14[2]",
+  "knn_two_hop_response_cluster_e137",
+  "shared_geneset_score_e15[0]",
+  "shared_geneset_score_e15[1]",
+  "knn_response_ppi_diffusion_e248",
+  "knn_response_reconstruction_weights_e162",
+  "gene_reliability_weighted_knn_e413",
+  "kernel_ridge_annotation_embedding_e430",
+  "knn_response_geneset_e12[0]",
+  "knn_response_geneset_e12[1]",
+  "knn_response_geneset_e12[2]",
+  "knn_response_geneset_e11[0]",
+  "knn_response_geneset_e11[1]",
+  "knn_response_geneset_e11[2]",
+  "control_mean",
+  "mean_response"
+ ],
+ "matrix_rank": 22,
+ "most_correlated_column_pairs": [
+  {
+   "abs_r": 1.0,
+   "a": "knn_response_geneset_e12[1]",
+   "b": "knn_response_geneset_e11[1]"
+  },
+  {
+   "abs_r": 1.0,
+   "a": "knn_response_geneset_e12[0]",
+   "b": "knn_response_geneset_e11[0]"
+  },
+  {
+   "abs_r": 1.0,
+   "a": "knn_response_geneset_e12[2]",
+   "b": "knn_response_geneset_e11[2]"
+  },
+  {
+   "abs_r": 0.9998,
+   "a": "normalized_mean_response_e56[0]",
+   "b": "normalized_mean_response_e56[1]"
+  },
+  {
+   "abs_r": 0.9458,
+   "a": "normalized_mean_response_e56[1]",
+   "b": "mean_response"
+  },
+  {
+   "abs_r": 0.9438,
+   "a": "normalized_mean_response_e56[0]",
+   "b": "mean_response"
+  },
+  {
+   "abs_r": 0.9178,
+   "a": "knn_response_reconstruction_weights_e162",
+   "b": "knn_response_geneset_e11[0]"
+  },
+  {
+   "abs_r": 0.9178,
+   "a": "knn_response_reconstruction_weights_e162",
+   "b": "knn_response_geneset_e12[0]"
+  },
+  {
+   "abs_r": 0.912,
+   "a": "knn_response_ppi_diffusion_e248",
+   "b": "knn_response_geneset_e12[0]"
+  },
+  {
+   "abs_r": 0.9119,
+   "a": "knn_response_ppi_diffusion_e248",
+   "b": "knn_response_geneset_e11[0]"
+  },
+  {
+   "abs_r": 0.8713,
+   "a": "knn_two_hop_response_cluster_e137",
+   "b": "knn_response_geneset_e11[0]"
+  },
+  {
+   "abs_r": 0.8713,
+   "a": "knn_two_hop_response_cluster_e137",
+   "b": "knn_response_geneset_e12[0]"
+  },
+  {
+   "abs_r": 0.8545,
+   "a": "rwr_target_proximity_e14[2]",
+   "b": "mean_response"
+  },
+  {
+   "abs_r": 0.8424,
+   "a": "knn_residual_response_e59",
+   "b": "knn_response_ppi_diffusion_e248"
+  },
+  {
+   "abs_r": 0.831,
+   "a": "knn_two_hop_response_cluster_e137",
+   "b": "knn_response_ppi_diffusion_e248"
+  }
+ ],
+ "n_pairs_abs_r_over_0.9": 10,
+ "n_pairs_abs_r_over_0.7": 34,
+ "single_feature_cv": [
+  {
+   "feature": "knn_response_reconstruction_weights_e162",
+   "cv_pearson_delta": 0.5409415564631223
+  },
+  {
+   "feature": "knn_response_geneset_e12",
+   "cv_pearson_delta": 0.53732903543808
+  },
+  {
+   "feature": "knn_response_geneset_e11",
+   "cv_pearson_delta": 0.5372988297536665
+  },
+  {
+   "feature": "knn_response_symbol_family_e58",
+   "cv_pearson_delta": 0.519408513699388
+  },
+  {
+   "feature": "knn_response_ppi_diffusion_e248",
+   "cv_pearson_delta": 0.5105493086060688
+  },
+  {
+   "feature": "normalized_mean_response_e56",
+   "cv_pearson_delta": 0.48754325381765207
+  },
+  {
+   "feature": "mean_response",
+   "cv_pearson_delta": 0.4714988029835831
+  },
+  {
+   "feature": "knn_two_hop_response_cluster_e137",
+   "cv_pearson_delta": 0.4714988029835831
+  },
+  {
+   "feature": "rwr_target_proximity_e14",
+   "cv_pearson_delta": 0.4139230029998128
+  },
+  {
+   "feature": "gene_reliability_weighted_knn_e413",
+   "cv_pearson_delta": 0.1574878557400922
+  },
+  {
+   "feature": "kernel_ridge_annotation_embedding_e430",
+   "cv_pearson_delta": 0.15693008248392468
+  },
+  {
+   "feature": "shared_geneset_score_e15",
+   "cv_pearson_delta": 0.14214467633663033
+  },
+  {
+   "feature": "is_target_x_control_mean_e35",
+   "cv_pearson_delta": 0.10709802811092224
+  },
+  {
+   "feature": "is_target",
+   "cv_pearson_delta": 0.10693001740266786
+  },
+  {
+   "feature": "control_mean",
+   "cv_pearson_delta": 0.08169306068307165
+  },
+  {
+   "feature": "knn_residual_response_e59",
+   "cv_pearson_delta": 0.05362097396324188
+  }
+ ],
+ "forward_selection": [
+  {
+   "n_features": 1,
+   "n_columns": 1,
+   "added": "knn_response_reconstruction_weights_e162",
+   "cv_pearson_delta": 0.5409415564631223,
+   "alpha": 1.0
+  },
+  {
+   "n_features": 2,
+   "n_columns": 3,
+   "added": "knn_response_symbol_family_e58",
+   "cv_pearson_delta": 0.5614405062092696,
+   "alpha": 30000.0
+  },
+  {
+   "n_features": 3,
+   "n_columns": 4,
+   "added": "is_target_x_control_mean_e35",
+   "cv_pearson_delta": 0.5768288794156552,
+   "alpha": 30000.0
+  },
+  {
+   "n_features": 4,
+   "n_columns": 7,
+   "added": "knn_response_geneset_e12",
+   "cv_pearson_delta": 0.5791030327580813,
+   "alpha": 30000.0
+  },
+  {
+   "n_features": 5,
+   "n_columns": 8,
+   "added": "is_target",
+   "cv_pearson_delta": 0.5796877636437965,
+   "alpha": 30000.0
+  },
+  {
+   "n_features": 6,
+   "n_columns": 10,
+   "added": "shared_geneset_score_e15",
+   "cv_pearson_delta": 0.5798778712745711,
+   "alpha": 30000.0
+  },
+  {
+   "n_features": 7,
+   "n_columns": 11,
+   "added": "control_mean",
+   "cv_pearson_delta": 0.5786065032964715,
+   "alpha": 30000.0
+  },
+  {
+   "n_features": 8,
+   "n_columns": 12,
+   "added": "knn_two_hop_response_cluster_e137",
+   "cv_pearson_delta": 0.5779288428781801,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 9,
+   "n_columns": 13,
+   "added": "knn_residual_response_e59",
+   "cv_pearson_delta": 0.5790958193549032,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 10,
+   "n_columns": 14,
+   "added": "knn_response_ppi_diffusion_e248",
+   "cv_pearson_delta": 0.5801179719344856,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 11,
+   "n_columns": 16,
+   "added": "normalized_mean_response_e56",
+   "cv_pearson_delta": 0.5807201005301106,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 12,
+   "n_columns": 19,
+   "added": "rwr_target_proximity_e14",
+   "cv_pearson_delta": 0.5809985091045053,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 13,
+   "n_columns": 20,
+   "added": "gene_reliability_weighted_knn_e413",
+   "cv_pearson_delta": 0.5811615794851074,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 14,
+   "n_columns": 23,
+   "added": "knn_response_geneset_e11",
+   "cv_pearson_delta": 0.580650497184756,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 15,
+   "n_columns": 24,
+   "added": "mean_response",
+   "cv_pearson_delta": 0.5798729212298812,
+   "alpha": 3000.0
+  },
+  {
+   "n_features": 16,
+   "n_columns": 25,
+   "added": "kernel_ridge_annotation_embedding_e430",
+   "cv_pearson_delta": 0.577331741087208,
+   "alpha": 3000.0
+  }
+ ],
+ "run_best_model": {
+  "features": [
+   "is_target",
+   "is_target_x_control_mean_e35",
+   "knn_response_symbol_family_e58",
+   "knn_residual_response_e59",
+   "normalized_mean_response_e56",
+   "rwr_target_proximity_e14",
+   "knn_two_hop_response_cluster_e137",
+   "shared_geneset_score_e15",
+   "knn_response_ppi_diffusion_e248",
+   "knn_response_reconstruction_weights_e162",
+   "gene_reliability_weighted_knn_e413",
+   "kernel_ridge_annotation_embedding_e430"
+  ],
+  "n_features": 12,
+  "cv_pearson_delta": 0.5831870829180786,
+  "alpha": 3000.0
+ },
+ "lasso_path": [
+  {
+   "lambda": 0.0001,
+   "n_columns_kept": 22,
+   "kept": [
+    "is_target",
+    "is_target_x_control_mean_e35",
+    "knn_response_symbol_family_e58[0]",
+    "knn_response_symbol_family_e58[1]",
+    "knn_residual_response_e59",
+    "normalized_mean_response_e56[1]",
+    "rwr_target_proximity_e14[0]",
+    "rwr_target_proximity_e14[1]",
+    "rwr_target_proximity_e14[2]",
+    "knn_two_hop_response_cluster_e137",
+    "shared_geneset_score_e15[0]",
+    "shared_geneset_score_e15[1]",
+    "knn_response_ppi_diffusion_e248",
+    "knn_response_reconstruction_weights_e162",
+    "gene_reliability_weighted_knn_e413",
+    "kernel_ridge_annotation_embedding_e430",
+    "knn_response_geneset_e12[0]",
+    "knn_response_geneset_e12[1]",
+    "knn_response_geneset_e11[0]",
+    "knn_response_geneset_e11[1]",
+    "control_mean",
+    "mean_response"
+   ]
+  },
+  {
+   "lambda": 0.0003,
+   "n_columns_kept": 19,
+   "kept": [
+    "is_target_x_control_mean_e35",
+    "knn_response_symbol_family_e58[0]",
+    "knn_response_symbol_family_e58[1]",
+    "knn_residual_response_e59",
+    "normalized_mean_response_e56[1]",
+    "rwr_target_proximity_e14[1]",
+    "rwr_target_proximity_e14[2]",
+    "knn_two_hop_response_cluster_e137",
+    "shared_geneset_score_e15[1]",
+    "knn_response_ppi_diffusion_e248",
+    "knn_response_reconstruction_weights_e162",
+    "gene_reliability_weighted_knn_e413",
+    "kernel_ridge_annotation_embedding_e430",
+    "knn_response_geneset_e12[0]",
+    "knn_response_geneset_e12[1]",
+    "knn_response_geneset_e11[0]",
+    "knn_response_geneset_e11[1]",
+    "control_mean",
+    "mean_response"
+   ]
+  },
+  {
+   "lambda": 0.001,
+   "n_columns_kept": 11,
+   "kept": [
+    "is_target_x_control_mean_e35",
+    "knn_response_symbol_family_e58[0]",
+    "normalized_mean_response_e56[1]",
+    "knn_two_hop_response_cluster_e137",
+    "shared_geneset_score_e15[1]",
+    "knn_response_ppi_diffusion_e248",
+    "knn_response_reconstruction_weights_e162",
+    "kernel_ridge_annotation_embedding_e430",
+    "knn_response_geneset_e12[0]",
+    "knn_response_geneset_e11[0]",
+    "mean_response"
+   ]
+  },
+  {
+   "lambda": 0.003,
+   "n_columns_kept": 9,
+   "kept": [
+    "is_target_x_control_mean_e35",
+    "knn_response_symbol_family_e58[0]",
+    "normalized_mean_response_e56[1]",
+    "shared_geneset_score_e15[1]",
+    "knn_response_ppi_diffusion_e248",
+    "knn_response_reconstruction_weights_e162",
+    "knn_response_geneset_e12[0]",
+    "knn_response_geneset_e11[0]",
+    "mean_response"
+   ]
+  },
+  {
+   "lambda": 0.01,
+   "n_columns_kept": 4,
+   "kept": [
+    "knn_response_symbol_family_e58[0]",
+    "knn_response_reconstruction_weights_e162",
+    "knn_response_geneset_e12[0]",
+    "knn_response_geneset_e11[0]"
+   ]
+  }
+ ]
+}
