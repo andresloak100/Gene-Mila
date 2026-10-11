@@ -196,7 +196,15 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 ## Waiting on Andres
 
 - **A DeepSeek key on the Mac and mains power.** Spending is approved up to a $34 ledger (his 02:39 UTC message;
-  $2.22 left). Plan, decided 02:45 UTC: (A, free) a no-LLM continuation from newcode_opus_w4_r0 with the Replogle
+  $2.22 left). **Changed 13:55 UTC 11 Oct: the paid run goes to Norman, not Adamson** (Adamson's sealed set is
+  used up; Norman's has had only the pre-specified looks): plan section 6 step 8, N3, one DeepSeek-planned
+  4-worker 20-minute run with the Replogle file in the bundle, no warm start (warm_start refuses another dataset),
+  `python run_research.py --minutes 20 --workers 4 --dataset norman --planner-provider deepseek --planner-model
+  deepseek-v4-pro --run-dir runs/norman_ds_replogle_w4_r0 --set budget.cumulative_usd.deepseek=34 --set
+  budget.max_total_usd=2.2` (DeepSeek workers as in tools/scale_seq.sh new_ds), no start at a $33.50 ledger.
+  Read with tools/sealed_reading.py against its own additive baseline; N2 sits beside it as a labelled arm, not
+  paired (the tool pairs a run with the screen against one without). It starts on Andres's typed "start the paid run" (asked
+  13:55 UTC) once the key is in ~/.zshenv. Earlier plan, superseded, kept for the record: (A, free) a no-LLM continuation from newcode_opus_w4_r0 with the Replogle
   hypotheses, runs/control_replogle_from_opus_r0, to combine the agents' best features with the screen; (B, paid,
   about $1.20) one DeepSeek-planned 4-worker 20-minute run warm-started from the free Replogle run with the highest visible
   score (never chosen by sealed score; at 03:50 UTC that is control_replogle3_from_opus_r0, visible 0.657), runs/replogle_ds_warm_w4_r0,
