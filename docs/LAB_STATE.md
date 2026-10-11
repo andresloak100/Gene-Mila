@@ -202,7 +202,9 @@ Conclusion: the limit on this bundle is information about the targets, not searc
   score (never chosen by sealed score; at 03:50 UTC that is control_replogle3_from_opus_r0, visible 0.657), runs/replogle_ds_warm_w4_r0,
   `--set budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=2.2`, no start at a $33.50 ledger. One full run
   rather than two runs capped at $1.10, because past DeepSeek-planned runs cost $1.13 to $1.28 and would be cut short.
-  B needs a freshly rotated key exported in ~/.zshenv on the Mac by Andres (the Mac holds none and cannot write
+  Before B starts, check on the Mac (free) that a warm start from that run under 3d7c519's guard refuses no
+  plugin of its selected model (warm_start.json "refused"); if it does, stop and report. B needs a freshly
+  rotated key exported in ~/.zshenv on the Mac by Andres (the Mac holds none and cannot write
   that file; never ask him to paste it), and mains power or more than 50% battery.
 - **Run the push script on the Mac** (the feature audit has finished): `bash ~/Documents/Loak-documents/genemila_scale_logs/push_to_github.sh --check-only`
   (scans for anything that looks like a key, pushes nothing), then the same without the flag. It pushes Astra's two
