@@ -1,11 +1,14 @@
 #!/bin/bash
 # B2's paid runs (docs/PLAN_AFTER_N4.md, B2): the DeepSeek agents start fresh (no --continue-from) on Norman with its
 # Replogle file, 4 workers, 20 minutes, from baseline_ridge_additive, on the commit block_b2_control.sh recorded.
-# Contains no key: start it as  DEEPSEEK_API_KEY="$API_KEY" bash block_b2_run.sh SEED  with SEED 0, then 1, then 2,
-# one at a time, each only after the one before ended with "stop rule passed". The block's caps: the ledger may reach
-# $48; this run's workers $1.00 and planner $1.50, so it starts only at a ledger of $45.50 or less.
+# Contains no key: start it as  DEEPSEEK_API_KEY="$API_KEY" bash block_b2_run.sh SEED, one seed at a time, each
+# only after the one before ended with "stop rule passed". The block's caps: the ledger may reach $48; this run's
+# workers $1.00 and planner $1.50, so it starts only at a ledger of $45.50 or less.
+# Seeds 0 and 1 ran from this script as it was at ce1b530. Seed 1 was killed by run_research.py's watchdog while
+# finishing and is its own arm; B2 continues with seed 2 and then seed 3 in its place, run with --no-watchdog and the
+# backstop below (docs/PLAN_AFTER_N4.md, note of 2026-10-11 22:50 UTC). This version takes seeds 2 and 3 only.
 SEED=$1
-case "$SEED" in 0|1|2) ;; *) echo "usage: DEEPSEEK_API_KEY=\"\$API_KEY\" bash block_b2_run.sh 0|1|2"; exit 1 ;; esac
+case "$SEED" in 2|3) ;; *) echo "usage: DEEPSEEK_API_KEY=\"\$API_KEY\" bash block_b2_run.sh 2|3 (seeds 0 and 1 have run)"; exit 1 ;; esac
 set +x
 M="$HOME/Documents/Mila/Gene-Mila/gene-mila"; L="$HOME/Documents/Mila/Gene-Mila/genemila_scale_logs"
 PY="$M/.venv/bin/python"; LEDGER="$M/runs/spend_ledger.sqlite"
@@ -24,12 +27,11 @@ pgrep -f run_research.py > /dev/null && no "a lab run is running (pgrep -f run_r
 [ -e "$L/STOP" ] && no "the STOP file $L/STOP is present (it holds every lab run); remove it for this run only"
 pgrep -f scale_seq.sh > /dev/null && no "the scaling driver is running (pgrep -f scale_seq.sh)"
 ok "block not stopped, no STOP file, $n does not exist, no lab run or driver running"
-# order: the control, then seeds 0, 1, 2
+# order: the control, seed 0, then seed 2 and seed 3 (seed 1, killed while finishing, is its own arm and gates nothing)
 [ -e "$L/norman_control_addstart_w4_r0.passed" ] || no "the control has not finished and passed its checks; run block_b2_control.sh first"
-if [ "$SEED" -gt 0 ]; then
-  p="norman_ds_addstart_w4_r$((SEED - 1))"; [ -e "$L/$p.passed" ] || no "$p has not finished and passed the stop rule"
-fi
-ok "the control and the seeds before $SEED finished and passed their checks"
+case "$SEED" in 2) p=norman_ds_addstart_w4_r0 ;; 3) p=norman_ds_addstart_w4_r2 ;; esac
+[ -e "$L/$p.passed" ] || no "$p has not finished and passed the stop rule"
+ok "the control and $p finished and passed their checks"
 # the code: the recorded B2/B3 commit, nothing tracked changed (the controller runs the working tree)
 [ -e "$COMMIT_FILE" ] || no "no recorded B2/B3 commit ($COMMIT_FILE); run block_b2_control.sh first"
 want=$(cat "$COMMIT_FILE"); head=$(git rev-parse HEAD)
@@ -48,7 +50,7 @@ ok "external knowledge replogle2022_k562 only, md5 $km, the same files as the co
 args=(--minutes 20 --workers 4 --dataset norman --planner-provider deepseek --planner-model deepseek-v4-pro
       --worker-provider deepseek --worker-model deepseek-flash --run-dir "$d" --set run.seed="$SEED"
       --set budget.ledger="$LEDGER" --set budget.cumulative_usd.deepseek=48
-      --set budget.max_total_usd=1.0 --set budget.max_planner_usd=1.5)
+      --set budget.max_total_usd=1.0 --set budget.max_planner_usd=1.5 --no-watchdog)
 echo "command: $PY run_research.py ${args[*]}"
 SEED="$SEED" LEDGER="$LEDGER" DATA="$M/data/norman" "$PY" - "${args[@]}" <<'EOF' || no "the configuration is not the plan's (above)"
 import os, sys
@@ -76,6 +78,18 @@ ok "DeepSeek ledger \$$spent <= \$45.50"
 echo "- $(date -u +%Y-%m-%dT%H:%MZ) $n started (code $(git rev-parse --short HEAD), DeepSeek ledger \$$spent)" >> "$L/progress.md"
 mkdir "$d" || no "$d appeared meanwhile"
 trap 'echo "$(date -u +%Y-%m-%dT%H:%MZ) $n: script interrupted before its checks; the run may still be going" >> "$STOPPED"; exit 4' HUP INT TERM
+# the backstop in place of run_research.py's watchdog, which allows only 180 s after the search and grace for the
+# end-of-run scoring and cell-eval: a run still going BACKSTOP_S after it started is terminated, and that is a stop
+# (the guard watches only this script's own child; $$ is this script's PID inside the subshell too)
+BACKSTOP_S=5400
+( waited=0
+  while [ "$waited" -lt "$BACKSTOP_S" ]; do
+    sleep 30; waited=$((waited + 30))
+    pgrep -P $$ -f "run_research.py.*runs/$n" > /dev/null || exit 0
+  done
+  p=$(pgrep -P $$ -f "run_research.py.*runs/$n") || exit 0
+  echo "$(date -u +%Y-%m-%dT%H:%MZ) $n: still running $BACKSTOP_S s after it started; terminated (pid $p)" > "$L/$n.backstop.txt"
+  kill -TERM $p; sleep 60; kill -0 $p 2> /dev/null && kill -KILL $p 2> /dev/null ) &
 "$PY" run_research.py "${args[@]}" > "$L/$n.log" 2>&1
 rc=$?
 unset DEEPSEEK_API_KEY
@@ -87,6 +101,7 @@ echo "- $(date -u +%Y-%m-%dT%H:%MZ) $n finished rc=$rc DeepSeek ledger \$$after 
 stop=""
 [ "$rc" = 0 ] || stop="$stop exit code $rc;"
 grep -qE 'WATCHDOG|interrupted; shutting down' "$L/$n.log" && stop="$stop killed or interrupted (see $L/$n.log);"
+[ -e "$L/$n.backstop.txt" ] && stop="$stop terminated by the backstop ($L/$n.backstop.txt);"
 [ -n "$after" ] && [ "$(echo "$cost <= 2.00" | bc)" = 1 ] \
   || stop="$stop cost \$$cost by the ledger (\$$spent to \$$after), over \$2.00 or unreadable;"
 "$PY" - "$d" "$want" "$ctl" <<'EOF' | tee "$L/$n.check.txt"

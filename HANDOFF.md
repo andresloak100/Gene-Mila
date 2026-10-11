@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-11 19:45, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
+**Last updated:** 2026-10-11 22:55, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
 (19:45). `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
@@ -20,33 +20,37 @@ over this section where they disagree; this section is the short cross-agent vie
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88` | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (21:50):** ledger $38.08 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
+**On the Mac (22:55):** ledger $41.03 of the block's $48. B1 is finished and read (docs/NORMAN_PLAN.md section 8; the
 readings and the three runs' summaries are in draft PR #6, waiting for Andres to merge): the agents' search adds
 nothing to its start (arm G −0.0000, SE 0.0071), and the combined model of the three repeats scores 0.723 sealed,
 +0.0041 ± 0.0011 over N2's selected model, not established over the additive rule; it is the delivered Norman model
 unless B2's combined model scores higher on the visible validation perturbations. B2 (docs/PLAN_AFTER_N4.md; Andres
-said "continue" at 20:56 UTC) is running unattended since 21:31:47 UTC on the pinned commit ce1b530 (main checkout
-pulled to it; started detached with `docs/mac/block_after_n4/block_b2_chain.sh`, the command in its header; ends
-about 23:00 UTC), which runs the free control `runs/norman_control_addstart_w4_r0` and then the paid seeds
-`runs/norman_ds_addstart_w4_r0`, `_r1`, `_r2` one at a time, each only if the step before passed; the control pins
-the commit in `genemila_scale_logs/block_after_n4_b2b3_commit.txt`, and nobody pulls in the main checkout until B3
-has ended; a stop writes `genemila_scale_logs/block_after_n4_stopped.txt` and ends the chain; `progress.md` and
-`genemila_scale_logs/block_b2_chain.log` say where it is. Exact next steps once the chain has finished (all free,
-from the main checkout, with `.venv/bin/python`): `tools/sealed_reading.py --runs runs/<run> --out
-docs/results/norman_b2_<r0|r1|r2|control>_sealed_reading.md` for the three runs and the control; for each run
-`tools/sealed_reading.py --versus --runs runs/norman_ds_addstart_w4_r<S> runs/norman_control_addstart_w4_r0 --out
-docs/results/norman_b2_r<S>_versus_control.md`; the primary reading `tools/arm_reading.py rule --readings
-docs/results/norman_b2_r0_sealed_reading.json docs/results/norman_b2_r1_sealed_reading.json
-docs/results/norman_b2_r2_sealed_reading.json --against start --out docs/results/norman_b2_arm_vs_start.md`, the same
-with `--against additive`, and `--against versus` over the three versus JSON twins; `tools/arm_reading.py combine
---members runs/norman_ds_addstart_w4_r0 runs/norman_ds_addstart_w4_r1 runs/norman_ds_addstart_w4_r2 --reference R
---out docs/results/norman_b2_combined_vs_<name>.md` for R = `runs/norman_ds_addstart_w4_r0:start` (the start,
+said "continue" at 20:56 UTC) runs on the pinned commit ce1b530 (recorded in
+`genemila_scale_logs/block_after_n4_b2b3_commit.txt`; nobody pulls in the main checkout until B2 has ended). The free
+control `runs/norman_control_addstart_w4_r0` and seed 0 `runs/norman_ds_addstart_w4_r0` ($1.293) passed. Seed 1
+`runs/norman_ds_addstart_w4_r1` ($1.649) was killed by run_research.py's watchdog while finishing, after its full
+search, and stopped the block. The plan's note of 22:50 UTC writes it up: r1 is its own arm, and B2 continues with
+seed 2 and then seed 3 in r1's place, run with `--no-watchdog` and a 90-minute backstop by
+`docs/mac/block_after_n4/block_b2_resume.sh` (brought into `genemila_scale_logs/b2_resume/` with `git show`; the
+command is in its header). B3 is dropped from this block. `progress.md` and `genemila_scale_logs/block_b2_resume.log`
+say where it is; a stop writes `genemila_scale_logs/block_after_n4_stopped.txt` and ends the script. Exact next steps
+once seeds 2 and 3 have passed (all free, from the main checkout, with `.venv/bin/python`): `tools/sealed_reading.py
+--runs runs/<run> --out docs/results/norman_b2_<r0|r1|r2|r3|control>_sealed_reading.md` for the four runs and the
+control (r1's is a row of its own, never in the arm); for r0, r2 and r3 `tools/sealed_reading.py --versus --runs
+runs/norman_ds_addstart_w4_r<S> runs/norman_control_addstart_w4_r0 --out docs/results/norman_b2_r<S>_versus_control.md`;
+the primary reading `tools/arm_reading.py rule --readings docs/results/norman_b2_r0_sealed_reading.json
+docs/results/norman_b2_r2_sealed_reading.json docs/results/norman_b2_r3_sealed_reading.json --against start --out
+docs/results/norman_b2_arm_vs_start.md`, the same with `--against additive`, and `--against versus` over the three
+versus JSON twins; `tools/arm_reading.py combine --members runs/norman_ds_addstart_w4_r0
+runs/norman_ds_addstart_w4_r2 runs/norman_ds_addstart_w4_r3 --reference R --out
+docs/results/norman_b2_combined_vs_<name>.md` for R = `runs/norman_ds_addstart_w4_r0:start` (the start,
 baseline_ridge_additive), `runs/norman_control_addstart_w4_r0`, `runs/norman_ds_addstart_w4_r0:additive`, and the B1
 arm `runs/norman_ds_from_n2_w4_r1 runs/norman_ds_from_n2_w4_r2 runs/norman_ds_from_n2_w4_r3`; then the delivered
 Norman model by the plan's rule (visible_validation in the combine JSONs, B2's against B1's); push the readings and
-the runs' summaries like PR #6. B3 (the Adamson re-split) has no script yet: build and run it exactly as the plan's
-B3 says, on the pinned commit (bring later scripts in with `git fetch` and `git show origin/claude/autonomous-
-research-system-3k435s:<path> > ../genemila_scale_logs/<file>`, never by pulling). How to work on the Mac (paths, the
+the runs' summaries like PR #6. B3 (the Adamson re-split) runs only if Andres raises the cap above $48; it has no
+script yet, and it would run exactly as the plan's B3 says, on the pinned commit (bring later scripts in with
+`git fetch` and `git show origin/claude/autonomous-research-system-3k435s:<path> > ../genemila_scale_logs/<file>`,
+never by pulling). How to work on the Mac (paths, the
 key, the STOP file, how results reach GitHub): `docs/mac/MAC_HANDOFF.md` and the running log `docs/mac/STATE.md` (in
 PR #6 until it is merged). The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
@@ -129,8 +133,9 @@ first.
 AGENTS.md, CLAUDE.md) merged as `4356ca2`, PR #1 (README and its checker) as `ca35f88`. The Mac's reports went in
 as PR #3 and PR #4 (N4), md5-verified and scanned for keys first. None is open.
 
-**Next:** the block in `docs/PLAN_AFTER_N4.md`, in its order (B1: N4's repeats r2 and r3; B2: a free control, then
-three fresh Norman runs from the additive start; B3: the Adamson re-split, a free control, then two runs), each read
+**Next:** the block in `docs/PLAN_AFTER_N4.md`, in its order (B1: done; B2: a free control, then
+three fresh Norman runs from the additive start, seeds 0, 2 and 3 after seed 1's stop; B3, the Adamson re-split, dropped
+from this block), each read
 by the rules fixed there, with `tools/sealed_reading.py` and `tools/arm_reading.py`; results go to Andres before
 anything more is spent. After it: (1) free: measure the new additive start model on Norman with a no-LLM run on the
 Mac (B2's control does this); (2) free: check whether

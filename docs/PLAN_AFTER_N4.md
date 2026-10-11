@@ -256,3 +256,57 @@ scaling driver halts the chain; and the control stops the block if its best mode
 `baseline_ridge_additive`, the start B2 is about. The best baseline overall (which the exploit engine refines, and
 which can be the analytic additive rule) is recorded beside each run's start. B2's readings and B3 follow as above;
 HANDOFF.md section 1 holds the exact commands.
+
+## Note, 2026-10-11 22:50 UTC: B2's second run was killed while finishing, and how B2 continues
+
+This section changes the plan above; nothing above is edited. It is written before any B2 run's sealed reading.
+
+**What stopped the block.** The free control and seed 0 passed (`runs/norman_ds_addstart_w4_r0`: $1.293 by the
+ledger, selected EXP_0724, 24 features). Seed 1, `runs/norman_ds_addstart_w4_r1`, ran its full 20-minute search with
+its planner unchanged and cost $1.649 by the ledger (workers $0.773, planner $0.877; the ledger read $41.03 after it).
+While it was finishing, after the search and the 30-second grace (the end-of-run scoring, the ensemble and cell-eval),
+run_research.py's watchdog killed it, at about 22:37 UTC. The watchdog allows 20 minutes + `run.shutdown_grace_s`
+(30 s) + 180 s, 1,410 s in all, which leaves about three minutes for finishing; this run needed more. It exited 247
+(SIGKILL). Its end-of-run sealed scoring had already run in the killed process (five oracle queries recorded in
+lab.db, the run's cap). run_research.py's fallback then wrote its summary.json from lab.db: it marks experiments still
+running as killed (none should have been, after the shutdown) and reuses the stored sealed scores without a new query.
+The run script recorded the stop. The cause is operational: the watchdog's margin is too short for finishing a Norman run on this machine.
+Nothing in the search failed.
+
+**Seed 1 is its own arm.** By the stop rule it is reported as "killed by the watchdog while finishing", beside B2's
+arm and never in it. The alternative the Mac session raised, keeping it in the arm if its end-of-run outputs turn out
+complete, is not taken, because membership would then be decided after looking at the run. Its sealed reading, made
+like the others' after B2 has ended, is reported in a row of its own, labelled as a run killed while finishing, and
+decides nothing.
+
+**Disclosure.** While diagnosing the kill, the Mac session displayed one row of seed 1's summary table: the additive
+baseline's (EXP_0003), possibly with its sealed column. That model's sealed score was already on record (0.713, since
+N1). Seed 1's selected model and its visible score were seen (EXP_0875, 10 features, alpha 120000, visible 0.6408);
+by the Mac session's report, no B2 run's selected-model sealed score has been read. Seed 1's are in its run directory,
+computed before the kill. The replacement below does not depend on anything seen: a run stopped by an operational
+kill is replaced by the next unused seed.
+
+**How B2 continues (decided now, before any B2 sealed reading).**
+- Seed 2 runs as specified, `runs/norman_ds_addstart_w4_r2`, then seed 3, `runs/norman_ds_addstart_w4_r3`, in place of
+  seed 1, so that B2's arm has three runs: r0, r2 and r3. Everything else is as specified: the pinned code ce1b530, the
+  data and its Replogle file, the start, the caps, the $45.50 gate and the stop rule.
+- Seeds 2 and 3 pass `--no-watchdog`, so run_research.py runs the lab in its own process instead of a child under the
+  1,410-second watchdog. Nothing that shapes the search changes. The controller still ends the search at 20 minutes
+  and waits the same 30 s for running experiments; `run.shutdown_grace_s` is not raised, because it decides which
+  experiments finish. The spend caps still bound the money. The watchdog's 180-second margin lies past the search,
+  the grace and the shutdown's ten-second kill window, so it acts during finishing unless start-up or shutdown took
+  minutes; r0 exited 0, so it never acted on r0, which is therefore the same run as r2 and r3 but for its seed. In the
+  watchdog's place, the run script terminates a run still going 90 minutes after it started, and that counts as a kill
+  under the stop rule.
+- The scripts: `block_b2_run.sh` now takes seeds 2 and 3 only (seeds 0 and 1 ran from its version at ce1b530). Seed 2
+  requires seed 0's pass marker and seed 3 requires seed 2's. `block_b2_resume.sh` runs seed 2, then seed 3. The main
+  checkout stays on the pinned commit, so both are brought into `genemila_scale_logs/b2_resume/` with `git show`. The
+  stop marker `block_after_n4_stopped.txt` is renamed `block_after_n4_stopped_r1.txt`, and kept, once this note is on
+  GitHub.
+- The readings are as specified, with r3 in r1's place: the arm over r0, r2 and r3, and the combined model of r0, r2
+  and r3.
+
+**Money.** The ledger reads $41.03. At r0's and r1's costs, seeds 2 and 3 take it to about $43.6 to $44.3, each still
+starting only at $45.50 or less; at their caps ($2.50 each) the ledger would end at $46.03 at most, inside $48. B3 is
+dropped from this block, as the plan foresaw ("if anything in B1 or B2 stops the block, B3 is what is dropped").
+Whether B3 runs later, under a cap above $48, goes to Andres with B2's results.

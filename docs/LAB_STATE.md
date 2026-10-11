@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 19:45 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 22:55 UTC.
 
 ## What this is
 
@@ -151,7 +151,9 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    0.007 over the additive rule (not established); details in docs/NORMAN_PLAN.md section 8 and PR #6; N4 is not in the
    arm because its planner ran out at 18.7 of 20 minutes (the $34 cap bound; summary.json `planner.mixed`), so it
    is its own arm "(lost its planner)". B2: a free no-LLM control on the additive start, then three fresh DeepSeek
-   runs from it. B3: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson
+   runs from it (the control and seed 0 passed; seed 1 was killed by run_research.py's watchdog while finishing, is
+   its own arm and stopped the block; seeds 2 and 3, with --no-watchdog and a 90-minute backstop, are to complete the arm;
+   plan note of 22:50 UTC). B3, dropped from this block when seed 1 stopped it: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson
    perturbation's labels or sealed scores were used in development; only the agents-versus-control contrast is
    read). Each arm's deliverable is its combined model, the average of its runs' selected models; for Norman the
    delivered model is B1's unless B2's scores higher on the visible validation perturbations. One primary reading
