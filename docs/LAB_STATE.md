@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 03:26 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:46 UTC.
 
 ## What this is
 
@@ -64,6 +64,7 @@ Sealed pearson_delta (Pearson correlation of predicted and measured expression c
 | Astra's two DeepSeek continuation campaigns (8 workers, 2 h each) | 0.599 to 0.602 | Astra's notes on the Mac |
 | scripted no-LLM control with the Replogle 2022 screen (control_replogle_w4_r0, one run, labelled arm) | 0.621 | Mac report, 11 Oct 02:55 UTC; files on the push list |
 | no-LLM continuation of newcode_opus_w4_r0 with the Replogle screen (control_replogle_from_opus_r0, one run) | 0.638 (ensemble 0.640) | Mac report, 11 Oct 03:20 UTC; files on the push list |
+| the same with the kernel-ridge Replogle feature (control_replogle3_from_opus_r0, code 89ab4fb, one run) | 0.646 (ensemble 0.646) | Mac report, 11 Oct 03:50 UTC; files on the push list |
 | best of any run without an external screen | under 0.604 | |
 | noise ceiling (a perfect predictor, limited by cell sampling) | 0.89 (training) / 0.94 (visible validation) | docs/results/ceiling_analysis.md, docs/results/noise_ceiling.md |
 | transfer ceiling (best mix of other perturbations' responses, with hindsight) | 0.73 to 0.78 | same |
@@ -147,8 +148,8 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    13 features: is_target, both Replogle features, target_level, shared_module and eight of the agents' transfer
    features) scores visible 0.647, sealed pearson_delta 0.638, MSE_DE 0.078, PCC_DE 0.968, R2_DE 0.863, all-gene
    PCC 0.990; the other finalists 0.640 and 0.641. Same caveats: one run, used sealed set. summary.json md5
-   203d99f4d0fbcaebcccaf135ad9ab39d. It is the warm start for the paid run B (chosen on visible score: 0.647 vs
-   0.625). A paid agent arm with the file needs
+   203d99f4d0fbcaebcccaf135ad9ab39d. It was the warm start for the paid run B (chosen on visible score: 0.647 vs
+   0.625) until the kernel-ridge run below scored higher on visible. A paid agent arm with the file needs
    Andres's words (card posted 02:22 UTC in the build thread). external_krr (kernel ridge through the screen: signed
    weights on the other training responses, kernel = Pearson correlation of the targets' external rows, lambda by an
    inner leave-one-out) now exists both as a leave-one-out predictor in tools/external_loo.py, with
@@ -158,9 +159,24 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    (external_krr_<file>, so a control with the file from this code on is a new arm; docs/PROMPTS.md section 5); it
    was added after the first reading. On real data (leave-one-out, visible only, docs/results/
    external_loo_replogle2022_k562_v3.md) it beats the Replogle kNN as a single column (0.590 vs 0.568) but adds
-   nothing to the stack (0.614 vs 0.616). The free continuation on this code (runs/control_replogle3_from_opus_r0,
-   from newcode_opus_w4_r0 with the 11 hypotheses, no LLM) started on the Mac around 03:27 UTC; the lab's visible
-   selection decides whether external_krr enters the model.
+   nothing to the stack (0.614 vs 0.616).
+   **With kernel ridge (control_replogle3_from_opus_r0, code 89ab4fb, free, full 1,200 s, 469 experiments, 20
+   duplicates, 1 failed; config byte-identical to control_replogle_from_opus_r0, so the code version, recorded as
+   base_commit in summary.json and appended to the arm label by the results table, is what separates the two arms):**
+   selected EXP_0466 (ridge, alpha 14,434, 12 features: is_target, external_direct, external_krr, target_level,
+   is_target_x_control_mean, and seven of the agents' transfer features: knn_response_symbol_family,
+   knn_two_hop_response_cluster, knn_response_ppi_diffusion, normalized_mean_response, rwr_target_proximity,
+   knn_response_geneset, shared_module) scores visible 0.657 (MSE_DE 0.048, PCC_DE 0.977, R2_DE 0.934), sealed
+   pearson_delta 0.646, MSE_DE 0.0735, PCC_DE 0.970, R2_DE 0.868, all-gene PCC 0.990; all four finalists and the
+   ensemble give 0.646. The visible selection replaced external_knn with external_krr. Added alone to the three
+   built-in features, the Replogle features lift the visible score from 0.501 to 0.570 (direct), 0.582 (kNN) and
+   0.603 (kernel ridge). No LLM calls, ledger unchanged ($31.778). summary.json md5
+   89538745c528903098b3470d61d74e92, analysis log md5 1ab591c844f3536297d1486947006481, config.json md5
+   9743f34b8177420715a44442294787e9 (all on the push list). How far to trust it: this is the fourth look at the
+   used sealed set tonight, each from a new arm, so the sealed numbers grow more optimistic as evidence; the visible
+   scores rose in step (0.625, 0.647, 0.657), and the gain over control_replogle_from_opus_r0 (+0.008) is inside
+   run-to-run spread. Norman, or a fresh split, is the clean test. This run is now the warm start for the paid run
+   B (highest visible score).
 2. **Compact model rules (Andres's ask, 11 Oct 00:32 UTC):** a box of failed features that agents cannot re-propose; an
    admission rule (a feature joins only if its gain beats the fold noise, checked under two fold seeds); a redundancy
    check that rejects a feature correlating above 0.9 with one already in the model before it is fitted; a
@@ -169,7 +185,7 @@ Conclusion: the limit on this bundle is information about the targets, not searc
    the sealed one. Astra's unpushed branch already has a feature board (master and worker roles), a failure archive,
    in-fold Lasso screening, a curator and a compact incumbent, never run on real data; it lacks the admission
    threshold, the second fold seed, the redundancy pre-check and the monitor. Plan: push Astra's branch, review and
-   merge it into the lab branch, add the four missing rules. tools/feature_audit.py is committed (6a2eb65; visible data only by default; per run: redundancy clusters, single-feature and drop-one scores, Lasso stability, a one-SE compact set chosen on training out-of-fold scores and checked on the visible validation perturbations, and a failed-feature box a lab component can import); the Mac runs it over the 28 runs and Astra's two campaigns (28 of 30 checkpointed by 03:27 UTC; paused for the continuation run and resumes after it; Astra's first campaign has 48 features in its selected model).
+   merge it into the lab branch, add the four missing rules. tools/feature_audit.py is committed (6a2eb65; visible data only by default; per run: redundancy clusters, single-feature and drop-one scores, Lasso stability, a one-SE compact set chosen on training out-of-fold scores and checked on the visible validation perturbations, and a failed-feature box a lab component can import); the Mac runs it over the 28 runs and Astra's two campaigns (28 of 30 checkpointed by 03:27 UTC; on Astra's first campaign, run 29 of 30, at 03:50 UTC; that campaign has 48 features in its selected model).
 3. **Files to push from the Mac** (genemila_scale_logs/push_to_github.sh, Andres runs it): noise_ceiling.json,
    refit_visible.{md,json}, the Mac's STATE.md and notes, adamson_cf_ncells.json, the Replogle build report,
    external_loo JSON and the stack control without external columns, external_loo_replogle2022_k562_v3.json (md5
@@ -181,8 +197,8 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 - **A DeepSeek key on the Mac and mains power.** Spending is approved up to a $34 ledger (his 02:39 UTC message;
   $2.22 left). Plan, decided 02:45 UTC: (A, free) a no-LLM continuation from newcode_opus_w4_r0 with the Replogle
   hypotheses, runs/control_replogle_from_opus_r0, to combine the agents' best features with the screen; (B, paid,
-  about $1.20) one DeepSeek-planned 4-worker 20-minute run warm-started from whichever of control_replogle_w4_r0 and
-  control_replogle_from_opus_r0 has the higher visible score (never chosen by sealed score), runs/replogle_ds_warm_w4_r0,
+  about $1.20) one DeepSeek-planned 4-worker 20-minute run warm-started from the free Replogle run with the highest visible
+  score (never chosen by sealed score; at 03:50 UTC that is control_replogle3_from_opus_r0, visible 0.657), runs/replogle_ds_warm_w4_r0,
   `--set budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=2.2`, no start at a $33.50 ledger. One full run
   rather than two runs capped at $1.10, because past DeepSeek-planned runs cost $1.13 to $1.28 and would be cut short.
   B needs a freshly rotated key exported in ~/.zshenv on the Mac by Andres (the Mac holds none and cannot write
