@@ -211,7 +211,10 @@ Conclusion: the limit on this bundle is information about the targets, not searc
   config, summary and analysis log, and the feature audit. The 8.8 GB Replogle file and run directories stay off
   GitHub by design (reports record the source and md5).
 - Merge PR #2 (handoff rules), create a `main` branch, rotate the DeepSeek key and store it in ~/.zshenv.
-- Decide who takes Norman 2019 (Claude or Astra); Srivatsan needs new drug and dose ingestion.
+- Decide who takes Norman 2019 (Claude or Astra; asked on a card in the build thread at 03:55 UTC 11 Oct, Claude
+  recommended); either follows docs/NORMAN_PLAN.md (gene-grouped split, order-independent pair labels, additive
+  baseline, sign-aware Replogle features for CRISPRa, a pre-specified leave-one-out, run order). The download needs
+  his words in the build thread. Srivatsan needs new drug and dose ingestion.
 - Answer the comment in the summary doc.
 
 ## Next after Adamson
