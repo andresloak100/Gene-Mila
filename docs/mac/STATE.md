@@ -492,3 +492,7 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
 - COMBINED model (average of the three): 0.723 sealed; vs N2 +0.0041 ± 0.0011 (38/18, A better); vs additive +0.010 ± 0.007
   (no difference). Visible validation alone: 0.7801 vs 0.7746 (N2) and 0.7259 (additive).
 - Readings in gene-mila/docs/results/norman_b1_*.md/.json (untracked there). B2 and B3 wait for the coordinator's next note.
+
+## 2026-10-11 21:35 UTC — handoff note written
+- MAC_HANDOFF.md in this folder (docs/mac/MAC_HANDOFF.md on GitHub, pull request 6): where things are on the Mac, the rules,
+  how a paid run is started, how results get to GitHub, where the science stands, what is next. Nothing is running.
