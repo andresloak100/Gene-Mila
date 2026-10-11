@@ -22,9 +22,10 @@ from pathlib import Path
 from genemila import REPO_ROOT
 from genemila.benchmark.table import run_arm
 
-# The Mac keeps the lab in ~/Documents/Gene-Mila (moved out of ~/Documents/Loak-documents on 11 Oct 2026): the
+# The Mac keeps the lab in ~/Documents/Mila/Gene-Mila (moved out of ~/Documents/Loak-documents on 11 Oct 2026): the
 # log directory beside this checkout, else the one there.
-LOG_DIRS = (REPO_ROOT.parent / "genemila_scale_logs", Path.home() / "Documents" / "Gene-Mila" / "genemila_scale_logs")
+LOG_DIRS = (REPO_ROOT.parent / "genemila_scale_logs",
+            Path.home() / "Documents" / "Mila" / "Gene-Mila" / "genemila_scale_logs")
 
 
 def sh(*cmd, cwd=None) -> str:
