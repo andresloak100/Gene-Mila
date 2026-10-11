@@ -312,7 +312,11 @@ at the time: 02e7021. Nothing below read an expression value beyond the 500 cont
   split_a391fa9e7b4eccb7, modality CRISPRa. Training 112 (71 singles, 41 pairs); visible validation 63 (15 singles;
   pairs 8 pair_seen0, 35 pair_seen1, 5 pair_seen2); sealed 56 (16 singles; pairs 8, 27, 5). No held-out single's
   gene appears in any training perturbation. The sealed pair_seen0 (8) and pair_seen2 (5) categories are under 10,
-  so they are reported and not read (section 5).
+  so they are reported and not read (section 5). Committed byte for byte from the Mac (md5-verified):
+  docs/results/norman_splits.json (fb7cbbd7f2d292ae4d428523c936462e), norman_manifest.json
+  (880dfa94e3289d368595ab747f7a29f2) and norman_check.txt (93aa1389c68e0f684f083f1463547cb1, the section 2
+  output with unrelated paths under ~/Documents omitted). The split was reproduced from the labels alone with
+  make_gene_splits(seed 0) in a separate checkout: same sets, categories, gene assignment and split_id.
 
 Decisions on what the plan did not anticipate, made before any score on this bundle existed:
 
