@@ -101,7 +101,8 @@ def test_deltas_match_a_dense_computation(tmp_path, dataset, layout):
     assert out == dataset / "knowledge" / f"ext_{layout}.json"
     try:
         k = json.loads(out.read_text())
-        assert list(k)[0] == "description" and "Perturb-seq" in k["description"]
+        assert list(k)[0] == "description"                                            # the planner reads the first key
+        assert k["description"].startswith("External screen deltas") and path.name in k["description"]
         assert k["genes"] == bundle_genes
         assert k["measured"] == [g in col for g in bundle_genes]
         assert k["source"]["encoding"] == layout and k["source"]["raw_counts"] is True

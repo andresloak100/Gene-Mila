@@ -433,10 +433,11 @@ def build(h5ad: Path, bundle_dir: Path, name: str, label_col: str | None = None,
 
     space = ("mean over cells of log1p(10,000 x counts / cell total)" if normalise else
              "mean over cells of the stored (already normalised) values")
+    # the planner sees the first 60 characters of this sentence (lab.knowledge_summary), so it leads with the content
     knowledge = {
-        "description": (f"External Perturb-seq screen {h5ad.name}: for each bundle target gene it also perturbed, "
-                        f"the {space}, minus that screen's own control mean, over this bundle's genes "
-                        "(null where the gene is not measured there); 'perts' maps target gene to delta."),
+        "description": (f"External screen deltas: perts[gene].delta = {space} of that screen's cells of the "
+                        "perturbation minus its own control mean, over this bundle's genes in bundle order (null where "
+                        f"unmeasured there); source: Perturb-seq screen {h5ad.name}."),
         "source": {
             "file": h5ad.name, "size_bytes": h5ad.stat().st_size, "md5": md5_file(h5ad) if with_md5 else None,
             "n_cells": info["shape"][0], "n_genes": info["shape"][1], "encoding": info["layout"],

@@ -58,7 +58,7 @@ def render(knowledge: dict) -> str:
     L = [f"# External screen {src['file']}", "",
          knowledge["description"], "",
          f"Source: {src['n_cells']:,} cells x {src['n_genes']:,} genes ({src['encoding']} X, "
-         f"{src['size_bytes'] / 1e9:.2f} GB, md5 {src['md5']}), labels from obs[{src['label_col']!r}] "
+         f"{src['size_bytes'] / 1e9:.2f} GB, md5 {src['md5'] or 'not computed'}), labels from obs[{src['label_col']!r}] "
          f"({src['n_labels']} distinct), gene symbols from var[{src['gene_col']!r}], built {src['date']} in "
          f"{src['seconds']:.0f} s. Control labels {src['control_labels']} ({knowledge['control']['n_cells']:,} cells); "
          f"{'raw counts normalised' if src['raw_counts'] else 'stored values used as they are'}: {src['normalisation']}.",
