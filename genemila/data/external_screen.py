@@ -89,6 +89,31 @@ def _as_str(values) -> list[str]:
 
 # ---- reading the h5ad pieces (obs, var, X layout) ------------------------------------------------------------
 
+def _read_strings(node) -> list[str]:
+    """A string array of an h5ad file as str: a plain HDF5 dataset (older anndata), or an encoded group such as
+    the "nullable-string-array" that anndata 0.13 writes for string indexes and categories (values plus a mask;
+    a masked entry reads as ''). anndata's own reader is used for an encoded group, with a direct read of its
+    values as the fallback for an anndata that predates the encoding."""
+    import h5py
+    if isinstance(node, h5py.Dataset):
+        return _as_str(node[...])
+    try:
+        from anndata.io import read_elem
+        values = read_elem(node)
+        if hasattr(values, "to_numpy"):
+            values = values.to_numpy(dtype=object, na_value="")
+        values = ["" if v is None or (isinstance(v, float) and np.isnan(v)) else v
+                  for v in np.asarray(values, dtype=object).ravel().tolist()]
+        return _as_str(np.array(values, dtype=object))
+    except Exception:
+        if "values" not in node:
+            raise
+        out = _as_str(node["values"][...])
+        if "mask" in node:
+            out = ["" if m else v for v, m in zip(out, np.asarray(node["mask"][...], dtype=bool).tolist())]
+        return out
+
+
 def read_label_codes(f, label_col: str | None = None) -> tuple[str, list[str], np.ndarray]:
     """The perturbation column of obs as (column name, categories, code per cell); code -1 marks a missing
     value. Categorical columns are read as their codes and categories, so a file of millions of cells costs a
@@ -103,7 +128,7 @@ def read_label_codes(f, label_col: str | None = None) -> tuple[str, list[str], n
         raise ValueError(f"obs has no column {label_col!r}: {sorted(obs.keys())}")
     elem = obs[label_col]
     if isinstance(elem, h5py.Group) and elem.attrs.get("encoding-type") == "categorical":
-        cats = _as_str(elem["categories"][...])
+        cats = _read_strings(elem["categories"])
         codes = np.asarray(elem["codes"][...], dtype=np.int64)
     else:
         from anndata.io import read_elem
@@ -130,7 +155,7 @@ def read_gene_symbols(f, gene_col: str | None = None) -> tuple[str, list[str]]:
     if isinstance(index_name, bytes):
         index_name = index_name.decode()
     if gene_col is None:
-        idx = _as_str(var[index_name][...])
+        idx = _read_strings(var[index_name])
         head = idx[:1000]
         if head and sum(1 for g in head if g.startswith("ENS")) > 0.5 * len(head):
             gene_col = next((c for c in GENE_COLUMNS if c in var), None)

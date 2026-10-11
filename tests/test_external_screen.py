@@ -408,3 +408,52 @@ def test_build_with_an_alias_and_a_cell_minimum(tmp_path, dataset, capsys):
     finally:
         if out.exists():
             out.unlink()
+
+
+def _as_nullable_strings(f, path: str) -> None:
+    """Rewrite a string dataset of an open h5ad as the "nullable-string-array" group anndata 0.13 writes for string
+    indexes and categories (values plus a mask), keeping its attributes' meaning."""
+    import h5py
+    data = [v.decode() if isinstance(v, bytes) else str(v) for v in f[path][...].tolist()]
+    del f[path]
+    g = f.create_group(path)
+    g.attrs["encoding-type"] = "nullable-string-array"
+    g.attrs["encoding-version"] = "0.1.0"
+    g.create_dataset("values", data=np.array(data, dtype=object), dtype=h5py.string_dtype())
+    g.create_dataset("mask", data=np.zeros(len(data), dtype=bool))
+
+
+@pytest.mark.filterwarnings("ignore::Warning")
+@pytest.mark.parametrize("reader", ["anndata", "fallback"])
+def test_a_screen_written_by_a_newer_anndata_reads_the_same(tmp_path, dataset, monkeypatch, reader):
+    """anndata 0.13 stores a string var index and categorical categories as encoded groups, not datasets (the
+    Mac's suite failed on [...] of a group, 11 Oct 2026): the gene symbols, the labels and the built file must
+    equal those of the same screen stored the old way, through anndata's reader or the direct fallback."""
+    import h5py
+    import shutil
+    bundle = tmp_path / "bundle"                     # builds write into knowledge/: never into the shared fixture
+    shutil.copytree(dataset, bundle)
+    path, X, labels, genes, t = external_screen(tmp_path, bundle, "csr")
+    new = tmp_path / "screen_new_encoding.h5ad"
+    shutil.copy(path, new)
+    with h5py.File(new, "r+") as f:
+        index_name = f["var"].attrs.get("_index", "_index")
+        index_name = index_name.decode() if isinstance(index_name, bytes) else index_name
+        _as_nullable_strings(f, f"var/{index_name}")
+        _as_nullable_strings(f, "obs/perturbation/categories")
+        assert isinstance(f["var"][index_name], h5py.Group)
+    if reader == "fallback":
+        import anndata.io
+
+        def refuse(elem, *a, **k):
+            raise NotImplementedError("an anndata that predates the encoding")
+        monkeypatch.setattr(anndata.io, "read_elem", refuse)
+    with h5py.File(path, "r") as old_f, h5py.File(new, "r") as new_f:
+        assert es.read_gene_symbols(new_f) == es.read_gene_symbols(old_f)
+        old_lab, new_lab = es.read_label_codes(old_f), es.read_label_codes(new_f)
+        assert new_lab[0] == old_lab[0] and new_lab[1] == old_lab[1]
+        np.testing.assert_array_equal(new_lab[2], old_lab[2])
+    monkeypatch.undo()
+    a = json.loads(es.build(path, bundle, "ext_old", with_md5=False).read_text())
+    b = json.loads(es.build(new, bundle, "ext_new", with_md5=False).read_text())
+    assert a["perts"] == b["perts"] and a["genes"] == b["genes"] and a["measured"] == b["measured"]
