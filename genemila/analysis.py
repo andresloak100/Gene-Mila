@@ -21,7 +21,8 @@ def _max_overlap(intervals: list[tuple[float, float]]) -> int:
 def analyze(lab: Lab, project_workers=(8, 16, 44), project_hours=(1, 6)) -> dict:
     db = lab.db
     run = db.query("SELECT * FROM runs LIMIT 1")[0]
-    exps = db.query("SELECT * FROM experiments WHERE kind!='baseline' AND status NOT IN ('reserved','cancelled')")
+    exps = db.query("SELECT * FROM experiments WHERE COALESCE(kind, '') NOT IN ('baseline', 'ensemble') "
+                    "AND status NOT IN ('reserved','cancelled')")
     calls = db.query("SELECT * FROM llm_calls")
     workers = sorted({e["worker_id"] for e in exps if e.get("worker_id")})
     t0 = min([run["started_at"]] + [c["ts"] - (c["latency_s"] or 0) for c in calls])

@@ -1,0 +1,375 @@
+{
+ "bundle": "synthetic",
+ "knowledge": "ext_v1",
+ "description": "synthetic external screen (signal)",
+ "k": 3,
+ "alpha_grid": [
+  0.1,
+  1.0,
+  10.0,
+  100.0,
+  1000.0
+ ],
+ "n_train": 8,
+ "n_genes": 40,
+ "n_genes_measured_external": 36,
+ "external_file": {
+  "n_perts": 6,
+  "n_control_cells": 1000,
+  "n_bundle_targets_missing": 2,
+  "zero_cell_targets": [
+   "G0006"
+  ]
+ },
+ "coverage": {
+  "with_external_row": 6,
+  "without_external_row": [
+   "G0000_KO",
+   "G0006_KO"
+  ]
+ },
+ "fallbacks": {
+  "external_direct_no_row": 2,
+  "external_knn_no_row": 2,
+  "external_knn_no_positive_neighbour": 0,
+  "geneset_knn_no_positive_similarity": 4
+ },
+ "agreement": {
+  "n": 6,
+  "mean": 0.997880385036467,
+  "median": 0.9981779734376627,
+  "min": 0.9963528838508002,
+  "max": 0.9987149775754369
+ },
+ "alphas_chosen": {
+  "0.1": 5,
+  "1.0": 0,
+  "10.0": 3,
+  "100.0": 0,
+  "1000.0": 0
+ },
+ "predictors": [
+  {
+   "name": "mean_response",
+   "mean": 0.36691363337330424,
+   "sd": 0.15297568563790045,
+   "median": 0.3883263316734197,
+   "min": 0.09909525382684797,
+   "max": 0.6088305413229087,
+   "vs_mean_response": {
+    "wins": 0,
+    "mean_diff": 0.0,
+    "se_diff": 0.0
+   },
+   "vs_geneset_knn": {
+    "wins": 2,
+    "mean_diff": -0.010712690267287314,
+    "se_diff": 0.03703575919804898
+   },
+   "coverage": 8
+  },
+  {
+   "name": "geneset_knn",
+   "mean": 0.37762632364059157,
+   "sd": 0.19660464661393875,
+   "median": 0.3334736153006226,
+   "min": 0.09909525382684797,
+   "max": 0.6647090110025374,
+   "vs_mean_response": {
+    "wins": 2,
+    "mean_diff": 0.010712690267287314,
+    "se_diff": 0.03703575919804898
+   },
+   "vs_geneset_knn": {
+    "wins": 0,
+    "mean_diff": 0.0,
+    "se_diff": 0.0
+   },
+   "coverage": 8
+  },
+  {
+   "name": "external_direct",
+   "mean": 0.7860920571712666,
+   "sd": 0.2444178675486151,
+   "median": 0.9326051504219837,
+   "min": 0.4271996058895718,
+   "max": 0.9769126927211597,
+   "vs_mean_response": {
+    "wins": 6,
+    "mean_diff": 0.41917842379796233,
+    "se_diff": 0.11447963501005197
+   },
+   "vs_geneset_knn": {
+    "wins": 7,
+    "mean_diff": 0.408465733530675,
+    "se_diff": 0.12646302417912017
+   },
+   "coverage": 6
+  },
+  {
+   "name": "external_knn",
+   "mean": 0.48491254581931165,
+   "sd": 0.11187775869015963,
+   "median": 0.49475918860228835,
+   "min": 0.23782585733825357,
+   "max": 0.6084702845407975,
+   "vs_mean_response": {
+    "wins": 7,
+    "mean_diff": 0.11799891244600741,
+    "se_diff": 0.03762806437902805
+   },
+   "vs_geneset_knn": {
+    "wins": 5,
+    "mean_diff": 0.10728622217872011,
+    "se_diff": 0.056659261194880954
+   },
+   "coverage": 6
+  },
+  {
+   "name": "external_stack",
+   "mean": 0.7933746397311512,
+   "sd": 0.22563592650184072,
+   "median": 0.9247618658662353,
+   "min": 0.46936907423685814,
+   "max": 0.9773693563057327,
+   "vs_mean_response": {
+    "wins": 8,
+    "mean_diff": 0.42646100635784695,
+    "se_diff": 0.10778897742516452
+   },
+   "vs_geneset_knn": {
+    "wins": 7,
+    "mean_diff": 0.4157483160905596,
+    "se_diff": 0.11901275023098279
+   },
+   "coverage": 6
+  }
+ ],
+ "per_perturbation": [
+  {
+   "pert": "G0000_KO",
+   "target": "G0000",
+   "external_target": null,
+   "n_cells_bundle": 12,
+   "n_cells_external": null,
+   "n_genes_shared": 0,
+   "agreement": null,
+   "scores": {
+    "mean_response": 0.6088305413229087,
+    "geneset_knn": 0.6084702845407975,
+    "external_direct": 0.6088305413229087,
+    "external_knn": 0.6084702845407975,
+    "external_stack": 0.645532276963039
+   },
+   "alpha": 10.0,
+   "stack_weights": [
+    -0.03304699134887901,
+    0.018158934330800937,
+    0.31973632693596876,
+    0.02188109458606536
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": "no external row",
+    "external_knn": "no external row"
+   }
+  },
+  {
+   "pert": "G0006_KO",
+   "target": "G0006",
+   "external_target": null,
+   "n_cells_bundle": 12,
+   "n_cells_external": null,
+   "n_genes_shared": 0,
+   "agreement": null,
+   "scores": {
+    "mean_response": 0.4271996058895718,
+    "geneset_knn": 0.49894543927857565,
+    "external_direct": 0.4271996058895718,
+    "external_knn": 0.49894543927857565,
+    "external_stack": 0.47493023712421645
+   },
+   "alpha": 10.0,
+   "stack_weights": [
+    -0.03217805481994404,
+    0.023050444856079374,
+    0.3221275235344535,
+    0.022884454330438474
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": "no external row",
+    "external_knn": "no external row"
+   }
+  },
+  {
+   "pert": "G0010_KO",
+   "target": "G0010",
+   "external_target": "G0010",
+   "n_cells_bundle": 12,
+   "n_cells_external": 102,
+   "n_genes_shared": 36,
+   "agreement": 0.9963528838508002,
+   "scores": {
+    "mean_response": 0.3067065730300484,
+    "geneset_knn": 0.3067065730300484,
+    "external_direct": 0.46019069089437553,
+    "external_knn": 0.5714113287120423,
+    "external_stack": 0.46936907423685814
+   },
+   "alpha": 0.1,
+   "stack_weights": [
+    -0.025439904217955615,
+    0.021272930788066823,
+    0.31771670055833173,
+    0.019721845334235055
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "G0011_KO",
+   "target": "G0011",
+   "external_target": "G0011",
+   "n_cells_bundle": 12,
+   "n_cells_external": 103,
+   "n_genes_shared": 36,
+   "agreement": 0.9980189244702824,
+   "scores": {
+    "mean_response": 0.2496418289028639,
+    "geneset_knn": 0.2496418289028639,
+    "external_direct": 0.9769126927211597,
+    "external_knn": 0.5370060829816085,
+    "external_stack": 0.9773693563057327
+   },
+   "alpha": 0.1,
+   "stack_weights": [
+    -0.04653770481144061,
+    0.03784649962237604,
+    0.31809442859048886,
+    0.014504846557623236
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "G0014_KO",
+   "target": "G0014",
+   "external_target": "G0014",
+   "n_cells_bundle": 12,
+   "n_cells_external": 104,
+   "n_genes_shared": 36,
+   "agreement": 0.9983775325360983,
+   "scores": {
+    "mean_response": 0.09909525382684797,
+    "geneset_knn": 0.09909525382684797,
+    "external_direct": 0.9116828366528084,
+    "external_knn": 0.23782585733825357,
+    "external_stack": 0.9077054941976642
+   },
+   "alpha": 10.0,
+   "stack_weights": [
+    -0.03991684639451536,
+    0.04156403078972107,
+    0.31161835359491896,
+    0.013142219637415506
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "G0021_KO",
+   "target": "G0021",
+   "external_target": "G0021",
+   "n_cells_bundle": 12,
+   "n_cells_external": 105,
+   "n_genes_shared": 36,
+   "agreement": 0.998337022405043,
+   "scores": {
+    "mean_response": 0.46718260066735384,
+    "geneset_knn": 0.6647090110025374,
+    "external_direct": 0.9535274641911589,
+    "external_knn": 0.49057293792600104,
+    "external_stack": 0.9558623897226957
+   },
+   "alpha": 0.1,
+   "stack_weights": [
+    -0.029538020226426733,
+    0.011834543219802792,
+    0.3228273739080694,
+    0.02016209493970759
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "G0027_KO",
+   "target": "G0027",
+   "external_target": "G0027",
+   "n_cells_bundle": 12,
+   "n_cells_external": 106,
+   "n_genes_shared": 36,
+   "agreement": 0.9987149775754369,
+   "scores": {
+    "mean_response": 0.3602406575711967,
+    "geneset_knn": 0.3602406575711967,
+    "external_direct": 0.9740766448577217,
+    "external_knn": 0.455929627261303,
+    "external_stack": 0.9744100517641968
+   },
+   "alpha": 0.1,
+   "stack_weights": [
+    -0.043897954853447024,
+    0.04411979841504619,
+    0.22400156393735265,
+    0.015467985539949958
+   ],
+   "fallbacks": {
+    "geneset_knn": "no positive similarity",
+    "external_direct": null,
+    "external_knn": null
+   }
+  },
+  {
+   "pert": "G0037_KO",
+   "target": "G0037",
+   "external_target": "G0037",
+   "n_cells_bundle": 12,
+   "n_cells_external": 107,
+   "n_genes_shared": 36,
+   "agreement": 0.997480969381141,
+   "scores": {
+    "mean_response": 0.41641200577564264,
+    "geneset_knn": 0.23320154097186485,
+    "external_direct": 0.976315980840428,
+    "external_knn": 0.47913880851591184,
+    "external_stack": 0.9418182375348064
+   },
+   "alpha": 0.1,
+   "stack_weights": [
+    -0.06699277882122595,
+    0.05618630112853999,
+    0.32960930968014734,
+    0.026833803826991687
+   ],
+   "fallbacks": {
+    "geneset_knn": null,
+    "external_direct": null,
+    "external_knn": null
+   }
+  }
+ ],
+ "runtime_s": 0.03
+}

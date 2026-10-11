@@ -16,8 +16,8 @@ that can be decided mechanically is decided here, so the agent and CI agree on i
 * every command in a shell block or inline code names a real script, real flags and real
   config keys, and every inline `section.key` that names a config section exists
 * every score-like number (three or more decimals) traces to a file under docs/, and every
-  README section or figure that shows one says the data is synthetic until real-data results
-  exist (repo-profile: readme.results_label)
+  README section or figure that shows one names the data it comes from: "synthetic" or a real
+  dataset (repo-profile: readme.results_labels)
 * SVG figures are self-contained (viewBox, <title>, no scripts or remote resources), and the
   numbers they draw (kept in each text group's aria-label) trace to docs/ like the README's
 * the About description and topics fit GitHub's limits; the social preview is 2:1
@@ -318,17 +318,25 @@ def sections(md: str, prose: str) -> list[tuple[str, str, int]]:
     return parts
 
 
-def check_numbers(name: str, md: str, prose: str, label: str, rep: Report) -> None:
+def says(labels: list[str]) -> str:
+    return " or ".join(f'"{label}"' for label in labels)
+
+
+def names_data(text: str, labels: list[str]) -> bool:
+    return any(label.lower() in text.lower() for label in labels)
+
+
+def check_numbers(name: str, md: str, prose: str, labels: list[str], rep: Report) -> None:
     known = docs_numbers()
     for m in SCORE.finditer(md):
         if not traceable(m.group(0), known):
             rep.error(f"{name}:{line_of(md, m.start())}", f"{m.group(0)} appears in no file under docs/; cite where it comes from")
-    if not label:
+    if not labels:
         return
     full_sections = sections(md, prose)
     for title, body, start in full_sections:
-        if SCORE.search(body) and label.lower() not in (title + body).lower():
-            rep.error(f"{name}:{start}", f'section "{title}" shows scores but never says "{label}"')
+        if SCORE.search(body) and not names_data(title + body, labels):
+            rep.error(f"{name}:{start}", f'section "{title}" shows scores but never says {says(labels)}')
 
 
 def check_headings(name: str, prose: str, required: list[str], rep: Report) -> None:
@@ -344,7 +352,7 @@ def check_headings(name: str, prose: str, required: list[str], rep: Report) -> N
 SVG_NS = "{http://www.w3.org/2000/svg}"
 
 
-def check_svg(path: Path, label: str, rep: Report) -> None:
+def check_svg(path: Path, labels: list[str], rep: Report) -> None:
     rel = str(path.relative_to(ROOT))
     raw = path.read_text()
     try:
@@ -366,8 +374,8 @@ def check_svg(path: Path, label: str, rep: Report) -> None:
         rep.error(rel, "outlined text carries no aria-label, so what the figure draws cannot be checked; "
                        "rebuild it with docs/assets/build_figures.py")
     text = " ".join([t.strip() for t in root.itertext() if t.strip()] + drawn)
-    if label and SCORE.search(text) and label.lower() not in text.lower():
-        rep.error(rel, f'figure shows scores but never says "{label}"')
+    if labels and SCORE.search(text) and not names_data(text, labels):
+        rep.error(rel, f'figure shows scores but never says {says(labels)}')
     known = docs_numbers()
     for m in SCORE.finditer(text):
         if not traceable(m.group(0), known):
@@ -417,7 +425,8 @@ def run_checks() -> Report:
     profile = load_profile()
     rcfg = profile.get("readme", {})
     readme = ROOT / rcfg.get("path", "README.md")
-    label = rcfg.get("results_label", "synthetic")
+    # the datasets a score may come from; every section or figure that shows a score names one
+    labels = rcfg.get("results_labels") or [rcfg.get("results_label", "synthetic")]
     md = readme.read_text()
     prose, blocks = split_code(md)
     name = readme.name
@@ -425,12 +434,14 @@ def run_checks() -> Report:
     images = check_links(name, md, prose, readme.parent, rep)
     check_sanitizer(name, prose, rep)
     check_voice(name, prose, rcfg.get("banned_phrases", DEFAULT_BANNED), rcfg.get("max_badges", 3), rep)
+    for m in re.finditer(r"^(?:<{7}|>{7}|={7})(?:\s|$)", md, re.M):
+        rep.error(f"{name}:{line_of(md, m.start())}", "merge conflict marker left in the page")
     for m in re.finditer(r"\b\d+\s+(?:unit\s+|passing\s+)?tests\b|\b\d+\s+passed\b", md, re.I):
         rep.error(f"{name}:{line_of(md, m.start())}", f'hard-coded "{m.group(0)}" goes stale; drop the count')
     check_commands(name, blocks, rep)
     check_inline_code(name, prose, rep)
     check_inline_paths(name, prose, rep)
-    check_numbers(name, md, prose, label, rep)
+    check_numbers(name, md, prose, labels, rep)
     check_headings(name, prose, rcfg.get("required_headings", []), rep)
     if not profile:
         rep.warn("repo-profile", f"{PROFILE.relative_to(ROOT)} not found; About box is unchecked")
@@ -442,7 +453,7 @@ def run_checks() -> Report:
     preview_source = str(Path(preview).with_suffix(".svg")) if preview else None
     if assets.exists():
         for svg in sorted(assets.glob("*.svg")):
-            check_svg(svg, label, rep)
+            check_svg(svg, labels, rep)
             rel = str(svg.relative_to(ROOT))
             if rel not in images and rel != preview_source:
                 rep.warn(rel, "not referenced from the README")

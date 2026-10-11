@@ -103,6 +103,7 @@ def test_good_page_passes(repo):
     ("Set `run.nope` in the config.", "no such key"),
     ("Pass `--set run.nope=2`.", "no such key"),
     ("We ran 3 passed.", "goes stale"),
+    ("<<<<<<< HEAD\nx\n=======\ny\n>>>>>>> other", "merge conflict marker"),
 ])
 def test_each_rule_fires(repo, snippet, expected):
     found = errors(repo, GOOD + "\n" + snippet + "\n")
@@ -149,6 +150,15 @@ def test_svg_outlines_without_labels_are_flagged(repo):
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>plate, synthetic</title>'
         '<defs><path id="a" d="M0 0"/></defs><g><use href="#a"/></g></svg>')
     assert any("carries no aria-label" in e for e in errors(repo))
+
+
+def test_any_listed_dataset_labels_a_section(repo):
+    prof = repo / ".github" / "repo-profile.toml"
+    prof.write_text(prof.read_text().replace("[readme]\n", '[readme]\nresults_labels = ["synthetic", "Adamson"]\n'))
+    page = GOOD.replace("## Results on synthetic data", "## Results on Adamson")
+    assert errors(repo, page) == []
+    found = errors(repo, page.replace("## Results on Adamson", "## Results"))
+    assert any('never says "synthetic" or "Adamson"' in e for e in found), found
 
 
 def test_rounded_numbers_trace_to_docs(repo):

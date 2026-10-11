@@ -35,7 +35,13 @@ def sha256_file(path: Path) -> str:
 
 
 def split_id_for(splits: dict) -> str:
-    payload = json.dumps({k: sorted(splits[k]) for k in ("train", "val1", "val2")}, sort_keys=True)
+    """The split's identifier: a hash of the three perturbation lists and, only when the split carries them (a
+    gene-grouped split, make_gene_splits), the held-out categories, so a split without categories keeps the
+    identifier it always had."""
+    body = {k: sorted(splits[k]) for k in ("train", "val1", "val2")}
+    if "categories" in splits:
+        body["categories"] = {str(k): str(v) for k, v in sorted(splits["categories"].items())}
+    payload = json.dumps(body, sort_keys=True)
     return "split_" + hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
@@ -56,6 +62,56 @@ def make_splits(perts: list[str], seed: int, frac=(0.6, 0.2, 0.2)) -> dict:
     return splits
 
 
+SET_ORDER = ("train", "val1", "val2")  # training, visible validation, sealed: later is more held out
+
+
+def pert_category(targets: list[str], singles_in_train: set[str]) -> str:
+    """A held-out perturbation's category: "single" for one target, else "pair_seenK" with K the number of its
+    targets whose single-gene perturbation is a training perturbation (K runs to the number of targets, so a
+    three-gene perturbation can be pair_seen3)."""
+    if len(targets) == 1:
+        return "single"
+    return f"pair_seen{sum(1 for t in targets if t in singles_in_train)}"
+
+
+def make_gene_splits(targets: dict[str, list[str]], seed: int, gene_frac=(0.7, 0.15, 0.15),
+                     seen2_holdout: float = 0.2) -> dict:
+    """Split perturbations grouped by gene, after GEARS's "simulation" split, so a held-out gene is never trained
+    on, alone or in a combination (docs/NORMAN_PLAN.md section 3). Every gene named by a perturbation is sorted,
+    shuffled with the seed and dealt gene_frac to training, visible (val1) and sealed (val2); a single goes to its
+    gene's set and a perturbation of several genes to the most held-out set among its genes. Of the combinations
+    whose genes are all training genes, a seeded share seen2_holdout is held out, the first half (rounded down)
+    visible and the rest sealed, so both held-out sets hold combinations of seen genes and mirror each other.
+    Every held-out perturbation gets a category (pert_category). Labels only, never expression: the result
+    depends on the perturbation keys, their targets and the seed, nothing else."""
+    frac = [float(f) for f in gene_frac]
+    if len(frac) != 3 or min(frac) < 0 or abs(sum(frac) - 1.0) > 1e-6:
+        raise ValueError(f"gene_frac must be three non-negative shares summing to 1, got {list(gene_frac)}")
+    if not 0.0 <= seen2_holdout <= 1.0:
+        raise ValueError(f"seen2_holdout must lie in [0, 1], got {seen2_holdout}")
+    rng = np.random.default_rng(seed)
+    genes = sorted({g for ts in targets.values() for g in ts})
+    order = [str(g) for g in rng.permutation(genes)]
+    n_train, n_val1 = int(round(frac[0] * len(order))), int(round(frac[1] * len(order)))
+    gene_sets = {g: ("train" if i < n_train else "val1" if i < n_train + n_val1 else "val2")
+                 for i, g in enumerate(order)}
+    part = {p: max((gene_sets[g] for g in ts), key=SET_ORDER.index) for p, ts in targets.items()}
+    seen = sorted(p for p, ts in targets.items() if len(ts) > 1 and part[p] == "train")
+    held = [str(p) for p in rng.permutation(seen)][:int(round(seen2_holdout * len(seen)))] if seen else []
+    for i, p in enumerate(held):
+        part[p] = "val1" if i < len(held) // 2 else "val2"
+    splits = {s: sorted(p for p in targets if part[p] == s) for s in SET_ORDER}
+    singles_in_train = {targets[p][0] for p in splits["train"] if len(targets[p]) == 1}
+    splits.update({
+        "seed": seed, "mode": "gene", "gene_frac": frac, "seen2_holdout": float(seen2_holdout),
+        "gene_sets": dict(sorted(gene_sets.items())),
+        "categories": {p: pert_category(targets[p], singles_in_train)
+                       for p in sorted(splits["val1"] + splits["val2"])},
+    })
+    splits["split_id"] = split_id_for(splits)
+    return splits
+
+
 def write_bundle(
     out_dir: Path,
     name: str,
@@ -69,11 +125,19 @@ def write_bundle(
     extra_meta: dict | None = None,
     eval_cells: dict | None = None,
     de_non_dropout: bool = False,
+    private_files: dict | None = None,
 ) -> Path:
     """eval_cells (optional): {"control": matrix, "<pert>": matrix of cells} with cells x genes in
     log-normalised space. Cells of validation perturbations (and a control sample) are stored
     privately so held-out predictions can be scored with cell-eval, together with the ground-truth
-    DE reference (top DE genes, DE labels and directions) used by the comparable metrics."""
+    DE reference (top DE genes, DE labels and directions) used by the comparable metrics.
+    private_files (optional): {"name.json": JSON-serialisable content} written under private/ (never exported to
+    a run) and covered by the manifest's file hashes, e.g. the ingest's per-perturbation record."""
+    empty = [part for part in ("train", "val1", "val2") if not splits[part]]
+    if empty:  # np.stack would fail below with "need at least one array to stack"
+        raise ValueError(f"the split leaves {', '.join(empty)} without perturbations ({len(pert_means)} perturbations "
+                         f"in all: {len(splits['train'])} train, {len(splits['val1'])} val1, {len(splits['val2'])} "
+                         "val2); a bundle needs at least one in each")
     out_dir = Path(out_dir)
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -122,6 +186,9 @@ def write_bundle(
     for fname, content in (knowledge or {}).items():
         with open(out_dir / "knowledge" / fname, "w") as fh:
             json.dump(content, fh)
+    for fname, content in (private_files or {}).items():
+        with open(out_dir / "private" / fname, "w") as fh:
+            json.dump(content, fh, indent=1)
 
     files = sorted(p for p in out_dir.rglob("*") if p.is_file())
     manifest = {
@@ -157,6 +224,20 @@ def verify_bundle(data_dir: Path) -> list[str]:
     if split_id_for(splits) != manifest["split_id"]:
         problems.append("split identifier mismatch")
     return problems
+
+
+def added_knowledge(data_dir: Path) -> list[str]:
+    """Knowledge files a bundle (or a run's public copy of it) holds beyond those it was built with, by name
+    without ".json". The manifest lists the files written at build time; a file dropped into knowledge/ later
+    (an external screen, say) reaches every run started afterwards through export_public, so such a run saw
+    information the bundle's earlier runs did not and is its own arm (benchmark.table.run_arm)."""
+    data_dir = Path(data_dir)
+    listed = set(json.loads((data_dir / "manifest.json").read_text()).get("knowledge_files") or [])
+    kdir = data_dir / "knowledge"
+    if not kdir.is_dir():
+        return []
+    names = [f.name for f in kdir.iterdir() if f.is_file() and f.name not in listed and not f.name.endswith(".tmp")]
+    return sorted(n[:-5] if n.endswith(".json") else n for n in names)
 
 
 def export_public(data_dir: Path, dest: Path) -> Path:

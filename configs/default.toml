@@ -21,6 +21,11 @@ executor = "forkserver"        # forkserver (warm, fast start) | subprocess (fre
 feature_cache = true           # reuse computed feature blocks and shared matrices within a run
 feature_cache_max_mb = 4096    # oldest cached feature blocks are evicted beyond this
 keep_all_alphas = false        # keep every alpha's predictions in predictions.npz (else only the chosen one)
+cv_folds = 5                   # model selection also uses out-of-fold predictions for the training
+                               # perturbations (K folds, fixed per run); 0 = visible validation set only
+selection = "pearson_delta"    # selection score: pearson_delta (correlation of the change, blind to its size) or
+                               # pearson_delta+r2_top (adds R² on each perturbation's 20 most changed genes, so a
+                               # model that shrinks every change loses); a lab setting agents cannot change
 default_model = "ridge"
 default_alpha_grid = [0.01, 0.1, 1.0, 10.0, 100.0]
 
@@ -34,12 +39,19 @@ planner_concurrency = 0        # planner rounds allowed at once, each with its o
 planner_min_interval_s = 60    # back-off after a planner round that failed or produced nothing new
 max_planner_calls = 0          # 0 = no limit (the planner dollar cap still applies)
 replicates_max = 3             # same hypothesis to independent workers
+exploit_depth = 3              # 1: follow-ups around the best only; 2: + every known feature, pairs, next-best parents; 3: + feature-subset search
+python_exploit = true          # queue deterministic follow-ups around the best model (add a helpful feature,
+                               # ablate, refine alpha, swap model family) whenever fewer are queued than workers
 
 [planner]
-provider = "claude_cli"        # claude_cli | anthropic | scripted
-model = "opus"
+provider = "claude_cli"        # claude_cli | anthropic | deepseek | openai_compat | scripted
+model = "opus"                 # with provider = "deepseek": e.g. "deepseek-v4-pro" (API spend, no subscription limit)
 max_output_tokens = 6000
 timeout_s = 300
+thinking = "disabled"          # DeepSeek planner: keep the output limit for the plan (see worker.thinking)
+reasoning_effort = ""
+fallback = []                  # tried in order when the planner fails, e.g. ["deepseek:deepseek-v4-pro"]; the run is then
+                               # labelled a mixed-planner arm. Empty: the run goes on without a planner and says so.
 
 [worker]
 provider = "deepseek"          # deepseek | claude_cli | mock | openai_compat
@@ -102,7 +114,8 @@ output = 0.0
 
 [final]
 top_k = 3                      # visible-validation winners evaluated on the query-only set
-max_queries = 5                # hard cap on query-only evaluations per run
+max_queries = 5                # hard cap on query-only evaluations per run (top_k + ensemble + baseline)
+ensemble = true                # also try the average of the top_k finalists, kept only if it wins on the visible set
 celleval = true                # also score finalists with Arc's cell-eval when held-out cells exist
 celleval_profile = "full"      # cell-eval profile: full | minimal | vcc | de
 

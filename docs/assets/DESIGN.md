@@ -16,8 +16,9 @@ python tools/readme_check.py
 2. **Data comes from `docs/`.** The script parses run reports (`docs/example_run/summary.md`,
    `analysis.md`); it never types a score in. Each SVG says where its numbers came from in a
    comment at the top and in its footer.
-3. **Synthetic stays labelled.** Until a real dataset has been scored, every figure that shows a
-   score says "synthetic" in its kicker or footer. `tools/readme_check.py` enforces this.
+3. **Every score names its data.** A figure that shows a score says which dataset it comes from
+   (synthetic, Adamson or Norman) in its kicker or footer, and shows spread next to means.
+   `tools/readme_check.py` enforces the dataset label (repo-profile `readme.results_labels`).
 4. **Self-contained SVG.** GitHub shows README images inside an `<img>`, which blocks fonts,
    scripts and remote files. Lettering is therefore converted to outlines from the fonts in
    `fonts/`, colours live in an internal stylesheet, and nothing is loaded from elsewhere.
@@ -27,7 +28,7 @@ python tools/readme_check.py
 6. **Accessible.** Each SVG has a `<title>` and a `<desc>` that states the numbers, and the
    README gives the same information in its `alt` text or the surrounding prose. Every outlined
    line of text keeps its words in an `aria-label`, which is also what `tools/readme_check.py`
-   reads when it traces numbers and the synthetic label.
+   reads when it traces numbers and the dataset label.
 7. **Layout is checked when drawing.** A missing glyph, a legend that runs into the footer, or
    text that overflows a panel stops the script with an error instead of producing a broken
    figure. Look at every changed figure rendered in light and dark before committing it.

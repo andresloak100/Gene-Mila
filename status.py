@@ -25,7 +25,7 @@ def main():
               f"{'finished' if run['finished_at'] else f'time left {max(0, left):.0f}s'}")
         print("status: " + ", ".join(f"{k}={v}" for k, v in sorted(c.items())))
         if best:
-            print(f"best: {best['experiment_id']} pearson_delta={best['primary_score']:.4f} "
+            print(f"best: {best['experiment_id']} score={best['primary_score']:.4f} "
                   f"features={best['feature_set_json']}")
         active = db.query("SELECT experiment_id, status, worker_id, hypothesis FROM experiments WHERE status IN "
                           "('claimed','implementing','testing','running') ORDER BY worker_id")

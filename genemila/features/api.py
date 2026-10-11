@@ -15,6 +15,8 @@ ctx.train_delta(exclude=p). For row p it MUST exclude p itself, which is what
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 import os
 import tempfile
@@ -78,6 +80,47 @@ class FeatureContext:
         self._targets: dict[str, list[str]] = json.loads((self.public_dir / "knowledge" / "targets.json").read_text())
         self._feature_cache: dict = {}
         self.cache: dict = {}  # free-form cache features may use for shared work
+        self.label_reads = 0   # how often training labels were read (tells label-dependent features apart)
+
+    # ---- cross-validation views ---------------------------------------------------
+    @property
+    def train_signature(self) -> str:
+        """Identifies the training set this context exposes (feature caches key on it)."""
+        return hashlib.sha256("\n".join(self.train_perts).encode()).hexdigest()[:12]
+
+    def without_train(self, exclude: list[str]) -> "FeatureContext":
+        """A view whose training labels exclude `exclude` (a cross-validation fold). Feature code sees a
+        smaller training set and nothing else changes; the fold's labels are unreachable through it. The view
+        has its own memo caches so nothing computed from the full training set leaks in."""
+        out = copy.copy(self)
+        gone = set(exclude)
+        keep = [i for i, p in enumerate(self.train_perts) if p not in gone]
+        out.train_perts = [self.train_perts[i] for i in keep]
+        out._train_delta = self._train_delta[keep]
+        out._train_pos = {p: i for i, p in enumerate(out.train_perts)}
+        out._feature_cache = {}
+        out.cache = {}
+        return out
+
+    def with_extra_train(self, perts: list[str], deltas: np.ndarray) -> "FeatureContext":
+        """A view whose training labels are the public training set plus `perts` with the given delta
+        profiles (expression minus the control mean), for refits on every perturbation whose labels the
+        controller may see. Feature code sees a larger training set and nothing else changes. The view has
+        its own memo caches, and its train_signature differs from the public one, so cached feature blocks
+        of the two training sets never collide."""
+        perts = [str(p) for p in perts]
+        deltas = np.asarray(deltas, dtype=np.float64)
+        if deltas.shape != (len(perts), self.n_genes):
+            raise ValueError(f"deltas must have shape ({len(perts)}, {self.n_genes}), got {deltas.shape}")
+        if len(set(perts)) != len(perts) or any(p in self._train_pos for p in perts):
+            raise ValueError("extra training perturbations must be distinct and outside the training set")
+        out = copy.copy(self)
+        out.train_perts = list(self.train_perts) + perts
+        out._train_delta = np.vstack([self._train_delta, deltas])
+        out._train_pos = {p: i for i, p in enumerate(out.train_perts)}
+        out._feature_cache = {}
+        out.cache = {}
+        return out
 
     # ---- perturbation metadata -------------------------------------------------
     def target_genes(self, pert: str) -> list[str]:
@@ -89,6 +132,7 @@ class FeatureContext:
     # ---- training labels (leave-one-out aware) --------------------------------
     def train_delta(self, exclude: str | None = None) -> tuple[list[str], np.ndarray]:
         """Training perturbations and their delta profiles, minus `exclude`."""
+        self.label_reads += 1
         if exclude is not None and exclude in self._train_pos:
             keep = [i for p, i in self._train_pos.items() if p != exclude]
             return [self.train_perts[i] for i in keep], self._train_delta[keep]

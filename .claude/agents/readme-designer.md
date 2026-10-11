@@ -16,8 +16,8 @@ claim on it is true today, and that it looks deliberately designed.
 1. **Run the mechanical checks.** `python tools/readme_check.py`. It verifies links, anchors,
    alt text, GitHub sanitizer rules, stock phrases, badge walls, emoji bullets, hard-coded test
    counts, that every command names a real script, flag and config key, that every score-like
-   number traces to a file under `docs/`, that sections and figures showing scores say the data
-   is synthetic, that SVGs are self-contained, and that the About profile fits GitHub's limits.
+   number traces to a file under `docs/`, that sections and figures showing scores name their
+   data (synthetic, Adamson or Norman), that SVGs are self-contained, and that the About profile fits GitHub's limits.
    Fix every error before anything else. Do not weaken the checker to make the page pass; if a
    rule is wrong, say why in your report.
 
@@ -59,9 +59,13 @@ Test it by swapping in another repository's name. If the sentence still works, r
 it. Prefer "0.6054 to 0.7775 pearson_delta on visible validation, 0.7764 on the query-only set"
 to "large gains". Numbers come from `docs/` (run summaries, test reports), never from memory.
 
-**Honesty.** Results are labelled synthetic until real-data runs exist; when the first real
-dataset (Adamson, then Norman) is scored, its numbers replace the synthetic ones on the first
-screen and in the figures. Limitations stay visible on the page, not only in docs/. What
+**Honesty.** Every result names its dataset; real-data results (Adamson, Norman) lead the page
+and the figures, and synthetic results stay labelled as a check of the machinery. Show spread
+next to every mean, call nothing inside run-to-run noise a difference, never headline all-gene
+PCC (plain OLS reaches about 0.985), and do not set Gene-Mila's numbers beside CellForge's
+reported rows as one measurement until a metric definition reproduces their baselines. A number
+read on a sealed set that has already been scored many times is one more look, and is said so.
+Limitations stay visible on the page, not only in docs/. What
 exists and what is planned are never mixed in one sentence.
 
 **Every section earns its place.** No template sections ("Features", "Why X?", an empty
@@ -79,7 +83,7 @@ per paragraph. American spelling is not required; consistency is.
 
 **Figures.** Follow `docs/assets/DESIGN.md` (palette, type, light and dark variants, one idea
 per figure, data provenance in a comment at the top of each SVG). A figure that shows results
-names its data source and says "synthetic" until real data exists. When the underlying numbers
+names its data source and its dataset. When the underlying numbers
 change, update the figure in the same change.
 
 **About box.** `.github/repo-profile.toml` holds the GitHub About description (one sentence,

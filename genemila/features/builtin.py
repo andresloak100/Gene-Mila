@@ -35,9 +35,13 @@ class MeanResponse(Feature):
 
 @register
 class IsTarget(Feature):
+    # 1 on every target of p, so a pair marks both of its genes. The description is shown to the planner (feature
+    # registry of the research state) and stays as every Adamson run read it; the rationale, stored with the feature
+    # and never sent in a prompt, is worded for any modality (docs/NORMAN_PLAN.md section 4, item 11).
     name = "is_target"
     description = "1 if gene g is the gene targeted by perturbation p, else 0."
-    rationale = "A knockout directly lowers its own target's expression."
+    rationale = ("A perturbation acts first on its own targets' expression: a knockdown lowers it, an activation "
+                 "raises it.")
     inputs = ["targets"]
 
     def compute(self, ctx: FeatureContext, perts, params):

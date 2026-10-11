@@ -202,7 +202,7 @@ class Database:
 
     def best(self) -> dict | None:
         rows = self.query("SELECT * FROM experiments WHERE status='completed' AND primary_score IS NOT NULL "
-                          "ORDER BY primary_score DESC, finished_at ASC LIMIT 1")
+                          "AND COALESCE(kind, '') != 'ensemble' ORDER BY primary_score DESC, finished_at ASC LIMIT 1")
         return rows[0] if rows else None
 
     def find_by_config_hash(self, config_hash: str) -> dict | None:

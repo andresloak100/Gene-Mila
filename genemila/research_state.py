@@ -10,8 +10,10 @@ import itertools
 import json
 import time
 
+from .benchmark import METRIC_TEXT, PRIMARY_METRIC, SELECTION_RULES
 from .db import ACTIVE
 from .lab import Lab
+from .prompts import dataset_flags
 
 HELP_THRESHOLD = 0.002  # minimum primary-metric gain to call a feature "helpful"
 
@@ -29,10 +31,45 @@ IDEA_BANK = [
     ("response heterogeneity across training perturbations (gene responsiveness)", ("respons", "variab", "std")),
 ]
 
+# A bundle with pairs of genes or a recorded modality (Norman; docs/NORMAN_PLAN.md section 4, item 11) reads the
+# knockdown idea worded for any modality (same keys) and, with pairs, an additivity idea after the similarity one.
+# Its keys leave out a bare "additiv", which the combine hypotheses' "additive gains" would match, and the words of
+# baseline_additive's text ("... single-gene changes in training (additive model)."), which every such run records
+# before any feature is tried. Every other bundle (Adamson's) reads IDEA_BANK exactly as before.
+NEUTRAL_IDEAS = {"target knockdown magnitude": "target perturbation magnitude (how far p moves its own targets)"}
+PAIR_IDEAS = [("additivity of pairs: a pair's response as the sum of its genes' single-gene responses, and "
+               "departures from it", ("additive_", "additivity", "additive model of", "non-additiv", "epista",
+                                      "synerg"))]
+
+
+def idea_bank(pairs: bool, modality: bool) -> list[tuple[str, tuple]]:
+    """The idea areas a run's planner is shown as unexplored until a hypothesis names one of their keys."""
+    if not pairs and not modality:
+        return IDEA_BANK
+    ideas = [(NEUTRAL_IDEAS.get(idea, idea), keys) for idea, keys in IDEA_BANK]
+    if pairs:
+        at = 1 + next(i for i, (idea, _) in enumerate(IDEA_BANK) if idea.startswith("perturbation similarity"))
+        ideas[at:at] = PAIR_IDEAS
+    return ideas
+
 
 def _short(text: str, n: int = 90) -> str:
     text = " ".join((text or "").split())
     return text if len(text) <= n else text[: n - 1] + "…"
+
+
+def _metric_text(lab: Lab) -> str:
+    if lab.selection == PRIMARY_METRIC:
+        base = ("pearson_delta (higher is better): Pearson correlation between predicted and true expression change, "
+                "averaged over ")
+    else:
+        terms = " plus ".join(f"{w:g} x {m} ({METRIC_TEXT[m]})" for m, w in SELECTION_RULES[lab.selection].items())
+        base = f"selection score (higher is better): {terms}; each term is averaged over "
+    if lab.cv_folds > 1:
+        return base + (f"the {len(lab._train.perts) + len(lab._val1.perts)} visible perturbations "
+                       f"({lab.cv_folds}-fold out-of-fold predictions of the {len(lab._train.perts)} training "
+                       f"perturbations plus the {len(lab._val1.perts)} visible validation perturbations)")
+    return base + f"the {len(lab._val1.perts)} held-out visible validation perturbations"
 
 
 def build_state(lab: Lab, max_recent: int = 10) -> dict:
@@ -73,7 +110,9 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
     untested_helpful_in_best = [h for h in helpful_names if h not in best_set]
 
     used_text = " ".join(f"{e.get('new_feature') or ''} {e['hypothesis']}".lower() for e in exps)
-    unexplored = [idea for idea, keys in IDEA_BANK if not any(k in used_text for k in keys)]
+    dataset = lab.data_summary()
+    ideas = idea_bank(dataset_flags(dataset)["pairs"], bool(lab.manifest.get("modality")))
+    unexplored = [idea for idea, keys in ideas if not any(k in used_text for k in keys)]
 
     inflight = [e for e in exps if e["status"] in ("queued", *ACTIVE)]
     recent = [{"id": e["experiment_id"], "status": e["status"], "kind": e["kind"], "cat": e["category"],
@@ -84,12 +123,22 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
                               key=lambda e: e.get("finished_at") or 0)[-max_recent:]]
     cpu = [e["cpu_s"] for e in done if e.get("cpu_s")]
     llm = db.llm_totals()
+    prior = None
+    warm = lab.run_dir / "warm_start.json"
+    if warm.exists():
+        w = json.loads(warm.read_text())
+        prior = {"continued_from": w["run_id"], "its_best": {"visible": w["best_visible"], "sealed": w["best_sealed"],
+                                                              "model": w["model"], "features": w["features"]},
+                 "features_that_helped_there": w["helpful_features"][:10],
+                 "features_that_did_not_help_there": w["unhelpful_features"][:12],
+                 "ideas_that_failed_there": [f"{f['idea']} [{f['stage']}]" for f in w["failed_ideas"][:8]],
+                 "note": "Its best model is this run's starting experiment; do not re-propose what is listed here."}
     return {
         "generated_at": time.time(),
-        "dataset": lab.data_summary(),
-        "primary_metric": "pearson_delta (higher is better): mean over held-out perturbations of the Pearson "
-                          "correlation between predicted and true expression change",
+        "dataset": dataset,
+        "primary_metric": _metric_text(lab),
         "knowledge_available": lab.knowledge_summary(),
+        **({"prior_campaign": prior} if prior else {}),
         "baselines": [{"id": e["experiment_id"], "what": _short(e["hypothesis"], 60),
                        "score": round(e["primary_score"], 4)} for e in baselines],
         "current_best": None if not best else {

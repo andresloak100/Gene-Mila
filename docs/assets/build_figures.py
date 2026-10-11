@@ -256,6 +256,30 @@ def example_run() -> dict:
             "control": control}
 
 
+ADAMSON_ROWS = [  # (label in the figure, start of the row's label in the summary table, colour)
+    ("start: OLS, 3 features", "Gene-Mila starting model", "base"),
+    ("no-LLM control", "No-LLM control (fixed", "base"),
+    ("agents, 1 worker", "Agents, 1 worker (", "gain"),
+    ("agents, 4 workers", "Agents, 4 workers (", "gain"),
+    ("agents, 8 workers", "Agents, 8 workers (", "gain"),
+    ("agents, 16 workers", "Agents, 16 workers (", "gain"),
+]
+
+
+def adamson_results() -> dict:
+    """Sealed pearson_delta by arm on Adamson, parsed from docs/results/summary_for_collaborators.md."""
+    text = (DOCS / "results" / "summary_for_collaborators.md").read_text()
+    rows = []
+    for label, prefix, colour in ADAMSON_ROWS:
+        m = re.search(r"^\| " + re.escape(prefix) + r"[^|]*\| ([\d.]+(?: ± [\d.]+)?) \|", text, re.M)
+        if m is None:
+            raise ValueError(f"no row starting {prefix!r} in summary_for_collaborators.md")
+        rows.append((label, m.group(1), colour))
+    sealed = int(re.search(r"(\d+) test \(held-out\)", text).group(1))
+    runs = int(re.search(r"Agents, 4 workers \((\d+) runs\)", text).group(1))
+    return {"rows": rows, "sealed": sealed, "runs": runs}
+
+
 def outcome_text(outcome: dict) -> str:
     """'1 failed', or '1 failed, 2 rejected' when more than one kind occurred."""
     parts = [f"{n} {kind}" for kind, n in outcome.items() if n]
@@ -521,25 +545,14 @@ def loop_figure() -> Path:
 
 
 def hero_figure() -> Path:
-    run = example_run()
-    readme = (DOCS / "example_run" / "README.md").read_text()
-    budget = int(re.search(r"--minutes (\d+)", readme).group(1))
-    planner = re.search(r"--planner-model (\w+)", readme).group(1).capitalize()
-    worker = re.search(r"--worker-model (\w+)", readme).group(1).capitalize()
-    base = next(b for b in run["baselines"] if b["id"] == "EXP_0004")["score"]
-    best_id, best = run["lineage"][-1]["id"], run["lineage"][-1]["score"]
-    sealed = run["query_only"][best_id][1]
-    base_sealed = run["query_only"]["EXP_0004"][1]
-    n_vis, n_sealed = run["split"]["visible"], run["split"]["sealed"]
-    outcome = outcome_text(run["outcome"])
-
+    res = adamson_results()
+    summary = "; ".join(f"{label} {value}" for label, value, _ in res["rows"])
     c = Canvas(960, 300, "Gene-Mila",
                "Gene-Mila: an autonomous research lab for single-cell perturbation prediction. Agents write the "
-               "features, only a linear model may use them, and the clock stops everyone. Example run on synthetic "
-               f"data: {run['minutes']} of {budget} minutes used, {len(run['experiments'])} experiments, {outcome}. "
-               f"pearson_delta, visible validation then sealed query-only set ({n_vis} perturbations each): "
-               f"linear baseline {fmt(base)} and {fmt(base_sealed)}, best model {fmt(best)} and {fmt(sealed)}.",
-               "docs/example_run/README.md and docs/example_run/summary.md")
+               "features, only a linear model may use them, and the clock stops everyone. Adamson Perturb-seq "
+               f"screen (CRISPRi, K562), pearson_delta on {res['sealed']} sealed held-out knockdowns, mean ± sd over "
+               f"{res['runs']} runs per agent arm, 20-minute runs: {summary}.",
+               "docs/results/summary_for_collaborators.md")
     plate(c)
     kicker(c, "Autonomous lab  /  single-cell perturbation prediction", 44, 62)
     c.text("Gene-Mila", 40, 146, 80, "display")
@@ -547,36 +560,24 @@ def hero_figure() -> Path:
     c.text("Only a linear model may use them.", 44, 224, 21, "italic", "soft")
     c.text("The clock stops everyone.", 44, 252, 21, "italic", "clock")
 
-    # run card
+    # results card
     x, y, w, h = 586, 34, 334, 234
     c.add(f'<rect class="f-panel" x="{x}" y="{y}" width="{w}" height="{h}" rx="12"/>')
-    kicker(c, "Example run", x + 22, y + 30, "ink")
-    c.text("synthetic data", x + w - 22, y + 30, 11.5, "mono-medium", "clock", anchor="end")
-    right, col = x + w - 22, 74
-
-    def leader(label: str, ry: float, value_left: float) -> None:
+    kicker(c, "Adamson Perturb-seq", x + 22, y + 30, "ink")
+    c.text("CRISPRi, K562", x + w - 22, y + 30, 11.5, "mono-medium", "clock", anchor="end")
+    right = x + w - 22
+    c.text(f"sealed pearson_delta, n = {res['sealed']}", x + 22, y + 54, 11.5, "mono", "soft")
+    c.text("mean ± sd", right, y + 54, 11.5, "mono", "faint", anchor="end")
+    c.add(f'<line class="s-rule" x1="{x + 22}" x2="{right}" y1="{y + 64}" y2="{y + 64}" stroke-width="1"/>')
+    for i, (label, value, colour) in enumerate(res["rows"]):
+        ry = y + 86 + i * 22
         lw = c.text(label, x + 22, ry, 12.5, "mono", "soft")
-        c.add(f'<line class="s-rule" x1="{x + 22 + lw + 8:.1f}" x2="{value_left - 8:.1f}" y1="{ry - 3.5}" '
+        vl = right - c.measure(value, 12.5, "mono-medium")
+        assert x + 22 + lw + 16 < vl, f"hero row {label!r} overlaps its value"
+        c.add(f'<line class="s-rule" x1="{x + 22 + lw + 8:.1f}" x2="{vl - 8:.1f}" y1="{ry - 3.5}" '
               f'y2="{ry - 3.5}" stroke-width="1.4" stroke-dasharray="1 4" stroke-linecap="round"/>')
-
-    for i, (label, value) in enumerate([("models", f"Claude {planner} / {worker}"),
-                                        ("budget", f"{run['minutes']} of {budget} min used"),
-                                        ("experiments", f"{len(run['experiments'])}, {outcome}")]):
-        ry = y + 60 + i * 25
-        leader(label, ry, right - c.measure(value, 12.5, "mono-medium"))
-        c.text(value, right, ry, 12.5, "mono-medium", "ink", anchor="end")
-    c.add(f'<line class="s-rule" x1="{x + 22}" x2="{right}" y1="{y + 125}" y2="{y + 125}" stroke-width="1"/>')
-    c.text(f"pearson_delta, n = {n_vis}" if n_vis == n_sealed else "pearson_delta", x + 22, y + 146, 11.5,
-           "mono", "soft")
-    c.text("visible", right - col, y + 146, 11.5, "mono", "faint", anchor="end")
-    c.text("sealed", right, y + 146, 11.5, "mono", "faint", anchor="end")
-    for i, (label, vis, seal, colour) in enumerate([("linear baseline", base, base_sealed, "base"),
-                                                    ("best model", best, sealed, "gain")]):
-        ry = y + 172 + i * 25
-        leader(label, ry, right - col - c.measure(fmt(vis), 12.5, "mono-medium"))
-        c.text(fmt(vis), right - col, ry, 12.5, "mono-medium", colour, anchor="end")
-        c.text(fmt(seal), right, ry, 12.5, "mono-medium", colour, anchor="end")
-    c.text("source  docs/example_run/", x + 22, y + h - 14, 11, "mono", "soft")
+        c.text(value, right, ry, 12.5, "mono-medium", colour, anchor="end")
+    c.text(f"{res['runs']} runs per agent arm  /  source docs/results/", x + 22, y + h - 14, 11, "mono", "soft")
     return c.save("hero.svg")
 
 
@@ -605,24 +606,13 @@ def lines(c: Canvas, text: str, x: float, y: float, width: float, size: float, f
 
 
 def hero_narrow_figure() -> Path:
-    run = example_run()
-    readme = (DOCS / "example_run" / "README.md").read_text()
-    budget = int(re.search(r"--minutes (\d+)", readme).group(1))
-    planner = re.search(r"--planner-model (\w+)", readme).group(1).capitalize()
-    worker = re.search(r"--worker-model (\w+)", readme).group(1).capitalize()
-    base = next(b for b in run["baselines"] if b["id"] == "EXP_0004")["score"]
-    best_id, best = run["lineage"][-1]["id"], run["lineage"][-1]["score"]
-    sealed = run["query_only"][best_id][1]
-    base_sealed = run["query_only"]["EXP_0004"][1]
-    n_vis = run["split"]["visible"]
-    outcome = outcome_text(run["outcome"])
-
+    res = adamson_results()
+    summary = "; ".join(f"{label} {value}" for label, value, _ in res["rows"])
     c = Canvas(NW, 0, "Gene-Mila",
                "Gene-Mila: agents write the features, only a linear model may use them, and the clock stops "
-               f"everyone. Example run on synthetic data: {run['minutes']} of {budget} minutes used, "
-               f"{len(run['experiments'])} experiments, {outcome}. pearson_delta, visible then sealed: linear "
-               f"baseline {fmt(base)} and {fmt(base_sealed)}, best model {fmt(best)} and {fmt(sealed)}.",
-               "docs/example_run/README.md and docs/example_run/summary.md")
+               f"everyone. Adamson Perturb-seq screen, pearson_delta on {res['sealed']} sealed held-out knockdowns, "
+               f"mean ± sd over {res['runs']} runs per agent arm: {summary}.",
+               "docs/results/summary_for_collaborators.md")
     x = 24
     kicker(c, "Autonomous lab", x, 42)
     kicker(c, "Single-cell perturbation prediction", x, 60)
@@ -632,29 +622,21 @@ def hero_narrow_figure() -> Path:
     c.text("The clock stops everyone.", x, 214, 18, "italic", "clock")
 
     y, w = 240, NW - 2 * x
-    right, col, inner = x + w - 18, 70, x + 18
+    right, inner = x + w - 18, x + 18
     rows_top = y + 30
-    c.add(f'<rect class="f-panel" x="{x}" y="{y}" width="{w}" height="238" rx="12"/>')
-    kicker(c, "Example run", inner, rows_top, "ink")
-    c.text("synthetic data", right, rows_top, 12, "mono-medium", "clock", anchor="end")
-    for i, (label, value) in enumerate([("models", f"Claude {planner} / {worker}"),
-                                        ("budget", f"{run['minutes']} of {budget} min"),
-                                        ("experiments", f"{len(run['experiments'])}, {outcome}")]):
-        ry = rows_top + 30 + i * 24
-        c.text(label, inner, ry, 13, "mono", "soft")
-        c.text(value, right, ry, 13, "mono-medium", "ink", anchor="end")
-    c.add(f'<line class="s-rule" x1="{inner}" x2="{right}" y1="{rows_top + 95}" y2="{rows_top + 95}" stroke-width="1"/>')
-    c.text(f"pearson_delta, n = {n_vis}", inner, rows_top + 116, 12, "mono", "soft")
-    c.text("visible", right - col, rows_top + 116, 12, "mono", "faint", anchor="end")
-    c.text("sealed", right, rows_top + 116, 12, "mono", "faint", anchor="end")
-    for i, (label, vis, seal, colour) in enumerate([("baseline", base, base_sealed, "base"),
-                                                    ("best model", best, sealed, "gain")]):
-        ry = rows_top + 141 + i * 24
-        c.text(label, inner, ry, 13, "mono", "soft")
-        c.text(fmt(vis), right - col, ry, 13, "mono-medium", colour, anchor="end")
-        c.text(fmt(seal), right, ry, 13, "mono-medium", colour, anchor="end")
-    c.text("source  docs/example_run/", inner, y + 238 - 16, 12, "mono", "soft")
-    plate_to(c, y + 238 + 24)
+    height = 82 + 24 * len(res["rows"]) + 30
+    c.add(f'<rect class="f-panel" x="{x}" y="{y}" width="{w}" height="{height}" rx="12"/>')
+    kicker(c, "Adamson Perturb-seq", inner, rows_top, "ink")
+    c.text("CRISPRi", right, rows_top, 12, "mono-medium", "clock", anchor="end")
+    c.text(f"sealed pearson_delta, n = {res['sealed']}", inner, rows_top + 26, 12, "mono", "soft")
+    c.add(f'<line class="s-rule" x1="{inner}" x2="{right}" y1="{rows_top + 38}" y2="{rows_top + 38}" stroke-width="1"/>')
+    for i, (label, value, colour) in enumerate(res["rows"]):
+        ry = rows_top + 62 + i * 24
+        lw = c.text(label, inner, ry, 13, "mono", "soft")
+        assert inner + lw + 12 < right - c.measure(value, 13, "mono-medium"), f"narrow hero row {label!r} overlaps"
+        c.text(value, right, ry, 13, "mono-medium", colour, anchor="end")
+    c.text(f"mean ± sd, {res['runs']} runs per agent arm", inner, y + height - 16, 12, "mono", "soft")
+    plate_to(c, y + height + 24)
     return c.save("hero-narrow.svg")
 
 

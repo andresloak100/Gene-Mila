@@ -17,6 +17,7 @@ import time
 import traceback
 from pathlib import Path
 
+from . import exploit
 from .db import ACTIVE
 from .lab import Lab
 from .planner import Planner
@@ -48,9 +49,33 @@ def build_providers(cfg: dict):
         esc = make_provider(w["escalation_provider"], w["escalation_model"],
                             {**w, **cfg.get("providers", {}).get(w["escalation_provider"], {})})
     p = cfg["planner"]
-    planner = make_provider(p["provider"], p["model"], p)
-    fallback = make_provider("scripted", "scripted") if p.get("fallback", "scripted") == "scripted" else None
-    return worker, esc, planner, fallback
+    # the scripted planner adds fixed hypotheses for external screens the run can read (run.external_knowledge)
+    planner = make_provider(p["provider"], p["model"], {**p, "external_knowledge": cfg["run"].get("external_knowledge")})
+    return worker, esc, planner, planner_fallbacks(cfg)
+
+
+def planner_fallbacks(cfg: dict) -> list:
+    """The planner fallback chain from `planner.fallback`: a list (or comma-separated string) of
+    "provider:model" entries tried in order when the planner before them fails, e.g.
+    ["deepseek:deepseek-v4-pro"]; "scripted" names the deterministic planner. Empty by default, so an
+    LLM arm never degrades silently: the run goes on without a planner and says so."""
+    p = cfg["planner"]
+    raw = p.get("fallback") or []
+    if isinstance(raw, str):
+        raw = [x.strip() for x in raw.split(",")]
+    out = []
+    for item in raw:
+        item = str(item).strip()
+        if not item or item == "none":
+            continue
+        kind, _, model = item.partition(":")
+        if kind == "scripted":
+            out.append(make_provider("scripted", "scripted"))
+            continue
+        if not model:
+            raise ValueError(f"planner.fallback entry {item!r} must be provider:model (or 'scripted')")
+        out.append(make_provider(kind, model, {**p, **cfg.get("providers", {}).get(kind, {})}))
+    return out
 
 
 class Controller:
@@ -73,6 +98,8 @@ class Controller:
         self.deadline = None
         self._planner_threads: list[threading.Thread] = []
         self.max_planner_calls = int(self.cfg["schedule"].get("max_planner_calls", 0))  # 0 = no limit
+        self.python_exploit = bool(self.cfg["schedule"].get("python_exploit", True))
+        self._next_exploit = 0.0
         self.min_free_mb = float(self.cfg["run"].get("min_free_disk_mb", 2000))
         b = self.cfg["budget"]
         if float(b.get("max_planner_usd", 0)) <= 0:  # 0 = scale the planner cap with run length and worker count
@@ -161,6 +188,29 @@ class Controller:
         self._planner_threads.append(t)
         t.start()
 
+    def _maybe_exploit(self) -> None:
+        """Keep workers busy while the planner thinks: when fewer experiments are queued than there are
+        workers, queue deterministic follow-ups around the current best (no LLM involved)."""
+        if not self.python_exploit or self.lab.stop_event.is_set() or time.time() < self._next_exploit:
+            return
+        self._next_exploit = time.time() + 15
+        queued = self.lab.db.count_by_status().get("queued", 0)
+        if queued >= self.n_workers:
+            return
+        n_queued, want = 0, self.n_workers - queued
+        for _ in range(20):  # a candidate the guardrail rejects or that is a duplicate is replaced by the next one
+            batch = exploit.propose(self.lab, want - n_queued)
+            if not batch:
+                break
+            for spec in batch:
+                _, status = self.lab.queue(spec)
+                n_queued += status == "queued"
+            if n_queued >= want:
+                break
+        if n_queued:
+            self.lab.db.event("python_exploit", f"queued {n_queued} deterministic follow-ups around the best model")
+            self._log(f"exploit: queued {n_queued} follow-ups around the best model (no LLM)")
+
     # ---------------------------------------------------------------- workers
     def _start_worker(self, i: int) -> None:
         wid = f"W{i:03d}"
@@ -217,6 +267,13 @@ class Controller:
                   f"${self.lab.gateway.role_caps['worker']:.2f}, planner ${self.lab.gateway.role_caps['planner']:.2f}")
         self.lab.record_analytic_baselines()
         self.lab.queue_model_baselines()
+        prev = self.cfg["run"].get("continue_from")
+        if prev:
+            info = self.lab.warm_start(Path(prev))
+            self._log(f"warm start from {info['run_id']}: {len(info['imported'])} features imported, starting model "
+                      f"{info['start_experiment']} on {len(info['features'])} features"
+                      + (f"; missing {info['missing']}" if info["missing"] else "")
+                      + (f"; refused by the plugin guard {sorted(info['refused'])}" if info.get("refused") else ""))
         for i in range(self.n_workers):
             self._start_worker(i)
         interval = float(self.cfg["run"]["status_interval_s"])
@@ -225,12 +282,14 @@ class Controller:
             while time.time() < self.deadline:
                 if self._baselines_done():
                     self._maybe_plan()
+                    self._maybe_exploit()
                 self._supervise()
                 if time.time() >= next_status:
                     self._log(self.status_line())
                     next_status = time.time() + interval
                 if self._exhausted():
                     self._log("nothing left to do (planner exhausted and queue empty); stopping early")
+                    self.lab.db.event("exhausted", "planner exhausted, queue empty, no exploit follow-up left")
                     break
                 if time.time() >= next_disk_check:
                     next_disk_check = time.time() + 30
@@ -263,8 +322,19 @@ class Controller:
             capped = self.max_planner_calls and self.planner.rounds >= self.max_planner_calls
             if not capped and not self.planner.dry():
                 return False
+        if self._in_flight() or any(w.current for w in self.workers):
+            return False
+        if self.python_exploit:  # the throttle must not end a run while follow-ups remain
+            self._next_exploit = 0.0
+            self._maybe_exploit()
+            if self._in_flight():
+                return False
+        return True
+
+    def _in_flight(self) -> int:
+        """Experiments queued or being worked on (a just-claimed one is no longer 'queued' but is still work)."""
         c = self.lab.db.count_by_status()
-        return c.get("queued", 0) == 0 and not any(w.current for w in self.workers)
+        return sum(c.get(s, 0) for s in ("queued", "claimed", "implementing", "testing", "running"))
 
     def shutdown(self) -> dict:
         self.lab.stop_event.set()

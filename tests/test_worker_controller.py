@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import threading
 import time
 
@@ -144,6 +145,40 @@ def test_controller_end_to_end_and_reproduce(lab_factory):
     import reproduce
     r = reproduce.reproduce(lab, summary["best"]["experiment_id"])
     assert r["reproducible"], r
+    # an ensemble of completed experiments reproduces through its members
+    import numpy as np
+    members = lab.db.query("SELECT * FROM experiments WHERE status='completed' AND artifact_dir IS NOT NULL "
+                           "AND kind!='ensemble' ORDER BY primary_score DESC LIMIT 2")
+    assert len(members) == 2
+    deltas = []
+    for m in members:
+        z = np.load(Path(m["artifact_dir"]) / "predictions.npz", allow_pickle=False)
+        alphas = list(map(float, z["alphas"]))
+        deltas.append(z["delta"][alphas.index(float(m["best_alpha"]))].astype(np.float64))
+        perts = np.array([str(p) for p in z["perts"]])
+    eid = lab.db.next_experiment_id()
+    art = lab.artifacts / eid
+    art.mkdir(parents=True)
+    np.savez_compressed(art / "predictions.npz", delta=np.mean(deltas, axis=0)[None].astype(np.float32), perts=perts,
+                        alphas=np.array([0.0]))
+    ev = lab.evaluate_artifact(art / "predictions.npz") if lab.cv_folds <= 1 else None
+    if ev is None:  # cv.npz is required when folds are on: average the members' out-of-fold predictions too
+        cvs = []
+        for m in members:
+            z = np.load(Path(m["artifact_dir"]) / "cv.npz", allow_pickle=False)
+            alphas = list(map(float, z["alphas"]))
+            cvs.append(z["delta"][alphas.index(float(m["best_alpha"]))].astype(np.float64))
+            cv_perts = z["perts"]
+        np.savez_compressed(art / "cv.npz", delta=np.mean(cvs, axis=0)[None].astype(np.float32), perts=cv_perts,
+                            alphas=np.array([0.0]), folds=np.array([lab.cv_folds]))
+        ev = lab.evaluate_artifact(art / "predictions.npz")
+    lab.db.insert_experiment({"experiment_id": eid, "run_id": lab.run_id, "status": "completed", "kind": "ensemble",
+                              "model_type": "ensemble", "dataset": lab.dataset, "split_id": lab.split_id,
+                              "primary_score": ev["metrics"]["primary"], "best_alpha": 0.0, "artifact_dir": str(art),
+                              "diagnostics_json": {"members": [m["experiment_id"] for m in members]},
+                              "hypothesis": "ensemble for the reproduce test"})
+    r = reproduce.reproduce(lab, eid)
+    assert r["kind"] == "ensemble" and r["reproducible"] and len(r["members"]) == 2, r
 
 
 def test_deadline_is_enforced(lab_factory):
@@ -235,3 +270,138 @@ def test_transient_api_error_is_requeued_once(lab_factory):
     w2.process(lab2.db.claim_next("W0"))
     rec2 = lab2.db.get_experiment(eid2)
     assert rec2["status"] == "failed" and rec2["failure_stage"] == "llm_api"
+
+
+def test_python_exploit_fills_the_queue_without_llm(lab_factory):
+    """With the planner limited to one round, the deterministic exploit engine keeps proposing follow-ups
+    around the best model; each configuration runs at most once and nothing is re-proposed."""
+    from genemila import exploit
+    lab = lab_factory(schedule__max_planner_calls=1)
+    ctl = Controller(lab, workers=2, seconds=60, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+                     quiet=True)
+    summary = ctl.run()
+    rows = lab.db.query("SELECT * FROM experiments WHERE proposer='python:exploit'")
+    assert rows, "exploit experiments should have been queued once the planner stopped"
+    assert all(r["kind"] == "config" and r["category"] == "exploit" and r["parent_id"] for r in rows)
+    assert all(r["status"] != "duplicate" for r in rows), "exploit never re-proposes a tried configuration"
+    assert len({r["config_hash"] for r in rows}) == len(rows)
+    groups = [r["hypothesis_group"] for r in rows]
+    assert any(g.startswith("exploit_alpha_") for g in groups) or any(g.startswith("exploit_model_") for g in groups)
+    assert summary["experiments_completed"] >= 4
+    # a run that stopped early did so only once no exploit follow-up was left
+    if lab.db.query("SELECT 1 FROM events WHERE kind='exhausted'"):
+        assert exploit.propose(lab, 50) == []
+    # once everything around the best has been tried, propose() is empty rather than looping
+    best = lab.best()
+    for spec in exploit.candidates(lab, best):
+        lab.queue(spec)
+    lab.cfg["schedule"]["exploit_depth"] = 1
+    assert exploit.propose(lab, 5) == []
+    # deeper tiers: wider additions and next-best parents, then feature subsets; every configuration once
+    lab.cfg["schedule"]["exploit_depth"] = 3
+    seen = set()
+    for _ in range(400):
+        batch = exploit.propose(lab, 7)
+        if not batch:
+            break
+        for spec in batch:
+            ch = lab.config_hash_for(spec)
+            assert ch not in seen
+            seen.add(ch)
+            _, status = lab.queue(spec)
+            assert status == "queued", status
+    assert exploit.propose(lab, 7) == [] and seen  # how many depends on the features the run discovered
+    groups = {r["hypothesis_group"] for r in lab.db.query("SELECT hypothesis_group FROM experiments WHERE proposer='python:exploit'")}
+    assert any(g.startswith("exploit_wide_") or g.startswith("exploit_subset_") for g in groups)
+
+
+def test_exploit_never_reproposes_a_rejected_candidate(lab_factory):
+    """A guardrail rejection is terminal for that configuration: the rejected row carries the configuration
+    hash, so the exploit engine does not offer it again every throttle interval."""
+    from genemila import exploit
+    lab = lab_factory()
+    lab.record_analytic_baselines()
+    eid, st = lab.queue(ExperimentSpec(hypothesis="Ridge on the built-in features as the starting model.",
+                                       scientific_rationale="Reference model rationale.", kind="config",
+                                       feature_set=list(BASE), hyperparameters={"alpha_grid": [1.0]}))
+    lab.db.update_experiment(eid, status="completed", primary_score=0.5, best_alpha=1.0)
+    cands = exploit.candidates(lab, lab.best())
+    assert cands
+    victim = cands[0]
+    victim.hypothesis = victim.hypothesis + " using the val2 oracle"  # protected component: rejected
+    vid, st = lab.queue(victim)
+    assert st == "rejected" and lab.db.get_experiment(vid)["config_hash"]
+    hashes = {lab.config_hash_for(c) for c in exploit.propose(lab, 50)}
+    assert lab.config_hash_for(victim) not in hashes
+    assert len(hashes) == len(cands) - 1
+
+
+def test_exploit_candidates_carry_params_and_seed():
+    """Follow-ups reproduce the best model's feature parameters and seed; dropped features lose their entry;
+    an analytic baseline (no model) yields no candidates."""
+    from genemila import exploit
+
+    class FakeLab:
+        cfg = {"experiment": {"default_alpha_grid": [0.1, 1.0, 10.0]}}
+
+        class db:
+            @staticmethod
+            def query(*a, **k):
+                return [{"new_feature": "coexpr_e5", "d": 0.05}]
+
+        @staticmethod
+        def known_features():
+            return set(BASE) | {"coexpr_e5", "tf_e7"}
+
+    best = {"experiment_id": "EXP_0009", "feature_set_json": list(BASE) + ["tf_e7"], "model_type": "ridge",
+            "best_alpha": 1.0, "hyperparameters_json": {"alpha_grid": [1.0]},
+            "feature_params_json": {"tf_e7": {"k": 3}, "mean_response": {"shrink": 0.5}}, "seed": 7}
+    cands = exploit.candidates(FakeLab(), best)
+    assert cands and all(c.seed == 7 for c in cands)
+    for c in cands:
+        assert set(c.feature_params) <= set(c.feature_set)
+        if "tf_e7" in c.feature_set:
+            assert c.feature_params["tf_e7"] == {"k": 3}
+    drop = next(c for c in cands if c.hypothesis_group.startswith("exploit_drop_tf_e7"))
+    assert "tf_e7" not in drop.feature_params and drop.feature_params["mean_response"] == {"shrink": 0.5}
+    assert exploit.candidates(FakeLab(), {"experiment_id": "EXP_0001", "feature_set_json": [], "model_type": "none"}) == []
+
+
+def test_warm_start_continues_a_campaign(lab_factory, tmp_path, dataset):
+    """A second run on the same split imports the first run's useful features, starts from its best model and
+    tells the planner what was already learned; a run on another split is refused."""
+    first = lab_factory(schedule__max_planner_calls=2)
+    Controller(first, workers=2, seconds=45, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+               quiet=True).run()
+    best = first.best()
+    assert best["kind"] == "new_feature" or best["feature_set_json"]
+    second = lab_factory(run__continue_from=str(first.run_dir), schedule__max_planner_calls=1)
+    ctl = Controller(second, workers=2, seconds=30, worker_provider=MockProvider(), planner_provider=ScriptedPlanner(),
+                     quiet=True)
+    summary = ctl.run()
+    info = json.loads((second.run_dir / "warm_start.json").read_text())
+    assert info["run_id"] == first.run_id and info["features"] == best["feature_set_json"]
+    imported = [f for f in second.db.features() if (f.get("creator_experiment") or "").startswith("warm:")]
+    assert {f["name"] for f in imported} >= {f for f in best["feature_set_json"] if f not in ("control_mean", "mean_response", "is_target")}
+    assert all((second.store / f"{f['name']}.py").exists() for f in imported)
+    start = second.db.query("SELECT * FROM experiments WHERE proposer='python:warm_start'")
+    assert len(start) == 1 and start[0]["status"] == "completed", start[0].get("failure_reason")
+    assert start[0]["feature_set_json"] == best["feature_set_json"]
+    assert abs(start[0]["primary_score"] - best["primary_score"]) < 1e-6  # same model, same split: same score
+    assert summary["continued_from"] == str(first.run_dir)
+    from genemila.research_state import build_state, render_state
+    text = render_state(build_state(second))
+    assert "PRIOR CAMPAIGN" in text and first.run_id in text
+    # another split: refused
+    from genemila.data.synthetic import generate
+    other = generate(tmp_path / "other", n_genes=120, n_perts=30, n_control=600, cells_per_pert=40, seed=1, split_seed=7)
+    from genemila.lab import Lab
+    from conftest import make_cfg
+    cfg = make_cfg(tmp_path, run__continue_from=str(first.run_dir))
+    cfg["run"]["data_dir"] = str(other)
+    lab3 = Lab(cfg, tmp_path / "run_other", other, repo=second.repo)
+    try:
+        with pytest.raises(RuntimeError, match="cannot continue"):
+            lab3.warm_start(first.run_dir)
+    finally:
+        lab3.stop_event.set(); lab3.kill_event.set(); lab3.close()

@@ -36,6 +36,42 @@ RF_SEEDS = (0, 1, 2)
 
 
 # ------------------------------------------------------------------ lab rows
+def run_arm(cfg: dict, summary: dict | None = None) -> str:
+    """Which arm a run belongs to, from its config: the LLM planner/worker pair, or the scripted no-LLM
+    control (fixed hypotheses implemented by hand-written template features). With the run's summary, a run
+    whose planner was replaced by a fallback during the run is its own arm, named by the planners that
+    actually produced its plans ("claude_cli:opus -> deepseek:deepseek-v4-pro planner"), and one that lost
+    every planner says so; neither is pooled with the clean runs of its configured arm. A run that could read
+    knowledge files added to the bundle after it was built (run.external_knowledge) is its own arm too."""
+    p, w = cfg.get("planner", {}), cfg.get("worker", {})
+    src = cfg.get("run", {}).get("continue_from")
+    source = Path(str(src)).name if src else ""  # a warm start carries the campaign it continues in its name
+    cont = ""
+    if "python_exploit" in cfg.get("schedule", {}) and not cfg["schedule"]["python_exploit"]:
+        cont += " (no exploit)"
+    rule = str(cfg.get("experiment", {}).get("selection") or "pearson_delta")
+    if rule != "pearson_delta":  # another selection rule is another arm
+        cont += f" (selection {rule})"
+    extra = cfg.get("run", {}).get("external_knowledge") or []
+    if extra:  # knowledge files added to the bundle after it was built (see data.bundle.added_knowledge)
+        cont += f" (external knowledge: {', '.join(sorted(extra))})"
+    if p.get("provider") == "scripted" and w.get("provider") in ("mock", None):
+        if source:  # re-searches another campaign's features without an LLM: its result is theirs, not a control's
+            return f"no-LLM continuation of {source}" + cont
+        return "scripted control (no LLM)" + cont
+    if source:
+        cont = f" (continued from {source})" + cont
+    planner = f"{p.get('provider', '?')}:{p.get('model', '')}"
+    ph = (summary or {}).get("planner") or {}
+    if ph.get("mixed"):
+        used = ph.get("used") or []
+        chain = [ph.get("configured") or planner] + [u for u in used if u != (ph.get("configured") or planner)]
+        planner = " -> ".join(chain)
+        if ph.get("exhausted_at_min") is not None:
+            cont += " (lost its planner)"
+    return f"{planner} planner, {w.get('provider', '?')}:{w.get('model', '')} workers" + cont
+
+
 def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
     """The best model and the starting model of one run, with CellForge metrics on `part`
     (val2 = query-only held-out perturbations; val1 = visible validation)."""
@@ -55,20 +91,21 @@ def run_rows(run_dir: Path, part: str = "val2") -> dict | None:
         return {c: comp.get(f"cellforge_{c}") for c in COLUMNS + DESET_COLUMNS}
 
     cfg = json.loads((run_dir / "config.json").read_text()) if (run_dir / "config.json").exists() else {}
-    planner = cfg.get("planner", {}).get("provider", "")
-    worker = cfg.get("worker", {}).get("provider", "")
-    arm = "scripted control (no LLM)" if planner == "scripted" or worker in ("mock", "") else \
-        f"{planner}:{cfg.get('planner', {}).get('model', '')} planner, {worker}:{cfg.get('worker', {}).get('model', '')} workers"
+    arm = run_arm(cfg, s)
     return {"run_id": s.get("run_id", run_dir.name), "dataset": s.get("dataset"), "split_id": s.get("split_id"),
             "workers": s.get("workers") or cfg.get("run", {}).get("workers"), "duration_s": s.get("duration_s"),
-            "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm,
+            "data_dir": cfg.get("run", {}).get("data_dir"), "arm": arm, "code": (s.get("base_commit") or "")[:7],
             "best": None if best is None else {"experiment_id": best["experiment_id"],
-                                               "features": (s.get("best") or {}).get("features"),
-                                               "model": (s.get("best") or {}).get("model"),
-                                               "primary": best.get("query_only_score"), "metrics": metrics(best)},
+                                               "features": ((s.get("ensemble") or {}).get("features") if best.get("kind") == "ensemble"
+                                                            else (s.get("best") or {}).get("features")),
+                                               "model": ("ensemble of top finalists" if best.get("kind") == "ensemble"
+                                                         else (s.get("best") or {}).get("model")),
+                                               "primary": best.get("query_only_pearson_delta", best.get("query_only_score")),  # by name, whatever the rule
+                                               "metrics": metrics(best)},
             "start": None if start is None else {"experiment_id": start["experiment_id"],
                                                  "description": (s.get("baseline") or {}).get("description"),
-                                                 "primary": start.get("query_only_score"), "metrics": metrics(start)}}
+                                                 "primary": start.get("query_only_pearson_delta", start.get("query_only_score")),
+                                                 "metrics": metrics(start)}}
 
 
 def aggregate(rows: list[dict]) -> dict:
@@ -173,6 +210,9 @@ def build(run_dirs: list[Path], paper_json: Path | None, dataset_key: str | None
           label: str = "Gene-Mila") -> dict:
     """Collect everything the table needs. Lab runs are grouped by (dataset, split, workers)."""
     runs = [r for r in (run_rows(Path(d), part) for d in run_dirs) if r]
+    if len({r["code"] for r in runs if r.get("code")}) > 1:  # runs on different code are different arms
+        for r in runs:
+            r["arm"] = f"{r['arm']} @ {r['code'] or 'unknown code'}"
     groups: dict[tuple, list[dict]] = {}
     for r in runs:
         groups.setdefault((r["dataset"], r["split_id"], r["arm"], r["workers"]), []).append(r)
@@ -185,14 +225,18 @@ def build(run_dirs: list[Path], paper_json: Path | None, dataset_key: str | None
                        "best": best, "start": start,
                        "best_primary": [r["best"]["primary"] for r in rs if r["best"]],
                        "start_description": next((r["start"]["description"] for r in rs if r["start"]), None)})
-    baselines = {}
+    baselines, start_all = {}, {}
     for b in blocks:
         key = (b["dataset"], b["split_id"])
         if key not in baselines and b["data_dir"] and (Path(b["data_dir"]) / "public.npz").exists():
             baselines[key] = simple_baselines(Path(b["data_dir"]), part)
+        if key not in start_all:  # the starting model is the same fit in every run of a dataset and split
+            start_all[key] = aggregate([r["start"]["metrics"] for r in runs if (r["dataset"], r["split_id"]) == key
+                                        and r["start"] and r["start"]["metrics"]])
     paper = json.loads(Path(paper_json).read_text()) if paper_json and Path(paper_json).exists() else None
     return {"part": part, "label": label, "blocks": blocks,
             "baselines": {f"{k[0]}|{k[1]}": v for k, v in baselines.items()},
+            "start_all": {f"{k[0]}|{k[1]}": v for k, v in start_all.items()},
             "paper": paper, "dataset_key": dataset_key}
 
 
@@ -228,8 +272,9 @@ def render(t: dict) -> str:
                 sources[key] = "rerun"
         for b in blocks:
             start_name = f"{t['label']} starting model"
-            if start_name not in rows and any(b["start"].get(c) for c in COLUMNS):
-                rows[start_name] = b["start"]
+            start = (t.get("start_all") or {}).get(f"{dataset}|{b['split_id']}") or b["start"]
+            if start_name not in rows and any(start.get(c) for c in COLUMNS):
+                rows[start_name] = start
                 sources[start_name] = "ours"
             name = f"{t['label']}, {b['arm']}, {b['workers']} workers (n={b['n_runs']})"
             rows[name] = b["best"]
