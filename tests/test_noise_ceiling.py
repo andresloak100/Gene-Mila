@@ -251,7 +251,7 @@ def test_runs_show_achieved_against_the_ceiling(lab_factory, tmp_path):
                     "--repeats", "5"]) == 0
     text = md.read_text()
     assert "## Achieved vs ceiling" in text and f"Selected model {other['experiment_id']}" in text
-    assert "| perturbation | cells | ceiling | achieved | gap |" in text and "headroom" in text
+    assert "| perturbation | target cells | ceiling | achieved | gap |" in text and "headroom" in text
     assert "Not scored:" in text  # the missing run directory is shown, not fatal
     rep = json.loads(md.with_suffix(".json").read_text())
     assert [x["run_id"] for x in rep["runs"]] == [lab.run_id, "missing"] and rep["runs"][1]["error"]
