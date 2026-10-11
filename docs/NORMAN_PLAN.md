@@ -367,3 +367,19 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   targets resemble each other, not the response itself. Gain by stratum: singles +0.027 ± 0.009 (43 of 71), pairs
   +0.015 ± 0.008 (25 of 41), targets expressed in control +0.029 ± 0.008, silent +0.003 ± 0.013. Stack alpha 0.1 in 99
   of 112 folds (external_stack) and 111 (stack_inbundle), the smallest of the fixed grid.
+- **N2** (runs/norman_control_replogle_w4_r0, step 7; as N1 with replogle2022_k562.json in the bundle;
+  run.external_knowledge ["replogle2022_k562"], hash seed 0, same split): ended on its own after 940 s, 1,038
+  experiments completed, none failed, no LLM calls. Selected EXP_0198: N1's five features plus
+  external_direct_replogle2022_k562_e16, ridge alpha 0.00006 (effectively unpenalised), visible 0.6423 against N1's
+  0.6408. The kernel-ridge external feature, the strongest alone (+0.051 visible over the three built-in features,
+  against +0.015 for external_knn and +0.005 for external_direct), was not kept once additive_singles was in the
+  model. Sealed, pooled, as the runs reported their finalists: N2 0.7188, N1 0.7170, additive baseline 0.7126
+  pearson_delta; MSE_DE 0.110, 0.119 and 0.102; R²_DE 0.842, 0.833 and 0.846. Visible by category, N2 against N1:
+  single 0.653 / 0.657, pair_seen0 0.769 / 0.768, pair_seen1 0.809 / 0.808, pair_seen2 0.909 / 0.908. The paired,
+  per-category readings of section 5 (each run against its additive baseline, N2 against N1) come from
+  tools/sealed_reading.py. On the pooled numbers alone, the leave-one-out gain (+0.023) did not carry into the
+  scripted control's sealed score (+0.002), a disagreement in size that section 5 says to report as one; visible
+  reasons: the selection kept the weakest external feature and left out the kernel ridge one, and sealed coverage by
+  the screen is 62% against 81% in training. Files (push list): summary.json md5 e0bb5704beca4652b11d2fd11b35b99e,
+  config.json b67be1e5a9bf0f803d1b57bccce81a82, analysis log 8f1315085486e717f242324c100a426f. Queries used: N1 5 of
+  5, N2 4 of 5.
