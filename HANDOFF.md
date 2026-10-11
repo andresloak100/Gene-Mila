@@ -7,8 +7,8 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-11 16:05, by Claude ("Agent handoff" session), from `docs/LAB_STATE.md`
-(13:51) and the build thread up to 15:55. `docs/LAB_STATE.md` on the integration branch is the lab-code
+**Last updated:** 2026-10-11 16:15, by Claude ("Autonomous research system" session), with `docs/LAB_STATE.md`
+(16:15). `docs/LAB_STATE.md` on the integration branch is the lab-code
 owner's full catch-up document (results, levers tested, work in progress, what waits on Andres) and wins
 over this section where they disagree; this section is the short cross-agent view.
 
@@ -16,24 +16,21 @@ over this section where they disagree; this section is the short cross-agent vie
 
 | Agent | Since | Working on | Claim |
 |---|---|---|---|
-| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | Norman 2019 (Andres chose "Claude now", 11 Oct 12:02): the paid Norman run started 15:34; after it, the folder move on the Mac, the push of the Mac-only reports and Astra's branches, then `docs/LAB_STATE.md` and `docs/NORMAN_PLAN.md` | (predates claim issues) |
+| Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | Norman 2019 (Andres chose "Claude now", 11 Oct 12:02): N3 done, N4 waits on Andres (see below) | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | PR #1 (README), to be refreshed to today's results before it merges | |
 | Astra (ChatGPT) | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
-**On the Mac (15:45):** the paid Norman run `runs/norman_ds_replogle_w4_r0` (N3 in `docs/NORMAN_PLAN.md`
-section 6: DeepSeek planner `deepseek-v4-pro`, 4 workers, 20 minutes, the Replogle 2022 screen in the
-bundle, no warm start, `--set budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=2.2`) started
-at 15:34 on Andres's words and ends about 15:55; it spends the last $2.20 of the cap. Its sealed reading
-comes from `tools/sealed_reading.py` against the additive baseline. Start nothing else on the Mac while it
-runs. After it, the Mac session moves the lab out of `~/Documents/Loak-documents/` into
-`~/Documents/Mila/Gene-Mila/` (`gene-mila`, `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`;
-shortcuts stay at the old names, so paths recorded in past runs keep working), scans everything for
-key-shaped strings, and pushes Astra's two branches unchanged plus a branch `claude/mac-reports-2026-10-11`
-with the Mac-only reports (noise-ceiling and refit reports, the Replogle build report, the external
-leave-one-out JSON, the Replogle control runs' config, summary and analysis log, the feature-audit JSON
-and box, the N3 sealed reading, with an md5 list); the lab-code owner merges the reports into the
-integration branch. The code at `28a8a37` already names the new folder (`handoff_state.py`,
-`tools/scale_seq.sh`); `docs/LAB_STATE.md` (13:51) still names the old one.
+**On the Mac (16:15):** nothing running. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+`genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
+`~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
+nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). The paid Norman run N3
+(`runs/norman_ds_replogle_w4_r0`, $1.03, ledger $32.81 of $34) selected its additive baseline: the agents' best
+model scored 0.671 sealed against 0.713 for the additive rule and 0.719 for the no-LLM control, because no agent
+built the additive prediction as a feature and almost none used the Replogle file (`docs/NORMAN_PLAN.md`
+section 8). Astra's two branches and the Mac-only reports are on GitHub (reports merged as PR #3, under
+`docs/mac/` and `docs/results/`). Next paid step, N4 (pre-specified in `docs/NORMAN_PLAN.md` section 8): the
+same agents continuing the no-LLM control N2, about $1.10, only on Andres's typed "start the paid run" in the
+build thread with a key in `~/.zshenv`.
 
 **Results on Adamson (CellForge's seed-42 split; read the files):** tables over 28 runs in
 `docs/results/results_table.md` and `scaling.md`, the account in `docs/results/summary_for_collaborators.md`,

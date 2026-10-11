@@ -30,7 +30,7 @@ never a headline (docs/LAB_STATE.md:50-52).
 ## 2. Data
 
 The file is `NormanWeissman2019_filtered.h5ad` from the scPerturb archive, Zenodo record 13350497 (real.py:15-19,
-docs/LAB_STATE.md:217-221), to be downloaded into ~/Documents/Loak-documents/data_downloads (docs/LAB_STATE.md:29;
+docs/LAB_STATE.md:217-221), to be downloaded into ~/Documents/Mila/Gene-Mila/data_downloads (docs/LAB_STATE.md:29;
 not downloaded yet, docs/LAB_STATE.md:220-221). Expected, to be checked: K562 CRISPRa, about 111,000 cells, about
 237 labels in `obs['perturbation']` (about 105 single genes, about 131 pairs written like `CEBPE_KLF1`), controls
 labelled `control`, raw counts in X.
@@ -49,8 +49,8 @@ warning; a lower-case label is dropped (recorded only in the manifest's `dropped
 Read-only checks on the Mac, from the lab checkout; save the output to genemila_scale_logs/norman_check.txt:
 
 ```
-cd ~/Documents/Loak-documents/gene-mila && source .venv/bin/activate
-F=~/Documents/Loak-documents/data_downloads/NormanWeissman2019_filtered.h5ad
+cd ~/Documents/Mila/Gene-Mila/gene-mila && source .venv/bin/activate
+F=~/Documents/Mila/Gene-Mila/data_downloads/NormanWeissman2019_filtered.h5ad
 ls -l "$F"; md5 -q "$F"; sysctl -n hw.memsize; python prepare_data.py describe "$F"
 python - "$F" <<'EOF'
 import collections, re, sys; import numpy as np, pandas as pd, anndata as ad
@@ -273,10 +273,10 @@ readings agree, the Adamson finding is confirmed; a disagreement is reported as 
    `python run_research.py --minutes 20 --workers 4 --dataset norman --worker-provider mock --planner-provider scripted --run-dir runs/norman_control_w4_r0`
 5. Free: build the Norman rename table (bundle symbol = Replogle symbol, matched by Ensembl id; nothing in the repo
    builds it; `check_aliases` refuses clashes, external_screen.py:250-264), apply the gate of section 5 to the counts of
-   `python tools/build_external_screen.py --h5ad ~/Documents/Loak-documents/data_downloads/ReplogleWeissman2022_K562_gwps.h5ad --bundle data/norman --name replogle2022_k562 --min-cells 20 --alias-file <table> --modality CRISPRi --dry-run`,
+   `python tools/build_external_screen.py --h5ad ~/Documents/Mila/Gene-Mila/data_downloads/ReplogleWeissman2022_K562_gwps.h5ad --bundle data/norman --name replogle2022_k562 --min-cells 20 --alias-file <table> --modality CRISPRi --dry-run`,
    then build without `--dry-run`.
 6. Free: run the leave-one-out (the protocol fixes its own grid, so no `--alpha-grid`) and push its report:
-   `python tools/external_loo.py --bundle data/norman --knowledge replogle2022_k562 --protocol norman_v1 --out ~/Documents/Loak-documents/genemila_scale_logs/external_loo_norman_v1.md`
+   `python tools/external_loo.py --bundle data/norman --knowledge replogle2022_k562 --protocol norman_v1 --out ~/Documents/Mila/Gene-Mila/genemila_scale_logs/external_loo_norman_v1.md`
 7. Free: run N2, as N1 with `--run-dir runs/norman_control_replogle_w4_r0`; it records the file (lab.py:49-56).
 8. Paid: a DeepSeek-planned agent arm with the screen (N3) starts only on Andres's own typed words in the build thread
    and stays under the cap in docs/LAB_STATE.md:41-45 ($34 ledger total, `--set budget.cumulative_usd.deepseek=34`).
@@ -397,3 +397,37 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   the scripted control turned +0.002 of the leave-one-out's +0.023 into sealed accuracy, and neither control beats
   the additive baseline pooled. The audit's repeat check: astra_ds_w8_2h rerun alone under v3 code with a fresh
   cache reproduces its feature_audit_v3 entry exactly (timings aside).
+- **N3, the paid agent run** (runs/norman_ds_replogle_w4_r0, 15:34 to 15:54 UTC 2026-10-11, started on Andres's
+  "use it" with the key he pasted, passed only to the run's environment; DeepSeek planner deepseek-v4-pro, workers
+  deepseek-flash, 4 workers, 20 minutes, Replogle file in the bundle, no warm start, code 5fe6e76, hash seed 0; cost
+  $1.027, ledger $31.778 to $32.806 of the $34 cap; summary.json md5 71db26cbca97c7cc07019b9bcdd30bc0, config.json
+  55f654ab8e719a3a783682216afba1d3, both in docs/mac/norman_ds_replogle_w4_r0/). 517 experiments: 416 completed, 57
+  duplicates, 22 failed (8 constant features, 3 label leakage, 2 index errors), 14 rejected (12 several changes at
+  once, 2 set iteration under the determinism rule). **The run selected its additive baseline** (visible 0.611): no
+  agent model beat it on the visible score. Sealed pearson_delta / MSE_DE / R²_DE: additive baseline 0.713 / 0.102 /
+  0.846; best agent model EXP_0225 (ridge, 9 features, visible 0.579) 0.671 / 0.157 / 0.784; N2 for reference 0.719 /
+  0.110 / 0.842. The section 5 reading (docs/results/norman_n3_sealed_reading.md, md5
+  735c1743ac5ccd42700b598f39265bbc) has nothing to compare, since the selected model is the baseline; it made no
+  sealed scoring. **Why:** no agent built the additive prediction as a feature (88 hypotheses used additive wording,
+  all about departures from additivity on top of the three built-in features, whose visible score is 0.542; the
+  agents took "the additive baseline" for part of the model), and only 1 of 355 plugins read the Replogle file (as an
+  essentiality score). The planner saw the file as the first 60 characters of its description (lab.knowledge_summary)
+  and the baselines only as a list. The scripted control leads because a hand-written template puts the additive rule
+  into its ridge. Reading: on Norman this agent run is about 0.04 below a rule that needs no model; it says how the
+  agents were started, not anything about the biology.
+- **Changes after N3 (code version of N4):** lab.knowledge_summary shows an external screen's whole description and
+  its keys; the pairs note of the planner prompt says the baselines are reference predictions, not features, and
+  that no model holds baseline_additive's prediction unless a feature computes it; tools/sealed_reading.py reads a
+  continued run (run.continue_from) against its starting model as well. Scripted runs do not read either text, so N1
+  and N2 would run as before.
+- **N4, pre-specified before it runs (one paid run, the last within the $34 cap):** the DeepSeek agents of N3,
+  continuing N2 (`--continue-from runs/norman_control_replogle_w4_r0`), so they start from N2's selected model (EXP_0198,
+  six features among them additive_singles and external_direct; visible 0.642, sealed 0.719) and must add to it;
+  4 workers, 20 minutes, `--set budget.max_total_usd=1.1 --set budget.cumulative_usd.deepseek=34`, run directory
+  runs/norman_ds_from_n2_w4_r0; no start at a ledger of $33.00 or more. It starts only on Andres's own typed "start
+  the paid run" in the build thread, with a key from ~/.zshenv. Readings, by the section 5 rule:
+  `python tools/sealed_reading.py --runs runs/norman_ds_from_n2_w4_r0` gives (1) N4's selected model against its
+  additive baseline and (2) N4's selected model against its starting model, which is the agents' own contribution.
+  Expected direction, fixed now: none; the agents add something only if (2) passes the rule pooled. If N4 selects its
+  starting model, the agents added nothing they kept, and that is the result. Arm label: a continuation with external
+  knowledge, never pooled with N1 to N3.

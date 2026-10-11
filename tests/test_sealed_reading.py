@@ -31,13 +31,23 @@ def make_lab(tmp_path, bundles, code_repo):
     from genemila.lab import Lab
     made = []
 
-    def factory(bundle=None, alpha_grid=(1.0, 100.0), score_additive=False):
+    def factory(bundle=None, alpha_grid=(1.0, 100.0), score_additive=False, continue_from=None, start_score=0.5):
         bundle = bundle or bundles[0]
         cfg = make_cfg(tmp_path)
         cfg["run"]["data_dir"] = str(bundle)
+        if continue_from is not None:
+            cfg["run"]["continue_from"] = str(continue_from)
         lab = Lab(cfg, tmp_path / f"run{len(made)}", bundle, repo=code_repo)
         made.append(lab)
         lab.record_analytic_baselines()
+        if continue_from is not None:  # the previous run's best, queued as this run's first experiment and fitted
+            sid = lab.warm_start(Path(continue_from))["start_experiment"]
+            rec = lab.db.get_experiment(sid)
+            out = lab.artifacts / sid
+            run(ExperimentSpec.from_record(rec).run_spec(), lab.public_dir, lab.run_dir / "plugins", out)
+            ev = lab.evaluate_artifact(out / "predictions.npz")
+            lab.db.update_experiment(sid, status="completed", primary_score=start_score, best_alpha=ev["best_alpha"],
+                                     artifact_dir=str(out), val_metrics_json=ev["metrics"])
         spec = _ridge_spec()
         spec.hyperparameters["alpha_grid"] = list(alpha_grid)
         eid, status = lab.queue(spec)
@@ -163,3 +173,46 @@ def test_small_categories_are_reported_not_read():
 def test_a_difference_that_rounds_to_zero_still_shows():
     assert sealed_reading._diff({"mean_diff": 0.00031, "se": 0.00012}) == "+0.00031 ± 0.00012"
     assert sealed_reading._diff({"mean_diff": 0.012, "se": 0.004}) == "+0.012 ± 0.004"
+
+
+def _start_id(lab) -> str:
+    return lab.db.query("SELECT experiment_id FROM experiments WHERE hypothesis_group LIKE 'warm_start_%'")[0][
+        "experiment_id"]
+
+
+def test_a_continued_run_is_read_against_its_starting_model(make_lab):
+    """N4 (NORMAN_PLAN.md section 8): a run that continued another is read against its additive baseline and against
+    its starting model, the second by the oracle's paired query like every other comparison; a run that continues
+    nothing has no such section."""
+    prev, _ = make_lab()
+    lab, eid = make_lab(alpha_grid=(1000.0,), continue_from=prev.run_dir)
+    start = _start_id(lab)
+    before = _sealed_events(lab)
+    r = sealed_reading.read_run(lab)
+    c = r["continuation"]
+    assert c["from"] == prev.run_dir.name and c["start"]["experiment_id"] == start and c["note"] is None
+    perts = lab.oracle.perts
+    pa, oa = lab._predict(lab.db.get_experiment(eid), perts)
+    pb, ob = lab._predict(lab.db.get_experiment(start), perts)
+    own = QueryOracle(lab.data_dir, max_queries=2).query_paired(eid, pa, oa, start, pb, ob, lab.control_mean,
+                                                                metric="pearson_delta")
+    assert c["sealed"]["paired"] == own["paired"] and c["sealed"]["b"]["matches_stored"] is None
+    assert c["visible"] == lab.compare_visible(eid, start, metric="pearson_delta")
+    assert _sealed_events(lab) == before
+    assert "continuation" not in sealed_reading.read_run(prev)
+    rep = json.loads(json.dumps(sealed_reading.analyse([lab.run_dir]), default=float))
+    assert rep["protocol"]["sealed_scorings"] == 4
+    assert f"{lab.run_dir.name}:{start}" in rep["protocol"]["first_sealed_scorings"]
+    md = sealed_reading.render(rep)
+    assert "selected model against its starting model" in md and "| selected | start |" in md
+    assert "against its starting model, sealed pooled: selected minus start" in md.split("## Reading", 1)[1]
+
+
+def test_a_continued_run_that_kept_its_start_has_nothing_to_compare(make_lab):
+    prev, _ = make_lab()
+    lab, _ = make_lab(alpha_grid=(1000.0,), continue_from=prev.run_dir, start_score=100.0)
+    c = sealed_reading.read_run(lab)["continuation"]
+    assert c["sealed"] is None and c["note"] == "the run selected its starting model: its search added nothing it kept"
+    rep = sealed_reading.analyse([lab.run_dir])
+    assert rep["protocol"]["sealed_scorings"] == 2   # the selected start against the additive baseline only
+    assert "its search added nothing it kept" in sealed_reading.render(rep)
