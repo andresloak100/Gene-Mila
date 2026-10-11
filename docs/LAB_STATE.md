@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 03:05 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 03:10 UTC.
 
 ## What this is
 
@@ -39,8 +39,10 @@ docs/PROMPTS.md.
 - The DeepSeek key lives only in the environment variable DEEPSEEK_API_KEY on the Mac. Never print, log, commit,
   quote or ask for it. Andres pasted it in chat earlier and should rotate it.
 - Paid work (DeepSeek, or a planner run) starts only on Andres's own words. Shared ledger: runs/spend_ledger.sqlite in
-  the Mac checkout, $31.78 on 2026-10-11 (workers $22.85, planner $8.93; Astra's two campaigns about $21.50). Astra's
-  notes cite a cap near $40 from Andres; ask before going beyond it. Claude usage is limited and shared.
+  the Mac checkout, $31.78 on 2026-10-11 (workers $22.85, planner $8.93; Astra's two campaigns about $21.50).
+  **Cap: $34 in total** (Andres, 02:39 UTC 11 Oct: "we have a max of 34 for deep seek spend it as you think is best
+  but we need to have a very good model"); within it the spending choice is delegated, beyond it ask him. Pass it as
+  `--set budget.cumulative_usd.deepseek=34`. Claude usage is limited and shared.
 - The sealed held-out perturbations (val2) are read only through `genemila.benchmark.oracle.QueryOracle`, never to
   choose a model, feature, penalty, rule or protocol. Analysis tools read visible data only, and tests assert that
   tool sources never name the sealed files. The Adamson sealed set has been scored for dozens of finalists across
@@ -144,11 +146,21 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## Waiting on Andres
 
-- The two paid DeepSeek-planned runs with the Replogle file (runs/replogle_ds_w4_r0 and r1, 20 min, 4 workers,
-  about $2.50, no start at a $36 ledger): he chose them on the card at 02:34 UTC 11 Oct, but the Mac starts paid
-  work only on his typed words in the build thread, and it no longer holds a DeepSeek key. Needed: his typed
-  approval, and a freshly rotated key exported in ~/.zshenv on the Mac by him. The Mac should be on mains power.
-- Approve pushing Astra's two branches and the Mac-only reports to GitHub (on the Mac).
+- **A DeepSeek key on the Mac and mains power.** Spending is approved up to a $34 ledger (his 02:39 UTC message;
+  $2.22 left). Plan, decided 02:45 UTC: (A, free) a no-LLM continuation from newcode_opus_w4_r0 with the Replogle
+  hypotheses, runs/control_replogle_from_opus_r0, to combine the agents' best features with the screen; (B, paid,
+  about $1.20) one DeepSeek-planned 4-worker 20-minute run warm-started from whichever of control_replogle_w4_r0 and
+  control_replogle_from_opus_r0 has the higher visible score (never chosen by sealed score), runs/replogle_ds_warm_w4_r0,
+  `--set budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=2.2`, no start at a $33.50 ledger. One full run
+  rather than two runs capped at $1.10, because past DeepSeek-planned runs cost $1.13 to $1.28 and would be cut short.
+  B needs a freshly rotated key exported in ~/.zshenv on the Mac by Andres (the Mac holds none and cannot write
+  that file; never ask him to paste it), and mains power or more than 50% battery.
+- **Run the push script on the Mac** once the feature audit finishes: `bash ~/Documents/Loak-documents/genemila_scale_logs/push_to_github.sh --check-only`
+  (scans for anything that looks like a key, pushes nothing), then the same without the flag. It pushes Astra's two
+  branches unchanged and a branch `claude/mac-reports-2026-10-11` with the Mac's state log, the noise-ceiling and
+  refit reports, the gene-rename table, the Replogle build report, the stacking control, the Replogle control run's
+  config, summary and analysis log, and the feature audit. The 8.8 GB Replogle file and run directories stay off
+  GitHub by design (reports record the source and md5).
 - Merge PR #2 (handoff rules), create a `main` branch, rotate the DeepSeek key and store it in ~/.zshenv.
 - Decide who takes Norman 2019 (Claude or Astra); Srivatsan needs new drug and dose ingestion.
 - Answer the comment in the summary doc.
