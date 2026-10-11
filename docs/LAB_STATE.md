@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 12:07 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 12:22 UTC.
 
 ## What this is
 
@@ -216,8 +216,11 @@ Conclusion: the limit on this bundle is information about the targets, not searc
   GitHub by design (reports record the source and md5).
 - Merge PR #2 (handoff rules), create a `main` branch, rotate the DeepSeek key and store it in ~/.zshenv.
 - **Norman 2019: Claude takes it** (Andres chose "Claude now" on the build-thread card at 12:02 UTC 11 Oct; the Mac
-  was briefed at 12:05 UTC for section 6 steps 2 to 7, all free, and downloads the file once Andres types
-  "download norman" in the thread). Before that: plan items 1 to 13 of section 4 and the `norman_v1` leave-one-out are
+  was briefed at 12:05 UTC for section 6 steps 2 to 7, all free; Andres typed "download norman" at 12:04 UTC).
+  Steps 2 and 3 done by 12:20 UTC: file verified, every section 2 check passes, bundle built (231
+  perturbations, split_a391fa9e7b4eccb7); details and three decisions (old symbols, cell-quality flags, modality)
+  in docs/NORMAN_PLAN.md section 8. Next: N1 once feature audit v3 finishes (so the timed run does not share
+  CPU), then the Replogle rename table, gate, build, norman_v1 leave-one-out and N2. Before that: plan items 1 to 13 of section 4 and the `norman_v1` leave-one-out are
   implemented and reviewed, see the commit after b63491d; every new behaviour is gated on a bundle with pairs, a
   recorded modality or a gene split, and a frozen-output test (tests/data/adamson_text_b63491d.json) pins Adamson's
   prompts, scripted hypotheses and templates; on the Mac's macOS suite (anndata 0.13.4, pandas 3) nine

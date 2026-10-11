@@ -297,3 +297,38 @@ readings agree, the Adamson finding is confirmed; a disagreement is reported as 
   needs a new mechanism and would be its own arm.
 - Whether 300 evaluation controls (real.py:74) suffice for cell-eval on Norman, and whether cell-eval accepts `+` in
   labels (untested); whether selection should weight categories (fixed here as the pooled visible mean, as on Adamson).
+
+## 8. Log: steps 2 and 3 on the Mac (11 Oct 2026)
+
+Andres chose Claude for Norman (build-thread card, 12:02 UTC) and typed "download norman" (12:04 UTC). Plan commit
+at the time: 02e7021. Nothing below read an expression value beyond the 500 control cells section 2 allows.
+
+- **File:** NormanWeissman2019_filtered.h5ad, Zenodo 13350497, 698,680,199 bytes, md5
+  c870e6967d91c017d9da827bab183cd6 (matches Zenodo). 111,445 cells, 33,694 genes; 237 labels in
+  obs['perturbation'] (102 singles, 129 pairs, none with three genes); 11,855 `control` cells; symbols from var_names
+  (var carries `ensemble_id`, no `gene_name`), no duplicates; cells per perturbation minimum 54, median 358; X holds
+  integers. Every section 2 check passes (docs/results/norman_check.txt). No CellForge Norman split exists on the Mac.
+- **Bundle** (section 6 step 3's exact command, 52 s): 231 perturbations, 2,083 genes, 2,000 public controls,
+  split_a391fa9e7b4eccb7, modality CRISPRa. Training 112 (71 singles, 41 pairs); visible validation 63 (15 singles;
+  pairs 8 pair_seen0, 35 pair_seen1, 5 pair_seen2); sealed 56 (16 singles; pairs 8, 27, 5). No held-out single's
+  gene appears in any training perturbation. The sealed pair_seen0 (8) and pair_seen2 (5) categories are under 10,
+  so they are reported and not read (section 5).
+
+Decisions on what the plan did not anticipate, made before any score on this bundle existed:
+
+1. **Old gene symbols.** C19orf26, C3orf72 and KIAA1804 are not in var (current names CBARP, FOXL2NB, MAP3K21), so
+   those three singles drop, and the pairs C3orf72_FOXL2 and TGFBR2_C19orf26 drop under `--strict-labels` (listed in
+   the manifest's strict_dropped_labels, never pooled into FOXL2 or TGFBR2). Kept as built: five of 236 labels, and
+   an ingest alias step would be new code after the protocol was fixed. A later rebuild that recovers them is a new
+   bundle and split, never mixed with this one.
+2. **Cell-quality flags.** good_coverage is False for 6,938 cells and number_of_cells is 2 or more for 13,339; the
+   ingest uses neither, so they are in the pseudobulks, as pre-specified. Every comparison of this test (N1 against
+   N2, the norman_v1 leave-one-out) is within one bundle, so multiplets dilute both sides alike. A filtered bundle
+   (good_coverage and number_of_cells == 1) is a sensitivity arm after N2, labelled as such, never a replacement.
+3. **perturbation_type** reads `CRISPR`; the modality the code uses is the manifest's CRISPRa from `--modality`.
+
+Replogle coverage, from the labels and var tables only: 85 of the 102 Norman target genes have a Replogle row by
+symbol (Ensembl ids add none; the 17 without are ATL1, CDKN1A, CKS1B, CNNM4, COL1A1, IGDCC3, MAML2, MAP2K6, PRTG,
+PTPN13, RUNX1T1, S1PR2, SLC4A1, SLC6A9, TGFBR2, UBASH3A, UBASH3B, mostly silent in K562); 139 of 2,083 bundle genes
+lack a symbol match and 84 of them match by Ensembl id (rename table, 84 aliases). The section 5 gate is judged on
+step 5's dry-run counts for training perturbations.
