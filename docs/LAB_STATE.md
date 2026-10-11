@@ -102,7 +102,15 @@ guides, not genes (6 of 21 test genes have another guide in training), their spr
 all-gene PCC is saturated (our 3-feature start already scores 0.984). The comparable statement is against baselines
 rerun on our split with our code: DE-gene MSE 0.084 vs 0.160 and R² 0.85 vs 0.71 for linear regression. A real
 claim needs CellForge's model run through our evaluation on our split (a GPU). pearson_delta cannot reach 0.99 for
-any model here (noise ceiling 0.94).
+any model here (noise ceiling 0.94). Asked again 11 Oct 17:10 UTC; the side by side with the current best models,
+CellForge's reported row against ours: Adamson (control_replogle3_from_opus_r0, sealed) MSE 0.0051 / 0.0044, PCC
+0.9883 / 0.9902, R² 0.9761 / 0.9787, MSE_DE 0.2013 / 0.0735, PCC_DE 0.9474 / 0.9698, R²_DE 0.8912 / 0.8683; Norman
+(N2, norman_control_replogle_w4_r0, sealed, our own gene-held-out split) MSE 0.0034 / 0.0054, PCC 0.9846 / 0.9887,
+R² 0.9609 / 0.9746, MSE_DE 0.1736 / 0.1104, PCC_DE 0.8109 / 0.9374, R²_DE 0.5975 / 0.8424. Ours is ahead on 5 of 6 in
+each, but on Norman the additive rule alone (no model) scores PCC_DE 0.941 and R²_DE 0.846 against their 0.811 and
+0.598, which says the two evaluations differ rather than that our method is better. The statement we can make: a
+ridge regression on a few interpretable features, fitted on a CPU in minutes, matches or exceeds CellForge's reported
+numbers on five of six metrics under our splits; the evaluations are not verified to be equivalent.
 
 ## Levers tested and closed (all free unless noted)
 
