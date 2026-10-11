@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 16:15 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 18:30 UTC.
 
 ## What this is
 
@@ -43,9 +43,12 @@ docs/PROMPTS.md.
 ## Rules every agent follows
 
 - The DeepSeek key lives only in the environment variable DEEPSEEK_API_KEY on the Mac. Never print, log, commit,
-  quote or ask for it. Andres pasted it in chat earlier and should rotate it.
+  quote or ask for it. Andres pasted keys in chat (11 Oct 15:34 and 17:48) and should rotate the key.
 - Paid work (DeepSeek, or a planner run) starts only on Andres's own words. Shared ledger: runs/spend_ledger.sqlite in
-  the Mac checkout, $31.78 on 2026-10-11 (workers $22.85, planner $8.93; Astra's two campaigns about $21.50).
+  the Mac checkout, **$33.97 after N4** (11 Oct 18:08; $31.78 before the two Norman runs; Astra's two campaigns
+  about $21.50), so the cap below is spent and any paid run needs a new amount from Andres. `budget.max_total_usd`
+  caps a run's workers only and `budget.max_planner_usd` its planner: a paid run sets both (N4 set only the first
+  and cost $1.16 against a planned $1.10).
   **Cap: $34 in total** (Andres, 02:39 UTC 11 Oct: "we have a max of 34 for deep seek spend it as you think is best
   but we need to have a very good model"); within it the spending choice is delegated, beyond it ask him. Pass it as
   `--set budget.cumulative_usd.deepseek=34`. Claude usage is limited and shared.
@@ -209,24 +212,31 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## Waiting on Andres
 
-- **N4, the last paid run within the $34 cap: his typed "start the paid run" in the build thread and a key in
-  ~/.zshenv on the Mac** (rotated: the key used for N3 was pasted in the thread at 15:34 UTC 11 Oct; it went only into
-  N3's process environment and is in no file or commit). N3 is done (below): the agents did not beat the additive
-  baseline. N4 continues N2 so the agents start from the model that contains the additive rule and the screen;
-  pre-specified in docs/NORMAN_PLAN.md section 8. Ledger $32.81, so about $1.19 is left:
-  `python run_research.py --minutes 20 --workers 4 --dataset norman --planner-provider deepseek --planner-model
-  deepseek-v4-pro --continue-from runs/norman_control_replogle_w4_r0 --run-dir runs/norman_ds_from_n2_w4_r0 --set
-  budget.cumulative_usd.deepseek=34 --set budget.max_total_usd=1.1` (workers as in N3), no start at a ledger of
-  $33.00 or more, mains power or more than 50% battery; then `python tools/sealed_reading.py --runs
-  runs/norman_ds_from_n2_w4_r0`. Anything beyond $34 needs his say.
+- **Rotate the DeepSeek key** (pasted in the thread at 15:34 and 17:48 UTC 11 Oct; it went only into the N3 and N4
+  process environments, was unset after each and is in no file or commit) and store it in ~/.zshenv on the Mac.
+- **A new DeepSeek amount** before any paid run: the ledger is at $33.97 of the $34 cap.
+- **N4 (done 18:08 UTC 11 Oct, $1.16; pre-specified in docs/NORMAN_PLAN.md section 8, started on his typed "start
+  the paid run" at 17:47):** the DeepSeek agents continued the no-LLM control N2 for 20 minutes with 4 workers.
+  Selected EXP_0790 (ridge, alpha 50,000, 11 features: five of N2's six plus the agents' own copy of the additive
+  sum, a one-number version of the Replogle feature and four that added 0.0000 when tried). Sealed pearson_delta
+  0.726, the best Norman number so far, against 0.719 for its start (N2's model) and 0.713 for the additive rule;
+  MSE_DE 0.129, PCC_DE 0.928, R2_DE 0.819 against 0.102 / 0.941 / 0.846 for the rule. Pre-set paired reading
+  (docs/results/norman_n4_sealed_reading.md): against its start +0.008 ± 0.004, better on 40 of 56, not established;
+  against the rule +0.014 ± 0.008, better on 37 of 56, not established (pairs with one gene in training: +0.021 ±
+  0.006, better on 22 of 27, established). So a small gain that is not proven, and worse than the rule on the
+  most-changed genes (likely the heavy ridge penalty shrinking predicted changes; not yet checked).
+- **The additive start model (code c6fadc0, free, no run yet):** on a bundle with pairs every fresh run now starts
+  its agents from ridge on the three built-ins plus `additive_response`, the additive baseline's prediction as a
+  built-in feature, so they no longer start below the rule as N3's did. Adamson is unchanged. Next, free: a no-LLM
+  run on Norman measures the new start's visible score.
 - **N3 (done 15:54 UTC 11 Oct, $1.03):** DeepSeek planner and workers, 4 workers, 20 minutes, Replogle file, no warm
   start. It selected its additive baseline (visible 0.611; sealed 0.713); its best agent model scored 0.671 sealed
   (visible 0.579; ridge, alpha 1000), below the additive rule and N2's 0.719. No agent fed the plain additive
   prediction to the model (the best feature multiplies it by a per-perturbation factor) and only 1 of 355 plugins read
   the Replogle file; details and the prompt changes made since in NORMAN_PLAN section 8.
-- **Pull requests:** PR #2 (AGENTS.md, HANDOFF.md) merged 11 Oct; PR #3 (the Mac-only reports, docs/mac/ and
-  docs/results/, md5-verified against docs/mac/MD5SUMS.txt) merged 11 Oct; PR #1 (README design) is being brought up
-  to date by its thread and merged after (Andres chose "Merge both" at 15:52 UTC). Astra's two branches are on GitHub
+- **Pull requests:** all merged 11 Oct: PR #2 (AGENTS.md, HANDOFF.md), PR #1 (README design, ca35f88; Andres chose
+  "Merge both" at 15:52 UTC), and the Mac's reports, PR #3 and PR #4 (N4), each md5-verified against its
+  docs/mac/MD5SUMS file and scanned for keys. Astra's two branches are on GitHub
   unchanged, with no pull request: merging them is his call. Still his: a `main` branch, if he wants one.
 - **Norman 2019: Claude takes it** (Andres chose "Claude now" on the build-thread card at 12:02 UTC 11 Oct; the Mac
   was briefed at 12:05 UTC for section 6 steps 2 to 7, all free; Andres typed "download norman" at 12:04 UTC).
@@ -255,5 +265,5 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 ## Next after Adamson
 
 Norman 2019 (NormanWeissman2019_filtered.h5ad on Zenodo 13350497) is the first clean test of everything above, then
-Srivatsan sci-Plex 3. The timeline given on 05 Oct (a three-dataset result around 10 to 12 Oct) has slipped: neither
-has started.
+Srivatsan sci-Plex 3. The timeline given on 05 Oct (a three-dataset result around 10 to 12 Oct) has slipped: Norman
+started on 11 Oct (N1 to N4 above and in docs/NORMAN_PLAN.md section 8); Srivatsan has not.

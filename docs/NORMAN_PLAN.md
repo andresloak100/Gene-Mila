@@ -437,3 +437,47 @@ Steps 4 to 6 on the Mac (11 Oct 2026, code 02e7021, all free, ledger unchanged a
   Expected direction, fixed now: none; the agents add something only if (2) passes the rule pooled. If N4 selects its
   starting model, the agents added nothing they kept, and that is the result. Arm label: a continuation with external
   knowledge, never pooled with N1 to N3.
+- **N4, the paid continuation** (runs/norman_ds_from_n2_w4_r0, 17:48 to 18:08 UTC 2026-10-11, started on Andres's
+  typed "start the paid run" with a key he pasted in the thread, passed only to the run's environment and unset after;
+  DeepSeek planner deepseek-v4-pro, workers deepseek-flash, 4 workers, 1,201 s, continued from N2, code 076282c, hash
+  seed 0, Replogle file; summary.json md5 389c88fa1c8134f6577d9cb7704d059d, config.json
+  b64cf83fd216d9fb302d847e20e23fc4, analysis log 1d64e28b23a18a2310e7cddf6d215efc, all in
+  docs/mac/norman_ds_from_n2_w4_r0/). **Cost $1.164** (planner $0.680 over 52 calls, workers $0.484 over 419), ledger
+  $32.806 to $33.970 of the $34 cap. `budget.max_total_usd=1.1` caps the workers only and the planner kept its own
+  default cap (budget.max_planner_usd was not set), so the run cost $0.064 more than the $1.10 planned; the $34 cap
+  held. 596 experiments completed, 142 duplicates, 58 failed (36 constant features, 7 refused by the determinism rule,
+  5 label leakage, 4 NaN or infinite values, 2 errors), 7 rejected, 5 cancelled; ridge in 575 fits, lasso 9, elastic
+  net 7. **Selected EXP_0790** (ridge, alpha 50,000, 11 features): five of the start's six (is_target,
+  additive_singles_e15, external_direct_replogle2022_k562_e16, response_components_e14, target_level_e11;
+  prior_network_edge_e8 dropped) plus additive_singles_e15_e8 (the agents' own sum of the targets' single responses,
+  +0.067 when first added to a model without the rule), external_direct_replogle2022_k562_e16_e9 (the targets'
+  sign-flipped Replogle changes summed to one number per perturbation, +0.007) and four whose gain when added was
+  0.0000 (target_ppi_degree_times_external_delta_e112, random_fourier_target_expression_e107,
+  shared_ppi_neighbors_weighted_e95, target_ppi_degree_e16). Visible 0.646 against 0.642 for the start and 0.611 for
+  the additive baseline. Sealed pearson_delta / MSE_DE / PCC_DE / R²_DE: selected 0.726 / 0.129 / 0.928 / 0.819 (the
+  ensemble and the other two finalists 0.726); additive baseline 0.713 / 0.102 / 0.941 / 0.846; the start EXP_0007
+  0.719, scored on the sealed set for the first time by the reading. The section 5 reading
+  (docs/results/norman_n4_sealed_reading.md, md5 da7d9164c6f5c7c3331d767576b13ae3; JSON
+  34af6f90e43fbceef6a9baecca167d3e): (1) selected minus additive, pooled +0.014 ± 0.008, better on 37 of 56: **no
+  difference established**; pair_seen1 +0.021 ± 0.006, better on 22 of 27: selected better; singles -0.002 ± 0.023:
+  none. (2) selected minus its start, pooled +0.008 ± 0.004, better on 40 of 56: **no difference established** (the
+  gain is twice its SE and the rule asks for more); on the visible and out-of-fold perturbations +0.004 ± 0.003, none.
+  Reading: 0.726 is the best Norman number so far, but neither its lead over the additive rule nor the agents' own
+  contribution passes the rule fixed before the run, and what the agents kept is mostly second copies of what the
+  start had. On the most-changed genes it is worse than the additive rule (MSE_DE 0.129 against 0.102, R²_DE 0.819
+  against 0.846), as N1 and N2 were; a likely cause, not yet checked, is that the heavy ridge penalty (alpha 50,000)
+  shrinks the predicted changes, which pearson_delta, the selection metric, does not see. Arm: a DeepSeek
+  continuation with external knowledge, never
+  pooled with N1 to N3. The ledger leaves $0.03, so no paid run starts until Andres sets a new cap.
+- **Changes after N4 (lab branch from c6fadc0 on):** on a bundle whose targets include a pair, the lab registers a
+  fourth built-in feature, `additive_response` (the additive baseline's predicted change, leaving p out, by the same
+  rule, which now lives in genemila/features/builtin.py), and queues one more baseline, `baseline_ridge_additive`,
+  ridge on the three built-ins plus it. The planner and the exploit engine take the best completed model as a new
+  feature's parent, so a run that does not continue another starts its agents on top of the additive rule, which
+  N3's agents never rebuilt; the pairs note of the planner prompt names the built-in. The starting model a run
+  reports (summary, sealed scoring, the results table's starting-model row) stays the best of the other baselines,
+  so pair runs before and after the change report the same reference. Adamson's bundle and every bundle without
+  pairs keep three built-ins and three model baselines, so their prompts and hashes are unchanged, and a pair run
+  reopened from before the change gets no new feature row. No run has used it yet; expected direction, fixed now:
+  none until a run shows one. Before a fresh paid agent run is read, tools/sealed_reading.py needs to read it
+  against `baseline_ridge_additive` as its start (today it reads a start only for a continued run).
