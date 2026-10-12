@@ -6,7 +6,7 @@
 # The readme-designer agent (.claude/agents/readme-designer.md) keeps this in sync with the README.
 
 [about]
-description = "An autonomous lab for single-cell perturbation prediction, tested on held-out knockdowns of the Adamson and Norman Perturb-seq screens: Claude plans, DeepSeek workers write one feature per experiment, and only a linear model may use them, so every gain is a feature you can read."
+description = "An autonomous lab for single-cell perturbation prediction, tested on held-out perturbations of the Adamson (CRISPRi) and Norman (CRISPRa) Perturb-seq screens: Claude plans, DeepSeek workers write one feature per experiment, and only a linear model may use them, so every gain is a feature you can read."
 homepage = ""
 topics = [
   "perturb-seq",

@@ -86,8 +86,8 @@ significance by arm).
   same stack without the screen's columns scores 0.543 ([`LAB_STATE.md`](docs/LAB_STATE.md)). A
   no-LLM run that adds the screen's features to those of one Opus-planned agent run reads 0.646
   on the sealed set, in one run. That set had already been scored for dozens of finalists across
-  about 30 runs, so 0.646 is one more look at a used set, not a result; Norman is the clean
-  test.
+  about 30 runs, so 0.646 is one more look at a used set, not a result; Norman, read only at
+  pre-specified points, was the cleaner test (below).
 - **Left out on purpose.** All-gene MSE, PCC and R²: every model in the table, and predicting no
   change at all, has an all-gene PCC between 0.979 and 0.987, so those columns cannot separate
   models. And a comparison with CellForge's published rows: their evaluation code is
@@ -95,39 +95,91 @@ significance by arm).
   unperturbed baseline at PCC 0.0001; on this data it scores 0.98), and their split holds out
   guides, not genes.
 
-### Norman 2019: a first pre-specified reading
+## Results on Norman 2019: pre-specified readings
 
-The Norman et al. 2019 screen (CRISPRa activation in K562, single genes and gene pairs) is the
-clean test, because its sealed set is read only at points fixed in advance
-([`NORMAN_PLAN.md`](docs/NORMAN_PLAN.md)). The bundle has 231 perturbations on a split that keeps
-every held-out single gene out of training: 112 training, 63 visible and 56 sealed. Two no-LLM
-controls and one agent run, one run each, are read against the additive baseline (a pair
-predicted as control plus its two single-gene responses) under a rule fixed before any run: a
-gain counts when it exceeds twice its paired standard error and wins on more than half the
-perturbations.
+The Norman et al. 2019 screen (CRISPRa activation in K562, single genes and gene pairs) is read
+only at points fixed in advance ([`NORMAN_PLAN.md`](docs/NORMAN_PLAN.md),
+[`PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md)). The bundle has 231 perturbations on a split that
+keeps every held-out single gene out of training: 112 training, 63 visible and 56 sealed. Single
+models are read against the additive baseline (a pair predicted as control plus its two
+single-gene responses) by the reading rule: a gain counts when it exceeds twice its paired
+standard error and the model is better on more than half the perturbations. The primary question
+is whether the agents' search adds to the model it starts from, asked of two arms of three
+DeepSeek runs (4 workers, 20 minutes each): an arm's mean gain over its start must exceed about
+twice a standard error that includes the spread between runs and the target genes perturbations
+share, every run must point the same way, and the arm must be better on more than half the 168
+perturbation-run pairs. Every B1 and B2 number is in [`NORMAN_PLAN.md`](docs/NORMAN_PLAN.md)
+section 8.
+
+| Arm of three runs, sealed set, n = 56 | pearson_delta of the selected models, mean ± sd | Mean gain over the start (SE) | Better on | Verdict |
+|---|---|---|---|---|
+| B1: N4 repeated with seeds 1 to 3, continuing N2's model (0.719) | 0.719 ± 0.007 | 0.000 (0.007) | 88 of 168 | not established: the runs differ in sign |
+| B2: fresh runs from ridge with the additive prediction as a feature (0.716) | 0.724 ± 0.005 | +0.008 (0.006) | 110 of 168 | not established: under its bar of 0.012; every run positive |
+
+In neither arm is the runs' mean gain over their start established (the primary reading); the
+average of each arm's three models does better than its start, a secondary reading (below).
+Secondary, against the additive baseline: B1's arm +0.006, SE 0.013, not established; B2's
+clears its bar by the narrowest margin (0.011290 against 0.011267), too thin to rest on.
 
 | Sealed set, n = 56 | pearson_delta | minus additive (paired SE) | Better on |
 |---|---|---|---|
 | Additive baseline | 0.713 | | |
-| No-LLM control | 0.717 | +0.004 ± 0.008 | 28 of 56 |
-| No-LLM control with the Replogle screen | 0.719 | +0.006 ± 0.007 | 32 of 56 |
-| Agents with the screen: best agent-built model | 0.671 | no paired reading | |
+| No-LLM control (N1) | 0.717 | +0.004 ± 0.008 | 28 of 56 |
+| No-LLM control with the Replogle screen (N2) | 0.719 | +0.006 ± 0.007 | 32 of 56 |
+| N3: agents with the screen, from scratch; best agent-built model | 0.671 | not read | |
+| N4: agents continuing N2; planner lost at minute 18.7 of 20 | 0.726 | +0.014 ± 0.008 | 37 of 56 |
+| B1's combined model: the average of its three runs' models | 0.723 | +0.010 ± 0.007 | 36 of 56 |
+| Ridge with the additive prediction as a feature, B2's start | 0.716 | not read | |
+| No-LLM control from that start | 0.719 | not read | |
+| B2's combined model: the average of its three runs' models | 0.727 | +0.014 ± 0.003 | 45 of 56 |
 
-Neither control is established above the additive baseline on the sealed set, although on the 175
-visible and out-of-fold training perturbations both led it (+0.030 ± 0.009 and +0.031 ± 0.008,
-paired SE): selection overfits the perturbations it chooses on. The screen adds +0.002 ± 0.001
-(paired SE) pooled, better on 40 of 56, which passes the rule but is too small to matter, and is
-not established on single genes
+Neither N1 nor N2 is established above the additive baseline on the sealed set, although on the
+175 visible and out-of-fold training perturbations both led it (+0.030 ± 0.009 and +0.031 ±
+0.008, paired SE): selection overfits the perturbations it chooses on. The screen adds +0.002 ±
+0.001 (paired SE) pooled, better on 40 of 56, which passes the reading rule but is too small to
+matter, and is not established on single genes
 ([`norman_sealed_reading.md`](docs/results/norman_sealed_reading.md)).
 
-The agent run (DeepSeek planner and workers, 4 workers, 20 minutes, the screen in its bundle, no
-warm start) selected the additive baseline itself, because no agent-built model beat it on the
-visible score, so the pre-specified paired reading has nothing to compare. Its best agent-built
-model scores 0.671 on the sealed set against 0.713 for the additive rule. No agent built the
-additive prediction as a feature, and 1 of 355 plugins read the screen
-([`NORMAN_PLAN.md`](docs/NORMAN_PLAN.md), section 8). That says how the agents were started, not
-anything about the biology: the scripted control leads because a hand-written template puts the
-additive rule into its model. The next run is set to start the agents from that model.
+The first agent run (N3: DeepSeek planner and workers, the screen in its bundle, no warm start)
+selected the additive baseline itself, because no agent-built model beat it on the visible score.
+Its best agent-built model scores 0.671 on the sealed set
+([`norman_n3_sealed_reading.md`](docs/results/norman_n3_sealed_reading.md)). No agent fed the
+plain additive prediction to the model: the agents' best feature sums the targets' single-gene
+responses but multiplies the sum by log1p of the targets' control expression, a factor that
+differs per perturbation and that the ridge cannot undo. One of 355 plugins read the screen.
+
+The second (N4: the same agents, continuing from N2's model, $1.16) selected a model that scores
+0.726 but establishes neither of its gains: +0.014 ± 0.008 over the additive baseline and +0.008
+± 0.004 over its start
+([`norman_n4_sealed_reading.md`](docs/results/norman_n4_sealed_reading.md)). Its planner ran out
+at minute 18.7, when the project's spending cap then in force bound, so it stands as an arm of
+its own. B1 repeated it three times on the same code, and the selected models scored 0.711 to
+0.726: N4's +0.008 looks like one draw from a search whose mean gain over the start is 0.000 (SE
+0.007). Averaging is what helps: the plain average of the three runs' models, B1's combined
+model, scores 0.723, +0.004 ± 0.001 over N2's model, the no-LLM control it continued (paired SE,
+better on 38 of 56), where single runs gained −0.008 to +0.007 over the same start. The gain is
+small and a secondary reading. It is the delivered Norman model.
+
+B2's runs started from ridge with the additive prediction as a feature, as fresh agent runs on
+pairs do from commit `c6fadc0` on. Seed 1 was killed by the run's watchdog while finishing; it is
+reported apart and decides nothing, and seed 3 took its place, a departure from the plan recorded
+before any B2 reading (read as first specified, over seeds 0 and 2, the arm is not established
+either). As a secondary reading, B2's combined model scores 0.727, +0.011 ± 0.002 over its start
+(44 of 56) and +0.014 ± 0.003 over the additive baseline, better on 45 of 56: the first Norman
+model whose gain over that baseline passes the reading rule (N4's was as large, with an SE of
+0.008). It is not established over the no-LLM control from the same start (+0.008 ± 0.006) or
+over B1's combined model (+0.004 ± 0.006). The delivered model stays B1's, by a choice fixed
+before B2 that is made on the 63 visible validation perturbations (0.780 against 0.751).
+
+On each perturbation's 20 most changed genes the agents' models do no better than the additive
+baseline: R²_DE 0.847 ± 0.008 for B1's runs and 0.828 ± 0.027 for B2's, against 0.846 (N4:
+0.819). B2's most shrunk run (ridge alpha 300,000) has its best pearson_delta and its worst DE
+scores. Whether ridge shrinkage is what costs the DE genes is not yet checked.
+
+Norman's sealed set has now been scored for many models (B2's readings alone made 58 sealed
+scorings), so from here on comparisons on it are descriptive
+([`PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md), "What happens after"). By the spend ledger, B1 cost
+$4.11 and B2 $5.51, its killed run included; the ledger counts about twice what DeepSeek bills.
 
 ## What one run looks like, on a synthetic screen
 
@@ -318,15 +370,17 @@ best model on visible validation ([summary](docs/example_run/control_scripted_su
 
 ## Limitations
 
-- **Adamson's sealed set is used, and Norman's is barely started.** Adamson's 21 sealed
-  perturbations have been scored for dozens of finalists across about 30 runs. No run selects on
-  a sealed number, but the hand-written transfer feature was designed after 26 sealed results had
+- **Both sealed sets are used, and on Norman no arm's mean gain over its start is
+  established.** Adamson's 21 sealed perturbations have been scored for dozens of finalists across
+  about 30 runs. No run selects on a sealed number, but the hand-written transfer feature was designed after 26 sealed results had
   been read, and each new arm read there is one more look, so later readings on it are weaker
-  evidence than the first. Norman's sealed set, read only at pre-specified points, is the clean
-  test, and its one agent run so far did not reach the additive rule.
-- **Few, short runs.** Two runs per agent arm, 20 minutes each, on one split. Most differences
-  between arms are inside run-to-run noise. The no-LLM control is deterministic, so its six
-  identical runs are not a noise estimate.
+  evidence than the first. Norman's 56 were read only at pre-specified points; there neither arm's
+  mean gain over its start is established, and averaging each arm's three models gives small
+  gains that pass only as secondary readings; after those two blocks the set has been scored for
+  many models, so later comparisons on it are descriptive.
+- **Few, short runs.** Two runs per agent arm on Adamson; on Norman three per arm for B1 and
+  B2, one for N3 and N4; 20 minutes each, one split per dataset. Most differences between arms are inside run-to-run noise. The no-LLM
+  control is deterministic, so its six identical runs are not a noise estimate.
 - **A small gain, of one kind.** The agents' lead over the fixed no-LLM control on sealed
   pearson_delta (+0.01 to +0.05 by arm, the smallest inside run-to-run spread) disappears
   against a control given one hand-written transfer feature, written after the agent runs had
@@ -356,7 +410,10 @@ The paper this lab is built for asks three questions:
 - **How far?** Within a fixed clock, how far past a scripted planner with hand-written features
   do agent-discovered features take a linear model on perturbations it has never seen? On
   Adamson: a little, and on pearson_delta not past a control given one more hand-written
-  feature.
+  feature. On Norman, the average of three agent runs that continue the no-LLM control beats
+  it by +0.004 ± 0.001 (paired SE), a small gain; from the additive start the average is not
+  established above the no-LLM control (+0.008 ± 0.006), and in neither arm is the runs' mean
+  gain over their start established.
 - **Which signals?** Which biology carries the gain, and how much of it comes from the screen
   rather than from what the models already know about these genes? On Adamson, transfer of
   responses between related knockdowns; leave-one-out, an external screen of the same
@@ -369,8 +426,8 @@ with both:
 
 1. **CellForge's datasets.** Adamson is done (above). Norman has its bundle, a split that keeps
    held-out single genes out of training, the additive baseline, a recorded modality (CRISPRa)
-   with sign-aware external features, and a reading rule fixed before any run; its first agent run
-   did not reach the additive rule, and the next starts from the control's model. Srivatsan
+   with sign-aware external features, and reading rules fixed before any run; in neither of two
+   arms of three agent runs is the mean gain over its start established (above). Srivatsan
    (sci-Plex 3) needs drug and dose ingestion.
 2. **The same game.** `results_table.py` lays every arm out like CellForge's Table 1
    ([`results_table.md`](docs/results/results_table.md)), with Unperturbed, Random Forest and
