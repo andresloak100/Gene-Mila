@@ -2,7 +2,7 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 18:30 UTC.
+milestone and before stopping; newest state wins. Last updated 2026-10-11 23:50 UTC.
 
 ## What this is
 
@@ -42,16 +42,19 @@ docs/PROMPTS.md.
 
 ## Rules every agent follows
 
-- The DeepSeek key lives only in the environment variable DEEPSEEK_API_KEY on the Mac. Never print, log, commit,
-  quote or ask for it. Andres pasted keys in chat (11 Oct 15:34 and 17:48) and should rotate the key.
-- Paid work (DeepSeek, or a planner run) starts only on Andres's own words. Shared ledger: runs/spend_ledger.sqlite in
-  the Mac checkout, **$33.97 after N4** (11 Oct 18:08; $31.78 before the two Norman runs; Astra's two campaigns
-  about $21.50), so the cap below is spent and any paid run needs a new amount from Andres. `budget.max_total_usd`
-  caps a run's workers only and `budget.max_planner_usd` its planner: a paid run sets both (N4 set only the first
-  and cost $1.16 against a planned $1.10).
-  **Cap: $34 in total** (Andres, 02:39 UTC 11 Oct: "we have a max of 34 for deep seek spend it as you think is best
-  but we need to have a very good model"); within it the spending choice is delegated, beyond it ask him. Pass it as
-  `--set budget.cumulative_usd.deepseek=34`. Claude usage is limited and shared.
+- The DeepSeek key: Andres keeps it in ~/.zshenv on the Mac as API_KEY (11 Oct 19:22); each run gets it as
+  `DEEPSEEK_API_KEY="$API_KEY" <command>`, in its own process environment only. Never print, log, commit, quote or
+  ask for it. He pasted keys in chat at 15:34 and 17:48 and asked that the second be used ("use the same key", 19:17).
+- Paid work (DeepSeek, or a planner run) starts only on Andres's own words. On 11 Oct 19:10 to 19:16 he put the rest
+  of his DeepSeek balance at the lab-code owner's disposal ("you can spent as much as u want and you think is
+  necessary we have in total 33 in deep seek"; "keep improving the model spent those dolars well"); the console then
+  showed $33.01 left and $16.98 billed. Shared ledger: runs/spend_ledger.sqlite in the Mac checkout, **$33.97 after
+  N4** (11 Oct 18:08; $31.78 before the two Norman runs; Astra's two campaigns about $21.50); it counts about twice
+  what DeepSeek bills (likely off-peak pricing; not checked call by call) and is never repriced. Spending goes in
+  pre-specified blocks: the current one, docs/PLAN_AFTER_N4.md, lets the ledger reach $48 and starts a run only when
+  the ledger plus its own caps stays within it. `budget.max_total_usd` caps a run's workers only and
+  `budget.max_planner_usd` its planner (default derived: $5.33 for 4 workers and 20 minutes). Earlier caps: $15,
+  then $34 (02:39 UTC 11 Oct). Claude usage is limited and shared.
 - The sealed held-out perturbations (val2) are read only through `genemila.benchmark.oracle.QueryOracle`, never to
   choose a model, feature, penalty, rule or protocol. Analysis tools read visible data only, and tests assert that
   tool sources never name the sealed files. The Adamson sealed set has been scored for dozens of finalists across
@@ -138,6 +141,33 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## In progress (2026-10-11)
 
+0. **The paid block after N4 (docs/PLAN_AFTER_N4.md, written 19:15 to 19:45 UTC, reviewed independently before
+   any result; amended 20:30 UTC: the gene-clustering ratio of the arm reading is now overlap-robust, since the
+   leave-one-gene-out jackknife first specified counts a pair twice and reads about 1.41 where it should read 1).**
+   B1: three repeats of N4 on its code 076282c (seeds 1 to 3; r1 started 19:16:54, $1.436, read: selected model
+   0.719 sealed; r2 0.726, r3 0.711; the last ended about 21:08 UTC, ledger $38.08). B1's primary reading: the arm
+   against its start G −0.0000, SE 0.0071, no difference established, so the agents' search adds nothing; its
+   combined model scores 0.723 sealed, +0.0041 ± 0.0011 over N2's selected model (better on 38 of 56) and +0.010 ±
+   0.007 over the additive rule (not established); details in docs/NORMAN_PLAN.md section 8 and PR #6; N4 is not in the
+   arm because its planner ran out at 18.7 of 20 minutes (the $34 cap bound; summary.json `planner.mixed`), so it
+   is its own arm "(lost its planner)". B2: a free no-LLM control on the additive start, then three fresh DeepSeek
+   runs from it (the control and seed 0 passed; seed 1 was killed by run_research.py's watchdog while finishing, is
+   its own arm and stopped the block; seeds 2 and 3, with --no-watchdog and a 90-minute backstop, completed the arm;
+   plan note of 22:50 UTC). **B2 result (PR #7; docs/NORMAN_PLAN.md section 8):** primary reading, the arm over r0, r2
+   and r3 against their start (ridge on the additive rule, 0.716 sealed), G +0.0078 against a bar of 0.0118, every run
+   positive: no difference established. Secondary: the arm against the additive rule G +0.0113 against a bar of
+   0.0113, "better" by the narrowest margin (fragile); against the control, no difference. B2's combined model scores
+   0.727 sealed, +0.0143 ± 0.0025 over the additive rule (45 of 56), the largest Norman gain over it so far, but worse
+   on the most-changed genes (top-20 DE MSE 0.123 against 0.110), and not established over the control (0.719) or B1's
+   combined model (0.723). The delivered Norman model stays B1's combined model by the rule fixed before B2 (visible
+   validation 0.7801 against B2's 0.7505). Ledger $43.59 after B2. B3, dropped from this block by the plan note of 22:50 UTC: an Adamson re-split (gene mode, seed 20261011; not a clean test, since every Adamson
+   perturbation's labels or sealed scores were used in development; only the agents-versus-control contrast is
+   read). Each arm's deliverable is its combined model, the average of its runs' selected models; for Norman the
+   delivered model is B1's unless B2's scores higher on the visible validation perturbations. One primary reading
+   per block, by the arm rule (G against k·SE, SE = sqrt(S² + sd_g²/R), one sign, most wins), with Norman's SE
+   inflated by a gene-clustering ratio estimated on visible labels. Tools: tools/sealed_reading.py (fresh starts,
+   --versus, the clustering ratio, the planner record) and tools/arm_reading.py (the rule, the combined model).
+
 1. **External K562 screen (Andres chose Replogle 2022 on 11 Oct).** Downloaded on the Mac
    (ReplogleWeissman2022_K562_gwps.h5ad, Zenodo 13350497, md5 13db594f8f1d2ccb88fec44a13e414dc) and built into
    data/adamson_cf/knowledge/replogle2022_k562.json there: 82 bundle targets with a row, 1,938 of 2,055 genes
@@ -212,9 +242,8 @@ Conclusion: the limit on this bundle is information about the targets, not searc
 
 ## Waiting on Andres
 
-- **Rotate the DeepSeek key** (pasted in the thread at 15:34 and 17:48 UTC 11 Oct; it went only into the N3 and N4
-  process environments, was unset after each and is in no file or commit) and store it in ~/.zshenv on the Mac.
-- **A new DeepSeek amount** before any paid run: the ledger is at $33.97 of the $34 cap.
+- **Rotate the DeepSeek key** when he chooses (pasted in the thread at 15:34 and 17:48 UTC 11 Oct; it went only into
+  run process environments and is in no file or commit; the key now comes from his ~/.zshenv).
 - **N4 (done 18:08 UTC 11 Oct, $1.16; pre-specified in docs/NORMAN_PLAN.md section 8, started on his typed "start
   the paid run" at 17:47):** the DeepSeek agents continued the no-LLM control N2 for 20 minutes with 4 workers.
   Selected EXP_0790 (ridge, alpha 50,000, 11 features: five of N2's six plus the agents' own copy of the additive

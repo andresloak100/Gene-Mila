@@ -506,6 +506,12 @@ class Lab:
         visible validation perturbations and, when the run cross-validates, the out-of-fold training ones, as
         {perturbation: evaluate()'s per-perturbation metrics}, with the categories they fall in ({} for a bundle
         without them). Trusted controller code over visible labels only."""
+        return self.score_visible(*self.visible_predictions(experiment_id))
+
+    def visible_predictions(self, experiment_id: str) -> tuple[np.ndarray, np.ndarray | None]:
+        """An experiment's absolute predictions at its chosen alpha for the visible validation perturbations (in
+        their order) and, when the run cross-validates, out of fold for the training ones (in their order; else
+        None), as visible_scores scores them."""
         rec = self.db.get_experiment(experiment_id)
         if not rec:
             raise KeyError(f"no experiment {experiment_id}")
@@ -514,23 +520,32 @@ class Lab:
         missing = [p for p in self._val1.perts if p not in idx]
         if missing:
             raise ValueError(f"{experiment_id} has no prediction for validation perturbations {missing[:3]}")
-        res = evaluate(pred[[idx[p] for p in self._val1.perts]], self._val1.means, self.control_mean,
-                       self._val1.perts, selection=self.selection, **self._extras("val1"))
+        val1 = pred[[idx[p] for p in self._val1.perts]]
+        if self.cv_folds <= 1:
+            return val1, None
+        if rec["kind"] == "baseline" and not rec.get("artifact_dir"):
+            return val1, self._cv_baseline(rec["hypothesis_group"])
+        c = np.load(Path(rec["artifact_dir"]) / "cv.npz", allow_pickle=False)
+        if [str(p) for p in c["perts"]] != self._train.perts:
+            raise ValueError(f"{experiment_id}: cv.npz does not cover the training perturbations")
+        alphas = list(map(float, c["alphas"]))
+        cv = c["delta"][alphas.index(rec["best_alpha"]) if rec["best_alpha"] in alphas else 0]
+        return val1, cv.astype(np.float64) + self.control_mean
+
+    def score_visible(self, val1: np.ndarray, cv: np.ndarray | None, cv_categories: bool = True) -> tuple[dict, dict]:
+        """visible_scores for given predictions: val1 in the visible validation perturbations' order, cv (or None)
+        out of fold in the training perturbations' order. cv_categories=False leaves the out-of-fold perturbations
+        without categories (theirs depend on this run's folds), for predictions averaged over runs whose folds
+        differ."""
+        res = evaluate(val1, self._val1.means, self.control_mean, self._val1.perts, selection=self.selection,
+                       **self._extras("val1"))
         scores, cats = dict(res["per_perturbation"]), dict(self._extras("val1").get("categories") or {})
-        if self.cv_folds > 1:
-            if rec["kind"] == "baseline" and not rec.get("artifact_dir"):
-                cv = self._cv_baseline(rec["hypothesis_group"])
-            else:
-                c = np.load(Path(rec["artifact_dir"]) / "cv.npz", allow_pickle=False)
-                if [str(p) for p in c["perts"]] != self._train.perts:
-                    raise ValueError(f"{experiment_id}: cv.npz does not cover the training perturbations")
-                alphas = list(map(float, c["alphas"]))
-                cv = c["delta"][alphas.index(rec["best_alpha"]) if rec["best_alpha"] in alphas else 0]
-                cv = cv.astype(np.float64) + self.control_mean
+        if cv is not None:
             cv_res = evaluate(cv, self._train.means, self.control_mean, self._train.perts, selection=self.selection,
                               **self._extras("cv"))
             scores.update(cv_res["per_perturbation"])
-            cats.update(self._cv_categories)
+            if cv_categories:
+                cats.update(self._cv_categories)
         return scores, {p: c for p, c in cats.items() if p in scores}
 
     def compare_visible(self, experiment_a: str, experiment_b: str, metric: str = PRIMARY_METRIC) -> dict:
