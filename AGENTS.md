@@ -31,7 +31,7 @@ repository: `HANDOFF.md` section 1, GitHub issues and pull requests.
 | Agent | Owns | Branches |
 |---|---|---|
 | Claude, "Autonomous research system" | the lab code, the runs on Andres's Mac, `docs/results/`, `docs/LAB_STATE.md` | `claude/autonomous-research-system-3k435s`, the integration branch (there is no `main` yet) |
-| Claude, "Repo description design" | `README.md`, `docs/assets/`, the GitHub About box, `tools/readme_check.py` | `claude/repo-description-design-bro3vo` (draft PR #1) |
+| Claude, "Repo description design" | `README.md`, `docs/assets/`, the GitHub About box, `tools/readme_check.py` | `claude/repo-description-design-bro3vo` (PRs #1 and #5) |
 | Other Claude sessions | the tasks Andres gives them | `claude/<topic>` |
 | Astra (ChatGPT) | the tasks Andres gives it | `astra/<topic>` |
 
