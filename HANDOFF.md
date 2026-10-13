@@ -5,7 +5,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 ## 1. Current state (whoever is working keeps this true)
 
 **Latest result, 2026-10-13 22:40 UTC — Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
-draft [PR #25](https://github.com/andresloak100/Gene-Mila/pull/25):** completed one free, fixed
+draft [PR #25](https://github.com/andresloak100/Gene-Mila/pull/25), archive head **3f78618**, claim closed:** completed one free, fixed
 missing-singleton transfer development comparison. **Negative primary result; do not promote or merge
 the unused experimental feature/tool. B1 remains delivered and unchanged.** Plan `c8c1358`, reviewed
 implementation `7606c04` were published before fitting; own `astra/singleton-transfer-development`,
@@ -23,8 +23,9 @@ allfolds/alphas/coverage, config, sourcepins, review, SHA256/MD5 and exactlaunch
 `docs/SINGLETON_TRANSFER_RESULTS.md`, `docs/results/singleton_transfer_development_20261013/`.
 Numeric predictions stay ignored locally, with hashes in the archive. No model/controller run remains.
 
-Andres asked every change/finding be on GitHub so Claude can resume. Root owns final publication/shared
-state; chat2 provides a read-only independent summary check. **Exact next:** read PR25's negative report
+Andres asked every change/finding be on GitHub so Claude can resume. Publication and independent checks are complete. Chat2 independently verified90 aggregate/paired
+statistic pairs, folds, fitcounts, inneralpha choices, gate and progress; no discrepancies. Root
+updated this shared state/live Mac STATE; no collaborator has outstanding experiment work. **Exact next:** read PR25's negative report
 and preserve this closed grid; do not run conditional StageB or tune it after its outcomes. A next
 model block needs a distinct prospective hypothesis and matched public-development control. Keep B1;
 no supported replacement was found. Claim22/evaluator-account setup remains **deferred, not approved**;
@@ -59,7 +60,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 22:40 UTC, Astra (Codex), chat “1”. Claim24 complete; no active model/controller run.
+**Last updated:** 2026-10-13 22:42 UTC, Astra (Codex), chat “1”. Claim24 archived/closed; no active model/controller run.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
