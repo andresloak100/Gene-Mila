@@ -4,6 +4,20 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active follow-up, 13 Oct 21:12 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22):**
+Andres said “go test”, then “use the deepseek agents”; he is unsure of the separate evaluator account/host.
+Chat 1 owns `astra/test-readiness-deepseek` / own `gene-mila-test-readiness`: finish metadata eligibility
+and frozen-feature coverage; two sequential DeepSeek text-only reviews, fixed prompts/config before calls,
+worker cap **$0.25**, cumulative cap **$48**, maximum two completions, no retry/fallback/planner.
+Use the existing LLMGateway and original shared ledger. This specifically authorized review does not
+restart model-search runs; STOP stays. No test labels/efficacy, fitting, oracle calls, B3, protected edits,
+main-checkout changes or account permissions changes. Proposed evaluator: separate standard Mac account,
+with a concrete setup/access-denial check to review before creation. Chat 2 may help locate pure condition/
+guide/control metadata read-only; chat 1 owns shared files and paid calls. Exact next: fix the review plan,
+verify runtime/budget/credential availability without printing secrets, review the bounded runner, then
+run the two reviews and archive every outcome. Actual scoring waits for compatible cohort and a proven
+access boundary. Older no-new-paid-review statements below are superseded only for this $0.25 review.
+
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
