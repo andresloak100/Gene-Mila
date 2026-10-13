@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 19:35 UTC, by Astra (Codex), working in separate own-clone worktrees. No controller/paid run is active; a standalone public-training diagnostic is starting; STOP remains present; shared DeepSeek ledger **$43.589781152**.
+**Last updated:** 2026-10-13 19:41 UTC, by Astra (Codex), working in separate own-clone worktrees. No controller/paid run or model computation is active; standalone public-training diagnostic complete; STOP remains present; shared DeepSeek ledger **$43.589781152**.
 Main checkout `~/Documents/Mila/Gene-Mila/gene-mila` remains `4562af5b`, untouched by this takeover.
 Andres's DeepSeek console screenshot (13 Oct 15:01 EDT / 19:01 UTC) shows **$28.20 available cash**
 and **$21.79 billed**, described as all available API funds. These are separate from the conservative
@@ -30,18 +30,22 @@ this explicitly authorizes the bounded README edit despite the earlier hands-off
   inner-OOF magnitude calibration; no outer-score model promotion. Root independently reviewed the design.
   Prospective plan `fe98ed7` was published before outcomes; reviewed implementation `0fbb8ce`
   passed **447 tests** (646.95 s, no skips; eight dependency deprecation warnings) and is published.
-  Real training-only diagnostic is starting in the new own-clone run directory below.
+  Completed in `gene-mila-shrinkage/runs/norman_development_shrinkage_20261013`; all four recipes,
+  ten metrics, config/summary and MD5/SHA256 archived in draft [PR #17](https://github.com/andresloak100/Gene-Mila/pull/17), head `a699d44`.
+  Low-penalty ridge is identical; calibration minus ridge top-20 MSE +0.001208 ± 0.002419
+  sample SD over three fold seeds on the same cohort. No average calibration benefit or promotion.
 - [Claim #16](https://github.com/andresloak100/Gene-Mila/issues/16), `astra/current-readme-status`,
   own worktree `gene-mila-readme`: current-status/source pointers and stale README command/budget fixes,
   plus living-doc status overrides. PR #5 was already merged 12 Oct. No asset changes. Await final
   tool/results links before documentation publication.
 
-**Exact next step now:** run the reviewed free diagnostic, from `gene-mila-shrinkage`, with
-`PYTHONHASHSEED=0 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/shrinkage_diagnostic.py --public /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman --out runs/norman_development_shrinkage_20261013`.
-It uses public training responses only and has no oracle/provider. Preserve config/summary, publish all
-four recipes/seeds with sample SD and same-cohort caveat; no winner promotion. Export's 27 focused tests
-pass and its full suite is running; real export reproduction waits until the diagnostic has ended.
-Then publish separate draft PRs, final README/status/claims and synchronized Mac STATE/checksums.
+**Exact next step now:** export's 27 focused tests pass and its full suite is still running.
+After it passes, publish the reviewed adapter and replay driver on the own branch, then run
+`PYTHONHASHSEED=0 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/norman_frozen_export_20261013/verification_driver.py --receipt /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-frozen-test/docs/results/norman_b1_frozen_test_review_20261013.json --out runs/norman_frozen_export_20261013`
+from own `gene-mila-export` worktree. Config precedes computation; preserve failure or success artifacts.
+All three saved members and equal ensemble must match exact order within the predeclared rtol/atol 1e-6;
+no labels, scoring or refitting. A mismatch blocks use; do not relax tolerance or substitute models.
+Then archive data-free receipts, separate draft PR, final README/status/claims and Mac STATE/checksums.
 No paid call, new oracle query, private/split read, protected-code edit, main-checkout modification,
 STOP removal or merge. Prospective isolated evaluation still needs evaluator identity and cohort audit.
 
@@ -128,8 +132,8 @@ implemented and await review; claims #14/#15/#16 now own the new work. Avoid dup
 |---|---|---|---|
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88`; PR #5 (README Norman section with N4, B1 and B2) 12 Oct | |
-| Astra (Codex), current takeover | 2026-10-13 | active free export, Norman shrinkage and documentation tasks on own branches; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
-| Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
+| Astra (Codex), current takeover | 2026-10-13 | free export/documentation active; shrinkage completed in draft PR #17; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
+| Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, are now on GitHub (remote heads verified 13 Oct: 6a3e8a8e and 74114d43); the old local-only note is superseded | none |
 
 **On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
 read (docs/NORMAN_PLAN.md section 8; readings, the five runs' summaries and the logs in draft PR #7, md5s checked,
