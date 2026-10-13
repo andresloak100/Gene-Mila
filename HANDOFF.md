@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 19:41 UTC, by Astra (Codex), working in separate own-clone worktrees. No controller/paid run or model computation is active; standalone public-training diagnostic complete; STOP remains present; shared DeepSeek ledger **$43.589781152**.
+**Last updated:** 2026-10-13 19:44 UTC, by Astra (Codex), working in separate own-clone worktrees. No controller/paid run is active; one saved-prediction replay is running; training-only diagnostic complete; STOP remains present; shared DeepSeek ledger **$43.589781152**.
 Main checkout `~/Documents/Mila/Gene-Mila/gene-mila` remains `4562af5b`, untouched by this takeover.
 Andres's DeepSeek console screenshot (13 Oct 15:01 EDT / 19:01 UTC) shows **$28.20 available cash**
 and **$21.79 billed**, described as all available API funds. These are separate from the conservative
@@ -23,7 +23,9 @@ this explicitly authorizes the bounded README edit despite the earlier hands-off
   own worktree `gene-mila-export`: new frozen numeric export/prediction tool, synthetic checks, then
   trusted hash-verified B1 stored-prediction reproduction without labels/refitting. A selected plugin
   has batch-dependent fallback behavior; original batch anchors and the prospective new-query recipe
-  must be explicit and verified. No real artifact deserialization has occurred yet.
+  are explicit. Reviewed code `1ec08e6` is published after **464 tests passed** (652.70 s, no skips;
+  eight dependency deprecation warnings). One real stored-prediction replay is running in
+  `gene-mila-export/runs/norman_frozen_export_20261013`; no scoring or refitting.
 - [Claim #15](https://github.com/andresloak100/Gene-Mila/issues/15), `astra/norman-development-shrinkage`,
   own worktree `gene-mila-shrinkage`: pre-specified four-recipe diagnostic using public training data only,
   nested gene-grouped folds, seeds 0/1/2. Analytic additive, inner-selected ridge, lower-penalty ridge and
@@ -39,15 +41,23 @@ this explicitly authorizes the bounded README edit despite the earlier hands-off
   plus living-doc status overrides. PR #5 was already merged 12 Oct. No asset changes. Await final
   tool/results links before documentation publication.
 
-**Exact next step now:** export's 27 focused tests pass and its full suite is still running.
-After it passes, publish the reviewed adapter and replay driver on the own branch, then run
+**Exact next step now:** await the one active saved-prediction replay; do not start another.
+The full suite now passes; reviewed adapter/driver `1ec08e6` is published. The following replay is running:
 `PYTHONHASHSEED=0 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/norman_frozen_export_20261013/verification_driver.py --receipt /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-frozen-test/docs/results/norman_b1_frozen_test_review_20261013.json --out runs/norman_frozen_export_20261013`
 from own `gene-mila-export` worktree. Config precedes computation; preserve failure or success artifacts.
 All three saved members and equal ensemble must match exact order within the predeclared rtol/atol 1e-6;
 no labels, scoring or refitting. A mismatch blocks use; do not relax tolerance or substitute models.
-Then archive data-free receipts, separate draft PR, final README/status/claims and Mac STATE/checksums.
+Then archive success/failure and data-free receipts, a separate draft PR, final README/status/claims and Mac STATE/checksums.
 No paid call, new oracle query, private/split read, protected-code edit, main-checkout modification,
 STOP removal or merge. Prospective isolated evaluation still needs evaluator identity and cohort audit.
+
+**Cross-chat division (13 Oct, Andres: "coordinate with the other chat to move faster"):**
+Codex chat "1" owns the current export/shrinkage/README worktrees, commits/pushes and shared HANDOFF/Mac
+STATE. Chat "2" accepted read-only status for those files and owns the independent external-cohort
+**target/guide/provenance-only** audit on a fresh own claim/branch. Its claim/link is pending; consult
+open Claim issues before duplicating that audit. No response/efficacy download/read, test selection,
+paid run, main-checkout edit, permissions change or merge is included in the audit. Independent chat2
+review also confirms the diagnostic archive's byte copies, all aggregate statistics and checksums.
 
 **Completed work, review links and exact next steps:**
 1. B2 is complete and independently verified in draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
