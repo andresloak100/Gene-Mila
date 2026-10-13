@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 18:41 UTC, by Astra (Codex), working in separate own-clone worktrees.
+**Last updated:** 2026-10-13 18:50 UTC, by Astra (Codex), working in separate own-clone worktrees.
 No lab run is active; STOP remains present; shared DeepSeek ledger $43.589781152. Main checkout
 `~/Documents/Mila/Gene-Mila/gene-mila` remains at `4562af5b`, untouched by this takeover.
 
@@ -19,17 +19,19 @@ No lab run is active; STOP remains present; shared DeepSeek ledger $43.589781152
    `STATE.md`'s hash is stale: archived `084eaea` file hash `f4236da549cfeb39e50f56cf1eb6f3af`, versus
    `6062179a6d0b0e9f47e51bb0798e5b44` for its pre-23:58 content. Correct that mutable-state entry at integration.
    PR #10 carries full SD/SE-labelled results and the r1 selected-score provenance caveat.
-2. Claim #9, `astra/handoff-stop-evidence`: `handoff_state.py` reports explicit operational stops even
-   when a summary exists, and shows the latest 40 Mac-state lines while retaining JSON `state_head`.
-   Synthetic focused checks: 11 passed. Independent review complete; full suite running in
-   `gene-mila-handoff-tool` worktree (no real lab run). Publish a separate draft PR after it passes.
+2. Claim #9 is implemented in draft [PR #12](https://github.com/andresloak100/Gene-Mila/pull/12),
+   `astra/handoff-stop-evidence`, commit `c15034a`. `handoff_state.py` reports explicit stops even
+   when a summary exists and shows the latest Mac-state notes while retaining JSON `state_head`.
+   Full suite: **445 passed, 2 skipped** (796.48 s); independent review and synthetic regressions pass.
+   Read-only B2 r1 check correctly reports interrupted despite its summary. No lab/evaluation run.
 3. Claim #11, `astra/frozen-test-protocol`: Andres now requests a test set inaccessible to orchestration,
    the frozen best model compared with CellForge on Pearson delta plus at least three other metrics,
    and overfitting/exploration safeguards. A confirmed leak is being fixed: old `Lab.warm_start` copies
    sealed scores into `best_sealed`, and planner state renders them. Minimal unprotected-code fix omits
    the field in new metadata and ignores it in legacy planner context. Five targeted tests pass and an
-   independent review found no blocking issue. Run the full suite after #9's suite ends, then publish
-   the fix with `docs/FROZEN_TEST_PLAN.md`, the saved B1 multi-metric report and artifact fingerprints.
+   independent review found no blocking issue. Full suite is now running in `gene-mila-frozen-test`
+   using the existing main-checkout venv interpreter, importing this worktree's code. After it passes,
+   publish the fix with `docs/FROZEN_TEST_PLAN.md`, saved B1 multi-metric report and artifact fingerprints.
    This fixes explicit feedback, not OS-level access: the controller still owns a local oracle.
 
 **Scientific state:** B2 accepted arm r0/r2/r3: sealed Pearson delta 0.723882 ± 0.005414 sample SD;
@@ -46,7 +48,9 @@ happening in this repo dont mess it up and keep improving", requested the test b
 "do the required changes in the github that you think are necesessay, but document everything so the
 next agent can pick it up where you left when usage runs out". These authorize the bounded GitHub
 changes and documented protocol; they are not permission to spend, merge, alter existing datasets or
-claim a fresh test happened. No paid run starts. B3 remains dropped by the 11 Oct 22:50 amendment.
+claim a fresh test happened. He later offered a credential for possible agents; its value was not
+copied, stored or used, and rotation was advised. This is not an approved experiment/budget. No paid
+run starts. B3 remains dropped by the 11 Oct 22:50 amendment.
 
 **Next scientific gate:** no additional untouched real-data cohort was found locally. Andres was asked
 whether to use an untouched cohort or the existing set descriptively; no explicit choice/source has
@@ -55,6 +59,10 @@ approved cohort plus a separate evaluator identity/host, a tested frozen-inferen
 prospective evaluation batch. Do not retune on the opened test or change exploration because of its
 score. Use development folds for proposed remedies, then freeze before a later unseen test. The new
 protocol gives the next implementation steps and separates these blockers from the completed fixes.
+Metadata-only research identified Replogle 2020 direct-capture exp8 (GSM4367986) and Pacalin/Steinhart
+CRISPRai (GSE220974) as possible independent CRISPRa cohorts; compatibility and exposure audits are
+incomplete. Neither is yet a clean test, and no response data was downloaded. The saved B1 report and
+receipt were independently verified against all four exact archived source hashes.
 
 The older narrative below is historical where this current state supersedes it. No branch was merged,
 no protected code changed, and the main checkout, STOP and all run/data files remain unchanged.
