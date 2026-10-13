@@ -1,0 +1,716 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-13T19:51:41.865205+00:00",
+  "status": "metadata_audit_only_no_approved_cohort_no_evaluation",
+  "claim": "https://github.com/andresloak100/Gene-Mila/issues/18",
+  "agent": "Astra (Codex), chat2",
+  "branch": "astra/external-cohort-metadata",
+  "report_sha256": "dee2361f34ec26175e3f18f548f359a01cf07aeed1c7fa51dd74d12f12d4294e",
+  "development_metadata": {
+    "source_run": "runs/norman_ds_from_n2_w4_r1",
+    "metadata_only_arrays_read": [
+      "train_perts",
+      "genes",
+      "perts"
+    ],
+    "targets_json_sha256": "f02c03f13588ea93b8a14a7979e9c31b8bc317d6cb18b9c24e38362b3bb7662c",
+    "n_train_conditions": 112,
+    "n_all_context_conditions": 231,
+    "n_gene_universe": 2083,
+    "training_target_gene_count": 71,
+    "all_context_target_gene_count": 102,
+    "training_target_genes": [
+      "AHR",
+      "ARID1A",
+      "ARRDC3",
+      "ATL1",
+      "BAK1",
+      "BCL2L11",
+      "BCORL1",
+      "CBFA2T3",
+      "CBL",
+      "CDKN1A",
+      "CDKN1B",
+      "CEBPA",
+      "CEBPE",
+      "CELF2",
+      "CITED1",
+      "CKS1B",
+      "CLDN6",
+      "CNN1",
+      "CNNM4",
+      "COL1A1",
+      "COL2A1",
+      "CSRNP1",
+      "DLX2",
+      "DUSP9",
+      "EGR1",
+      "ELMSAN1",
+      "FEV",
+      "FOXF1",
+      "FOXL2",
+      "FOXO4",
+      "GLB1L2",
+      "HK2",
+      "HOXB9",
+      "HOXC13",
+      "IER5L",
+      "IGDCC3",
+      "IRF1",
+      "JUN",
+      "KIF18B",
+      "KIF2C",
+      "KLF1",
+      "KMT2A",
+      "LYL1",
+      "MAP2K3",
+      "MAP4K5",
+      "MAPK1",
+      "MIDN",
+      "NCL",
+      "NIT1",
+      "OSR2",
+      "PLK4",
+      "PRDM1",
+      "PRTG",
+      "PTPN1",
+      "PTPN13",
+      "PTPN9",
+      "SET",
+      "SGK1",
+      "SLC38A2",
+      "SLC4A1",
+      "SLC6A9",
+      "SNAI1",
+      "SPI1",
+      "STIL",
+      "TBX2",
+      "TMSB4X",
+      "TP73",
+      "UBASH3B",
+      "ZBTB25",
+      "ZC3HAV1",
+      "ZNF318"
+    ],
+    "all_context_target_genes": [
+      "AHR",
+      "ARID1A",
+      "ARRDC3",
+      "ATL1",
+      "BAK1",
+      "BCL2L11",
+      "BCORL1",
+      "BPGM",
+      "CBFA2T3",
+      "CBL",
+      "CDKN1A",
+      "CDKN1B",
+      "CDKN1C",
+      "CEBPA",
+      "CEBPB",
+      "CEBPE",
+      "CELF2",
+      "CITED1",
+      "CKS1B",
+      "CLDN6",
+      "CNN1",
+      "CNNM4",
+      "COL1A1",
+      "COL2A1",
+      "CSRNP1",
+      "DLX2",
+      "DUSP9",
+      "EGR1",
+      "ELMSAN1",
+      "ETS2",
+      "FEV",
+      "FOSB",
+      "FOXA1",
+      "FOXA3",
+      "FOXF1",
+      "FOXL2",
+      "FOXO4",
+      "GLB1L2",
+      "HES7",
+      "HK2",
+      "HNF4A",
+      "HOXA13",
+      "HOXB9",
+      "HOXC13",
+      "IER5L",
+      "IGDCC3",
+      "IKZF3",
+      "IRF1",
+      "ISL2",
+      "JUN",
+      "KIF18B",
+      "KIF2C",
+      "KLF1",
+      "KMT2A",
+      "LHX1",
+      "LYL1",
+      "MAML2",
+      "MAP2K3",
+      "MAP2K6",
+      "MAP4K3",
+      "MAP4K5",
+      "MAP7D1",
+      "MAPK1",
+      "MEIS1",
+      "MIDN",
+      "NCL",
+      "NIT1",
+      "OSR2",
+      "PLK4",
+      "POU3F2",
+      "PRDM1",
+      "PRTG",
+      "PTPN1",
+      "PTPN12",
+      "PTPN13",
+      "PTPN9",
+      "RHOXF2",
+      "RREB1",
+      "RUNX1T1",
+      "S1PR2",
+      "SAMD1",
+      "SET",
+      "SGK1",
+      "SLC38A2",
+      "SLC4A1",
+      "SLC6A9",
+      "SNAI1",
+      "SPI1",
+      "STIL",
+      "TBX2",
+      "TBX3",
+      "TGFBR2",
+      "TMSB4X",
+      "TP73",
+      "TSC22D1",
+      "UBASH3A",
+      "UBASH3B",
+      "ZBTB1",
+      "ZBTB10",
+      "ZBTB25",
+      "ZC3HAV1",
+      "ZNF318"
+    ],
+    "gene_universe_sha256": "c6c1991b1d7ccdb34f10b15abbcf4c569f68d0ee76d889b89f02dea238a0caf2",
+    "source_public_npz_sha256": "b2c7eb3d34806a8d05b3a7719670833aa547d235e9d00767acce4126cbdc5411",
+    "metadata_serialization": "JSON UTF-8, compact separators, original list order; sorted for target sets",
+    "training_target_set_sha256": "239172cf4f6b539a1d725351c0058c3f1950331fd0f070e4527a5ccd38a43ed1",
+    "all_context_target_set_sha256": "5e3f6ea3fe7d2f865682ddb0e966393280914c4c5548fed9115f519f6adcb6df",
+    "training_condition_order_sha256": "b27baf6a42544c58516db9ea1fa1e08986fdb13db14761c0166f49cf27ca5809",
+    "all_context_condition_order_sha256": "d54be27d82df3e24ce53faa875b9bb9e34d9f6f4ad03c1f2c7771823a12db01a",
+    "public_source_directory": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_from_n2_w4_r1/public_data"
+  },
+  "cohorts": [
+    {
+      "accession": "GSM4367986",
+      "series": "GSE146194",
+      "title": "exp8: CRISPRa multiplexing",
+      "status": "source_locations_verified_target_list_unresolved",
+      "cell_line": "K562",
+      "modality": "CRISPRa",
+      "designed_target_gene_count": 49,
+      "distinct_gene_pair_count": null,
+      "same_gene_dosage_design": true,
+      "source_urls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC7416462/",
+        "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4367986&targ=self&form=text&view=full",
+        "https://www.nature.com/articles/s41587-020-0470-y#Sec24"
+      ],
+      "metadata_candidate": {
+        "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4367nnn/GSM4367986/suppl/GSM4367986_exp8.cell_identities.csv.gz",
+        "access": "HEAD only; body not downloaded; fields and purity unverified",
+        "head_checked_utc": "2026-10-13T19:47:28Z",
+        "head_status": 200,
+        "content_length": 2556477,
+        "sha256": null
+      },
+      "supplementary_guide_source": "Supplementary Table 6 in combined Tables1-8 workbook; not opened because target-only purity unverified",
+      "target_gene_list": null,
+      "overlap_counts": null,
+      "unknowns": [
+        "Exact targets and guide/control configurations",
+        "Cell-identities CSV fields/purity",
+        "Observed condition availability",
+        "Training/context/source overlap",
+        "Compatible frozen features and preprocessing",
+        "Prior exposure and isolated evaluator"
+      ]
+    },
+    {
+      "accession": "GSE220974",
+      "status": "guide_dictionary_audited_condition_eligibility_unresolved",
+      "source_urls": [
+        "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE220nnn/GSE220974/suppl/GSE220974_features.csv.gz",
+        "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE220974&targ=self&form=text&view=brief",
+        "https://pmc.ncbi.nlm.nih.gov/articles/mid/NIHMS2012655/"
+      ],
+      "metadata_retrieved_utc": "2026-10-13T19:46:46.400919+00:00",
+      "guide_dictionary": {
+        "source_url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE220nnn/GSE220974/suppl/GSE220974_features.csv.gz",
+        "compressed_source_sha256": "6c7c33e931ffb17bd40eb93de0116f68bd4f5596420a9530d269e44291bed40e",
+        "uncompressed_source_sha256": "ef2cad94cbfe8b8db709a573772f92ccd5e8ba7240148a2cd57c3f8332f4c258",
+        "source_columns": [
+          "id",
+          "name",
+          "read",
+          "pattern",
+          "sequence",
+          "feature_type",
+          "target_gene_id",
+          "target_gene_name"
+        ],
+        "source_rows": 94,
+        "activation_guide_rows": 42,
+        "inhibition_guide_rows": 40,
+        "non_targeting_guide_rows": 12,
+        "promoter_classification_limit": "Identifiers without -e or -e1 are classified as putative gene/promoter guides only; genomic-locus annotation still needs independent confirmation. No guide efficacy or observed cell availability used.",
+        "enhancer_labeled_activation_guides": [
+          {
+            "id": "GATA1-e1-a1",
+            "target_gene_name": "GATA1"
+          },
+          {
+            "id": "GATA1-e1-a2",
+            "target_gene_name": "GATA1"
+          },
+          {
+            "id": "MYC-e1-a1",
+            "target_gene_name": "MYC"
+          },
+          {
+            "id": "MYC-e1-a2",
+            "target_gene_name": "MYC"
+          }
+        ],
+        "non_targeting_guides": [
+          "NTC-1-i",
+          "NTC-10-a",
+          "NTC-11-a",
+          "NTC-12-a",
+          "NTC-2-i",
+          "NTC-3-i",
+          "NTC-4-i",
+          "NTC-5-i",
+          "NTC-6-i",
+          "NTC-7-a",
+          "NTC-8-a",
+          "NTC-9-a"
+        ]
+      },
+      "target_metadata": [
+        {
+          "target_gene": "ARID1A",
+          "guide_ids": [
+            "ARID1A-a1",
+            "ARID1A-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000117713"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "ATF5",
+          "guide_ids": [
+            "ATF5-a1",
+            "ATF5-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000169136"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": false,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "BTF3",
+          "guide_ids": [
+            "BTF3-a1",
+            "BTF3-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000145741"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": false,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "CEBPA",
+          "guide_ids": [
+            "CEBPA-a1",
+            "CEBPA-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000245848"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "CEBPB",
+          "guide_ids": [
+            "CEBPB-a1",
+            "CEBPB-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000172216"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "ETS2",
+          "guide_ids": [
+            "ETS2-a1",
+            "ETS2-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000157557"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "FAM83A",
+          "guide_ids": [
+            "FAM83A-a1",
+            "FAM83A-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000147689"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "FOSL1",
+          "guide_ids": [
+            "FOSL1-a1",
+            "FOSL1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000175592"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": false,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "GATA1",
+          "guide_ids": [
+            "GATA1-a1",
+            "GATA1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000102145"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "HBE1",
+          "guide_ids": [
+            "HBE1-a1",
+            "HBE1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000213931"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": false,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "IRF1",
+          "guide_ids": [
+            "IRF1-a1",
+            "IRF1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000125347"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "JUN",
+          "guide_ids": [
+            "JUN-a1",
+            "JUN-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000177606"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "KLF1",
+          "guide_ids": [
+            "KLF1-a1",
+            "KLF1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000105610"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "LYL1",
+          "guide_ids": [
+            "LYL1-a1",
+            "LYL1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000104903"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "MAP2K3",
+          "guide_ids": [
+            "MAP2K3-a1",
+            "MAP2K3-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000034152"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "MYC",
+          "guide_ids": [
+            "MYC-a1",
+            "MYC-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000136997"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "RIPK2",
+          "guide_ids": [
+            "RIPK2-a1",
+            "RIPK2-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000104312"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": false,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "SPI1",
+          "guide_ids": [
+            "SPI1-a1",
+            "SPI1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000066336"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": true,
+          "overlaps_any_original_context_target": true,
+          "eligibility": "unresolved_no_condition_level_approval"
+        },
+        {
+          "target_gene": "YY1",
+          "guide_ids": [
+            "YY1-a1",
+            "YY1-a2"
+          ],
+          "ensembl_ids": [
+            "ENSG00000100811"
+          ],
+          "putative_promoter_by_identifier_only": true,
+          "in_frozen_gene_universe": true,
+          "overlaps_training_target": false,
+          "overlaps_any_original_context_target": false,
+          "eligibility": "unresolved_no_condition_level_approval"
+        }
+      ],
+      "outside_original_context_inside_frozen_gene_universe": [
+        "FAM83A",
+        "GATA1",
+        "MYC",
+        "YY1"
+      ],
+      "outside_frozen_gene_universe": [
+        "ATF5",
+        "BTF3",
+        "FOSL1",
+        "HBE1",
+        "RIPK2"
+      ],
+      "counts_are": "guide design dictionary annotations, not observed eligible conditions",
+      "pair_configuration_counts": {
+        "designed_double_configurations": 22,
+        "bidirectional": 18,
+        "unidirectional_controls_aa_or_ii": 4,
+        "activation_activation_only": null
+      },
+      "unknowns": [
+        "Exact pair membership and aa/ii split",
+        "Observed conditions and matched controls",
+        "Genomic locus confirmation",
+        "Candidate response exposure across all agents",
+        "Complete frozen feature-input coverage",
+        "Cohort-specific preprocessing and sample-size rules"
+      ],
+      "sample_metadata": [
+        {
+          "portion": "activation_singles_S1",
+          "scrna_accession": "GSM6833424",
+          "guide_capture_accessions": [
+            "GSM6833430"
+          ]
+        },
+        {
+          "portion": "inhibition_singles_S2",
+          "scrna_accession": "GSM6833425",
+          "guide_capture_accessions": [
+            "GSM6833431"
+          ]
+        },
+        {
+          "portion": "single_activation_or_inhibition_S3",
+          "scrna_accession": "GSM6833426",
+          "guide_capture_accessions": [
+            "GSM6833432",
+            "GSM6833433"
+          ]
+        },
+        {
+          "portion": "double_rep1",
+          "scrna_accession": "GSM6833427",
+          "guide_capture_accessions": [
+            "GSM6833434",
+            "GSM6833435"
+          ]
+        },
+        {
+          "portion": "double_rep2",
+          "scrna_accession": "GSM6833428",
+          "guide_capture_accessions": [
+            "GSM6833436",
+            "GSM6833437"
+          ]
+        },
+        {
+          "portion": "double_rep3",
+          "scrna_accession": "GSM6833429",
+          "guide_capture_accessions": [
+            "GSM6833438",
+            "GSM6833439"
+          ]
+        }
+      ]
+    }
+  ],
+  "access_log": {
+    "candidate_expression_matrices_read": false,
+    "candidate_efficacy_tables_read": false,
+    "candidate_per_cell_annotations_read": false,
+    "mixed_supplementary_workbooks_read": false,
+    "existing_private_or_split_files_read": false,
+    "existing_expression_arrays_read": false,
+    "candidate_guide_dictionary_read": true,
+    "public_methods_and_geo_descriptions_read": true,
+    "published_aggregate_search_snippets_may_have_been_visible": true,
+    "outcome_based_eligibility": false
+  },
+  "inclusion_rule_status": "proposed pending independent review; no condition approved",
+  "required_metadata_projection_fields": [
+    "source",
+    "sample",
+    "condition_id",
+    "guide_id",
+    "target_gene_id",
+    "direction",
+    "locus_class",
+    "same_gene_dosage_or_distinct_gene_configuration",
+    "replicate",
+    "matched_control"
+  ],
+  "blocked_response_fields": [
+    "expression",
+    "efficacy",
+    "DE labels",
+    "embedding",
+    "cell state",
+    "response-derived QC"
+  ],
+  "no_changes": [
+    "frozen ensemble",
+    "gene universe",
+    "feature input context",
+    "alphas",
+    "preprocessing",
+    "existing bundles/runs",
+    "benchmark/split/guard",
+    "STOP",
+    "spend ledger",
+    "main checkout"
+  ],
+  "next_step": "Separate evaluator projects target/guide/configuration/control metadata only; review exposure, overlap and frozen-input compatibility before cohort approval or response acquisition."
+}
