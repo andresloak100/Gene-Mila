@@ -1,0 +1,16 @@
+{
+  "pytest": {
+    "passed": 467,
+    "skipped": 0,
+    "warnings": 8,
+    "seconds": 657.02,
+    "command": "nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m pytest -q"
+  },
+  "focused_synthetic_privacy_checks": 4,
+  "independent_runner_review": "passed after pre-persistence sanitization repair",
+  "independent_source_coverage_review": "passed; receipt wording corrected from ineligible to unverified",
+  "fixed_prompt_driver_config_hashes": "match executed artifacts",
+  "all_raw_review_hashes": "match",
+  "ledger_arithmetic": "independently verified against usage",
+  "no_new_model_scores": true
+}

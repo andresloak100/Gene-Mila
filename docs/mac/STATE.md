@@ -687,3 +687,35 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
 - Chat2 bounded metadata audit complete. Four Pacalin dictionary-novel/in-universe target names are candidates only, no approved conditions/cohort. Feature coverage/configuration/control/exposure gates remain.
 - Chat1 owns final README/status/merges, HANDOFF and this live STATE; no more duplicate work. NEXT: publish requested README/current state; then a new claimed condition/guide/control-only eligibility projection plus separate evaluator identity before any responses/scoring.
 - No API spend/oracle/private/split read/protected edit/permission change. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged. B3 remains dropped.
+
+## 2026-10-13 20:43 UTC — selected merges and README complete; next clean-test gates
+- Merged13/19/20/21: explicit sealed-feedback fix, verified frozen export, guide-only cohort audit, journal-style current README/docs. READMEchecker/GitHub CI pass. No accuracy gain claimed or model recipe changed.
+- No benefit supported by calibration diagnostic, so PR17/tool stays unmerged; PR10/12 optional reporting and Claude6/7 archives remain separate. Claim15 closed as completed negative study.
+- Chat2 bounded audit helped identify compatibility/overlap limits and is complete. Use additional chat work only for a distinct useful task, not duplicate edits/tests/runs. Chat1 finishes this shared-state publication.
+- Exact NEXT: read merged FROZEN_TEST_PLAN/FROZEN_EXPORT/EXTERNAL_COHORT_METADATA and newest HANDOFF section1. New own Claim/branch for condition/guide/control-only projection plus exposure/feature-coverage checks; evaluator identity still unanswered. Neither cohort approved. No responses/efficacy for eligibility, no fresh scoring or automatic B3/paid restart.
+- All code/run reports/pins/checksums are on GitHub; arrays remain ignored locally. No API spend, oracle query, private/split/protected change or main-checkout update. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged.
+
+## 2026-10-13 21:12 UTC — Claim22 test preparation authorized, bounded DeepSeek review
+- Andres: “go test”, “use the deepseek agents”; evaluator account/host unknown. Own astra/test-readiness-deepseek worktree; chat1 shared-state/paid-call owner.
+- Exactly two sequential metadata/protocol DeepSeek reviews: worker cap0.25, cumulative48, no retries/fallback/planner; existing LLMGateway/shared ledger. Plan/prompts fixed and runner reviewed before calls. No call made yet.
+- STOP/main4562af5b/data/historical runs/protected code untouched; no scoring/fitting/labels. Separate standard Mac evaluator account proposed, no permission/account change yet.
+- NEXT: metadata/feature audit, frozen review config, bounded calls, reviewed evidence/draft PR; real evaluation requires eligible cohort and proven access denial.
+
+## 2026-10-13 21:15 UTC — Claim22 DeepSeek text review started
+- Prospective plan/prompts/config published as d89e822 before calls. Independently reviewed driver SHA256 ff5f5ad0bc22936682d382ae49ba807302d0ebf5300e6e6b0986f14ba99e1483.
+- Own gene-mila-test-readiness/runs/test_readiness_20261013; 2sequential calls, worker0.25/cumulative48, no retries/planner/fallback; existing LLMGateway/shared ledger. Initial ledger43.589781152, fixed worst-case reservation0.03723852.
+- First local startup failed before any API call because own runs parent was absent; created empty own runs parent then started unchanged reviewed driver. No run/summary was overwritten.
+- Chat2 metadata search found no verified pure exactcondition manifest. Source-only feature audit found fourcandidate genes missing direct external rows; some annotation/outputgene channels remain. No quality result follows.
+- No lab model run/scoring/refit/labels/account change. STOP/main/data/protected code intact. NEXT: preserve both reviews/usage, full tests for archived driver, draft report/PR and exact evaluator setup blocker.
+
+## 2026-10-13 21:21 UTC — Claim22 DeepSeek review complete; real test remains blocked
+- Two DeepSeek V4 Pro text calls completed; 3,209input/1,466output tokens, ledger increment0.01004124; ledger now43.599822392 of48. No retries/fallback/planner. Own runs/test_readiness_20261013.
+- Plan/prompts/config d89e822 preceded calls. Draft PR23 archives exact driver/hash, raw reviews, source metadata audit and explicit corrections to reviewer errors; full pytest is finishing before code publication.
+- No eligible condition manifest yet; no evaluator boundary. Current agent account is admin, proposed genemilaeval absent. Asked Andres approval for standard evaluator account plus access-denial/elevation review; no response/account changes yet.
+- NEXT: finish full suite, publish checksummed PR23 evidence, then design-only condition/control projection and demonstrated isolation before candidate responses. No inference/refit/newscore/labels/private/split/protected edits. STOP/main4562af5b remain; no further paid calls; B3 remains dropped.
+
+## 2026-10-13 21:23 UTC — Claim22 checks complete; PR23 evidence publication
+- Full suite467passed/no skips/8dependencywarnings657.02s. Four synthetic credential/error sanitization checks pass; independent source/runner review complete; fixed prompts/config/driver/response hashes and ledger arithmetic verified.
+- No new model score. DeepSeek reviews completed for0.01004124ledgerUSD; sharedtotal43.599822392/cap48. Raw reviews retained with explicit corrections; no further paidcalls.
+- Final data-free evidence in PR23/own astra/test-readiness-deepseek; no model/protected/main changes. STOP remains.
+- ExactNEXT: await Andres decision on Standard evaluator account/access-denial check, then obtain pure condition/guide/control projection and fix missingfeature/preprocessing/baseline/uncertainty rules before responses/scoring. Neither cohort is verified eligible.
