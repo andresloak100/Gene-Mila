@@ -625,3 +625,12 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
 - STOP stays. Main checkout stays 4562af5b. Shared DeepSeek ledger unchanged at $43.589781152.
   No new query, download, paid call, lab run, data/run edit, protected-code change, permission change or merge.
   B3 stays dropped. Andres reviews/merges; do not push another agent's branch. PR #10 mirrors this state.
+
+## 2026-10-13 19:03 UTC — Andres confirms remaining API funds
+- His 13 Oct 15:01 EDT screenshot shows $28.20 available and $21.79 billed, described as all API funds.
+- This differs from the conservative shared DeepSeek ledger ($43.589781152), not a second charge.
+  Existing block cap remains $48, leaving $4.410218848 ledger room. Do not reprice or raise it automatically.
+- No paid call or new experiment started. Credential permission is recorded without the value; screenshot
+  is not copied into the public repository. Evaluator account/host question remains unanswered.
+- NEXT unchanged: review PRs #10/#12/#13; new agent claims cohort metadata + frozen-inference preparation,
+  follows PR #13's protocol and current HANDOFF section 1. STOP, main checkout and real run/data files stay.
