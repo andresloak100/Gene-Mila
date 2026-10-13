@@ -127,7 +127,9 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
     warm = lab.run_dir / "warm_start.json"
     if warm.exists():
         w = json.loads(warm.read_text())
-        prior = {"continued_from": w["run_id"], "its_best": {"visible": w["best_visible"], "sealed": w["best_sealed"],
+        # Project visible metadata explicitly: legacy files can still contain best_sealed, which must not
+        # become feedback for the next campaign's planner.
+        prior = {"continued_from": w["run_id"], "its_best": {"visible": w["best_visible"],
                                                               "model": w["model"], "features": w["features"]},
                  "features_that_helped_there": w["helpful_features"][:10],
                  "features_that_did_not_help_there": w["unhelpful_features"][:12],
