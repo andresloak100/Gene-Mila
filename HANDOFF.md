@@ -4,37 +4,33 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active model-improvement block, 2026-10-13 22:19 UTC:** Andres accepted a bounded development comparison:
-“yes improve our model ... updates from the claude's work”. Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
-own `astra/singleton-transfer-development` / `gene-mila-singleton-transfer`. Prioritize model evidence;
-Claim22/evaluator-account setup is deferred, not approved. No account changes or new API calls.
-Hypothesis: preserve known singleton responses, use the existing external screen to estimate missing
-singletons, then sum. StageA matched five-column ridge panels; StageB fixed B1 recipes refitted on the
-same development folds only if the prospective component gate passes. All labels are public training;
-3 fold seeds/5 outer folds, nested feature regeneration for selection, unchanged existing split/evaluator
-code. No stored B1 in-sample predictions used as a validation comparator. Historical feature selection
-makes this development evidence only. Root owns plan/runner/results/sharedstate; implementation subagent
-owns only new optional feature/tests; a second owns the diagnostic runner/tests; chat2 independently reviews methods.
-Prospective protocol published **c8c1358**, `docs/SINGLETON_TRANSFER_PLAN.md`, draft
-[PR #25](https://github.com/andresloak100/Gene-Mila/pull/25), before any real fitting. Review requires
-full outer/inner gene hide sets, duplicate-singleton self-exclusion, fixed lambda1 and direct-additive
-controls. Ten metrics; exact all-positive/mean>max(.002,SD) Pearson gate with ratio-of-means MSE/top20
-guards; 7200s bound, at most480+90 ridgefits. No new model score yet.
-Andres explicitly asks every change/finding be on GitHub for Claude: preserve negative outcomes too.
-Source/methodology reviews complete; focused **62 passed (2.19s)**, including outer/inner hidden-label
-poisoning, member-paired reporting, gate arithmetic and stopped-checkpoint preservation. A parent
-launcher in `docs/results/singleton_transfer_development_20261013/run_with_deadline.py` enforces7200s.
-Full suite **529 passed, no skips, 8 dependency warnings (653.50s)**; focused62passed. Reviewed code
-published **7606c04** before fitting; secret/diff scans pass. Starting one free standalone real
-public-training comparison now, own `gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013`.
-Use mainvenv Python, `PYTHONHASHSEED=0`, single-thread BLAS variables, niceness19, and archived
-`docs/results/singleton_transfer_development_20261013/run_with_deadline.py --package <pinned package>
---out runs/singleton_transfer_development_20261013`. Parent deadline7200s; A480 fits then B90 only
-if fixed gate passes. Config/source/input hashes precede fits. Exact next: wait for that one process,
-preserve all stage/repeat/gate results and raw ignored predictions; independently verify arithmetic,
-publish data-free report/hashes/run summaries and update Claude handoff. Do not retry/widen/restart B3.
-Command and input manifest pin are in the prospective plan. Do not create an evaluator account.
-STOP/main4562af5b/private/splits/protected code unchanged; ledger43.599822392/cap48; B3 stays dropped.
+**Latest result, 2026-10-13 22:40 UTC — Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
+draft [PR #25](https://github.com/andresloak100/Gene-Mila/pull/25):** completed one free, fixed
+missing-singleton transfer development comparison. **Negative primary result; do not promote or merge
+the unused experimental feature/tool. B1 remains delivered and unchanged.** Plan `c8c1358`, reviewed
+implementation `7606c04` were published before fitting; own `astra/singleton-transfer-development`,
+`gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013`. Three outer gene-fold seeds,
+five folds, nested alpha selection, 112 public-training conditions/2083genes. Candidate minus matched
+five-column control Pearson delta **−0.003245 ± 0.001620 sample SD**, all three negative. Control
+0.573512±0.015021; candidate0.570267±0.013404. MSE control0.008086±0.000372/candidate0.008132±0.000304;
+top20MSE0.194277±0.013439/0.193232±0.012043 (paired improvement smaller than its SD).
+These are same-cohort development partition sensitivities, not independent replication, historical
+B1 held-out comparisons or CellForge results. Fixed gate failed; StageB correctly **skipped**.
+480A/0Bfits, summary57.771s; no retry/grid extension/API call. Full **529passed**, no skips,
+8dependencywarnings653.50s; focused62passed2.19s. Independent raw-array arithmetic verified150metric
+values (maxdifference8.882e-16), source/input hashes and seed aggregates. Complete ten-metric results,
+allfolds/alphas/coverage, config, sourcepins, review, SHA256/MD5 and exactlauncher are archived in PR25:
+`docs/SINGLETON_TRANSFER_RESULTS.md`, `docs/results/singleton_transfer_development_20261013/`.
+Numeric predictions stay ignored locally, with hashes in the archive. No model/controller run remains.
+
+Andres asked every change/finding be on GitHub so Claude can resume. Root owns final publication/shared
+state; chat2 provides a read-only independent summary check. **Exact next:** read PR25's negative report
+and preserve this closed grid; do not run conditional StageB or tune it after its outcomes. A next
+model block needs a distinct prospective hypothesis and matched public-development control. Keep B1;
+no supported replacement was found. Claim22/evaluator-account setup remains **deferred, not approved**;
+no permissions changes. STOP/main4562af5b/private/splits/protected code unchanged, sharedledger
+43.599822392/cap48, noAPIspend. B3 stays dropped. This latest decision supersedes the older account-first
+next steps below; no additional automatic model or paid run is authorized by this completed plan.
 
 **Latest follow-up, 2026-10-13 21:24 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22),
 draft [PR #23](https://github.com/andresloak100/Gene-Mila/pull/23):** Andres said “go test” then “use the
@@ -63,7 +59,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 22:19 UTC, by Astra (Codex), chat “1”. Claim24 fixed development diagnostic starting; no controller or paid run.
+**Last updated:** 2026-10-13 22:40 UTC, Astra (Codex), chat “1”. Claim24 complete; no active model/controller run.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
@@ -122,7 +118,7 @@ HANDOFF/live Mac STATE. Chat “2” finished claim #18 on its own `astra/extern
 it stopped overlapping writes/runs. Its independent archive review also verified the diagnostic's raw
 statistics and checksums. No additional chat or implementation is needed for the finished audit.
 
-**Exact next bounded step:** the selected merges and requested README are complete. Read the merged
+**Earlier clean-test planning (deferred by the latest model-priority decision):** the selected merges and requested README are complete. Read the merged
 `docs/FROZEN_TEST_PLAN.md`, `docs/FROZEN_EXPORT.md` and `docs/EXTERNAL_COHORT_METADATA.md` before new work.
 Do not repeat B1/B2 readings, rerun the diagnostic, promote a model by the used sealed set, or restart B3.
 A new own-branch Claim should own a **condition/guide/control-only** projection and exposure/feature-coverage
@@ -183,7 +179,7 @@ implemented and await review; claims #14/#15/#16 now own the new work. Avoid dup
 |---|---|---|---|
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88`; PR #5 (README Norman section with N4, B1 and B2) 12 Oct | |
-| Astra (Codex), current takeover | 2026-10-13 | selected export/feedback/cohort/README merges complete; shrinkage unmerged; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
+| Astra (Codex), current takeover | 2026-10-13 | Claim24 negative transfer experiment complete/archived; B1 unchanged; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
 | Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, are now on GitHub (remote heads verified 13 Oct: 6a3e8a8e and 74114d43); the old local-only note is superseded | none |
 
 **On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
