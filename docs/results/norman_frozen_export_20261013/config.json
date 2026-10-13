@@ -1,0 +1,58 @@
+{
+  "access": "no private data, split files, test labels, oracle, summary scores, fitting or model selection",
+  "comparison": {
+    "atol": 1e-06,
+    "rtol": 1e-06,
+    "rule": "all members and equal ensemble pass with exact condition and gene order"
+  },
+  "created_utc": "2026-10-13T19:43:07.279975+00:00",
+  "expected_full_grid_indices": [
+    0,
+    1,
+    4
+  ],
+  "helper_sha256": "a1c171df06c1dfa0f8448786be6da583404fc86f5580da44d982d5560cff5d91",
+  "inputs": "original hash-pinned fitted models, public training context, feature source, and saved predictions only",
+  "output_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013",
+  "predeclared_core_diff_sha256": "a7267e73f6bea54c16de23d63f7fd2a78564f413d34a9adc7950dbb77910fdaf",
+  "runtime": {
+    "implementation": "CPython",
+    "packages": {
+      "numpy": "2.5.3",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1"
+    },
+    "python": "3.13.7",
+    "pythonhashseed": "0",
+    "source_sha256": {
+      "features/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "features/api.py": "6cded0b6c2105bceed8b08ad10d432cfefa496aa3824c5b31eb518df00f3b0d7",
+      "features/builtin.py": "7385a22d565958ddd870297c722452072b1b2701431367dbc95290deba732725",
+      "features/registry.py": "549e46a862fcb62d478798963b0863a61681d01bfb648e765b421cd187575ff4",
+      "frozen.py": "c076add7df09447cd59a3aeceee16dae1f38fa2fe2f757eb8e4ce0172271e64a",
+      "pipeline.py": "afb15b56bbe778d66f051f79db6d6bb47e7e1b1e4eaad080dd08bc90817ba82f"
+    }
+  },
+  "selected_models": [
+    {
+      "alpha": 20000.0,
+      "experiment_id": "EXP_0681",
+      "weight": 0.3333333333333333
+    },
+    {
+      "alpha": 0.00198,
+      "experiment_id": "EXP_0729",
+      "weight": 0.3333333333333333
+    },
+    {
+      "alpha": 300.0,
+      "experiment_id": "EXP_0519",
+      "weight": 0.3333333333333333
+    }
+  ],
+  "source_receipt": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-frozen-test/docs/results/norman_b1_frozen_test_review_20261013.json",
+  "source_receipt_sha256": "f0b2424676b559f9140c656bd8264649fb405144abf3f1c89115277de76341b9",
+  "task": "frozen_B1_saved_prediction_reproduction",
+  "worktree": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export",
+  "worktree_head": "1ec08e64204cc3fcb7fa4602ca0308d64b3b72a2"
+}
