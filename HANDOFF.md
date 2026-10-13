@@ -24,9 +24,15 @@ Andres explicitly asks every change/finding be on GitHub for Claude: preserve ne
 Source/methodology reviews complete; focused **62 passed (2.19s)**, including outer/inner hidden-label
 poisoning, member-paired reporting, gate arithmetic and stopped-checkpoint preservation. A parent
 launcher in `docs/results/singleton_transfer_development_20261013/run_with_deadline.py` enforces7200s.
-Full pytest on final source is running (own clone); one earlier test attempt was stopped for the final
-preservation fix, not counted as a pass. Exact next: finish full suite, secret-scan and publish code,
-then one free standalone own-clone experiment with immutable config/source/plan hashes.
+Full suite **529 passed, no skips, 8 dependency warnings (653.50s)**; focused62passed. Reviewed code
+published **7606c04** before fitting; secret/diff scans pass. Starting one free standalone real
+public-training comparison now, own `gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013`.
+Use mainvenv Python, `PYTHONHASHSEED=0`, single-thread BLAS variables, niceness19, and archived
+`docs/results/singleton_transfer_development_20261013/run_with_deadline.py --package <pinned package>
+--out runs/singleton_transfer_development_20261013`. Parent deadline7200s; A480 fits then B90 only
+if fixed gate passes. Config/source/input hashes precede fits. Exact next: wait for that one process,
+preserve all stage/repeat/gate results and raw ignored predictions; independently verify arithmetic,
+publish data-free report/hashes/run summaries and update Claude handoff. Do not retry/widen/restart B3.
 Command and input manifest pin are in the prospective plan. Do not create an evaluator account.
 STOP/main4562af5b/private/splits/protected code unchanged; ledger43.599822392/cap48; B3 stays dropped.
 
@@ -57,7 +63,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 22:19 UTC, by Astra (Codex), chat “1”. Claim24 implementation/tests active; no real fitting yet.
+**Last updated:** 2026-10-13 22:19 UTC, by Astra (Codex), chat “1”. Claim24 fixed development diagnostic starting; no controller or paid run.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
