@@ -4,6 +4,21 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active block, 2026-10-13 23:27 UTC — Claim [#26](https://github.com/andresloak100/Gene-Mila/issues/26),
+draft [PR #27](https://github.com/andresloak100/Gene-Mila/pull/27):** Andres said “go” to a free
+baseline/error diagnosis of Claude's actual fixed B1 recipes. Own `astra/b1-development-diagnosis`,
+`gene-mila-b1-diagnosis`. Prospective plan **1fdadb9**, `docs/B1_DIAGNOSTIC_PLAN.md`, published before
+outcomes. Threegene-foldseeds0/1/2×5folds; fullhideunion; original3recipes/params/alphas/seeds;
+equalensemble vs analytic additive; no innerCV/tuning/correction/newfeature. Pinned B1export manifest
+225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45. Metadata-only strata for singles/pairs,
+0/1knownsingles and raw external-profilecoverage.10metrics/pairedsampleSD, same-cohort/historical
+selection limits; no fresh-test/CellForge/modelpromotion. Separate from failed Claim24; do not reopen it.
+Root owns plan/docs/publication/sharedstate; implementation subagent only newrunner/tests, independent
+reviewer read-only. **Exact next:** finish source/synthetic review, fullpytest beforecodepush, then one
+free ownclone diagnostic,45fits/7200sparentdeadline, exclusive `runs/b1_development_diagnostic_20261013`.
+No realfitting started; no APIcalls/account/protected/main/data/STOP changes. Ledger43.599822392/cap48.
+Keep allfindings and exactnext action onGitHub forClaude. No additional modelsearch is part of this plan.
+
 **Latest result, 2026-10-13 22:40 UTC — Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
 draft [PR #25](https://github.com/andresloak100/Gene-Mila/pull/25), archive head **3f78618**, claim closed:** completed one free, fixed
 missing-singleton transfer development comparison. **Negative primary result; do not promote or merge
@@ -60,7 +75,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 22:42 UTC, Astra (Codex), chat “1”. Claim24 archived/closed; no active model/controller run.
+**Last updated:** 2026-10-13 23:27 UTC, Astra (Codex), chat “1”. Claim26 implementation/tests active; no real fit yet.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
