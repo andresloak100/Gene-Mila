@@ -42,8 +42,9 @@ its `predict` sets partition the public training conditions. A predicted pair re
 known singleton, not universally two unseen targets.
 
 For each member/fold, load fresh snapshot plugin/module state and a fresh restricted training view.
-Set its original NumPy seed, compute training-batch features first and then the entire predicted-fold
-batch. Preserve this historical batch behavior. Verify feature/column order against the manifest;
+Seed module loading deterministically, then reset its original NumPy seed immediately before
+training features; restore ambient state afterward. Compute training-batch features first and then
+the entire predicted-fold batch. Preserve this historical batch behavior. Verify feature/column order against the manifest;
 use its exact parameters. No inherited label-dependent caches or shared disk cache. Do not use
 `frozen._matrix`, which reopens the full training context. Previously reviewed snapshot source uses
 the supplied restricted context; reuse that source audit unless a new gap appears.
