@@ -7,38 +7,57 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 18:26 UTC, by Astra (Codex). Verification of the completed B2 block is
-in progress under [claim #8](https://github.com/andresloak100/Gene-Mila/issues/8), branch
-`astra/b2-handoff-verification`, in a separate clone. The 11 Oct 21:40 briefing is superseded by the
-23:50 B2 results and 23:58 Mac state below. No lab run is active; STOP remains present; the shared
-DeepSeek ledger is $43.589781152. No new run, sealed query, spend, main-checkout change or protected-file
-change is authorized or underway in this verification.
+**Last updated:** 2026-10-13 18:41 UTC, by Astra (Codex), working in separate own-clone worktrees.
+No lab run is active; STOP remains present; shared DeepSeek ledger $43.589781152. Main checkout
+`~/Documents/Mila/Gene-Mila/gene-mila` remains at `4562af5b`, untouched by this takeover.
 
-**Exact next step (Astra):** finish the requested low-priority test suite and publish the verified B2
-reading/state note as a documentation-only draft PR. Independent checks of the stored readings are complete.
-In parallel, [claim #9](https://github.com/andresloak100/Gene-Mila/issues/9), branch
-`astra/handoff-stop-evidence`, is a separate, free reporting fix: `handoff_state.py` must display explicit
-external stop records even when a summary exists, and the latest appended Mac state. It changes no
-experiment, scoring, model, run artifact or scientific arm membership. Review and synthetic regression
-checks precede a full test suite and a separate draft PR. Do not rerun B2's readings.
-PR #7 already holds all 16 B2 readings and the five runs' summaries; do not rerun them or make a duplicate
-results PR. All 58 archived files match the Mac byte for byte; 57 of 58 entries in its md5 list match.
-The `docs/mac/STATE.md` entry is stale: actual at PR #7 head `084eaea` is
-`f4236da549cfeb39e50f56cf1eb6f3af`, not `6062179a6d0b0e9f47e51bb0798e5b44`. The 59 changed files
-(including that list) have no key-shaped matches under the verification scan. Keep the watchdog-killed
-r1 separate from the r0/r2/r3 arm. PRs #6 and #7 remain drafts and unmerged.
+**Current work and exact next steps:**
+1. B2 is complete. Its independent verification is in draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
+   claim #8, branch `astra/b2-handoff-verification`. All 16 saved readings and five runs' summaries remain
+   in draft PR #7; B1 is in draft PR #6. No new sealed query was made. Initial suite: **435 passed, 2 skipped**.
+   All 58 PR #7 artifacts matched the Mac originals before state updates; 57/58 md5 entries pass. Only
+   `STATE.md`'s hash is stale: archived `084eaea` file hash `f4236da549cfeb39e50f56cf1eb6f3af`, versus
+   `6062179a6d0b0e9f47e51bb0798e5b44` for its pre-23:58 content. Correct that mutable-state entry at integration.
+   PR #10 carries full SD/SE-labelled results and the r1 selected-score provenance caveat.
+2. Claim #9, `astra/handoff-stop-evidence`: `handoff_state.py` reports explicit operational stops even
+   when a summary exists, and shows the latest 40 Mac-state lines while retaining JSON `state_head`.
+   Synthetic focused checks: 11 passed. Independent review complete; full suite running in
+   `gene-mila-handoff-tool` worktree (no real lab run). Publish a separate draft PR after it passes.
+3. Claim #11, `astra/frozen-test-protocol`: Andres now requests a test set inaccessible to orchestration,
+   the frozen best model compared with CellForge on Pearson delta plus at least three other metrics,
+   and overfitting/exploration safeguards. A confirmed leak is being fixed: old `Lab.warm_start` copies
+   sealed scores into `best_sealed`, and planner state renders them. Minimal unprotected-code fix omits
+   the field in new metadata and ignores it in legacy planner context. Five targeted tests pass and an
+   independent review found no blocking issue. Run the full suite after #9's suite ends, then publish
+   the fix with `docs/FROZEN_TEST_PLAN.md`, the saved B1 multi-metric report and artifact fingerprints.
+   This fixes explicit feedback, not OS-level access: the controller still owns a local oracle.
 
-**Scope and spend, 13 Oct:** Andres's arriving request leaves both bracketed spend alternatives in place
-and explicitly requires asking before spending or changing scope. It gives no unambiguous paid-run go.
-B3 was dropped by the plan's dated 22:50 amendment after the r1 stop; it is not resumed here. Do not
-remove STOP, build a B3 bundle, start a control/paid run, or substitute a shrinkage investigation.
-After this verification, present B2's results and await Andres's explicit next-block decision; record
-his actual answer here before any dependent action. Andres then wrote, "i want you to undestand what is happening in this repo dont mess it up and keep improving".
-That supports the narrow free reporting improvement above; it is not a paid-run go, permission to reopen
-B3 or approval to change protected code. The B3 scope/spend decision remains open.
+**Scientific state:** B2 accepted arm r0/r2/r3: sealed Pearson delta 0.723882 ± 0.005414 sample SD;
+primary gain over ridge-additive start +0.007758 ± 0.005414 across repeats, arm SE 0.005594, threshold
+0.011780: no difference established. Watchdog-killed r1 remains separate. Delivered Norman model stays
+B1's equal average of `norman_ds_from_n2_w4_r1:EXP_0681`, `_r2:EXP_0729`, `_r3:EXP_0519`, chosen on
+visible validation (0.780139 versus B2 0.750482), saved sealed Pearson delta 0.722897. Current held-out
+scores are descriptive; continuation planners had aggregate sealed feedback. Do not claim CellForge
+superiority. Published CellForge has no Pearson delta and an equivalent fixed evaluator was not located.
 
-The lab-code owner's full scientific state remains `docs/LAB_STATE.md` (11 Oct 23:50); the older
-operational narrative below is historical where this current paragraph supersedes it.
+**Andres's decisions and open gates (13 Oct):** The initial request retained both bracketed spend
+alternatives and requires asking before spending. He then wrote "i want you to undestand what is
+happening in this repo dont mess it up and keep improving", requested the test boundary above, and
+"do the required changes in the github that you think are necesessay, but document everything so the
+next agent can pick it up where you left when usage runs out". These authorize the bounded GitHub
+changes and documented protocol; they are not permission to spend, merge, alter existing datasets or
+claim a fresh test happened. No paid run starts. B3 remains dropped by the 11 Oct 22:50 amendment.
+
+**Next scientific gate:** no additional untouched real-data cohort was found locally. Andres was asked
+whether to use an untouched cohort or the existing set descriptively; no explicit choice/source has
+arrived. Report existing frozen B1 results without re-querying. A true untouched evaluation requires an
+approved cohort plus a separate evaluator identity/host, a tested frozen-inference adapter and a
+prospective evaluation batch. Do not retune on the opened test or change exploration because of its
+score. Use development folds for proposed remedies, then freeze before a later unseen test. The new
+protocol gives the next implementation steps and separates these blockers from the completed fixes.
+
+The older narrative below is historical where this current state supersedes it. No branch was merged,
+no protected code changed, and the main checkout, STOP and all run/data files remain unchanged.
 
 **Active agents**
 
@@ -46,7 +65,7 @@ operational narrative below is historical where this current paragraph supersede
 |---|---|---|---|
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88`; PR #5 (README Norman section with N4, B1 and B2) 12 Oct | |
-| Astra (Codex), current takeover | 2026-10-13 | B2 verification and reporting safety; branches `astra/b2-handoff-verification`, `astra/handoff-stop-evidence`; free only | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9) |
+| Astra (Codex), current takeover | 2026-10-13 | B2 verification, reporting safety and test-feedback boundary; separate `astra/*` branches; free only | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
 | Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
 **On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
