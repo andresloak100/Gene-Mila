@@ -4,27 +4,33 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active follow-up, 13 Oct 21:12 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22):**
-Andres said “go test”, then “use the deepseek agents”; he is unsure of the separate evaluator account/host.
-Chat 1 owns `astra/test-readiness-deepseek` / own `gene-mila-test-readiness`: finish metadata eligibility
-and frozen-feature coverage; two sequential DeepSeek text-only reviews, fixed prompts/config before calls,
-worker cap **$0.25**, cumulative cap **$48**, maximum two completions, no retry/fallback/planner.
-Use the existing LLMGateway and original shared ledger. This specifically authorized review does not
-restart model-search runs; STOP stays. No test labels/efficacy, fitting, oracle calls, B3, protected edits,
-main-checkout changes or account permissions changes. Proposed evaluator: separate standard Mac account,
-with a concrete setup/access-denial check to review before creation. Chat 2 may help locate pure condition/
-guide/control metadata read-only; chat 1 owns shared files and paid calls. Exact next: fix the review plan,
-verify runtime/budget/credential availability without printing secrets, review the bounded runner, then
-run the two reviews and archive every outcome. Actual scoring waits for compatible cohort and a proven
-access boundary. Older no-new-paid-review statements below are superseded only for this $0.25 review.
+**Latest follow-up, 2026-10-13 21:21 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22),
+draft [PR #23](https://github.com/andresloak100/Gene-Mila/pull/23):** Andres said “go test” then “use the
+deepseek agents”; he is unsure of a separate evaluator account/host. Chat 1 owns
+`astra/test-readiness-deepseek` / own `gene-mila-test-readiness`. Two sequential DeepSeek V4 Pro text
+reviews completed under the published plan/prompts/config `d89e822`, existing LLMGateway, worker cap
+$0.25 and unchanged cumulative cap $48. No retries/fallback/planner. Run `runs/test_readiness_20261013`:
+3,209 input/1,466 output tokens; ledger increment **$0.01004124**, current total **$43.599822392**.
+No model search, inference, fit, new score or label/efficacy read. STOP/main/data/protected code unchanged.
+The cohort/source audit confirms incomplete target-specific frozen features and no verified pure
+condition/control manifest. Missing profiles do not prove poor accuracy. The raw DeepSeek reviews
+contain errors: output-gene measurement is not perturbation exposure; 19 targets are not 19 rejected
+conditions; a hypothetical prediction probe is not a performance test. Preserve raw reviews and the
+explicit corrections in `docs/TEST_READINESS_20261013.md`; do not adopt them uncritically.
+Chat 2's useful metadata search and the independent source audit are complete. No further paid calls.
+Current orchestration user is admin; proposed `genemilaeval` does not exist. Andres was asked approval
+for a Standard evaluator account plus an actual access-denial/elevation check; no answer or account
+change yet. Exact next: finish/publish checksummed report/driver after the ongoing required full suite,
+then obtain design-only condition/guide/control projection and verified evaluator isolation before any
+candidate responses. Account setup alone is not proof. B3 remains dropped; no new lab run is authorized.
 
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 20:43 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
-STOP remains present; shared DeepSeek ledger **$43.589781152**, cap **$48**. Main Mac checkout remains
+**Last updated:** 2026-10-13 21:21 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
+STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
-do not reprice the conservative ledger or infer a new paid block. No API spend occurred in this work.
+do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
 
 **Andres's latest decisions, 13 Oct:** “i need you to merge it as well” authorizes the completed changes;
 then “please dont overengeneer” and “just make sure whatever is being merge is going to help our model
