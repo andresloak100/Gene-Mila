@@ -137,11 +137,25 @@ clone, so the real shared ledger was checked separately via a read-only SQLite c
 `nice -n 19 python -m pytest -q` passed: **435 passed, 2 skipped in 800.55 s**. This was the initial
 lab-head baseline suite in the own clone; the separate reporting patch is tested separately.
 
-## Next step and authorization
+## Completed improvements and next step
 
-B3 was dropped from this block by the dated plan after the r1 stop. The 13 October request retains both
-spend alternatives and asks for approval before scope or spending changes. No paid authorization is
-inferred. STOP remains in place; no B3 build or run starts. Andres's follow-up asked to understand the repository, avoid disrupting it and keep improving. The next
-bounded free step is therefore the separate handoff-reporting safety fix in
-[claim #9](https://github.com/andresloak100/Gene-Mila/issues/9), not another experiment. Reopening B3,
-raising the ledger cap or touching protected code still requires his explicit decision.
+B3 was dropped from this block by the dated plan after the r1 stop. STOP remains in place; no B3 build
+or run starts. Andres subsequently authorized careful GitHub improvements and a test boundary with a
+complete handoff. The bounded free changes are now reviewable:
+
+- [PR #12](https://github.com/andresloak100/Gene-Mila/pull/12), claim #9, fixes stop-evidence reporting;
+  full suite 445 passed, 2 skipped. It does not change scientific membership or historical outputs.
+- [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13), claim #11, removes explicit sealed-score
+  feedback from continuation metadata/planner requests; full suite 440 passed. It also records the
+  frozen B1 multi-metric evidence, member/source hashes and prospective isolated-evaluation protocol.
+  This removes a feedback path but does not undo old exposure or establish a filesystem boundary.
+
+Andres later requested credential use; no new paid experiment was specified or started, and no
+credential value was copied into tools or artifacts. Reopening B3, raising the cap or changing protected
+code still requires an explicit decision. Main checkout, STOP and existing run/data files remain unchanged.
+
+The next agent should read current HANDOFF section 1 and PR #13's `docs/FROZEN_TEST_PLAN.md`, claim a
+new own-branch task, audit external cohort target/guide eligibility without response labels, and
+implement a verified frozen inference adapter with synthetic checks. A separate evaluator account/host
+is needed for the requested inaccessible test; Andres has been asked which to use. No fresh clean test
+or CellForge superiority is claimed. The synchronized Mac state in this PR records the latest milestone.

@@ -590,3 +590,38 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
 - NEXT: publish B2 verification docs; independently review the reporting patch, run synthetic regressions and the
   full suite, then a separate draft PR. Initial full suite is still finishing. No lab run or new sealed query.
 - B3 and all paid work remain held. STOP and main checkout untouched; ledger $43.589781152.
+
+## 2026-10-13 18:50 UTC — Astra GitHub improvements; no lab run
+- B2 verification is draft PR #10 (claim #8). Initial full suite: 435 passed, 2 skipped.
+- Stop-evidence reporting is draft PR #12 (claim #9), astra/handoff-stop-evidence, c15034a.
+  Full suite: 445 passed, 2 skipped; interrupted B2 r1 is correctly labelled despite summary.json.
+- Claim #11, astra/frozen-test-protocol: omit best_sealed from new warm-start metadata and legacy planner
+  context. Five targeted tests and independent code review pass; full suite running in own worktree.
+  Saved B1 multi-metric report and model/source fingerprints are reviewed; no new sealed query occurred.
+- B1 ensemble Pearson delta 0.722897 is descriptive; top-20 MSE is worse than additive. No CellForge
+  superiority claim or inaccessible-test claim. Separate evaluator and frozen inference adapter still needed.
+- Two potential external CRISPRa cohorts identified by metadata only; no downloads or test selection yet.
+- NEXT: finish full suite, publish feedback fix/protocol as a draft PR, update HANDOFF section 1 and mirror
+  this state into own PR #10 with a fresh checksum. Then metadata-only cohort/inference compatibility audit.
+- Main checkout 4562af5b, STOP, run/data files unchanged. Ledger remains $43.589781152. No paid run,
+  permissions change, merge or protected-code edit authorized/performed; B3 stays dropped.
+
+## 2026-10-13 19:01 UTC — Astra takeover finished; reviewable PRs and next agent task
+- Draft PR #10: completed B2 verification, archived checksum caveat, synchronized state (claim #8).
+- Draft PR #12: handoff stop-evidence fix, c15034a, 445 passed / 2 skipped (claim #9).
+- Draft PR #13: sealed-score continuation-feedback fix + frozen-test protocol/report/receipt, 661bd89,
+  440 passed with no skips (8 dependency deprecation warnings); independent review complete (claim #11).
+- No fresh test was run. B1 remains delivered by visible validation; ensemble Pearson delta 0.722897;
+  its repeats 0.718780 ± 0.007325 sample SD. Six saved metrics and CellForge comparability limits in PR #13.
+- Exact next: read HANDOFF section 1 and docs/FROZEN_TEST_PLAN.md from astra/frozen-test-protocol. In an
+  own clone, fetch that branch, create an unused own astra/* branch and open a new Claim issue. Audit
+  external cohort target/guide metadata; implement/test a frozen inference adapter with synthetic data.
+  Match saved best_alpha in the full model grid; do not mistake pruned prediction index zero for its model.
+- Untouched-test gates: cohort compatibility/exposure audit, verified immutable inference/runtime export,
+  separate evaluator account/host, fixed metrics/baselines/uncertainty. Andres was asked for evaluator
+  identity; no answer yet. No real labels or outcome-based eligibility decisions during preparation.
+- Andres explicitly requested credential use; no credential value was copied/stored/logged, and no new
+  paid experiment or budget was specified. Future paid work still needs a pre-specified authorized block.
+- STOP stays. Main checkout stays 4562af5b. Shared DeepSeek ledger unchanged at $43.589781152.
+  No new query, download, paid call, lab run, data/run edit, protected-code change, permission change or merge.
+  B3 stays dropped. Andres reviews/merges; do not push another agent's branch. PR #10 mirrors this state.
