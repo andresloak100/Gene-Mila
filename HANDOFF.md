@@ -4,6 +4,20 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active model-improvement block, 2026-10-13 22:13 UTC:** Andres accepted a bounded development comparison:
+“yes improve our model ... updates from the claude's work”. Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
+own `astra/singleton-transfer-development` / `gene-mila-singleton-transfer`. Prioritize model evidence;
+Claim22/evaluator-account setup is deferred, not approved. No account changes or new API calls.
+Hypothesis: preserve known singleton responses, use the existing external screen to estimate missing
+singletons, then sum. StageA matched five-column ridge panels; StageB fixed B1 recipes refitted on the
+same development folds only if the prospective component gate passes. All labels are public training;
+3 fold seeds/5 outer folds, nested feature regeneration for selection, unchanged existing split/evaluator
+code. No stored B1 in-sample predictions used as a validation comparator. Historical feature selection
+makes this development evidence only. Root owns plan/runner/results/sharedstate; implementation subagent
+owns only new optional feature/tests; chat2 independently reviews methods. Exact next: publish fixed
+plan before outcomes, implement/test/review, full suite, then one free standalone own-clone experiment.
+STOP/main4562af5b/private/splits/protected code unchanged; ledger43.599822392/cap48; B3 stays dropped.
+
 **Latest follow-up, 2026-10-13 21:24 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22),
 draft [PR #23](https://github.com/andresloak100/Gene-Mila/pull/23):** Andres said “go test” then “use the
 deepseek agents”; he is unsure of a separate evaluator account/host. Chat 1 owns
