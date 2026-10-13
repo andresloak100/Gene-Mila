@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 19:16 UTC, by Astra (Codex), working in separate own-clone worktrees. No lab run is active; STOP remains present; shared DeepSeek ledger **$43.589781152**.
+**Last updated:** 2026-10-13 19:35 UTC, by Astra (Codex), working in separate own-clone worktrees. No controller/paid run is active; a standalone public-training diagnostic is starting; STOP remains present; shared DeepSeek ledger **$43.589781152**.
 Main checkout `~/Documents/Mila/Gene-Mila/gene-mila` remains `4562af5b`, untouched by this takeover.
 Andres's DeepSeek console screenshot (13 Oct 15:01 EDT / 19:01 UTC) shows **$28.20 available cash**
 and **$21.79 billed**, described as all available API funds. These are separate from the conservative
@@ -28,18 +28,22 @@ this explicitly authorizes the bounded README edit despite the earlier hands-off
   own worktree `gene-mila-shrinkage`: pre-specified four-recipe diagnostic using public training data only,
   nested gene-grouped folds, seeds 0/1/2. Analytic additive, inner-selected ridge, lower-penalty ridge and
   inner-OOF magnitude calibration; no outer-score model promotion. Root independently reviewed the design.
-  Exact prospective plan must be published before the real diagnostic. No real diagnostic run yet.
+  Prospective plan `fe98ed7` was published before outcomes; reviewed implementation `0fbb8ce`
+  passed **447 tests** (646.95 s, no skips; eight dependency deprecation warnings) and is published.
+  Real training-only diagnostic is starting in the new own-clone run directory below.
 - [Claim #16](https://github.com/andresloak100/Gene-Mila/issues/16), `astra/current-readme-status`,
   own worktree `gene-mila-readme`: current-status/source pointers and stale README command/budget fixes,
   plus living-doc status overrides. PR #5 was already merged 12 Oct. No asset changes. Await final
   tool/results links before documentation publication.
 
-**Exact next step now:** finish implementations and focused synthetic tests; publish the diagnostic
-plan before outcomes; independently review both tools before real public-only execution. Real export
-verification and the diagnostic run sequentially. Then full suites before any code push, separate draft
-PRs, current README/status/claims, and a synchronized Mac STATE with checksums. No paid call, new oracle
-query, private/split read, protected-code edit, main-checkout modification, STOP removal or merge.
-The prospective isolated evaluation still needs its separate evaluator identity and cohort audit.
+**Exact next step now:** run the reviewed free diagnostic, from `gene-mila-shrinkage`, with
+`PYTHONHASHSEED=0 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/shrinkage_diagnostic.py --public /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman --out runs/norman_development_shrinkage_20261013`.
+It uses public training responses only and has no oracle/provider. Preserve config/summary, publish all
+four recipes/seeds with sample SD and same-cohort caveat; no winner promotion. Export's 27 focused tests
+pass and its full suite is running; real export reproduction waits until the diagnostic has ended.
+Then publish separate draft PRs, final README/status/claims and synchronized Mac STATE/checksums.
+No paid call, new oracle query, private/split read, protected-code edit, main-checkout modification,
+STOP removal or merge. Prospective isolated evaluation still needs evaluator identity and cohort audit.
 
 **Completed work, review links and exact next steps:**
 1. B2 is complete and independently verified in draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
