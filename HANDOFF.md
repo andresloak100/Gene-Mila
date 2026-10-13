@@ -21,8 +21,12 @@ full outer/inner gene hide sets, duplicate-singleton self-exclusion, fixed lambd
 controls. Ten metrics; exact all-positive/mean>max(.002,SD) Pearson gate with ratio-of-means MSE/top20
 guards; 7200s bound, at most480+90 ridgefits. No new model score yet.
 Andres explicitly asks every change/finding be on GitHub for Claude: preserve negative outcomes too.
-Exact next: finish feature/runner synthetic leakage checks and source review, full pytest before code
-push, then one free standalone own-clone experiment with immutable config/source/plan hashes.
+Source/methodology reviews complete; focused **62 passed (2.19s)**, including outer/inner hidden-label
+poisoning, member-paired reporting, gate arithmetic and stopped-checkpoint preservation. A parent
+launcher in `docs/results/singleton_transfer_development_20261013/run_with_deadline.py` enforces7200s.
+Full pytest on final source is running (own clone); one earlier test attempt was stopped for the final
+preservation fix, not counted as a pass. Exact next: finish full suite, secret-scan and publish code,
+then one free standalone own-clone experiment with immutable config/source/plan hashes.
 Command and input manifest pin are in the prospective plan. Do not create an evaluator account.
 STOP/main4562af5b/private/splits/protected code unchanged; ledger43.599822392/cap48; B3 stays dropped.
 
