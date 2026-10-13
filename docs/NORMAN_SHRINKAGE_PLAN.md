@@ -32,6 +32,8 @@ that calibrating that ensemble would help.
    For its selected-alpha inner out-of-fold deltas P and inner truths D,
    `s = sum(P * D) / sum(P * P)`, clipped to `[0, 4]`. Zero denominator uses s=1.
    There is no intercept, no scored-outer-fold calibration and no scale-grid search.
+   Positive uniform scaling preserves Pearson delta (except a zero scale), so
+   magnitude/error metrics carry this check; Pearson gain is not its expected mechanism.
    Alpha and scalar share the inner predictions: those predictions are fitting data,
    not a reported independent calibration result. The outer fold is their evaluation.
 
