@@ -450,3 +450,240 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
   neither established by the pre-specified rule (needs more than twice the paired SE). pair_seen1: +0.021 ± 0.006 vs additive (established).
 - The DeepSeek key was pasted by Andres in the thread (twice) and used only as a process environment variable; in no file. He should rotate it.
 - Everything is on GitHub: lab branch, astra/* branches, claude/mac-reports-2026-10-11 (draft PR andresloak100/Gene-Mila#3).
+
+## 2026-10-11 19:20 UTC — replicates of N4, pre-specified before starting
+- Andres (19:10 and 19:16 UTC, with a screenshot of the DeepSeek console): spend as needed; the account has $33.01 left.
+  The console shows total cost $16.98 for 12,493 requests, where this lab's ledger records $33.97 for 12,492 calls:
+  the ledger's price table overstates real DeepSeek cost about twofold.
+- Plan fixed now, before any result: two replicates of N4 with identical settings except the seed:
+  runs/norman_ds_from_n2_w4_r1 (run.seed=1) and _r2 (run.seed=2), each continued from runs/norman_control_replogle_w4_r0,
+  code 076282c7, budget.max_total_usd=1.3, budget.cumulative_usd.deepseek=40 (ledger terms).
+  Reading: tools/sealed_reading.py on each; report all three seeds' "selected minus additive" and "selected minus start"
+  paired differences side by side, their mean and range. No seed is dropped, none replaces r0, nothing is chosen by a sealed score.
+- 19:16:54 UTC: r1 (seed 1) STARTED from the main checkout at 076282c7 via norman_n4_replicates.sh, caps max_total_usd 1.3, cumulative 40.
+  The coordinator's note (19:17 UTC) asked for no paid start before its plan commit; it arrived after the start. r2 is HELD by
+  genemila_scale_logs/STOP (the driver halts between runs). Remove STOP only after the coordinator confirms r2's caps
+  (its B1: cumulative 44, max_total_usd 0.8, max_planner_usd 0.9, run from worktree ~/Documents/Mila/Gene-Mila/gene-mila-076282c).
+- Correction: max_total_usd caps WORKER spend only; N4 did not overshoot (workers $0.484 of 1.1).
+- run.seed changes the CV folds: the same start model scores 0.6525 visible at seed 1 vs 0.6423 at seed 0.
+
+## 2026-10-11 ~19:45 UTC — r1 ended; BLINDED; r2 held
+- r1 runs/norman_ds_from_n2_w4_r1: full 20 min, rc 0, workers $0.614, planner $0.822, total $1.436; ledger $35.405757.
+  DO NOT open its query-only scores or run sealed_reading on it until the coordinator sends the final commit of
+  docs/PLAN_AFTER_N4.md (the reading rules must be on GitHub first).
+- r2: wait for the coordinator's commit hash and go. Planner spend passed $0.80, so r2 uses r1's caps (max_total_usd 1.3,
+  cumulative 40), run from the worktree ~/Documents/Mila/Gene-Mila/gene-mila-076282c with absolute paths, --set run.seed=2.
+- Key: now in ~/.zshenv as API_KEY (Andres, 19:22 UTC). Launch runs from a login zsh with DEEPSEEK_API_KEY="$API_KEY" as a
+  shell assignment; never print or write it. Do not use the key from the chat any more.
+- genemila_scale_logs/STOP is in place: remove it only when a paid run is approved to start.
+- Free dry check from the worktree passed (runs/drycheck_076282c_worktree_contaminated).
+- Plan after B1 (coordinator's): B2 = three fresh Norman DeepSeek runs starting from the additive rule, after a free control;
+  B3 = fresh Adamson split (gene mode, gene-frac 0.57 0.19 0.24, seed 20261011), free control, two DeepSeek runs.
+
+## 2026-10-11 ~21:30 UTC — B1 done (three repeats of N4), block stopped as planned; nothing running
+- Key now comes from API_KEY in ~/.zshenv (login zsh, DEEPSEEK_API_KEY="$API_KEY" as a shell assignment). STOP file is in place.
+- Main checkout at d0fb6357 (reading tools amended 20:30 UTC); runs r2, r3 ran from the worktree gene-mila-076282c.
+- r1 seed 1: $1.436, selected EXP_0681, sealed 0.719; vs start +0.0004 ± 0.0011; vs additive +0.007 ± 0.008.
+- r2 seed 2: $1.425, selected EXP_0729, sealed 0.726; vs start +0.0071 ± 0.0033; vs additive +0.013 ± 0.006.
+- r3 seed 3: $1.254, selected EXP_0519, sealed 0.711; vs start -0.0075 ± 0.0079; vs additive -0.001 ± 0.012.
+- All three: full 20 min, rc 0, planner unchanged. DeepSeek ledger $38.084345 (block cap 48).
+- ARM (primary, vs start): G -0.0000, SE 0.0071: no difference established. The agents' search adds nothing over the
+  scripted starting model. Vs additive: G +0.0062, SE 0.0128: no difference established.
+- COMBINED model (average of the three): 0.723 sealed; vs N2 +0.0041 ± 0.0011 (38/18, A better); vs additive +0.010 ± 0.007
+  (no difference). Visible validation alone: 0.7801 vs 0.7746 (N2) and 0.7259 (additive).
+- Readings in gene-mila/docs/results/norman_b1_*.md/.json (untracked there). B2 and B3 wait for the coordinator's next note.
+
+## 2026-10-11 21:35 UTC — handoff note written
+- MAC_HANDOFF.md in this folder (docs/mac/MAC_HANDOFF.md on GitHub, pull request 6): where things are on the Mac, the rules,
+  how a paid run is started, how results get to GitHub, where the science stands, what is next. Nothing is running.
+
+## 2026-10-11 21:32 UTC — B2 chain RUNNING unattended
+- Main checkout pinned at ce1b5304 (recorded in block_after_n4_b2b3_commit.txt). DO NOT `git pull` in gene-mila until B3 has
+  ended: every B2/B3 run refuses any other commit.
+- Started 21:31:47 UTC: docs/mac/block_after_n4/block_b2_chain.sh (log: block_b2_chain.log). It runs, one at a time:
+  the free control runs/norman_control_addstart_w4_r0, then paid runs/norman_ds_addstart_w4_r0, _r1, _r2 (DeepSeek, fresh start
+  from baseline_ridge_additive, caps workers $1.00, planner $1.50, ledger cap 48, no start above $45.50). About 85 minutes.
+  Each step runs only if the one before passed (<run>.passed files here). A stop writes block_after_n4_stopped.txt and ends it.
+  The chain removed the STOP file and puts it back when it ends.
+- Key: taken from API_KEY in ~/.zshenv at launch, process environment only.
+- If the chain finished and nobody read it: follow HANDOFF.md section 1 in the repository for B2's readings
+  (sealed readings per run, versus, three arm readings, four combine readings), report the primary reading and the
+  visible-validation numbers, and push as for pull request 6 (docs/mac/<run>/ and docs/results/, md5 list, key scan first).
+- If block_after_n4_stopped.txt exists: start nothing; report that file and the <run>.check.txt next to it.
+- Ledger at chain start: $38.084345. Mac on battery (91% at 21:31 UTC): ask Andres to plug in.
+
+## 2026-10-11 22:38 UTC — B2 chain STOPPED at seed 1; nothing running; start nothing
+- Control runs/norman_control_addstart_w4_r0: passed (start baseline_ridge_additive visible 0.6154; its selected model 0.6423 visible).
+- Seed 0 runs/norman_ds_addstart_w4_r0: passed the stop rule ($1.29; selected EXP_0724, 24 features, visible 0.628).
+- Seed 1 runs/norman_ds_addstart_w4_r1: search ran its full 20 min (1,203.7 s, planner unchanged, workers $0.773, planner $0.877),
+  then run_research.py's external WATCHDOG killed the lab during end-of-run work (exit code 247; log line 388). summary.json exists;
+  5 query_only events and 1 ensemble event recorded. The stop rule counts it as killed: block_after_n4_stopped.txt written.
+- Seed 2 NOT run. STOP file back in place. Ledger $41.026295 of 48. Main checkout pinned at ce1b5304 (do not pull).
+- Sealed results of B2: NOT read. Do not run B2's readings or any run until the lab-code owner decides how seed 1 is treated
+  (reported to the thread at 22:45 UTC with two options: own arm plus a replacement seed, or check its outputs first).
+- Cause to fix in code: watchdog allowance = minutes*60 + shutdown_grace_s + 180 s is too tight when a run has 640+ experiments.
+
+## 2026-10-11 22:52 UTC — B2 RESUMED: seed 2 running, then seed 3 (in place of seed 1)
+- Decision (docs/PLAN_AFTER_N4.md, note of 22:50 UTC, commit 2dcf5f3): seed 1 (runs/norman_ds_addstart_w4_r1) is its OWN ARM,
+  "killed by the watchdog while finishing"; never pooled with seeds 0, 2, 3. B3 is dropped from this block.
+- Running: genemila_scale_logs/b2_resume/block_b2_resume.sh (log block_b2_resume.log), started 22:52:00 UTC, detached.
+  It runs runs/norman_ds_addstart_w4_r2 then _r3 with --no-watchdog and a 5,400 s backstop; each ~25 min.
+  The scripts were brought in with `git show FETCH_HEAD:...` (md5 abf9af19... run, 79d80ef6... resume); the main checkout is
+  STILL pinned at ce1b5304: do not pull, check out or edit it.
+- The first stop record is kept as block_after_n4_stopped_r1.txt.
+- When it ends: report the tails of block_b2_resume.log and each run's .check.txt, each run's cost and the ledger.
+  READ NO SEALED RESULT of any B2 run (seed 1 included) and run no reading until the lab-code owner sends the readings to run.
+- If it stops: start nothing; report the stop line and the end of the run's log.
+
+## 2026-10-11 23:39 UTC — B2's runs are DONE; nothing running; readings NOT yet run
+- Seed 2 runs/norman_ds_addstart_w4_r2: passed (1,202.7 s, $1.369, selected EXP_0715, 16 features, visible 0.6506).
+- Seed 3 runs/norman_ds_addstart_w4_r3: passed (1,231.0 s, $1.194, selected EXP_0625, 11 features, visible 0.6496).
+- Seed 0: passed earlier ($1.293). Seed 1: its own arm (killed by the watchdog while finishing), never pooled.
+- B2's arm = seeds 0, 2, 3. Control = runs/norman_control_addstart_w4_r0. DeepSeek ledger $43.589781 of the block's $48.
+- STOP file is back. Main checkout still pinned at ce1b5304.
+- NEXT: wait for the lab-code owner's message with the exact readings to run. Until then read NO sealed result of any B2 run:
+  do not open the end of genemila_scale_logs/<run>.log (it holds the rendered summary) or any summary.md.
+  Then push the runs' config/summary files and the readings as for pull request 6.
+
+## 2026-10-11 23:50 UTC — B2 READ (free); nothing running
+- Readings by genemila_scale_logs/b2_resume/block_b2_read.sh (tools at the pinned ce1b5304): READ_DONE rc=0, 58 sealed scorings,
+  console in norman_b2_read.console.txt, reports gene-mila/docs/results/norman_b2_*.md/.json (16 pairs).
+- PRIMARY, arm (seeds 0, 2, 3) vs each run's start (baseline_ridge_additive): G +0.0078, SE 0.0056, k 2.11: no difference established.
+- Arm vs additive baseline: G +0.0113, SE 0.0053, k 2.14, wins 117/51: the arm better. Arm vs the control: +0.0051, not established.
+- Combined model of seeds 0, 2, 3: 0.727 sealed. vs additive +0.0143 ± 0.0025 (45/11, A better); vs its start +0.0108 ± 0.0024
+  (A better); vs the control +0.0081 ± 0.0063 (no difference); vs B1's combined +0.0040 ± 0.0060 (no difference).
+- DELIVERED Norman model by the plan's rule (visible validation only): B1's combined model (0.7801 vs B2's 0.7505 on the 63 visible
+  validation perturbations); its sealed score is 0.723.
+- Seed 1 (own arm, killed while finishing): +0.0113 ± 0.0045 vs its start; reported beside, in no arm reading.
+- Ledger unchanged by the readings: $43.589781. Main checkout still pinned at ce1b5304 until the lab-code owner lifts the pin.
+
+## 2026-10-11 23:58 UTC — end of tonight's block; nothing running
+- The pin is lifted: main checkout pulled to the lab head 4562af5b (fast-forward, no untracked file was in the way).
+- Nothing is running on the Mac. The STOP file is in place and stays there. DeepSeek ledger $43.589781.
+- B2 is done and read (draft pull request 7). B3 is dropped from this block.
+- Delivered Norman model: still B1's combined model (0.723 sealed; chosen on visible validation, 0.7801 vs B2's 0.7505).
+  B2's combined model scores 0.727 sealed, +0.0143 ± 0.0025 over the additive baseline (0.713).
+- NEXT (free): whether ridge shrinkage costs the selected models the most-changed genes (their MSE_DE and R2_DE are worse
+  than the additive baseline's although pearson_delta is better). Wait for the lab-code owner's brief.
+- No paid run starts without a new pre-specified block in the repository and Andres's own word.
+
+## 2026-10-13 18:18 UTC — Astra takeover verification; no run started
+- Claim: https://github.com/andresloak100/Gene-Mila/issues/8; own branch astra/b2-handoff-verification, separate clone.
+- Current: no lab process; STOP present; ledger $43.589781152. Main checkout remains 4562af5b and is untouched.
+- B2 completed on 11 Oct; accepted arm r0/r2/r3; watchdog-killed r1 is separate. All 16 saved readings already
+  exist in draft PR #7. B1's combined model remains delivered by visible validation. PR #6 also remains draft.
+- Artifact audit at PR #7 head 084eaea: all 58 archived files match the live originals before this append;
+  57/58 md5 entries pass. Archived STATE.md is f4236da549cfeb39e50f56cf1eb6f3af; its manifest entry is stale
+  (6062179a6d0b0e9f47e51bb0798e5b44). No key-shaped matches in the 59 PR files. Verification will document this.
+- B3 was dropped by the dated plan amendment. The new request retains both spend alternatives, so no paid go
+  is inferred. No bundle build, free/paid lab run, sealed query or shrinkage investigation starts in this task.
+- NEXT: finish nice -n 19 python -m pytest -q in the own clone; finish independent saved-reading verification;
+  publish the verification and synchronized state in a draft PR, then await Andres's next-block decision.
+
+## 2026-10-13 18:26 UTC — verification complete; reporting safety improvement claimed
+- Independent review reproduced all saved B2 arm calculations, input hashes and visible-validation delivery choice.
+  Primary gain +0.007758 ± 0.005414 sample SD; arm SE 0.005594, below the 0.011780 threshold: not established.
+- The stale PR #7 STATE checksum is exactly the file before its 23:58 entry. Results/configs/summaries/logs all match.
+- Andres: "i want you to undestand what is happening in this repo dont mess it up and keep improving".
+  Free, bounded reporting work only: claim #9, astra/handoff-stop-evidence, in a separate own-clone worktree.
+  Show recorded stops despite a summary and show the latest appended state. Do not alter lab/metrics/arm membership.
+- NEXT: publish B2 verification docs; independently review the reporting patch, run synthetic regressions and the
+  full suite, then a separate draft PR. Initial full suite is still finishing. No lab run or new sealed query.
+- B3 and all paid work remain held. STOP and main checkout untouched; ledger $43.589781152.
+
+## 2026-10-13 18:50 UTC — Astra GitHub improvements; no lab run
+- B2 verification is draft PR #10 (claim #8). Initial full suite: 435 passed, 2 skipped.
+- Stop-evidence reporting is draft PR #12 (claim #9), astra/handoff-stop-evidence, c15034a.
+  Full suite: 445 passed, 2 skipped; interrupted B2 r1 is correctly labelled despite summary.json.
+- Claim #11, astra/frozen-test-protocol: omit best_sealed from new warm-start metadata and legacy planner
+  context. Five targeted tests and independent code review pass; full suite running in own worktree.
+  Saved B1 multi-metric report and model/source fingerprints are reviewed; no new sealed query occurred.
+- B1 ensemble Pearson delta 0.722897 is descriptive; top-20 MSE is worse than additive. No CellForge
+  superiority claim or inaccessible-test claim. Separate evaluator and frozen inference adapter still needed.
+- Two potential external CRISPRa cohorts identified by metadata only; no downloads or test selection yet.
+- NEXT: finish full suite, publish feedback fix/protocol as a draft PR, update HANDOFF section 1 and mirror
+  this state into own PR #10 with a fresh checksum. Then metadata-only cohort/inference compatibility audit.
+- Main checkout 4562af5b, STOP, run/data files unchanged. Ledger remains $43.589781152. No paid run,
+  permissions change, merge or protected-code edit authorized/performed; B3 stays dropped.
+
+## 2026-10-13 19:01 UTC — Astra takeover finished; reviewable PRs and next agent task
+- Draft PR #10: completed B2 verification, archived checksum caveat, synchronized state (claim #8).
+- Draft PR #12: handoff stop-evidence fix, c15034a, 445 passed / 2 skipped (claim #9).
+- Draft PR #13: sealed-score continuation-feedback fix + frozen-test protocol/report/receipt, 661bd89,
+  440 passed with no skips (8 dependency deprecation warnings); independent review complete (claim #11).
+- No fresh test was run. B1 remains delivered by visible validation; ensemble Pearson delta 0.722897;
+  its repeats 0.718780 ± 0.007325 sample SD. Six saved metrics and CellForge comparability limits in PR #13.
+- Exact next: read HANDOFF section 1 and docs/FROZEN_TEST_PLAN.md from astra/frozen-test-protocol. In an
+  own clone, fetch that branch, create an unused own astra/* branch and open a new Claim issue. Audit
+  external cohort target/guide metadata; implement/test a frozen inference adapter with synthetic data.
+  Match saved best_alpha in the full model grid; do not mistake pruned prediction index zero for its model.
+- Untouched-test gates: cohort compatibility/exposure audit, verified immutable inference/runtime export,
+  separate evaluator account/host, fixed metrics/baselines/uncertainty. Andres was asked for evaluator
+  identity; no answer yet. No real labels or outcome-based eligibility decisions during preparation.
+- Andres explicitly requested credential use; no credential value was copied/stored/logged, and no new
+  paid experiment or budget was specified. Future paid work still needs a pre-specified authorized block.
+- STOP stays. Main checkout stays 4562af5b. Shared DeepSeek ledger unchanged at $43.589781152.
+  No new query, download, paid call, lab run, data/run edit, protected-code change, permission change or merge.
+  B3 stays dropped. Andres reviews/merges; do not push another agent's branch. PR #10 mirrors this state.
+
+## 2026-10-13 19:03 UTC — Andres confirms remaining API funds
+- His 13 Oct 15:01 EDT screenshot shows $28.20 available and $21.79 billed, described as all API funds.
+- This differs from the conservative shared DeepSeek ledger ($43.589781152), not a second charge.
+  Existing block cap remains $48, leaving $4.410218848 ledger room. Do not reprice or raise it automatically.
+- No paid call or new experiment started. Credential permission is recorded without the value; screenshot
+  is not copied into the public repository. Evaluator account/host question remains unanswered.
+- NEXT unchanged: review PRs #10/#12/#13; new agent claims cohort metadata + frozen-inference preparation,
+  follows PR #13's protocol and current HANDOFF section 1. STOP, main checkout and real run/data files stay.
+
+## 2026-10-13 19:16 UTC — next free block started: export, development diagnostic, README
+- Andres explicitly approved export + free shrinkage diagnostic and asked README/current docs up to date.
+- Claim #14: astra/frozen-inference-export in own gene-mila-export worktree, numeric export/inference,
+  no refit/labels. Selected plugin batch dependency found; preserve original anchors and fixed query recipe.
+- Claim #15: astra/norman-development-shrinkage in own gene-mila-shrinkage worktree, nested public-training
+  gene folds, four fixed recipes, seeds0/1/2. Publish prospective plan and review before any real outcomes.
+- Claim #16: astra/current-readme-status, own gene-mila-readme worktree. README command/budget/status and
+  living-doc pointers; user explicitly authorizes README edit. No assets or historical-method rewriting.
+- NEXT: focused synthetic tests/reviews, then sequential real export verification and training-only
+  diagnostic, full tests, separate draft PRs and synchronized handoff. No real computation started yet.
+- No paid call/new oracle query/protected edit/private or split read. STOP remains, main remains4562af5b,
+  ledger43.589781152/cap48; actual API screenshot28.20available/21.79billed. No merge or cap change.
+
+## 2026-10-13 19:35 UTC — reviewed free diagnostic starts; export verification pending
+- Claim #15: prospective plan fe98ed7 published before outcomes; reviewed code0fbb8ce published.
+- Full suite447passed, no skips,646.95s, eight dependency warnings. No model result yet.
+- Standalone own-clone command: PYTHONHASHSEED=0 nice -n19 <main .venv python> tools/shrinkage_diagnostic.py --public <main>/data/norman --out runs/norman_development_shrinkage_20261013, cwd gene-mila-shrinkage.
+- Uses public training only; fixed four recipes/seeds0/1/2; no lab controller/provider/oracle. Preserve exclusive run directory and publish every recipe, fold-sensitivity SD and hashes.
+- Claim #14:27focused tests pass, full suite running in gene-mila-export; real stored-prediction reproduction waits for diagnostic completion. No real model deserialization yet.
+- Claim #16: journal-style README/current docs prepared, waiting final tool PR/results links. No asset edits.
+- STOP/main4562af5b unchanged; no paid/API call, private/split read, protected-code change, oracle query or merge. Ledger43.589781152/cap48.
+
+## 2026-10-13 19:37 UTC — development diagnostic complete, export suite pending
+- Claim #15: runs/norman_development_shrinkage_20261013 in own gene-mila-shrinkage completed in4.344s, public training only. Config/summary preserved; four recipes and10metrics being archived byte-for-byte.
+- Pearson delta: additive0.561398±0.016064, ridge0.569691±0.016473; low-penalty identical, calibration same correlation. SD is three fold-seeds on the same cohort, not biological replication.
+- Calibration minus ridge top-20MSE +0.001208±0.002419 sample SD; no supported calibration benefit/no model promotion. FixedB1 unchanged.
+- NEXT: archive all diagnostic results/hashes, draft PR; finish export full suite then publish reviewed code before actual stored-prediction reproduction. That replay compares no labels/scores and uses fixed1e-6 tolerances.
+- No active controller/model diagnostic now; tests only. STOP/main4562af5b unchanged; ledger43.589781152/cap48; no paid call/oracle query/private read/protected edit/merge.
+
+## 2026-10-13 19:43 UTC — export full suite passes; one saved-prediction replay starts
+- Claim #14: reviewed exporter/replaydriver published1ec08e6 after464passed/no skips/8dependencywarnings652.70s.
+- Start one standalone free saved-B1 prediction reproduction in own gene-mila-export/runs/norman_frozen_export_20261013; config before export, explicitthree frozenalphas/fullgridindices0/1/4, original119anchors/2083genes, fixedrtol=atol1e-6. No scoring/refitting/newlabels.
+- Exact command is in HANDOFF section1/docs/FROZEN_EXPORT.md; uses own archivedverification_driver.py --receipt <PR13receipt> --out runs/norman_frozen_export_20261013, PYTHONHASHSEED0/mainvenv/nice19.
+- PR17/claim15 complete diagnostic already published, samecohortSD/no calibration benefit/no B1change.
+- Andres asked “coordinate with the other chat to move faster”. Chat1 owns these export/shrinkage/README worktrees and sharedHANDOFF/STATE. Chat2 explicitly messaged to stop duplicate mutations/runs and take independent target/guide-only cohort metadata/provenance audit on a fresh claim/branch; acceptance pending. Never download/read outcomes or start paid/test runs for that audit.
+- NEXT: preserve replay success/failure and immutable metadata, draftexportPR; finalREADMEPR/handoff/checksums. STOP/main4562af5b intact; no APIspend/oracle/private/split read/protected edit/merge.
+
+## 2026-10-13 19:46 UTC — frozen replay passed; cross-chat ownership confirmed
+- Export replay: own gene-mila-export/runs/norman_frozen_export_20261013 completed in 59.009 s. All three members reproduce saved float32 predictions exactly (max difference 0); equal ensemble max difference 5.960464477539063e-08, within predeclared rtol=atol=1e-6. No tolerance changed.
+- Original 119 conditions × 2,083 genes; full-grid indices 0/1/4, identity/order/core checks pass. Numeric package stays ignored; only data-free receipts/report/checksums will be published. No score, fit, labels or oracle query.
+- Chat2 accepted independent target/guide-only external-cohort audit, Claim #18, astra/external-cohort-metadata in fresh gene-mila-cohort-audit clone. Files only new docs/EXTERNAL_COHORT_METADATA.md and docs/results/external_cohort_metadata_20261013.json. No cohort approval/outcome or efficacy reads.
+- Chat1 remains sole owner of current export/shrinkage/README worktrees, HANDOFF section 1 and this live STATE. Chat2 stopped overlapping edits/runs; archive-only review confirmed diagnostic statistics/checksums.
+- NEXT: publish replay receipts and export draft PR, current README draft PR and synchronized final handoff. Then Claim #18 metadata audit/evaluator identity gates, never repeat scoring or reopen the diagnostic grid. STOP/main 4562af5b/ledger 43.589781152/cap48 unchanged.
+
+## 2026-10-13 20:38 UTC — useful changes merged; model unchanged; README finalizing
+- Andres explicitly authorized merging, then restricted it to helpful model research without overengineering.
+- Merged PR13 feedback fix (491986ee), PR19 verified frozen export (0fd91607), PR20 guide-only cohort audit (9081e848). Topic full suites440/464 passed; real export replay/independent raw-array verification passed.
+- PR17 negative diagnostic tool remains unmerged; no calibration remedy or B1 model promotion. PR10/12 optional reporting and Claude6/7 archives remain separate.
+- Optional combined five-PR test finished487passed8warnings604.30s despite late stop request; it includes unmerged code, not the live integration test count. No further runs/tests needed absent changes.
+- Chat2 bounded metadata audit complete. Four Pacalin dictionary-novel/in-universe target names are candidates only, no approved conditions/cohort. Feature coverage/configuration/control/exposure gates remain.
+- Chat1 owns final README/status/merges, HANDOFF and this live STATE; no more duplicate work. NEXT: publish requested README/current state; then a new claimed condition/guide/control-only eligibility projection plus separate evaluator identity before any responses/scoring.
+- No API spend/oracle/private/split read/protected edit/permission change. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged. B3 remains dropped.

@@ -1,5 +1,18 @@
 # Architecture and design notes
 
+**Current-state pointer, 13 October 2026:** the design below describes the integrated lab; active work
+and exact commits are in [HANDOFF section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true).
+Real Adamson and Norman ingestion and campaigns have now run on the Mac; the original build-environment
+limitation below is historical. The current planner state bound in `genemila/research_state.py` is
+20,000 characters, with 2,500 per section. The warm-start description below must be read alongside
+[merged PR #13](https://github.com/andresloak100/Gene-Mila/pull/13): legacy warm starts exposed
+an aggregate sealed score to the planner; the integrated fix removes that explicit path. The local controller/oracle
+still shares filesystem access with orchestration. The stronger inaccessible-test boundary is proposed,
+not deployed. The top-20 DE builder in `genemila/benchmark/reference.py` ranks the absolute Wilcoxon
+rank-sum statistic with absolute log fold change as a tie-breaker; the older Welch description below
+is superseded. Paired reading `mse_top`/`r2_top` instead uses the largest absolute changes from control.
+[Documentation status](DOCUMENTATION_STATUS.md) distinguishes integrated, pending and historical material.
+
 ## Scientific framing
 
 * **Task.** Predict the pseudobulk expression profile of cells under an *unseen*
@@ -33,8 +46,10 @@
 * **Results table** (`genemila/benchmark/table.py`, `results_table.py`): run summaries, the paper's
   simple baselines refitted on the same split, and the paper's reported rows, in CellForge's Table 1
   layout with ranks recomputed from the means; plus a calibration of candidate metric definitions
-  against the paper's Unperturbed / Linear Regression / Random Forest rows, because the paper does
-  not state its expression scale and its repository has no evaluation code.
+  against the paper's Unperturbed / Linear Regression / Random Forest rows, because the paper
+  does not establish the exact metric scale, and a fixed Table 1 evaluator was not located in the
+  inspected public release. Released components do not establish a matched comparison; see the
+  [comparability audit in PR #13](https://github.com/andresloak100/Gene-Mila/pull/13).
 * **Comparable metrics** (`genemila/benchmark/comparable.py`), on every experiment's visible
   validation and on every query-only evaluation, so our numbers sit next to published ones:
   CellForge's MSE / PCC / R² on mean expression over all genes and over the top-20 DE genes,
