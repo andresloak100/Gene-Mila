@@ -7,15 +7,20 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 18:24 UTC, by Astra (Codex). Verification of the completed B2 block is
+**Last updated:** 2026-10-13 18:26 UTC, by Astra (Codex). Verification of the completed B2 block is
 in progress under [claim #8](https://github.com/andresloak100/Gene-Mila/issues/8), branch
 `astra/b2-handoff-verification`, in a separate clone. The 11 Oct 21:40 briefing is superseded by the
 23:50 B2 results and 23:58 Mac state below. No lab run is active; STOP remains present; the shared
 DeepSeek ledger is $43.589781152. No new run, sealed query, spend, main-checkout change or protected-file
 change is authorized or underway in this verification.
 
-**Exact next step (Astra):** finish the requested low-priority test suite, independently verify the saved
-B2 readings and delivered-model rule, publish a verification/state-only draft PR, and report to Andres.
+**Exact next step (Astra):** finish the requested low-priority test suite and publish the verified B2
+reading/state note as a documentation-only draft PR. Independent checks of the stored readings are complete.
+In parallel, [claim #9](https://github.com/andresloak100/Gene-Mila/issues/9), branch
+`astra/handoff-stop-evidence`, is a separate, free reporting fix: `handoff_state.py` must display explicit
+external stop records even when a summary exists, and the latest appended Mac state. It changes no
+experiment, scoring, model, run artifact or scientific arm membership. Review and synthetic regression
+checks precede a full test suite and a separate draft PR. Do not rerun B2's readings.
 PR #7 already holds all 16 B2 readings and the five runs' summaries; do not rerun them or make a duplicate
 results PR. All 58 archived files match the Mac byte for byte; 57 of 58 entries in its md5 list match.
 The `docs/mac/STATE.md` entry is stale: actual at PR #7 head `084eaea` is
@@ -28,7 +33,9 @@ and explicitly requires asking before spending or changing scope. It gives no un
 B3 was dropped by the plan's dated 22:50 amendment after the r1 stop; it is not resumed here. Do not
 remove STOP, build a B3 bundle, start a control/paid run, or substitute a shrinkage investigation.
 After this verification, present B2's results and await Andres's explicit next-block decision; record
-his actual answer here before any dependent action. No answer has yet been received.
+his actual answer here before any dependent action. Andres then wrote, "i want you to undestand what is happening in this repo dont mess it up and keep improving".
+That supports the narrow free reporting improvement above; it is not a paid-run go, permission to reopen
+B3 or approval to change protected code. The B3 scope/spend decision remains open.
 
 The lab-code owner's full scientific state remains `docs/LAB_STATE.md` (11 Oct 23:50); the older
 operational narrative below is historical where this current paragraph supersedes it.
@@ -39,7 +46,7 @@ operational narrative below is historical where this current paragraph supersede
 |---|---|---|---|
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88`; PR #5 (README Norman section with N4, B1 and B2) 12 Oct | |
-| Astra (Codex), current takeover | 2026-10-13 | verifying completed B2 and current Mac state; branch `astra/b2-handoff-verification`; free reporting only | [#8](https://github.com/andresloak100/Gene-Mila/issues/8) |
+| Astra (Codex), current takeover | 2026-10-13 | B2 verification and reporting safety; branches `astra/b2-handoff-verification`, `astra/handoff-stop-evidence`; free only | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9) |
 | Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
 **On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
