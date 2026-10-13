@@ -7,96 +7,81 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 19:44 UTC, by Astra (Codex), working in separate own-clone worktrees. No controller/paid run is active; one saved-prediction replay is running; training-only diagnostic complete; STOP remains present; shared DeepSeek ledger **$43.589781152**.
-Main checkout `~/Documents/Mila/Gene-Mila/gene-mila` remains `4562af5b`, untouched by this takeover.
-Andres's DeepSeek console screenshot (13 Oct 15:01 EDT / 19:01 UTC) shows **$28.20 available cash**
-and **$21.79 billed**, described as all available API funds. These are separate from the conservative
-ledger; do not reprice it or increase the block cap automatically. The current $48 ledger cap has
-$4.410218848 remaining. No top-up or new paid block is assumed. The screenshot itself is not committed.
+**Last updated:** 2026-10-13 20:38 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
+STOP remains present; shared DeepSeek ledger **$43.589781152**, cap **$48**. Main Mac checkout remains
+`4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
+do not reprice the conservative ledger or infer a new paid block. No API spend occurred in this work.
 
-**New work authorized and in progress (13 Oct):** Andres approved the proposed export tool and free
-shrinkage diagnostic: "go and make sure everything is up in the github and documented so later other
-agents can pic it up really easly". He additionally asked to update README and all current documentation;
-this explicitly authorizes the bounded README edit despite the earlier hands-off instruction.
+**Andres's latest decisions, 13 Oct:** “i need you to merge it as well” authorizes the completed changes;
+then “please dont overengeneer” and “just make sure whatever is being merge is going to help our model
+otherwise dont do it” narrow the merge to model-research necessities and the requested README/handoff.
+This supersedes the earlier no-merge instruction only for this bounded work. No protected-code edit,
+main-checkout update, paid experiment, permission change or new test-data acquisition is authorized.
 
-- [Claim #14](https://github.com/andresloak100/Gene-Mila/issues/14), `astra/frozen-inference-export`,
-  own worktree `gene-mila-export`: new frozen numeric export/prediction tool, synthetic checks, then
-  trusted hash-verified B1 stored-prediction reproduction without labels/refitting. A selected plugin
-  has batch-dependent fallback behavior; original batch anchors and the prospective new-query recipe
-  are explicit. Reviewed code `1ec08e6` is published after **464 tests passed** (652.70 s, no skips;
-  eight dependency deprecation warnings). One real stored-prediction replay is running in
-  `gene-mila-export/runs/norman_frozen_export_20261013`; no scoring or refitting.
-- [Claim #15](https://github.com/andresloak100/Gene-Mila/issues/15), `astra/norman-development-shrinkage`,
-  own worktree `gene-mila-shrinkage`: pre-specified four-recipe diagnostic using public training data only,
-  nested gene-grouped folds, seeds 0/1/2. Analytic additive, inner-selected ridge, lower-penalty ridge and
-  inner-OOF magnitude calibration; no outer-score model promotion. Root independently reviewed the design.
-  Prospective plan `fe98ed7` was published before outcomes; reviewed implementation `0fbb8ce`
-  passed **447 tests** (646.95 s, no skips; eight dependency deprecation warnings) and is published.
-  Completed in `gene-mila-shrinkage/runs/norman_development_shrinkage_20261013`; all four recipes,
-  ten metrics, config/summary and MD5/SHA256 archived in draft [PR #17](https://github.com/andresloak100/Gene-Mila/pull/17), head `a699d44`.
-  Low-penalty ridge is identical; calibration minus ridge top-20 MSE +0.001208 ± 0.002419
-  sample SD over three fold seeds on the same cohort. No average calibration benefit or promotion.
-- [Claim #16](https://github.com/andresloak100/Gene-Mila/issues/16), `astra/current-readme-status`,
-  own worktree `gene-mila-readme`: current-status/source pointers and stale README command/budget fixes,
-  plus living-doc status overrides. PR #5 was already merged 12 Oct. No asset changes. Await final
-  tool/results links before documentation publication.
+**Merged into the lab branch:**
+- [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13), merge `491986ee`, claim #11: removes
+  `best_sealed` from new warm starts and legacy planner context. Actual planner-request regressions,
+  independent review and full **440 passed** (656.85 s). Historical exposure remains; this explicit
+  feedback fix does not isolate files from the local controller.
+- [PR #19](https://github.com/andresloak100/Gene-Mila/pull/19), merge `0fd91607`, claim #14: frozen
+  numeric export/target-only inference, 27 focused cases and full **464 passed** (652.70 s), no skips.
+  One stored-prediction replay at `gene-mila-export/runs/norman_frozen_export_20261013` completed in
+  59.009 s. All three B1 members reproduce bit for bit on 119 original conditions × 2,083 genes;
+  their equal average passes predeclared rtol=atol=1e-6 (max difference 5.960464477539063e-08).
+  Full model-grid indices 0/1/4, exact order, hashes, runtime/core audit and independent raw-array
+  checks pass. Data-free receipts/checksums/driver/report are in `docs/results/norman_frozen_export_20261013/`.
+  Numeric models/context/predictions stay ignored locally. No labels, scoring, refitting or gain claim.
+- [PR #20](https://github.com/andresloak100/Gene-Mila/pull/20), merge `9081e848`, claim #18, chat “2”:
+  `docs/EXTERNAL_COHORT_METADATA.md` and its JSON guide-only audit. Neither cohort approved. Pacalin:
+  19 putative promoter targets partition into 8 training, 2 other Norman-context, 4 outside context
+  but inside the frozen gene universe, and 5 outside that universe. The four are FAM83A/GATA1/MYC/YY1,
+  **not four eligible conditions**. Guide locus, observed configurations/controls, exposure and frozen
+  feature-input coverage remain unresolved. Replogle exp8 is chiefly same-gene guide dosage; its exact
+  target-only projection remains unverified. No expression/efficacy/per-cell response data was read.
+- Requested journal-style README/current-status documentation, claim #16, is being published next.
+  GitHub-native title/abstract/evidence/figure captions/references; no figure or numerical result change.
+  README checker: 0 errors/0 warnings; secret and diff checks pass. Final PR/merge link follows.
 
-**Exact next step now:** await the one active saved-prediction replay; do not start another.
-The full suite now passes; reviewed adapter/driver `1ec08e6` is published. The following replay is running:
-`PYTHONHASHSEED=0 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/norman_frozen_export_20261013/verification_driver.py --receipt /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-frozen-test/docs/results/norman_b1_frozen_test_review_20261013.json --out runs/norman_frozen_export_20261013`
-from own `gene-mila-export` worktree. Config precedes computation; preserve failure or success artifacts.
-All three saved members and equal ensemble must match exact order within the predeclared rtol/atol 1e-6;
-no labels, scoring or refitting. A mismatch blocks use; do not relax tolerance or substitute models.
-Then archive success/failure and data-free receipts, a separate draft PR, final README/status/claims and Mac STATE/checksums.
-No paid call, new oracle query, private/split read, protected-code edit, main-checkout modification,
-STOP removal or merge. Prospective isolated evaluation still needs evaluator identity and cohort audit.
+**Completed, intentionally unmerged:**
+- [PR #17](https://github.com/andresloak100/Gene-Mila/pull/17), claim #15, archival head `a699d44`:
+  pre-specified public-training diagnostic; plan `fe98ed7` preceded outcomes, reviewed code `0fbb8ce`,
+  full **447 passed** (646.95 s). Run `gene-mila-shrinkage/runs/norman_development_shrinkage_20261013`.
+  Four fixed recipes, 10 metrics, three fold seeds; low-penalty ridge is identical. Calibration minus
+  ridge top-20 MSE +0.001208 ± 0.002419 sample SD over the same-cohort fold seeds: no supported average
+  benefit. All config/summary/results/checksums remain on its branch; no tool/model change is being
+  integrated. Do not enlarge this closed grid from its results. Delivered B1 unchanged.
+- Draft [PR #12](https://github.com/andresloak100/Gene-Mila/pull/12), claim #9, `c15034a`: optional
+  handoff stop-evidence/reporting fix, full 445 passed/2 skipped, independently reviewed. Not prioritized
+  for integration under the latest scope. Draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
+  claim #8: B2 verification/archival state. Its numerical verification is complete. PR #7 has one stale
+  mutable STATE checksum; all scientific/config/summary/log hashes pass. Preserve the caveat.
+- Claude archival PRs #6/#7 remain separate and unmerged. Do not silently merge them or rewrite their
+  scientific outputs. Optional combined local test in `gene-mila-integration-check` finished 487 passed,
+  8 dependency warnings,604.30 s; it included unmerged #10/#12/#17 and is **not** the live integration's
+  test count. No further test repetition is needed absent a new change/failure.
 
-**Cross-chat division (13 Oct, Andres: "coordinate with the other chat to move faster"):**
-Codex chat "1" owns the current export/shrinkage/README worktrees, commits/pushes and shared HANDOFF/Mac
-STATE. Chat "2" accepted read-only status for those files and owns the independent external-cohort
-**target/guide/provenance-only** audit on a fresh own claim/branch. Its claim/link is pending; consult
-open Claim issues before duplicating that audit. No response/efficacy download/read, test selection,
-paid run, main-checkout edit, permissions change or merge is included in the audit. Independent chat2
-review also confirms the diagnostic archive's byte copies, all aggregate statistics and checksums.
+**Cross-chat coordination:** Andres explicitly requested coordinating, then said to use chat “2” only
+when useful. Chat “1” owns current export/shrinkage/README worktrees, commits/merges and shared
+HANDOFF/live Mac STATE. Chat “2” finished claim #18 on its own `astra/external-cohort-metadata` branch;
+it stopped overlapping writes/runs. Its independent archive review also verified the diagnostic's raw
+statistics and checksums. No additional chat or implementation is needed for the finished audit.
 
-**Completed work, review links and exact next steps:**
-1. B2 is complete and independently verified in draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
-   claim #8, `astra/b2-handoff-verification`. All 16 saved readings and five runs' summaries remain in
-   draft PR #7; B1 remains in draft PR #6. No new sealed query was made. Baseline suite: **435 passed,
-   2 skipped**. All 58 PR #7 files matched Mac originals before state updates; 57/58 md5 entries pass.
-   Only `STATE.md`'s checksum is stale: archived `084eaea` file hash `f4236da549cfeb39e50f56cf1eb6f3af`,
-   versus `6062179a6d0b0e9f47e51bb0798e5b44` for its pre-23:58 content. When integrating PR #7 and
-   the newer state, regenerate that mutable-state checksum. Scientific/config/summary/log hashes pass.
-2. Draft [PR #12](https://github.com/andresloak100/Gene-Mila/pull/12), claim #9,
-   `astra/handoff-stop-evidence`, commit `c15034a`: explicit interruption evidence overrides a summary
-   in the handoff report; latest Mac notes are displayed; old JSON `state_head` remains compatible.
-   Full suite **445 passed, 2 skipped** (796.48 s), independent review and synthetic regressions pass.
-   Read-only B2 r1 check reports interrupted despite its summary. Implemented, awaiting review/merge.
-3. Draft [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13), claim #11,
-   `astra/frozen-test-protocol`, commit `661bd89`: new warm starts omit `best_sealed`; legacy planner
-   context excludes it. Tests capture actual planner requests, preserve visible selection and leave
-   historical results unchanged. Full suite **440 passed** (656.85 s), no skips, eight dependency
-   deprecation warnings, using the existing Mac venv interpreter with this worktree's code. Five
-   focused tests and independent code/scientific review pass. No secret-shaped strings in the six
-   changed files. This fixes explicit feedback, not OS-level access: the controller still owns a local oracle.
-4. PR #13 also contains `docs/FROZEN_TEST_PLAN.md`, the saved B1 multi-metric report and JSON member/source
-   fingerprint receipt. All four exact archived source hashes were independently verified. No new
-   clean test is claimed. First read that protocol and the report before any new work; do not repeat
-   the already-completed B2/B1 readings or restart B3. Andres alone reviews/merges the draft PRs.
+**Exact next bounded step:** finish merging the requested README/status snapshot, then read the merged
+`docs/FROZEN_TEST_PLAN.md`, `docs/FROZEN_EXPORT.md` and `docs/EXTERNAL_COHORT_METADATA.md` before new work.
+Do not repeat B1/B2 readings, rerun the diagnostic, promote a model by the used sealed set, or restart B3.
+A new own-branch Claim should own a **condition/guide/control-only** projection and exposure/feature-coverage
+review of a suitable candidate. Responses and efficacy must stay out of eligibility choices. The
+separate evaluator account/host is still unspecified; Andres was asked and has not named one. A clean
+test needs that identity and demonstrated orchestration access denial, compatible cohort approval,
+fixed preprocessing/controls/gene panel, baseline/model batch and shared-gene uncertainty before outcomes.
+No cohort is currently ready for scoring and no superiority over CellForge is established.
 
-**Next agent's bounded free task:** open a new Claim issue and branch of your own from PR #13's head
-(or the integration branch after it is merged). For example, in your own clone:
-`git fetch origin astra/frozen-test-protocol`, then
-`git switch -c astra/frozen-inference-audit FETCH_HEAD` (choose an unused own branch name).
-First produce a target/guide-only eligibility manifest for the two prospective external cohorts below;
-exclude response/efficacy fields from eligibility decisions. Independently implement/review a frozen
-inference/export adapter using synthetic data, then verify frozen saved predictions without fitting or
-selecting models. `pipeline.run()` refits and `Lab._predict()` only subsets stored predictions; neither
-is an external frozen adapter. `models.pkl` retains the whole alpha grid although `predictions.npz`
-is pruned: match exactly the frozen `best_alpha`, never blindly take estimator zero. Preserve feature,
-gene and context ordering, hashes and isolated caches. Detailed acceptance checks are in PR #13's plan.
-Do not expose new responses to the lab or run a real evaluation until the cohort, boundary and batch
-are fixed and reviewed. Nothing should be installed into the main checkout by the takeover agent.
+**Paths and preservation:** all takeover clones/worktrees are under
+`/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/`.
+Own `gene-mila-export`/`gene-mila-shrinkage` runs have exclusive config/summary artifacts; never overwrite.
+Live Mac notes: `~/Documents/Mila/Gene-Mila/genemila_scale_logs/STATE.md`. Numeric packages/public context
+and prediction arrays stay out of Git. Continue from the lab branch's newest HANDOFF; source topic
+branches remain available. Main checkout/data/historical runs/STOP/ledger/protected code remain unchanged.
 
 **Scientific state:** B2 accepted arm r0/r2/r3: sealed Pearson delta 0.723882 ± 0.005414 sample SD;
 primary gain over ridge-additive start +0.007758 ± 0.005414 across repeats, arm SE 0.005594, threshold
