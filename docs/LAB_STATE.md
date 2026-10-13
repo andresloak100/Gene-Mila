@@ -2,7 +2,30 @@
 
 The single catch-up document for any agent (Claude, Astra or another) picking up Gene-Mila. It records what the lab
 is, where everything lives, what has been measured, what is in progress and what waits on Andres. Update it at every
-milestone and before stopping; newest state wins. Last updated 2026-10-11 23:50 UTC.
+milestone and before stopping; newest state wins. The detailed campaign snapshot below was last
+updated 2026-10-11 23:50 UTC.
+
+**Current-state pointer, 13 October 2026:** read [HANDOFF section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true)
+for the latest active claims, code commits, review links, budgets and exact next commands. The paid B1/B2
+block has ended; B3 was dropped by its dated amendment, STOP remains present, and no lab run is active.
+B1 remains the delivered Norman ensemble by visible validation. PRs #1 and #5 for the public README
+have been merged. Draft PRs [#10](https://github.com/andresloak100/Gene-Mila/pull/10) and
+[#12](https://github.com/andresloak100/Gene-Mila/pull/12) hold the B2 verification and optional stop-reporting
+fix; these remain unmerged under Andres's request to prioritize changes useful to model research.
+[PR #13](https://github.com/andresloak100/Gene-Mila/pull/13) is merged: continuation planners no longer
+receive aggregate sealed scores; historical exposure and same-user oracle access remain limitations.
+[PR #19](https://github.com/andresloak100/Gene-Mila/pull/19) is merged: all three frozen saved members
+reproduce exactly and their average passes the fixed tolerance. It is not a fresh test or accuracy gain.
+The bounded training-only diagnostic in [unmerged PR #17](https://github.com/andresloak100/Gene-Mila/pull/17)
+supports no calibration remedy; its tool is not being integrated and B1 stays unchanged.
+[PR #20](https://github.com/andresloak100/Gene-Mila/pull/20) is merged: a guide-only cohort audit identifies
+four Pacalin target names outside Norman's context and inside the frozen gene universe, with unresolved
+condition/feature/exposure checks. Neither candidate cohort is approved.
+See [documentation status](DOCUMENTATION_STATUS.md) before treating an older next-step list as current.
+The release audit in PR #13 did not locate a fixed CellForge Table 1 evaluator; this supersedes the
+older categorical “evaluation code is unpublished” wording below. Released pieces do not establish a
+matched comparison. The historical Adamson rows retain the two hash-sensitive selected-model draws
+identified in the v3 feature audit; the README now carries their visible qualification.
 
 ## What this is
 

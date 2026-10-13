@@ -1,3 +1,39 @@
+# Gene-Mila
+
+*Agent-discovered features for linear prediction of genetic perturbation responses*
+
+Research software · Adamson and Norman Perturb-seq · Updated 13 October 2026
+
+## Abstract
+
+Gene-Mila asks how far LLM agents can improve a linear model's prediction of gene-expression changes
+under an unseen genetic perturbation, within a fixed wall-clock budget. Agents propose hypotheses and
+write one feature per experiment. Python controls scheduling, spend, fitting and evaluation; the outer
+model stays ridge, lasso, elastic net or OLS. On Adamson, most of the gain comes from transferring
+responses between related knockdowns. On Norman, neither repeated agent arm establishes a mean gain
+over its start; averaging three models gives a small secondary gain. Features, code and failures remain
+inspectable. Linear baselines provide the scientific reference
+([Ahlmann-Eltze, Huber and Anders, *Nature Methods*, 2025](https://www.nature.com/articles/s41592-025-02772-6)).
+
+**Current status — 13 October 2026.** B1 remains the delivered Norman ensemble by the fixed
+visible-validation rule. B1/B2 are complete; both real-data held-out sets have been used repeatedly.
+The [saved multi-metric review](https://github.com/andresloak100/Gene-Mila/pull/13) reports unfavorable
+top-20 error as well as correlation. The continuation-feedback fix is integrated; a separate
+evaluator and compatible untouched cohort are still needed for a fresh test.
+
+The [frozen export](https://github.com/andresloak100/Gene-Mila/pull/19) reproduces all three saved
+B1 members exactly; their average passes the fixed numerical tolerance. This checks reproducibility.
+The [training-only shrinkage diagnostic](https://github.com/andresloak100/Gene-Mila/pull/17) found no
+average calibration benefit in its small built-in feature panel and remains unmerged. The verified
+export is integrated. The [target/guide-only cohort audit](https://github.com/andresloak100/Gene-Mila/blob/66ed4c69462b723bf2b800fb8a503ee198cc15c9/docs/EXTERNAL_COHORT_METADATA.md) identifies
+compatibility and overlap limits; it approves no test cohort and inspects no response data.
+
+[HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true) holds exact continuation
+steps; the [documentation status](docs/DOCUMENTATION_STATUS.md) separates integrated code, draft PRs
+and dated evidence. Real Adamson and Norman screens lead below; the synthetic example checks the machinery.
+
+## Results on Adamson
+
 <p align="center">
   <picture>
     <source media="(max-width: 600px)" srcset="docs/assets/hero-narrow.svg">
@@ -5,28 +41,11 @@
   </picture>
 </p>
 
-Gene-Mila is a research lab run by LLM agents against a wall clock. Give it a single-cell
-perturbation screen and a deadline (`--hours 6`): Claude plans as the principal investigator,
-cheap worker models each turn one hypothesis into one feature, and Python fits a ridge, lasso,
-elastic net or OLS model, scores it, and kills everything when time is up. The outer model never
-gets cleverer, so every gain arrives as a named feature with a coefficient, and every feature is
-a committed file of numpy, scipy or scikit-learn code that a person can read.
-
-**The question.** Gene-Mila asks how far LLM agents can take a linear model on perturbations
-held out of training, within a fixed time budget, and which signals the gain comes from. The
-task is the unpaired one: given control cells and the identity of a held-out genetic
-perturbation, predict every gene's change in mean expression. Held out means that none of the
-perturbation's cells are used in training; perturbations, not cells, are split. The predictor is
-linear on purpose: on this task, simple linear baselines have matched or beaten deep-learning
-models (Ahlmann-Eltze, Huber and Anders, *Nature Methods* 2025), and a linear model keeps the
-biology in the features, where it can be read.
-
-> [!NOTE]
-> Scores in the next two sections come from real Perturb-seq screens, Adamson 2016 and Norman
-> 2019, on CellForge's datasets. The synthetic screen after them, with known biology, checks the
-> machinery and is labelled as such.
-
-## Results on Adamson
+**Fig. 1 | Worker count and predictive accuracy on Adamson.** Sealed Pearson delta on 21 held-out
+knockdowns, with mean ± SD over two repeats per agent arm. More workers increased throughput without
+a corresponding rise in accuracy. Source: [worker-scaling report](docs/results/scaling.md).
+The figure preserves the original scaling comparison; its hash-sensitive 8-worker model is qualified
+by the table footnote below. The later external-screen result is described separately.
 
 The Adamson et al. 2016 screen of the unfolded protein response (CRISPRi in K562 cells) has 88
 knockdowns; the bundle keeps 2,055 genes (2,000 highly variable genes plus every target).
@@ -44,14 +63,25 @@ with the best visible score, never the best sealed one.
 | No-LLM control plus one hand-written transfer feature | 1 | 0.593 | 0.142 | 0.755 |
 | Agents, 1 worker | 2 | 0.566 ± 0.032 | 0.109 ± 0.005 | 0.817 ± 0.006 |
 | Agents, 4 workers | 2 | 0.602 ± 0.002 | 0.117 ± 0.002 | 0.803 ± 0.003 |
-| Agents, 8 workers | 2 | 0.584 ± 0.001 | 0.119 ± 0.003 | 0.802 ± 0.001 |
+| Agents, 8 workers † | 2 | 0.584 ± 0.001 | 0.119 ± 0.003 | 0.802 ± 0.001 |
 | Agents, 16 workers | 2 | 0.577 ± 0.022 | 0.111 ± 0.009 | 0.816 ± 0.020 |
 | Agents, 4 workers, cross-validated selection, Opus planner | 2 | 0.594 ± 0.009 | 0.124 ± 0.008 | 0.791 ± 0.017 |
-| Agents, 4 workers, cross-validated selection, DeepSeek V4 Pro planner | 2 | 0.570 ± 0.044 | 0.133 ± 0.022 | 0.776 ± 0.038 |
+| Agents, 4 workers, cross-validated selection, DeepSeek V4 Pro planner † | 2 | 0.570 ± 0.044 | 0.133 ± 0.022 | 0.776 ± 0.038 |
+
+† These archived means include one hash-sensitive selected model in each marked arm:
+`runs/scale_w8_r0` and `runs/newcode_ds_w4_r0`. One feature in each used Python's process-salted
+`hash()`, making its score an arbitrary process-dependent draw. The [v3 feature audit](docs/results/feature_audit_v3.md)
+identified those two unstable selected models; the table and figure preserve their original readings.
+The integrated [guard and hash-seed fix, `3d7c519`](https://github.com/andresloak100/Gene-Mila/commit/3d7c519)
+prevents this path in new experiments. Comparisons involving either old arm need this qualification;
+the fix does not retroactively reproduce its historical draw.
 
 Mean ± sd over runs. pearson_delta is the Pearson correlation between predicted and measured
-change from control over all 2,055 genes, per perturbation, averaged; the DE columns use each
-perturbation's 20 most changed genes, CellForge's definition. Sources:
+change from control over all 2,055 genes, per perturbation, averaged. The DE columns use the bundle's
+stored top-20 reference: the lab's builder ranks the absolute Wilcoxon rank-sum statistic, with absolute
+log fold change as a tie-breaker ([definition](genemila/benchmark/reference.py)). This differs from the
+largest-absolute-change subset used by the paired ensemble readings; neither establishes a matched
+CellForge evaluation. Sources:
 [`summary_for_collaborators.md`](docs/results/summary_for_collaborators.md),
 [`results_table.md`](docs/results/results_table.md) (every arm, labelled by code version, in
 CellForge's Table 1 layout) and [`scaling.md`](docs/results/scaling.md) (cost, throughput and
@@ -69,8 +99,9 @@ significance by arm).
   columns.
 - **More workers bought throughput, not accuracy.** From 1 to 16 workers, experiments completed
   per run rose from 88 ± 8 to 690 ± 46 and DeepSeek cost per run from $0.182 ± 0.015 to
-  $1.287 ± 0.125, while the sealed score did not rise. Of the six worker-count pairs only 4
-  against 8 workers exceeds run-to-run noise (Welch p = 0.01, two runs per arm). Most of a run's gain
+  $1.287 ± 0.125, while the sealed score did not rise. The archived Welch comparison singled out
+  4 against 8 workers (p = 0.01, two runs per arm), but it includes the hash-sensitive 8-worker model
+  above and does not establish a reproducible accuracy difference. Most of a run's gain
   arrives in its first half ([`time_to_best.md`](docs/results/time_to_best.md)).
 - **The limit is information about the targets.** Under cell-sampling noise alone a perfect
   predictor would score about 0.944 on the 17 visible-validation perturbations; the selected
@@ -90,10 +121,11 @@ significance by arm).
   pre-specified points, was the cleaner test (below).
 - **Left out on purpose.** All-gene MSE, PCC and R²: every model in the table, and predicting no
   change at all, has an all-gene PCC between 0.979 and 0.987, so those columns cannot separate
-  models. And a comparison with CellForge's published rows: their evaluation code is
-  unpublished, no metric definition reproduces their own baseline rows (they report the
-  unperturbed baseline at PCC 0.0001; on this data it scores 0.98), and their split holds out
-  guides, not genes.
+  models. A fixed Table 1 evaluator was not located in the inspected CellForge release, and none
+  of the tested metric definitions reproduces its own baseline rows (its unperturbed baseline has
+  PCC 0.0001; on this data it scores 0.98). Released components do not establish a matched comparison,
+  and the split does not enforce Gene-Mila's gene-grouped Norman rule; see the
+  [release comparability audit](https://github.com/andresloak100/Gene-Mila/pull/13).
 
 ## Results on Norman 2019: pre-specified readings
 
@@ -171,10 +203,14 @@ model whose gain over that baseline passes the reading rule (N4's was as large, 
 over B1's combined model (+0.004 ± 0.006). The delivered model stays B1's, by a choice fixed
 before B2 that is made on the 63 visible validation perturbations (0.780 against 0.751).
 
-On each perturbation's 20 most changed genes the agents' models do no better than the additive
+On the stored top-20 DE reference the agents' models do no better than the additive
 baseline: R²_DE 0.847 ± 0.008 for B1's runs and 0.828 ± 0.027 for B2's, against 0.846 (N4:
 0.819). B2's most shrunk run (ridge alpha 300,000) has its best pearson_delta and its worst DE
-scores. Whether ridge shrinkage is what costs the DE genes is not yet checked.
+scores. A subsequent development-only diagnostic on four built-in features, under three fixed fold
+seeds, did not support a benefit from magnitude calibration or establish a remedy for the error
+([saved diagnostic report](https://github.com/andresloak100/Gene-Mila/blob/a699d449050e5aee8def1e9eed848df720b5ce96/docs/results/norman_development_shrinkage_20261013/report.md)). It does not diagnose the cause in
+B1's larger feature models, and B1 remains unchanged. These fold-seed summaries use the same
+cohort; they are not independent repeated searches or a fresh held-out evaluation.
 
 Norman's sealed set has now been scored for many models (B2's readings alone made 58 sealed
 scorings), so from here on comparisons on it are descriptive
@@ -189,6 +225,10 @@ $4.11 and B2 $5.51, its killed run included; the ledger counts about twice what 
     <img src="docs/assets/example-run.svg" width="100%" alt="Every experiment of the synthetic example run, plotted in queue order by pearson_delta on 16 visible-validation perturbations. Worker-written features range from 0.6053 to 0.7775. Twelve alpha sweeps sit on the 0.6054 linear baseline or the 0.7633 plateau, and one planner-proposed combination briefly held the best score at 0.7683. The winning lineage adds one feature per step: target_coexpression +0.1579 to 0.7633, target_knockdown_scaled +0.0136 to 0.7769, tf_gated_coexpression +0.0007 to 0.7775. EXP_0027 failed because its feature leaked the label. On 16 sealed query-only perturbations the best model scored 0.7764, a scripted control with no LLM 0.7776, and the linear baseline 0.5942.">
   </picture>
 </p>
+
+**Fig. 2 | Feature lineage in the synthetic screen.** Experiments in queue order, with the selected
+lineage highlighted. The synthetic biology tests the machinery; it is separate from the real-data
+campaigns. Source: [example-run artifacts](docs/example_run/).
 
 Before the real screens, the lab was checked on a synthetic one whose biology is known. Claude
 Opus planned and four Claude Haiku workers wrote code against a synthetic knockout screen: 300 genes, 1,000 control cells and 80 single-gene knockouts (48 for training, 16 for
@@ -307,9 +347,13 @@ been changed to run several planner rounds at once as the worker count grows
   </picture>
 </p>
 
+**Fig. 3 | The experiment lifecycle.** Python controls scheduling, numerical evaluation and the
+stopping deadline; LLMs propose hypotheses and feature code. The controller performs the capped final
+queries after search. Source: [architecture](docs/ARCHITECTURE.md).
+
 | Role | Who | Sees |
 |---|---|---|
-| Planner | Claude, through the `claude` CLI or the Anthropic API | A compressed research state of at most 20,000 characters (2,500 per section), however long the run. Called when the queue runs low; with many workers, several rounds run at once. |
+| Planner | Claude or DeepSeek, through the selected provider | A compressed research state of at most 20,000 characters (2,500 per section), however long the run. Called when the queue runs low; with many workers, several rounds run at once. |
 | Workers | DeepSeek, Claude Haiku, or any OpenAI-compatible model | The spec, a 30-line API reference, one example plugin, short summaries of the data and the prior-knowledge files, and the names of the model's other features. Never the repository or the experiment history. |
 | Controller | Python | Everything: deadline, queue, retries, concurrency, evaluation, the query-only oracle, SQLite. |
 
@@ -372,12 +416,16 @@ best model on visible validation ([summary](docs/example_run/control_scripted_su
 
 - **Both sealed sets are used, and on Norman no arm's mean gain over its start is
   established.** Adamson's 21 sealed perturbations have been scored for dozens of finalists across
-  about 30 runs. No run selects on a sealed number, but the hand-written transfer feature was designed after 26 sealed results had
+  about 30 runs. Finalists were selected by visible scores, but the hand-written transfer feature was designed after 26 sealed results had
   been read, and each new arm read there is one more look, so later readings on it are weaker
   evidence than the first. Norman's 56 were read only at pre-specified points; there neither arm's
   mean gain over its start is established, and averaging each arm's three models gives small
   gains that pass only as secondary readings; after those two blocks the set has been scored for
   many models, so later comparisons on it are descriptive.
+- **Continuation feedback.** Integrated warm starts exposed the prior winner's aggregate sealed
+  score to the planner. [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13) removed that
+  explicit path for new and legacy metadata and is integrated. Historical exposure remains
+  part of the record, and this fix alone does not isolate test files from orchestration.
 - **Few, short runs.** Two runs per agent arm on Adamson; on Norman three per arm for B1 and
   B2, one for N3 and N4; 20 minutes each, one split per dataset. Most differences between arms are inside run-to-run noise. The no-LLM
   control is deterministic, so its six identical runs are not a noise estimate.
@@ -393,9 +441,10 @@ best model on visible validation ([summary](docs/example_run/control_scripted_su
   for example by scrambling gene names, would separate the two.
 - **Comparable metrics, not comparable runs.** CellForge's and VCWorld's metrics are
   reimplemented from their papers (`genemila/benchmark/comparable.py`), not run from their code;
-  CellForge publishes no evaluation code and defines DE genes differently in its paper and its
-  documentation, so both definitions are reported, and no definition reproduces its own baseline
-  rows. cell-eval scores only the finalists, and the search itself optimises `pearson_delta`.
+  a fixed CellForge Table 1 evaluator was not located in the inspected public release. Its paper
+  and documentation define DE genes differently; the released components and tested definitions
+  do not establish a matched comparison or reproduce its own baseline rows. cell-eval scores only
+  the finalists, and the search itself optimises `pearson_delta`.
 - **Means, not cells.** The lab predicts each perturbation's mean expression change, so
   cell-eval's distribution metrics see a point mass per perturbation. Cell-level predictions
   would need a noise or sampling model on top of the linear mean model.
@@ -451,27 +500,38 @@ measured gene.
 
 ---
 
+## Reproducibility and availability
+
+Every reported arm names its dataset, split, run directories and code version. Repeat means and SDs
+are separate from paired standard errors and single-ensemble estimates. The dated [result reports](docs/results/)
+and [Mac archives](docs/mac/) preserve summaries and configurations; current review links and exact
+continuation steps live in [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true).
+
+The code is public in this repository. Real data bundles and fitted run artifacts remain on Andres's
+Mac and are excluded from Git; the [Data](#data) section names ingestion sources and preprocessing.
+The synthetic example and source figures are committed. A compatible untouched cohort and separate
+evaluator account or host are still required for the requested fresh test. The current oracle shares
+filesystem access with orchestration.
+
 ## Quick start
 
 Needs Python 3.11 or newer.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q                                   # about a minute
+python -m pytest -q                                   # allow roughly 15 minutes on the Mac
 
 # offline dry run: mock workers + scripted planner, synthetic data, no API keys
 # (the no-LLM control in docs/example_run/control_scripted_summary.md)
 python run_research.py --minutes 2 --workers 4 --worker-provider mock --planner-provider scripted
-
-# Claude plans, DeepSeek implements (needs DEEPSEEK_API_KEY and the claude CLI)
-python deepseek_check.py                              # one minimal API call; prints tokens and cost
-python run_research.py --minutes 3 --workers 1 --max-planner-calls 1   # one-worker cycle
-python run_research.py --minutes 6 --workers 4 --max-planner-calls 2   # four-worker test
-
-# the example run on this page (Claude Opus plans, Claude Haiku implements)
-python run_research.py --minutes 10 --workers 4 --worker-provider claude_cli --worker-model haiku \
-    --planner-provider claude_cli --planner-model opus --budget 1.5 --max-planner-calls 4
 ```
+
+The command above uses synthetic data and makes no API calls. For paid work on the shared lab,
+read [AGENTS.md](AGENTS.md) and the current approved block in [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true)
+first. Every run states its planner provider explicitly; the configuration default is Claude CLI.
+Paid runs also state the shared ledger, cumulative cap, and separate worker and planner caps.
+Credentials enter through the environment only. `python deepseek_check.py` makes a paid API call,
+so it needs spend authorization too.
 
 Watch a run, then take it apart:
 
@@ -481,12 +541,13 @@ python leaderboard.py                # ranked experiments; --all includes failur
 python leaderboard.py --lineage EXP_0012
 python summarize.py --state          # the compressed research state the planner sees
 python summarize.py                  # regenerate the run summary (keeps stored query-only scores)
-python run_research.py --dataset adamson_cf --minutes 20 --workers 4 --continue-from runs/<earlier run>
 python reproduce.py --experiment EXP_0012
 python analyze_run.py                # worker independence, tokens, cost, bottlenecks, projections
 ```
 
-Every command defaults to the most recent run under `runs/`; pass `--run runs/<id>` to pick one.
+The reporting commands default to the most recent run under `runs/`; pass `--run runs/<id>` to pick one.
+Warm starts use `--continue-from runs/<earlier run>` on the same dataset and split, with the
+explicit providers and budgets from the approved run plan.
 `summarize.py` keeps the sealed-set scores a finished run already stored and makes no new
 query; `--query-only` also scores any top candidate that has no stored sealed-set score yet.
 
@@ -495,14 +556,6 @@ query; `--query-only` also scores any top candidate that has no stored sealed-se
 ```bash
 # rehearsal with no API calls: 44 mock workers and an endless stream of distinct hypotheses
 python run_research.py --minutes 5 --workers 44 --worker-provider mock --planner-provider loadtest
-
-# paid runs; each raises the cumulative DeepSeek cap on purpose
-python run_research.py --minutes 20 --workers 8  --budget 1.00 \
-    --set budget.cumulative_usd.deepseek=10
-python run_research.py --minutes 20 --workers 16 --budget 2.00 \
-    --set budget.cumulative_usd.deepseek=10
-python run_research.py --hours 1 --workers 44 --budget 5.00 \
-    --set budget.cumulative_usd.deepseek=25
 ```
 
 Experiments fork from a warm server process and reuse cached feature blocks within a run, which
@@ -514,9 +567,10 @@ workers on an 8-core machine queue politely for CPU while the others are writing
 calls are unlimited unless `--max-planner-calls` is set. The planner's own cap scales with
 workers and hours (`budget.planner_usd_per_worker_hour`) and is paced over the run, so a long
 run never spends it all at the start; new LLM calls are refused once any dollar cap is reached.
-Raise `budget.cumulative_usd.deepseek` deliberately when you want to spend beyond the $0.25
-development cap; the cumulative cap includes earlier runs' ledger spend, so a run halts partway
-through when it is left at the default.
+For paid scaling, use the exact commands and authorized caps from the current pre-specified
+block in HANDOFF. The cumulative cap includes earlier runs' ledger spend; it is separate from
+the cash balance reported by DeepSeek. A run can halt partway through if that cap is left at its
+development default. Do not increase a cap or reprice the shared ledger without Andres's decision.
 
 ## Data
 
@@ -540,8 +594,11 @@ validation is drawn from their training perturbations (`--val-frac`, default 0.2
 Prior knowledge for real screens: `python prepare_data.py knowledge` downloads curated
 resources once (Reactome, GO Biological Process and MSigDB Hallmark gene sets, CollecTRI
 signed TF-to-target regulation, STRING v12 physical interactions), and `--knowledge` filters
-them to a bundle's genes. Resources derived from perturbation screens or expression atlases
-are left out on purpose, so prior knowledge cannot encode the held-out responses.
+them to a bundle's genes. This general-purpose download excludes perturbation screens and
+expression atlases. The real-data campaigns separately added the audited Replogle 2022 CRISPRi
+screen as external knowledge, recorded in each run's configuration; see the Adamson result above
+and [the external-screen control definitions](docs/PROMPTS.md).
+A source used as model knowledge cannot also serve as an untouched test.
 
 ```bash
 pip install anndata cell-eval
@@ -549,7 +606,8 @@ python prepare_data.py describe AdamsonWeissman2016_GSM2406681_10X010.h5ad
 python prepare_data.py knowledge                       # once; needs network access
 python prepare_data.py h5ad --name adamson --knowledge data/raw/knowledge \
     --h5ad AdamsonWeissman2016_GSM2406681_10X010.h5ad --hvg 2000
-python run_research.py --dataset adamson --minutes 20 --workers 4
+python run_research.py --dataset adamson --minutes 20 --workers 4 \
+    --worker-provider mock --planner-provider scripted
 ```
 
 ### cell-eval
@@ -588,9 +646,10 @@ run on the same split from that run's useful features and best model, with a PRI
 section in the planner's state. DeepSeek's models reason before answering by default and the
 hidden reasoning counts against `worker.max_output_tokens`; the default `worker.thinking = "disabled"`
 keeps the whole limit for code (set `"enabled"` plus `worker.reasoning_effort` to try it). DeepSeek prices are set to the
-published peak-hour rates for `deepseek-flash` (what the API serves for `deepseek-chat`)
-and `deepseek-v4-pro`; update `[pricing.*]` if they change, and run
-`python reprice_ledger.py --apply` to recompute the spend ledger with new prices.
+published peak-hour rates for `deepseek-flash` (the configured legacy `deepseek-chat` alias)
+and `deepseek-v4-pro`, as checked on the date recorded in the configuration. Prices are a dated
+snapshot. `python reprice_ledger.py` previews discrepancies without changing anything; changing
+prices or applying a ledger rewrite requires an explicit reviewed decision under [AGENTS.md](AGENTS.md).
 
 ## Providers
 
@@ -647,3 +706,14 @@ run_research.py  (external watchdog: hard-kills the lab if it overruns, then wri
 Module map, token and CPU budgets, failure handling and current limitations are in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The figures on this page are drawn from the run
 reports by [`docs/assets/build_figures.py`](docs/assets/build_figures.py).
+
+
+## References
+
+- Ahlmann-Eltze, C., Huber, W. and Anders, S. [Deep-learning-based gene perturbation effect prediction
+  does not yet outperform simple linear baselines](https://www.nature.com/articles/s41592-025-02772-6).
+  *Nature Methods* **22**, 1657–1661 (2025).
+- [CellForge](https://arxiv.org/abs/2508.02276), arXiv 2508.02276. Dataset and reported-metric reference;
+  its published rows remain contextual until both methods are evaluated on identical locked data.
+- [VCWorld](https://proceedings.iclr.cc/paper_files/paper/2026/file/767ff070c27c8954babe74eccf3fbe91-Paper-Conference.pdf),
+  ICLR 2026. DE and direction-classification reference; Gene-Mila has not yet run its drug benchmark.
