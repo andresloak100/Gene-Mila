@@ -7,7 +7,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 20:38 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
+**Last updated:** 2026-10-13 20:43 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
 STOP remains present; shared DeepSeek ledger **$43.589781152**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. No API spend occurred in this work.
@@ -38,9 +38,9 @@ main-checkout update, paid experiment, permission change or new test-data acquis
   **not four eligible conditions**. Guide locus, observed configurations/controls, exposure and frozen
   feature-input coverage remain unresolved. Replogle exp8 is chiefly same-gene guide dosage; its exact
   target-only projection remains unverified. No expression/efficacy/per-cell response data was read.
-- Requested journal-style README/current-status documentation, claim #16, is being published next.
+- [PR #21](https://github.com/andresloak100/Gene-Mila/pull/21), claim #16: requested journal-style README/current-status documentation is merged.
   GitHub-native title/abstract/evidence/figure captions/references; no figure or numerical result change.
-  README checker: 0 errors/0 warnings; secret and diff checks pass. Final PR/merge link follows.
+  README checker: 0 errors/0 warnings; GitHub CI, secret and diff checks pass. Mac snapshot/MD5 included.
 
 **Completed, intentionally unmerged:**
 - [PR #17](https://github.com/andresloak100/Gene-Mila/pull/17), claim #15, archival head `a699d44`:
@@ -66,7 +66,7 @@ HANDOFF/live Mac STATE. Chat “2” finished claim #18 on its own `astra/extern
 it stopped overlapping writes/runs. Its independent archive review also verified the diagnostic's raw
 statistics and checksums. No additional chat or implementation is needed for the finished audit.
 
-**Exact next bounded step:** finish merging the requested README/status snapshot, then read the merged
+**Exact next bounded step:** the selected merges and requested README are complete. Read the merged
 `docs/FROZEN_TEST_PLAN.md`, `docs/FROZEN_EXPORT.md` and `docs/EXTERNAL_COHORT_METADATA.md` before new work.
 Do not repeat B1/B2 readings, rerun the diagnostic, promote a model by the used sealed set, or restart B3.
 A new own-branch Claim should own a **condition/guide/control-only** projection and exposure/feature-coverage
@@ -104,7 +104,7 @@ runs out". This authorized the completed bounded GitHub work. He later offered a
 started. The value was not copied into tools, files, logs or GitHub; rotation was advised once. Any
 future permitted run must use environment-only credentials and the shared ledger/caps. Do not treat
 credential availability as a new research block or silently raise the cap. B3 remains dropped by the
-11 Oct 22:50 amendment. No merge, protected-code change or existing-data alteration was authorized.
+11 Oct 22:50 amendment. Later explicit merge authorization is recorded above; protected-code and existing-data changes remain unauthorized.
 
 **Untouched-test blockers and pending input:** no additional untouched real-data cohort was found
 locally. Metadata-only research identified Replogle 2020 direct-capture exp8 (GSM4367986; single-target
@@ -117,7 +117,7 @@ metric/baseline batch and uncertainty rule before any real evaluation. Investiga
 only on development folds; do not tune exploration from the opened test's score.
 
 The older narrative below is historical where this current state supersedes it. No paid call, real
-lab run or new sealed query occurred in this takeover. No branch was merged, no protected code changed,
+lab run or new sealed query occurred in this takeover. Before the bounded merges recorded above, no branch had been merged. No protected code changed,
 and the main checkout, STOP and all existing run/data files remain unchanged. Claims #8/#9/#11 are
 implemented and await review; claims #14/#15/#16 now own the new work. Avoid duplicate implementations.
 
@@ -127,7 +127,7 @@ implemented and await review; claims #14/#15/#16 now own the new work. Avoid dup
 |---|---|---|---|
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88`; PR #5 (README Norman section with N4, B1 and B2) 12 Oct | |
-| Astra (Codex), current takeover | 2026-10-13 | free export/documentation active; shrinkage completed in draft PR #17; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
+| Astra (Codex), current takeover | 2026-10-13 | selected export/feedback/cohort/README merges complete; shrinkage unmerged; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
 | Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, are now on GitHub (remote heads verified 13 Oct: 6a3e8a8e and 74114d43); the old local-only note is superseded | none |
 
 **On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
