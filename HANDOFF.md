@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Latest follow-up, 2026-10-13 21:21 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22),
+**Latest follow-up, 2026-10-13 21:24 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22),
 draft [PR #23](https://github.com/andresloak100/Gene-Mila/pull/23):** Andres said “go test” then “use the
 deepseek agents”; he is unsure of a separate evaluator account/host. Chat 1 owns
 `astra/test-readiness-deepseek` / own `gene-mila-test-readiness`. Two sequential DeepSeek V4 Pro text
@@ -20,14 +20,18 @@ explicit corrections in `docs/TEST_READINESS_20261013.md`; do not adopt them unc
 Chat 2's useful metadata search and the independent source audit are complete. No further paid calls.
 Current orchestration user is admin; proposed `genemilaeval` does not exist. Andres was asked approval
 for a Standard evaluator account plus an actual access-denial/elevation check; no answer or account
-change yet. Exact next: finish/publish checksummed report/driver after the ongoing required full suite,
-then obtain design-only condition/guide/control projection and verified evaluator isolation before any
-candidate responses. Account setup alone is not proof. B3 remains dropped; no new lab run is authorized.
+change yet. PR #23 evidence head `645e21d` is published: full **467 passed**, no skips, 8 dependency
+warnings (657.02 s), four synthetic privacy/error checks, independent source/runner review, hashes,
+ledger arithmetic and secret scans pass. Raw review hard-break whitespace is intentionally preserved.
+The exact next step is Andres's evaluator-account decision, design-only condition/guide/control
+projection, and verified access denial before candidate responses; then freeze preprocessing, baseline
+packages/query budget and a concrete uncertainty rule before scoring. Account setup alone is not proof.
+Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no new lab run is authorized.
 
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 21:21 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
+**Last updated:** 2026-10-13 21:24 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
