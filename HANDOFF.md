@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active model-improvement block, 2026-10-13 22:13 UTC:** Andres accepted a bounded development comparison:
+**Active model-improvement block, 2026-10-13 22:19 UTC:** Andres accepted a bounded development comparison:
 “yes improve our model ... updates from the claude's work”. Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
 own `astra/singleton-transfer-development` / `gene-mila-singleton-transfer`. Prioritize model evidence;
 Claim22/evaluator-account setup is deferred, not approved. No account changes or new API calls.
@@ -14,8 +14,16 @@ same development folds only if the prospective component gate passes. All labels
 3 fold seeds/5 outer folds, nested feature regeneration for selection, unchanged existing split/evaluator
 code. No stored B1 in-sample predictions used as a validation comparator. Historical feature selection
 makes this development evidence only. Root owns plan/runner/results/sharedstate; implementation subagent
-owns only new optional feature/tests; chat2 independently reviews methods. Exact next: publish fixed
-plan before outcomes, implement/test/review, full suite, then one free standalone own-clone experiment.
+owns only new optional feature/tests; a second owns the diagnostic runner/tests; chat2 independently reviews methods.
+Prospective protocol published **c8c1358**, `docs/SINGLETON_TRANSFER_PLAN.md`, draft
+[PR #25](https://github.com/andresloak100/Gene-Mila/pull/25), before any real fitting. Review requires
+full outer/inner gene hide sets, duplicate-singleton self-exclusion, fixed lambda1 and direct-additive
+controls. Ten metrics; exact all-positive/mean>max(.002,SD) Pearson gate with ratio-of-means MSE/top20
+guards; 7200s bound, at most480+90 ridgefits. No new model score yet.
+Andres explicitly asks every change/finding be on GitHub for Claude: preserve negative outcomes too.
+Exact next: finish feature/runner synthetic leakage checks and source review, full pytest before code
+push, then one free standalone own-clone experiment with immutable config/source/plan hashes.
+Command and input manifest pin are in the prospective plan. Do not create an evaluator account.
 STOP/main4562af5b/private/splits/protected code unchanged; ledger43.599822392/cap48; B3 stays dropped.
 
 **Latest follow-up, 2026-10-13 21:24 UTC — Claim [#22](https://github.com/andresloak100/Gene-Mila/issues/22),
@@ -45,7 +53,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 21:24 UTC, by Astra (Codex), chat “1”. No lab run or real model computation is active.
+**Last updated:** 2026-10-13 22:19 UTC, by Astra (Codex), chat “1”. Claim24 implementation/tests active; no real fitting yet.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
