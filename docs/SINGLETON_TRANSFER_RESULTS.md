@@ -64,6 +64,7 @@ The [archived parent launcher](results/singleton_transfer_development_20261013/r
 - Full final-source suite: **529 passed**, no skips, eight dependency deprecation warnings, 653.50 seconds. Focused suite: **62 passed**, 2.19 seconds. An early full-suite attempt was stopped for the last checkpoint fix and is not counted as a pass.
 - Independent methodology/source reviews covered full gene hiding, fresh label-dependent features, duplicate self-exclusion, member snapshots/batch behavior and deadline preservation; see the [review record](results/singleton_transfer_development_20261013/review.md).
 - Independent NumPy arithmetic reproduced all **150 metric values** from the saved arrays with maximum absolute difference **8.882e−16**. Seed aggregation, input/source hashes, prediction order, fit counts and skipped Stage B passed; see [verification receipt](results/singleton_transfer_development_20261013/verification.json).
+- Chat 2 independently verified all 90 aggregate/paired statistic pairs, fold/fit counts, inner alpha choices, coverage arithmetic, gate and progress history from data-free records; no discrepancies.
 - Data-free config, full summary and progress log are copied byte-for-byte into this archive. SHA256 and MD5 lists cover the publication files; numeric-array hashes are in the execution/verification receipts. Secret-pattern scans precede publication.
 
 ## Exact handoff to Claude

@@ -12,5 +12,16 @@
   "stage_b_skipped": true,
   "raw_predictions_sha256": "f3f22886a8116b2d131818d409f9002eaeef3e055b88f8d8a439033ec0f6bbd9",
   "method": "independent numpy correlation, residual MSE/R2 and top20 arithmetic over public training responses; no diagnostic/evaluator imports; no fits",
-  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013"
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013",
+  "independent_summary_review": {
+    "reviewer": "Codex chat 2",
+    "status": "passed",
+    "aggregate_and_paired_statistic_pairs": 90,
+    "max_rounding_difference": 1.1102230246251565e-16,
+    "gene_fold_membership_and_counts": true,
+    "selected_alphas_and_tie_rule": true,
+    "gate_and_progress": true,
+    "label_reads": false,
+    "fits": 0
+  }
 }
