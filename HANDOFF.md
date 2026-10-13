@@ -7,9 +7,13 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 19:01 UTC, by Astra (Codex), finishing this takeover in separate own-clone
+**Last updated:** 2026-10-13 19:03 UTC, by Astra (Codex), finishing this takeover in separate own-clone
 worktrees. No lab run is active; STOP remains present; shared DeepSeek ledger **$43.589781152**.
 Main checkout `~/Documents/Mila/Gene-Mila/gene-mila` remains `4562af5b`, untouched by this takeover.
+Andres's DeepSeek console screenshot (13 Oct 15:01 EDT / 19:01 UTC) shows **$28.20 available cash**
+and **$21.79 billed**, described as all available API funds. These are separate from the conservative
+ledger; do not reprice it or increase the block cap automatically. The current $48 ledger cap has
+$4.410218848 remaining. No top-up or new paid block is assumed. The screenshot itself is not committed.
 
 **Completed work, review links and exact next steps:**
 1. B2 is complete and independently verified in draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
