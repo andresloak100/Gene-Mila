@@ -14,8 +14,12 @@ equalensemble vs analytic additive; no innerCV/tuning/correction/newfeature. Pin
 0/1knownsingles and raw external-profilecoverage.10metrics/pairedsampleSD, same-cohort/historical
 selection limits; no fresh-test/CellForge/modelpromotion. Separate from failed Claim24; do not reopen it.
 Root owns plan/docs/publication/sharedstate; implementation subagent only newrunner/tests, independent
-reviewer read-only. **Exact next:** finish source/synthetic review, fullpytest beforecodepush, then one
-free ownclone diagnostic,45fits/7200sparentdeadline, exclusive `runs/b1_development_diagnostic_20261013`.
+reviewer read-only. **Source/method review complete; focused7passed1.27s. Fullpytest on final source is running.**
+Originalseed reset before features is clarified prospectively in57d83d2. Parentlauncher/sourcepins
+and metadata coverage boundaries were reviewed. Exact next: fullsuitepass, source/secretcheck/codepush,
+then one free ownclone diagnostic,45fits/7200sparentdeadline, exclusive `runs/b1_development_diagnostic_20261013`.
+The live Mac STATE now opens with a current overview (oldpaths/budgetnotes preserved as history);
+sharedledger read-only verified43.599822392. All results/nextaction will be archived forClaude.
 No realfitting started; no APIcalls/account/protected/main/data/STOP changes. Ledger43.599822392/cap48.
 Keep allfindings and exactnext action onGitHub forClaude. No additional modelsearch is part of this plan.
 
