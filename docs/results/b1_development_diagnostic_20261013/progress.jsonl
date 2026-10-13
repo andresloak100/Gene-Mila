@@ -1,0 +1,80 @@
+{"event": "config_written", "elapsed_s": 1.7661465839482844, "fits": 0}
+{"event": "fold_started", "elapsed_s": 1.7673620842397213, "fits": 0, "seed": 0, "fold": 0}
+{"event": "member_completed", "elapsed_s": 9.87315041711554, "fits": 1, "seed": 0, "fold": 0, "member": 0}
+{"event": "member_completed", "elapsed_s": 15.161594749893993, "fits": 2, "seed": 0, "fold": 0, "member": 1}
+{"event": "member_completed", "elapsed_s": 22.00138045893982, "fits": 3, "seed": 0, "fold": 0, "member": 2}
+{"event": "fold_completed", "elapsed_s": 22.016145708970726, "fits": 3, "seed": 0, "fold": 0}
+{"event": "fold_started", "elapsed_s": 22.087922834325582, "fits": 3, "seed": 0, "fold": 1}
+{"event": "member_completed", "elapsed_s": 30.06452487502247, "fits": 4, "seed": 0, "fold": 1, "member": 0}
+{"event": "member_completed", "elapsed_s": 35.33998120902106, "fits": 5, "seed": 0, "fold": 1, "member": 1}
+{"event": "member_completed", "elapsed_s": 42.27672408428043, "fits": 6, "seed": 0, "fold": 1, "member": 2}
+{"event": "fold_completed", "elapsed_s": 42.290611917153, "fits": 6, "seed": 0, "fold": 1}
+{"event": "fold_started", "elapsed_s": 42.408756375312805, "fits": 6, "seed": 0, "fold": 2}
+{"event": "member_completed", "elapsed_s": 49.99396170908585, "fits": 7, "seed": 0, "fold": 2, "member": 0}
+{"event": "member_completed", "elapsed_s": 54.89624195918441, "fits": 8, "seed": 0, "fold": 2, "member": 1}
+{"event": "member_completed", "elapsed_s": 61.28940545907244, "fits": 9, "seed": 0, "fold": 2, "member": 2}
+{"event": "fold_completed", "elapsed_s": 61.30127595923841, "fits": 9, "seed": 0, "fold": 2}
+{"event": "fold_started", "elapsed_s": 61.466967792250216, "fits": 9, "seed": 0, "fold": 3}
+{"event": "member_completed", "elapsed_s": 68.87227575015277, "fits": 10, "seed": 0, "fold": 3, "member": 0}
+{"event": "member_completed", "elapsed_s": 73.58261420903727, "fits": 11, "seed": 0, "fold": 3, "member": 1}
+{"event": "member_completed", "elapsed_s": 80.01975050009787, "fits": 12, "seed": 0, "fold": 3, "member": 2}
+{"event": "fold_completed", "elapsed_s": 80.03053458407521, "fits": 12, "seed": 0, "fold": 3}
+{"event": "fold_started", "elapsed_s": 80.2500812090002, "fits": 12, "seed": 0, "fold": 4}
+{"event": "member_completed", "elapsed_s": 88.23262837529182, "fits": 13, "seed": 0, "fold": 4, "member": 0}
+{"event": "member_completed", "elapsed_s": 93.37266754219308, "fits": 14, "seed": 0, "fold": 4, "member": 1}
+{"event": "member_completed", "elapsed_s": 100.324455417227, "fits": 15, "seed": 0, "fold": 4, "member": 2}
+{"event": "fold_completed", "elapsed_s": 100.33376258425415, "fits": 15, "seed": 0, "fold": 4}
+{"event": "seed_completed", "elapsed_s": 101.57366454228759, "fits": 15, "seed": 0}
+{"event": "fold_started", "elapsed_s": 101.57593675004318, "fits": 15, "seed": 1, "fold": 0}
+{"event": "member_completed", "elapsed_s": 109.09694170905277, "fits": 16, "seed": 1, "fold": 0, "member": 0}
+{"event": "member_completed", "elapsed_s": 113.8826080840081, "fits": 17, "seed": 1, "fold": 0, "member": 1}
+{"event": "member_completed", "elapsed_s": 120.06529416702688, "fits": 18, "seed": 1, "fold": 0, "member": 2}
+{"event": "fold_completed", "elapsed_s": 120.08092337520793, "fits": 18, "seed": 1, "fold": 0}
+{"event": "fold_started", "elapsed_s": 120.60601737489924, "fits": 18, "seed": 1, "fold": 1}
+{"event": "member_completed", "elapsed_s": 128.44190312502906, "fits": 19, "seed": 1, "fold": 1, "member": 0}
+{"event": "member_completed", "elapsed_s": 133.56282008392736, "fits": 20, "seed": 1, "fold": 1, "member": 1}
+{"event": "member_completed", "elapsed_s": 140.38963354192674, "fits": 21, "seed": 1, "fold": 1, "member": 2}
+{"event": "fold_completed", "elapsed_s": 140.40097175026312, "fits": 21, "seed": 1, "fold": 1}
+{"event": "fold_started", "elapsed_s": 140.76842462504283, "fits": 21, "seed": 1, "fold": 2}
+{"event": "member_completed", "elapsed_s": 149.13442995911464, "fits": 22, "seed": 1, "fold": 2, "member": 0}
+{"event": "member_completed", "elapsed_s": 154.95591079210863, "fits": 23, "seed": 1, "fold": 2, "member": 1}
+{"event": "member_completed", "elapsed_s": 162.32322291703895, "fits": 24, "seed": 1, "fold": 2, "member": 2}
+{"event": "fold_completed", "elapsed_s": 162.33524108398706, "fits": 24, "seed": 1, "fold": 2}
+{"event": "fold_started", "elapsed_s": 162.7529573342763, "fits": 24, "seed": 1, "fold": 3}
+{"event": "member_completed", "elapsed_s": 171.2834642501548, "fits": 25, "seed": 1, "fold": 3, "member": 0}
+{"event": "member_completed", "elapsed_s": 177.05147345922887, "fits": 26, "seed": 1, "fold": 3, "member": 1}
+{"event": "member_completed", "elapsed_s": 184.72566475020722, "fits": 27, "seed": 1, "fold": 3, "member": 2}
+{"event": "fold_completed", "elapsed_s": 184.73594204196706, "fits": 27, "seed": 1, "fold": 3}
+{"event": "fold_started", "elapsed_s": 185.1860689590685, "fits": 27, "seed": 1, "fold": 4}
+{"event": "member_completed", "elapsed_s": 192.1118745841086, "fits": 28, "seed": 1, "fold": 4, "member": 0}
+{"event": "member_completed", "elapsed_s": 196.33970512496307, "fits": 29, "seed": 1, "fold": 4, "member": 1}
+{"event": "member_completed", "elapsed_s": 202.06050950009376, "fits": 30, "seed": 1, "fold": 4, "member": 2}
+{"event": "fold_completed", "elapsed_s": 202.07174433395267, "fits": 30, "seed": 1, "fold": 4}
+{"event": "seed_completed", "elapsed_s": 203.49532500002533, "fits": 30, "seed": 1}
+{"event": "fold_started", "elapsed_s": 203.4970669168979, "fits": 30, "seed": 2, "fold": 0}
+{"event": "member_completed", "elapsed_s": 211.09771754220128, "fits": 31, "seed": 2, "fold": 0, "member": 0}
+{"event": "member_completed", "elapsed_s": 215.84783208416775, "fits": 32, "seed": 2, "fold": 0, "member": 1}
+{"event": "member_completed", "elapsed_s": 222.05613904213533, "fits": 33, "seed": 2, "fold": 0, "member": 2}
+{"event": "fold_completed", "elapsed_s": 222.07175366720185, "fits": 33, "seed": 2, "fold": 0}
+{"event": "fold_started", "elapsed_s": 222.65644629206508, "fits": 33, "seed": 2, "fold": 1}
+{"event": "member_completed", "elapsed_s": 229.9246235419996, "fits": 34, "seed": 2, "fold": 1, "member": 0}
+{"event": "member_completed", "elapsed_s": 234.48664425034076, "fits": 35, "seed": 2, "fold": 1, "member": 1}
+{"event": "member_completed", "elapsed_s": 240.46910816710442, "fits": 36, "seed": 2, "fold": 1, "member": 2}
+{"event": "fold_completed", "elapsed_s": 240.4829255840741, "fits": 36, "seed": 2, "fold": 1}
+{"event": "fold_started", "elapsed_s": 241.1065894588828, "fits": 36, "seed": 2, "fold": 2}
+{"event": "member_completed", "elapsed_s": 248.3303221249953, "fits": 37, "seed": 2, "fold": 2, "member": 0}
+{"event": "member_completed", "elapsed_s": 252.87754641706124, "fits": 38, "seed": 2, "fold": 2, "member": 1}
+{"event": "member_completed", "elapsed_s": 258.88860658416525, "fits": 39, "seed": 2, "fold": 2, "member": 2}
+{"event": "fold_completed", "elapsed_s": 258.9003261253238, "fits": 39, "seed": 2, "fold": 2}
+{"event": "fold_started", "elapsed_s": 259.57628616690636, "fits": 39, "seed": 2, "fold": 3}
+{"event": "member_completed", "elapsed_s": 267.60754575021565, "fits": 40, "seed": 2, "fold": 3, "member": 0}
+{"event": "member_completed", "elapsed_s": 272.76359545905143, "fits": 41, "seed": 2, "fold": 3, "member": 1}
+{"event": "member_completed", "elapsed_s": 279.5765327089466, "fits": 42, "seed": 2, "fold": 3, "member": 2}
+{"event": "fold_completed", "elapsed_s": 279.5864813751541, "fits": 42, "seed": 2, "fold": 3}
+{"event": "fold_started", "elapsed_s": 280.28517708415166, "fits": 42, "seed": 2, "fold": 4}
+{"event": "member_completed", "elapsed_s": 288.2715810840018, "fits": 43, "seed": 2, "fold": 4, "member": 0}
+{"event": "member_completed", "elapsed_s": 293.50594337517396, "fits": 44, "seed": 2, "fold": 4, "member": 1}
+{"event": "member_completed", "elapsed_s": 300.5101370420307, "fits": 45, "seed": 2, "fold": 4, "member": 2}
+{"event": "fold_completed", "elapsed_s": 300.5195760843344, "fits": 45, "seed": 2, "fold": 4}
+{"event": "seed_completed", "elapsed_s": 302.17266516713426, "fits": 45, "seed": 2}
+{"event": "diagnostic_completed", "elapsed_s": 302.18644449999556, "fits": 45}
