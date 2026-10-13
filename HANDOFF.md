@@ -14,13 +14,17 @@ equalensemble vs analytic additive; no innerCV/tuning/correction/newfeature. Pin
 0/1knownsingles and raw external-profilecoverage.10metrics/pairedsampleSD, same-cohort/historical
 selection limits; no fresh-test/CellForge/modelpromotion. Separate from failed Claim24; do not reopen it.
 Root owns plan/docs/publication/sharedstate; implementation subagent only newrunner/tests, independent
-reviewer read-only. **Source/method review complete; focused7passed1.27s. Fullpytest on final source is running.**
+reviewer read-only. **Source/method review complete; focused7passed1.27s; full474passed/no skips/8warnings654.14s.**
+Reviewed code **07a3baa** published beforefitting; secret/diff checks pass.
 Originalseed reset before features is clarified prospectively in57d83d2. Parentlauncher/sourcepins
-and metadata coverage boundaries were reviewed. Exact next: fullsuitepass, source/secretcheck/codepush,
-then one free ownclone diagnostic,45fits/7200sparentdeadline, exclusive `runs/b1_development_diagnostic_20261013`.
+and metadata coverage boundaries were reviewed. Starting one free ownclone diagnostic now,45fits/7200sparentdeadline, exclusive
+`gene-mila-b1-diagnosis/runs/b1_development_diagnostic_20261013`. Mainvenv/nice19/PYTHONHASHSEED0/singlethreadBLAS;
+archived `run_with_deadline.py --package <pinnedB1package> --out runs/b1_development_diagnostic_20261013`.
+Exact next: wait this one process; preserve allseed/global/stratum metrics/metadata and predictions;
+independent raw-array/statistic verification, allfindings/report/hash/archive forClaude. No retry/tuning.
 The live Mac STATE now opens with a current overview (oldpaths/budgetnotes preserved as history);
 sharedledger read-only verified43.599822392. All results/nextaction will be archived forClaude.
-No realfitting started; no APIcalls/account/protected/main/data/STOP changes. Ledger43.599822392/cap48.
+Fixed standalone diagnosis starting; no controller/API/account/protected/main/data/STOP changes. Ledger43.599822392/cap48.
 Keep allfindings and exactnext action onGitHub forClaude. No additional modelsearch is part of this plan.
 
 **Latest result, 2026-10-13 22:40 UTC — Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
@@ -79,7 +83,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 23:27 UTC, Astra (Codex), chat “1”. Claim26 implementation/tests active; no real fit yet.
+**Last updated:** 2026-10-13 23:42 UTC, Astra (Codex), chat “1”. Claim26 fixed diagnostic starting; no paid/controller run.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
