@@ -7,13 +7,39 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-13 19:03 UTC, by Astra (Codex), finishing this takeover in separate own-clone
-worktrees. No lab run is active; STOP remains present; shared DeepSeek ledger **$43.589781152**.
+**Last updated:** 2026-10-13 19:16 UTC, by Astra (Codex), working in separate own-clone worktrees. No lab run is active; STOP remains present; shared DeepSeek ledger **$43.589781152**.
 Main checkout `~/Documents/Mila/Gene-Mila/gene-mila` remains `4562af5b`, untouched by this takeover.
 Andres's DeepSeek console screenshot (13 Oct 15:01 EDT / 19:01 UTC) shows **$28.20 available cash**
 and **$21.79 billed**, described as all available API funds. These are separate from the conservative
 ledger; do not reprice it or increase the block cap automatically. The current $48 ledger cap has
 $4.410218848 remaining. No top-up or new paid block is assumed. The screenshot itself is not committed.
+
+**New work authorized and in progress (13 Oct):** Andres approved the proposed export tool and free
+shrinkage diagnostic: "go and make sure everything is up in the github and documented so later other
+agents can pic it up really easly". He additionally asked to update README and all current documentation;
+this explicitly authorizes the bounded README edit despite the earlier hands-off instruction.
+
+- [Claim #14](https://github.com/andresloak100/Gene-Mila/issues/14), `astra/frozen-inference-export`,
+  own worktree `gene-mila-export`: new frozen numeric export/prediction tool, synthetic checks, then
+  trusted hash-verified B1 stored-prediction reproduction without labels/refitting. A selected plugin
+  has batch-dependent fallback behavior; original batch anchors and the prospective new-query recipe
+  must be explicit and verified. No real artifact deserialization has occurred yet.
+- [Claim #15](https://github.com/andresloak100/Gene-Mila/issues/15), `astra/norman-development-shrinkage`,
+  own worktree `gene-mila-shrinkage`: pre-specified four-recipe diagnostic using public training data only,
+  nested gene-grouped folds, seeds 0/1/2. Analytic additive, inner-selected ridge, lower-penalty ridge and
+  inner-OOF magnitude calibration; no outer-score model promotion. Root independently reviewed the design.
+  Exact prospective plan must be published before the real diagnostic. No real diagnostic run yet.
+- [Claim #16](https://github.com/andresloak100/Gene-Mila/issues/16), `astra/current-readme-status`,
+  own worktree `gene-mila-readme`: current-status/source pointers and stale README command/budget fixes,
+  plus living-doc status overrides. PR #5 was already merged 12 Oct. No asset changes. Await final
+  tool/results links before documentation publication.
+
+**Exact next step now:** finish implementations and focused synthetic tests; publish the diagnostic
+plan before outcomes; independently review both tools before real public-only execution. Real export
+verification and the diagnostic run sequentially. Then full suites before any code push, separate draft
+PRs, current README/status/claims, and a synchronized Mac STATE with checksums. No paid call, new oracle
+query, private/split read, protected-code edit, main-checkout modification, STOP removal or merge.
+The prospective isolated evaluation still needs its separate evaluator identity and cohort audit.
 
 **Completed work, review links and exact next steps:**
 1. B2 is complete and independently verified in draft [PR #10](https://github.com/andresloak100/Gene-Mila/pull/10),
@@ -90,7 +116,7 @@ only on development folds; do not tune exploration from the opened test's score.
 The older narrative below is historical where this current state supersedes it. No paid call, real
 lab run or new sealed query occurred in this takeover. No branch was merged, no protected code changed,
 and the main checkout, STOP and all existing run/data files remain unchanged. Claims #8/#9/#11 are
-implemented and await review; the next agent should claim the new bounded task rather than duplicate them.
+implemented and await review; claims #14/#15/#16 now own the new work. Avoid duplicate implementations.
 
 **Active agents**
 
@@ -98,7 +124,7 @@ implemented and await review; the next agent should claim the new bounded task r
 |---|---|---|---|
 | Claude, "Autonomous research system" (lab-code owner) | 2026-10-03 | the paid block of `docs/PLAN_AFTER_N4.md` (repeats of N4, fresh Norman runs from the additive start, an Adamson re-split), on Andres's go of 11 Oct 19:10 to 19:17 | (predates claim issues) |
 | Claude, "Repo description design" | 2026-10-04 | finished: PR #1 (README) merged 11 Oct as `ca35f88`; PR #5 (README Norman section with N4, B1 and B2) 12 Oct | |
-| Astra (Codex), current takeover | 2026-10-13 | completed PRs #10/#12/#13; handoff ready, no run active; next agent claims frozen-inference audit | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
+| Astra (Codex), current takeover | 2026-10-13 | active free export, Norman shrinkage and documentation tasks on own branches; no lab run active | [#8](https://github.com/andresloak100/Gene-Mila/issues/8), [#9](https://github.com/andresloak100/Gene-Mila/issues/9), [#11](https://github.com/andresloak100/Gene-Mila/issues/11) |
 | Astra (ChatGPT), earlier campaigns | 2026-10-08 | not active now. Two DeepSeek continuation campaigns on Adamson (8 workers, 2 h each, about $21.50 together): sealed 0.599 to 0.602, +0.003 over the run they continued. Its branches `astra/deepseek-continuation-memory` (6a3e8a8e) and `astra/compact-master-selection` (74114d43, contains the first), both from lab commit 8261c57, exist only on the Mac until the Mac session pushes them | none |
 
 **On the Mac (23:50):** ledger $43.59 of the block's $48; nothing runs; the STOP file is in place. B2 is done and
