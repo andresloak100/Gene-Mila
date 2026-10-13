@@ -1,0 +1,1 @@
+d5a9d9bb1abdc36c0df2f893db86ffdd  docs/mac/STATE.md

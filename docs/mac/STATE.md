@@ -634,3 +634,63 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
   is not copied into the public repository. Evaluator account/host question remains unanswered.
 - NEXT unchanged: review PRs #10/#12/#13; new agent claims cohort metadata + frozen-inference preparation,
   follows PR #13's protocol and current HANDOFF section 1. STOP, main checkout and real run/data files stay.
+
+## 2026-10-13 19:16 UTC — next free block started: export, development diagnostic, README
+- Andres explicitly approved export + free shrinkage diagnostic and asked README/current docs up to date.
+- Claim #14: astra/frozen-inference-export in own gene-mila-export worktree, numeric export/inference,
+  no refit/labels. Selected plugin batch dependency found; preserve original anchors and fixed query recipe.
+- Claim #15: astra/norman-development-shrinkage in own gene-mila-shrinkage worktree, nested public-training
+  gene folds, four fixed recipes, seeds0/1/2. Publish prospective plan and review before any real outcomes.
+- Claim #16: astra/current-readme-status, own gene-mila-readme worktree. README command/budget/status and
+  living-doc pointers; user explicitly authorizes README edit. No assets or historical-method rewriting.
+- NEXT: focused synthetic tests/reviews, then sequential real export verification and training-only
+  diagnostic, full tests, separate draft PRs and synchronized handoff. No real computation started yet.
+- No paid call/new oracle query/protected edit/private or split read. STOP remains, main remains4562af5b,
+  ledger43.589781152/cap48; actual API screenshot28.20available/21.79billed. No merge or cap change.
+
+## 2026-10-13 19:35 UTC — reviewed free diagnostic starts; export verification pending
+- Claim #15: prospective plan fe98ed7 published before outcomes; reviewed code0fbb8ce published.
+- Full suite447passed, no skips,646.95s, eight dependency warnings. No model result yet.
+- Standalone own-clone command: PYTHONHASHSEED=0 nice -n19 <main .venv python> tools/shrinkage_diagnostic.py --public <main>/data/norman --out runs/norman_development_shrinkage_20261013, cwd gene-mila-shrinkage.
+- Uses public training only; fixed four recipes/seeds0/1/2; no lab controller/provider/oracle. Preserve exclusive run directory and publish every recipe, fold-sensitivity SD and hashes.
+- Claim #14:27focused tests pass, full suite running in gene-mila-export; real stored-prediction reproduction waits for diagnostic completion. No real model deserialization yet.
+- Claim #16: journal-style README/current docs prepared, waiting final tool PR/results links. No asset edits.
+- STOP/main4562af5b unchanged; no paid/API call, private/split read, protected-code change, oracle query or merge. Ledger43.589781152/cap48.
+
+## 2026-10-13 19:37 UTC — development diagnostic complete, export suite pending
+- Claim #15: runs/norman_development_shrinkage_20261013 in own gene-mila-shrinkage completed in4.344s, public training only. Config/summary preserved; four recipes and10metrics being archived byte-for-byte.
+- Pearson delta: additive0.561398±0.016064, ridge0.569691±0.016473; low-penalty identical, calibration same correlation. SD is three fold-seeds on the same cohort, not biological replication.
+- Calibration minus ridge top-20MSE +0.001208±0.002419 sample SD; no supported calibration benefit/no model promotion. FixedB1 unchanged.
+- NEXT: archive all diagnostic results/hashes, draft PR; finish export full suite then publish reviewed code before actual stored-prediction reproduction. That replay compares no labels/scores and uses fixed1e-6 tolerances.
+- No active controller/model diagnostic now; tests only. STOP/main4562af5b unchanged; ledger43.589781152/cap48; no paid call/oracle query/private read/protected edit/merge.
+
+## 2026-10-13 19:43 UTC — export full suite passes; one saved-prediction replay starts
+- Claim #14: reviewed exporter/replaydriver published1ec08e6 after464passed/no skips/8dependencywarnings652.70s.
+- Start one standalone free saved-B1 prediction reproduction in own gene-mila-export/runs/norman_frozen_export_20261013; config before export, explicitthree frozenalphas/fullgridindices0/1/4, original119anchors/2083genes, fixedrtol=atol1e-6. No scoring/refitting/newlabels.
+- Exact command is in HANDOFF section1/docs/FROZEN_EXPORT.md; uses own archivedverification_driver.py --receipt <PR13receipt> --out runs/norman_frozen_export_20261013, PYTHONHASHSEED0/mainvenv/nice19.
+- PR17/claim15 complete diagnostic already published, samecohortSD/no calibration benefit/no B1change.
+- Andres asked “coordinate with the other chat to move faster”. Chat1 owns these export/shrinkage/README worktrees and sharedHANDOFF/STATE. Chat2 explicitly messaged to stop duplicate mutations/runs and take independent target/guide-only cohort metadata/provenance audit on a fresh claim/branch; acceptance pending. Never download/read outcomes or start paid/test runs for that audit.
+- NEXT: preserve replay success/failure and immutable metadata, draftexportPR; finalREADMEPR/handoff/checksums. STOP/main4562af5b intact; no APIspend/oracle/private/split read/protected edit/merge.
+
+## 2026-10-13 19:46 UTC — frozen replay passed; cross-chat ownership confirmed
+- Export replay: own gene-mila-export/runs/norman_frozen_export_20261013 completed in 59.009 s. All three members reproduce saved float32 predictions exactly (max difference 0); equal ensemble max difference 5.960464477539063e-08, within predeclared rtol=atol=1e-6. No tolerance changed.
+- Original 119 conditions × 2,083 genes; full-grid indices 0/1/4, identity/order/core checks pass. Numeric package stays ignored; only data-free receipts/report/checksums will be published. No score, fit, labels or oracle query.
+- Chat2 accepted independent target/guide-only external-cohort audit, Claim #18, astra/external-cohort-metadata in fresh gene-mila-cohort-audit clone. Files only new docs/EXTERNAL_COHORT_METADATA.md and docs/results/external_cohort_metadata_20261013.json. No cohort approval/outcome or efficacy reads.
+- Chat1 remains sole owner of current export/shrinkage/README worktrees, HANDOFF section 1 and this live STATE. Chat2 stopped overlapping edits/runs; archive-only review confirmed diagnostic statistics/checksums.
+- NEXT: publish replay receipts and export draft PR, current README draft PR and synchronized final handoff. Then Claim #18 metadata audit/evaluator identity gates, never repeat scoring or reopen the diagnostic grid. STOP/main 4562af5b/ledger 43.589781152/cap48 unchanged.
+
+## 2026-10-13 20:38 UTC — useful changes merged; model unchanged; README finalizing
+- Andres explicitly authorized merging, then restricted it to helpful model research without overengineering.
+- Merged PR13 feedback fix (491986ee), PR19 verified frozen export (0fd91607), PR20 guide-only cohort audit (9081e848). Topic full suites440/464 passed; real export replay/independent raw-array verification passed.
+- PR17 negative diagnostic tool remains unmerged; no calibration remedy or B1 model promotion. PR10/12 optional reporting and Claude6/7 archives remain separate.
+- Optional combined five-PR test finished487passed8warnings604.30s despite late stop request; it includes unmerged code, not the live integration test count. No further runs/tests needed absent changes.
+- Chat2 bounded metadata audit complete. Four Pacalin dictionary-novel/in-universe target names are candidates only, no approved conditions/cohort. Feature coverage/configuration/control/exposure gates remain.
+- Chat1 owns final README/status/merges, HANDOFF and this live STATE; no more duplicate work. NEXT: publish requested README/current state; then a new claimed condition/guide/control-only eligibility projection plus separate evaluator identity before any responses/scoring.
+- No API spend/oracle/private/split read/protected edit/permission change. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged. B3 remains dropped.
+
+## 2026-10-13 20:43 UTC — selected merges and README complete; next clean-test gates
+- Merged13/19/20/21: explicit sealed-feedback fix, verified frozen export, guide-only cohort audit, journal-style current README/docs. READMEchecker/GitHub CI pass. No accuracy gain claimed or model recipe changed.
+- No benefit supported by calibration diagnostic, so PR17/tool stays unmerged; PR10/12 optional reporting and Claude6/7 archives remain separate. Claim15 closed as completed negative study.
+- Chat2 bounded audit helped identify compatibility/overlap limits and is complete. Use additional chat work only for a distinct useful task, not duplicate edits/tests/runs. Chat1 finishes this shared-state publication.
+- Exact NEXT: read merged FROZEN_TEST_PLAN/FROZEN_EXPORT/EXTERNAL_COHORT_METADATA and newest HANDOFF section1. New own Claim/branch for condition/guide/control-only projection plus exposure/feature-coverage checks; evaluator identity still unanswered. Neither cohort approved. No responses/efficacy for eligibility, no fresh scoring or automatic B3/paid restart.
+- All code/run reports/pins/checksums are on GitHub; arrays remain ignored locally. No API spend, oracle query, private/split/protected change or main-checkout update. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged.
