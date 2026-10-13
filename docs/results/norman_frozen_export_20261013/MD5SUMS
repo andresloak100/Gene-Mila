@@ -1,0 +1,8 @@
+4d61098a2b6ed72734ba5123c173e97a  config.json
+7c7009d34b9144aea3bf226d2848ac3c  independent_verification.json
+c5fa52b76efb6377b621839bfdf05f5f  manifest.json
+0cb78805ff2bb1c071c7b774725beb72  prediction_receipt.json
+0732113d1abe885b6962f49c8c63bbd1  report.md
+b27e13c87a010800bf0b2e1e3626443f  summary.json
+0b965d1adac67bec7be063d26ce36913  training_core_compatibility.diff
+841113b34a82fe986b897b09d360c68c  verification_driver.py

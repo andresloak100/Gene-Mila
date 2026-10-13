@@ -1,0 +1,50 @@
+{
+  "condition_gene_member_order": "exact",
+  "config_sha256": "44eb5e1336d7dca3801120a184550fb880571adbd8b74c1ce94d502027330113",
+  "ensemble": {
+    "array_equal": false,
+    "atol": 1e-06,
+    "max_abs_difference": 5.960464477539063e-08,
+    "mean_abs_difference": 7.64988671630699e-12,
+    "rtol": 1e-06,
+    "values_exceeding_tolerance": 0
+  },
+  "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+  "members": [
+    {
+      "alpha": 20000.0,
+      "array_equal": true,
+      "bit_identical": true,
+      "experiment_id": "EXP_0681",
+      "max_abs_difference": 0.0,
+      "run_directory": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_from_n2_w4_r1",
+      "saved_predictions_sha256": "47578f72517ecb29552bc32500968be1208b41ed12fc3ac640640b15c4f8db90"
+    },
+    {
+      "alpha": 0.00198,
+      "array_equal": true,
+      "bit_identical": true,
+      "experiment_id": "EXP_0729",
+      "max_abs_difference": 0.0,
+      "run_directory": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_from_n2_w4_r2",
+      "saved_predictions_sha256": "714bd0c43ad76e7f1150a5f01fab507300f64c03eba42a9ef9a6ea86153dcc95"
+    },
+    {
+      "alpha": 300.0,
+      "array_equal": true,
+      "bit_identical": true,
+      "experiment_id": "EXP_0519",
+      "max_abs_difference": 0.0,
+      "run_directory": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_from_n2_w4_r3",
+      "saved_predictions_sha256": "1814b55969737bb8f8d298f722e841156004a34e8fd210eee3e05cdfe9e9709f"
+    }
+  ],
+  "n_conditions": 119,
+  "n_genes": 2083,
+  "no_labels_fitting_or_scoring": true,
+  "operation": "read-only recheck of saved/reproduced prediction arrays and recorded file hashes; no inference was rerun",
+  "source_run_summary_sha256": "980e32a383a8949cc3f1fa887970c369cafa43d20bae47fd4f11518ac461f7a1",
+  "status": "passed",
+  "verification_driver_sha256": "a1c171df06c1dfa0f8448786be6da583404fc86f5580da44d982d5560cff5d91",
+  "verified_utc": "2026-10-13T19:45:58.777693+00:00"
+}
