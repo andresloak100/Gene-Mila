@@ -298,7 +298,6 @@ class Lab:
             start_set = [f for f in (best.get("feature_set_json") or []) if f not in missing and f not in refused]
             helpful = [f for f in helpful if f not in refused]  # not in this run: the planner cannot build on them
             hp = {k: v for k, v in (best.get("hyperparameters_json") or {}).items() if k in ("alpha", "alpha_grid")}
-            sealed = (best.get("query_metrics_json") or {}).get("primary")
             eid, status = self.queue(ExperimentSpec(
                 hypothesis=f"Warm start: the best model of run {run['run_id']} ({best['experiment_id']}, visible "
                            f"{best['primary_score']:.4f}) is the starting point of this run.",
@@ -314,7 +313,7 @@ class Lab:
                 "new_feature IS NOT NULL AND delta_from_parent IS NOT NULL GROUP BY new_feature")
                 if r["d"] is not None and r["d"] <= HELP_THRESHOLD]
             info = {"run_id": run["run_id"], "run_dir": str(prev_run_dir), "best_experiment": best["experiment_id"],
-                    "best_visible": best["primary_score"], "best_sealed": sealed, "model": best["model_type"],
+                    "best_visible": best["primary_score"], "model": best["model_type"],
                     "features": start_set, "helpful_features": helpful,
                     "unhelpful_features": unhelpful[:20],
                     "failed_ideas": [{"idea": r["hypothesis"][:90], "stage": r["failure_stage"],
