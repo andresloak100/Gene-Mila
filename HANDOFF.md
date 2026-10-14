@@ -4,50 +4,43 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active targeted follow-up, 2026-10-14 00:03 UTC — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28),
-draft [PR #29](https://github.com/andresloak100/Gene-Mila/pull/29):** Andres's “go” accepted diagnosis
-then one targeted change. DiagnosisClaim26/PR27 completed45fixed recipe refits in302.190s: ensemble
-Pearsondelta0.476530±0.035865 versus additive0.561398±0.016064; paired−0.084868±0.022776. r1/r2
-0.586247±0.017491 /0.584365±0.020631, r3 0.309025±0.107512 andhigherMSE. These are refits, not original
-frozenB1 rescoring or its historical0.723 dropping. Rootverified2400rawmetrics includingallstrata;
-chat2verified1440mean/SDstatisticpairs/counts/folds, no discrepancies. Sourceaudit flagsr3'swhole-batch
-controlmeanfallback andtrain/unseen-proxy mismatch as concerns, not proven causes; originalsnapshotsuntouched.
-Completeddiagnosisresults published **6ed0cd1**, `docs/B1_DIAGNOSTIC_RESULTS.md`/PR27 archive.
+**Active targeted follow-up, 2026-10-14 00:12 UTC — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28),
+draft [PR #29](https://github.com/andresloak100/Gene-Mila/pull/29):** Andres's “go” accepted the free B1
+diagnosis followed by one targeted change. Own `astra/b1-two-member-test` / `gene-mila-b1-two-member`,
+stacked on diagnostic PR #27. Prospective plan **2fc1ab1** precedes all candidate outcomes.
+Test only r1+r2 mean (weights 0.5/0.5/0) versus the original three-member mean on gene-fold seeds 3/4/5;
+shared original recipes, alphas, model seeds and 45 refits, 7200s parent deadline, ten metrics and additive context.
+No candidate was calculated on diagnosis seeds 0/1/2. Gate: all three paired Pearson gains positive,
+mean > max(0.002, sample SD), ratio of across-seed mean MSE and top-20 MSE <= 1.01.
 
-One fixed test now: **r1+r2 mean (0.5/0.5/0) versus original three-membermean** on gene-foldseeds3/4/5,
-sharedoriginalrecipes/alphas/modelseeds/refits;45fits/7200s;10metrics/additive context. Own
-`astra/b1-two-member-test`/`gene-mila-b1-two-member`, stacked dependencyPR27. Prospective plan
-**2fc1ab1**, `docs/B1_TWO_MEMBER_PLAN.md`, before any candidate score (none computed on diagnosis seeds).
-Gateall3pairedPearsonpositive,mean>max(.002,sampleSD),ratio-of-meanMSE/top20MSE<=1.01. Noothersubsets,
-weights/search/retry; samecohortafterselection is robustness only, not independent validation.
-**Exact next:** wrapper/source/syntheticreview/fullpytest/codepublish, then one exclusive free
-`runs/b1_two_member_test_20261013`; verify/publish alloutcomes/hashes andexactClaude continuation.
-No newfrozenpackage/deliveredmodelpromotion automatically; keeporiginalB1 pending independent validation.
-Rootowns sharedstate/publication; implementationagent onlywrapper/tests; reviewerread-only. Noactual
-modelrun active now, noAPI/account/protected/main/data/STOPchanges; ledger43.599822392/cap48.
+Independent source/method review is complete. The parent timeout now preserves completed baseline
+summary bytes and always marks an incomplete comparison. Focused **15 passed in 1.39s** (base7,
+wrapper6, timeout2). Full tests are running before source publication; **no real candidate run has started**.
+Exact next: when full tests pass, scan and publish the reviewed wrapper/tests/launcher; start the one
+exclusive `runs/b1_two_member_test_20261013`; independently verify raw arrays and aggregate arithmetic;
+publish every outcome, source/input pins, exact command, checksums and Claude's continuation.
+No other subsets, weights, seeds, tuning or retries. This is same-cohort development after selection,
+not independent validation or proof the original frozen B1 score dropped. Delivered B1 stays unchanged;
+a screen pass does not automatically create a new frozen package or promote a model.
+Root owns shared/live state, publication and the requested current README/documentation pointers.
+Collaborators only review source/evidence; no duplicate fitting or paid calls. Main/data/protected code,
+private/split files, STOP, permissions and ledger remain unchanged; ledger **43.599822392**, cap **48**.
 
-**Completed baseline block, 2026-10-13 23:27 UTC — Claim [#26](https://github.com/andresloak100/Gene-Mila/issues/26),
-draft [PR #27](https://github.com/andresloak100/Gene-Mila/pull/27):** Andres said “go” to a free
-baseline/error diagnosis of Claude's actual fixed B1 recipes. Own `astra/b1-development-diagnosis`,
-`gene-mila-b1-diagnosis`. Prospective plan **1fdadb9**, `docs/B1_DIAGNOSTIC_PLAN.md`, published before
-outcomes. Threegene-foldseeds0/1/2×5folds; fullhideunion; original3recipes/params/alphas/seeds;
-equalensemble vs analytic additive; no innerCV/tuning/correction/newfeature. Pinned B1export manifest
-225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45. Metadata-only strata for singles/pairs,
-0/1knownsingles and raw external-profilecoverage.10metrics/pairedsampleSD, same-cohort/historical
-selection limits; no fresh-test/CellForge/modelpromotion. Separate from failed Claim24; do not reopen it.
-Root owns plan/docs/publication/sharedstate; implementation subagent only newrunner/tests, independent
-reviewer read-only. **Source/method review complete; focused7passed1.27s; full474passed/no skips/8warnings654.14s.**
-Reviewed code **07a3baa** published beforefitting; secret/diff checks pass.
-Originalseed reset before features is clarified prospectively in57d83d2. Parentlauncher/sourcepins
-and metadata coverage boundaries were reviewed. Starting one free ownclone diagnostic now,45fits/7200sparentdeadline, exclusive
-`gene-mila-b1-diagnosis/runs/b1_development_diagnostic_20261013`. Mainvenv/nice19/PYTHONHASHSEED0/singlethreadBLAS;
-archived `run_with_deadline.py --package <pinnedB1package> --out runs/b1_development_diagnostic_20261013`.
-Exact next: wait this one process; preserve allseed/global/stratum metrics/metadata and predictions;
-independent raw-array/statistic verification, allfindings/report/hash/archive forClaude. No retry/tuning.
-The live Mac STATE now opens with a current overview (oldpaths/budgetnotes preserved as history);
-sharedledger read-only verified43.599822392. All results/nextaction will be archived forClaude.
-Fixed standalone diagnosis starting; no controller/API/account/protected/main/data/STOP changes. Ledger43.599822392/cap48.
-Keep allfindings and exactnext action onGitHub forClaude. No additional modelsearch is part of this plan.
+**Completed diagnosis, Claim [#26](https://github.com/andresloak100/Gene-Mila/issues/26),
+[PR #27](https://github.com/andresloak100/Gene-Mila/pull/27), claim closed, evidence head 0e2ec6a:**
+Published plan 1fdadb9/57d83d2 and reviewed source 07a3baa before fitting. One free run at
+`gene-mila-b1-diagnosis/runs/b1_development_diagnostic_20261013`: 45 fixed refits, 302.190s, no retry/API.
+Original three B1 recipes under full gene-hide unions, seeds0/1/2 x five folds, training-only scaling.
+Ensemble Pearson delta **0.476530 ± 0.035865**, additive **0.561398 ± 0.016064**;
+paired **−0.084868 ± 0.022776** sample SD. r1 **0.586247 ± 0.017491**, r2 **0.584365 ± 0.020631**,
+r3 **0.309025 ± 0.107512**, with much higher error. These are refits, not frozen B1 rescoring.
+A read-only r3 audit found a batch-dependent fallback and train/unseen proxy mismatch; their causal role
+is unproven and snapshots remain unchanged. All ten metrics and descriptive metadata strata are in
+`docs/B1_DIAGNOSTIC_RESULTS.md` and its complete archive. Full **474 passed**, no skips,
+8 dependency warnings, 654.14s; focused7 passed. Root independently verified 2,400 raw metric values;
+chat2 verified 1,440 statistic pairs, counts, folds and progress. No discrepancies. Secret scans,
+SHA256/MD5 lists, exact command and dated Mac overview are published. Numeric arrays remain ignored locally.
+This task is complete; Claim28 owns the one prospective follow-up. Do not rescreen the diagnosis seeds.
 
 **Latest result, 2026-10-13 22:40 UTC — Claim [#24](https://github.com/andresloak100/Gene-Mila/issues/24),
 draft [PR #25](https://github.com/andresloak100/Gene-Mila/pull/25), archive head **3f78618**, claim closed:** completed one free, fixed
@@ -105,7 +98,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-14 00:03 UTC, Astra (Codex), chat “1”. Claim26 complete; Claim28 implementation active; no real fit.
+**Last updated:** 2026-10-14 00:12 UTC, Astra (Codex), chat “1”. Claim26 archived/closed; Claim28 full tests running; no real fit.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
