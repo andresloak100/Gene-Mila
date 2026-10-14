@@ -4,6 +4,46 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active source-correctness improvement, 2026-10-14 02:19 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
+draft [PR #35](https://github.com/andresloak100/Gene-Mila/pull/35):** Distinct confirmed query-composition
+defect identified before Claim32 outcomes; Andres's continuing request to improve the model authorizes
+this free source-correction test. Own astra/b1-pair-batch-correction / gene-mila-pair-batch, base2e22982.
+Prospective plan **9920fec**, docs/B1_PAIR_BATCH_PLAN.md, pushed before outcomes.
+Correct ONLY copied r2 e34 fallback per pair: preserve each nonzero prior weight; otherwise finite
+control correlation for that pair, elsezero; singletonszero. Version3/input metadata reflects controls.
+This matches original standalone row behavior, e401 unchanged. Original snapshot/package untouched.
+Metadata-only activation:3 matched/38 unmatched training pairs,14/15 mixed training and7/15 mixed query
+batches in Claim32 folds. No response/correlation inspection for that count or accuracy/leak claim.
+
+Preserve originalr1/r2 recipes/columns/params/seeds/alphas (r2 .00198, NOT failedalpha20000), train-only
+scaling and equal weights. Copy/pin plugin snapshot in exclusive ignoredrun dir beforefits.
+Newseeds12/13/14 x5 full-hide folds; sharedr1/originalr2/correctedr2=45fits/7200s/$0. No oldseedcandidate
+scores/grid/newweights/otherfeaturefix. Fixed gate: Pearson gain positiveeachseed and mean>max(.002,SD);
+mean MSE/top20 ratios<=1.01 against BOTH originalr1+r2 and additive. All10metrics/strata retained.
+Same historically selected cohort, not independent validation/CellForge evidence. Behavior correctness
+alone is not an accuracy gain; failure closes this separate candidate without tuning and unusedcode
+stays unmerged. Original frozenB1 remains delivered. No paid/protected/private/split/main/STOP/account change.
+
+Root owns plan/launcher/docs/Git/shared/live state. Implementation agent owns only new runner/copiede34/
+synthetic tests; reviewer read-only. No real model/controller process is active.
+Exact next: implement/review invariance + matched/zero/missing/nonfinite/singleton/e401/fullhide/snapshot/
+fitcount/prefitpins/failure/deadline tests; full nice19pytest; scan/publish reviewedcode BEFORE one exclusive
+runs/b1_pair_batch_20261013 fit via docs/results/b1_pair_batch_20261013/run_with_deadline.py with original
+pinnedpackage. Then independent raw metric/array/fold/gate/source/package checks and Chat2 data-free
+review, all findings/checksums/current README/documentation/Claude handoff. No duplicate or retries.
+Separate evaluator/cohort setup remains deferred. Main4562af5b/STOP/DeepSeek43.599822392 cap48 unchanged.
+
+**Completed and rejected, 2026-10-14 02:15 UTC — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32) closed:**
+[PR #33](https://github.com/andresloak100/Gene-Mila/pull/33) unmerged research record, evidence **618c4da**.
+Independent raw2880metric/5139aggregate/21exactarray/15hide/45event/12source/820package checks PASS;
+Chat2 data-free2560statistic pairs/all6report tables/alpha-only identity/counts/gates PASS.
+No discrepancies or fit replay. Correct fixedgateFAILURE only top20/control **1.0106722979>1.01**.
+All outcomes/report/reviews/SHA256/MD5 archived on PR33 in docs/B1_R2_REGULARIZATION_RESULTS.md and
+docs/results/b1_r2_regularization_20261013/. Exact sampleSD figures and initial execution log below
+are dated history; verification is complete. No process remains. No alpha/threshold/feature/seed retuning.
+Claims30/32 failures remain closed and separate; the new e34 correction was already identified source
+work, not a revised alpha candidate. Source defect efficacy remains unknown until prospective test.
+
 **Model comparison completed; verification in progress, 2026-10-14 02:10 UTC (13 October local) — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32),
 draft [PR #33](https://github.com/andresloak100/Gene-Mila/pull/33):** Andres's explicit request to
 improve the model authorizes this distinct free development block after rejected Claim30.
