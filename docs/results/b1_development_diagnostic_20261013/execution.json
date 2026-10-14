@@ -1,0 +1,49 @@
+{
+  "status": "complete",
+  "plan_commits": [
+    "1fdadb9",
+    "57d83d2"
+  ],
+  "implementation_commit": "07a3baa",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-b1-diagnosis/runs/b1_development_diagnostic_20261013",
+  "api_cost_usd": 0,
+  "fit_count": 45,
+  "elapsed_s": 302.18984062504023,
+  "full_tests": {
+    "passed": 474,
+    "skipped": 0,
+    "warnings": 8,
+    "seconds": 654.14
+  },
+  "focused_tests": {
+    "passed": 7,
+    "seconds": 1.27
+  },
+  "files": {
+    "summary.json": {
+      "sha256": "48309b354edb752336397bb8d7d2c31e9e3411257ad61f76332bc318ca5ed833",
+      "md5": "e752f5d61d43302945f816b150324ead"
+    },
+    "progress.jsonl": {
+      "sha256": "8894eceaeca0ba0aed40639a993a816f5103acc0f6cca9379c348fd58b659d48",
+      "md5": "22309492724fbf871725cc1ee848e7ef"
+    },
+    "config.json": {
+      "sha256": "2d8716d2063c4eedb77584824a321062081eb770d7b0bd4d0203b12f6b56bd84",
+      "md5": "2e05d07024df30f4136c871e5bdf1827"
+    },
+    "predictions.npz": {
+      "sha256": "5b1584ef28410f1c874a5dd426140f80ffa0436e18f4069390e370ca8558acb7",
+      "md5": "368252fd635134c6daba84f5fcc9ae73"
+    }
+  },
+  "command": "PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/b1_development_diagnostic_20261013/run_with_deadline.py --package /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013/package --out runs/b1_development_diagnostic_20261013",
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-b1-diagnosis",
+  "parent_deadline_s": 7200,
+  "independent_summary_review": {
+    "reviewer": "Codex chat 2",
+    "statistic_pairs": 1440,
+    "max_rounding_difference": 2.22e-16,
+    "status": "passed"
+  }
+}

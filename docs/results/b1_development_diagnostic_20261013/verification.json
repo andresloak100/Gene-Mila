@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "metric_values_checked_including_all_strata": 2400,
+  "max_absolute_metric_difference": 7.771561172376096e-16,
+  "exact_ensemble_average_checked": true,
+  "prediction_order_checked": true,
+  "gene_hide_membership_checked": true,
+  "known_singleton_metadata_checked": true,
+  "input_and_source_hashes_checked": true,
+  "fit_count": 45,
+  "raw_predictions_sha256": "5b1584ef28410f1c874a5dd426140f80ffa0436e18f4069390e370ca8558acb7",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-b1-diagnosis/runs/b1_development_diagnostic_20261013",
+  "method": "independent NumPy correlation, residual MSE/R2, direction and top20 arithmetic over permitted public-training responses; no diagnostic/evaluator imports or fitting"
+}
