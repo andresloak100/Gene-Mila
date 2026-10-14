@@ -1,0 +1,17 @@
+{
+  "full": {
+    "command": "nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m pytest -q",
+    "passed": 490,
+    "skipped": 0,
+    "warnings": 8,
+    "duration_s": 647.09,
+    "exit_code": 0
+  },
+  "focused": {
+    "passed": 8,
+    "duration_s": 1.32,
+    "source": "implementation agent report"
+  },
+  "runner_sha256": "2a4852dc50b0aa034e40a0d4b24fb8808469ca20bfd4587436d29e38c6eb013f",
+  "test_sha256": "14e6aeef7b8f3b73d8ef768aed73c77d790628ecae34f4785f48185e6a7ccef0"
+}
