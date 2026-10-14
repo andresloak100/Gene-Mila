@@ -28,8 +28,11 @@ Final source ownership handed to root. Focused **8 passed3.59s**; independent me
 found no material issue, including final variant guard validation and unchanged guard source pin.
 Root owns source/variant/tests/plan/launcher/docs/Git/state; reviewers read-only. No real model process.
 Full nice19pytest is running (root session59608); no source edits or actual fits while it runs.
-README/documentation-map negative findings and dated Mac snapshot published in pure-doc commit86e8cc5
-on draftPR35; its source is not yet published. No automatic accuracy claim.
+README/documentation-map negative findings and dated Mac snapshot published in pure-doc86e8cc5,
+then independently reviewed documentation-only [PR #36](https://github.com/andresloak100/Gene-Mila/pull/36)
+merged as **2824088** at02:31UTC under Andres's explicit README/documentation and bounded merge requests.
+It preserves useful failed-search knowledge for Claude; no experiment code or promotion was merged.
+Claim34 source remains unpublished while fullsuite runs. No automatic accuracy claim.
 Exact next: wait fullsuite, scan/publish reviewedcode BEFORE one exclusive
 runs/b1_pair_batch_20261013 fit via docs/results/b1_pair_batch_20261013/run_with_deadline.py with original
 pinnedpackage. Then independent raw metric/array/fold/gate/source/package checks and Chat2 data-free
