@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active source-correctness improvement, 2026-10-14 02:27 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
+**Active source-correctness improvement, 2026-10-14 02:39 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
 draft [PR #35](https://github.com/andresloak100/Gene-Mila/pull/35):** Distinct confirmed query-composition
 defect identified before Claim32 outcomes; Andres's continuing request to improve the model authorizes
 this free source-correction test. Own astra/b1-pair-batch-correction / gene-mila-pair-batch, base2e22982.
@@ -27,15 +27,16 @@ stays unmerged. Original frozenB1 remains delivered. No paid/protected/private/s
 Final source ownership handed to root. Focused **8 passed3.59s**; independent method/source review
 found no material issue, including final variant guard validation and unchanged guard source pin.
 Root owns source/variant/tests/plan/launcher/docs/Git/state; reviewers read-only. No real model process.
-Full nice19pytest is running (root session59608); no source edits or actual fits while it runs.
-README/documentation-map negative findings and dated Mac snapshot published in pure-doc86e8cc5,
-then independently reviewed documentation-only [PR #36](https://github.com/andresloak100/Gene-Mila/pull/36)
-merged as **2824088** at02:31UTC under Andres's explicit README/documentation and bounded merge requests.
-It preserves useful failed-search knowledge for Claude; no experiment code or promotion was merged.
-Claim34 source remains unpublished while fullsuite runs. No automatic accuracy claim.
-Exact next: wait fullsuite, scan/publish reviewedcode BEFORE one exclusive
-runs/b1_pair_batch_20261013 fit via docs/results/b1_pair_batch_20261013/run_with_deadline.py with original
-pinnedpackage. Then independent raw metric/array/fold/gate/source/package checks and Chat2 data-free
+Full **490 passed**, no skips,8dependency warnings648.09s. Reviewed source **d3909a1** scanned/published
+before fitting; helper/core/guard unchanged. Documentation-only PR36 merged2824088 at02:31UTC
+under Andres's explicit README/documentation and bounded merge requests. No rejected experiment code/
+model promotion merged. No model/controller process was found before this launch; main STOP stays.
+Starting ONE exclusive free runs/b1_pair_batch_20261013 from own gene-mila-pair-batch now:
+PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n19 <mainvenv>/bin/python
+docs/results/b1_pair_batch_20261013/run_with_deadline.py --package <absolute original pinned B1 package>
+--out runs/b1_pair_batch_20261013. Originalr2alpha .00198,45sharedfits/parent7200s/$0.
+Exact next: wait soleprocess, no code edits/extra fits/retries; preserve all outcomes and copiedsnapshot.
+Then independent raw metric/array/fold/gate/source/package checks and Chat2 data-free
 review, all findings/checksums/current README/documentation/Claude handoff. No duplicate or retries.
 Separate evaluator/cohort setup remains deferred. Main4562af5b/STOP/DeepSeek43.599822392 cap48 unchanged.
 
