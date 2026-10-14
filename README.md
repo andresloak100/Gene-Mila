@@ -35,6 +35,14 @@ three partitions of the same training cohort after member selection. The candida
 mean errors than additive and does not replace the delivered B1 or establish a fresh-test result.
 The [recipe diagnosis](docs/B1_DIAGNOSTIC_RESULTS.md) explains the weakness and its source limits.
 
+Two further fixed development tests were rejected. A
+[nested blend](https://github.com/andresloak100/Gene-Mila/blob/72e26bd/docs/B1_NESTED_BLEND_RESULTS.md)
+lost too much correlation; a
+[stronger r2 penalty](https://github.com/andresloak100/Gene-Mila/blob/618c4da/docs/B1_R2_REGULARIZATION_RESULTS.md)
+reduced overall error but exceeded its fixed top-20 error limit. Their code stays unmerged and their
+complete findings are retained. A [per-pair feature correction](https://github.com/andresloak100/Gene-Mila/pull/35)
+is being tested separately; it changes batch-dependent fallback, with no accuracy claim yet.
+
 [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true) holds exact continuation
 steps; the [documentation status](docs/DOCUMENTATION_STATUS.md) separates integrated code, draft PRs
 and dated evidence. Real Adamson and Norman screens lead below; the synthetic example checks the machinery.
