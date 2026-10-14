@@ -1,0 +1,442 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "verified_at_utc": "2026-10-14T01:32:57.907311+00:00",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-nested-blend/runs/b1_nested_blend_20261013",
+  "method": "Independent NumPy and Python standard-library reconstruction of saved arithmetic, metadata folds and provenance. No project modules imported and no model fits replayed.",
+  "reviewed_source_commit": "1238dac",
+  "prospective_plan_commit": "21f50d9",
+  "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+  "artifact_sha256": {
+    "config.json": "09f2d483cb0df6adf258379cb8fb0a8c3d23731aa360c41dd3014f7ee2262591",
+    "summary.json": "4b195ee01ebb46743871c90e35fc86760e037fa9bbbc4659e74c9d48ef219f75",
+    "progress.jsonl": "d7fd8690662345b1c9ea3ea5ba1a6f4b81e2badd0b6a3a509bf91d2db093e2f1",
+    "predictions.npz": "bc751ba45b88056fb05e6f4d365384b83cae7680f8d766cc8e5e61efd77e1b8f",
+    "inner_oof/seed_6_fold_0.npz": "2bf3bd929710590861d8b95ea911bde4f9c74a4a91a9fc04aa64c9d99aa289b4",
+    "inner_oof/seed_6_fold_1.npz": "bddce8698efebde55545d326826abf267d7d5baaabda75a06f55394d853c2a89",
+    "inner_oof/seed_6_fold_2.npz": "7cf9be8b945b863c7fc5dbdca53d6c5276e0c5293729fbf1465d64c21cab6cf7",
+    "inner_oof/seed_6_fold_3.npz": "b6e701d58a20ff21a7c6d0c44113b41f2145516c678624f10c3687a0635e67d4",
+    "inner_oof/seed_6_fold_4.npz": "8d8665029c1cf66ab52e822aacef3ed79723d6d24e6ec2c34e445a784644e251",
+    "inner_oof/seed_7_fold_0.npz": "396850e574863e562c37864c87a4a9e8cafffc24584b01a3433a91f09f5bbb04",
+    "inner_oof/seed_7_fold_1.npz": "20f3799f9333a368291537852bc2b0404c11f5bfe1990123bf525efbe27ae60e",
+    "inner_oof/seed_7_fold_2.npz": "ee3578a3482e94fa16d7ecd66ae4d8f9a6b7c374620a32495b9b3768e0f6b9d3",
+    "inner_oof/seed_7_fold_3.npz": "d2b7d5fd4407b5897cbcfcb04ea484435cc59b4def27e6ffc966ebb0665fdb59",
+    "inner_oof/seed_7_fold_4.npz": "ec1a665c1cd7c37988532537baf62190e7ea0cdbc5d4ec6c4672c4970c3b55dd",
+    "inner_oof/seed_8_fold_0.npz": "2e3400df7c6c5fe6bd50a79b1b45c163e7487da08fc7a699c974fcabdfa83e81",
+    "inner_oof/seed_8_fold_1.npz": "5f646ddf51c2cb31161eef668c27e9ec9a6b8fe7f98a4b8ecd1df10c5fe9493d",
+    "inner_oof/seed_8_fold_2.npz": "d36427dfa8b59988ae97ad51c2f5542f81cbe970abcc3123c3d05ebb21114469",
+    "inner_oof/seed_8_fold_3.npz": "9b8cebd925bcbac3bf6a78e6fdef43fc1c03ffa04a66b4b26a566d82949873b6",
+    "inner_oof/seed_8_fold_4.npz": "7e2935623e87bec1716a2197806af1b74a88b43de68692c527da10fed643440d"
+  },
+  "source_files_verified": 12,
+  "package_files_verified": 820,
+  "runtime_source_files_verified": 6,
+  "n_conditions": 112,
+  "n_genes": 2083,
+  "fold_seeds": [
+    6,
+    7,
+    8
+  ],
+  "outer_folds_verified": 15,
+  "inner_folds_verified": 45,
+  "inner_member_fit_events_verified": 90,
+  "outer_member_fit_events_verified": 30,
+  "progress_event_counts": {
+    "config_written": 1,
+    "outer_fold_started": 15,
+    "inner_member_completed": 90,
+    "inner_fold_completed": 45,
+    "weight_learned": 15,
+    "outer_member_completed": 30,
+    "outer_fold_completed": 15,
+    "seed_completed": 3,
+    "diagnostic_completed": 1
+  },
+  "learned_weights_verified": 15,
+  "exact_array_checks": 93,
+  "metrics_per_arm": 10,
+  "arms_verified": [
+    "candidate",
+    "fixed_ensemble",
+    "additive",
+    "member_0",
+    "member_1"
+  ],
+  "stratum_seed_blocks_verified": 45,
+  "numeric_values_verified": {
+    "weight_values": 105,
+    "metric_values": 2400,
+    "aggregate_values": 4179
+  },
+  "max_abs_difference": {
+    "weight_values": 0.0,
+    "metric_values": 7.771561172376096e-16,
+    "aggregate_values": 6.348003719902628e-16
+  },
+  "comparison_tolerance": {
+    "rtol": 1e-11,
+    "atol": 1e-12
+  },
+  "checks": {
+    "source_and_plan_match_published_commits": true,
+    "input_package_matches_manifest": true,
+    "all_run_artifacts_unchanged_during_verification": true,
+    "full_nested_hide_unions_and_condition_order_match": true,
+    "inner_and_outer_metadata_coverage_match": true,
+    "inner_and_outer_additive_predictions_match": true,
+    "inner_and_outer_equal_member_means_match_exactly": true,
+    "all_lambda_statistics_clipping_and_inner_objectives_match": true,
+    "outer_candidate_blends_match_exactly": true,
+    "all_metrics_arms_strata_and_paired_sample_sd_match": true,
+    "all_predeclared_gate_checks_match": true
+  },
+  "verified_gate": {
+    "passed": false,
+    "checks": {
+      "mse_gain_each_positive": true,
+      "mse_gain_mean_above_sd": false,
+      "pearson_each_above_min": false,
+      "pearson_mean_above_min": false,
+      "mse_to_additive_within_one_percent": true,
+      "mse_top_to_additive_within_one_percent": true,
+      "mse_top_to_fixed_ensemble_within_one_percent": true
+    },
+    "failed_checks": [
+      "mse_gain_mean_above_sd",
+      "pearson_each_above_min",
+      "pearson_mean_above_min"
+    ],
+    "primary_mse_gains": [
+      0.002676657798846231,
+      0.00021643719942640582,
+      0.0007684839220768614
+    ],
+    "primary_mse_gain_mean": 0.0012205263067831661,
+    "primary_mse_gain_sample_sd": 0.001290902044165487,
+    "pearson_changes": [
+      -0.021677714372529522,
+      -0.013604071332254719,
+      -0.01844243487542907
+    ],
+    "pearson_change_mean": -0.01790807352673777,
+    "pearson_change_sample_sd": 0.004063260331762639,
+    "error_guardrails": {
+      "mse_to_additive": {
+        "candidate_mean": 0.008796376459111882,
+        "reference_mean": 0.008795199781993578,
+        "ratio": 1.0001337862865507,
+        "passed": true
+      },
+      "mse_top_to_additive": {
+        "candidate_mean": 0.1989828003384393,
+        "reference_mean": 0.20108822655703582,
+        "ratio": 0.9895298384463133,
+        "passed": true
+      },
+      "mse_top_to_fixed_ensemble": {
+        "candidate_mean": 0.1989828003384393,
+        "reference_mean": 0.20011734502467368,
+        "ratio": 0.9943306029465137,
+        "passed": true
+      }
+    }
+  },
+  "weight_summary": {
+    "minimum": 0.0,
+    "maximum": 0.6614708999330684,
+    "mean": 0.20489271540275056,
+    "zero_count": 2,
+    "one_count": 0
+  },
+  "verified_weight_records": [
+    {
+      "seed": 6,
+      "outer_fold": 0,
+      "lambda": 0.014194832884922503,
+      "unclipped_lambda": 0.014194832884922503,
+      "numerator": 128.34159747539684,
+      "denominator": 9041.4306752226,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 164557,
+      "mse_additive": 0.009344721415756147,
+      "mse_fixed_ensemble": 0.06272894378412582,
+      "mse_blend": 0.009333650555638697
+    },
+    {
+      "seed": 6,
+      "outer_fold": 1,
+      "lambda": 0.15580428682153394,
+      "unclipped_lambda": 0.15580428682153394,
+      "numerator": 51.1709219737062,
+      "denominator": 328.4307705366281,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 166640,
+      "mse_additive": 0.00728999719663264,
+      "mse_fixed_ensemble": 0.008646747836270277,
+      "mse_blend": 0.00724215364764012
+    },
+    {
+      "seed": 6,
+      "outer_fold": 2,
+      "lambda": 0.3023612291354793,
+      "unclipped_lambda": 0.3023612291354793,
+      "numerator": 62.290840087237,
+      "denominator": 206.01464104819564,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 177055,
+      "mse_additive": 0.008370243653856897,
+      "mse_fixed_ensemble": 0.008830173962934425,
+      "mse_blend": 0.008263868036265424
+    },
+    {
+      "seed": 6,
+      "outer_fold": 3,
+      "lambda": 0.03131648765981269,
+      "unclipped_lambda": 0.03131648765981269,
+      "numerator": 40.4246951866278,
+      "denominator": 1290.843840016687,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 179138,
+      "mse_additive": 0.010092429860744986,
+      "mse_fixed_ensemble": 0.016846967980202788,
+      "mse_blend": 0.010085362909746518
+    },
+    {
+      "seed": 6,
+      "outer_fold": 4,
+      "lambda": 0.0,
+      "unclipped_lambda": -0.0016243990397947171,
+      "numerator": -78.03118585381108,
+      "denominator": 48036.95640184092,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 177055,
+      "mse_additive": 0.008784692867359608,
+      "mse_fixed_ensemble": 0.2809770555430737,
+      "mse_blend": 0.008784692867359608
+    },
+    {
+      "seed": 7,
+      "outer_fold": 0,
+      "lambda": 0.5992283282435694,
+      "unclipped_lambda": 0.5992283282435694,
+      "numerator": 102.47455324799697,
+      "denominator": 171.0108625010531,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 164557,
+      "mse_additive": 0.007549851143602283,
+      "mse_fixed_ensemble": 0.007343611093073039,
+      "mse_blend": 0.0071766937863929035
+    },
+    {
+      "seed": 7,
+      "outer_fold": 1,
+      "lambda": 0.6614708999330684,
+      "unclipped_lambda": 0.6614708999330684,
+      "numerator": 128.0340814640216,
+      "denominator": 193.55965844752484,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 179138,
+      "mse_additive": 0.009458548598276533,
+      "mse_fixed_ensemble": 0.009109608091625135,
+      "mse_blend": 0.008985780011555066
+    },
+    {
+      "seed": 7,
+      "outer_fold": 2,
+      "lambda": 0.25230241929765646,
+      "unclipped_lambda": 0.25230241929765646,
+      "numerator": 58.78510986912514,
+      "denominator": 232.99463410920677,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 168723,
+      "mse_additive": 0.008329439362585343,
+      "mse_fixed_ensemble": 0.009013545349148862,
+      "mse_blend": 0.008241534184046207
+    },
+    {
+      "seed": 7,
+      "outer_fold": 3,
+      "lambda": 0.09512460455990258,
+      "unclipped_lambda": 0.09512460455990258,
+      "numerator": 114.89600446021926,
+      "denominator": 1207.8473807254156,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 174972,
+      "mse_additive": 0.009001826081091091,
+      "mse_fixed_ensemble": 0.014591608285129322,
+      "mse_blend": 0.008939362161207961
+    },
+    {
+      "seed": 7,
+      "outer_fold": 4,
+      "lambda": 0.31215121792801764,
+      "unclipped_lambda": 0.31215121792801764,
+      "numerator": 130.63040657418105,
+      "denominator": 418.484372546336,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 172889,
+      "mse_additive": 0.009035706811609362,
+      "mse_fixed_ensemble": 0.009945096994894442,
+      "mse_blend": 0.008799853515502828
+    },
+    {
+      "seed": 8,
+      "outer_fold": 0,
+      "lambda": 0.18186629485657826,
+      "unclipped_lambda": 0.18186629485657826,
+      "numerator": 62.18328985015484,
+      "denominator": 341.9176153513946,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 181221,
+      "mse_additive": 0.008545479524597601,
+      "mse_fixed_ensemble": 0.009745953176387875,
+      "mse_blend": 0.008483074811418443
+    },
+    {
+      "seed": 8,
+      "outer_fold": 1,
+      "lambda": 0.2420896250666794,
+      "unclipped_lambda": 0.2420896250666794,
+      "numerator": 53.24455961057244,
+      "denominator": 219.93738722139435,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 170806,
+      "mse_additive": 0.00860870932498524,
+      "mse_fixed_ensemble": 0.009272903018416673,
+      "mse_blend": 0.008533243852619141
+    },
+    {
+      "seed": 8,
+      "outer_fold": 2,
+      "lambda": 0.13653855163303316,
+      "unclipped_lambda": 0.13653855163303316,
+      "numerator": 109.50313792804974,
+      "denominator": 801.9942838001903,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 183304,
+      "mse_additive": 0.009451576356314504,
+      "mse_fixed_ensemble": 0.012632019816054014,
+      "mse_blend": 0.00937001021563035
+    },
+    {
+      "seed": 8,
+      "outer_fold": 3,
+      "lambda": 0.08894195302100479,
+      "unclipped_lambda": 0.08894195302100479,
+      "numerator": 37.716325089271415,
+      "denominator": 424.0555082072936,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 166640,
+      "mse_additive": 0.007249578580905809,
+      "mse_fixed_ensemble": 0.009341650460579063,
+      "mse_blend": 0.007229447978324108
+    },
+    {
+      "seed": 8,
+      "outer_fold": 4,
+      "lambda": 0.0,
+      "unclipped_lambda": -0.0026267360172409914,
+      "numerator": -58.81854602899776,
+      "denominator": 22392.256261357466,
+      "zero_denominator": false,
+      "n_condition_gene_pairs": 170806,
+      "mse_additive": 0.008429529718445935,
+      "mse_fixed_ensemble": 0.1402158449147239,
+      "mse_blend": 0.008429529718445935
+    }
+  ],
+  "key_readings": {
+    "candidate": {
+      "pearson_delta": {
+        "mean": 0.5577953680492482,
+        "sd": 0.0076108270467525425,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008796376459111882,
+        "sd": 0.0001590821579752089,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.1989828003384393,
+        "sd": 0.008822966881452354,
+        "n_seeds": 3
+      }
+    },
+    "fixed_ensemble": {
+      "pearson_delta": {
+        "mean": 0.575703441575986,
+        "sd": 0.009283617653141405,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.010016902765895048,
+        "sd": 0.001202281505204837,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.20011734502467368,
+        "sd": 0.006360059592963894,
+        "n_seeds": 3
+      }
+    },
+    "additive": {
+      "pearson_delta": {
+        "mean": 0.5495734152452023,
+        "sd": 0.0077761595862788834,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008795199781993578,
+        "sd": 0.0003394348171463401,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.20108822655703582,
+        "sd": 0.009941894962455554,
+        "n_seeds": 3
+      }
+    },
+    "member_0": {
+      "pearson_delta": {
+        "mean": 0.5743296921500691,
+        "sd": 0.008928307970211317,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008599807136614896,
+        "sd": 0.00034450365304901197,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.20384365057812914,
+        "sd": 0.009324700849466605,
+        "n_seeds": 3
+      }
+    },
+    "member_1": {
+      "pearson_delta": {
+        "mean": 0.574134015084916,
+        "sd": 0.009291898000850594,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.015309941612012748,
+        "sd": 0.0056989742578328435,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.20399639450193108,
+        "sd": 0.008713510412846952,
+        "n_seeds": 3
+      }
+    }
+  },
+  "limitations": [
+    "Verification confirms saved arithmetic/provenance and recorded execution events; it is not an independent replay of the120fits.",
+    "All repeats are new partitions of the same historically selected public-training cohort; sample SD measures partition sensitivity, not independent replication.",
+    "Inner loss minimization guarantees neither outer error improvement nor preserved correlation.",
+    "Failed advancement gates close this fixed block; no candidate promotion, changed criterion, historical frozen-score comparison or CellForge superiority follows."
+  ]
+}

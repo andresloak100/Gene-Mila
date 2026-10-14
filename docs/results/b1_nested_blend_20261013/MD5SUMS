@@ -1,0 +1,13 @@
+c1b3c9b740e1ea76505ba52592fa43cc  docs/B1_NESTED_BLEND_PLAN.md
+88499e3395ac27fb05ae24bd40ff2efd  docs/B1_NESTED_BLEND_RESULTS.md
+e7035dca257acb5278bbc91f09096b71  docs/results/b1_nested_blend_20261013/chat2_review.json
+0f92b0c6813397fdd162a3e0d443e41d  docs/results/b1_nested_blend_20261013/config.json
+3bd5c8b6319208a8f63cf8f63b45b081  docs/results/b1_nested_blend_20261013/execution.json
+6d900cf0381c9ff8e8c9edeaddbc48cb  docs/results/b1_nested_blend_20261013/mac_STATE_snapshot.md
+4e2c3f6cd05b6e9a968995d335f84c62  docs/results/b1_nested_blend_20261013/progress.jsonl
+e6f976aa9651e5511430956205ed6b7f  docs/results/b1_nested_blend_20261013/review.md
+1776ae66caafb84fdb1cc9a1e79ce653  docs/results/b1_nested_blend_20261013/run_with_deadline.py
+694fac24ab5541c5007f667150d62a87  docs/results/b1_nested_blend_20261013/summary.json
+8e9af93eef8385da677a41bb812101fc  docs/results/b1_nested_blend_20261013/verification.json
+c2453524ee75d9a36d7102252755272d  tests/test_b1_nested_blend.py
+8057f42819699bbb48327b45177b53e4  tools/b1_nested_blend.py
