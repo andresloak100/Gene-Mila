@@ -1,3 +1,33 @@
+# GitHub snapshot of current Mac state
+
+Copied from `~/Documents/Mila/Gene-Mila/genemila_scale_logs/STATE.md` at 2026-10-14 00:32 UTC. This dated snapshot records verified model results; current HANDOFF section1/PRs hold merge status and later instructions. Historical notes are retained below.
+
+<!-- CURRENT_STATE_BEGIN -->
+# Current Gene-Mila Mac state
+
+Verified 2026-10-14 00:32 UTC (13 October local), Astra/Codex chat 1. Read this overview and current
+integration HANDOFF section 1; older notes below are history. GitHub merge status lives in current HANDOFF/PRs.
+
+- Claim28 fixed model block is complete and independently verified. No model/controller process is active.
+- Own `gene-mila-b1-two-member/runs/b1_two_member_test_20261013`, 45 shared fits, 307.875s, $0 API.
+- Plan2fc1ab1/source5467687 published before outcomes; full482 passed,8warnings654.28s; focused15 passed1.39s.
+- r1+r2 candidate Pearson0.584325±0.011274 vs all3control0.458983±0.020521; pairedgain0.125342±0.015775.
+- Fixed gate passes all3positive/mean>SD/errorguards; mean MSE ratio0.696179/top20MSE0.944288 vs control.
+- Additive Pearson0.561655±0.008879. Candidate mean MSE/top20MSE remain10.6%/4.1% higher than additive.
+- Original delivered frozen B1 remains unchanged. Same-cohort post-selection refits are not a fresh test or CellForge result.
+- Independent raw3,840metrics/4,492aggregate values, source/input pins and Chat2 2,240statisticpairs pass.
+- PR29 complete findings: `docs/B1_TWO_MEMBER_RESULTS.md` plus full summaries/config/progress/reviews/hashes/command.
+- Claim26 closed/complete: PR27 evidence0e2ec6a, source07a3baa; diagnosis45fits/302.190s; r3 weak, causal role unproven.
+- Original main `~/Documents/Mila/Gene-Mila/gene-mila` stays4562af5b, untouched; STOP remains present.
+- Sharedledger `gene-mila/runs/spend_ledger.sqlite` read-only43.599822392 of48. No paid calls in Claims26/28.
+- Exact next model milestone: prospectively freeze/validate r1+r2 and additive on compatible unseen perturbations,
+  with response-access boundary/preprocessing/multi-metric rule fixed first. No automatic new package, fitting or paid run.
+- Evaluator account/cohort setup deferred/not approved; no permission/private/split/protected/data changes. B3/Claim24 grid closed.
+- Root owns publication/current state; collaborator checks finished. Never extend this block’s subsets/weights/seeds.
+<!-- CURRENT_STATE_END -->
+
+## Historical notes and milestone log
+
 # State of the Gene-Mila runs on this Mac
 
 Written by the Claude session that ran the comparison, 2026-10-04 17:45 UTC. Whoever runs
@@ -687,3 +717,88 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
 - Chat2 bounded metadata audit complete. Four Pacalin dictionary-novel/in-universe target names are candidates only, no approved conditions/cohort. Feature coverage/configuration/control/exposure gates remain.
 - Chat1 owns final README/status/merges, HANDOFF and this live STATE; no more duplicate work. NEXT: publish requested README/current state; then a new claimed condition/guide/control-only eligibility projection plus separate evaluator identity before any responses/scoring.
 - No API spend/oracle/private/split read/protected edit/permission change. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged. B3 remains dropped.
+
+## 2026-10-13 20:43 UTC — selected merges and README complete; next clean-test gates
+- Merged13/19/20/21: explicit sealed-feedback fix, verified frozen export, guide-only cohort audit, journal-style current README/docs. READMEchecker/GitHub CI pass. No accuracy gain claimed or model recipe changed.
+- No benefit supported by calibration diagnostic, so PR17/tool stays unmerged; PR10/12 optional reporting and Claude6/7 archives remain separate. Claim15 closed as completed negative study.
+- Chat2 bounded audit helped identify compatibility/overlap limits and is complete. Use additional chat work only for a distinct useful task, not duplicate edits/tests/runs. Chat1 finishes this shared-state publication.
+- Exact NEXT: read merged FROZEN_TEST_PLAN/FROZEN_EXPORT/EXTERNAL_COHORT_METADATA and newest HANDOFF section1. New own Claim/branch for condition/guide/control-only projection plus exposure/feature-coverage checks; evaluator identity still unanswered. Neither cohort approved. No responses/efficacy for eligibility, no fresh scoring or automatic B3/paid restart.
+- All code/run reports/pins/checksums are on GitHub; arrays remain ignored locally. No API spend, oracle query, private/split/protected change or main-checkout update. Main4562af5b/STOP/ledger43.589781152/cap48 unchanged.
+
+## 2026-10-13 21:12 UTC — Claim22 test preparation authorized, bounded DeepSeek review
+- Andres: “go test”, “use the deepseek agents”; evaluator account/host unknown. Own astra/test-readiness-deepseek worktree; chat1 shared-state/paid-call owner.
+- Exactly two sequential metadata/protocol DeepSeek reviews: worker cap0.25, cumulative48, no retries/fallback/planner; existing LLMGateway/shared ledger. Plan/prompts fixed and runner reviewed before calls. No call made yet.
+- STOP/main4562af5b/data/historical runs/protected code untouched; no scoring/fitting/labels. Separate standard Mac evaluator account proposed, no permission/account change yet.
+- NEXT: metadata/feature audit, frozen review config, bounded calls, reviewed evidence/draft PR; real evaluation requires eligible cohort and proven access denial.
+
+## 2026-10-13 21:15 UTC — Claim22 DeepSeek text review started
+- Prospective plan/prompts/config published as d89e822 before calls. Independently reviewed driver SHA256 ff5f5ad0bc22936682d382ae49ba807302d0ebf5300e6e6b0986f14ba99e1483.
+- Own gene-mila-test-readiness/runs/test_readiness_20261013; 2sequential calls, worker0.25/cumulative48, no retries/planner/fallback; existing LLMGateway/shared ledger. Initial ledger43.589781152, fixed worst-case reservation0.03723852.
+- First local startup failed before any API call because own runs parent was absent; created empty own runs parent then started unchanged reviewed driver. No run/summary was overwritten.
+- Chat2 metadata search found no verified pure exactcondition manifest. Source-only feature audit found fourcandidate genes missing direct external rows; some annotation/outputgene channels remain. No quality result follows.
+- No lab model run/scoring/refit/labels/account change. STOP/main/data/protected code intact. NEXT: preserve both reviews/usage, full tests for archived driver, draft report/PR and exact evaluator setup blocker.
+
+## 2026-10-13 21:21 UTC — Claim22 DeepSeek review complete; real test remains blocked
+- Two DeepSeek V4 Pro text calls completed; 3,209input/1,466output tokens, ledger increment0.01004124; ledger now43.599822392 of48. No retries/fallback/planner. Own runs/test_readiness_20261013.
+- Plan/prompts/config d89e822 preceded calls. Draft PR23 archives exact driver/hash, raw reviews, source metadata audit and explicit corrections to reviewer errors; full pytest is finishing before code publication.
+- No eligible condition manifest yet; no evaluator boundary. Current agent account is admin, proposed genemilaeval absent. Asked Andres approval for standard evaluator account plus access-denial/elevation review; no response/account changes yet.
+- NEXT: finish full suite, publish checksummed PR23 evidence, then design-only condition/control projection and demonstrated isolation before candidate responses. No inference/refit/newscore/labels/private/split/protected edits. STOP/main4562af5b remain; no further paid calls; B3 remains dropped.
+
+## 2026-10-13 21:23 UTC — Claim22 checks complete; PR23 evidence publication
+- Full suite467passed/no skips/8dependencywarnings657.02s. Four synthetic credential/error sanitization checks pass; independent source/runner review complete; fixed prompts/config/driver/response hashes and ledger arithmetic verified.
+- No new model score. DeepSeek reviews completed for0.01004124ledgerUSD; sharedtotal43.599822392/cap48. Raw reviews retained with explicit corrections; no further paidcalls.
+- Final data-free evidence in PR23/own astra/test-readiness-deepseek; no model/protected/main changes. STOP remains.
+- ExactNEXT: await Andres decision on Standard evaluator account/access-denial check, then obtain pure condition/guide/control projection and fix missingfeature/preprocessing/baseline/uncertainty rules before responses/scoring. Neither cohort is verified eligible.
+
+## 2026-10-13 22:13 UTC — Claim24 model-improvement development block starts
+- Andres prioritizes model improvements building on Claude; account setup/Claim22 deferred, no permission changes. Own astra/singleton-transfer-development/gene-mila-singleton-transfer.
+- One hypothesis: external-screen singleton transfer for missing additive responses. Fixed two-stage plan before outcomes; matched simple panel then same-fold B1-recipe refits only if stageA passes. 3seeds/5outerfolds; public training only.
+- Root owns plan/runner/results/sharedstate; local feature subagent owns new feature/tests only; chat2 methods review only. NEXT publish plan, synthetic tests/review/fullpytest, one free standalone experiment.
+- STOP/main4562af5b/data/protected files untouched; no paidcalls; ledger43.599822392/cap48. No real fitting started.
+
+## 2026-10-13 22:19 UTC — Claim24 prospective plan published; no outcomes
+- Plan c8c1358 / draftPR25 before real fitting. Fixedlambda1, nested3inner/5outer gene folds seeds0/1/2, 10metrics, exact continuationgate,7200s/480+90fit bounds. Includes direct controls and duplicate singleton self-exclusion.
+- User explicitly requires every change/finding and exact continuation on GitHub for Claude. Root owns sharedstate/results; localfeature+runneragents synthetic/source work; chat2 review only.
+- NEXT: finish focused tests/review/fullpytest, publishcode, then one free standalone public-training diagnostic. No other real run/noAPI/account/protected/main change; STOP remains,ledger43.599822392/cap48.
+
+## 2026-10-13 22:25 UTC — Claim24 source reviewed; full tests in progress
+- Focused62passed2.19s. Scientific/source reviews pass after member-paired reporting and atomic checkpoint fixes; parent7200s deadline preserves stopped evidence. Initial fullsuite stopped for that final correction; fresh finalsource fullsuite active.
+- Plan c8c1358 precedes outcomes; PR25/Claim24 current. No realmodel fit/API/account/main/protected change. NEXT fullsuitepass,scan/codepublish,one fixed developmentrun.
+
+## 2026-10-13 22:36 UTC — Claim24 fixed development experiment starts
+- Full529passed/no skips/8dependencywarnings653.50s; focused62passed2.19s. Plan c8c1358/code7606c04 published beforefitting; reviews/secretchecks pass.
+- Own gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013; archived run_with_deadline.py,7200s parentlimit, fixed A480/B90fits; StageB onlyifStageA gatepasses. Mainvenv/nice19/PYTHONHASHSEED0/singlethreadBLAS. Nootherlab/diagnosticprocess,STOPverified,main4562af5b intact.
+- NEXT waitthisoneprocess; preserve and independentlyverify allresults; publish data-free receipts/hashes/report and exactClaude handoff. NoAPIs/noaccount/protected/mainchanges; ledger43.599822392/cap48. Neverretry/widenfromoutcomes.
+
+## 2026-10-13 22:40 UTC — Claim24 negative model comparison complete; preserve for Claude
+- One fixed run: gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013. Plan c8c1358/code7606c04 preceded outcomes. 480A/0Bfits,57.771s; no retry/grid changes/API. Primary Pearson gain -0.003244765±0.001620149 across3samecohort gene-foldseeds; allnegative; StageBskipped byfixedgate. B1 unchanged.
+- Full529passed/no skips/8warnings653.50s; focused62passed. Independently reconstructed150metrics fromsavedpredictions,maxdiff8.882e-16; allinput/source hashes,order,counts passed. PR25 contains complete10metrics/allcontrols/alphas/coverage/config/pins/review/report/checksums; arraysstayignored. Keeptoolunmerged.
+- NEXT Claude/otheragent readPR25 negative report + newestHANDOFF; do not rerun/tuneclosedgrid orrunStageB. Next modelblock needsdistinctpredeclaredhypothesis/matcheddevelopmentcontrol. AccountsetupClaim22 deferred/notapproved; B3dropped. Noactivecontroller/experiment; STOP/main4562af5b intact; protected/data/private/splits unchanged; ledger43.599822392/cap48.
+
+## 2026-10-13 22:42 UTC — Claim24 archive published and independently verified
+- PR25 final archive3f78618 (plan c8c1358/code7606c04), claim24closed. All changes/negative findings/tenmetrics/config/pins/reviews/exactcommands/checksums onGitHub; noexperimentalcode merged. Archivedmac_STATE is a dated completion snapshot, not a mutable-file checksum.
+- Chat2 independently checked90 aggregate/paired statisticpairs, allfolds/fitcounts/alphachoices/gate/progress; no discrepancies. Rootrawarray verification150metrics maxdiff8.882e-16. BothSHA256/MD5 lists pass, no key-shaped publicationstrings.
+- Noactivework. NEXT preserveB1/closednegativegrid; distinct predeclared modelhypothesis before nextcomparison. Claim22accountsetup deferred (issuecommentupdated), nopermissionchanges/B3/paidrestart. STOP/main4562af5b/protecteddata unchanged,ledger43.599822392/cap48.
+
+## 2026-10-13 23:27 UTC — Claim26 B1 development diagnosis starts
+- Andresgo tofreefixedB1recipebaseline vsadditive, threegene-foldseeds/fivefolds,10metrics andmetadataerrors; nonewcandidate/tuning. Ownastra/b1-development-diagnosis/gene-mila-b1-diagnosis; prospectiveplan1fdadb9/PR27 beforeoutcomes.
+- Separatebaselineonlystudy, notfailedClaim24StageB; keepnegativegridclosed/B1delivered. Pinnedpackage sameexportmanifest,45fitsmax/7200sparentdeadline, runs/b1_development_diagnostic_20261013 exclusive.
+- NEXT source/syntheticreview/fullpytest/codepublish,one freeowncloneprocess,independentarithmetic/allresults/hashes/docs forClaude. No realfit started/APIs/account/protected/main/data/STOPchange; ledger43.599822392/cap48.
+
+## 2026-10-13 23:42 UTC — Claim26 fixed B1 diagnosis starts
+- Full474passed/no skips/8warnings654.14s; focused7passed1.27s. Plan1fdadb9/57d83d2 and code07a3baa published before fits.
+- Own gene-mila-b1-diagnosis/runs/b1_development_diagnostic_20261013, original3recipes only,45fits,7200sparentdeadline. Mainvenv/nice19/hashseed0/singlethreadBLAS. Nootherlabprocess; STOP/main4562af5bverified.
+- NEXT waitoneprocess; allresults/strata/coverage/predictions preserved, raw/statisticindependentchecks/report/hasharchive forClaude. NoAPIs/protected/data/account/mainchanges.
+
+## 2026-10-14 00:03 UTC — Claim26 result archived; Claim28 fixed target starts
+- All45refitscomplete; ensembleworse thanadditive, r3unstable. Report/2400rawchecks published6ed0cd1; chat2statisticchecks pass. Sources batchfallback/proxymismatch notednotcausalproof. OriginalB1unchanged.
+- Plan2fc1ab1/PR29 foronefixedr1+r2meanvsall3 onnewfoldseeds3/4/5; no candidate score yet. NEXT synthetic/source/fulltests/codepublish thenonefree45fitrun,allresults/docs/hashes forClaude.
+
+
+2026-10-14 00:12 UTC: Claim26 archive0e2ec6a complete/closed. Claim28 source review and15 focused tests pass; full suite before source publication/one fixed run. No real experiment active.
+
+2026-10-14 00:20 UTC: Claim28 full482passed,8warnings654.28s; code5467687 published before fitting. Starting the one fixed 45-fit comparison, no retries/API. Root owns sole process.
+
+2026-10-14 00:27 UTC: Claim28 fixed test completed45fits/307.875s, preset gatepassed; pairedPδ+0.125342±0.015775. Independent checks/publication active. OriginalB1unchanged, no fresh/CellForge claim, no new experiment.
+
+2026-10-14 00:32 UTC: Claim28 independent raw and Chat2/statistical/report reviews pass; full archive/current docs finalized for PR29. No model run or paid call; original B1 unchanged. Next independent-validation protocol, no automatic experiment.

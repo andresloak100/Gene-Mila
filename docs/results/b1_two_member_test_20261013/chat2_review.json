@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "reviewer": "Codex chat 2",
+  "scope": "Only config.json, summary.json, comparison.json and progress.jsonl; no NPZ, response, private/split reads, scoring, fitting, edits or paid calls",
+  "aggregate_mean_sd_statistic_pairs_verified": 2240,
+  "max_rounding_difference": 4.44e-16,
+  "checks": [
+    "all global and 15-stratum arm/paired mean and sample SD values",
+    "112 unique predictions per seed3/4/5;71singles/41pairs",
+    "15configured folds, hide partitions and coverage strata",
+    "45ordered member completions",
+    "original member identities, alphas, model seeds and grid metadata",
+    "summary/comparison/config hashes and exact baseline/additive correspondence",
+    "fixed weights and predeclared gate; ratio of means, not mean of ratios"
+  ],
+  "limits": [
+    "NPZ hashes/raw scoring checked by separate raw-array reviewer",
+    "same-cohort post-selection screen; no model promotion or CellForge evidence",
+    "candidate MSE/top20 MSE are higher than additive"
+  ],
+  "artifact_sha256": {
+    "config.json": "6a27652f235c20baf66b82de5744a51d209f76f307562a2001c13d6628c764fa",
+    "summary.json": "f27f902183fd77eb0538ba1d86a636a384e9c4a56e6d66e3aabf2b90753214e4",
+    "comparison.json": "183fdfc9fd9a7a2e8e4b8cb144df6ce9f3146e4ba38b6060f8c394b7ce439702",
+    "progress.jsonl": "a993b3ad42c64c74924301fda87d7a95c22a852b8a1647fdc47414bea8d37cca"
+  }
+}
