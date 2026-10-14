@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "verified_at_utc": "2026-10-14T00:28:22.723440+00:00",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-b1-two-member/runs/b1_two_member_test_20261013",
+  "method": "Independent NumPy and Python standard-library arithmetic. No project modules imported; no model fitting; no prior diagnosis candidate arrays read or computed.",
+  "reviewed_source_commit": "5467687",
+  "predeclared_plan_commit": "2fc1ab1",
+  "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+  "artifact_sha256": {
+    "config.json": "6a27652f235c20baf66b82de5744a51d209f76f307562a2001c13d6628c764fa",
+    "summary.json": "f27f902183fd77eb0538ba1d86a636a384e9c4a56e6d66e3aabf2b90753214e4",
+    "comparison.json": "183fdfc9fd9a7a2e8e4b8cb144df6ce9f3146e4ba38b6060f8c394b7ce439702",
+    "progress.jsonl": "a993b3ad42c64c74924301fda87d7a95c22a852b8a1647fdc47414bea8d37cca",
+    "predictions.npz": "0ffe6bfcf62e0f5255412aab073d31358bf469cbd8aa9e867e07e1b5605b6f83",
+    "candidate_predictions.npz": "4420b3ab295809d2290cb494087c5951387c4626dbd692927b6944f0ddb8f340"
+  },
+  "source_files_verified": 13,
+  "package_files_verified": 820,
+  "runtime_source_files_verified": 6,
+  "n_conditions": 112,
+  "n_genes": 2083,
+  "fold_seeds": [
+    3,
+    4,
+    5
+  ],
+  "folds_verified": 15,
+  "fit_events_verified": 45,
+  "progress_event_counts": {
+    "config_written": 1,
+    "fold_started": 15,
+    "member_completed": 45,
+    "fold_completed": 15,
+    "seed_completed": 3,
+    "diagnostic_completed": 1
+  },
+  "exact_candidate_means_verified": 3,
+  "exact_baseline_means_verified": 3,
+  "analytic_additive_arrays_verified": 3,
+  "analytic_additive_max_abs_error": 0.0,
+  "metrics_per_arm": 10,
+  "stratum_seed_blocks_verified": 45,
+  "metric_values_verified": 3840,
+  "aggregate_values_verified": 4492,
+  "max_abs_metric_difference": 8.881784197001252e-16,
+  "max_abs_aggregate_difference": 5.707240235963695e-16,
+  "comparison_tolerance": {
+    "rtol": 1e-11,
+    "atol": 1e-12
+  },
+  "checks": {
+    "published_source_matches_config": true,
+    "published_plan_matches_config": true,
+    "all_package_files_match_manifest": true,
+    "baseline_summary_and_predictions_unchanged": true,
+    "all_result_artifacts_unchanged_during_verification": true,
+    "all_metrics_all_arms_and_strata_match": true,
+    "sample_sd_and_paired_differences_match": true,
+    "gene_folds_hide_union_and_metadata_strata_match": true,
+    "original_member_recipes_preserved": true,
+    "gate_matches_predeclared_rule": true
+  },
+  "verified_gate": {
+    "passed": true,
+    "checks": {
+      "all_gains_positive": true,
+      "mean_gain_above_threshold": true,
+      "mse_within_one_percent": true,
+      "mse_top_within_one_percent": true
+    },
+    "paired_pearson_gains": [
+      0.12229824890898122,
+      0.14241647191982965,
+      0.11131099083428536
+    ],
+    "mean_paired_gain": 0.12534190388769875,
+    "sample_sd_paired_gain": 0.015774524243630687,
+    "mse_ratio_of_means": 0.6961794527030127,
+    "mse_top_ratio_of_means": 0.9442879789792329
+  },
+  "key_readings": {
+    "candidate": {
+      "pearson_delta": {
+        "mean": 0.5843249014837545,
+        "sd": 0.011273839108362682,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.009419614522558422,
+        "sd": 0.0016513362789298866,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.2005629561937818,
+        "sd": 0.00838297823474261,
+        "n_seeds": 3
+      }
+    },
+    "baseline": {
+      "pearson_delta": {
+        "mean": 0.4589829975960558,
+        "sd": 0.020520721154443308,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.013530440299531205,
+        "sd": 0.0017896057928993346,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.21239596464056296,
+        "sd": 0.006466276387554004,
+        "n_seeds": 3
+      }
+    },
+    "additive": {
+      "pearson_delta": {
+        "mean": 0.561654724298377,
+        "sd": 0.008878964169837859,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008514710290233532,
+        "sd": 0.00022471179424115095,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.19267818925059632,
+        "sd": 0.002570976213249444,
+        "n_seeds": 3
+      }
+    }
+  },
+  "limitations": [
+    "Same public-training cohort with new partitions; not independent held-out evidence.",
+    "Members and candidate subset were historically selected with this cohort; fold-seed SD measures partition sensitivity.",
+    "Verification confirms saved-array arithmetic, recorded fit events and provenance; it does not rerun the 45 fits or prove every execution event.",
+    "No new full-training candidate coefficients, model promotion, historical frozen-score change, or CellForge superiority is established."
+  ]
+}

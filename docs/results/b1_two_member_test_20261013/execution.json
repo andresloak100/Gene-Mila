@@ -1,0 +1,51 @@
+{
+  "status": "complete",
+  "plan_commit": "2fc1ab1",
+  "reviewed_implementation_commit": "5467687",
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-b1-two-member",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-b1-two-member/runs/b1_two_member_test_20261013",
+  "parent_deadline_s": 7200,
+  "api_cost_usd": 0,
+  "fit_count": 45,
+  "baseline_elapsed_s": 306.19024899974465,
+  "total_elapsed_s": 307.87461137538776,
+  "full_tests": {
+    "passed": 482,
+    "skipped": 0,
+    "warnings": 8,
+    "seconds": 654.28
+  },
+  "focused_tests": {
+    "passed": 15,
+    "seconds": 1.39
+  },
+  "fixed_development_gate_passed": true,
+  "delivered_model_changed": false,
+  "command": "PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/b1_two_member_test_20261013/run_with_deadline.py --package /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013/package --out runs/b1_two_member_test_20261013",
+  "files": {
+    "summary.json": {
+      "sha256": "f27f902183fd77eb0538ba1d86a636a384e9c4a56e6d66e3aabf2b90753214e4",
+      "md5": "eceb6a78269380373a0a940605955411"
+    },
+    "comparison.json": {
+      "sha256": "183fdfc9fd9a7a2e8e4b8cb144df6ce9f3146e4ba38b6060f8c394b7ce439702",
+      "md5": "c029f6d02ff90aca5171345f640211e0"
+    },
+    "config.json": {
+      "sha256": "6a27652f235c20baf66b82de5744a51d209f76f307562a2001c13d6628c764fa",
+      "md5": "bcb5b8e1f7dde3cfabaf984c57558e46"
+    },
+    "progress.jsonl": {
+      "sha256": "a993b3ad42c64c74924301fda87d7a95c22a852b8a1647fdc47414bea8d37cca",
+      "md5": "2724a7ecefe780cfd33333a174c77b44"
+    },
+    "predictions.npz": {
+      "sha256": "0ffe6bfcf62e0f5255412aab073d31358bf469cbd8aa9e867e07e1b5605b6f83",
+      "md5": "0ea638f0cb34fc593a9dcb3449c618c6"
+    },
+    "candidate_predictions.npz": {
+      "sha256": "4420b3ab295809d2290cb494087c5951387c4626dbd692927b6944f0ddb8f340",
+      "md5": "6c93cb76c210c837d73c651171f6798f"
+    }
+  }
+}

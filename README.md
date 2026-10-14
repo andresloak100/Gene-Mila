@@ -28,6 +28,13 @@ average calibration benefit in its small built-in feature panel and remains unme
 export is integrated. The [target/guide-only cohort audit](https://github.com/andresloak100/Gene-Mila/blob/66ed4c69462b723bf2b800fb8a503ee198cc15c9/docs/EXTERNAL_COHORT_METADATA.md) identifies
 compatibility and overlap limits; it approves no test cohort and inspects no response data.
 
+A [fixed gene-hidden development comparison](docs/B1_TWO_MEMBER_RESULTS.md) supports a simpler
+r1+r2 average over the three-member refit ensemble: Pearson delta **0.584 ± 0.011** versus
+**0.459 ± 0.021**, with paired gain **0.125 ± 0.016** and lower overall/top-20 error. These are
+three partitions of the same training cohort after member selection. The candidate has higher
+mean errors than additive and does not replace the delivered B1 or establish a fresh-test result.
+The [recipe diagnosis](docs/B1_DIAGNOSTIC_RESULTS.md) explains the weakness and its source limits.
+
 [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true) holds exact continuation
 steps; the [documentation status](docs/DOCUMENTATION_STATUS.md) separates integrated code, draft PRs
 and dated evidence. Real Adamson and Norman screens lead below; the synthetic example checks the machinery.
