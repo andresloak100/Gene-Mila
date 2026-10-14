@@ -35,13 +35,15 @@ three partitions of the same training cohort after member selection. The candida
 mean errors than additive and does not replace the delivered B1 or establish a fresh-test result.
 The [recipe diagnosis](docs/B1_DIAGNOSTIC_RESULTS.md) explains the weakness and its source limits.
 
-Two further fixed development tests were rejected. A
+Three further fixed development tests were rejected. A
 [nested blend](https://github.com/andresloak100/Gene-Mila/blob/72e26bd/docs/B1_NESTED_BLEND_RESULTS.md)
 lost too much correlation; a
 [stronger r2 penalty](https://github.com/andresloak100/Gene-Mila/blob/618c4da/docs/B1_R2_REGULARIZATION_RESULTS.md)
-reduced overall error but exceeded its fixed top-20 error limit. Their code stays unmerged and their
-complete findings are retained. A [per-pair feature correction](https://github.com/andresloak100/Gene-Mila/pull/35)
-is being tested separately; it changes batch-dependent fallback, with no accuracy claim yet.
+reduced overall error but exceeded its fixed top-20 error limit. A
+[copied per-pair feature correction](https://github.com/andresloak100/Gene-Mila/blob/dab64d0/docs/B1_PAIR_BATCH_RESULTS.md)
+passed batch-behavior checks, but its Pearson change was **−0.000003 ± 0.000028** and it failed the
+additive MSE guard. Their code stays unmerged and their full findings are retained. Original B1 remains delivered;
+the supported two-member composition still needs an independent frozen comparison.
 
 [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true) holds exact continuation
 steps; the [documentation status](docs/DOCUMENTATION_STATUS.md) separates integrated code, draft PRs
