@@ -4,36 +4,47 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Completed run, verification active, 2026-10-14 00:27 UTC — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28),
-draft [PR #29](https://github.com/andresloak100/Gene-Mila/pull/29):** Andres's “go” accepted the free B1
-diagnosis followed by one targeted change. Own `astra/b1-two-member-test` / `gene-mila-b1-two-member`,
-stacked on diagnostic PR #27. Prospective plan **2fc1ab1** precedes all candidate outcomes.
-Test only r1+r2 mean (weights 0.5/0.5/0) versus the original three-member mean on gene-fold seeds 3/4/5;
-shared original recipes, alphas, model seeds and 45 refits, 7200s parent deadline, ten metrics and additive context.
-No candidate was calculated on diagnosis seeds 0/1/2. Gate: all three paired Pearson gains positive,
-mean > max(0.002, sample SD), ratio of across-seed mean MSE and top-20 MSE <= 1.01.
+**Completed and merged, 2026-10-14 00:37 UTC (13 October local) — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28) closed:**
+[PR #27](https://github.com/andresloak100/Gene-Mila/pull/27) merged as **0db04e42**;
+[PR #29](https://github.com/andresloak100/Gene-Mila/pull/29) merged as **6e17ff8c**, evidence head **337ef8a**.
+Andres's “go” accepted diagnosis then one targeted change; his explicit “merge it” instruction,
+narrowed to useful model changes, covers these independently reviewed changes after the fixed gate passed.
+No protected edit, new paid call, account change, main-checkout update or delivered-model promotion followed.
 
-Independent source/method review is complete. The parent timeout preserves completed baseline
-summary bytes and marks an incomplete comparison. Focused **15 passed in 1.39s**; full **482 passed**,
-no skips, 8 dependency warnings, **654.28s**. Reviewed source **5467687** was scanned and published before fitting.
-The sole run completed cleanly: `gene-mila-b1-two-member/runs/b1_two_member_test_20261013`,
-**45 shared fits, 307.875s total**, no retry/API. The fixed development gate passed: candidate−control
-Pearson delta **+0.125342 ± 0.015775** sample SD, positive in all3; MSE ratio **0.696179**, top-20 MSE
-ratio **0.944288**. Candidate **0.584325 ± 0.011274**, control **0.458983 ± 0.020521**, additive
-**0.561655 ± 0.008879**. Candidate−additive correlation **+0.022670 ± 0.002693**, but candidate mean
-MSE/top-20 MSE are higher (0.009420/0.200563 versus 0.008515/0.192678); no blanket additive superiority.
-Original delivered B1 is unchanged. Same-cohort post-selection folds are not an untouched test.
-No model/controller process remains. Independent raw-array verification and Chat2 data-free statistic
-review are now active. Root owns documentation/Git/shared state. Exact next: finish both checks;
-archive complete comparison/config/summary/progress/receipts/checksums and honest multi-metric findings;
-update README/current docs/Mac STATE and review the two useful PRs under Andres's bounded merge instruction.
-Do not start any other subset/weight/seed test or full-training refit. No automatic new frozen model.
-No other subsets, weights, seeds, tuning or retries. This is same-cohort development after selection,
-not independent validation or proof the original frozen B1 score dropped. Delivered B1 stays unchanged;
-a screen pass does not automatically create a new frozen package or promote a model.
-Root owns shared/live state, publication and the requested current README/documentation pointers.
-Collaborators only review source/evidence; no duplicate fitting or paid calls. Main/data/protected code,
-private/split files, STOP, permissions and ledger remain unchanged; ledger **43.599822392**, cap **48**.
+One fixed free run: `gene-mila-b1-two-member/runs/b1_two_member_test_20261013`,
+**45 shared original-recipe fits, 307.875s**. Prospective plan **2fc1ab1**, reviewed source **5467687**
+published before outcomes; fold seeds3/4/5, five folds, original features/parameters/alphas/model seeds.
+Candidate r1+r2 mean Pearson delta **0.584325 ± 0.011274**, three-member refit control
+**0.458983 ± 0.020521**, additive **0.561655 ± 0.008879** sample SD over same-cohort partitions.
+Primary paired gain **+0.125342 ± 0.015775**, all3 positive; mean exceeds max(0.002, sampleSD).
+Mean MSE/control ratio **0.696179**, top-20 MSE/control **0.944288**; both pass the1.01 guard.
+Candidate MSE **0.009420 ± 0.001651**, top-20 MSE **0.200563 ± 0.008383**;
+control **0.013530 ± 0.001790** / **0.212396 ± 0.006466**. Against additive, candidate correlation
+**+0.022670 ± 0.002693**, but mean MSE/top-20 MSE remain **10.6%/4.1% higher**. No blanket additive win.
+r1 alone is similarly correlated with lower mean error in descriptive context; no new subset was selected.
+
+Full **482 passed**, no skips,8 dependency warnings,654.28s; focused **15 passed**1.39s.
+Independent source/method review, raw **3,840 metric/4,492 aggregate** checks, Chat2 **2,240 mean/SD
+statistic pairs**, separate report review and all source/input/array/gate checks pass. No discrepancies.
+After merging, executable/test bytes match the full-suite source, both archive SHA256/MD5 lists and
+source pins pass, secret scan passes and README checker has0errors/0warnings. Findings/all10metrics,
+all seeds/strata, exact command, config/both summaries/progress/reviews/receipts are published in
+`docs/B1_TWO_MEMBER_RESULTS.md` and `docs/results/b1_two_member_test_20261013/`. Numeric arrays/package
+stay ignored locally. README, documentation map and dated `docs/mac/STATE.md` snapshot are current.
+Root updated shared/live state; collaborator reviews finished. No model/controller process remains.
+
+**Exact next for Claude:** read the two result reports and current package manifest, preserve this closed
+composition block, and specify a frozen r1+r2 versus additive comparison on compatible unseen
+perturbations. Fix the response-access boundary, cohort/controls/preprocessing and multi-metric
+advancement rule before outcomes. This needs a distinct prospective claim/plan; account/host/cohort setup
+is still **deferred, not approved**. Do not silently extend subsets/weights/seeds, refit or create a new
+package, reopen diagnosis seeds0/1/2, query worn held-out scores, restart B3 or run paid agents.
+Original frozen B1 remains delivered, manifest225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45.
+New partitions reuse the historically selected cohort; this is development robustness, not independent
+validation or proof original B1's historical0.723 dropped. No CellForge superiority is established.
+Main4562af5b/STOP/data/private/splits/protected code/permissions unchanged. DeepSeek ledger read-only
+verified **43.599822392**, cap48; Claims26/28 spent$0. Filter ledger `provider='deepseek'` for this cap:
+the same ledger also stores Claude CLI subscription estimates. Never sum all providers for the DeepSeek cap.
 
 **Completed diagnosis, Claim [#26](https://github.com/andresloak100/Gene-Mila/issues/26),
 [PR #27](https://github.com/andresloak100/Gene-Mila/pull/27), claim closed, evidence head 0e2ec6a:**
@@ -107,7 +118,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-14 00:27 UTC, Astra (Codex), chat “1”. Claim28 run complete; independent verification/publication active; no model run.
+**Last updated:** 2026-10-14 00:37 UTC, Astra (Codex), chat “1”. Claims26/28 complete/closed; PR27/29 merged; no active experiment or outstanding collaborator check.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
@@ -119,6 +130,10 @@ This supersedes the earlier no-merge instruction only for this bounded work. No 
 main-checkout update, paid experiment, permission change or new test-data acquisition is authorized.
 
 **Merged into the lab branch:**
+- [PR #27](https://github.com/andresloak100/Gene-Mila/pull/27), merge0db04e42, and
+  [PR #29](https://github.com/andresloak100/Gene-Mila/pull/29), merge6e17ff8c: fixed B1 refit diagnosis
+  and one supported two-member development screen, complete verified evidence and current documentation.
+  No automatic frozen-package/delivered-model change; see the latest result above.
 - [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13), merge `491986ee`, claim #11: removes
   `best_sealed` from new warm starts and legacy planner context. Actual planner-request regressions,
   independent review and full **440 passed** (656.85 s). Historical exposure remains; this explicit
