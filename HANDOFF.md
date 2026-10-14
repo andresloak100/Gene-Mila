@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active source-correctness improvement, 2026-10-14 02:27 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
+**Source-correction comparison completed; verification in progress, 2026-10-14 02:46 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
 draft [PR #35](https://github.com/andresloak100/Gene-Mila/pull/35):** Distinct confirmed query-composition
 defect identified before Claim32 outcomes; Andres's continuing request to improve the model authorizes
 this free source-correction test. Own astra/b1-pair-batch-correction / gene-mila-pair-batch, base2e22982.
@@ -27,13 +27,24 @@ stays unmerged. Original frozenB1 remains delivered. No paid/protected/private/s
 Final source ownership handed to root. Focused **8 passed3.59s**; independent method/source review
 found no material issue, including final variant guard validation and unchanged guard source pin.
 Root owns source/variant/tests/plan/launcher/docs/Git/state; reviewers read-only. No real model process.
-Full nice19pytest is running (root session59608); no source edits or actual fits while it runs.
-README/documentation-map negative findings and dated Mac snapshot published in pure-doc commit86e8cc5
-on draftPR35; its source is not yet published. No automatic accuracy claim.
-Exact next: wait fullsuite, scan/publish reviewedcode BEFORE one exclusive
-runs/b1_pair_batch_20261013 fit via docs/results/b1_pair_batch_20261013/run_with_deadline.py with original
-pinnedpackage. Then independent raw metric/array/fold/gate/source/package checks and Chat2 data-free
-review, all findings/checksums/current README/documentation/Claude handoff. No duplicate or retries.
+Full **490 passed**, no skips,8dependency warnings648.09s. Reviewed source **d3909a1** scanned/published
+before fitting; helper/core/guard unchanged. Documentation-only PR36 merged2824088 at02:31UTC
+under Andres's explicit README/documentation and bounded merge requests. No rejected experiment code/
+model promotion merged. No model/controller process was found before this launch; main STOP stays.
+Sole exclusive ownclone run completed cleanly, runs/b1_pair_batch_20261013:45fits,**268.524s,$0**.
+No model/controller process remains. Saved gate **FAILED**: paired Pearson change
+**-0.0000027117 +/- 0.0000282624**, mixed signs and below fixed.002; candidate/additive mean MSE
+**1.04495856>1.01**. Other three errorguards pass. CandidateP **0.588816 +/- 0.021337**,
+control **0.588819 +/- 0.021309**; candidate MSE **0.008777 +/- 0.001214**, control
+**0.017833 +/- 0.016697**. Paired MSE difference **-0.009056 +/- 0.015643** is inside partitionSD;
+do not present the mean ratio as an established stable improvement. Sourcecorrectness is notaccuracy.
+These saved figures await independent confirmation. Do not change objective/fallback/alpha/seeds/
+margins, promote a new package or merge unused candidate code.
+Exact next: independent raw metrics/arrays/allpluginhashes/folds/gates and Chat2 data-free report review;
+archive every outcome/checksum/receipt, update README/map/Mac snapshot, close Claim34. Root owns all
+publication/current state. No more model fits/API calls/retries for this closed source candidate.
+OriginalB1 remains delivered; previously accepted two-member composition is a development candidate,
+not independently validated. Preserve all failed blocks and exact original package/snapshots.
 Separate evaluator/cohort setup remains deferred. Main4562af5b/STOP/DeepSeek43.599822392 cap48 unchanged.
 
 **Completed and rejected, 2026-10-14 02:15 UTC — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32) closed:**
