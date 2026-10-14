@@ -1,0 +1,5 @@
+Working directory: /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-pair-batch
+
+PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/b1_pair_batch_20261013/run_with_deadline.py --package /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013/package --out runs/b1_pair_batch_20261013
+
+Execute once after full suite/source review/scanned code publication. Exclusive output;7200s parent.
