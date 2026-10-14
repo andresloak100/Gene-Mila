@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active model improvement, 2026-10-14 01:51 UTC (13 October local) — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32),
+**Active model improvement, 2026-10-14 02:04 UTC (13 October local) — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32),
 draft [PR #33](https://github.com/andresloak100/Gene-Mila/pull/33):** Andres's explicit request to
 improve the model authorizes this distinct free development block after rejected Claim30.
 Own astra/b1-r2-regularization / gene-mila-r2-regularization, integration base a8f433e.
@@ -22,13 +22,14 @@ eachseed and mean>=-.002. Ratios of means; practical development screen, not ind
 significance, noninferiority or CellForge evidence. Failure closes this block without penalties/features/
 seeds/margins retuned; passing only nominates independent validation, no automatic frozen export.
 
-Root owns plan/parentlauncher/Git/docs/shared/live state; source agent has handed new runner/tests to root.
-Focused **8 passed in1.32s** on synthetic inputs. Reviewer read-only; source review/full suite in progress.
-No actual model/controller process or real-data fit is active. Exact next: finish independent source review
-and full nice19 pytest, scan/publish code, then start ONE exclusive free own-clone run:
+Root owns reviewed source/plan/parentlauncher/Git/docs/shared/live state. Focused8passed1.32s;
+independent source/method review no material issue. Full **490 passed**, no skips,8warnings647.09s.
+Reviewed code **8134cd9** scanned/published before fitting; helper/core unchanged. No model/controller
+process was found before launch; main STOP stays. Starting ONE exclusive free own-clone run now:
 PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n19 <mainvenv>/bin/python
 docs/results/b1_r2_regularization_20261013/run_with_deadline.py --package <absolute pinned B1 package>
 --out runs/b1_r2_regularization_20261013. Parent deadline7200s, exactly45fits; no retries/duplicate.
+Exact next: wait this sole process; preserve every outcome and do no code edits/extra model run.
 After completion independent raw-array/metric/stratum/gate/hash and Chat2 data-free review, all outcomes/
 receipts/checksums/current docs/Claude continuation. Merge only reviewed useful change under Andres's
 standing explicit merge instruction. Main remains4562af5b; STOP stays. DeepSeek43.599822392/cap48 unchanged.
