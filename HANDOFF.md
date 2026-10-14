@@ -4,48 +4,51 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Source-correction comparison completed; verification in progress, 2026-10-14 02:46 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
-draft [PR #35](https://github.com/andresloak100/Gene-Mila/pull/35):** Distinct confirmed query-composition
-defect identified before Claim32 outcomes; Andres's continuing request to improve the model authorizes
-this free source-correction test. Own astra/b1-pair-batch-correction / gene-mila-pair-batch, base2e22982.
-Prospective plan **9920fec**, docs/B1_PAIR_BATCH_PLAN.md, pushed before outcomes.
-Correct ONLY copied r2 e34 fallback per pair: preserve each nonzero prior weight; otherwise finite
-control correlation for that pair, elsezero; singletonszero. Version3/input metadata reflects controls.
-This matches original standalone row behavior, e401 unchanged. Original snapshot/package untouched.
-Metadata-only activation:3 matched/38 unmatched training pairs,14/15 mixed training and7/15 mixed query
-batches in Claim32 folds. No response/correlation inspection for that count or accuracy/leak claim.
+**Completed model-quality block, 2026-10-14 02:57 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34) closed:**
+[PR #35](https://github.com/andresloak100/Gene-Mila/pull/35) stays an unmerged research record, final evidence
+**dab64d0**. Documentation-only [PR #36](https://github.com/andresloak100/Gene-Mila/pull/36) merged2824088;
+[PR #37](https://github.com/andresloak100/Gene-Mila/pull/37) merged **e5a2216**. Andres's explicit README/
+documentation and bounded merge instructions authorize this useful evidence/Claude continuation update;
+no rejected candidate code or model promotion was merged. **No model/controller process remains.**
 
-Preserve originalr1/r2 recipes/columns/params/seeds/alphas (r2 .00198, NOT failedalpha20000), train-only
-scaling and equal weights. Copy/pin plugin snapshot in exclusive ignoredrun dir beforefits.
-Newseeds12/13/14 x5 full-hide folds; sharedr1/originalr2/correctedr2=45fits/7200s/$0. No oldseedcandidate
-scores/grid/newweights/otherfeaturefix. Fixed gate: Pearson gain positiveeachseed and mean>max(.002,SD);
-mean MSE/top20 ratios<=1.01 against BOTH originalr1+r2 and additive. All10metrics/strata retained.
-Same historically selected cohort, not independent validation/CellForge evidence. Behavior correctness
-alone is not an accuracy gain; failure closes this separate candidate without tuning and unusedcode
-stays unmerged. Original frozenB1 remains delivered. No paid/protected/private/split/main/STOP/account change.
+Distinct source defect identified before Claim32 outcomes: e34 whole-batch fallback changes an
+unmatched pair when an unrelated matched pair joins. e401 inherits it. Metadata-only activation showed
+3matched/38unmatched pairs,14/15mixedtrain and7/15mixedquery batches in Claim32 partitions.
+Copied e34version3 corrects fallback per row, matching original standalone semantics and preserving
+nonzero positive/negative priors, missing/zero-edge fallback and singletons. Behavioral/e401 invariance
+tests pass. Originalr2alpha **.00198**, specifications/features/params/columns/seeds/e401 and package
+stay unchanged; only one copied plugin differs. This is a component correction, not an accuracy claim.
 
-Final source ownership handed to root. Focused **8 passed3.59s**; independent method/source review
-found no material issue, including final variant guard validation and unchanged guard source pin.
-Root owns source/variant/tests/plan/launcher/docs/Git/state; reviewers read-only. No real model process.
-Full **490 passed**, no skips,8dependency warnings648.09s. Reviewed source **d3909a1** scanned/published
-before fitting; helper/core/guard unchanged. Documentation-only PR36 merged2824088 at02:31UTC
-under Andres's explicit README/documentation and bounded merge requests. No rejected experiment code/
-model promotion merged. No model/controller process was found before this launch; main STOP stays.
-Sole exclusive ownclone run completed cleanly, runs/b1_pair_batch_20261013:45fits,**268.524s,$0**.
-No model/controller process remains. Saved gate **FAILED**: paired Pearson change
-**-0.0000027117 +/- 0.0000282624**, mixed signs and below fixed.002; candidate/additive mean MSE
-**1.04495856>1.01**. Other three errorguards pass. CandidateP **0.588816 +/- 0.021337**,
-control **0.588819 +/- 0.021309**; candidate MSE **0.008777 +/- 0.001214**, control
-**0.017833 +/- 0.016697**. Paired MSE difference **-0.009056 +/- 0.015643** is inside partitionSD;
-do not present the mean ratio as an established stable improvement. Sourcecorrectness is notaccuracy.
-These saved figures await independent confirmation. Do not change objective/fallback/alpha/seeds/
-margins, promote a new package or merge unused candidate code.
-Exact next: independent raw metrics/arrays/allpluginhashes/folds/gates and Chat2 data-free report review;
-archive every outcome/checksum/receipt, update README/map/Mac snapshot, close Claim34. Root owns all
-publication/current state. No more model fits/API calls/retries for this closed source candidate.
-OriginalB1 remains delivered; previously accepted two-member composition is a development candidate,
-not independently validated. Preserve all failed blocks and exact original package/snapshots.
-Separate evaluator/cohort setup remains deferred. Main4562af5b/STOP/DeepSeek43.599822392 cap48 unchanged.
+Prospective plan **9920fec**, reviewed source **d3909a1**, published before outcomes; exclusive
+gene-mila-pair-batch/runs/b1_pair_batch_20261013 completed **45fits,268.524s,$0**, seeds12/13/14 x5fullhide.
+Fixed gate **FAILED**: primary Pearson change **-0.0000027117 +/- 0.0000282624**, mixedsigns and below
+.002; candidate/additive meanMSE **1.04495856>1.01**. Other errorguards pass. Candidate Pearson
+**0.588816 +/- 0.021337**, control **0.588819 +/- 0.021309**, additive **0.562024 +/- 0.019969**.
+Candidate MSE **0.008777 +/- 0.001214**, top20MSE **0.197545 +/- 0.023791**.
+Paired MSE change againstcontrol **-0.009056 +/- 0.015643** lies insidepartitionSD; no stable-halving
+claim. Posthoc existing-array decomposition shows seed14 change almost entirely gene-constant offsets,
+consistent with error movement/almostunchangedPearson; descriptive only, no new candidate or causalproof.
+
+Focused **8passed3.59s**; full **490passed**, no skips,8dependency warnings648.09s. Independent source/
+method review and raw **2880metric/5138aggregate/21exactarray/15fold/45event/14source/820package/
+292original+292copiedplugin** checks PASS. Chat2 data-free **2560statistic pairs/all6tables/counts/
+fullhides/spec/gates** PASS. No discrepancy/fit replay. Exact config/summary/progress/command, all6arms/
+10metrics/strata/plugin/source/runtime pins/reviews/checksums in docs/B1_PAIR_BATCH_RESULTS.md and
+docs/results/b1_pair_batch_20261013/ onPR35. Key-shaped scan and SHA256/MD5 checks pass.
+Integration README/map/datedMac snapshot are current; READMEchecker0errors/0warnings. Numeric arrays,
+copiedplugins and originalpackage/context remain ignored locally. Root owns finalpublication/state;
+collaborators finished. Main4562af5b/STOP/protected/private/split/data/account/ledger unchanged.
+
+**Exact next for Claude:** preserve closed Claims30/32/34 and all original packages/runs; do not retune
+their objectives/fallback/alpha/seeds/margins or merge unused research code. The previously supported
+r1+r2 composition from Claim28 remains a development candidate; original frozenB1 remains delivered.
+Read all three negative reports, the two-member report and docs/EXTERNAL_COHORT_METADATA.md. Specify
+a separate frozenr1+r2 versus additive comparison on compatible unseen perturbations, with source/
+batch recipe, cohort/controls/preprocessing, response-access boundary and multi-metric advancement
+rule fixed before outcomes. Evaluatoraccount/host/cohort setup remains **deferred, not approved**;
+a concrete proposal/owner decision is still needed before changing access or enrolling a new cohort.
+No automatic new fits/exports/paidcalls/worn-heldout lookup or B3 restart. No fresh-test/CellForge win
+or historicalB1score-drop claim. SharedDeepSeek provider-filtered ledger **43.599822392/cap48** unchanged.
 
 **Completed and rejected, 2026-10-14 02:15 UTC — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32) closed:**
 [PR #33](https://github.com/andresloak100/Gene-Mila/pull/33) unmerged research record, evidence **618c4da**.
