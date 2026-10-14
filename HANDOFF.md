@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active model improvement, 2026-10-14 02:04 UTC (13 October local) — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32),
+**Model comparison completed; verification in progress, 2026-10-14 02:10 UTC (13 October local) — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32),
 draft [PR #33](https://github.com/andresloak100/Gene-Mila/pull/33):** Andres's explicit request to
 improve the model authorizes this distinct free development block after rejected Claim30.
 Own astra/b1-r2-regularization / gene-mila-r2-regularization, integration base a8f433e.
@@ -24,15 +24,20 @@ seeds/margins retuned; passing only nominates independent validation, no automat
 
 Root owns reviewed source/plan/parentlauncher/Git/docs/shared/live state. Focused8passed1.32s;
 independent source/method review no material issue. Full **490 passed**, no skips,8warnings647.09s.
-Reviewed code **8134cd9** scanned/published before fitting; helper/core unchanged. No model/controller
-process was found before launch; main STOP stays. Starting ONE exclusive free own-clone run now:
-PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n19 <mainvenv>/bin/python
-docs/results/b1_r2_regularization_20261013/run_with_deadline.py --package <absolute pinned B1 package>
---out runs/b1_r2_regularization_20261013. Parent deadline7200s, exactly45fits; no retries/duplicate.
-Exact next: wait this sole process; preserve every outcome and do no code edits/extra model run.
-After completion independent raw-array/metric/stratum/gate/hash and Chat2 data-free review, all outcomes/
-receipts/checksums/current docs/Claude continuation. Merge only reviewed useful change under Andres's
-standing explicit merge instruction. Main remains4562af5b; STOP stays. DeepSeek43.599822392/cap48 unchanged.
+Reviewed code **8134cd9** scanned/published before fitting; helper/core unchanged. The exclusive run
+completed cleanly in **266.442s,45fits,$0**, all3seeds9/10/11. No model/controller process remains.
+Saved gate **FAILED**: only top20MSE/fixedE mean ratio **1.0106723** exceeds1.01. Other guards pass:
+MSE gain **0.0001540287 +/- 0.0000925371**, Pearson change **-0.0004494645 +/- 0.0002914937**;
+candidate Pearson **0.593702 +/- 0.005731**, control **0.594151 +/- 0.005555**, additive
+**0.570125 +/- 0.005630**. Candidate MSE **0.00757968 +/- 0.00019867**, top20MSE
+**0.17374269 +/- 0.00382295**. These are saved outcomes pending independent confirmation.
+Do not relax the limit, reprice the failure, retune alpha/features/seeds or promote/merge unused code.
+Exact next: independent raw-array/metric/stratum/gate/hash and Chat2 data-free verification; complete
+all-outcome archive/checksums/report/current docs and close Claim32. DraftPR33 stays a research record
+if checks confirm failure. Root owns publication/live/shared state; reviewer read-only, no fitting/API.
+A source-only assessment of the already known prior-edge batch behavior is separate preparatory work,
+not another candidate fit or permission to change this closed block. Keep delivered originalB1.
+Main remains4562af5b; STOP stays. DeepSeek43.599822392/cap48 unchanged.
 
 **Completed and rejected, 2026-10-14 01:47 UTC — Claim [#30](https://github.com/andresloak100/Gene-Mila/issues/30) closed:**
 draft [PR #31](https://github.com/andresloak100/Gene-Mila/pull/31) stays unmerged research record;
