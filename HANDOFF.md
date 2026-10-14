@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active source-correctness improvement, 2026-10-14 02:19 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
+**Active source-correctness improvement, 2026-10-14 02:27 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34),
 draft [PR #35](https://github.com/andresloak100/Gene-Mila/pull/35):** Distinct confirmed query-composition
 defect identified before Claim32 outcomes; Andres's continuing request to improve the model authorizes
 this free source-correction test. Own astra/b1-pair-batch-correction / gene-mila-pair-batch, base2e22982.
@@ -24,10 +24,13 @@ Same historically selected cohort, not independent validation/CellForge evidence
 alone is not an accuracy gain; failure closes this separate candidate without tuning and unusedcode
 stays unmerged. Original frozenB1 remains delivered. No paid/protected/private/split/main/STOP/account change.
 
-Root owns plan/launcher/docs/Git/shared/live state. Implementation agent owns only new runner/copiede34/
-synthetic tests; reviewer read-only. No real model/controller process is active.
-Exact next: implement/review invariance + matched/zero/missing/nonfinite/singleton/e401/fullhide/snapshot/
-fitcount/prefitpins/failure/deadline tests; full nice19pytest; scan/publish reviewedcode BEFORE one exclusive
+Final source ownership handed to root. Focused **8 passed3.59s**; independent method/source review
+found no material issue, including final variant guard validation and unchanged guard source pin.
+Root owns source/variant/tests/plan/launcher/docs/Git/state; reviewers read-only. No real model process.
+Full nice19pytest is running (root session59608); no source edits or actual fits while it runs.
+README/documentation-map negative findings and dated Mac snapshot published in pure-doc commit86e8cc5
+on draftPR35; its source is not yet published. No automatic accuracy claim.
+Exact next: wait fullsuite, scan/publish reviewedcode BEFORE one exclusive
 runs/b1_pair_batch_20261013 fit via docs/results/b1_pair_batch_20261013/run_with_deadline.py with original
 pinnedpackage. Then independent raw metric/array/fold/gate/source/package checks and Chat2 data-free
 review, all findings/checksums/current README/documentation/Claude handoff. No duplicate or retries.
