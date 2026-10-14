@@ -4,39 +4,50 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active model-error improvement, 2026-10-14 01:21 UTC (13 October local) — Claim [#30](https://github.com/andresloak100/Gene-Mila/issues/30),
-draft [PR #31](https://github.com/andresloak100/Gene-Mila/pull/31):** Andres explicitly said “we need to
-better we need to improve the model” after Claim28 completed. This authorizes a distinct free model
-development block, superseding the previous no-additional-automatic-experiment next step for this
-bounded work. No paid/protected/account/main/data/STOP change is authorized or needed.
-Root owns `astra/b1-nested-blend` / own `gene-mila-nested-blend`, integration base d32284f.
-Prospective plan **21f50d9**, `docs/B1_NESTED_BLEND_PLAN.md`, published before any outcome.
-Independent method/source review found no remaining material issue; hidden-answer tests strengthened
-to cover extra gene-sharing hidden rows through the actual nested runner. Focused **8 passed in3.73s**.
-Full **490 passed**, no skips,8 dependency warnings,648.89s. Reviewed source **1238dac** was scanned
-and published before fitting. Implementation handed source ownership to root; reviewer read-only.
-Root owns runner/launcher/docs/publication/shared/live state; no code edits during the full suite.
+**Active model improvement, 2026-10-14 01:51 UTC (13 October local) — Claim [#32](https://github.com/andresloak100/Gene-Mila/issues/32),
+draft [PR #33](https://github.com/andresloak100/Gene-Mila/pull/33):** Andres's explicit request to
+improve the model authorizes this distinct free development block after rejected Claim30.
+Own astra/b1-r2-regularization / gene-mila-r2-regularization, integration base a8f433e.
+Prospective plan **fe64e9e**, docs/B1_R2_REGULARIZATION_PLAN.md, pushed before any outcome.
+Change only deep-copied r2 ridge alpha0.00198 to20000, matching existing r1. Original features,
+parameters/columns/model seeds/training-only scaling/train-then-whole-fold batches and equal weights
+remain fixed. Same public cohort, fresh partition seeds9/10/11 x5;45 shared r1/originalr2/modifiedr2 fits.
+Source audit flags existing batch fallback/kernel/external-input assumptions; this test preserves them,
+does not establish their cause or repair them. No grid, scalar calibration, inner selection or old-seed
+candidate scores. No paid/protected/account/main/data/STOP change. Delivered original B1 unchanged.
 
-One scalar calibration: C=A+lambda*(E-A), E=fixed equal r1/r2, A=additive, lambda clipped[0,1],
-learned by pooled MSE exclusively on INNER gene-hidden OOF arrays inside each outer restricted view.
-No new feature/alpha/composition/grid or old-seed candidate calculation. Outerseeds6/7/8 x5folds,
-inner3folds with seed1000+100*outerseed+outerfold; full outer+inner hide union, original recipes/alphas/
-model seeds/scaling/batches. Exactly120shared member fits,7200s parent deadline. Same historically
-used cohort: development only, not independent validation or CellForge evidence; originalB1 unchanged.
+Fixed advancement: MSE improvement over equal original r1/r2 positive eachseed and mean>sampleSD;
+candidate mean MSE/top20MSE<=1.01*additive mean, top20MSE<=1.01*fixedcontrol mean; Pearson change>=-.01
+eachseed and mean>=-.002. Ratios of means; practical development screen, not independent validation,
+significance, noninferiority or CellForge evidence. Failure closes this block without penalties/features/
+seeds/margins retuned; passing only nominates independent validation, no automatic frozen export.
 
-Fixed gate: candidate MSE lower than fixedE in all3seeds, mean paired improvement>sampleSD; mean
-MSE/top20MSE<=1.01*additive mean, top20MSE<=1.01*fixedE mean; candidate-minus-fixedE Pearson>=-.01
-eachseed and mean>=-.002. Ratios of means; practical screening margins, not noninferiority/significance.
-Failure closes this distinct block; do not reopen oldClaim28/Claim24 subsets or change objectives/gates.
-Starting the one free own-clone run now, exclusive `runs/b1_nested_blend_20261013`; root owns the
-sole process,120fits/7200s parentdeadline. Command from `gene-mila-nested-blend`: PYTHONHASHSEED=0
-OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n19 <mainvenv>/bin/python
-docs/results/b1_nested_blend_20261013/run_with_deadline.py --package <absolute pinned B1 package>
---out runs/b1_nested_blend_20261013. No duplicate model/controller process or code edits.
-**Exact next:** wait the one process; preserve all15 weights/inner arrays/outer predictions and every
-outcome; independent learning/metric/stratum/gate/hash verification and Chat2 data-free review; then
-publish complete report/archive/checksums/current docs/Claude continuation. Keep originalB1 unchanged.
-No retries, additional weights/seeds/alpha/objectives or paid calls. DeepSeek43.599822392/cap48.
+Root owns plan/parentlauncher/Git/docs/shared/live state; source agent has handed new runner/tests to root.
+Focused **8 passed in1.32s** on synthetic inputs. Reviewer read-only; source review/full suite in progress.
+No actual model/controller process or real-data fit is active. Exact next: finish independent source review
+and full nice19 pytest, scan/publish code, then start ONE exclusive free own-clone run:
+PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n19 <mainvenv>/bin/python
+docs/results/b1_r2_regularization_20261013/run_with_deadline.py --package <absolute pinned B1 package>
+--out runs/b1_r2_regularization_20261013. Parent deadline7200s, exactly45fits; no retries/duplicate.
+After completion independent raw-array/metric/stratum/gate/hash and Chat2 data-free review, all outcomes/
+receipts/checksums/current docs/Claude continuation. Merge only reviewed useful change under Andres's
+standing explicit merge instruction. Main remains4562af5b; STOP stays. DeepSeek43.599822392/cap48 unchanged.
+
+**Completed and rejected, 2026-10-14 01:47 UTC — Claim [#30](https://github.com/andresloak100/Gene-Mila/issues/30) closed:**
+draft [PR #31](https://github.com/andresloak100/Gene-Mila/pull/31) stays unmerged research record;
+final evidence **72e26bd**. Source1238dac/plan21f50d9 published before the exclusive
+gene-mila-nested-blend/runs/b1_nested_blend_20261013 run;120fits,506.492s,zero API cost.
+Full490passed/no skips/8warnings648.89s; focused8passed3.73s. No process remains.
+Nested scalar C=A+lambda*(E-A), E=equal r1/r2; outer6/7/8 x5,inner3 gene-hidden folds; closed unchanged.
+MSE improvement **0.0012205263 +/- 0.0012909020** is smaller than sampleSD; Pearson change
+**-0.0179080735 +/- 0.0040632603** fails everyseed/mean margin. Error guards pass but do not override
+the failed gate. C Pearson **0.557795 +/- 0.007611**, E **0.575703 +/- 0.009284**, additive
+**0.549573 +/- 0.007776**; these are same-cohort development partitions, not delivered-model/test scores.
+Independent raw2400metric/4179aggregate checks and15learnedweights/45inner/15outer memberships/
+120event/package/source hashes PASS; Chat2 data-free2080statistic pairs and all counts/gates PASS.
+Complete report/docs archive/checksums at docs/B1_NESTED_BLEND_RESULTS.md and
+docs/results/b1_nested_blend_20261013/ on PR31. Numeric arrays/inner OOF stay ignored locally.
+No tuning of lambda/objective/zero-weight epsilon/groupweights after outcomes. Keep originalB1.
 
 **Completed and merged, 2026-10-14 00:37 UTC (13 October local) — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28) closed:**
 [PR #27](https://github.com/andresloak100/Gene-Mila/pull/27) merged as **0db04e42**;
