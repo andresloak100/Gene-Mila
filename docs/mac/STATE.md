@@ -1,31 +1,34 @@
 # GitHub snapshot of current Mac state
 
-Copied at2026-10-14 02:21 UTC. This is a dated overview, not a running-state guarantee. Current integration HANDOFF section1/PRs hold later instructions and merge status; old notes are historical.
+Copied at2026-10-14 02:53 UTC. Dated evidence, not a running-state guarantee. Current integration HANDOFF section1/PRs hold later instructions and merge status. Historical notes are retained.
 
 <!-- CURRENT_STATE_BEGIN -->
 # Current Gene-Mila Mac state
 
-Verified2026-10-14 02:19 UTC (13 October local), Astra/Codex chat1. Shared HANDOFF section1 is authoritative;
-historical notes below do not authorize old work.
+Verified2026-10-14 02:53 UTC (13 October local), Astra/Codex chat1. Current integration HANDOFF section1
+and PRs hold exact continuation/merge state; older notes are history.
 
-- No real model/controller process is active. New Claim34/PR35 implementation/synthetic review in progress.
-- Ownastra/b1-pair-batch-correction/gene-mila-pair-batch, base2e22982; prospectiveplan9920fec beforeoutcomes.
-- Correct ONLY copiede34 per-rowfallback, matching standalone behavior; e401 unchanged. Originalsnapshot/package stays.
-- Source issue active in metadata:3matched/38unmatched pairs;14/15mixedtrain,7/15mixedquery. No efficacy/leak claim.
-- Originalr2 alpha.00198, originalr1/recipes/columns/params/seeds/scaling/equalweights fixed; no rejectedalpha20000.
-- Future exclusive runs/b1_pair_batch_20261013; seeds12/13/14 x5fullhide;45sharedfits/parent7200s/$0.
-- Gate fixed BEFORE outcomes: Pearsongain eachpositive/mean>max(.002,SD); meanMSE/top20<=1.01BOTH control/additive.
-- Exact next: implement/review syntheticbatch/order/edge/e401/fullhide/pins/count/failure/deadline checks, fullnice19pytest;
-  scan/publish reviewedsource before onefit via docs/results/b1_pair_batch_20261013/run_with_deadline.py.
-- Then raw numerical/provenance and Chat2 data-free checks; complete archive/README/docs/Claudehandoff.
-- Root owns plan/launcher/docs/Git/state; implementer newrunner/copiede34/tests only; reviewer read-only/no fits/API.
-- Claim32 closed/rejected, PR33 unmerged/evidence618c4da;45fits266.442s/$0,full490passed647.09s.
-- Raw2880metrics/5139aggregates and Chat2 2560statisticpairs PASS; gateFAIL onlytop20/E1.0106722979>1.01.
-- Claim30 closed/rejected, PR31 unmerged/evidence72e26bd;120fits506.492s/$0; errorgain belowSD/Pearsonloss beyondmargins.
-- Claims26/28 closed; PR27/29 merged0db04e42/6e17ff8c. Prior data/results/closed grids preserved.
-- Delivered originalfrozenB1 unchanged. Newpartitions are development, not independent validation/CellForge evidence.
+- No model/controller process remains. Claim34 source-correction block complete and independently verified.
+- PR35 unmerged research record/evidence dab64d0; own gene-mila-pair-batch/runs/b1_pair_batch_20261013.
+- Plan9920fec/source d3909a1 beforefits;45fits268.524s/$0. Focused8passed3.59s; full490passed/8warnings648.09s.
+- CandidateP .588816+/- .021337, control .588819+/- .021309; primarychange-.0000027117+/- .0000282624.
+- GateFAILED mixedsign/no .002gain andMSE/additive1.04495856>1.01. No objective/fallback/alpha/seed/margin retuning.
+- CandidateMSE .008777+/- .001214; pairedcontrolchange-.009056+/- .015643 insideSD, no stable-halving claim.
+- Raw2880metrics/5138aggregates/14source/820package/292original+292copiedpluginpins PASS; onlye34 differs.
+- Chat2 data-free2560stats/all6tables/fullhide/counts/gates PASS. No discrepancy/fit replay.
+- Source correction passes per-row/e401 batchbehavior checks; accuracy advancement stillfails. Originalr2specalpha.00198 unchanged.
+- Existing-array offset decomposition descriptive only; no newcandidate/objective or causal efficacy claim.
+- Complete report/archive/reviews/SHA256/MD5 at docs/B1_PAIR_BATCH_RESULTS.md and docs/results/b1_pair_batch_20261013/ onPR35.
+- Claim32 closed/rejected, PR33 unmerged/evidence618c4da; top20/E1.0106723>1.01; Claim30 closed/rejected/PR31evidence72e26bd.
+- Claims26/28 closed; PR27/29 merged0db04e42/6e17ff8c. Supportedr1+r2 composition remains a development candidate only.
+- Documentation-only PR36 merged2824088. Root publishing final README/map/datedMacsnapshot separately; no unusedexperimentcode merged.
+- Exact next: finish documentation-only publication and closeClaim34; then preserve closedblocks and originalfrozenB1.
+- Next scientific milestone: separately specify compatible unseen-perturbation validation of frozenr1+r2 andadditive,
+  with response-access/preprocessing/multi-metric rule fixed first. Evaluatoraccount/host/cohort setup remainsdeferred/unapproved.
+- No automatic newfits/exports/paidcalls/fallback/alpha/seed tuning or B3 restart. Read HANDOFF before any newprospectiveclaim.
 - Main ~/Documents/Mila/Gene-Mila/gene-mila remains4562af5b; STOP stays; no protected/private/split/data/account changes.
-- DeepSeek43.599822392/cap48, provider-filtered/read-only; no new paid call. Evaluator/cohort work deferred.
+- OriginalfrozenB1 remainsdelivered; reused-cohort partitions are not independent validation/CellForge evidence.
+- DeepSeek43.599822392/cap48, provider-filtered/read-only; no newpaidcall. Numeric arrays/copiedplugins/packages stay ignored.
 <!-- CURRENT_STATE_END -->
 
 ## Historical notes and milestone log
@@ -837,3 +840,33 @@ Independent numerical/data-free checks pending; no retuning/merging/promotion. O
 
 Claim32 independently verified and rejected/evidence618c4da. New distinct Claim34/PR35 prospective
 plan9920fec published; copied per-pair source correction implementation/review next, no realfit yet.
+
+
+## Milestone 2026-10-14 02:27 UTC
+
+Claim34 source/variant/tests handed to root, focused8passed3.59s and independent review PASS. Fullsuite
+session59608 running; no actual modelprocess/source edits. Pure-doc86e8cc5 updates negative findings.
+
+
+## Milestone 2026-10-14 02:32 UTC
+
+Reviewed documentation-only PR36 merged2824088 under explicit user README/documentation/merge request.
+Claim34 fullsuite59608 still running; no source edits or actual modelprocess.
+
+
+## Milestone 2026-10-14 02:39 UTC
+
+Full490passed648.09s, reviewedsource d3909a1 scanned/published beforefits. Solefree45fit Claim34
+comparison starting with7200s parent/originalr2alpha .00198; no othermodelprocess or main/STOP change.
+
+
+## Milestone 2026-10-14 02:46 UTC
+
+Claim34 complete45fits268.524s, savedgateFAILED correlationprimary andadditiveMSEguard. No modelprocess.
+Independent raw/data-free confirmation and complete archive/currentdocs next. Do not retune/promote.
+
+
+## Milestone2026-10-14 02:53 UTC
+
+Claim34 independently verified and rejected/evidence dab64d0. No modelprocess. Finaldocumentation-only
+publication/currenthandoff and claimclosure next; no further model fits/spend or sourcecandidate retuning.
