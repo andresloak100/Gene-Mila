@@ -4,7 +4,7 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active targeted follow-up, 2026-10-14 00:20 UTC — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28),
+**Completed run, verification active, 2026-10-14 00:27 UTC — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28),
 draft [PR #29](https://github.com/andresloak100/Gene-Mila/pull/29):** Andres's “go” accepted the free B1
 diagnosis followed by one targeted change. Own `astra/b1-two-member-test` / `gene-mila-b1-two-member`,
 stacked on diagnostic PR #27. Prospective plan **2fc1ab1** precedes all candidate outcomes.
@@ -16,13 +16,18 @@ mean > max(0.002, sample SD), ratio of across-seed mean MSE and top-20 MSE <= 1.
 Independent source/method review is complete. The parent timeout preserves completed baseline
 summary bytes and marks an incomplete comparison. Focused **15 passed in 1.39s**; full **482 passed**,
 no skips, 8 dependency warnings, **654.28s**. Reviewed source **5467687** was scanned and published before fitting.
-Starting one exclusive free comparison now: own `gene-mila-b1-two-member/runs/b1_two_member_test_20261013`.
-Command from that clone: `PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
-nice -n 19 <mainvenv>/bin/python docs/results/b1_two_member_test_20261013/run_with_deadline.py
---package <absolute pinned B1 package> --out runs/b1_two_member_test_20261013`.
-Root owns this sole process; never launch a duplicate. Exact next: wait for the one run, preserve all artifacts;
-independently verify raw arrays/ten metrics/strata/gate and data-free aggregates; publish every outcome,
-source/input pins, exact command, checksums and Claude's continuation. No code edits during this run.
+The sole run completed cleanly: `gene-mila-b1-two-member/runs/b1_two_member_test_20261013`,
+**45 shared fits, 307.875s total**, no retry/API. The fixed development gate passed: candidate−control
+Pearson delta **+0.125342 ± 0.015775** sample SD, positive in all3; MSE ratio **0.696179**, top-20 MSE
+ratio **0.944288**. Candidate **0.584325 ± 0.011274**, control **0.458983 ± 0.020521**, additive
+**0.561655 ± 0.008879**. Candidate−additive correlation **+0.022670 ± 0.002693**, but candidate mean
+MSE/top-20 MSE are higher (0.009420/0.200563 versus 0.008515/0.192678); no blanket additive superiority.
+Original delivered B1 is unchanged. Same-cohort post-selection folds are not an untouched test.
+No model/controller process remains. Independent raw-array verification and Chat2 data-free statistic
+review are now active. Root owns documentation/Git/shared state. Exact next: finish both checks;
+archive complete comparison/config/summary/progress/receipts/checksums and honest multi-metric findings;
+update README/current docs/Mac STATE and review the two useful PRs under Andres's bounded merge instruction.
+Do not start any other subset/weight/seed test or full-training refit. No automatic new frozen model.
 No other subsets, weights, seeds, tuning or retries. This is same-cohort development after selection,
 not independent validation or proof the original frozen B1 score dropped. Delivered B1 stays unchanged;
 a screen pass does not automatically create a new frozen package or promote a model.
@@ -102,7 +107,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-14 00:20 UTC, Astra (Codex), chat “1”. Claim26 archived/closed; Claim28 fixed comparison starting after published source/full tests.
+**Last updated:** 2026-10-14 00:27 UTC, Astra (Codex), chat “1”. Claim28 run complete; independent verification/publication active; no model run.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
