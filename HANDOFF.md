@@ -4,6 +4,32 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active model-error improvement, 2026-10-14 01:03 UTC (13 October local) — Claim [#30](https://github.com/andresloak100/Gene-Mila/issues/30),
+draft [PR #31](https://github.com/andresloak100/Gene-Mila/pull/31):** Andres explicitly said “we need to
+better we need to improve the model” after Claim28 completed. This authorizes a distinct free model
+development block, superseding the previous no-additional-automatic-experiment next step for this
+bounded work. No paid/protected/account/main/data/STOP change is authorized or needed.
+Root owns `astra/b1-nested-blend` / own `gene-mila-nested-blend`, integration base d32284f.
+Prospective plan **21f50d9**, `docs/B1_NESTED_BLEND_PLAN.md`, published before any outcome.
+Independent method review found no material issue. Implementation agent owns only new runner/tests;
+root owns launcher/docs/publication/shared/live state; source reviewer is read-only.
+
+One scalar calibration: C=A+lambda*(E-A), E=fixed equal r1/r2, A=additive, lambda clipped[0,1],
+learned by pooled MSE exclusively on INNER gene-hidden OOF arrays inside each outer restricted view.
+No new feature/alpha/composition/grid or old-seed candidate calculation. Outerseeds6/7/8 x5folds,
+inner3folds with seed1000+100*outerseed+outerfold; full outer+inner hide union, original recipes/alphas/
+model seeds/scaling/batches. Exactly120shared member fits,7200s parent deadline. Same historically
+used cohort: development only, not independent validation or CellForge evidence; originalB1 unchanged.
+
+Fixed gate: candidate MSE lower than fixedE in all3seeds, mean paired improvement>sampleSD; mean
+MSE/top20MSE<=1.01*additive mean, top20MSE<=1.01*fixedE mean; candidate-minus-fixedE Pearson>=-.01
+eachseed and mean>=-.002. Ratios of means; practical screening margins, not noninferiority/significance.
+Failure closes this distinct block; do not reopen oldClaim28/Claim24 subsets or change objectives/gates.
+**Exact next:** finish compact runner/synthetic/source review; fullpytest/secret scan/source publication;
+then one exclusive free `runs/b1_nested_blend_20261013` with parentlauncher in its archive. Preserve all15
+weights and inner/outer numeric arrays/memberships for independent learning/metric/hash verification.
+Archive every outcome and Claude continuation. No real model run is active yet; DeepSeek43.599822392/cap48.
+
 **Completed and merged, 2026-10-14 00:37 UTC (13 October local) — Claim [#28](https://github.com/andresloak100/Gene-Mila/issues/28) closed:**
 [PR #27](https://github.com/andresloak100/Gene-Mila/pull/27) merged as **0db04e42**;
 [PR #29](https://github.com/andresloak100/Gene-Mila/pull/29) merged as **6e17ff8c**, evidence head **337ef8a**.
@@ -118,7 +144,7 @@ Claim #22 stays open for that decision; no work runs now. B3 remains dropped; no
 Update this section when you start, after each milestone, and before you stop or run out of
 tokens; commit it straight to the integration branch (AGENTS.md, "Git"). Times are UTC.
 
-**Last updated:** 2026-10-14 00:37 UTC, Astra (Codex), chat “1”. Claims26/28 complete/closed; PR27/29 merged; no active experiment or outstanding collaborator check.
+**Last updated:** 2026-10-14 01:03 UTC, Astra (Codex), chat “1”. Claim30 source work active; Claims26/28 complete; no real model run.
 STOP remains present; shared DeepSeek ledger **$43.599822392**, cap **$48**. Main Mac checkout remains
 `4562af5b`, untouched. The 13 Oct console screenshot showed $28.20 cash available/$21.79 billed;
 do not reprice the conservative ledger or infer a new paid block. The previous merged block incurred no API spend; the Claim #22 review cost is recorded above.
