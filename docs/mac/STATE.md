@@ -1,29 +1,31 @@
 # GitHub snapshot of current Mac state
 
-Copied from `~/Documents/Mila/Gene-Mila/genemila_scale_logs/STATE.md` at 2026-10-14 00:32 UTC. This dated snapshot records verified model results; current HANDOFF section1/PRs hold merge status and later instructions. Historical notes are retained below.
+Copied at2026-10-14 02:21 UTC. This is a dated overview, not a running-state guarantee. Current integration HANDOFF section1/PRs hold later instructions and merge status; old notes are historical.
 
 <!-- CURRENT_STATE_BEGIN -->
 # Current Gene-Mila Mac state
 
-Verified 2026-10-14 00:32 UTC (13 October local), Astra/Codex chat 1. Read this overview and current
-integration HANDOFF section 1; older notes below are history. GitHub merge status lives in current HANDOFF/PRs.
+Verified2026-10-14 02:19 UTC (13 October local), Astra/Codex chat1. Shared HANDOFF section1 is authoritative;
+historical notes below do not authorize old work.
 
-- Claim28 fixed model block is complete and independently verified. No model/controller process is active.
-- Own `gene-mila-b1-two-member/runs/b1_two_member_test_20261013`, 45 shared fits, 307.875s, $0 API.
-- Plan2fc1ab1/source5467687 published before outcomes; full482 passed,8warnings654.28s; focused15 passed1.39s.
-- r1+r2 candidate Pearson0.584325±0.011274 vs all3control0.458983±0.020521; pairedgain0.125342±0.015775.
-- Fixed gate passes all3positive/mean>SD/errorguards; mean MSE ratio0.696179/top20MSE0.944288 vs control.
-- Additive Pearson0.561655±0.008879. Candidate mean MSE/top20MSE remain10.6%/4.1% higher than additive.
-- Original delivered frozen B1 remains unchanged. Same-cohort post-selection refits are not a fresh test or CellForge result.
-- Independent raw3,840metrics/4,492aggregate values, source/input pins and Chat2 2,240statisticpairs pass.
-- PR29 complete findings: `docs/B1_TWO_MEMBER_RESULTS.md` plus full summaries/config/progress/reviews/hashes/command.
-- Claim26 closed/complete: PR27 evidence0e2ec6a, source07a3baa; diagnosis45fits/302.190s; r3 weak, causal role unproven.
-- Original main `~/Documents/Mila/Gene-Mila/gene-mila` stays4562af5b, untouched; STOP remains present.
-- Sharedledger `gene-mila/runs/spend_ledger.sqlite` read-only43.599822392 of48. No paid calls in Claims26/28.
-- Exact next model milestone: prospectively freeze/validate r1+r2 and additive on compatible unseen perturbations,
-  with response-access boundary/preprocessing/multi-metric rule fixed first. No automatic new package, fitting or paid run.
-- Evaluator account/cohort setup deferred/not approved; no permission/private/split/protected/data changes. B3/Claim24 grid closed.
-- Root owns publication/current state; collaborator checks finished. Never extend this block’s subsets/weights/seeds.
+- No real model/controller process is active. New Claim34/PR35 implementation/synthetic review in progress.
+- Ownastra/b1-pair-batch-correction/gene-mila-pair-batch, base2e22982; prospectiveplan9920fec beforeoutcomes.
+- Correct ONLY copiede34 per-rowfallback, matching standalone behavior; e401 unchanged. Originalsnapshot/package stays.
+- Source issue active in metadata:3matched/38unmatched pairs;14/15mixedtrain,7/15mixedquery. No efficacy/leak claim.
+- Originalr2 alpha.00198, originalr1/recipes/columns/params/seeds/scaling/equalweights fixed; no rejectedalpha20000.
+- Future exclusive runs/b1_pair_batch_20261013; seeds12/13/14 x5fullhide;45sharedfits/parent7200s/$0.
+- Gate fixed BEFORE outcomes: Pearsongain eachpositive/mean>max(.002,SD); meanMSE/top20<=1.01BOTH control/additive.
+- Exact next: implement/review syntheticbatch/order/edge/e401/fullhide/pins/count/failure/deadline checks, fullnice19pytest;
+  scan/publish reviewedsource before onefit via docs/results/b1_pair_batch_20261013/run_with_deadline.py.
+- Then raw numerical/provenance and Chat2 data-free checks; complete archive/README/docs/Claudehandoff.
+- Root owns plan/launcher/docs/Git/state; implementer newrunner/copiede34/tests only; reviewer read-only/no fits/API.
+- Claim32 closed/rejected, PR33 unmerged/evidence618c4da;45fits266.442s/$0,full490passed647.09s.
+- Raw2880metrics/5139aggregates and Chat2 2560statisticpairs PASS; gateFAIL onlytop20/E1.0106722979>1.01.
+- Claim30 closed/rejected, PR31 unmerged/evidence72e26bd;120fits506.492s/$0; errorgain belowSD/Pearsonloss beyondmargins.
+- Claims26/28 closed; PR27/29 merged0db04e42/6e17ff8c. Prior data/results/closed grids preserved.
+- Delivered originalfrozenB1 unchanged. Newpartitions are development, not independent validation/CellForge evidence.
+- Main ~/Documents/Mila/Gene-Mila/gene-mila remains4562af5b; STOP stays; no protected/private/split/data/account changes.
+- DeepSeek43.599822392/cap48, provider-filtered/read-only; no new paid call. Evaluator/cohort work deferred.
 <!-- CURRENT_STATE_END -->
 
 ## Historical notes and milestone log
@@ -802,3 +804,36 @@ fields), `planner_compare.py` (what each planner proposed, read from the run dat
 2026-10-14 00:27 UTC: Claim28 fixed test completed45fits/307.875s, preset gatepassed; pairedPδ+0.125342±0.015775. Independent checks/publication active. OriginalB1unchanged, no fresh/CellForge claim, no new experiment.
 
 2026-10-14 00:32 UTC: Claim28 independent raw and Chat2/statistical/report reviews pass; full archive/current docs finalized for PR29. No model run or paid call; original B1 unchanged. Next independent-validation protocol, no automatic experiment.
+
+2026-10-14 00:37 UTC: PR27/29 merged0db04e42/6e17ff8c, Claim28closed. Merged checks/source identity pass; DeepSeek-only ledger43.599822392 read-only verified. No process/API/protected/main change. Exact next is separately specified independent validation; original delivered B1 unchanged.
+
+2026-10-14 01:03 UTC: New explicit user model-improvement request recorded. Claim30/PR31/plan21f50d9; one nested scalar calibration, source/review work only, no real fit/API/main/protected change.
+
+2026-10-14 01:11 UTC: Claim30 independent source/methodreview complete, focused8passed3.73s; fullsuite on finalsource. No real fit/API, old/core files unchanged.
+
+2026-10-14 01:21 UTC: Claim30 full490passed,8warnings648.89s; code1238dac published before fitting. Sole fixed nested run starting,120fits/7200sparent; no retries/API/main/protected changes.
+
+
+## Milestone 2026-10-14 01:51 UTC
+
+Claim30 complete, independently verified and rejected; PR31/evidence72e26bd preserves all findings.
+Claim32/PR33 planfe64e9e published; alpha-only runner synthetic8pass, source/full-suite review next.
+No actual model process; source/publication must finish before the single45fit run.
+
+
+## Milestone 2026-10-14 02:04 UTC
+
+Claim32 source8134cd9 reviewed/scanned/published after full490passed647.09s. Sole free45fit run starting;
+root owns7200s parent. No other model process; main checkout/STOP/protected/data/ledger unchanged.
+
+
+## Milestone 2026-10-14 02:10 UTC
+
+Claim32 complete266.442s/45fits. Saved gateFAILED onlytop20/E1.0106723>1.01. No modelprocess.
+Independent numerical/data-free checks pending; no retuning/merging/promotion. OriginalB1 preserved.
+
+
+## Milestone 2026-10-14 02:19 UTC
+
+Claim32 independently verified and rejected/evidence618c4da. New distinct Claim34/PR35 prospective
+plan9920fec published; copied per-pair source correction implementation/review next, no realfit yet.
