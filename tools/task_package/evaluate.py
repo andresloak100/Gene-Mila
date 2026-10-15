@@ -1,0 +1,333 @@
+#!/usr/bin/env python3
+"""The fixed evaluation of a Gene-Mila task package. Do not edit it: its sha256 is in MANIFEST.json.
+
+    python evaluate.py > run.log 2>&1
+
+The model is ridge regression on the parent features (MANIFEST.json "parent_features", the lab's starting model)
+plus every feature file in features/. Each run scores that model out of fold on the training perturbations, with
+the lab's own code (harness/genemila: pipeline.cross_validate and benchmark.evaluator), and compares it with the
+kept state in runs/kept/. Why it works this way:
+
+- One change per run. Between runs exactly one features/*.py may be added, modified or deleted, so every score
+  difference belongs to one feature, the unit the comparison of systems is about (the lab's max_new_features=1). The
+  first run (no runs/kept/scores.json) is the baseline: it scores features/ as it is, normally empty.
+- Static checks before any plugin code runs: the lab's guard (genemila/guard.py: imports, I/O, reflection) and
+  literal.py's caps (no data tables pasted into code) on every file, then the lab's smoke test of the changed file
+  in a limited subprocess (shape, finiteness, determinism, own-label leakage).
+- Honest out-of-fold scores: for every fold seed in MANIFEST.json, cross_validate recomputes every feature on each
+  fold's view (label_dep={}, the lab's rule for code whose label reads it cannot trace), so a feature never sees
+  the labels it is scored on; runs/cache makes unchanged features cheap. The alpha is chosen per seed by the mean
+  per-perturbation pearson_delta, the lab's selection metric.
+- A noise-aware keep rule (MANIFEST.json "keep_rule"). "noise": keep when the gain over the kept state, averaged over
+  the seeds, exceeds max(2 SE, 0.002) with an SE widened for perturbations sharing a gene, wins on more than half
+  the perturbations and is positive under every seed; a deletion is kept when it loses less than one SE. "strict"
+  (autoresearch as published): keep when the mean gain is above zero.
+- The decision is applied here, not left to the agent: kept means features/ becomes runs/kept/features; discarded,
+  rejected or crashed means features/ is restored from it. Every attempt is copied to runs/attempts/ and logged in
+  results.tsv and runs/evals.jsonl.
+
+The script re-runs itself as a subprocess under PYTHONHASHSEED=0 (the lab's experiment processes' seed, so plugin
+values match the lab's) with the time and memory limits of MANIFEST.json; it never replaces its own process, so it
+also runs from an agent that executes Python inside its own interpreter. Exit 0 when the attempt was scored
+(baseline, keep, discard), 1 when it was rejected or crashed. Grep-able lines: status:, decision:,
+oof_pearson_delta:, parent:, gain:, gain_se:, wins:, seeds_positive:, harness_ok:, cpu_s:.
+"""
+from __future__ import annotations
+
+import ast
+import hashlib
+import json
+import shutil
+import sys
+import time
+import traceback
+from pathlib import Path
+
+PKG = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
+FEATURES, RUNS = PKG / "features", PKG / "runs"
+KEPT = RUNS / "kept"
+TSV_HEADER = "n\toof_pearson_delta\tgain\tgain_se\tstatus\tfeature\tdescription\n"
+MIN_GAIN = 0.002  # the lab's helpful-feature threshold (genemila/research_state.py)
+
+
+# ------------------------------------------------------------------ bookkeeping (standard library only)
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def py_files(folder: Path) -> dict[str, bytes]:
+    return {p.stem: p.read_bytes() for p in sorted(folder.glob("*.py"))} if folder.is_dir() else {}
+
+
+def changes() -> list[tuple[str, str]]:
+    """(kind, stem) for every features/*.py added, modified or deleted since the kept snapshot."""
+    now, kept = py_files(FEATURES), py_files(KEPT / "features")
+    out = [("added" if s not in kept else "modified", s) for s in now if now[s] != kept.get(s)]
+    return out + [("deleted", s) for s in kept if s not in now]
+
+
+def restore() -> None:
+    """features/*.py back to the kept snapshot (nothing to restore before the baseline)."""
+    if not (KEPT / "features").is_dir():
+        return
+    FEATURES.mkdir(exist_ok=True)
+    for p in FEATURES.glob("*.py"):
+        p.unlink()
+    for p in (KEPT / "features").glob("*.py"):
+        shutil.copyfile(p, FEATURES / p.name)
+
+
+def describe(source: bytes | None) -> str:
+    """The `description` class attribute of a feature file, read statically (the file may never be imported)."""
+    try:
+        for node in ast.walk(ast.parse(source or b"")):
+            if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "description"
+                                                    for t in node.targets) and isinstance(node.value, ast.Constant):
+                return " ".join(str(node.value.value).split())[:200]
+    except (SyntaxError, ValueError):
+        pass
+    return ""
+
+
+def describe_attempt(baseline: bool, attempt: list[tuple[str, str]]) -> str:
+    if baseline:
+        return "baseline"
+    if len(attempt) != 1:
+        return ""
+    kind, stem = attempt[0]
+    if kind == "deleted":
+        return "delete: " + describe(py_files(KEPT / "features").get(stem))
+    return describe((FEATURES / f"{stem}.py").read_bytes())
+
+
+def next_n() -> int:
+    log = RUNS / "evals.jsonl"
+    return 1 + (sum(1 for line in log.read_text().splitlines() if line.strip()) if log.exists() else 0)
+
+
+def record(row: dict, attempt: list[tuple[str, str]]) -> None:
+    """Copy the attempt's files to runs/attempts/, append to results.tsv and runs/evals.jsonl."""
+    (RUNS / "attempts").mkdir(parents=True, exist_ok=True)
+    for kind, stem in attempt:
+        if (FEATURES / f"{stem}.py").exists() and kind != "deleted":
+            shutil.copyfile(FEATURES / f"{stem}.py", RUNS / "attempts" / f"{row['n']}_{stem}.py")
+    tsv = PKG / "results.tsv"
+    if not tsv.exists():
+        tsv.write_text(TSV_HEADER)
+    cells = [row["n"], f"{row.get('oof_pearson_delta') or 0:.6f}", f"{row.get('gain') or 0:.6f}",
+             f"{row.get('gain_se') or 0:.6f}", row["status"], row["feature"], row["description"]]
+    with tsv.open("a") as fh:
+        fh.write("\t".join(" ".join(str(c).split()) for c in cells) + "\n")
+    with (RUNS / "evals.jsonl").open("a") as fh:
+        fh.write(json.dumps(row) + "\n")
+
+
+def report(row: dict) -> None:
+    print(f"status: {row['status']}")
+    print(f"decision: {row['decision']}")
+    print(f"change: {row['change']}")
+    for problem in row.get("problems") or []:
+        print(f"problem: {problem}")
+    if row.get("oof_pearson_delta") is not None:
+        print(f"oof_pearson_delta: {row['oof_pearson_delta']:.6f}")
+        print(f"parent: {row['parent']:.6f}" if row.get("parent") is not None else "parent: none")
+        print(f"gain: {row['gain']:.6f}")
+        print(f"gain_se: {row['gain_se']:.6f}")
+        print(f"wins: {row['wins']}/{row['n_perts']}")
+        print(f"seeds_positive: {row['seeds_positive']}/{len(row['seed_gains'])}")
+    print(f"harness_ok: {str(row['harness_ok']).lower()}")
+    print(f"cpu_s: {row['cpu_s']:.1f}")
+
+
+# ------------------------------------------------------------------ the outer process: limits and hash seed
+def outer(manifest: dict) -> int:
+    sys.dont_write_bytecode = True
+    sys.path.insert(0, str(PKG / "harness"))
+    from genemila.sandbox import run_limited
+
+    n = next_n()
+    res = run_limited([sys.executable, str(PKG / "evaluate.py"), "--inner"], PKG, RUNS / "logs",
+                      float(manifest["eval_timeout_s"]), float(manifest["ram_mb"]),
+                      env={"PYTHONPATH": str(PKG / "harness"), "PYTHONDONTWRITEBYTECODE": "1"}, name="evaluate")
+    for stream in ("stdout", "stderr"):
+        text = (RUNS / "logs" / f"evaluate.{stream}").read_text(errors="replace")
+        print(text, end="", file=sys.stdout if stream == "stdout" else sys.stderr, flush=True)
+    if next_n() > n:
+        return res.returncode
+    # the inner process died before it recorded the attempt (time or memory limit, a crash in the interpreter)
+    baseline = not (KEPT / "scores.json").exists()
+    attempt = [("baseline", s) for s in py_files(FEATURES)] if baseline else changes()
+    row = {"n": n, "time": time.time(), "status": "crash", "decision": "discard",
+           "change": ", ".join(f"{k} {s}" for k, s in attempt) or "none",
+           "feature": ",".join(s for _, s in attempt) or "-", "description": describe_attempt(baseline, attempt),
+           "problems": [res.killed_reason or f"evaluation process exited with {res.returncode}"],
+           "harness_ok": None, "cpu_s": res.cpu_s}
+    record(row, attempt)
+    restore()
+    report(row)
+    return 1
+
+
+# ------------------------------------------------------------------ the inner process: checks, scores, decision
+def overlap_ratio(d, genes_of) -> float:
+    """How much perturbations sharing a target gene widen the paired SE of a mean difference: with e = d - mean(d),
+    sqrt(sum of e_p e_q over ordered pairs whose targets overlap, p = q included, / sum of e_p^2); exactly 1 when no
+    two perturbations share a gene (tools/sealed_reading.py _cluster_ratio, the same few lines)."""
+    import numpy as np
+    e = d - d.mean()
+    plain = float(e @ e)
+    if len(d) < 3 or plain <= 0:
+        return 1.0
+    overlap = np.array([[bool(a & b) for b in genes_of] for a in genes_of], dtype=np.float64)
+    return float(np.sqrt(max(0.0, float(e @ overlap @ e)) / plain))
+
+
+def inner(manifest: dict) -> int:
+    t0 = time.process_time()
+    sys.dont_write_bytecode = True
+    sys.path[:0] = [str(PKG / "harness"), str(PKG)]
+    bad = [rel for rel, h in manifest["sha256"].items() if not (PKG / rel).is_file() or sha256(PKG / rel) != h]
+    for rel in bad:
+        print(f"harness_changed: {rel}")
+    import numpy as np
+    from genemila.guard import CodeViolation, check_plugin_source
+    from genemila.sandbox import run_limited
+    from literal import literal_check
+
+    data = PKG / "data"
+    z = np.load(data / "public.npz", allow_pickle=False)
+    genes, perts = [str(g) for g in z["genes"]], [str(p) for p in z["perts"]]
+    train, train_means = [str(p) for p in z["train_perts"]], z["train_means"].astype(np.float64)
+    targets = json.loads((data / "knowledge" / "targets.json").read_text())
+    pair_ids = [p for p, v in targets.items() if len(set(v or [])) > 1]
+    prefix, seeds = manifest["prefix"], [int(s) for s in manifest["fold_seeds"]]
+
+    baseline = not (KEPT / "scores.json").exists()
+    current = py_files(FEATURES)
+    attempt = [("baseline", s) for s in current] if baseline else changes()
+    n = next_n()
+    row = {"n": n, "time": time.time(), "change": ", ".join(f"{k} {s}" for k, s in attempt) or "none",
+           "feature": ",".join(s for _, s in attempt) or "-", "description": describe_attempt(baseline, attempt),
+           "harness_ok": not bad, "keep_rule": manifest["keep_rule"],
+           "sha256": {s: hashlib.sha256(src).hexdigest() for s, src in current.items()}}
+
+    def finish(status: str, problems=(), smoke_cpu: float = 0.0, **scores) -> int:
+        decision = "keep" if status in ("baseline", "keep") else "discard"
+        row.update(status=status, decision=decision, problems=list(problems),
+                   cpu_s=time.process_time() - t0 + smoke_cpu, **scores)
+        record(row, attempt)
+        if decision == "discard":
+            restore()
+        else:
+            if (KEPT / "features").exists():
+                shutil.rmtree(KEPT / "features")
+            (KEPT / "features").mkdir(parents=True)
+            for p in FEATURES.glob("*.py"):
+                shutil.copyfile(p, KEPT / "features" / p.name)
+            (KEPT / "scores.json").write_text(json.dumps(
+                {k: row[k] for k in ("n", "features", "oof_pearson_delta", "alphas", "per_seed")}))
+        report(row)
+        return 0 if status in ("baseline", "keep", "discard") else 1
+
+    # 1. the one-change rule and static checks, before any plugin code runs
+    problems = []
+    if not baseline and len(attempt) != 1:
+        problems.append(f"{len(attempt)} feature files changed since the kept state; exactly one may be added, "
+                        "modified or deleted per run")
+    for stem, src in current.items():
+        if not stem.startswith(prefix + "_"):
+            problems.append(f"{stem}.py: feature names must start with {prefix}_")
+        try:
+            check_plugin_source(src.decode(errors="replace"), expected_name=stem)
+        except CodeViolation as exc:
+            problems.append(f"{stem}.py: guard: {exc}")
+        lit = literal_check(src.decode(errors="replace"), pair_ids, genes + perts)
+        problems += [f"{stem}.py: literal cap: {p}" for p in lit["problems"]]
+    if problems:
+        return finish("rejected", problems)
+
+    # 2. the smoke test of the new or changed file, in a limited subprocess. It runs in a session of its own, which a
+    # kill of this process would not reach, so it gets a third of the evaluation's time and as many CPU seconds.
+    smoke_cpu, limit = 0.0, float(manifest["eval_timeout_s"]) / 3
+    for kind, stem in attempt:
+        if kind == "deleted":
+            continue
+        out = RUNS / "smoke" / stem
+        if out.exists():
+            shutil.rmtree(out)
+        res = run_limited([sys.executable, "-m", "genemila.pipeline", "smoke", "--feature", stem, "--public",
+                           str(data), "--plugins", str(FEATURES), "--out", str(out)], PKG, out,
+                          limit, float(manifest["ram_mb"]), limit,
+                          env={"PYTHONPATH": str(PKG / "harness"), "PYTHONDONTWRITEBYTECODE": "1"}, name="smoke")
+        smoke_cpu += res.cpu_s
+        if res.returncode != 0:
+            if (out / "smoke.json").exists():
+                found = json.loads((out / "smoke.json").read_text())["problems"]
+            elif (out / "error.json").exists():
+                found = [json.loads((out / "error.json").read_text())["error"]]
+            else:
+                found = [res.killed_reason or res.stderr_tail[-500:].strip() or f"exit status {res.returncode} "
+                         "(killed at the CPU limit?)"]
+            problems += [f"{stem}.py: smoke: {p}" for p in found]
+    if problems:
+        return finish("rejected", problems, smoke_cpu)
+
+    # 3. out-of-fold scores of the parent plus every feature file, per fold seed
+    try:
+        from genemila.benchmark.evaluator import evaluate
+        from genemila.features import registry
+        from genemila.features.api import FeatureContext
+        from genemila.pipeline import cross_validate
+
+        np.random.seed(0)  # as pipeline.run seeds before it loads plugins
+        registry.load_plugins(FEATURES)
+        ctx = FeatureContext(data, RUNS / "cache" / "shared")
+        feats = list(manifest["parent_features"]) + sorted(current)
+        alphas = [float(a) for a in manifest["alphas"]]
+        per_seed, chosen = {}, {}
+        for s in seeds:
+            cv = cross_validate(ctx, feats, {}, "ridge", alphas, 0, int(manifest["k"]), s, {}, RUNS / "cache",
+                                None, {}, {}, manifest["groups"])
+            evals = [evaluate(cv[j] + ctx.control_mean, train_means, ctx.control_mean, train)
+                     for j in range(len(alphas))]
+            j = int(np.argmax([e["metrics"]["pearson_delta"] for e in evals]))
+            chosen[str(s)] = alphas[j]
+            per_seed[str(s)] = {p: float(v["pearson_delta"]) for p, v in evals[j]["per_perturbation"].items()}
+    except Exception as exc:  # a feature that fails on a fold view, a deleted dependency ...
+        traceback.print_exc()
+        return finish("crash", [f"{type(exc).__name__}: {str(exc)[:500]}"], smoke_cpu)
+    cur = np.array([[per_seed[str(s)][p] for p in train] for s in seeds])
+    oof = float(cur.mean())
+    scores = {"features": feats, "alphas": chosen, "per_seed": per_seed, "oof_pearson_delta": oof,
+              "n_perts": len(train)}
+    if baseline:
+        return finish("baseline", (), smoke_cpu, parent=None, gain=0.0, gain_se=0.0, gain_se_plain=0.0,
+                      wins=0, seed_gains=[0.0] * len(seeds), seeds_positive=0, **scores)
+
+    # 4. paired comparison with the kept state and the keep rule
+    kept = json.loads((KEPT / "scores.json").read_text())
+    old = np.array([[kept["per_seed"][str(s)][p] for p in train] for s in seeds])
+    d_seed = cur - old
+    d = d_seed.mean(axis=0)
+    gain, se = float(d.mean()), float(d.std(ddof=1) / np.sqrt(len(d)))
+    se_adj = se * max(1.0, overlap_ratio(d, [set(targets.get(p) or [p]) for p in train]))
+    wins, seed_gains = int((d > 0).sum()), [float(g) for g in d_seed.mean(axis=1)]
+    if manifest["keep_rule"] == "strict":
+        keep = gain > 0
+    elif attempt[0][0] == "deleted":
+        keep = -gain < se
+    else:
+        keep = gain > max(2 * se_adj, MIN_GAIN) and wins > len(d) / 2 and all(g > 0 for g in seed_gains)
+    return finish("keep" if keep else "discard", (), smoke_cpu, parent=float(kept["oof_pearson_delta"]), gain=gain,
+                  gain_se=se_adj, gain_se_plain=se, wins=wins, seed_gains=seed_gains,
+                  seeds_positive=sum(g > 0 for g in seed_gains), **scores)
+
+
+def main(argv: list[str]) -> int:
+    manifest = json.loads((PKG / "MANIFEST.json").read_text())
+    RUNS.mkdir(exist_ok=True)
+    return inner(manifest) if "--inner" in argv else outer(manifest)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
