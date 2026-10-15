@@ -151,4 +151,53 @@ np.savez_compressed(out, resid=y - cv["delta"][0], perts=cv["perts"], genes=pub[
 with a gene-permutation matched null and Holm correction (M2, M3), and `tools/export_task_package.py` gives other
 systems the identical task. Still open: the residual dump as a tool (M1), per-gene table builders for the sources in
 section 2.1 (the genome annotation is reachable from the cloud through the iGenomes S3 bucket; most others must be
-downloaded on the Mac), and the nonlinear-derivability check (M4).
+downloaded on the Mac), and the nonlinear-derivability check (M4). The genome annotation builder is done
+(`tools/build_gene_annotation.py`; section 9).
+
+## 7. Recommended data-source policy (Andres asked for one on 16 October; awaiting his confirmation)
+
+Rule: **a source is allowed if it was measured or derived without perturbing genes and does not contain the expression
+responses the lab predicts.** Unperturbed K562 measurements are allowed for the same reason the control cells are.
+
+| Tier | Admission | Sources | Why |
+|---|---|---|---|
+| 1 | Allowed by default; any system in a comparison gets the same files | genome sequence and annotation (GENCODE, hg38: built, `tools/build_gene_annotation.py`); protein sequence features (UniProt signal peptides, transmembrane topology); curated physical complexes (CORUM); paralogs (Ensembl Compara); population constraint (gnomAD LOEUF; Collins 2022 pHaplo/pTriplo); unperturbed-K562 measurements (ENCODE TF ChIP-seq, DNase/ATAC, histone marks; Hi-C) | No perturbation or expression response behind them; K562 measurements describe the starting state, like `control_cells` |
+| 2 | Allowed, each as its own labelled arm, never pooled with tier 1 | MitoCarta3.0 (its integration uses some expression evidence); K562 mRNA half-lives (metabolic labelling, a kinetic measurement); effector-domain recruitment screens (Tycko 2020, DelRosso 2023) | Clean in intent; each carries an expression-derived or screen-derived component that must be visible in the arm's name |
+| 3 | Not allowed for the main claim | anything derived from perturbation screens (Replogle 2022, already its own arm; DepMap fitness), expression atlases or co-expression (GTEx, STRING's co-expression channel, Enrichr GEO libraries), and anything built from the evaluated datasets themselves | They can carry the answer: a response measured for the same target in another screen, or genes that move together because they respond together |
+
+Recommended first step: approve tier 1 and start with the genome annotation table (block F,
+`docs/PLAN_F_GENOME_ANNOTATION.md`); next, signal peptides and CORUM complexes, which match Adamson's ER-stress
+knockdowns. Tier 2 one arm at a time afterwards. The existing Replogle arm stays as it is and is labelled.
+
+## 8. 2,000 genes instead of 20,000 (Andres's question of 16 October)
+
+- **The lab already works on about 2,000 genes:** each bundle keeps the 2,000 most variable genes, ranked on control
+  cells, plus every target (`prepare_data.py --hvg 2000`; Adamson 2,055 and Norman 2,083 genes; `README.md`,
+  `docs/NORMAN_PLAN.md` §3 item 4).
+- **The DeepSeek bill does not depend on the number of genes.** The agents write feature code; their prompts carry the
+  research state, never the expression matrix (`docs/ARCHITECTURE.md`, "Token efficiency"). What grows with genes is
+  CPU time and memory: the design matrix has perturbations × genes rows, and a gene-by-gene matrix such as the control
+  co-expression `FeatureContext.gene_corr` grows with the square: about 32 MB at 2,000 genes, about 3.2 GB at 20,000.
+- **A feature found on 2,000 genes transfers at no LLM cost:** it is code, f(p, g), so it can be refitted and scored
+  on a bundle with more genes by CPU alone. Proposal: search on 2,000 genes as now, freeze the features, then score
+  them once on a bundle of all genes expressed in K562 control cells (about 8,000–11,000, since many of the 20,000 are
+  not expressed there; UNVERIFIED count) built from the same h5ad with the same perturbation split, and report both.
+  The perturbation split is the same, so `split_id` is the same; the bundle name must tell the two apart.
+- **Two cautions.** Highly variable genes are the responsive ones, so scores on 2,000 genes are higher than on all
+  genes; every number names its gene set. And the axis that adds evidence is the number of perturbations, not genes:
+  pearson_delta is averaged over perturbations, so its standard error shrinks with perturbations. Replogle's K562
+  essential-gene screen (about 2,000 knockdowns, about 10,000 genome-wide) is where a feature can show it generalises
+  (M6).
+
+## 9. Findings in this session (16 October)
+
+- **Retired symbols also affect Norman's measured genes.** Building the genome annotation for the committed Norman
+  gene list (`docs/results/norman_frozen_export_20261013/manifest.json`) against GENCODE v27 matched 2,041 of 2,083
+  genes; the 42 unmatched are retired or renamed symbols (for example SEPP1, KIAA0101, TCEB1, SEP15, HN1). The knowledge
+  loader matches symbols exactly, so the current gene-set, interaction and regulatory files may miss these genes too.
+  Counting it needs the Mac (`tools/knowledge_coverage.py`, R0).
+- **96 Norman genes share a promoter with another measured gene** (TSS on the other strand within 1 kb, for example
+  ALYREF and ANAPC11, AAMP and PNKD). A CRISPRa or CRISPRi guide at one of these TSSs can reach the other gene; the lab
+  had no way to represent this before the annotation table.
+- **Values checked by hand** on the representative transcripts: KLF1 362 amino acids, CEBPA 358, SET 290 and HBG1 147,
+  as in UniProt; MYC's CCDS transcript with the longest coding sequence is the 454-residue CUG-initiated isoform.
