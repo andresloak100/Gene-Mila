@@ -87,6 +87,18 @@ each one by the same rule: add it to the same fixed ridge on the same split and 
 Reading rule, fixed in advance as now: a gain counts only when it exceeds twice its paired standard error and wins
 on more than half the perturbations, pooled and per category; spreads over seeds are always reported.
 
+### Already built by Astra on 13 and 14 October (reuse, do not rebuild)
+
+- `docs/FROZEN_TEST_PLAN.md`: the clean-test protocol, with a separate evaluator identity and host, frozen inference,
+  metrics with uncertainty, and development-only remedies. Tier 3 above is that plan.
+- `docs/FROZEN_EXPORT.md`: the delivered Norman ensemble exported and reproduced bit for bit without refitting, so
+  frozen predictions on a new cohort are possible.
+- `docs/EXTERNAL_COHORT_METADATA.md`: a metadata-only audit of two CRISPRa candidate cohorts (Replogle experiment 8
+  and Pacalin); neither has yet passed a compatibility check.
+- `docs/results/norman_b1_frozen_test_review_20261013.md`: the six-metric table for the delivered model (below).
+- A fix that removes a leak: continuing a campaign used to copy the previous winner's sealed score into the next
+  planner's context (pull request 13). N4 and B1 continued N2, so their planners saw N2's sealed score.
+
 ## 5. Where the results stand now (held-out sets already used, so indicative only)
 
 | dataset | model | pearson_delta | MSE | PCC | R2 | MSE_DE | PCC_DE | R2_DE |
@@ -94,6 +106,7 @@ on more than half the perturbations, pooled and per category; spreads over seeds
 | Norman | additive rule | 0.713 | 0.0059 | 0.988 | 0.972 | 0.102 | 0.941 | 0.846 |
 | Norman | scripted features + Replogle (N2) | 0.719 | 0.0054 | 0.989 | 0.975 | 0.110 | 0.937 | 0.842 |
 | Norman | agents from additive start, combined (B2) | 0.727 | – | – | – | – | – | – |
+| Norman | delivered: B1 combined, frozen (Astra's review) | 0.723 | 0.0052 | 0.989 | – | 0.114 (top-20 MSE) | – | 0.856 (top-20 R2) |
 | Norman | CellForge, as reported (other split) | – | 0.0034 | 0.985 | 0.961 | 0.174 | 0.811 | 0.598 |
 | Adamson | start | 0.520 | 0.0070 | 0.985 | 0.966 | 0.154 | 0.932 | 0.734 |
 | Adamson | agents' features + Replogle, no LLM | 0.646 | 0.0044 | 0.990 | 0.979 | 0.074 | 0.970 | 0.868 |
