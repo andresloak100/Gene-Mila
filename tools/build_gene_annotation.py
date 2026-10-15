@@ -221,13 +221,18 @@ def build(gtf: Path, fasta: Path | None, keep: set[str] | None, bidir_bp: int = 
         bidir[name] = sorted(n for d, n, _ in others if d <= bidir_bp and chosen[n]["gene"]["strand"] != strand
                              and n in keep_set)
         neigh[name] = [[n, d] for d, n, _ in others if d <= neighbour_kb * 1e3 and n in keep_set][:max_neighbours]
-    description = (f"Per-gene molecular annotation from the reference genome and its annotation ({Path(gtf).name}"
-                   f"{', ' + Path(fasta).name if fasta else ''}); no expression or perturbation data. One transcript "
-                   f"per gene (CCDS with the longest coding sequence). Columns: {UNITS}. Also loci (chromosome, TSS, "
-                   f"strand), bidirectional (genes whose TSS is on the other strand within {bidir_bp} bp: shared "
-                   f"promoters, which CRISPRi/CRISPRa at one TSS can also hit) and neighbours (genes within "
-                   f"{neighbour_kb:g} kb, nearest first, with TSS distance in bp).")
-    return {"description": description, "columns": COLUMNS, "genes": rows, "loci": loci, "bidirectional": bidir,
+    # Kept short: the planner's state shows all knowledge files in one section cut at 2,500 characters
+    # (genemila/research_state.py SECTION_CHARS), so a long description would hide the files listed after it.
+    description = (f"Per-gene annotation from the genome sequence ({Path(gtf).name}); no expression data. "
+                   "genes[symbol] = values in the order of columns: gene_span_kb, n_transcripts, n_exons, "
+                   "transcript_length, cds_length, utr5_length, utr3_length, intron_length_kb, gc_cds, gc_utr3, "
+                   "gc_promoter, cpg_oe_promoter, n_upstream_atg, nearest_tss_kb, n_tss_within_100kb, then aa_A..aa_Y "
+                   "(amino-acid fractions of the protein; null without a coding sequence); units in column_units. "
+                   f"loci[symbol] = [chromosome, TSS, strand]; bidirectional[symbol] = genes whose TSS is on the other "
+                   f"strand within {bidir_bp} bp (a shared promoter that CRISPRi/a at one TSS can hit); "
+                   f"neighbours[symbol] = [[gene, TSS distance bp]] within {neighbour_kb:g} kb.")
+    return {"description": description, "columns": COLUMNS, "column_units": UNITS, "genes": rows, "loci": loci,
+            "bidirectional": bidir,
             "neighbours": neigh, "source": {"gtf": Path(gtf).name, "fasta": Path(fasta).name if fasta else None,
                                             "n_genes_annotated": len(chosen)}}
 

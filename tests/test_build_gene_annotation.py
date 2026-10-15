@@ -83,4 +83,4 @@ def test_bundle_restriction_and_cli(tmp_path):
     t = json.loads(out.read_text())
     assert sorted(t["genes"]) == ["FAR", "PLUS"] and t["unmatched"] == ["NOPE"]
     assert t["neighbours"]["PLUS"] == [["FAR", 50000]] and t["bidirectional"]["PLUS"] == []
-    assert t["description"].startswith("Per-gene molecular annotation")
+    assert t["description"].startswith("Per-gene annotation") and len(t["description"]) < 900
