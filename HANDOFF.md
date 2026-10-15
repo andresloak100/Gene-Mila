@@ -4,6 +4,21 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active, 2026-10-16 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41): feature-level comparison
+tool and autoresearch-style task package (PR #38 step 2).** A Claude cloud session on `claude/youthful-dijkstra-459nhj`
+(base `8061486`), at Andres's 15 October request for a "feature + linear model" comparison of systems
+(ours, Biomni, CellForge, karpathy/autoresearch, STATE) with one metrics table. It adds only new files:
+`tools/feature_compare.py`, `tools/export_task_package.py`, `tools/task_package/`, two test files and
+`docs/FEATURE_COMPARISON_PROTOCOL.md`. It leaves protected code, `planner.py`, `prompts.py` and
+`research_state.py` (Astra's #40), the PR #38 and #39 branches, data, the ledger and the Mac untouched. There are
+no paid calls. This session has no data and cannot reach DeepSeek, so it tests on synthetic data only.
+Open for Andres: (a) may the comparison tool read the visible-validation labels (opt-in `--with-val1`, as
+`tools/feature_audit.py` does); (b) who pays for the Claude Code/Codex and Biomni arms, and under which cap.
+The same session's read-only review of what a new biological feature needs is summarised on #41 when the PR
+opens; first free step on the Mac is a gene-symbol coverage check of the Adamson knowledge files (old symbols
+such as SRPR, MARS, ATP5B may match no gene set or edge). **Exact next:** finish the tools and tests, run the full
+suite, secret-scan, open a draft PR.
+
 **Active, 2026-10-15 22:04 UTC — Claim [#40](https://github.com/andresloak100/Gene-Mila/issues/40): automated biological feature discovery.**
 Andres on15October explicitly requested200precise biological hypotheses, matched control comparison,
 one biological feature missing from the current linear model, and agents that choose/search/test it
