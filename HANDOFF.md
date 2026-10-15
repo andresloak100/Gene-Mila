@@ -4,6 +4,24 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Active, 2026-10-15 22:04 UTC — Claim [#40](https://github.com/andresloak100/Gene-Mila/issues/40): automated biological feature discovery.**
+Andres on15October explicitly requested200precise biological hypotheses, matched control comparison,
+one biological feature missing from the current linear model, and agents that choose/search/test it
+automatically without his specifying what to examine. Astra/Codex chat2 owns
+`astra/biology-feature-discovery` in own `gene-mila-cohort-audit`, base2ac8507.
+Scope: minimal molecular hypothesis contract, available-input/existing-feature inventory, automatic
+reject/defer/eligible decisions, one-feature parent comparison and persisted findings in the existing
+planner/worker workflow; dedicated reproducible configuration, synthetic tests and documented200idea bank.
+No generic workflow platform, default budget change, paid call, new cohort, model search, benchmark/
+split/guard/data/private read or edit, STOP change or main-checkout mutation. No run is active.
+Baseline fullpytest atnice19 running in own clone; read-only handoff --fetch completed. Current Mac
+progress includes15October B4one-worker runs underPR39; older STATE/HANDOFF block below predates them,
+so consult that owner’s evidence before any run. Their results are not being read or changed here.
+**Exact next:** finish read-only integration audit; implement and independently review the bounded
+biology mode; run focused and full tests; publish a secret-scanned draftPR and exact continuation.
+This user authorization covers implementation/documentation, not spend or protected changes.
+
+
 **Completed model-quality block, 2026-10-14 02:57 UTC (13 October local) — Claim [#34](https://github.com/andresloak100/Gene-Mila/issues/34) closed:**
 [PR #35](https://github.com/andresloak100/Gene-Mila/pull/35) stays an unmerged research record, final evidence
 **dab64d0**. Documentation-only [PR #36](https://github.com/andresloak100/Gene-Mila/pull/36) merged2824088;
