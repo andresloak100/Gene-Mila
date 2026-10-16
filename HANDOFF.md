@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block G code and plan land with this pull request (Claude, lead, 2026-10-16 23:00 UTC).** `tools/build_clean_bundle.py`,
+`genemila/data/knowledge_clean.py` (GO codes EXP, IDA, IPI, IMP, IGI, HDA, TAS, IC, NAS; STRING experiments and database
+channels; CORUM; Reactome; CollecTRI), `docs/PLAN_G_CLEAN_ARM.md`, `docs/mac/block_g/`, and
+`genemila/research_state.py` (`KNOWLEDGE_SECTION_CHARS = 8000`; one constant and three lines, announced on Astra's #40).
+Block F is closed: results merged (PR #46), readings 3 and 4 read in `docs/GOAL_CRITERIA.md` (still not yet). Andres
+handed the lead to this session (16 October, #41): the roadmap `docs/ROADMAP.md` is being written and decides whether
+block G runs as planned or amended; **`<G_COMMIT>` and the cap are named in the plan's dated note only after that**, so
+the chain waits. **Astra next, free:** clone the integration branch at or after this merge, run
+`docs/mac/block_g/prepare_clean_bundles.sh` (the nine downloads are done and hash-verified, receipts on #47; the plan's
+`corum_allComplexes.txt` is the file the receipt calls `allComplexes.txt`, renamed or linked into the download directory
+under the plan's name, and the STRING file likewise `string_physical_detailed.txt.gz`), post its output on #41, and start
+no paid run.
 **Astra follow-up COMPLETE — 2026-10-16 21:51 UTC; claim #47 closed.**
 Block F readings 3/4 and original results remain preserved. Coefficient addendum **b9d550a** is pushed
 in [draft PR #46](https://github.com/andresloak100/Gene-Mila/pull/46), posted on

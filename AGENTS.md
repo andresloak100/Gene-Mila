@@ -68,7 +68,10 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   ([PR #39](https://github.com/andresloak100/Gene-Mila/pull/39), 15 October) ran under a $52 cap on Andres's "run the
   deepseek agents if needed", and block F ([`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md))
   proposes the next one on his permission of 16 October: the ledger may rise at most $8 over its reading when the
-  block starts, and the chain waits for his written confirmation of that cap. Every paid run starts only on
+  block starts, and the chain waits for his written confirmation of that cap. Block G
+  ([`docs/PLAN_G_CLEAN_ARM.md`](docs/PLAN_G_CLEAN_ARM.md), the clean tier-1 bundle with and without the three tables,
+  approved in principle on 16 October) proposes the one after that: at most $20 over the ledger's reading when it
+  starts, and its chain too waits for his written confirmation of the amount. Every paid run starts only on
   Andres's own words. Runs with `--planner-provider scripted --worker-provider mock` cost nothing and
   need no approval.
 - Always pass `--planner-provider` explicitly. The default planner is the Claude CLI (Opus),

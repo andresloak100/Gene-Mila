@@ -74,3 +74,11 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
     system recovers known biology from sequence alone), not a new rule. The biology path continues with block G
     (`docs/PLAN_G_CLEAN_ARM.md`): the curated tier-1 sources together, no screen in the bundle. Block F cost $2.82
     on the ledger (ledger $47.26 after; operator's report on #41).
+- 2026-10-16 22:55 UTC, block F readings 3 and 4 in (operator's PR #46, merged: `docs/results/norman_f_readings.md`,
+  `norman_f_coefficient_signs.md`): still **not yet**. Out of fold, descriptively, the F arm's selected models score
+  0.5805 ± 0.0023 against B2's 0.5825 ± 0.0081 (mean ± sd over seeds 0, 2, 3): no arm gain. The found CpG family's
+  gain over the parent is +0.00056 ± 0.00015 pearson_delta (the TSS-distance row +0.0014 ± 0.0005): detectable, and a
+  thousandth of the score. The coefficient of the CpG term in the runs' own fits was +0.0147 (r0 e428), +0.0143
+  (r0 e666) and −0.0100 (r3 e412), each conditional on that model's other columns; the add-one coefficient of the fair
+  test is not saved. No sign can be stated, so A.2 stays unmet and the mechanism stays "known biology, direction not
+  tested here".
