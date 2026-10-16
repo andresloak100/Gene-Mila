@@ -4,20 +4,29 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Active, 2026-10-16 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41): feature-level comparison
-tool and autoresearch-style task package (PR #38 step 2).** A Claude cloud session on `claude/youthful-dijkstra-459nhj`
-(base `8061486`), at Andres's 15 October request for a "feature + linear model" comparison of systems
-(ours, Biomni, CellForge, karpathy/autoresearch, STATE) with one metrics table. It adds only new files:
-`tools/feature_compare.py`, `tools/export_task_package.py`, `tools/task_package/`, two test files and
-`docs/FEATURE_COMPARISON_PROTOCOL.md`. It leaves protected code, `planner.py`, `prompts.py` and
-`research_state.py` (Astra's #40), the PR #38 and #39 branches, data, the ledger and the Mac untouched. There are
-no paid calls. This session has no data and cannot reach DeepSeek, so it tests on synthetic data only.
-Open for Andres: (a) may the comparison tool read the visible-validation labels (opt-in `--with-val1`, as
-`tools/feature_audit.py` does); (b) who pays for the Claude Code/Codex and Biomni arms, and under which cap.
-The same session's read-only review of what a new biological feature needs is summarised on #41 when the PR
-opens; first free step on the Mac is a gene-symbol coverage check of the Adamson knowledge files (old symbols
-such as SRPR, MARS, ATP5B may match no gene set or edge). **Exact next:** finish the tools and tests, run the full
-suite, secret-scan, open a draft PR.
+**Active, 2026-10-16 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), draft
+[PR #42](https://github.com/andresloak100/Gene-Mila/pull/42): framework to find and fairly test new biological
+features.** A Claude cloud session on `claude/youthful-dijkstra-459nhj` (final block F commit `986c4d6`), on Andres's
+requests of 15 and 16 October (a framework for the agents to find a useful feature; compare "feature + linear model"
+against Biomni, CellForge, autoresearch and STATE with one metrics table; a data-source policy; "you have permission
+to run the deep seek agents", 16 October). New files only, plus one Money paragraph in `AGENTS.md`, the README and the
+documentation map: `tools/feature_compare.py` (any system's features against one fixed ridge, matched gene-permutation
+null, Holm per system), `tools/export_task_package.py` + `tools/task_package/` (autoresearch-style task folder for
+Claude Code/Codex, Biomni), `tools/build_gene_annotation.py` (GENCODE/hg38 per-gene knowledge file; Norman table
+committed gzipped, md5 `99e0eccb3caae76bc98f1c2e5730cfc0`), `tools/knowledge_coverage.py` (retired-symbol check, R0),
+`docs/NOVEL_FEATURE_NEEDS.md`, `docs/FEATURE_COMPARISON_PROTOCOL.md`, `docs/PLAN_F_GENOME_ANNOTATION.md` with
+`docs/mac/block_f/`; four test files; full suite 510 passed. Protected code, `planner.py`/`prompts.py`/
+`research_state.py` (Astra's #40), data, ledger and the Mac untouched. **Nothing has run on real perturbation data.**
+**Block F is the current paid block** (`docs/PLAN_F_GENOME_ANNOTATION.md`): B2's Norman settings on code ce1b530
+with one change, `data/norman_ga` = `data/norman` plus `knowledge/gene_annotation.json`, seeds 0, 2, 3; cap = ledger
+reading at start + $8 (about $4 billed); feature-level reading by pooled Holm over the `gene_annotation` features of
+the three runs; nothing runs beside it. It runs on the Mac (Astra may run it as the operator, exactly as written) once
+Andres has confirmed the cap in writing on #41 and B4 (PR #39) has finished. Open for Andres: the cap; the data-source
+policy (NOVEL §7); `feature_compare --with-val1`; who pays for the autoresearch and Biomni arms; the fresh-test holder
+(#22). **Exact next:** Andres confirms the cap → operator follows PLAN_F "Exact commands" from a clone at `986c4d6`
+or later → readings per PLAN_F "Readings" on a results branch → results on #41. In the cloud: README redesign in
+journal style (Andres, 16 October) pushed to PR #42; then builders for the next tier-1 sources (gnomAD constraint,
+signal peptides, CORUM) and a training-only residual tool.
 
 **Active, 2026-10-15 22:04 UTC — Claim [#40](https://github.com/andresloak100/Gene-Mila/issues/40): automated biological feature discovery.**
 Andres on15October explicitly requested200precise biological hypotheses, matched control comparison,
