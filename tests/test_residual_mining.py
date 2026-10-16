@@ -47,7 +47,8 @@ def test_a_directory_that_is_not_a_bundle_is_refused(dataset, tmp_path):
 def mined(tmp_path_factory, dataset):
     """One run on a copy of the synthetic bundle with three knowledge files added: a STRING-format ppi_network built
     from the prior network, a gene_annotation table (one column a monotone function of the control mean, one with
-    missing values) and an external screen with a row for the first training perturbation's target."""
+    missing values, one of strings as a future biotype column would be) and an external screen with a row for the first
+    training perturbation's target."""
     tmp = tmp_path_factory.mktemp("rm")
     bundle = tmp / "bundle"
     shutil.copytree(dataset, bundle)
@@ -55,10 +56,10 @@ def mined(tmp_path_factory, dataset):
     edges = json.loads((k / "prior_network.json").read_text())
     (k / "ppi_network.json").write_text(json.dumps([[a, b, 0.9] for a, b, _ in edges]))
     ctx = FeatureContext(bundle)
-    rows = {g: [float(2 * ctx.control_mean[i] + 1), None if i % 5 == 0 else float(np.sin(i))]
+    rows = {g: [float(2 * ctx.control_mean[i] + 1), None if i % 5 == 0 else float(np.sin(i)), "protein_coding"]
             for i, g in enumerate(ctx.genes)}
-    (k / "gene_annotation.json").write_text(json.dumps({"description": "toy", "columns": ["cm_rank", "noisy"],
-                                                        "genes": rows}))
+    (k / "gene_annotation.json").write_text(json.dumps({"description": "toy",
+                                                        "columns": ["cm_rank", "noisy", "biotype"], "genes": rows}))
     target = ctx.target_genes(ctx.train_perts[0])[0]
     (k / "toy_screen.json").write_text(json.dumps({"description": "toy screen", "perts": {target: {"delta": [0.0]}}}))
     out = tmp / "out"
@@ -75,7 +76,7 @@ def test_outputs_exist_with_the_right_keys_and_the_caveats(mined):
     assert s["labels_read"] == ["training labels (public.npz)"] and s["honest"] is False and s["groups"] is None
     assert s["measures_available"] == {"gene_sets": True, "ppi": True, "coexpr": True}
     assert s["screens"] == ["toy_screen"]
-    assert r["parent"]["features"] == BUILTINS and r["parent"]["n_columns"] == 3
+    assert r["parent"]["features"] == BUILTINS and r["parent"]["n_columns"] == 3 and r["parent"]["exposure"] == "none"
     rows = r["per_perturbation"]
     assert [x["rank"] for x in rows] == list(range(1, len(rows) + 1))
     assert [x["oof_pearson_delta"] for x in rows] == sorted(x["oof_pearson_delta"] for x in rows)
@@ -88,7 +89,11 @@ def test_outputs_exist_with_the_right_keys_and_the_caveats(mined):
     assert len(r["per_gene"]["top"]) == 5 and "msr" in r["per_gene"]["top"][0]
     st = r["structure"]
     assert len(st["share"]) == len(st["null_share"]) == 5 and 0 < sum(st["share"]) <= 1 + 1e-9
+    assert all(lo <= m <= hi for lo, m, hi in zip(st["null_share_min"], st["null_share"], st["null_share_max"]))
     assert st["cumulative"] == pytest.approx(np.cumsum(st["share"]).tolist()) and len(st["components"]) == 2
+    assert all(0 < c["top_pert_share"] <= 1 for c in st["components"])
+    assert st["low_rank"] == st["reading"].startswith("correlated")
+    assert "permuted min to max" in md and "of its perturbation scores" in md
     assert "Hypothesis generation on training folds only" in md and "tools/feature_compare.py" in md
     assert "## 1. The 5 worst training perturbations out of fold" in md
     assert "## 2. The 5 genes with the largest mean squared OOF residual" in md and "## 3. Residual structure" in md
@@ -138,12 +143,16 @@ def test_similarity_columns_are_bounded_and_read_the_bundle_s_knowledge(mined):
 def test_a_per_gene_property_shows_up_in_the_residual_correlations(mined):
     g = mined["json"]["per_gene"]
     corr = g["correlations"]
-    assert g["annotation_columns"] == ["cm_rank", "noisy"]
-    assert set(corr) == {"control_mean", "control_std", "gene_annotation.cm_rank", "gene_annotation.noisy"}
+    assert g["annotation_columns"] == ["cm_rank", "noisy", "biotype"]
+    assert set(corr) == {"control_mean", "control_std", "gene_annotation.cm_rank", "gene_annotation.noisy",
+                         "gene_annotation.biotype"}
     # the same ranks as the control mean give the same Spearman rho; null values are left out
     assert corr["gene_annotation.cm_rank"]["rho"] == pytest.approx(corr["control_mean"]["rho"])
     assert corr["control_mean"]["n"] == g["n_genes"] and corr["gene_annotation.noisy"]["n"] == g["n_genes"] - 24
+    # a string column is skipped, not a crash
+    assert corr["gene_annotation.biotype"] == {"n": 0, "skipped": "non-numeric column"}
     assert "gene_annotation.noisy" in mined["md"] and "cm_rank" in mined["md"]
+    assert "| gene_annotation.biotype | skipped: non-numeric column |" in mined["md"]
     top = g["top"]
     assert [x["msr"] for x in top] == sorted((x["msr"] for x in top), reverse=True)
     assert sum(x["share"] for x in top) < 1.0
@@ -166,8 +175,10 @@ def test_pair_bundle_groups_by_gene_categorises_and_marks_absent_knowledge(tmp_p
     assert set(cats.values()) <= {"single", "pair_seen0", "pair_seen1", "pair_seen2"} and "single" in cats.values()
     for x in r["per_perturbation"]:
         assert x["sim_gene_sets"] is None and x["sim_ppi"] is None and 0.0 <= x["sim_coexpr"] <= 1.0
+        assert x["n_gene_sets"] is None and x["n_ppi_partners"] is None  # absent file, not "no annotation" (R0)
         assert x["n_targets"] == len(genes_of[x["pert"]]) and x["screen_rows"] == {}
         if any(genes_of[x["pert"]] & genes_of[q] for q in ctx.train_perts if q != x["pert"]):
             # a shared target gene is its own co-expression partner (|r| = 1), so the nearest shares a gene
             assert x["sim_coexpr"] == pytest.approx(1.0) and genes_of[x["nearest_coexpr"]] & genes_of[x["pert"]]
-    assert "file absent" in (out / "residual_mining.md").read_text()
+    md = (out / "residual_mining.md").read_text()
+    assert "file absent" in md and "| absent / absent |" in md and "| 0 / 0 |" not in md

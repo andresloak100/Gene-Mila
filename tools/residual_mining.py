@@ -20,8 +20,14 @@ score, reported on another), keeps the out-of-fold predictions and asks three qu
       each gene's residuals are permuted across perturbations, which keeps per-gene variance and destroys shared
       structure.
 
-Nothing here is evidence: every perturbation and gene named is one the NEXT source should help with, and that help is
-then tested by tools/feature_compare.py on its own folds. Reads the training labels (public.npz) and knowledge/ only,
+Nothing here is evidence: every perturbation and gene named is one the NEXT source should help with. A source chosen
+from these tables was selected on the training labels, and tools/feature_compare.py's OOF tier scores those same labels
+(other fold seeds do not change them): after mining, that tier is a screen, and the first unselected check of such a
+source is feature_compare --with-val1 (package arms) or the fresh test (docs/FEATURE_COMPARISON_PROTOCOL.md). The M1
+note's half-split (mine on one half of the training perturbations, score on the other) is not implemented:
+feature_compare scores no perturbation subset, so a held-back half would have no consumer yet.
+
+Reads the training labels (public.npz) and knowledge/ only,
 through feature_compare's public copy; the held-out labels, the split file and the oracle are never touched. The parent
 is feature_compare's (the built-in start, or a run's selected single model with its recorded feature params), its
 blocks computed in feature_compare's limited "_blocks" child process; this process only fits ridge in closed form.
@@ -59,7 +65,9 @@ MEASURES = {"gene_sets": "Jaccard of the gene-set memberships of the targets (kn
 HEADER = ("Hypothesis generation on training folds only. Nothing in this file is evidence and none of it may be cited "
           "as a result: the parent model was refitted out of fold on the training perturbations, whose labels every "
           "feature has already seen. The perturbations and genes named are those the NEXT knowledge source should "
-          "help with; whether it does is tested by tools/feature_compare.py. No held-out label was read.")
+          "help with. A source chosen here is selected on these labels, so tools/feature_compare.py's OOF tier only "
+          "screens it; its first unselected check is --with-val1 (package arms) or the fresh test. No held-out label "
+          "was read by this tool.")
 N_COMPONENTS = 5
 NULL_REPS = 5
 
@@ -89,7 +97,8 @@ def parent_model(a, data: fc.Data, work: Path, pub: Path, pr: dict | None) -> tu
 def target_similarity(data: fc.Data) -> tuple[dict, dict]:
     """Per training perturbation: the largest similarity of its targets to any other training perturbation's by each
     MEASURE, in [0, 1], with the nearest perturbation, and its knowledge coverage (gene sets, partners). A measure
-    whose knowledge file the bundle lacks is None. Memberships and edges only, so a perturbation whose targets have no
+    whose knowledge file the bundle lacks is None, and so is its coverage count (a count of 0 means the file is there
+    and names none of the targets: the R0 suspect). Memberships and edges only, so a perturbation whose targets have no
     annotation scores 0 against everyone: the coverage counts say when that is the reason."""
     ctx, train = data.ctx, data.train
     sets, ppi = ctx.knowledge("gene_sets"), ctx.knowledge("ppi_network")
@@ -115,7 +124,8 @@ def target_similarity(data: fc.Data) -> tuple[dict, dict]:
            "coexpr": lambda p, q: coex(prof[p][2], prof[q][2])}
     rows = {}
     for p in train:
-        row = {"n_gene_sets": len(prof[p][0]), "n_ppi_partners": len(prof[p][1] - set(data.genes_of[p]))}
+        row = {"n_gene_sets": len(prof[p][0]) if sets is not None else None,
+               "n_ppi_partners": len(prof[p][1] - set(data.genes_of[p])) if ppi is not None else None}
         for m, fn in fns.items():
             if fn is None:
                 row[f"sim_{m}"] = row[f"nearest_{m}"] = None
@@ -169,15 +179,17 @@ def spearman(x, y) -> dict:
 def gene_table(E: np.ndarray, msr: np.ndarray, data: fc.Data, top: int) -> dict:
     """Per gene: the mean squared OOF residual (msr) and its rank correlation with the control mean, the control
     standard deviation and every numeric column of knowledge/gene_annotation.json when the bundle has one (a null value
-    is missing); the --top genes by msr with their share of the total, their signed mean residual (bias: a gene the
-    model always under- or over-predicts) and how many training perturbations target them."""
+    is missing; a column with any other non-numeric value, such as a biotype or a compartment name, is recorded as
+    skipped rather than aborting the run); the --top genes by msr with their share of the total, their signed mean
+    residual (bias: a gene the model always under- or over-predicts) and how many training perturbations target them."""
     ctx = data.ctx
     corr = {"control_mean": spearman(msr, data.cm), "control_std": spearman(msr, ctx.control_std)}
     ann = ctx.knowledge("gene_annotation")
     cols = list(ann.get("columns") or []) if isinstance(ann, dict) and isinstance(ann.get("genes"), dict) else []
     for j, col in enumerate(cols):
-        vals = [ann["genes"].get(g) for g in ctx.genes]
-        corr[f"gene_annotation.{col}"] = spearman(msr, [v[j] if v and len(v) > j else None for v in vals])
+        vals = [v[j] if v and len(v) > j else None for v in (ann["genes"].get(g) for g in ctx.genes)]
+        numeric = all(v is None or isinstance(v, (int, float)) for v in vals)
+        corr[f"gene_annotation.{col}"] = spearman(msr, vals) if numeric else {"n": 0, "skipped": "non-numeric column"}
     targeted = Counter(g for p in data.train for g in data.genes_of[p])
     total = max(float(msr.sum()), 1e-300)
     rows = [{"gene": ctx.genes[i], "msr": float(msr[i]), "share": float(msr[i] / total), "bias": float(E[:, i].mean()),
@@ -189,10 +201,13 @@ def gene_table(E: np.ndarray, msr: np.ndarray, data: fc.Data, top: int) -> dict:
 # ================================================================== (c) structure
 def residual_structure(E: np.ndarray, data: fc.Data, top: int) -> dict:
     """The share of the residual matrix's variance that each of its first N_COMPONENTS singular components explains,
-    against the mean share over NULL_REPS permutations of every gene's residuals across perturbations (seed 0): a
-    component above twice its permuted share is more structure than independent per-gene noise would give. For the
-    first two components, the genes and perturbations with the largest loadings (SVD signs are arbitrary: read a
-    component's gene and perturbation signs together)."""
+    against the share over NULL_REPS permutations of every gene's residuals across perturbations (seed 0; mean, min and
+    max): a component above twice its mean permuted share is more correlation across genes than independent per-gene
+    noise would give. The permutation also destroys per-perturbation structure, so one badly predicted perturbation
+    (a rank-1 outlier row) passes the same test as a program shared by many: top_pert_share, the fraction of a
+    component's perturbation scores held by its largest perturbation, tells the two apart. For the first two
+    components, the genes and perturbations with the largest loadings (SVD signs are arbitrary: read a component's
+    gene and perturbation signs together)."""
     U, s, Vt = np.linalg.svd(E, full_matrices=False)
     share = (s ** 2 / (s ** 2).sum())[:N_COMPONENTS]
     rng = np.random.default_rng(0)
@@ -200,18 +215,23 @@ def residual_structure(E: np.ndarray, data: fc.Data, top: int) -> dict:
     for _ in range(NULL_REPS):
         t = np.linalg.svd(rng.permuted(E, axis=0), compute_uv=False)
         null.append((t ** 2 / (t ** 2).sum())[:N_COMPONENTS])
-    null = np.mean(null, axis=0)
+    null = np.asarray(null)
     comps = []
     for i in range(min(2, len(s))):
-        comps.append({"component": i + 1, "share": float(share[i]), "null_share": float(null[i]),
+        comps.append({"component": i + 1, "share": float(share[i]), "null_share": float(null[:, i].mean()),
+                      "top_pert_share": float((U[:, i] ** 2).max()),  # U's columns have unit norm
                       "genes": [[data.ctx.genes[j], float(Vt[i, j])] for j in np.argsort(-np.abs(Vt[i]))[:top]],
                       "perts": [[data.train[j], float(U[j, i] * s[i])] for j in np.argsort(-np.abs(U[:, i]))[:top]]})
-    low = bool(share[0] > 2 * null[0])
-    return {"n_components": int(len(share)), "share": share.tolist(), "null_share": null.tolist(),
+    low = bool(share[0] > 2 * null[:, 0].mean())
+    return {"n_components": int(len(share)), "share": share.tolist(), "null_share": null.mean(axis=0).tolist(),
+            "null_share_min": null.min(axis=0).tolist(), "null_share_max": null.max(axis=0).tolist(),
             "cumulative": np.cumsum(share).tolist(), "null_reps": NULL_REPS, "low_rank": low,
-            "reading": ("low-rank: component 1 explains more than twice its permuted share, a shared program the "
-                        "features do not carry" if low else
-                        "diffuse: component 1 explains at most twice its permuted share"),
+            "reading": ("correlated: component 1 explains more than twice its mean permuted share, so the residual is "
+                        "correlated across genes beyond independent per-gene noise; a shared program the features lack "
+                        "is one explanation, one badly predicted perturbation another (its top_pert_share is "
+                        f"{comps[0]['top_pert_share']:.2f}; see the perturbation loadings), as are composition or "
+                        "batch differences between perturbations" if low else
+                        "diffuse: component 1 explains at most twice its mean permuted share"),
             "components": comps}
 
 
@@ -286,8 +306,13 @@ def run(a) -> int:
                "alpha are not reused",
                "similarity measures use memberships and edges only (gene-set sizes and STRING scores ignored); a "
                "target with no gene set and no partner may be a retired symbol (docs/NOVEL_FEATURE_NEEDS.md, R0)",
-               "the structure null permutes genes independently, so it tests shared structure, not the size of the "
-               "residual"]
+               "the structure null permutes genes independently, so it tests correlation across genes, not the size "
+               "of the residual, and one perturbation's residual passes it as well as a shared program does",
+               "a source chosen from these tables is selected on the training labels that feature_compare's OOF tier "
+               "scores; its first unselected check is feature_compare --with-val1 (package arms) or the fresh test"]
+    if pr:
+        caveats.append("the parent run selected its features on the visible validation set (exposure val1+oof); the "
+                       "tables describe what that selected model misses")
     if not honest:
         caveats.append("one fold seed: alpha chosen and reported on the same OOF predictions (not honest)")
     result = {
@@ -299,7 +324,7 @@ def run(a) -> int:
                      "measures": MEASURES, "measures_available": have, "screens": sorted(screens),
                      "timeout_s": a.timeout_s, "ram_mb": a.ram_mb},
         "caveats": caveats,
-        "parent": {"source": pr["run"] if pr else "builtin",
+        "parent": {"source": pr["run"] if pr else "builtin", "exposure": "val1+oof" if pr else "none",
                    **({"run_id": pr["run_id"], "split_id": pr["split_id"], "experiment_id": pr["experiment_id"]}
                       if pr else {}),
                    "features": feats, "params": params, "n_columns": n_columns, "files": files,
@@ -322,8 +347,16 @@ def _sim(r: dict, m: str) -> str:
 
 
 def _corr(c: dict | None) -> str:
-    return "file absent" if c is None else (f"{c['rho']:+.3f} (p {c['p']:.3f}, n {c['n']})" if "rho" in c
-                                            else f"n {c['n']}: too few or constant")
+    if c is None:
+        return "file absent"
+    if "skipped" in c:
+        return f"skipped: {c['skipped']}"
+    return f"{c['rho']:+.3f} (p {c['p']:.3f}, n {c['n']})" if "rho" in c else f"n {c['n']}: too few or constant"
+
+
+def _cov(r: dict) -> str:
+    """'n sets / partners'; 'absent' when the bundle lacks that knowledge file (0 means the file is there)."""
+    return " / ".join("absent" if v is None else str(v) for v in (r["n_gene_sets"], r["n_ppi_partners"]))
 
 
 def markdown(r: dict) -> str:
@@ -348,7 +381,7 @@ def markdown(r: dict) -> str:
     for row in r["per_perturbation"][:s["top"]]:
         L.append(fc._md([row["rank"], row["pert"], row["category"] or "", fc._f(row["oof_pearson_delta"]),
                          fc._f(row["oof_pearson_delta_nontarget"]), row["n_targets"], _sim(row, "gene_sets"),
-                         _sim(row, "ppi"), _sim(row, "coexpr"), f"{row['n_gene_sets']} / {row['n_ppi_partners']}",
+                         _sim(row, "ppi"), _sim(row, "coexpr"), _cov(row),
                          ", ".join(n for n, v in row["screen_rows"].items() if v) or ("no" if s["screens"] else "")]))
     L += ["", "Spearman correlation of the OOF score with each similarity measure over all training perturbations "
           "(positive: perturbations with closer relatives score better):", "",
@@ -367,14 +400,17 @@ def markdown(r: dict) -> str:
     L += [fc._md([k, _corr(c)]) for k, c in g["correlations"].items()]
     L += ["", "## 3. Residual structure", "",
           f"Variance explained by the first {st['n_components']} singular components of the mean residual matrix "
-          f"(perturbations x genes), against the mean over {st['null_reps']} permutations of each gene's residuals "
-          "across perturbations:", "", fc._md(["component", "share", "cumulative", "permuted share"]),
-          "|---|---|---|---|"]
-    L += [fc._md([i + 1, fc._f(a), fc._f(c), fc._f(n)])
-          for i, (a, c, n) in enumerate(zip(st["share"], st["cumulative"], st["null_share"]))]
+          f"(perturbations x genes), against the same share over {st['null_reps']} permutations of each gene's "
+          "residuals across perturbations (mean, and min to max):", "",
+          fc._md(["component", "share", "cumulative", "permuted share", "permuted min to max"]),
+          "|" + "---|" * 5]
+    L += [fc._md([i + 1, fc._f(a), fc._f(c), fc._f(n), f"{fc._f(lo)} to {fc._f(hi)}"])
+          for i, (a, c, n, lo, hi) in enumerate(zip(st["share"], st["cumulative"], st["null_share"],
+                                                     st["null_share_min"], st["null_share_max"]))]
     L += ["", f"Reading: {st['reading']}.", ""]
     for c in st["components"]:
-        L += [f"Component {c['component']} ({100 * c['share']:.1f}% of the residual variance): genes "
+        L += [f"Component {c['component']} ({100 * c['share']:.1f}% of the residual variance; its largest perturbation "
+              f"holds {100 * c['top_pert_share']:.0f}% of its perturbation scores): genes "
               + ", ".join(f"{g_} ({v:+.2f})" for g_, v in c["genes"]) + "; perturbations "
               + ", ".join(f"{p_} ({v:+.2f})" for p_, v in c["perts"]) + ".", ""]
     return "\n".join(L) + "\n"
