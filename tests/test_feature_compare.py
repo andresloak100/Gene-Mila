@@ -347,3 +347,32 @@ def test_the_verdict_names_a_null_too_coarse_for_its_family():
     row["tiers"]["oof"]["null"]["p_holm"] = 0.01
     fc.verdict(row, "oof", 1, a)
     assert row["meaningful"] and row["verdict"] == "meaningful (development, OOF only, not held out)"
+
+
+def test_fast_null_equals_the_refit_from_scratch(dataset, tmp_path, monkeypatch):
+    """NullEngine computes only what a gene permutation changes; its replicate gains must equal a full refit."""
+    src = tmp_path / "src"
+    src.mkdir()
+    _plugin(src, "nn_std", "return np.broadcast_to(ctx.control_std[None, :, None], (len(perts), ctx.n_genes, 1)).copy()")
+    _plugin(src, "nn_lab", """\
+        out = np.zeros((len(perts), ctx.n_genes, 1))
+        for i, p in enumerate(perts):
+            _, d = ctx.train_delta(exclude=p)
+            out[i, :, 0] = np.abs(d).mean(axis=0)
+        return out""")
+    got = {}
+    for fast in (True, False):
+        monkeypatch.setattr(fc, "FAST_NULL", fast)
+        out = tmp_path / f"out_{fast}"
+        assert fc.main(["--data", str(dataset), "--out", str(out), "--source", f"s={src}", "--fold-seeds",
+                        "101,102", "--null-reps", "4", "--with-val1"]) == 0
+        rows = json.loads((out / "feature_compare.json").read_text())["rows"]
+        got[fast] = {(r["source"], r["feature"], r["kind"], t): r["tiers"][t]["null"]
+                     for r in rows if r["status"] == "ok" for t in r["tiers"]}
+    assert set(got[True]) == set(got[False]) and len(got[True]) >= 4
+    for key, slow in got[False].items():
+        fast = got[True][key]
+        assert fast["reps"] == slow["reps"] == 4
+        for field in ("mean", "sd", "p95", "excess"):
+            assert abs(fast[field] - slow[field]) < 1e-8, (key, field, fast[field], slow[field])
+        assert fast["p"] == slow["p"]

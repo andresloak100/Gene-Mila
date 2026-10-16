@@ -322,3 +322,12 @@ conservative, never more permissive, and is fixed now, before any reading:
 
 If the stage-2 call is still too slow on the Mac, the operator reports the measured time per replicate and stops;
 the number k is not lowered after the fact.
+
+## Note, 2026-10-16 05:05 UTC: the null in `feature_compare` is faster, the rule unchanged
+
+`tools/feature_compare.py` now refits a null replicate by recomputing only what a gene permutation changes (the
+candidate's cross terms and predictions; the parent columns, the candidate's standardisation and its own Gram block
+are unchanged by a permutation within rows), with a test that its replicate gains equal a full refit to 1e-8 and give
+the same p. Measured on a Norman-sized synthetic bundle: about 0.33 s per replicate per feature (0.84 before), so
+stage 2 of the amendment (20 features × `20·m_total − 1` replicates) is hours on the Mac. This is an optimisation of
+the tool; the amendment's rule and the replicate count are unchanged.
