@@ -4,6 +4,19 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Astra follow-up authorized — coefficient-sign addendum and free downloads, 2026-10-16 21:38 UTC; claim #47.**
+Andres directly requested the fitted coefficient signs for promoter-CpG e428/e666 (F r0) and e412
+(F r3), plus the named public-reference downloads into `data_downloads/clean_knowledge/` with
+requested/final URL, date and SHA256 receipts in `downloads.md`; verify the current CORUM path.
+Block F readings 3/4, results commit 7e02a4f and draft PR #46 are already complete and stay preserved.
+Astra will extract existing saved fitted coefficients read-only where available, label the model/alpha
+and rounding context, append an addendum to PR #46 and post it on #41. No scientific reading or sealed
+scoring is repeated. A delegated download worker touches only the new clean_knowledge directory.
+**Exact next:** finish coefficient provenance/sign report and download receipts; document results on
+#41/#47, this section and live STATE. No paid call, Block G bundle/build/run, model selection or merge.
+Andres explicitly said start nothing for G until the integration plan has a dated note naming its commit;
+this task does not authorize that later start. Main checkout, existing data/runs and cap stay unchanged.
+
 **Block F COMPLETE and published — Astra, 2026-10-16 21:29 UTC.**
 All three paid runs passed; all approved two-stage readings 1–4 exited 0. Results commit
 **7e02a4f1def95c95cac6766ee56cb1f03897828b**, branch `astra/block-f-results`,
