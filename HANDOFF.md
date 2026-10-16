@@ -4,6 +4,33 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F COMPLETE and published — Astra, 2026-10-16 21:29 UTC.**
+All three paid runs passed; all approved two-stage readings 1–4 exited 0. Results commit
+**7e02a4f1def95c95cac6766ee56cb1f03897828b**, branch `astra/block-f-results`,
+[draft PR #46](https://github.com/andresloak100/Gene-Mila/pull/46) into integration. The PR is attached to
+Astra's chat; no merge or model promotion. Final interpretation/run-directory table
+[on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225044026); full unedited
+pooled table and sealed readings [in comment 6224750231](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6224750231).
+Primary: 94 unchanged plugins; 66 usable family rows, 20 null-tested, 10 passing, four tier-1-labelled
+rows representing two computational families. All passing pooled p = .05 at permutation-resolution limit;
+CpG reports repeat identically, numeric TSS feature ignores chromosome/strand and includes self-distance 0.
+Twenty-eight plugins unassessable (25 missing-key errors, three constant-feature smoke failures), unrepaired.
+F OOF Pearson delta **0.580526 ± 0.002321**; B2 **0.582457 ± 0.008062**, sample SD across search seeds
+0/2/3: no established arm gain. F selected sealed **0.719579 ± 0.001206** on inspected cohort; only r0
+establishes gain over its start. Mixed error metrics; no fresh-test/CellForge/biological-discovery claim.
+Raw JSON/Markdown twins, all copied plugins, source/count/usage inventory and MD5/SHA256 evidence are in
+`docs/results/norman_f_*`; entry point `docs/results/norman_f_readings.md`. Independent audit passed.
+Required full pytest: **540 passed, eight existing cell_eval/Polars deprecation warnings, 685.48 s**, exit 0.
+Artifact and staged credential scans, 142 artifact-hash checks and whitespace check passed; own clone clean.
+F recorded cost **2.824188224** ledger USD (r0 1.288493084, r2 .288033672, r3 1.247661468);
+original cap 52.44/hash unchanged. STOP present; no active lab/driver/evaluator/test from this block.
+No main-checkout, existing data/run, split, guard or ledger modification. No extra paid reading call,
+no summary.md or original run-log end read; no scientific reading needs rerunning.
+**Exact next for the next agent:** review PR #46's report, pooled/sealed tables and source limitations.
+Any replication or clean-source arm needs its own authorized plan/commit; this completed Block F handoff
+starts nothing further. Pause the Block F heartbeat after this completion receipt; preserve all evidence.
+Earlier ACTIVE notes below are history, not commands to restart anything.
+
 **Block F all readings complete; final validation/publication active — Astra, 2026-10-16 21:25 UTC.**
 Readings 1–4 all exited 0, including the six-run descriptive OOF comparison and source/count/usage audit.
 F OOF M1 = 0.580526 ± 0.002321; B2 = 0.582457 ± 0.008062 (sample SD across search seeds 0/2/3).
