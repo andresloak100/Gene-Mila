@@ -256,3 +256,19 @@ orchestration, and a wet-lab test (`docs/NOVEL_FEATURE_NEEDS.md`, sections 3–4
 enables is known biology: CRISPRa or CRISPRi at one TSS reaching a nearby gene whose TSS is on the opposite strand
 within 1 kb (mostly head-to-head shared promoters; 96 Norman genes have such a measured partner). Confirming it
 would be a methods result, not a new rule.
+
+## Note, 2026-10-16 01:40 UTC: stale files from a false start, and the account reading
+
+Before the operator's takeover (Astra, [issue #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6205936490)),
+two files dated 2026-10-16 00:13 UTC were already in `genemila_scale_logs/`: `block_f_cap.txt` holding the single
+value `52.44` (the first version of this plan's cap command, before the three-field record was required) and
+`block_f_chain.log` holding only `bash: norman_f_chain.sh: No such file or directory` (a chain started before the
+scripts were copied). Nothing ran and nothing was spent: no run directory, no `.check.txt`, no script in the log
+directory. Decision: the operator renames both files with the suffix `.stale-20261016T0013Z` (nothing is deleted),
+writes the cap record with this plan's write-once command, and continues the plan unchanged. Andres's written
+confirmation of the +$8 cap is recorded in
+[his handoff comment](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6205851106).
+
+Account reading he gave at the same time (DeepSeek console, 16 October about 01:48 UTC): topped-up balance $28.19,
+granted credit $16.25 (DeepSeek's refund of 8 to 14 October usage after its outage), total cost $22.22 over the last
+30 days. His words: "we only have this, use it well". Block F's expected cost is about $4 billed.
