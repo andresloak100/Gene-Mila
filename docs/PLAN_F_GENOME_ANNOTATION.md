@@ -300,3 +300,25 @@ as `tools/feature_audit.py` does, and never writes into a run directory. This ch
 the caps, the readings or the criterion. A pre-run refusal does not stop the block (`block_f_stopped.txt` is written
 only after a run), so the operator restarts the chain the same way from a clone at the commit that carries this
 note; the chain has no passed seed to skip.
+
+## Amendment, 2026-10-16 04:20 UTC, before any score is read: a two-stage null that keeps the pooled rule feasible
+
+Run r0 produced about 60 `gene_annotation` plugins (operator's report, no score read). With three runs, `m_total`
+may reach 150 to 200, and the pre-registered replicate count `max(199, 20·m_total − 1)` then means several thousand
+refits per feature: days of CPU for every row. The rule is therefore made cheaper in a way that can only be more
+conservative, never more permissive, and is fixed now, before any reading:
+
+1. **Stage 1, every row, no null.** `tools/feature_compare.py` runs once with `--null-reps 0` over the three
+   per-run `--source` directories; every `gene_annotation` add-one row gets its paired OOF gain and `se_adj`.
+   `m_total` is the number of those rows with status ok, counted from this JSON.
+2. **Stage 2, the null for the top rows only.** The `k = 20` rows with the largest gain / `se_adj` (ties by name)
+   are scored again as one `--source` directory of exactly those files with `--null-reps` = `20·m_total − 1`.
+3. **Pooled Holm over `m_total`, untested rows at p = 1.** The raw null p of the k tested rows and p = 1 for
+   every other row enter one Holm procedure of size `m_total`. Assigning p = 1 to untested rows can only make
+   rejection harder, so this is a conservative version of the pre-registered pooled rule; the other criteria of the
+   rule (gain above twice `se_adj`, wins above half, every fold-seed report positive, M2 gain, `mse_top` not worse,
+   source not reading `replogle2022_k562` for a tier-1 claim) are unchanged.
+4. A row outside the top k is reported as "not tested against the null" and counts as not found.
+
+If the stage-2 call is still too slow on the Mac, the operator reports the measured time per replicate and stops;
+the number k is not lowered after the fact.
