@@ -4,6 +4,15 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F amended stage1 ACTIVE, 2026-10-16 20:26UTC:** exact OOF/null0 comparison in own
+`gene-mila-block-f`, branch astra/block-f-results atb6638c3; managed execsession77318, process27213,
+active3minutes at20:26:13UTC. No output JSON yet; do not duplicate/restart. Directtwo-stage decision
+and94unchanged plugin/MD5manifest remain as below. Monitor reactivated with resolved-choice/current
+stage checkpoint. **Exact next:** await session77318 exit; any refusal report/hold. On success run
+exact helperselect, then stage2 nice19 detached with fixed helperrepcount, pool, readings2–4.
+No sealed/log-end/summary.md read. Root is sole evaluator; no additional heavy job or paid run.
+
+
 **Direct two-stage decision received, 2026-10-16 20:22 UTC — Block F readings starting:**
 Andres explicitly said use PR44/b6638c3 two-stage test, do not run original single-stage, follow
 comments6223733089/6223972936 exactly, stage2 at nice19, then readings2–4 and draftresultsPR.
