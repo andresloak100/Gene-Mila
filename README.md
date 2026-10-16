@@ -526,8 +526,9 @@ measured gene.
 ### Can the agents find new biology?
 
 On 15 October Andres asked for one biological feature that the current linear model lacks, found
-by the agents without being told where to look. If one holds up, the work becomes a biology paper;
-if the agents only raise the score, it is a machine-learning paper comparing systems. Holding up
+by the agents without being told where to look. The plan he and his machine-learning collaborator set
+that day: if one holds up, the work becomes a biology paper; if the agents only raise the score, a
+machine-learning paper comparing systems. Holding up
 means naming the biology, replicating on another cohort and passing a wet-lab test.
 [`docs/NOVEL_FEATURE_NEEDS.md`](docs/NOVEL_FEATURE_NEEDS.md) sets out what that takes; in short:
 
@@ -573,12 +574,12 @@ means naming the biology, replicating on another cohort and passing a wet-lab te
   on the Mac and a GPU for CellForge and STATE are Andres's decisions.
 - **The first paid test is fixed before it runs.**
   [`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md) (block F) repeats the
-  three B2 Norman runs with one change, the genome annotation file, and no list of hypotheses, so
-  whatever the agents build from it is theirs. The primary reading is `tools/feature_compare.py` on
-  every feature that reads the file; the comparison with B2 on Norman's sealed set is one more look
-  at a set already read many times. The needs document expects a table of this kind to add 0.01 or
-  less. Andres gave permission to run it on 16 October; the plan caps it at $8 on the ledger
-  (about $4 billed). It has not run.
+  three B2 Norman runs with one change: the genome annotation file is added beside B2's Replogle
+  file. The agents get no list of hypotheses, so whatever they build from it is theirs. The primary
+  reading is `tools/feature_compare.py` on every feature that reads the file; the comparison with B2
+  on Norman's sealed set is one more look at a set already read many times. The needs document's
+  prior expectation is that a table of this kind usually adds 0.01 or less. Andres gave permission
+  to run it on 16 October; the plan caps it at $8 on the ledger (about $4 billed). It has not run.
 - **Genes and cost.** The bundles keep about 2,000 genes. The LLM bill does not grow with genes
   (agents write code and never read the matrix); CPU time and memory do. A feature is code, so one
   found on 2,000 genes can be rescored on all expressed genes without an LLM call. More
