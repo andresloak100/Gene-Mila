@@ -60,6 +60,13 @@ name: gone
 namespace: biological_process
 is_obsolete: true
 
+[Term]
+id: GO:0099999
+name: alt-bearing term
+namespace: biological_process
+alt_id: GO:0088888
+is_a: GO:0008150 ! biological_process
+
 [Typedef]
 id: part_of
 name: part of
@@ -189,8 +196,51 @@ def test_build_and_provenance(tmp_path):
     assert prov["tables"]["gene_constraint"]["sha256"] and prov["tables"]["gene_annotation"]["sha256"] is None
     with pytest.raises(ValueError):
         kc.build(src, sorted(GENES), {"replogle_screen": table})
-    files, prov = kc.build(tmp_path / "empty", sorted(GENES))
+    with pytest.raises(ValueError, match="outside the bundle"):  # a table built for another bundle's gene list
+        kc.build(src, sorted(GENES), {"gene_annotation": {"description": "x", "columns": ["x"], "genes": {"ATF6": [1], "G0001": [2]}}})
+    (tmp_path / "empty").mkdir()
+    with pytest.raises(FileNotFoundError, match="goa_human.gaf.gz"):  # an incomplete source directory is refused
+        kc.build(tmp_path / "empty", sorted(GENES))
+    files, prov = kc.build(tmp_path / "empty", sorted(GENES), allow_missing=True)
     assert files == {} and set(prov["sources"].values()) == {None}
+    assert not {"HMP", "HGI", "IEP", "HEP", "IEA"} & kc.GO_CURATED_EVIDENCE  # screen- and expression-derived codes
+
+
+def test_go_alt_id_merges_with_primary(tmp_path):
+    src = write_sources(tmp_path / "src")
+    rows = [("ATF6", "involved_in", "GO:0099999", "IDA", "P"), ("XBP1", "involved_in", "GO:0099999", "IDA", "P"),
+            ("ERN1", "involved_in", "GO:0088888", "IDA", "P"), ("DDIT3", "involved_in", "GO:0088888", "IDA", "P")]
+    (src / "goa_human.gaf.gz").write_bytes(gzip.compress(_gaf(rows).encode()))
+    sets = kc.go_curated(src / "goa_human.gaf.gz", src / "go-basic.obo", GENES)
+    assert sets["GOBP:alt-bearing term"] == ["ATF6", "DDIT3", "ERN1", "XBP1"]
+    assert kc.parse_obo(OBO)["GO:0088888"]["id"] == "GO:0099999"
+
+
+def test_corum_snake_case_header_organism_and_duplicates(tmp_path):
+    f = tmp_path / "corum_allComplexes.txt"
+    f.write_text("complex_id\tcomplex_name\torganism\tsynonyms\tsubunits_uniprot_id\tsubunits_gene_name\n"
+                 "1\tC\tHuman\t\tP1;P2\tATF6;XBP1\n"          # merged with the next Human row of the same name
+                 "2\tC\tHuman\t\tP3\tERN1\n"
+                 "3\tC\tMouse\t\tP4\tDDIT3\n"                # not Human: ignored
+                 "4\tM\tMouse\t\tP1;P2;P3\tATF6;XBP1;ERN1\n")  # a Mouse complex of measured-looking symbols: ignored
+    assert kc.corum(f, GENES) == {"CORUM:C": ["ATF6", "ERN1", "XBP1"]}
+    g = tmp_path / "no_organism.txt"
+    g.write_text("ComplexName\tsubunits(Gene name)\nC\tATF6;XBP1;ERN1\n")
+    assert kc.corum(g, GENES) == {"CORUM:C": ["ATF6", "ERN1", "XBP1"]}
+
+
+def test_added_knowledge_file_is_recorded_as_dropped(tmp_path, dataset):
+    import shutil
+    import numpy as np
+    bundle = tmp_path / "bundle"
+    shutil.copytree(dataset, bundle)
+    (bundle / "knowledge" / "replogle2022_k562.json").write_text(json.dumps({"description": "a screen", "genes": {}}))
+    genes = [str(g) for g in np.load(bundle / "public.npz", allow_pickle=False)["genes"]]
+    src = write_sources(tmp_path / "src", genes_for_bundle=genes[:8])
+    out = bcb.build_clean_bundle(bundle, src, tmp_path / "clean")
+    m = json.loads((out / "manifest.json").read_text())
+    assert "replogle2022_k562.json" in m["clean_knowledge"]["excluded_files"]
+    assert not (out / "knowledge" / "replogle2022_k562.json").exists() and added_knowledge(out) == []
 
 
 def _tree(d: Path) -> dict:
@@ -234,3 +284,24 @@ def test_bundle_round_trip(tmp_path, dataset, with_table):
     assert m["clean_knowledge"]["tables"] == (["gene_annotation"] if with_table else [])
     with pytest.raises(FileExistsError):
         bcb.main(argv)
+
+
+def test_cli_aliases_and_warning(tmp_path, dataset, capsys):
+    """The names docs/mac/block_g uses (--from/--raw/--knowledge PATH) work, and an oversized summary warns."""
+    import numpy as np
+    genes = [str(g) for g in np.load(dataset / "public.npz", allow_pickle=False)["genes"]]
+    src = write_sources(tmp_path / "src", genes_for_bundle=genes[:8])
+    table = {"description": "x" * 900, "columns": ["x"], "genes": {g: [i] for i, g in enumerate(genes)}}
+    paths = []
+    for name in kc.TABLE_NAMES:
+        (tmp_path / f"{name}.json").write_text(json.dumps(table))
+        paths += ["--knowledge", str(tmp_path / f"{name}.json")]
+    assert bcb.main(["--from", str(dataset), "--raw", str(src), "--out", str(tmp_path / "clean"), *paths]) == 0
+    m = json.loads((tmp_path / "clean" / "manifest.json").read_text())
+    assert m["clean_knowledge"]["tables"] == sorted(kc.TABLE_NAMES) and m["name"] == "synthetic_clean_tables"
+    text = capsys.readouterr().out
+    lines = bcb.knowledge_summary_lines(tmp_path / "clean")
+    assert ("WARNING" in text) == (len("; ".join(lines)) > bcb.planner_knowledge_limit())
+    with pytest.raises(FileNotFoundError):
+        bcb.main(["--bundle", str(dataset), "--sources", str(tmp_path / "nothing"), "--out", str(tmp_path / "c2")])
+    assert not (tmp_path / "c2").exists()

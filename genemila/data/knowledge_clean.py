@@ -20,9 +20,12 @@ plus, when given, the three per-gene tables built by tools/build_gene_annotation
 tools/build_protein_annotation.py (gene_annotation, gene_constraint, protein_annotation), included as built.
 
 Left out on purpose: MSigDB Hallmark (refined with expression data), Enrichr GO BP (no evidence codes, so expression-
-inferred annotations cannot be told apart), GO annotations with IEP/HEP (inferred from expression), IEA (electronic)
-and the computational-similarity codes (ISS, ISO, ISA, ISM, IGC, IBA, IBD, IKR, IRD, RCA), STRING's textmining and
-co-expression channels, and every perturbation screen (the Replogle external screen stays its own arm).
+inferred annotations cannot be told apart), GO annotations with IEP/HEP (inferred from expression), HMP/HGI (inferred
+from high-throughput mutant-phenotype and genetic-interaction screens: tier 3, "derived from perturbation screens"),
+IEA (electronic) and the computational-similarity codes (ISS, ISO, ISA, ISM, IGC, IBA, IBD, IKR, IRD, RCA), STRING's
+textmining and co-expression channels, and every perturbation screen (the Replogle external screen stays its own arm).
+IMP and IGI (single-gene mutant phenotype and genetic interaction, curated from the literature) stay: they are the
+evidence class CollecTRI's regulations rest on, which Andres approved; the block G plan states this.
 
 Every parser takes the bundle's gene universe and keeps the loader's set-size rules (MIN_SET_SIZE..MAX_SET_SIZE
 measured genes). `build` returns the knowledge files like knowledge.build, and a provenance record (source sha256s,
@@ -37,7 +40,7 @@ from pathlib import Path
 
 from .knowledge import MAX_SET_SIZE, MIN_SET_SIZE, STRING_MIN_SCORE, _gmt_lines, _read, collectri, summary  # noqa: F401
 
-GO_CURATED_EVIDENCE = frozenset({"EXP", "IDA", "IPI", "IMP", "IGI", "HDA", "HMP", "HGI", "TAS", "IC", "NAS"})
+GO_CURATED_EVIDENCE = frozenset({"EXP", "IDA", "IPI", "IMP", "IGI", "HDA", "TAS", "IC", "NAS"})
 GO_PREFIX = {"biological_process": "GOBP", "cellular_component": "GOCC", "molecular_function": "GOMF"}
 STRING_CHANNELS = ("experiments", "database")
 TABLE_NAMES = ("gene_annotation", "gene_constraint", "protein_annotation")
@@ -89,8 +92,8 @@ def reactome(src_dir: Path, genes: set[str]) -> dict[str, list[str]]:
 
 # ---- Gene Ontology --------------------------------------------------------------------------------------------
 def parse_obo(text: str) -> dict[str, dict]:
-    """go-basic.obo [Term] stanzas -> {id: {"name", "namespace", "parents": set(is_a and part_of ids)}}; obsolete
-    terms are left out and alt_ids map to their term."""
+    """go-basic.obo [Term] stanzas -> {id: {"id", "name", "namespace", "parents": set(is_a and part_of ids)}};
+    obsolete terms are left out and alt_ids map to their term's dict, whose "id" is the primary id."""
     terms, alt = {}, {}
     cur = None
     for raw in text.splitlines():
@@ -124,7 +127,7 @@ def parse_obo(text: str) -> dict[str, dict]:
     for tid, t in terms.items():
         if t["obsolete"]:
             continue
-        out[tid] = {"name": t["name"], "namespace": t["namespace"], "parents": t["parents"]}
+        out[tid] = {"id": tid, "name": t["name"], "namespace": t["namespace"], "parents": t["parents"]}
         for a in t["alt"]:
             alt[a] = tid
     return {**{a: out[t] for a, t in alt.items() if t in out}, **out}
@@ -157,6 +160,7 @@ def go_curated(gaf_path: Path, obo_path: Path, genes: set[str],
         symbol, qualifier, go_id, evidence = f[2], f[3], f[4], f[6]
         if symbol not in genes or evidence not in allowed or "NOT" in qualifier.split("|"):
             continue
+        go_id = terms.get(go_id, {}).get("id", go_id)  # an alt_id is the primary term
         direct.setdefault(go_id, set()).add(symbol)
     members: dict[str, set[str]] = {}
     memo: dict = {}
@@ -177,22 +181,32 @@ def go_curated(gaf_path: Path, obo_path: Path, genes: set[str],
 
 # ---- CORUM ----------------------------------------------------------------------------------------------------
 def corum(path: Path, genes: set[str]) -> dict[str, list[str]]:
-    """CORUM:<complex> sets from the allComplexes table (columns found by header: ComplexName and
-    subunits(Gene name), ';'-separated symbols)."""
+    """CORUM:<complex> sets from the allComplexes table (columns found by header, CORUM 4 'ComplexName' /
+    'subunits(Gene name)' or CORUM 5 'complex_name' / 'subunits_gene_name'; ';'-separated symbols). Only Human rows
+    when an organism column exists; rows with the same complex name are merged."""
     lines = (_read(Path(path)) or "").splitlines()
     if not lines:
         return {}
     head = lines[0].split("\t")
-    i_name = _header_index(head, "complexname", "complex name")
+    i_name = _header_index(head, "complexname", "complex_name", "complex name")
     i_sub = _header_index(head, "subunits(gene name)", "subunits_gene_name", "subunits (gene name)")
-    out = {}
+    try:
+        i_org = _header_index(head, "organism")
+    except ValueError:
+        i_org = None
+    members: dict[str, set[str]] = {}
     for line in lines[1:]:
         f = line.split("\t")
-        if len(f) <= max(i_name, i_sub):
+        if len(f) <= max(i_name, i_sub, i_org or 0):
             continue
-        kept = _keep((s.strip() for s in f[i_sub].split(";")), genes)
+        if i_org is not None and f[i_org].strip().lower() != "human":
+            continue
+        members.setdefault(f[i_name].strip(), set()).update(s.strip() for s in f[i_sub].split(";"))
+    out = {}
+    for name, syms in members.items():
+        kept = _keep(syms, genes)
         if kept:
-            out[f"CORUM:{f[i_name].strip()}"] = kept
+            out[f"CORUM:{name}"] = kept
     return out
 
 
@@ -237,11 +251,16 @@ def string_physical_channels(detailed_links_path: Path, info_path: Path, genes: 
 
 # ---- the bundle's files ---------------------------------------------------------------------------------------
 def build(src: Path, genes: list[str], tables: dict[str, object] | None = None,
-          allowed: frozenset[str] = GO_CURATED_EVIDENCE) -> tuple[dict[str, object], dict]:
-    """({"<name>.json": content}, provenance) for a bundle, restricted to its measured genes. Sources missing from
-    src are skipped and listed in the provenance. tables: {name: parsed JSON or path to a built table file}, name
-    one of TABLE_NAMES (the builders restrict them to the bundle's genes with --genes-from; they go in as given)."""
+          allowed: frozenset[str] = GO_CURATED_EVIDENCE, allow_missing: bool = False) -> tuple[dict[str, object], dict]:
+    """({"<name>.json": content}, provenance) for a bundle, restricted to its measured genes. A source missing from
+    src is an error (a '_clean' bundle built without GO, CORUM or STRING would be an arm no plan describes) unless
+    allow_missing, when it is skipped and recorded as null in the provenance. tables: {name: parsed JSON or path to
+    a built table file}, name one of TABLE_NAMES; a table's genes must all be in the bundle (the builders restrict
+    them with --genes-from), so a table built for another bundle is refused."""
     src, g = Path(src), set(genes)
+    missing = sorted(f for f in SOURCE_FILES if not (src / f).exists())
+    if missing and not allow_missing:
+        raise FileNotFoundError(f"clean sources missing from {src}: {', '.join(missing)}")
     files: dict[str, object] = {}
     sets = {**reactome(src, g),
             **go_curated(src / "goa_human.gaf.gz", src / "go-basic.obo", g, allowed),
@@ -265,6 +284,10 @@ def build(src: Path, genes: list[str], tables: dict[str, object] | None = None,
             obj = json.loads(Path(obj).read_text())
         else:
             prov_tables[name] = {"file": None, "sha256": None}
+        foreign = sorted(set(obj.get("genes", {})) - g) if isinstance(obj, dict) else []
+        if foreign:
+            raise ValueError(f"table {name} has {len(foreign)} genes outside the bundle (e.g. {foreign[:3]}); "
+                             "it was not built for this bundle (--genes-from)")
         files[f"{name}.json"] = obj
     provenance = {
         "policy": "tier 1 only (docs/NOVEL_FEATURE_NEEDS.md section 7; approved 2026-10-16)",
