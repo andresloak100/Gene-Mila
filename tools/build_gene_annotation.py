@@ -3,9 +3,9 @@
 
 The bundle's prior knowledge (genemila/data/knowledge.py) says which genes share pathways, interactions and regulators,
 but nothing about the genes themselves as molecules: where they sit, how long they are, what their messages encode.
-This table adds those properties, all derived from the reference genome and its annotation, with no expression or
-perturbation measurement behind them, so it cannot encode a held-out response (docs/NOVEL_FEATURE_NEEDS.md, section
-2.1, ranks 2 and C3). Features read it with ctx.knowledge("gene_annotation"). Three uses motivated it:
+This table adds those properties, all derived from the reference genome and its annotation. GENCODE's transcript
+models rest on RNA evidence (cDNA, ESTs, RNA-seq), but no perturbation or response measurement is behind them, so the
+table cannot encode a held-out response (docs/NOVEL_FEATURE_NEEDS.md, section 2.1, ranks 2 and C3). Features read it with ctx.knowledge("gene_annotation"). Three uses motivated it:
 
   - cis effects of CRISPRi and CRISPRa: dCas9-KRAB at a promoter can silence a gene sharing that promoter, and an
     activator can switch on its neighbour; "bidirectional" and "neighbours" let a feature mark those genes;
@@ -17,15 +17,22 @@ perturbation measurement behind them, so it cannot encode a held-out response (d
 Each gene is represented by one transcript: for protein-coding genes the CCDS (else "basic") transcript with the
 longest coding sequence, ties by longest message, then by transcript id; for other genes the longest "basic"
 transcript. Its transcription start site (TSS) is the gene's TSS. A symbol annotated more than once keeps the gene on
-the lowest-numbered primary chromosome. Coordinates are 1-based as in GTF.
+the lowest-numbered primary chromosome. Coordinates are 1-based as in GTF. GENCODE counts the stop codon in the 3' UTR
+feature and not in the CDS, so its bases (the "stop_codon" feature) are removed from the 3' UTR here; mitochondrial
+genes have no stop_codon feature and their CDS ends with the stop. Mitochondrial messages are translated with the
+vertebrate mitochondrial code (TGA is W, ATA is M, AGA and AGG stop), or their aa_<X> columns would be wrong exactly
+where the amino-acid demand use looks (M, I, W).
 
 The output (JSON):
     description  what the table is, its source files and every column with its unit (shown to the planner)
     columns      names of the numeric columns
     genes        {symbol: [value per column]}; null where a value does not exist (no coding sequence)
     loci         {symbol: [chromosome, TSS, strand]}
-    bidirectional {symbol: [symbols whose TSS is on the other strand within --bidir-bp of this TSS]}
+    bidirectional {symbol: [symbols whose TSS is on the other strand within --bidir-bp of this TSS]}: mostly
+                 head-to-head pairs sharing a promoter; no orientation test, so TSSs facing each other count too
     neighbours   {symbol: [[symbol, TSS distance in bp], ...]} genes of the output within --neighbour-kb, nearest first
+    source       the input file names and their sha256, so the exact inputs can be checked (the files may have been
+                 saved under other names than the URLs below)
 With --genes-from (a bundle or public directory) the output keeps the bundle's genes only (neighbour lists then name
 bundle genes only; "n_tss_within_100kb" still counts every annotated gene). A bundle symbol the annotation does not
 know is listed under "unmatched"; tools/knowledge_coverage.py helps map retired symbols.
@@ -41,6 +48,7 @@ from __future__ import annotations
 import argparse
 import bisect
 import collections
+import hashlib
 import json
 import re
 import sys
@@ -52,11 +60,14 @@ AMINO = "ACDEFGHIKLMNPQRSTVWY"
 CODON = {a + b + c: aa for (a, b, c), aa in zip(
     ((x, y, z) for x in "TCAG" for y in "TCAG" for z in "TCAG"),
     "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG")}
+CODON_MT = {**CODON, "TGA": "W", "ATA": "M", "AGA": "*", "AGG": "*"}  # vertebrate mitochondrial code (NCBI table 2)
+MITO = ("chrM", "MT", "chrMT")
 COLUMNS = (["gene_span_kb", "n_transcripts", "n_exons", "transcript_length", "cds_length", "utr5_length",
             "utr3_length", "intron_length_kb", "gc_cds", "gc_utr3", "gc_promoter", "cpg_oe_promoter",
             "n_upstream_atg", "nearest_tss_kb", "n_tss_within_100kb"] + [f"aa_{a}" for a in AMINO])
 UNITS = ("gene_span_kb: genomic span of the gene, kb; n_transcripts: annotated transcripts; n_exons, "
-         "transcript_length (nt), cds_length (nt, stop codon excluded), utr5_length, utr3_length (nt), "
+         "transcript_length (nt), cds_length (nt, stop codon excluded except on chrM), utr5_length, utr3_length (nt, "
+         "stop codon excluded), "
          "intron_length_kb: of the representative transcript; gc_cds, gc_utr3: GC fraction; gc_promoter, "
          "cpg_oe_promoter: GC fraction and CpG observed/expected in TSS +/- 500 bp; n_upstream_atg: ATG triplets in the "
          "5' UTR; nearest_tss_kb: distance to the nearest other annotated TSS, kb; n_tss_within_100kb: annotated TSSs of "
@@ -70,14 +81,14 @@ def _chrom_rank(c: str) -> tuple:
 
 
 def read_gtf(path: Path) -> dict:
-    """{gene_id: {name, type, chrom, strand, start, end, transcripts: {tid: {type, tags, exons, cds, utr}}}}."""
+    """{gene_id: {name, type, chrom, strand, start, end, transcripts: {tid: {type, tags, exons, cds, utr, stop}}}}."""
     genes: dict = {}
     with open(path) as fh:
         for line in fh:
             if line.startswith("#"):
                 continue
             f = line.rstrip("\n").split("\t")
-            if len(f) < 9 or f[2] not in ("gene", "transcript", "exon", "CDS", "UTR"):
+            if len(f) < 9 or f[2] not in ("gene", "transcript", "exon", "CDS", "UTR", "stop_codon"):
                 continue
             attrs = collections.defaultdict(list)
             for k, v in _ATTR.findall(f[8]):
@@ -89,10 +100,10 @@ def read_gtf(path: Path) -> dict:
                               "strand": f[6], "start": start, "end": end, "transcripts": {}}
                 continue
             tr = genes[gid]["transcripts"].setdefault(attrs["transcript_id"][0], {
-                "type": (attrs.get("transcript_type") or [""])[0], "tags": set(), "exons": [], "cds": [], "utr": []})
+                "type": (attrs.get("transcript_type") or [""])[0], "tags": set(), "exons": [], "cds": [], "utr": [], "stop": []})
             tr["tags"].update(attrs.get("tag", []))
-            if f[2] in ("exon", "CDS", "UTR"):
-                tr[{"exon": "exons", "CDS": "cds", "UTR": "utr"}[f[2]]].append((start, end))
+            if f[2] in ("exon", "CDS", "UTR", "stop_codon"):
+                tr[{"exon": "exons", "CDS": "cds", "UTR": "utr", "stop_codon": "stop"}[f[2]]].append((start, end))
     return genes
 
 
@@ -143,6 +154,27 @@ def _spliced(fa: Fasta, chrom: str, strand: str, iv: list) -> str:
     return _revcomp(seq) if strand == "-" else seq
 
 
+def _minus(iv: list, cut: list) -> list:
+    """The intervals iv with the bases of the intervals cut removed."""
+    for cs, ce in cut:
+        iv = [x for a, b in iv for x in ((a, min(b, cs - 1)), (max(a, ce + 1), b)) if x[0] <= x[1]]
+    return iv
+
+
+def translate(cseq: str, chrom: str) -> str:
+    """The protein of a coding sequence, without its stop; chrM (MT, chrMT) uses the mitochondrial code."""
+    table = CODON_MT if chrom in MITO else CODON
+    return "".join(table.get(cseq[j:j + 3], "X") for j in range(0, len(cseq) - len(cseq) % 3, 3)).rstrip("*")
+
+
+def _sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for block in iter(lambda: fh.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
 def _gc(s: str):
     return (s.count("G") + s.count("C")) / len(s) if s else None
 
@@ -190,6 +222,7 @@ def build(gtf: Path, fasta: Path | None, keep: set[str] | None, bidir_bp: int = 
             before = [iv for iv in tr["utr"] if iv[1] < lo]
             after = [iv for iv in tr["utr"] if iv[0] > hi]
             utr5, utr3 = (before, after) if strand == "+" else (after, before)
+            utr3 = _minus(utr3, tr["stop"])
         tsss = by_chrom[chrom]
         i = bisect.bisect_left(tsss, (tss, name))
         others = [(abs(t - tss), n, t) for t, n in tsss[max(0, i - 400):i + 400] if n != name]
@@ -210,9 +243,7 @@ def build(gtf: Path, fasta: Path | None, keep: set[str] | None, bidir_bp: int = 
                 u5 = _spliced(fa, chrom, strand, utr5)
                 row.update(gc_cds=_gc(cseq), gc_utr3=_gc(_spliced(fa, chrom, strand, utr3)),
                            n_upstream_atg=u5.count("ATG"))
-                prot = "".join(CODON.get(cseq[j:j + 3], "X") for j in range(0, len(cseq) - len(cseq) % 3, 3))
-                prot = prot.rstrip("*")
-                counts = collections.Counter(prot)
+                counts = collections.Counter(translate(cseq, chrom))
                 n = sum(counts[a] for a in AMINO)
                 if n:
                     row.update({f"aa_{a}": counts[a] / n for a in AMINO})
@@ -223,18 +254,21 @@ def build(gtf: Path, fasta: Path | None, keep: set[str] | None, bidir_bp: int = 
         neigh[name] = [[n, d] for d, n, _ in others if d <= neighbour_kb * 1e3 and n in keep_set][:max_neighbours]
     # Kept short: the planner's state shows all knowledge files in one section cut at 2,500 characters
     # (genemila/research_state.py SECTION_CHARS), so a long description would hide the files listed after it.
-    description = (f"Per-gene annotation from the genome sequence ({Path(gtf).name}); no expression data. "
+    description = (f"Per-gene annotation from the genome sequence and GENCODE transcript models ({Path(gtf).name}); "
+                   "no perturbation or response measurement. "
                    "genes[symbol] = values in the order of columns: gene_span_kb, n_transcripts, n_exons, "
                    "transcript_length, cds_length, utr5_length, utr3_length, intron_length_kb, gc_cds, gc_utr3, "
                    "gc_promoter, cpg_oe_promoter, n_upstream_atg, nearest_tss_kb, n_tss_within_100kb, then aa_A..aa_Y "
                    "(amino-acid fractions of the protein; null without a coding sequence); units in column_units. "
-                   f"loci[symbol] = [chromosome, TSS, strand]; bidirectional[symbol] = genes whose TSS is on the other "
-                   f"strand within {bidir_bp} bp (a shared promoter that CRISPRi/a at one TSS can hit); "
+                   f"loci[symbol] = [chromosome, TSS, strand]; bidirectional[symbol] = genes whose TSS is on the opposite "
+                   f"strand within {bidir_bp} bp (mostly head-to-head shared promoters, which CRISPRi/a at one TSS can hit); "
                    f"neighbours[symbol] = [[gene, TSS distance bp]] within {neighbour_kb:g} kb.")
     return {"description": description, "columns": COLUMNS, "column_units": UNITS, "genes": rows, "loci": loci,
             "bidirectional": bidir,
-            "neighbours": neigh, "source": {"gtf": Path(gtf).name, "fasta": Path(fasta).name if fasta else None,
-                                            "n_genes_annotated": len(chosen)}}
+            "neighbours": neigh,
+            "source": {"gtf": Path(gtf).name, "gtf_sha256": _sha256(gtf),
+                       "fasta": Path(fasta).name if fasta else None, "fasta_sha256": _sha256(fasta) if fasta else None,
+                       "n_genes_annotated": len(chosen)}}
 
 
 def main(argv=None) -> int:
