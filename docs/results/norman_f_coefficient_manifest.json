@@ -1,0 +1,20 @@
+{
+  "generated_utc": "2026-10-16T21:40:41.273020+00:00",
+  "purpose": "Reading 4 fitted-sign addendum requested directly by Andres after original results publication; no new fits or scores",
+  "parent_results_commit": "7e02a4f1def95c95cac6766ee56cb1f03897828b",
+  "original_artifact_manifest_sha256": "7c6f8a02bd04cf5c9bd24491ca8c062361357f247ceaee6b472fc4fc38edc81d",
+  "files": [
+    {
+      "path": "docs/results/norman_f_coefficient_signs.json",
+      "bytes": 12834,
+      "md5": "d0b88adcaedc0c9e79766621e760de22",
+      "sha256": "bf035c6e3ad55ae19c0fd01dd2cafce297059eb6869cfe260880d542a7c107a7"
+    },
+    {
+      "path": "docs/results/norman_f_coefficient_signs.md",
+      "bytes": 4150,
+      "md5": "0e751b92f8fcdeedf8cbd4ad2583acf3",
+      "sha256": "d2c7d11fe4f9716911730086a4f5a7f5b97edffefdd7a86c4cff989e7a994c91"
+    }
+  ]
+}

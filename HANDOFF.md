@@ -14,8 +14,116 @@ block G runs as planned or amended; **`<G_COMMIT>` and the cap are named in the 
 the chain waits. **Astra next, free:** clone the integration branch at or after this merge, run
 `docs/mac/block_g/prepare_clean_bundles.sh` (the nine downloads are done and hash-verified, receipts on #47; the plan's
 `corum_allComplexes.txt` is the file the receipt calls `allComplexes.txt`, renamed or linked into the download directory
-under the plan's name, and the STRING file likewise `string_physical_detailed.txt.gz`), post its output on #47, and start
+under the plan's name, and the STRING file likewise `string_physical_detailed.txt.gz`), post its output on #41, and start
 no paid run.
+**Astra follow-up COMPLETE — 2026-10-16 21:51 UTC; claim #47 closed.**
+Block F readings 3/4 and original results remain preserved. Coefficient addendum **b9d550a** is pushed
+in [draft PR #46](https://github.com/andresloak100/Gene-Mila/pull/46), posted on
+[#41/comment6225228232](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225228232).
+Existing creation-fit standardized interaction coefficients (ridge alpha100): F r0 EXP_0428/e428
++.014724067753942987; EXP_0666/e666 +.01434165272419911; F r3 EXP_0412/e412 -.00996105446986751.
+These original multifeature fits have mixed conditional signs, not a universal negative-CpG mechanism;
+the primary common-parent OOF coefficient was not saved. No refit or new score. Selected r0 retains
+e666 positively; e428 and selected r3/e412 are absent. Full artifact hashes/model columns and addendum
+manifest are in `docs/results/norman_f_coefficient_signs.*` / `norman_f_coefficient_manifest.json`.
+All 142 original result hashes remain unchanged; independent addendum audit and PR checks passed.
+All **9** requested public references are downloaded, **4,483,967,213 bytes** total, in
+`~/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/`. Every SHA256/size independently verified;
+HTTP200/curl0/TLS verification succeeded, all transfer processes ended normally and no partial remains.
+`downloads.md` records requested/final URLs, UTC dates and SHA256, including CORUM official API move
+(current5.3/date2026-04-14; old static ZIP path serves HTML) and GO OBO redirect. Document SHA256:
+`cd22243dcaba2b3e4c169b08f5919ea4894b8a69881213b428d12a4f848217da`.
+[Full exact receipt on #47](https://github.com/andresloak100/Gene-Mila/issues/47#issuecomment-6225365762);
+[completion cross-link on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225366353).
+The initial pending receipt entries are retained as history and explicitly resolved by final completion.
+**Exact next:** review PR #46 and the download receipt. No transfer, coefficient extraction, F reading,
+paid run or test needs repeating. No Block G preprocessing, bundle/build or run occurred; start nothing
+for G until `docs/PLAN_G_CLEAN_ARM.md` on integration has the dated note naming its commit, as Andres
+explicitly directed. This completed task initiates no later work. STOP present, Block F cap/hash unchanged,
+no lab/driver active, main checkout/existing bundles/runs/ledger untouched, F heartbeat remains PAUSED.
+Earlier ACTIVE download/process notes are historical; do not restart them.
+
+**Coefficient addendum published; free downloads active — Astra, 2026-10-16 21:42 UTC, claim #47.**
+Reading 4 saved-fit sign addendum **b9d550a** is pushed to draft PR #46 and posted on #41,
+[comment 6225228232](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225228232).
+Creation fits (all ridge alpha100): F r0 EXP_0428/e428 +.014724067753942987,
+EXP_0666/e666 +.01434165272419911; F r3 EXP_0412/e412 -.00996105446986751.
+Selected r0 EXP_0715 retains e666 positively; e428 and selected r3 EXP_0603/e412 are absent.
+These are original standardized interaction-column coefficients, not the unsaved common-parent OOF
+coefficient; signs vary with model context and do not confirm a universal negative-CpG mechanism.
+No new fit, label access, scoring, alpha/model choice or lab/tool code change. All 142 original artifact
+hashes remain unchanged; separate addendum JSON/MD/manifest and independent audit pass; PR checks pass.
+Seven of nine named downloads are complete with local receipts. GTF and FASTA remain active in
+`data_downloads/clean_knowledge/`: managed download session8677, Python76820, GTFcurl76876,
+FASTAcurl76958. Preserve those processes/partials; do not duplicate or restart.
+Partial names: `gencode.v27.primary_assembly.annotation.gtf.partial-34e2f95ac2` and
+`Homo_sapiens_assembly38.fasta.partial-c13bc1f84e`; per-file header/transfer receipts share suffixes.
+Downloader `download_sources.py` writes exclusive completed receipts; `download_receipts.json` appears
+when all nine finish. Local `downloads.md` already records seven completions and two pending entries.
+CORUM official release/file APIs independently verified:5.3/date2026-04-14, complete/allComplexes/txt;
+legacy ZIP path returns HTML, actual API path and GO OBO redirect are recorded.
+**Exact next:** download worker completes both existing transfers, appends final URL/UTC/SHA256 receipts;
+root verifies receipts, posts full downloads.md to #47/links #41, updates state and stops. No G build/run,
+API spend or additional experiment. The direct gate remains: no G action before its integration-plan
+dated note names a commit; this free-preparation task itself authorizes no later run.
+
+**Astra follow-up authorized — coefficient-sign addendum and free downloads, 2026-10-16 21:38 UTC; claim #47.**
+Andres directly requested the fitted coefficient signs for promoter-CpG e428/e666 (F r0) and e412
+(F r3), plus the named public-reference downloads into `data_downloads/clean_knowledge/` with
+requested/final URL, date and SHA256 receipts in `downloads.md`; verify the current CORUM path.
+Block F readings 3/4, results commit 7e02a4f and draft PR #46 are already complete and stay preserved.
+Astra will extract existing saved fitted coefficients read-only where available, label the model/alpha
+and rounding context, append an addendum to PR #46 and post it on #41. No scientific reading or sealed
+scoring is repeated. A delegated download worker touches only the new clean_knowledge directory.
+**Exact next:** finish coefficient provenance/sign report and download receipts; document results on
+#41/#47, this section and live STATE. No paid call, Block G bundle/build/run, model selection or merge.
+Andres explicitly said start nothing for G until the integration plan has a dated note naming its commit;
+this task does not authorize that later start. Main checkout, existing data/runs and cap stay unchanged.
+
+**Block F COMPLETE and published — Astra, 2026-10-16 21:29 UTC.**
+All three paid runs passed; all approved two-stage readings 1–4 exited 0. Results commit
+**7e02a4f1def95c95cac6766ee56cb1f03897828b**, branch `astra/block-f-results`,
+[draft PR #46](https://github.com/andresloak100/Gene-Mila/pull/46) into integration. The PR is attached to
+Astra's chat; no merge or model promotion. Final interpretation/run-directory table
+[on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225044026); full unedited
+pooled table and sealed readings [in comment 6224750231](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6224750231).
+Primary: 94 unchanged plugins; 66 usable family rows, 20 null-tested, 10 passing, four tier-1-labelled
+rows representing two computational families. All passing pooled p = .05 at permutation-resolution limit;
+CpG reports repeat identically, numeric TSS feature ignores chromosome/strand and includes self-distance 0.
+Twenty-eight plugins unassessable (25 missing-key errors, three constant-feature smoke failures), unrepaired.
+F OOF Pearson delta **0.580526 ± 0.002321**; B2 **0.582457 ± 0.008062**, sample SD across search seeds
+0/2/3: no established arm gain. F selected sealed **0.719579 ± 0.001206** on inspected cohort; only r0
+establishes gain over its start. Mixed error metrics; no fresh-test/CellForge/biological-discovery claim.
+Raw JSON/Markdown twins, all copied plugins, source/count/usage inventory and MD5/SHA256 evidence are in
+`docs/results/norman_f_*`; entry point `docs/results/norman_f_readings.md`. Independent audit passed.
+Required full pytest: **540 passed, eight existing cell_eval/Polars deprecation warnings, 685.48 s**, exit 0.
+Artifact and staged credential scans, 142 artifact-hash checks and whitespace check passed; own clone clean.
+F recorded cost **2.824188224** ledger USD (r0 1.288493084, r2 .288033672, r3 1.247661468);
+original cap 52.44/hash unchanged. STOP present; no active lab/driver/evaluator/test from this block.
+No main-checkout, existing data/run, split, guard or ledger modification. No extra paid reading call,
+no summary.md or original run-log end read; no scientific reading needs rerunning.
+**Exact next for the next agent:** review PR #46's report, pooled/sealed tables and source limitations.
+Any replication or clean-source arm needs its own authorized plan/commit; this completed Block F handoff
+starts nothing further. Pause the Block F heartbeat after this completion receipt; preserve all evidence.
+Earlier ACTIVE notes below are history, not commands to restart anything.
+
+**Block F all readings complete; final validation/publication active — Astra, 2026-10-16 21:25 UTC.**
+Readings 1–4 all exited 0, including the six-run descriptive OOF comparison and source/count/usage audit.
+F OOF M1 = 0.580526 ± 0.002321; B2 = 0.582457 ± 0.008062 (sample SD across search seeds 0/2/3).
+F has no established arm gain. Primary: 10 passing rows, four tier-1-labelled rows representing two
+computational families; CpG reports repeat identically, and the numeric TSS code ignores chromosome/strand,
+includes self-target distance 0 and never reads the bidirectional map. No biological-discovery claim.
+Selected sealed Pearson = 0.719579 ± 0.001206 on the already inspected split; only r0 establishes a gain
+against its start. Full unedited pooled/sealed tables are already on #41, comment 6224750231.
+Own `gene-mila-block-f`, branch `astra/block-f-results`, evaluation source b6638c3; all raw JSON/Markdown,
+94 unchanged plugins, manifests, metadata collector and final report are in `docs/results/norman_f_*`.
+Independent final arithmetic/source/report audit passes; two reproduction wording corrections applied.
+Required full pytest is running at nice 19, managed session 15408 / Python 50906; do not duplicate.
+**Exact next:** await test exit; on success save checks/artifact hashes, secret-scan, commit/push results,
+open/attach a draft PR into integration, post final arm/cost interpretation with run directories on #41,
+update this section/live STATE and pause the Block F monitor. Do not rerun any scientific reading.
+No model promotion, merge, further paid run or follow-on arm is part of this handoff. Main checkout,
+existing data/runs, cap and ledger untouched; STOP remains present. Earlier notes below are history.
 
 **Block F read against [`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md): not yet (Claude, claim #41, 2026-10-16 22:05 UTC).**
 A.1 is met at the letter by one family, additive_response × the targets' promoter CpG (r0 e428/e666, r3 e412;
@@ -38,7 +146,7 @@ Stage2 exited0 at21:05:40UTC (38min wall from log creation); exact helperpool ex
 tested20, passing10rows, tier1-labelled4rows. All passing rawp=1/1320, pooledp=.05 exactly at
 permutation-resolution boundary. Independent arithmetic/non-null/hash audit passed. Tier1rows are
 two computational families: CpG×additive repeated3times with identical saved reports; numeric
-TSS-distance×additive once. TSS code ignores chromosome/strand/self-distance and does not use
+TSS-distance×additive once. TSS code ignores chromosome/strand, includes self-target distance 0 and does not use
 bidirectional mapping; do not claim a bidirectional-promoter mechanism or novel discovery.
 Allthree ce1b530 sealed readings exited0, JSON/MD in ownclone; tooldiscloses4oracle scorings/run
 outside run caps, one previously unscored start/run. No sealed outcome used for selection/change.
