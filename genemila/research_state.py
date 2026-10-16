@@ -170,6 +170,10 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
 
 SECTION_CHARS = 2500   # each section is truncated on its own, so a long one cannot push the others out
 TOTAL_CHARS = 20000
+# The knowledge section holds one line per knowledge file; with the genome, constraint and protein tables plus the
+# curated files it exceeds 2,500 characters, which would hide the later files from the planner (the workers get
+# lab.knowledge_summary() uncut, genemila/worker.py _task). Every other section keeps SECTION_CHARS.
+KNOWLEDGE_SECTION_CHARS = 8000
 
 
 def render_state(state: dict) -> str:
@@ -185,7 +189,8 @@ def render_state(state: dict) -> str:
             body = json.dumps(value, separators=(',', ':'))
         else:
             body = str(value)
-        if len(body) > SECTION_CHARS:
-            body = body[:SECTION_CHARS].rsplit("\n", 1)[0] + "\n- … (truncated)"
+        limit = KNOWLEDGE_SECTION_CHARS if key == "knowledge_available" else SECTION_CHARS
+        if len(body) > limit:
+            body = body[:limit].rsplit("\n", 1)[0] + "\n- … (truncated)"
         out.append(f"## {title}\n{body}")
     return "\n".join(out)[:TOTAL_CHARS]
