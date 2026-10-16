@@ -58,8 +58,45 @@ def test_retired_symbol_is_found_and_counted(tmp_path):
     assert kc.main(["--data", str(d), "--hgnc", str(hgnc), "--sources", str(s), "--out", str(out)]) == 0
     text = out.read_text()
     assert "**OLD1**" in text and "| OLD1 | NEW1 | 1 | 1 | 1 |" in text
-    assert json.loads(out.with_suffix(".json").read_text())["renames"] == {
-        "OLD1": {"NEW1": {"gene_sets": 1, "edges": 1, "ppi_partners": 1}}}
+    rep = json.loads(out.with_suffix(".json").read_text())
+    assert rep["renames"] == {"prev": {"OLD1": {"NEW1": {"gene_sets": 1, "edges": 1, "ppi_partners": 1}}},
+                              "alias": {}}
+    assert rep["approved_elsewhere"] == {}
+
+
+def test_approved_target_that_is_another_genes_alias_gets_no_rename(tmp_path):
+    """OLD1 is itself approved; NEW1 listing it as an alias must not turn NEW1's knowledge into a 'rename'."""
+    d, s = _bundle(tmp_path), _sources(tmp_path)
+    hgnc = tmp_path / "hgnc.txt"
+    hgnc.write_text("hgnc_id\tsymbol\tprev_symbol\talias_symbol\nHGNC:1\tNEW1\t\t\"OLD1\"\n"
+                    "HGNC:2\tA\t\t\nHGNC:3\tOLD1\t\t\n")
+    out = tmp_path / "cov.md"
+    assert kc.main(["--data", str(d), "--hgnc", str(hgnc), "--sources", str(s), "--out", str(out)]) == 0
+    rep = json.loads(out.with_suffix(".json").read_text())
+    assert rep["renames"] == {"prev": {}, "alias": {}}
+    assert rep["approved_elsewhere"] == {"OLD1": {"alias": ["NEW1"]}}
+    text = out.read_text()
+    assert "| OLD1 | approved symbol; alias of NEW1 |" in text and "| OLD1 | NEW1 |" not in text
+
+
+def test_previous_and_alias_symbols_are_reported_apart(tmp_path):
+    hgnc = tmp_path / "hgnc.txt"
+    hgnc.write_text("hgnc_id\tsymbol\tprev_symbol\talias_symbol\n"
+                    "HGNC:1\tP1\t\"R1|R3\"\t\nHGNC:2\tQ1\t\t\"L1|R3\"\nHGNC:3\tAPP\t\t\n")
+    h = kc.hgnc_current(hgnc)
+    assert h["approved"] == {"P1", "Q1", "APP"}
+    assert dict(h["prev"]) == {"R1": {"P1"}, "R3": {"P1"}} and dict(h["alias"]) == {"L1": {"Q1"}, "R3": {"Q1"}}
+    rows = [{"target": t, "unannotated": True} for t in ("R1", "L1", "R3", "APP", "NONE")]
+    rows.append({"target": "P1", "unannotated": False})
+    renames, approved = kc.hgnc_lookup(rows, h)
+    assert renames == {"prev": {"R1": {"P1": None}, "R3": {"P1": None}},
+                       "alias": {"L1": {"Q1": None}, "R3": {"Q1": None}}}
+    assert approved == {}
+    text = kc.render({"data": "x", "n_targets": 0, "n_genes": 0, "genes_without_set": 0, "has": {}, "screens": [],
+                      "rows": [], "renames": renames, "approved_elsewhere": approved})
+    prev_part, alias_part = text.split("## Unannotated targets that are only an HGNC alias")
+    assert "| R1 | P1 |" in prev_part and "| L1 | Q1 |" not in prev_part
+    assert "| L1 | Q1 |" in alias_part and "| R1 | P1 |" not in alias_part
 
 
 def test_runs_on_a_synthetic_bundle_and_refuses_a_bad_dir(dataset, tmp_path):

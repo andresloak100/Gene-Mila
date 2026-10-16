@@ -14,7 +14,10 @@ contain it, its interaction partners (ppi_network), its regulatory edges as sour
 whether each external screen file (a knowledge file with a "perts" dict) has a row for it. With --hgnc (HGNC's
 complete set, tab-separated, columns symbol, prev_symbol and alias_symbol) every target without gene sets, partners
 or edges is looked up among the previous and alias symbols, and with --sources (the raw files genemila.data.knowledge
-downloaded) the entries each current symbol would bring are counted with the loader's own parsers.
+downloaded) the entries each current symbol would bring are counted with the loader's own parsers. Previous symbols
+(retired, the naming problem above) and aliases are reported apart, because an alias is a weaker link: HGNC lets one
+alias stand for several genes. A target that is itself an approved symbol gets no rename even when another gene lists
+it as an alias: mapping it would borrow an unrelated gene's knowledge, so it is only labelled.
 
 Read only: the bundle's public.npz, its knowledge/ files and the optional HGNC and source files. Never private/ or
 splits.json. Free, a few seconds.
@@ -71,18 +74,44 @@ def coverage(data_dir: Path) -> dict:
             "has": {k: _load(kdir, k) is not None for k in ("gene_sets", "ppi_network", "prior_network")}}
 
 
-def hgnc_current(path: Path) -> dict[str, set[str]]:
-    """Retired or alias symbol -> current approved symbols, from HGNC's complete set (tab-separated)."""
-    current: dict[str, set[str]] = collections.defaultdict(set)
+def hgnc_current(path: Path) -> dict:
+    """From HGNC's complete set (tab-separated): the approved symbols, and previous (retired) and alias symbols, each
+    mapped to the approved symbols that list them. Kept apart so a caller can tell a retired symbol from an alias and
+    can see when a target is itself approved."""
+    out = {"approved": set(), "prev": collections.defaultdict(set), "alias": collections.defaultdict(set)}
     with open(path, newline="") as fh:
         for rec in csv.DictReader(fh, delimiter="\t"):
             symbol = (rec.get("symbol") or "").strip()
-            for col in ("prev_symbol", "alias_symbol"):
+            if not symbol:
+                continue
+            out["approved"].add(symbol)
+            for col, kind in (("prev_symbol", "prev"), ("alias_symbol", "alias")):
                 for old in (rec.get(col) or "").strip('"').split("|"):
                     old = old.strip().strip('"')
-                    if old and symbol and old != symbol:
-                        current[old].add(symbol)
-    return current
+                    if old and old != symbol:
+                        out[kind][old].add(symbol)
+    return out
+
+
+def hgnc_lookup(rows: list[dict], hgnc: dict) -> tuple[dict, dict]:
+    """Renames for unannotated targets that are not approved symbols, split into {"prev": .., "alias": ..} as
+    {target: {current symbol: None}}, and {target: {"prev"/"alias": [genes listing it]}} for unannotated targets that
+    are approved symbols yet appear among another gene's previous or alias symbols (labelled, never renamed)."""
+    renames: dict = {"prev": {}, "alias": {}}
+    approved_elsewhere: dict = {}
+    for r in rows:
+        t = r["target"]
+        if not r["unannotated"]:
+            continue
+        if t in hgnc["approved"]:
+            others = {kind: sorted(hgnc[kind][t]) for kind in ("prev", "alias") if hgnc[kind].get(t)}
+            if others:
+                approved_elsewhere[t] = others
+            continue
+        for kind in ("prev", "alias"):
+            if hgnc[kind].get(t):
+                renames[kind][t] = {new: None for new in sorted(hgnc[kind][t])}
+    return renames, approved_elsewhere
 
 
 def recoverable(sources: Path, names: set[str], universe: set[str]) -> dict[str, dict]:
@@ -113,18 +142,34 @@ def render(rep: dict) -> str:
                  *("row" if r["screens"][s] else "-" for s in rep["screens"])]
         lines.append("| " + " | ".join(map(str, cells)) + " |")
     if "renames" in rep:
-        lines += ["", "## Unannotated targets with a current HGNC symbol", "",
-                  "Retired or alias symbol, the current symbol(s) HGNC gives, and what the raw sources hold under the "
-                  "current symbol (blank without --sources). A bundle copy with the symbol mapped is its own arm, "
-                  "a data-hygiene fix and not a discovery.", "",
-                  "| target | current symbol | gene sets | regulatory edges | PPI partners |", "|---|---|---|---|---|"]
-        for t, news in sorted(rep["renames"].items()):
-            for new, got in sorted(news.items()):
-                got = got or {}
-                lines.append(f"| {t} | {new} | {got.get('gene_sets', '')} | {got.get('edges', '')} | "
-                             f"{got.get('ppi_partners', '')} |")
-        if not rep["renames"]:
-            lines.append("| (none) | | | | |")
+        intro = {"prev": ("## Unannotated targets under a retired HGNC symbol",
+                          "The target is a previous symbol of the current one(s) HGNC gives; the table shows what the raw "
+                          "sources hold under the current symbol (blank without --sources). A bundle copy with the "
+                          "symbol mapped is its own arm, a data-hygiene fix and not a discovery."),
+                 "alias": ("## Unannotated targets that are only an HGNC alias",
+                           "The target is not approved and not a previous symbol, only an alias of the gene(s) listed. "
+                           "An alias can name several unrelated genes, so check each mapping (Ensembl id) before "
+                           "using it.")}
+        for kind, (title, text) in intro.items():
+            lines += ["", title, "", text, "",
+                      "| target | current symbol | gene sets | regulatory edges | PPI partners |", "|---|---|---|---|---|"]
+            for t, news in sorted(rep["renames"][kind].items()):
+                for new, got in sorted(news.items()):
+                    got = got or {}
+                    lines.append(f"| {t} | {new} | {got.get('gene_sets', '')} | {got.get('edges', '')} | "
+                                 f"{got.get('ppi_partners', '')} |")
+            if not rep["renames"][kind]:
+                lines.append("| (none) | | | | |")
+        lines += ["", "## Unannotated targets that are approved HGNC symbols", "",
+                  "The target is a current symbol, so no rename is offered: the genes that list it as a previous or "
+                  "alias symbol are different genes, and their knowledge is not this target's.", "",
+                  "| target | label |", "|---|---|"]
+        for t, others in sorted(rep["approved_elsewhere"].items()):
+            label = "; ".join(f"{'previous symbol' if kind == 'prev' else 'alias'} of {', '.join(genes)}"
+                              for kind, genes in others.items())
+            lines.append(f"| {t} | approved symbol; {label} |")
+        if not rep["approved_elsewhere"]:
+            lines.append("| (none) | |")
     return "\n".join(lines) + "\n"
 
 
@@ -141,13 +186,13 @@ def main(argv=None) -> int:
         return 2
     rep = {"data": data.name, **coverage(data)}
     if args.hgnc:
-        current = hgnc_current(Path(args.hgnc))
-        renames = {r["target"]: {new: None for new in sorted(current.get(r["target"], ()))}
-                   for r in rep["rows"] if r["unannotated"] and current.get(r["target"])}
-        if args.sources and renames:
+        renames, rep["approved_elsewhere"] = hgnc_lookup(rep["rows"], hgnc_current(Path(args.hgnc)))
+        news = {n for by_kind in renames.values() for v in by_kind.values() for n in v}
+        if args.sources and news:
             universe = {str(g) for g in np.load(data / "public.npz", allow_pickle=False)["genes"]}
-            got = recoverable(Path(args.sources), {n for v in renames.values() for n in v}, universe)
-            renames = {t: {n: got[n] for n in v} for t, v in renames.items()}
+            got = recoverable(Path(args.sources), news, universe)
+            renames = {kind: {t: {n: got[n] for n in v} for t, v in by_kind.items()}
+                       for kind, by_kind in renames.items()}
         rep["renames"] = renames
     text = render(rep)
     if args.out:
