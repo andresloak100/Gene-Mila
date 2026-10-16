@@ -144,7 +144,11 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 - Never read `data/*/private/` or `data/*/splits.json`, and never use held-out (val2 or test)
   labels or sealed scores to choose features, models or hyperparameters. Only the lab's capped
   `QueryOracle` scores the sealed set, at the end of a run. Selecting on it would turn every
-  reported number into a test-set-tuned one.
+  reported number into a test-set-tuned one. The visible validation tier (`private/val1.npz`) is read by
+  the lab's own code and tools only (the controller scores on it; `tools/export_task_package.py` ships it
+  as the task package's harness tier, disclosed in the package), and agents and foreign systems never
+  read it directly, only through that harness (added 2026-10-17 by the lead under `docs/ROADMAP.md` D5;
+  Andres may veto the tier, ROADMAP section 7, item 3).
 - Compare runs only within the same bundle and split (`split_id` in `summary.json`). Warm starts
   (`--continue-from`) only on the same split.
 - A run whose planner changed part-way is its own arm in every table, never pooled with the

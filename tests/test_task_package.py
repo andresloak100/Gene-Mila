@@ -2,16 +2,19 @@
 a lab experiment receives and a byte-identical copy of the lab code it needs, its baseline equals the lab's own
 out-of-fold score, and its evaluate.py keeps a helpful feature, discards a useless one and rejects attempts that
 break the one-change rule, the literal caps or the guard before running them."""
+import importlib.util
 import json
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from genemila import frozen
-from genemila.data.bundle import export_public
+from genemila.benchmark.evaluator import evaluate
+from genemila.data.bundle import LabelSet, export_public
 from genemila.features.api import FeatureContext
 from genemila.pipeline import cross_validate
 from genemila.prompts import EXAMPLE_FEATURE, feature_api_doc
@@ -20,6 +23,10 @@ from test_norman_lab import make_pair_bundle
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import export_task_package as etp  # noqa: E402
+
+_spec = importlib.util.spec_from_file_location("tp_evaluate", ROOT / "tools" / "task_package" / "evaluate.py")
+tp_evaluate = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(tp_evaluate)  # its functions only; main() is never called here
 
 FEATURE = '''import numpy as np
 from genemila.features.api import Feature, register
@@ -117,6 +124,13 @@ def test_package_holds_the_public_export_only(dataset, tmp_path):
     assert record["manifest_sha256"] == etp.sha256(pkg / "MANIFEST.json") and record["split_id"] == m["split_id"]
     # a second export into the same, now non-empty, directory is refused
     assert etp.main(["--data", str(dataset), "--out", str(pkg)]) == 2
+    # the visible tier (the default) is the one extra file; without it the package is as before
+    assert files.count("harness/val1.npz") == 1
+    assert m["harness_val1"]["sha256"] == etp.sha256(pkg / "harness" / "val1.npz")
+    bare = _export(dataset, tmp_path / "bare", "--no-harness-val1")
+    bare_files = sorted(str(p.relative_to(bare)) for p in bare.rglob("*") if p.is_file())
+    assert bare_files == [f for f in files if f != "harness/val1.npz"]
+    assert json.loads((bare / "MANIFEST.json").read_text())["harness_val1"] is None
 
 
 def test_harness_is_the_lab_code_and_imports_on_its_own(dataset, tmp_path):
@@ -143,12 +157,13 @@ def test_harness_is_the_lab_code_and_imports_on_its_own(dataset, tmp_path):
 @pytest.mark.parametrize("bundle", ["single", "pairs"])
 def test_baseline_equals_the_labs_cross_validation(bundle, dataset, pair_bundle, tmp_path):
     data = dataset if bundle == "single" else pair_bundle
-    pkg = _export(data, tmp_path / "pkg")
+    pkg = _export(data, tmp_path / "pkg", "--no-harness-val1")
     m = json.loads((pkg / "MANIFEST.json").read_text())
     if bundle == "pairs":
         assert m["groups"] == "gene" and m["parent_features"][-1] == "additive_response"
     code, out, log = _evaluate(pkg)
     assert code == 0 and out["status"] == "baseline" and out["decision"] == "keep" and out["harness_ok"] == "true", log
+    assert out["deciding"] == "oof" and "val1_pearson_delta" not in out and "combined_pearson_delta" not in out
     assert abs(float(out["oof_pearson_delta"]) - _lab_oof(data, m["parent_features"], m)) < 1e-6
     assert (pkg / "runs" / "kept" / "scores.json").exists()
     assert (pkg / "results.tsv").read_text().splitlines()[0].split("\t") == \
@@ -215,6 +230,94 @@ def test_keep_discard_and_rejections(dataset, tmp_path):
                                     "discard"]
     assert rows[1][6] == HELPFUL[1] and rows[7][6] == "delete: " + HELPFUL[1]
     assert len((pkg / "runs" / "evals.jsonl").read_text().splitlines()) == 8
+
+
+def _lab_combined(public: Path, manifest: dict, tmp: Path) -> float:
+    """What the lab's controller selects on (genemila/lab.py evaluate_artifact and _combine_visible), computed
+    from the lab's own experiment output (pipeline.run: predictions.npz for the held-out perturbations and cv.npz):
+    per fold seed, the alpha with the best mean pearson_delta over the visible validation and the out-of-fold
+    training perturbations together; averaged over the seeds."""
+    from genemila.pipeline import run
+    val1 = LabelSet.load(public / "private" / "val1.npz")  # the synthetic fixture's own file
+    ctx = FeatureContext(public)
+    truth = np.load(public / "public.npz")["train_means"].astype(np.float64)
+    n1, nt = len(val1.perts), len(ctx.train_perts)
+    (tmp / "plugins").mkdir(parents=True, exist_ok=True)
+    best = []
+    for s in manifest["fold_seeds"]:
+        spec = {"feature_set": manifest["parent_features"], "model_type": "ridge", "seed": 0,
+                "hyperparameters": {"alpha_grid": manifest["alphas"], "cv_folds": manifest["k"], "cv_seed": s,
+                                    "cv_groups": manifest["groups"]}}
+        run(spec, public, tmp / "plugins", tmp / f"exp{s}")
+        z, c = np.load(tmp / f"exp{s}" / "predictions.npz"), np.load(tmp / f"exp{s}" / "cv.npz")
+        rows = [[str(p) for p in z["perts"]].index(p) for p in val1.perts]
+        combined = []
+        for j in range(len(manifest["alphas"])):
+            v = evaluate(z["delta"][j][rows].astype(np.float64) + ctx.control_mean, val1.means, ctx.control_mean,
+                         val1.perts)["metrics"]["pearson_delta"]
+            o = evaluate(c["delta"][j].astype(np.float64) + ctx.control_mean, truth, ctx.control_mean,
+                         ctx.train_perts)["metrics"]["pearson_delta"]
+            combined.append((n1 * v + nt * o) / (n1 + nt))
+        best.append(max(combined))
+    return float(np.mean(best))
+
+
+def test_harness_tier_is_the_visible_validation_and_the_lab_rule_decides(dataset, tmp_path):
+    """The default package ships the visible validation tier under harness/ (the labels the lab's controller
+    scores on, from the bundle's private/val1.npz and nothing else), evaluate.py reports it beside the out-of-fold
+    score, and its deciding score is what the lab's own selection computes from the lab's own experiment output."""
+    pkg = _export(dataset, tmp_path / "pkg")
+    m = json.loads((pkg / "MANIFEST.json").read_text())
+    tier = np.load(pkg / "harness" / "val1.npz", allow_pickle=False)
+    val1 = LabelSet.load(dataset / "private" / "val1.npz")
+    assert [str(p) for p in tier["perts"]] == val1.perts and np.array_equal(tier["means"], val1.means)
+    assert m["harness_val1"]["n_perts"] == len(val1.perts) == m["harness_val1"]["n_perts"]
+    assert "harness/val1.npz" in m["sha256"] and m["harness_val1"]["rule"].startswith("combined:")
+    assert "Lab._combine_visible" in m["harness_val1"]["rule"]
+    assert not any("val2" in str(p) or "splits" in str(p) for p in pkg.rglob("*"))
+    code, out, log = _evaluate(pkg)
+    assert code == 0 and out["status"] == "baseline" and out["deciding"] == "combined", log
+    v, o, c = (float(out[k]) for k in ("val1_pearson_delta", "oof_pearson_delta", "combined_pearson_delta"))
+    n1, nt = len(val1.perts), len(FeatureContext(dataset).train_perts)
+    assert abs(c - (n1 * v + nt * o) / (n1 + nt)) < 1e-9 and out["wins"].endswith(f"/{n1 + nt}")
+    assert abs(c - _lab_combined(dataset, m, tmp_path / "lab")) < 1e-6
+    # a helpful feature: kept on the combined set, with both parts reported
+    _write(pkg, *HELPFUL)
+    code, out, log = _evaluate(pkg)
+    assert code == 0 and out["status"] == "keep" and out["deciding"] == "combined", log
+    assert abs(float(out["parent"]) - c) < 1e-9 and float(out["gain"]) > 0
+    assert abs(float(out["gain"]) - (n1 * float(out["val1_gain"]) + nt * float(out["oof_gain"])) / (n1 + nt)) < 2e-6
+    kept = json.loads((pkg / "runs" / "kept" / "scores.json").read_text())
+    assert set(kept["val1_per_seed"]) == {"0", "1", "2"} and "combined_pearson_delta" in kept
+    # a file whose source names the tier is rejected before it runs
+    _write(pkg, "ar_peek", "reads harness/val1.npz", "        import numpy  # harness/val1.npz\n" + PER_GENE)
+    code, out, log = _evaluate(pkg)
+    assert code == 1 and out["status"] == "rejected" and "visible validation tier" in out["problem"], log
+
+
+def test_keep_rule_matches_the_lab_on_a_hand_made_case():
+    """evaluate.py's combined score is Lab._combine_visible's primary, and its keep rule on the combined vector
+    keeps a case the out-of-fold vector alone would discard."""
+    from genemila.lab import Lab
+    fake = SimpleNamespace(_val1=SimpleNamespace(perts=list("abcdef")), selection="pearson_delta", cv_folds=5,
+                           _train=SimpleNamespace(perts=list("ghijklmnopqrstuvwx")))
+    metrics, cv_metrics = {"pearson_delta": 0.64}, {"pearson_delta": 0.61}
+    Lab._combine_visible(fake, metrics, cv_metrics)
+    assert abs(tp_evaluate.combined_primary(0.64, 0.61, 6, 18) - metrics["primary"]) < 1e-12
+    assert metrics["n_visible"] == 24
+    rng = np.random.default_rng(0)
+    old = rng.normal(0.6, 0.05, size=(3, 24))
+    cur = old.copy()
+    cur[:, :6] += 0.03   # the six validation perturbations gain clearly
+    cur[:, 6:] += 0.001  # the eighteen out-of-fold ones barely move
+    genes_of = [{p} for p in "abcdefghijklmnopqrstuvwx"]
+    oof = tp_evaluate.keep_decision("noise", "added", cur[:, 6:], old[:, 6:], genes_of[6:])
+    both = tp_evaluate.keep_decision("noise", "added", cur, old, genes_of)
+    assert not oof["keep"] and abs(oof["gain"] - 0.001) < 1e-12  # under the 0.002 floor
+    assert both["keep"] and abs(both["gain"] - (6 * 0.03 + 18 * 0.001) / 24) < 1e-12
+    assert both["wins"] == 24 and both["seeds_positive"] == 3 and both["gain"] > 2 * both["gain_se"]
+    assert tp_evaluate.keep_decision("strict", "added", cur, old, genes_of)["keep"]
+    assert tp_evaluate.keep_decision("noise", "deleted", old, cur, genes_of)["keep"] is False
 
 
 def test_smoke_limit_and_changed_harness_are_reported(dataset, tmp_path):
