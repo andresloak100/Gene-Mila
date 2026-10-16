@@ -111,5 +111,6 @@ something different.
 
 ## Hand back
 
-When you are stopped, everything is in the package directory: `features/` (the kept model), `runs/` (the kept
-state, every attempt and every evaluation), `results.tsv`, and your transcript. Nothing else is needed.
+When you are stopped, everything is in the package directory: `runs/kept/features/` (the kept model; `features/`
+may still hold a change that was never evaluated), `runs/` (the kept state, every attempt and every evaluation),
+`results.tsv`, and your transcript. Nothing else is needed.

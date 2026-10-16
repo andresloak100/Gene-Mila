@@ -270,3 +270,20 @@ def test_feature_readme_carries_the_lab_api_text(dataset, pair_bundle, tmp_path)
     assert feature_api_doc(True) in pairs and feature_api_doc(True) != feature_api_doc(False)
     data_readme = (tmp_path / "b" / "data" / "README.md").read_text()
     assert "pairs of two genes" in data_readme and "- targets: dict of" in data_readme
+
+
+def test_a_kept_package_feature_is_scored_by_feature_compare(dataset, tmp_path):
+    """The round trip the comparison protocol relies on: a feature an agent keeps in the package goes, unchanged, to
+    tools/feature_compare.py as a source and comes back as an ok row with the same name."""
+    pkg = _export(dataset, tmp_path / "pkg")
+    assert _evaluate(pkg)[1]["status"] == "baseline"
+    _write(pkg, *HELPFUL)
+    assert _evaluate(pkg)[1]["status"] == "keep"
+    out = tmp_path / "fc"
+    proc = subprocess.run([sys.executable, str(ROOT / "tools" / "feature_compare.py"), "--data", str(dataset),
+                           "--out", str(out), "--source", f"ar={pkg / 'runs' / 'kept' / 'features'}",
+                           "--fold-seeds", "101,102", "--null-reps", "19"], capture_output=True, text=True, timeout=600)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    rows = json.loads((out / "feature_compare.json").read_text())["rows"]
+    mine = [r for r in rows if r.get("source") == "ar" and r.get("feature") == "ar_target_corr"]
+    assert mine and all(r["status"] == "ok" for r in mine)
