@@ -40,7 +40,8 @@ def _graph(ctx: FeatureContext) -> np.ndarray:
 class CfGrnPropagation(Feature):
     name = "cf_grn_propagation"
     description = ("Signed influence of p's targets on g after up to `steps` hops along regulator->target edges "
-                   "(CollecTRI), damped per hop. Translated by us from CellForge's totalGAT network propagation.")
+                   "(CollecTRI; unsigned PPI edges when the bundle has no prior_network), damped per hop. "
+                   "Translated by us from CellForge's totalGAT network propagation.")
     rationale = ("A perturbed regulator changes its direct targets first, then theirs; propagating along the known "
                  "network reaches genes no training perturbation has touched.")
     inputs = ["targets", "prior_network", "ppi_network"]

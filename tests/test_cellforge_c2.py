@@ -2,7 +2,8 @@
 docs/FEATURE_COMPARISON_PROTOCOL.md). Every file passes the plugin guard and the literal caps, smoke-tests on the
 synthetic single-target bundle and on a pair bundle, and the directory scores as a --source of
 tools/feature_compare.py. The pair-interaction term is zero on a bundle without pairs by construction, so there the
-tool rejects it as constant; on the pair bundle every row is ok."""
+tool rejects it as constant; on the pair bundle every row is ok, but under the gene-grouped folds the tool uses there
+the term is zero on every predicted row (a predicted pair always has a single hidden), which the last test records."""
 
 import json
 import subprocess
@@ -73,10 +74,10 @@ def test_smoke_on_both_bundles(feature, which, dataset, pair_bundle, tmp_path):
 
 
 def _rows(bundle, out):
-    assert fc.main(["--data", str(bundle), "--out", str(out), "--source", f"cf_c2={PLUGINS}",
+    assert fc.main(["--data", str(bundle), "--out", str(out), "--source", f"A5_C2={PLUGINS}",
                     "--fold-seeds", "101,102", "--null-reps", "9"]) == 0
     res = json.loads((out / "feature_compare.json").read_text())
-    return res, {r["feature"]: r for r in res["rows"] if r["source"] == "cf_c2"}
+    return res, {r["feature"]: r for r in res["rows"] if r["source"] == "A5_C2"}
 
 
 def test_feature_compare_on_the_pair_bundle_scores_every_row(pair_bundle, tmp_path):
@@ -94,3 +95,16 @@ def test_feature_compare_on_the_single_bundle_rejects_only_the_pair_term(dataset
                                                          "cf_pair_interaction": "smoke"}
     assert "constant" in rows["cf_pair_interaction"]["reason"]
     assert rows["(set)"]["features"] == [f for f in FILES if f not in PAIR_ONLY]
+
+
+def test_pair_term_is_zero_on_every_gene_grouped_predicted_row(pair_bundle):
+    """What the README says of the OOF tier: cv_folds_of hides a single of every predicted pair, so the interaction
+    term is zero on the predicted rows of every fold while the view's training rows and the full-context eval rows
+    (seen-2 pairs, both singles in training) carry it."""
+    res = fc.compute_blocks(pair_bundle, PLUGINS, ["cf_pair_interaction"], {}, [101, 102], 5, "gene", True)
+    assert not res["errors"]
+    assert (np.abs(res["eval"]["cf_pair_interaction"]).max(axis=(1, 2)) > 0).any()  # the seen-2 held-out pairs
+    for folds in res["folds"].values():
+        for fd in folds:
+            b, n = fd["blocks"]["cf_pair_interaction"], len(fd["rows"]) - len(fd["predict"])
+            assert np.abs(b[:n]).max() > 0 and np.abs(b[n:]).max() == 0

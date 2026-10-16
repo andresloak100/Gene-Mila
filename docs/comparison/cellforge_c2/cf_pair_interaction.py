@@ -1,8 +1,8 @@
 """CellForge idea: scGen-X for Norman, "latent arithmetic over gene pairs with a non-additive interaction term":
 "scGen-X keeps the latent-arithmetic backbone and adds an explicit interaction term for gene pairs, so the model can
 represent synergy and antagonism rather than being forced into additivity" (gersteinlab/CellForge @6585ff9,
-docs/MODELS.md:18, :54-56); the template's "interaction": "element_wise_multiplication" (Method_Design/
-graph_discussion.py:875).
+docs/MODELS.md:18, :54-56; the template's element_wise_multiplication at graph_discussion.py:872-879 is a cell-type
+proposal, not this term, so it is not cited).
 
 Our translation to a feature of a linear model (the implementation is ours, not CellForge's code): the additive
 part is already the lab's additive_response, so this file carries only the interaction. For a perturbation of
@@ -10,7 +10,10 @@ several genes whose single-gene changes are all in training (leaving p out), two
 the singles' changes (synergy or antagonism scales with both) and the sign-aware minimum (the weaker single bounds
 the pair: buffering; zero where the singles disagree in sign). A single-gene perturbation, or a pair with a gene
 never perturbed alone in training, has no interaction and both columns are zero, so on a bundle without pairs the
-feature is constant and the comparison tool rejects it as such.
+feature is constant and the comparison tool rejects it as such. Under gene-grouped folds (pipeline.cv_folds_of, what
+feature_compare uses on a bundle with pairs) a predicted pair always has a single hidden from the view, so the term is
+zero on every out-of-fold predicted row by construction: that tier cannot measure it. Only a tier whose pairs have
+both singles in the full training set can (val1's seen-2 pairs with --with-val1; the sealed split).
 """
 from __future__ import annotations
 

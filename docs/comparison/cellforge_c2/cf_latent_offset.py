@@ -1,7 +1,8 @@
 """CellForge idea: CPA-X, a "disentangled perturbation embedding" in a latent space "explicitly factorised:
 perturbation effect on one axis" where a perturbation is an additive offset (gersteinlab/CellForge @6585ff9,
-docs/MODELS.md:17, :31-40); the plan template's perturbation embedding of dimension 128 (Method_Design/
-graph_discussion.py:874) and a gene embedding built from "gene ontology, pathway information" (refinement.py:1022).
+docs/MODELS.md:17, :31-40) and a gene embedding built from "gene ontology, pathway information"
+(Method_Design/refinement.py:1022). (The template's embedding_dimension 128 at graph_discussion.py:872-879 belongs to
+a cell-type proposal, so it is not cited.)
 
 Our translation to a feature of a linear model (the implementation is ours, not CellForge's code): the latent space
 is the top `rank` right-singular vectors of the training change profiles (leaving p out); each training
