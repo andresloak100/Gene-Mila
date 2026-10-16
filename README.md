@@ -15,12 +15,13 @@ over its start; averaging three models gives a small secondary gain. Features, c
 inspectable. Linear baselines provide the scientific reference
 ([Ahlmann-Eltze, Huber and Anders, *Nature Methods*, 2025](https://www.nature.com/articles/s41592-025-02772-6)).
 
-**Current status — 16 October 2026.** The next question is whether the agents can find a *new kind* of
-biological feature, not another variant of response transfer. The evidence so far says the limit is the
-information the agents can read, not the search, so the lab now has a policy for which new data sources are
-allowed, a first sequence-derived source, and tools that score any system's features against one fixed
-linear model with a matched null: see [Can the agents find new biology?](#can-the-agents-find-new-biology)
-below. Nothing in that section has run on real perturbation data yet.
+**Current status — 16 October 2026.** The next question is whether the agents can find a *new kind*
+of biological feature, not another variant of response transfer. The evidence so far says the limit
+is the information the agents can read, not the search. The lab now has a proposed rule for which new
+data sources are allowed, a first source derived from the genome sequence, tools that score any
+system's features on one fixed linear model against a matched null, and a paid test on Norman
+(block F), fixed in advance, that Andres has allowed: see [Can the agents find new biology?](#can-the-agents-find-new-biology)
+below. None of it has run on real perturbation data yet.
 
 **13 October 2026.** B1 remains the delivered Norman ensemble by the fixed
 visible-validation rule. B1/B2 are complete; both real-data held-out sets have been used repeatedly.
@@ -512,53 +513,6 @@ with both:
    has drug features the VCWorld comparison uses its DE and direction metrics on Adamson and
    Norman, not its data.
 
-### Can the agents find new biology?
-
-On 15 October Andres set the goal: a feature the agents discover that a linear model did not have before and that
-a wet lab could test. If they find one, the work is a biology paper; if they only make the model better, it is a
-machine-learning paper comparing systems. What it takes is written down in
-[`docs/NOVEL_FEATURE_NEEDS.md`](docs/NOVEL_FEATURE_NEEDS.md); the short version:
-
-- **Information, not search, is the limit.** Every winning model so far copies the responses of related knockdowns
-  ([`docs/NEXT_LEVER.md`](docs/NEXT_LEVER.md)). The one measured lever was another screen of the same cell line
-  (Replogle 2022 K562, about +0.07 in a free leave-one-out); features built on gene annotations added at most about
-  +0.01. The agents can only discover what their knowledge files let them compute.
-- **Which data may be added.** Proposed rule, awaiting Andres's confirmation: a source is allowed if it was
-  measured or derived without perturbing genes and holds none of the responses being predicted. Tier 1 (genome and
-  protein sequence, curated complexes, population constraint, unperturbed K562 chromatin and binding maps) is
-  allowed; tier 2 (MitoCarta, mRNA half-lives, recruitment screens) only as separately labelled arms; perturbation
-  screens and expression atlases stay out of the main claim (section 7 of the needs document).
-- **A first tier-1 source.** `tools/build_gene_annotation.py` turns GENCODE and the hg38 sequence into a per-gene
-  knowledge file: loci, shared promoters, neighbours, message lengths, promoter CpG content and amino-acid
-  composition. Built for Norman's 2,083 genes it matched 2,041. The 42 others are retired gene symbols (SEPP1,
-  KIAA0101, TCEB1 …), and 96 measured genes share a promoter with another measured gene, which a CRISPRa or CRISPRi
-  guide at one of them can reach. `tools/knowledge_coverage.py` checks, per target, whether retired symbols also hide
-  gene sets and interactions (Adamson names SRPR, MARS and ATP5B by their old symbols).
-- **A fair test of a feature.** Until now a feature counted as helpful after a +0.002 visible gain, below the noise.
-  `tools/feature_compare.py` scores any system's feature files on one fixed ridge model: a row for the system's
-  whole set and one per feature, every evaluator metric, a paired gain with an overlap-robust standard error, and a
-  matched null (the feature's values shuffled between genes of similar expression) with Holm correction per system.
-- **Other systems on the same task.** `tools/export_task_package.py` writes an autoresearch-style folder
-  ([karpathy/autoresearch](https://github.com/karpathy/autoresearch)): the public data a lab experiment receives, a
-  fixed out-of-fold evaluator with an automatic keep-or-discard rule and literal caps against pasted label tables, and
-  one editable `features/` directory. A coding agent (Claude Code or Codex), Biomni or CellForge's agents can each
-  work on it and hand back feature files. [`docs/FEATURE_COMPARISON_PROTOCOL.md`](docs/FEATURE_COMPARISON_PROTOCOL.md)
-  sets out the arms (ours, a one-worker loop, autoresearch, Biomni, CellForge, STATE), the fairness controls and the
-  metrics table.
-- **The first paid test is fixed before any run.** [`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md)
-  repeats the B2 Norman runs with one change, the genome annotation file, and no hypothesis list, so anything the
-  agents build from it is theirs. Andres gave permission on 16 October; it runs on the Mac, capped at $8 on the ledger.
-- **Genes and cost.** The bundles already keep about 2,000 genes. The LLM bill does not grow with genes (agents write
-  code, they never read the matrix); CPU and memory do. A feature found on 2,000 genes is code, so it can be rescored
-  on all expressed genes without any LLM call, and the number of perturbations, not genes, is what tightens the
-  estimate.
-
-```bash
-python tools/build_gene_annotation.py --gtf gencode.v27.primary_assembly.annotation.gtf \
-    --fasta Homo_sapiens_assembly38.fasta --genes-from data/norman --out gene_annotation.json
-python tools/feature_compare.py --data data/norman --out fc_norman --source ar=<package>/runs/kept/features
-```
-
 Drug perturbations (Srivatsan in CellForge's set, and all of VCWorld's GeneTAK) wait on drug
 metadata: every feature today assumes a gene target, and the ingestor drops labels that name no
 measured gene.
@@ -568,6 +522,77 @@ measured gene.
 | Agents produce | a trained perturbation-response model | differential-expression and direction-of-change predictions | features for a ridge, lasso, elastic net or OLS model |
 | Data | six datasets spanning gene knockouts, drug treatments and cytokine stimulations (scRNA-seq, scATAC-seq, CITE-seq), including Adamson, Norman and Srivatsan | GeneTAK: 348 drugs in five Tahoe-100M cell lines (C32, HepG2C3A, HOP62, Hs 766T, PANC-1) | Adamson and Norman from CellForge's set; synthetic screens to check the machinery |
 | Scored by | MSE, PCC and R² on mean expression, all genes and top-20 DE genes | DE and direction classification: accuracy, precision, recall, F1, AUROC, AUPRC | `pearson_delta` for the search; both of theirs on every experiment; cell-eval for finalists |
+
+### Can the agents find new biology?
+
+On 15 October Andres asked for one biological feature that the current linear model lacks, found
+by the agents without being told where to look. If one holds up, the work becomes a biology paper;
+if the agents only raise the score, it is a machine-learning paper comparing systems. Holding up
+means naming the biology, replicating on another cohort and passing a wet-lab test.
+[`docs/NOVEL_FEATURE_NEEDS.md`](docs/NOVEL_FEATURE_NEEDS.md) sets out what that takes; in short:
+
+- **The limit is information, not search.** Every winning model so far copies the measured
+  responses of knockdowns whose targets resemble the new one ([`docs/NEXT_LEVER.md`](docs/NEXT_LEVER.md)).
+  In leave-one-out over Adamson's 50 training perturbations, only another K562 perturbation screen
+  added clearly (Replogle 2022, +0.072 ± 0.020 paired SE over gene-set neighbours); a learned mix
+  of the bundle's own gene sets, interactions and co-expression added +0.010, inside the noise.
+- **Which data may be added.** Proposed rule, awaiting Andres's confirmation: a source is allowed if
+  it was measured or derived without perturbing genes and holds none of the responses being
+  predicted. Under it, tier 1 (genome and protein sequence, curated complexes, population
+  constraint, unperturbed K562 chromatin and binding maps) is allowed; tier 2 (MitoCarta, mRNA half-lives,
+  recruitment screens) only as separately labelled arms; perturbation screens, Replogle included,
+  and expression atlases stay out of the main claim (section 7 of the needs document).
+- **A first tier-1 source.** `tools/build_gene_annotation.py` turns GENCODE and the hg38 sequence
+  into a per-gene knowledge file: locus, shared promoters, neighbours, message lengths, promoter CpG
+  content and amino-acid composition. For Norman's 2,083 genes it matched 2,041; the other 42 are
+  retired symbols (SEPP1, KIAA0101, TCEB1, …). Of the measured genes, 96 share a promoter with
+  another (opposite strand, within 1 kb), so a CRISPRa or CRISPRi guide at one can also reach the
+  other. That is known biology: if the agents find it, it is a methods result, not a new rule.
+  Adamson names some targets by retired symbols too (SRPR, MARS, ATP5B), so they may get no gene
+  sets or interactions from the knowledge files; `tools/knowledge_coverage.py` counts this per
+  target once it runs on the Mac's data.
+- **A stricter test of a feature.** The planner still calls a feature helpful after a +0.002
+  visible gain, which does not separate signal from noise (drop-one standard errors in the
+  [feature audit](docs/results/feature_audit_v3.md) reach 0.0104). `tools/feature_compare.py` refits
+  one fixed ridge model, the lab's starting model plus either a system's whole feature set or one of
+  its features, out of fold on the training perturbations. It reports pearson_delta, MSE and four
+  metrics on each perturbation's 20 most-changed genes, a paired gain whose standard error allows
+  for shared target genes, and a matched null (the feature's values shuffled between genes of
+  similar control expression), Holm-corrected within each system. Every system has seen these
+  training labels, so a verdict only screens candidates; a claim needs the fresh test, whose
+  separate evaluator does not exist yet.
+- **Other systems on the same task.** `tools/export_task_package.py` writes the task as a folder in
+  the style of [karpathy/autoresearch](https://github.com/karpathy/autoresearch): the public data
+  every lab experiment receives, a fixed evaluator that keeps or discards each change by an
+  out-of-fold noise rule, caps on the constants a file may hold (so training labels cannot simply
+  be pasted in), and one editable `features/` directory. It is built for a coding agent (Claude
+  Code or Codex) or Biomni to work in and hand back feature files.
+  [`docs/FEATURE_COMPARISON_PROTOCOL.md`](docs/FEATURE_COMPARISON_PROTOCOL.md) fixes the arms (the
+  lab with four workers and with one, a coding agent, Biomni, CellForge, STATE), the fairness
+  controls and the metrics table. No outside system has run yet; who pays, an isolating container
+  on the Mac and a GPU for CellForge and STATE are Andres's decisions.
+- **The first paid test is fixed before it runs.**
+  [`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md) (block F) repeats the
+  three B2 Norman runs with one change, the genome annotation file, and no list of hypotheses, so
+  whatever the agents build from it is theirs. The primary reading is `tools/feature_compare.py` on
+  every feature that reads the file; the comparison with B2 on Norman's sealed set is one more look
+  at a set already read many times. The needs document expects a table of this kind to add 0.01 or
+  less. Andres gave permission to run it on 16 October; the plan caps it at $8 on the ledger
+  (about $4 billed). It has not run.
+- **Genes and cost.** The bundles keep about 2,000 genes. The LLM bill does not grow with genes
+  (agents write code and never read the matrix); CPU time and memory do. A feature is code, so one
+  found on 2,000 genes can be rescored on all expressed genes without an LLM call. More
+  perturbations, not more genes, narrow the error bars.
+
+```bash
+# the genome annotation file for the Norman genes
+python tools/build_gene_annotation.py --gtf gencode.v27.primary_assembly.annotation.gtf \
+    --fasta Homo_sapiens_assembly38.fasta --genes-from data/norman --out gene_annotation.json
+# the task package for an outside system; once it has worked there, score the features it kept
+python tools/export_task_package.py --data data/norman --out pkg_norman
+python tools/feature_compare.py --data data/norman --out fc_norman \
+    --source ar=pkg_norman/runs/kept/features
+```
 
 ---
 
