@@ -272,3 +272,19 @@ confirmation of the +$8 cap is recorded in
 Account reading he gave at the same time (DeepSeek console, 16 October about 01:48 UTC): topped-up balance $28.19,
 granted credit $16.25 (DeepSeek's refund of 8 to 14 October usage after its outage), total cost $22.22 over the last
 30 days. His words: "we only have this, use it well". Block F's expected cost is about $4 billed.
+
+## Note, 2026-10-16 02:05 UTC: the chain must run in a detached session
+
+The operator's first start (`nohup caffeinate -i bash norman_f_chain.sh … &` from a tool shell) printed the chain's
+start line and died before `norman_f_run.sh` began: the launching shell's process group was cleaned up, and `nohup`
+ignores only the hangup signal. No run directory, run log or spend resulted; the chain had removed STOP and did not
+get to restore it. Decision: STOP is restored by hand, the dead chain's log is renamed `block_f_chain.log.stale-20261016T0157Z`,
+the cap record stays (its start reading is unchanged), and the same command is started inside a detached `screen`
+session from a login zsh, so no tool shell owns it:
+```bash
+cd ~/Documents/Mila/Gene-Mila/genemila_scale_logs
+screen -dmS blockf zsh -lc 'DEEPSEEK_API_KEY="$API_KEY" caffeinate -i bash norman_f_chain.sh > block_f_chain.log 2>&1'
+screen -ls; pgrep -fl norman_f_chain.sh; tail -3 block_f_chain.log
+```
+Before the retry the operator checks that no `norman_ga_*` run directory or run log exists; if one does, the block
+stops and the cause is written up here first. A second death before a run starts is reported, not retried.
