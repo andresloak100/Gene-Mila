@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F restart authorised, 2026-10-16 03:45 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
+the 03:13 refusal was a bug in a new pre-spend check (`sqlite3 -readonly` cannot open the lab's write-ahead
+`lab.db` without creating its `-shm` file), not a problem with B2's run directories; fixed in `0db8091`, which copies
+each database and its `-wal` to a temporary directory and queries the copy. No spend; the block was not stopped
+(`block_f_stopped.txt` is written only after a run). The operator restarts the chain from a clone at `0db8091` or
+later with the steps in [#41, comment 6207417201](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6207417201)
+(archive the old run script and the refusal log with dated suffixes, copy the new `norman_f_run.sh`, same detached
+`screen` command). [PR #43](https://github.com/andresloak100/Gene-Mila/pull/43) (`e082d0c`, second batch of #41:
+gnomAD constraint and UniProt builders, residual mining, CellForge-translated features; 537 tests) is merged on
+Andres's "keep everything updated". The constraint file cannot join block F's bundle (planner knowledge section cut,
+`docs/NOVEL_FEATURE_NEEDS.md` §10). Astra's hold entries below are history as of this fix.
+
 **Block F STOPPED before any run, 2026-10-16 03:13 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
 Andres authorized one detached-screen retry, with STOP restored, the prior startup log renamed
 unchanged to `block_f_chain.log.stale-20261016T0157Z`, and the existing cap kept; his full decision
