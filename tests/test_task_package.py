@@ -112,6 +112,9 @@ def test_package_holds_the_public_export_only(dataset, tmp_path):
     fixed = [f for f in files if f.startswith(("harness/", "data/")) or f in ("evaluate.py", "literal.py")]
     assert set(fixed) <= set(m["sha256"])
     assert all(etp.sha256(pkg / rel) == h for rel, h in m["sha256"].items())
+    # the record outside the package vouches for MANIFEST.json, which nothing inside it can
+    record = json.loads((tmp_path / "pkg.export.json").read_text())
+    assert record["manifest_sha256"] == etp.sha256(pkg / "MANIFEST.json") and record["split_id"] == m["split_id"]
     # a second export into the same, now non-empty, directory is refused
     assert etp.main(["--data", str(dataset), "--out", str(pkg)]) == 2
 
@@ -170,6 +173,8 @@ def test_keep_discard_and_rejections(dataset, tmp_path):
     assert code == 0 and out["status"] == "discard" and out["decision"] == "discard", log
     assert sorted(p.name for p in (pkg / "features").glob("*.py")) == ["ar_target_corr.py"]
     assert (pkg / "runs" / "attempts" / "3_ar_noise.py").exists()
+    cached = {p.name.split("__")[0] for p in (pkg / "runs" / "cache").glob("*__*")}
+    assert "ar_target_corr" in cached and "ar_noise" not in cached  # a discarded attempt's blocks are dropped
 
     # two files at once: rejected, both removed
     _write(pkg, *NOISE)
@@ -214,15 +219,48 @@ def test_keep_discard_and_rejections(dataset, tmp_path):
 
 def test_smoke_limit_and_changed_harness_are_reported(dataset, tmp_path):
     pkg = _export(dataset, tmp_path / "pkg")
+    spec = pkg / "harness" / "genemila" / "spec.py"
+    spec.write_text(spec.read_text() + "\n")
+    (pkg / "harness" / "sitecustomize.py").write_text("")  # unlisted, and imported by every harness process
+    code, out, log = _evaluate(pkg)
+    assert out["harness_ok"] == "false" and out["harness_changed"].split("\n") == \
+        ["harness/genemila/spec.py", "harness/sitecustomize.py"], log
     m = json.loads((pkg / "MANIFEST.json").read_text())
     m["eval_timeout_s"] = 9  # the smoke test gets a third of it
     (pkg / "MANIFEST.json").write_text(json.dumps(m))
-    (pkg / "harness" / "genemila" / "spec.py").write_text((pkg / "harness" / "genemila" / "spec.py").read_text() + "\n")
-    assert _evaluate(pkg)[1]["harness_ok"] == "false"
     _write(pkg, "ar_spin", "never returns", "        while True:\n            pass")
     code, out, log = _evaluate(pkg)
     assert code == 1 and out["status"] == "rejected" and "smoke" in out["problem"], log
+    assert "MANIFEST.json" in out["harness_changed"]  # it no longer matches the export record
     assert not (pkg / "features" / "ar_spin.py").exists()
+    rows = [json.loads(r) for r in (pkg / "runs" / "evals.jsonl").read_text().splitlines()]
+    assert [r["manifest_sha256"] == etp.sha256(pkg / "MANIFEST.json") for r in rows] == [False, True]
+
+
+def test_feature_dependencies_must_be_listed(dataset, tmp_path):
+    """The feature cache keys a block by the source of the features in `dependencies` only, so a ctx.feature call
+    must name a listed feature; otherwise deleting or changing the feature it uses would be scored from stale
+    blocks and could leave a kept state that no longer computes."""
+    pkg = _export(dataset, tmp_path / "pkg", "--keep-rule", "strict")
+    assert _evaluate(pkg)[1]["status"] == "baseline"
+    _write(pkg, *HELPFUL)
+    assert _evaluate(pkg)[1]["status"] == "keep"
+    square = '        a = ctx.feature("ar_target_corr", perts)\n        return a + 0.5 * a ** 2'
+    _write(pkg, "ar_square", "square of the target correlation", square)
+    code, out, log = _evaluate(pkg)
+    assert out["status"] == "rejected" and "lists in dependencies" in out["problem"], log
+    path = _write(pkg, "ar_square", "square of the target correlation", square)
+    path.write_text(path.read_text().replace("    def compute", '    dependencies = ["ar_target_corr"]\n\n    def compute'))
+    code, out, log = _evaluate(pkg)
+    assert out["status"] == "keep", log  # strict: a positive gain under the first fold seed
+    (pkg / "features" / "ar_target_corr.py").unlink()  # ar_square lists it
+    code, out, log = _evaluate(pkg)
+    assert out["status"] == "rejected" and "ar_target_corr in dependencies, which is not a feature here" in \
+        out["problem"] and (pkg / "features" / "ar_target_corr.py").exists(), log
+    path = _write(pkg, "ar_cube", "cube", '        return ctx.feature("ar_square", perts) ** 3')
+    path.write_text(path.read_text().replace("    def compute", '    dependencies = ["ar_square"]\n\n    def compute'))
+    code, out, log = _evaluate(pkg)
+    assert out["status"] == "rejected" and "list ar_target_corr in dependencies too" in out["problem"], log
 
 
 def test_feature_readme_carries_the_lab_api_text(dataset, pair_bundle, tmp_path):

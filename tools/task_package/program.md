@@ -24,18 +24,23 @@ predicted out of fold (by a model and features that never saw its labels).
 
 - Add, modify or delete exactly one `features/*.py` per run. A file holds one feature: one class registered with
   `@register` whose `name` equals the file stem and starts with the prefix in `MANIFEST.json` (for example
-  `ar_target_coexpression`). Kept features stay in the model; a later feature may build on them.
+  `ar_target_coexpression`). Kept features stay in the model; a later feature may build on them with
+  `ctx.feature("name", perts)`, as long as it lists `name` in `dependencies` (and what `name` lists in turn).
+  A call with any other name is rejected, and so is deleting a feature that another one lists.
 - Write any analysis code and notes in `scratch/`, and read anything inside this package to do it.
 
 ## What you CANNOT do
 
-- Modify `evaluate.py`, `literal.py`, `harness/`, `data/` or `MANIFEST.json`. Their hashes are checked
-  (`harness_ok:`), and the scores are recomputed outside the package.
+- Modify `evaluate.py`, `literal.py`, `harness/`, `data/` or `MANIFEST.json`, or add files there. `harness_ok:`
+  reports the changes it sees; the hand-back is checked against a record kept outside the package, and the scores
+  are recomputed there.
 - Install packages or add dependencies. Use what `requirements.txt` lists.
 - Use the network, or read files outside this package.
 - Put data tables in feature code: no pasted labels, gene lists or numbers computed elsewhere. `literal.py` caps
   the literals a file may hold, and a file over the caps is rejected. Features must compute from `ctx`.
 - Change more than one feature file per run. That run is rejected and `features/` is restored.
+- Run two evaluations at once in this package (the second is refused). An edit to `features/` made while an
+  evaluation runs is not part of it: the files are read once when it starts, and the edit is the next run's change.
 
 ## Output format
 
@@ -49,6 +54,7 @@ oof_pearson_delta: 0.612345
 parent: 0.610000
 gain: 0.002345
 gain_se: 0.003100
+gain_se_plain: 0.003100
 wins: 10/18
 seeds_positive: 2/3
 harness_ok: true
@@ -74,8 +80,9 @@ If there is no `oof_pearson_delta:` line, the attempt was rejected or crashed: `
 
 Under the "noise" rule (the default), an added or changed feature is kept only when its gain beats the
 run-to-run noise. It must exceed twice its standard error and 0.002, win on more than half the perturbations, and
-be positive under every fold seed. A deletion is kept when it costs less than one standard error, so simpler is
-kept when it is as good. Under the "strict" rule any positive mean gain is kept.
+be positive under every fold seed. `gain_se` is widened for perturbations that share a gene. A deletion is kept
+when it costs less than one plain standard error (`gain_se_plain`), so simpler is kept when it is as good. Under
+the "strict" rule any positive gain under the first fold seed is kept.
 
 ## Logging results
 

@@ -20,6 +20,9 @@ What the package holds, and why:
 - features/: empty except README.md, the worker prompt's own API text (genemila.prompts) and a short package note,
   so both arms learn the API from the same words. scratch/: empty, for the agent's own analysis.
 - requirements.txt: the installed numpy, scipy and scikit-learn versions, which the scores depend on.
+- <out>.export.json, beside the package and outside it: the sha256 of MANIFEST.json (which no file inside the package
+  can vouch for, since the agent can edit them all), with the bundle and split. evaluate.py compares MANIFEST.json
+  with it when it is there and records the hash in every row, and the hand-back is checked against it.
 
 The parent model is the lab's start (Lab.queue_model_baselines): ridge on the built-in features, plus
 additive_response on a bundle with pairs; the alpha grid is configs/default.toml's experiment.default_alpha_grid.
@@ -137,7 +140,9 @@ def features_readme(pairs: bool, prefix: str, parent: list[str]) -> str:
             f"- Allowed imports: {', '.join(sorted(ALLOWED_IMPORT_ROOTS))} and genemila.features.api. No file, "
             "network or OS access (harness/genemila/guard.py checks this before any file runs).\n"
             "- No data tables in feature code: literal.py caps the numbers, strings and names a file may hold.\n"
-            "- Another feature here can be used through `ctx.feature(name, perts)`; list it in `dependencies`.\n")
+            "- Another feature here can be used through `ctx.feature(\"name\", perts)`: list it in `dependencies`, "
+            "with what it lists in turn (evaluate.py rejects any other call, since the feature cache keys a block "
+            "by the features listed there).\n")
 
 
 def main(argv=None) -> int:
@@ -204,6 +209,10 @@ def main(argv=None) -> int:
         "sha256": {str(p.relative_to(out)): sha256(p) for p in fixed},
     }
     (out / "MANIFEST.json").write_text(json.dumps(package, indent=1) + "\n")
+    record = out.resolve().parent / f"{out.resolve().name}.export.json"
+    record.write_text(json.dumps({"package": str(out.resolve()), "bundle": package["bundle"],
+                                  "split_id": package["split_id"], "lab_commit": commit,
+                                  "manifest_sha256": sha256(out / "MANIFEST.json")}, indent=1) + "\n")
     print(f"task package for {package['bundle']} ({package['split_id']}) at {out}: parent {', '.join(parent)}; "
           f"groups {package['groups']}; keep rule {args.keep_rule}; {len(package['sha256'])} files hashed")
     return 0
