@@ -26,9 +26,18 @@ them, create STOP, retry, infer a fresh allowance or start any paid run without 
 BlockF operation/shared/live state; chat2's Claim40 remains separate. The current block is F, on hold.
 
 
-**Active, 2026-10-16 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), draft
-[PR #42](https://github.com/andresloak100/Gene-Mila/pull/42): framework to find and fairly test new biological
-features.** A Claude cloud session on `claude/youthful-dijkstra-459nhj` (final block F commit `986c4d6`), on Andres's
+**Merged, 2026-10-16 01:55 UTC, on Andres's words "start merging, I want everything to be updated":**
+[PR #42](https://github.com/andresloak100/Gene-Mila/pull/42) (`f2ff718`), [PR #39](https://github.com/andresloak100/Gene-Mila/pull/39)
+(`1b3243e`) and [PR #38](https://github.com/andresloak100/Gene-Mila/pull/38) (`1f990c7`) are in this branch; the archival
+research records (#6, #7, #10, #12, #17, #23, #25, #31, #33, #35) stay unmerged as before. Block F is running on the Mac
+under Astra as operator (Andres's handoff and +$8 confirmation on #41; a false start of 00:13 UTC left two stale files,
+archived by the dated note in `docs/PLAN_F_GENOME_ANNOTATION.md`). DeepSeek console, 16 October: balance $28.19,
+granted credit $16.25, 30-day cost $22.22. In the cloud, claim #41 continues on `claude/youthful-dijkstra-459nhj` (now
+equal to this head): builders for gnomAD constraint and UniProt protein annotation, a training-only residual-mining
+tool and CellForge-translated features (arm A5-C2), each with tests and reviews, as the next PR.
+
+**Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), [PR #42](https://github.com/andresloak100/Gene-Mila/pull/42)
+(merged): framework to find and fairly test new biological features.** A Claude cloud session on `claude/youthful-dijkstra-459nhj` (final block F commit `986c4d6`), on Andres's
 requests of 15 and 16 October (a framework for the agents to find a useful feature; compare "feature + linear model"
 against Biomni, CellForge, autoresearch and STATE with one metrics table; a data-source policy; "you have permission
 to run the deep seek agents", 16 October). New files only, plus one Money paragraph in `AGENTS.md`, the README and the
