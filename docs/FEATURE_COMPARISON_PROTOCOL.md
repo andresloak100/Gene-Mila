@@ -188,17 +188,18 @@ nice -n 19 python tools/feature_compare.py --data <MAIN>/data/norman --out $HOME
   --source A3_r0=$HOME/gm_work/norman_A3_r0/runs/kept/features \
   --source A4_r0=$HOME/gm_work/norman_A4_r0/runs/kept/features \
   --source A5_C2=<folder of the translated plugins> \
-  --fold-seeds 101,102,103 --null-reps 499
+  --fold-seeds 101,102,103 --null-reps 999
 ```
 The report is `feature_compare.md` and `feature_compare.json` in `--out`. For parent P1 use `--parent-run <run>`
 and a second `--out`. Run every search seed of every arm in one call, so all rows share one parent scoring; the
-Holm families stay per source (section 6), so one call does not change any verdict.
+families stay per source (section 6), so one call does not change any verdict.
 
-**Null replicates.** The null p is never below 1/(B+1), and Holm multiplies the smallest p by the family size m
-(a source's add-one rows), so no row can pass unless B ≥ 20m − 1. A lab run adds up to about 20 features beyond P0
-(the B1 runs selected 13, 23 and 21 features, B2's r0 24), so B = 499 (m ≤ 25) is the default here. The report
-lists each source's family size; a verdict "null too coarse for a family of m" means rerun with the B it names, not that the feature
-failed. The null refits the whole procedure per replicate, so B drives the run time.
+**Null replicates.** The null p is never below 1/(B+1). The family-wise p is a max-gain step-down over a
+source's add-one rows (section 6), so a family of more than one row needs B ≥ 999 (floor 0.001); 999 is the tool's
+default and the figure here. The report lists each source's family size after deduplication; a verdict "null too
+coarse for a family of m" means rerun with the B it names, not that the feature failed. The null refits the whole
+procedure per replicate, so B drives the run time: the tool prints an estimate, measured on its first replicate,
+before it starts.
 
 **Visible validation.** Add `--with-val1` only after Andres allows it (section 7). It makes V the deciding tier
 for every row, and the lab arms selected on V, so their V verdicts read "optimistic" and screen nothing. With
@@ -294,7 +295,7 @@ parent minus candidate, so a positive ΔM3 or ΔM4 is also an improvement. The t
 ΔM5 and ΔM7; ΔM6 is in `feature_compare.json`, and ΔM3 (pooled MSE, no paired difference) is the difference of the
 two rows' M3.
 
-| arm | search | row | tier | n | P M1 | P+x M1 | ΔM1 ± SE_adj | wins | null p (Holm) | ΔM2 | ΔM3 | ΔM4 | ΔM5 | ΔM6 | ΔM7 | M12 | verdict |
+| arm | search | row | tier | n | P M1 | P+x M1 | ΔM1 ± SE_adj | wins | null p (FWER) | ΔM2 | ΔM3 | ΔM4 | ΔM5 | ΔM6 | ΔM7 | M12 | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | A0 | – | system | OOF | | | | | | | | | | | | | | |
 | A1 | r0 | system | OOF | | | | | | | | | | | | | | |
@@ -306,12 +307,38 @@ and on F once it exists; number of features; number with a development verdict.
 ## 6. What counts as a useful feature
 
 1. **Development verdict.** `feature_compare.py` prints "meaningful (development, …)" when, on the deciding tier
-   (OOF, or V with `--with-val1`): the mean M1 gain beats twice its overlap-adjusted SE with wins on more than
-   half the perturbations; the Holm-adjusted null p is at most 0.05; M2 gains and M4 is not significantly worse;
-   and every OOF report (fold-seed pair) gains. Holm runs within one source's add-one rows; a source's system row
-   is a family of one. The parenthesis says how far a pass can be trusted: "OOF only, not held out", "val1", or
-   "optimistic: source selected on val1" (a lab run under `--with-val1`, which screens nothing; section 4). The
-   tool's docstring is the exact list. The verdict screens; it proves nothing, because every arm selected on OOF.
+   (OOF, or V with `--with-val1`): the mean M1 gain beats twice its overlap-adjusted SE and the minimum effect of
+   interest, 0.002 (`docs/ROADMAP.md` D3), with wins on more than half the perturbations; the family-wise null p
+   `p_fwer` is at most 0.05 for the gene null and, when the candidate is proportional to a parent column, for the
+   perturbation null too; M2 gains and M4 is not significantly worse; every OOF report (fold-seed pair) gains; and
+   more than one fold seed was used. The parenthesis says how far a pass can be trusted: "OOF only, not held out",
+   "val1", or "optimistic: source selected on val1" (a lab run under `--with-val1`, which screens nothing;
+   section 4). The tool's docstring is the exact list. The verdict screens; it proves nothing, because every arm
+   selected on OOF. The pieces, fixed on 16 October 2026 after block F (`docs/ROADMAP.md` D2):
+   - *Two nulls.* The gene null permutes the candidate across genes within bins of control expression. A candidate
+     that is, within every perturbation's row, a per-perturbation scalar times one parent column (block F's
+     additive_response × target promoter CpG; `docs/results/norman_f_stage2/feature_compare.json`, null sd 1e-5
+     against a gain of 0.00056) cannot fail that null, because the parent factor stays in the model. Such a row is
+     marked `proportional` with its `parent_column` and gets the perturbation null `null_pert`: the scalars are
+     permuted across the training perturbations within deciles of the targets' mean control expression, the parent
+     columns stay in place, and the candidate is rebuilt in every fold view. It must pass both nulls. A row that is
+     not proportional passes the gene null alone.
+   - *Family-wise p.* `p_fwer` is the max-gain step-down permutation p (Westfall and Young) over one source's
+     add-one rows, from each row's stored B null gains; the permutation of replicate b is the same for every row of
+     the call, so the joint null keeps the dependence between candidates. The floor is 1/(B+1); B = 999 by default
+     (floor 0.001), and a family of more than one row with fewer than 999 replicates reads "null too coarse". The
+     Holm p of the raw null p stays in the report as `p_holm`, for comparison only. A source's system row is a
+     family of one.
+   - *Deduplication.* Before the correction, rows of one source with an identical prediction hash (the OOF
+     predictions over every report rounded to 1e-9, and the feature matrix) collapse to the first; the others get
+     status `duplicate` and are not family members, so three copies of one column count once.
+   - *Coefficient sign.* The standardised add-one coefficient of the candidate is saved per report
+     (`coef_candidate_std`, with its mean and sign) and shown in the table, so the sign can be read against the
+     pre-registered one (`docs/GOAL_CRITERIA.md` A.2).
+   - *Block F's reading.* `tools/block_f_readings.py pool` applies the same step-down once over the union of the
+     three runs' unique rows (duplicates collapsed across runs by hash) and requires, in addition, the gain above
+     max(2 SE_adj, 0.002); permutations are shared within one `feature_compare` call but not across calls, so
+     pooling rows from separate calls is conservative.
 2. **Pre-registration.** Before `feature_compare.py` runs, each arm's candidate list is fixed and recorded in
    the claim issue: the files and their sha256. Proposal: tier F receives each arm's system row, plus at most 3
    single features per arm, the ones with a development verdict (V-decided for package arms when V is allowed,
@@ -319,7 +346,8 @@ and on F once it exists; number of features; number with a development verdict.
    report and its arm's transcript; where V is allowed, drop a package candidate whose V gain falls more than
    2·SE_adj below its OOF gain (a sign of labels pasted into the file, section 3.9). No other feature may be
    added after any score is seen.
-3. **Multiplicity.** At the development tier, Holm within each source (the tool does it; item 1). At tier F
+3. **Multiplicity.** At the development tier, the max-gain step-down within each source (the tool does it;
+   item 1). At tier F
    (proposal, to be fixed before anything is scored): every candidate sent there, system rows and single features
    of all arms, gets a one-sided p from its paired M1 gain, p = 1 − Φ(Δ / SE_adj), with SE_adj widened by the
    gene-overlap ratio as in `tools/sealed_reading.py`; Holm runs over all of them at 0.05. Report raw and adjusted p.
