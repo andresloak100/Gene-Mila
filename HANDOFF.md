@@ -20,6 +20,7 @@ No other lab/heavy job. No early run-log ending/summary.md/sealed-score reading.
 four operator recommendations [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6222778776).
 Recommendations do not invent human approvals: tier1 now/tier2 later; validation ranking conditional
 on approval with fixed OOF primary; no extra comparison-arm budget; no appointed fresh-test holder.
+Follow-up in this chat is active every5minutes via heartbeat `finish-block-f-and-publish-its-readings`: quiet on unchanged state, report failure or complete the prescribed readings/PR after allthreepass; pause after failure/completion. No heavy job until the chain ends.
 **Exact next:** monitor only progress.md, block_f_chain.log and allowed checks. On any refusal/failure,
 report exact chain/check evidence on41 and hold without retry/script edits. After allthreepass and no
 lab/driver active, execute unchanged PLAN_F Readings in own clone, OOF-only unless Andres actually
