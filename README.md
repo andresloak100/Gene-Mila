@@ -81,14 +81,12 @@ prevents this path in new experiments but does not reproduce the historical draw
 
 Mean ± sd over runs. pearson_delta is the Pearson correlation between predicted and measured change
 from control over all 2,055 genes, per perturbation, averaged. The DE columns use the bundle's stored
-top-20 reference: the absolute Wilcoxon rank-sum statistic, with absolute log fold change as a
-tie-breaker ([definition](genemila/benchmark/reference.py)). This differs from the
-largest-absolute-change subset used by the paired ensemble readings on Norman; neither establishes a
-matched CellForge evaluation. Sources:
-[`summary_for_collaborators.md`](docs/results/summary_for_collaborators.md),
-[`results_table.md`](docs/results/results_table.md) (every arm, labelled by code version, in
-CellForge's Table 1 layout) and [`scaling.md`](docs/results/scaling.md) (cost, throughput and
-significance by arm).
+top-20 reference, the absolute Wilcoxon rank-sum statistic with absolute log fold change as a
+tie-breaker ([definition](genemila/benchmark/reference.py)); the paired ensemble readings on Norman
+use the largest-absolute-change subset instead, and neither is a matched CellForge evaluation.
+Sources: [`summary_for_collaborators.md`](docs/results/summary_for_collaborators.md),
+[`results_table.md`](docs/results/results_table.md) (every arm, by code version, in CellForge's
+Table 1 layout) and [`scaling.md`](docs/results/scaling.md) (cost, throughput and significance).
 
 - **Agents average above the fixed recipe, modestly.** Every agent arm's mean is above the starting
   model and the no-LLM control on sealed pearson_delta, and above every refit baseline and the
@@ -253,13 +251,12 @@ runs on the Mac's data.
 
 **A stricter test of a feature.** The planner calls a feature helpful after a +0.002 visible gain:
 one parent-to-child difference, with no standard error. `tools/feature_compare.py` refits one fixed
-ridge model, the lab's starting model plus a system's whole feature set or one of its features, out
-of fold on the training perturbations, and reports pearson_delta, MSE and four metrics on each
-perturbation's 20 most-changed genes, a paired gain whose standard error allows for shared target
-genes, and a matched null (the feature's values shuffled between genes of similar control
-expression), Holm-corrected within each system. Every system has seen these training labels, so a
-verdict only screens candidates; a claim needs the fresh test, whose separate evaluator does not
-exist yet.
+ridge model, the lab's starting model plus a system's feature set or one feature, out of fold on
+the training perturbations, and reports pearson_delta, MSE and four metrics on each perturbation's
+20 most-changed genes, a paired gain whose standard error allows for shared target genes, and a
+matched null (the feature's values shuffled between genes of similar control expression),
+Holm-corrected within each system. Every system has seen these training labels, so a verdict only
+screens candidates; a claim needs the fresh test, whose separate evaluator does not exist yet.
 
 **Other systems on the same task.** `tools/export_task_package.py` writes the task as a folder in
 the style of [karpathy/autoresearch](https://github.com/karpathy/autoresearch): the public data
@@ -276,16 +273,16 @@ container on the Mac and a GPU for CellForge and STATE are Andres's decisions.
 B2 Norman runs with one change: the genome annotation file is added beside B2's Replogle file. The
 agents get no list of hypotheses, so whatever they build from it is theirs. The primary reading is
 `tools/feature_compare.py` on every feature that reads the file; the comparison with B2 on Norman's
-sealed set is one more look at a set already read many times. The prior expectation is that a
-table of this kind usually adds 0.01 or less. Andres allowed DeepSeek runs on 16 October; the plan
-proposes an $8 ledger cap (about $4 billed), which awaits his OK. It has not run. Because F keeps
-B2's Replogle file, a perturbation screen outside tier 1, only gene_annotation features that do not
-also read that file can support a tier-1 claim.
+sealed set is one more look at a set already read many times, and the prior expectation is that a
+table of this kind usually adds 0.01 or less. Andres allowed DeepSeek runs on 16 October; the plan's $8
+ledger cap (about $4 billed) awaits his OK. It has not run. Because F keeps B2's Replogle file, a
+perturbation screen outside tier 1, only gene_annotation features that do not also read that file
+can support a tier-1 claim.
 
 **Genes and cost.** The bundles keep about 2,000 genes. The LLM bill does not grow with genes
-(agents write code and never read the matrix); CPU time and memory do. A feature is code, so one
-found on 2,000 genes can be rescored on all expressed genes without an LLM call. More
-perturbations, not more genes, narrow the error bars. Commands for these tools:
+(agents write code and never read the matrix); CPU time and memory do, and a feature found on
+2,000 genes can be rescored on all expressed genes without an LLM call. More perturbations, not
+more genes, narrow the error bars. Commands for these tools:
 [`docs/USAGE.md`](docs/USAGE.md#tools-for-the-feature-comparison).
 
 ## Methods
@@ -306,7 +303,7 @@ most 20,000 characters, however long the run, and proposes hypotheses as JSON. W
 Claude Haiku or any OpenAI-compatible model) see the spec, a 30-line API reference, one example
 plugin, short summaries of the data and the prior-knowledge files, and the names of the model's
 other features; never the repository or the experiment history. The Python controller sees
-everything: deadline, queue, retries, concurrency, evaluation, the query-only oracle, SQLite.
+everything.
 
 Six rules make a gain mean something. Each is enforced in code, not in a prompt.
 
@@ -342,11 +339,11 @@ control mean, leave-one-out mean response and a target indicator; on the synthet
 visible validation they score 0 (a constant prediction has no correlation), 0.4755 and 0.6054.
 `pearson_delta` has two known soft spots: it correlates over every gene, the knocked-out gene
 included, whose own drop is easy to predict, and it is measured against control, so a response that
-all perturbations share scores well on its own (the mean training response's 0.4755 on the synthetic
-screen; the systematic-variation problem described by Systema, Viñas Torné et al., 2025). Every
-experiment is therefore also scored with CellForge's metrics (MSE, PCC and R² on mean expression,
-over all genes and over the top-20 DE genes) and VCWorld's DE and direction classification metrics
-(`genemila/benchmark/comparable.py`), and finalists with Arc Institute's
+all perturbations share scores well on its own (hence the mean training response's 0.4755 on the
+synthetic screen; the systematic-variation problem described by Systema, Viñas Torné et al., 2025).
+Every experiment is therefore also scored with CellForge's metrics (MSE, PCC and R² on mean
+expression, over all genes and over the top-20 DE genes) and VCWorld's DE and direction
+classification metrics (`genemila/benchmark/comparable.py`), and finalists with Arc Institute's
 [cell-eval](https://github.com/ArcInstitute/cell-eval) when held-out cells exist.
 
 ### Synthetic check of the machinery
@@ -369,10 +366,10 @@ from 0.6054 to 0.7633; two smaller steps reached 0.7775, and the sealed set gave
 0.5942 for the baseline. The same split with no LLM at all, a scripted planner and hand-written
 template features, reached 0.7702 and 0.7776 in 2 minutes for $0
 ([control](docs/example_run/control_scripted_summary.md)); the agents, who never saw the templates,
-re-derived them. One feature that read its own label was caught by the smoke test and recorded as
-failed. So the run shows that the machinery works and that the agents reach a hand-written
-reference, not what they add beyond one. The lineage, the worker's code, the fitted coefficients
-and a second test with DeepSeek workers are in [`docs/USAGE.md`](docs/USAGE.md#the-synthetic-example-in-detail).
+re-derived them, and one feature that read its own label was caught by the smoke test. So the run
+shows that the machinery works and that the agents reach a hand-written reference, not what they
+add beyond one. The lineage, the worker's code, the fitted coefficients and a second test with
+DeepSeek workers: [`docs/USAGE.md`](docs/USAGE.md#the-synthetic-example-in-detail).
 
 ### Benchmark
 
@@ -382,24 +379,21 @@ its metrics, with Unperturbed, Random Forest and Linear Regression refitted on t
 laid out like its Table 1 ([`results_table.md`](docs/results/results_table.md)). CellForge's
 published rows stay marked as reported, not comparable, until a metric definition reproduces its
 baseline rows; a real comparison needs CellForge's model run through this evaluation on the same
-split, which needs a GPU. VCWorld's benchmark ([ICLR 2026](https://proceedings.iclr.cc/paper_files/paper/2026/file/767ff070c27c8954babe74eccf3fbe91-Paper-Conference.pdf))
-is drug perturbations only, so its DE and direction metrics are computed on Adamson and Norman, not
-on its data. What each system produces and scores is tabulated in
-[`docs/USAGE.md`](docs/USAGE.md#relation-to-cellforge-and-vcworld).
+split, which needs a GPU. VCWorld's own benchmark is drug perturbations only, so its DE and
+direction metrics are computed on Adamson and Norman, not on its data
+([what each system produces and scores](docs/USAGE.md#relation-to-cellforge-and-vcworld)).
 
 ## Limitations
 
 - **Both sealed sets are worn.** Adamson's 21 sealed perturbations have been scored for dozens of
   finalists across about 30 runs, and the hand-written transfer feature was designed after 26
   sealed results had been read. Norman's 56 were read only at pre-specified points, but after B1
-  and B2 the set has been scored for many models. Later readings on either set are descriptive and
-  weaker evidence than the first.
-- **No arm's mean gain over its start is established on Norman.** Averaging each arm's three
-  models gives small gains that pass only as secondary readings.
-- **Few, short runs.** Two runs per agent arm on Adamson; on Norman three per arm for B1 and B2,
-  one for N3 and N4; 20 minutes each, one split per dataset. Most differences between arms are
-  inside run-to-run noise. The no-LLM control is deterministic, so its six identical runs are not a
-  noise estimate.
+  and B2 the set has been scored for many models. Later readings on either set are descriptive.
+- **Few, short runs, and no established arm on Norman.** Two runs per agent arm on Adamson; on
+  Norman three per arm for B1 and B2, one for N3 and N4; 20 minutes each, one split per dataset.
+  Most differences between arms are inside run-to-run noise; the no-LLM control is deterministic,
+  so its six identical runs are not a noise estimate. On Norman no arm's mean gain over its start is
+  established, and the averaged models' gains pass only as secondary readings.
 - **A small gain, of one kind.** The agents' lead over the fixed no-LLM control on sealed
   pearson_delta (+0.01 to +0.05 by arm, the smallest inside run-to-run spread) disappears against
   a control given one hand-written transfer feature, written after the agent runs had shown what
@@ -417,8 +411,8 @@ on its data. What each system produces and scores is tabulated in
 - **Comparable metrics, not comparable runs.** CellForge's and VCWorld's metrics are
   reimplemented from their papers (`genemila/benchmark/comparable.py`), not run from their code,
   and no tested definition reproduces CellForge's baseline rows. cell-eval scores only the
-  finalists, and because the lab predicts each perturbation's mean change, cell-eval's
-  distribution metrics see a point mass per perturbation.
+  finalists, and because the lab predicts each perturbation's mean change, its distribution
+  metrics see a point mass per perturbation.
 
 ## Data and code availability
 
@@ -427,11 +421,11 @@ The code is public in this repository. The Adamson et al. 2016 screen (scPerturb
 (`NormanWeissman2019_filtered.h5ad`) come from [Zenodo record 13350497](https://zenodo.org/records/13350497);
 `prepare_data.py` normalises raw counts (counts per 10k, log1p), merges guides against the same
 gene, keeps 2,000 highly variable genes plus every target, and splits by perturbation. Prior
-knowledge is downloaded once from Reactome, GO Biological Process, MSigDB Hallmark, CollecTRI and
-STRING v12; the Replogle 2022 K562 screen was added as audited external knowledge and is recorded
-in each run's configuration. Data bundles and fitted run artifacts stay on Andres's Mac and are
-excluded from Git. Committed here: the dated [result reports](docs/results/), the
-[Mac archives](docs/mac/) (summaries, configurations, checksums), the Norman split and manifest
+knowledge comes from Reactome, GO Biological Process, MSigDB Hallmark, CollecTRI and STRING v12;
+the Replogle 2022 K562 screen was added as audited external knowledge, recorded in each run's
+configuration. Data bundles and fitted run artifacts stay on Andres's Mac, excluded from Git.
+Committed here: the dated [result reports](docs/results/), the [Mac archives](docs/mac/)
+(summaries, configurations, checksums), the Norman split and manifest
 (`docs/results/norman_splits.json`, `docs/results/norman_manifest.json`), the
 [frozen B1 export](docs/results/norman_frozen_export_20261013/), the synthetic
 [example run](docs/example_run/) and the figure sources.
@@ -442,14 +436,11 @@ Every reported arm names its dataset, split (`split_id` in `summary.json`), run 
 code version, and runs are compared only within one bundle and split. Repeat means and sds are
 kept separate from paired standard errors and single-ensemble estimates. Each run writes `lab.db`,
 `summary.md` and `summary.json`, pins every experiment's code at `refs/genemila/<run>/<experiment>`
-and logs every sealed-set query. The frozen export reproduces all three saved B1 members exactly,
-and their average passes the fixed numerical tolerance
+and logs every sealed-set query. The frozen export reproduces all three saved B1 members exactly
 ([PR #19](https://github.com/andresloak100/Gene-Mila/pull/19)). The figures are drawn from the run
 reports by `docs/assets/build_figures.py`, and `tools/readme_check.py` traces every score on this
-page to a file under `docs/`.
-
-Needs Python 3.11 or newer. An offline run with no API keys, the no-LLM control of the synthetic
-example:
+page to a file under `docs/`. Python 3.11 or newer; an offline run with no API keys, the no-LLM
+control of the synthetic example:
 
 ```bash
 pip install -r requirements.txt
