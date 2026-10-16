@@ -187,7 +187,7 @@ definition reproduces the paper's simple-baseline rows.
 
 | Role | Who | Sees |
 |---|---|---|
-| Planner | Claude or DeepSeek, through the selected provider | A compressed research state of at most 20,000 characters (2,500 per section), however long the run. Called when the queue runs low; with many workers, several rounds run at once. |
+| Planner | Claude or DeepSeek, through the selected provider | A compressed research state of at most 20,000 characters (2,500 per section, 8,000 for the knowledge section), however long the run. Called when the queue runs low; with many workers, several rounds run at once. |
 | Workers | DeepSeek, Claude Haiku, or any OpenAI-compatible model | The spec, a 30-line API reference, one example plugin, short summaries of the data and the prior-knowledge files, and the names of the model's other features. Never the repository or the experiment history. |
 | Controller | Python | Everything: deadline, queue, retries, concurrency, evaluation, the query-only oracle, SQLite. |
 

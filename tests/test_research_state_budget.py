@@ -26,10 +26,12 @@ def test_knowledge_section_gets_its_own_larger_budget():
     assert knowledge.endswith(MARK) and nine_k not in text
     assert KNOWLEDGE_SECTION_CHARS - 100 < len(knowledge) <= KNOWLEDGE_SECTION_CHARS + len(MARK)
 
-    # every other section keeps the 2,500-character budget, and the whole render stays within TOTAL_CHARS
+    # every other section keeps the 2,500-character budget, and a six-section state with a full knowledge section
+    # still fits TOTAL_CHARS whole: the last section is present and the render is not clipped by the final cut
     other = [f"hypothesis {i} " + "x" * 80 for i in range(40)]  # about 3,000 characters rendered
     text = render_state({"knowledge_available": nine_k, "in_flight": other, "failed_directions": other,
                          "recent_experiments": other, "feature_registry": other, "current_best": {"score": 0.5}})
     inflight = _section(text, "IN FLIGHT")
     assert inflight.endswith(MARK) and len(inflight) <= SECTION_CHARS + len(MARK)
-    assert "## CURRENT BEST" in text and len(text) <= TOTAL_CHARS
+    assert "## CURRENT BEST" in text and "## FEATURE REGISTRY" in text
+    assert _section(text, "FEATURE REGISTRY").endswith(MARK) and len(text) < TOTAL_CHARS

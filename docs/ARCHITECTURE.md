@@ -4,7 +4,8 @@
 and exact commits are in [HANDOFF section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true).
 Real Adamson and Norman ingestion and campaigns have now run on the Mac; the original build-environment
 limitation below is historical. The current planner state bound in `genemila/research_state.py` is
-20,000 characters, with 2,500 per section. The warm-start description below must be read alongside
+20,000 characters, with 2,500 per section and 8,000 for the knowledge section (`KNOWLEDGE_SECTION_CHARS`,
+16 October 2026). The warm-start description below must be read alongside
 [merged PR #13](https://github.com/andresloak100/Gene-Mila/pull/13): legacy warm starts exposed
 an aggregate sealed score to the planner; the integrated fix removes that explicit path. The local controller/oracle
 still shares filesystem access with orchestration. The stronger inaccessible-test boundary is proposed,

@@ -252,8 +252,9 @@ def build(gtf: Path, fasta: Path | None, keep: set[str] | None, bidir_bp: int = 
         bidir[name] = sorted(n for d, n, _ in others if d <= bidir_bp and chosen[n]["gene"]["strand"] != strand
                              and n in keep_set)
         neigh[name] = [[n, d] for d, n, _ in others if d <= neighbour_kb * 1e3 and n in keep_set][:max_neighbours]
-    # Kept short: the planner's state shows all knowledge files in one section cut at 2,500 characters
-    # (genemila/research_state.py SECTION_CHARS), so a long description would hide the files listed after it.
+    # Kept short: the planner's state shows all knowledge files in one section cut at 8,000 characters
+    # (genemila/research_state.py KNOWLEDGE_SECTION_CHARS; 2,500 before 16 October 2026), so a long description
+    # would hide the files listed after it.
     description = (f"Per-gene annotation from the genome sequence and GENCODE transcript models ({Path(gtf).name}); "
                    "no perturbation or response measurement. "
                    "genes[symbol] = values in the order of columns: gene_span_kb, n_transcripts, n_exons, "

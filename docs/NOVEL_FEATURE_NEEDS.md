@@ -37,7 +37,7 @@ Written 2026-10-15/16 for Andres's question "what do you need to be able to find
 |---|---|---|---|
 | Builder for non-screen tables (per-gene table or edge list with a `description` of units and columns) | The only builder writes screen-format `perts[gene].delta` rows | `genemila/data/external_screen.py:289-346,563-680`; `tools/build_external_screen.py:1-31` | Lab-code owner or me; new file |
 | Leave-one-out check that accepts tables, **with a matched-null mode** | Today it handles screens only, and it scores the 50 training perturbations | `tools/external_loo.py:5-24` | Same |
-| The planner must see the file | The planner's state sections are cut at 2,500 characters. Files are listed in sorted order. "Unexplored" is a substring match over `IDEA_BANK` keys, which have no mechanism, chromatin, turnover or dosage areas. Workers get the summary without the cut | `genemila/research_state.py:20-32,112-115,142,171,188-189`; `genemila/lab.py:767`; `genemila/worker.py:181` | **Astra, Claim #40.** Its branch `astra/biology-feature-discovery` is not on the remote (`git ls-remote`). We hand over these findings and do not edit those files |
+| The planner must see the file | The planner's state sections are cut at 2,500 characters; since 16 October the knowledge section has its own 8,000-character budget (`KNOWLEDGE_SECTION_CHARS`, below). Files are listed in sorted order. "Unexplored" is a substring match over `IDEA_BANK` keys, which have no mechanism, chromatin, turnover or dosage areas. Workers get the summary without the cut | `genemila/research_state.py:20-32,112-115,142,171,188-189`; `genemila/lab.py:767`; `genemila/worker.py:181` | **Astra, Claim #40.** Its branch `astra/biology-feature-discovery` is not on the remote (`git ls-remote`). We hand over these findings. One edit was made under Andres's approval of 16 October: `research_state.py` gained `KNOWLEDGE_SECTION_CHARS = 8000` and a three-line change in `render_state` that applies it to the knowledge section; nothing else in the file, `planner.py` or `prompts.py` changed |
 | Free scripted controls on non-screen tables | The mock adds screen-format templates for every added file, which give constant features on tables; the smoke test rejects them | `genemila/providers/mock.py:364-378,786-809`; `genemila/pipeline.py:320-326` | Lab-code owner |
 | Bundle copy, never an in-place add | A file dropped into `knowledge/` reaches every later run and makes its own arm. `write_bundle` deletes its output directory. Use `--set run.data_dir=<copy>` | `genemila/data/bundle.py:142-143,229-240,256-257`; `run_research.py:76-79,137-138` | Mac owner |
 
@@ -223,6 +223,9 @@ knockdowns. Tier 2 one arm at a time afterwards. The existing Replogle arm stays
   block F fits, but `gene_constraint` (546) on top does not: the cut would hide the Replogle description. Adding a
   second new file to the same bundle needs the planner state to render knowledge differently
   (`genemila/research_state.py`, held by #40) or its own arm without Replogle. The item is for the lab-code owner.
+  **Done, 16 October, with Andres's approval:** `render_state` gives the knowledge section its own budget,
+  `KNOWLEDGE_SECTION_CHARS = 8000` (every other section keeps 2,500; the 20,000 total is unchanged), so the clean
+  bundle with the three tables fits. The pre-run gate of any later block reads the constant rather than `2500`.
 - `tools/build_protein_annotation.py` reads a UniProt TSV export (signal peptide, transmembrane segments, localisation)
   into a knowledge file; UniProt is not reachable from the cloud, so it runs on the Mac, and it refuses an export whose
   header names differ from the ones it expects rather than guess.
