@@ -8,12 +8,13 @@ seeds each, Norman and Adamson; "approved, do what you think is best" and "pleas
 on, a change is a new, dated section, never an edit. The session has no data and no DeepSeek, so the block runs on the
 Mac with `docs/mac/block_g/`.
 
-**The code commit is not fixed yet.** Block G runs on the integration branch head after two merges: the clean-bundle
-builder (`tools/build_clean_bundle.py`, `genemila/data/knowledge_clean.py`; its own pull request) and the planner-state
-change (`genemila/research_state.py`: the knowledge section gets its own 8,000-character budget,
-`KNOWLEDGE_SECTION_CHARS`, so the planner sees every knowledge file). That file is inside Astra's open claim #40, so
-the change is coordinated with Astra on #40 before it merges; the chain cannot start before both merges. That head is
-`<G_COMMIT>` here. A dated note at the end of this file names it, with its date, before the chain starts, and the same
+**The code commit is not fixed yet.** Block G runs on the integration branch head after the pull request that carries
+this plan merges: it brings the clean-bundle builder (`tools/build_clean_bundle.py`, `genemila/data/knowledge_clean.py`),
+the Mac scripts, and the planner-state change (`genemila/research_state.py`: the knowledge section gets its own
+8,000-character budget, `KNOWLEDGE_SECTION_CHARS`, so the planner sees every knowledge file). That file is inside
+Astra's open claim #40, so the change is announced to Astra on #40 when it merges (one constant and three lines in
+`render_state`; nothing else in `research_state.py`, `planner.py` or `prompts.py` changes). That head, or a later one
+that changes none of the code the runs use, is `<G_COMMIT>` here. A dated note at the end of this file names it, with its date, before the chain starts, and the same
 commit fills `G_COMMIT=` at the top of `block_g_run.sh`, which refuses to run until then and refuses unless the
 checkout it runs from is at that commit and clean.
 

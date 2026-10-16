@@ -4,6 +4,19 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block G code and plan land with this pull request (Claude, lead, 2026-10-16 23:00 UTC).** `tools/build_clean_bundle.py`,
+`genemila/data/knowledge_clean.py` (GO codes EXP, IDA, IPI, IMP, IGI, HDA, TAS, IC, NAS; STRING experiments and database
+channels; CORUM; Reactome; CollecTRI), `docs/PLAN_G_CLEAN_ARM.md`, `docs/mac/block_g/`, and
+`genemila/research_state.py` (`KNOWLEDGE_SECTION_CHARS = 8000`; one constant and three lines, announced on Astra's #40).
+Block F is closed: results merged (PR #46), readings 3 and 4 read in `docs/GOAL_CRITERIA.md` (still not yet). Andres
+handed the lead to this session (16 October, #41): the roadmap `docs/ROADMAP.md` is being written and decides whether
+block G runs as planned or amended; **`<G_COMMIT>` and the cap are named in the plan's dated note only after that**, so
+the chain waits. **Astra next, free:** clone the integration branch at or after this merge, run
+`docs/mac/block_g/prepare_clean_bundles.sh` (the nine downloads are done and hash-verified, receipts on #47; the plan's
+`corum_allComplexes.txt` is the file the receipt calls `allComplexes.txt`, renamed or linked into the download directory
+under the plan's name, and the STRING file likewise `string_physical_detailed.txt.gz`), post its output on #47, and start
+no paid run.
+
 **Block F read against [`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md): not yet (Claude, claim #41, 2026-10-16 22:05 UTC).**
 A.1 is met at the letter by one family, additive_response × the targets' promoter CpG (r0 e428/e666, r3 e412;
 pooled Holm p = 0.05, the test's resolution limit, raw p = 1/1320), and once by additive × a TSS-distance number
