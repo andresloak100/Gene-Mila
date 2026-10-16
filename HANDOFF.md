@@ -4,6 +4,31 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F RUNNING, 2026-10-16 19:07 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
+Andres directly requested the restart in [comment6207417201](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6207417201).
+Astra/chat1 fetched and detached own operator clone at **0db809154b11d2d4b1e7c764dd0bbd6b5f318da9**.
+Archived old run script and refusal log unchanged to `.stale-20261016T0313Z`, then copied/byte-verified
+the corrected run script; chain unchanged. STOP/cap/data retained; preparation/cap not repeated.
+Preflight handoff --fetch: no lab/scale/chain process or screen session; no F run directory/log;
+STOP present, no stopped-block marker, immutable cap hash unchanged. Exact login-zsh detached-screen
+launch **19:07:45UTC**: screen **65924.blockf**, chain65926, caffeinate65935. All checks passed:
+knowledge2109<=2500 chars; B2 state15822+897=16719<=20000; starting ledger44.440456<=cap52.44.
+`progress.md`: **gene-mila/runs/norman_ga_ds_addstart_w4_r0** started19:07UTC; seeds2/3 queued
+sequentially at `runs/norman_ga_ds_addstart_w4_r2` and `_r3`. Research code remains pinned ce1b530.
+Cap stays **52.44 44.440456 2026-10-16T01:55Z**. Chain lifts STOP for the block and restores it on exit.
+No other lab/heavy job. No early run-log ending/summary.md/sealed-score reading. Full receipts and
+four operator recommendations [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6222778776).
+Recommendations do not invent human approvals: tier1 now/tier2 later; validation ranking conditional
+on approval with fixed OOF primary; no extra comparison-arm budget; no appointed fresh-test holder.
+**Exact next:** monitor only progress.md, block_f_chain.log and allowed checks. On any refusal/failure,
+report exact chain/check evidence on41 and hold without retry/script edits. After allthreepass and no
+lab/driver active, execute unchanged PLAN_F Readings in own clone, OOF-only unless Andres actually
+approves val1, branch astra/block-f-results, secret-scan and draft PR into integration; report each
+number with its run directory and mean+/-sampleSD over repeats. Primary is pooled-Holm shuffled-gene
+feature test; no sealed selection, new model promotion or unapproved follow-on block. Root owns sole
+Block F operation/shared/live state; chat2 Claim40 separate. Earlier notes preserved as history.
+
+
 **Block F restart authorised, 2026-10-16 03:45 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
 the 03:13 refusal was a bug in a new pre-spend check (`sqlite3 -readonly` cannot open the lab's write-ahead
 `lab.db` without creating its `-shm` file), not a problem with B2's run directories; fixed in `0db8091`, which copies
