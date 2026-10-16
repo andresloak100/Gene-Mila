@@ -4,6 +4,27 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F primary pooled / sealed readings complete; reading3 ACTIVE, 2026-10-16 21:10UTC:**
+Stage2 exited0 at21:05:40UTC (38min wall from log creation); exact helperpool exited0. Family66,
+tested20, passing10rows, tier1-labelled4rows. All passing rawp=1/1320, pooledp=.05 exactly at
+permutation-resolution boundary. Independent arithmetic/non-null/hash audit passed. Tier1rows are
+two computational families: CpG×additive repeated3times with identical saved reports; numeric
+TSS-distance×additive once. TSS code ignores chromosome/strand/self-distance and does not use
+bidirectional mapping; do not claim a bidirectional-promoter mechanism or novel discovery.
+Allthree ce1b530 sealed readings exited0, JSON/MD in ownclone; tooldiscloses4oracle scorings/run
+outside run caps, one previously unscored start/run. No sealed outcome used for selection/change.
+Full unedited pooledtable and sealedreadings [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6224750231).
+Reading3 six-run descriptive OOF comparison is running, managedsession**24627**, Python**47291**,
+output `docs/results/norman_f_arm_vs_b2/` (not yet written at21:10:25UTC). Do not duplicate/restart
+stage1/select/stage2/pool/sealed reads. Ownresultsbranch astra/block-f-results/sourceb6638c3.
+**Exact next:** await session24627; any refusal report/hold without workaround. Then reading4
+source/count/usage metadata, final mean+/-sampleSD over runseeds0/2/3 and all tool metrics, independent
+report audit, secret-scan/requiredchecks/resultscommit/draftPR; post finalinterpretation on41.
+No fresh-test/CellForge win, sealed F-versusB2 comparison, modelpromotion or follow-on arm. Original
+cap/data/run dirs/maincode untouched, STOPpresent; root owns evaluator/shared/live state. Prior
+notes below preserved; active nullscreen29493/PID29504 ended normally and must not be restarted.
+
+
 **Block F amended stage2 ACTIVE, 2026-10-16 20:27UTC — leave running at nice19:**
 Own clone `gene-mila-block-f`, astra/block-f-results atb6638c3. Stage1 exited0 (156reportrows;
 JSON/MD in norman_f_stage1); exact helperselect exited0: **66status-ok annotation add-one rows**,
