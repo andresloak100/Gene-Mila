@@ -4,6 +4,23 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F milestone, 2026-10-16 19:30 UTC — seed0 PASSED, seed2 started:**
+Run `gene-mila/runs/norman_ga_ds_addstart_w4_r0` finished rc0; permitted check: codece1b530431,
+duration1203s, seed0/four workers, exact knowledge pair, planner DeepSeek mixedFalse, no duration
+note or exhaustion; `.passed` exists. Selected EXP_0715 ridge28features;60plugins read annotation.
+This is process evidence, not a feature-level gain or discovery. Ledger run cost **$1.288493**,
+ending **$45.728949** (accounting, not invoice); cap unchanged52.44. `progress.md`: seed2 started
+19:30UTC at `gene-mila/runs/norman_ga_ds_addstart_w4_r2`; seed3 queued. Detached chain remains active,
+seed2 preflight passed, no refusal/stopped marker. No early run-log/summary.md/sealed reading,
+plugin audit/evaluation, script/cap/main-code edit, overlapping run or heavy job.
+Receipt [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6223149272).
+**Exact next:** continue existing five-minute monitor; only allowed progress/chain/check/process
+reads while active. On failure report and hold without retry. Allthreepass and no lab/driver before
+unchanged PLAN_F primary shuffled-gene/pooled-Holm reading, then sealed/descriptive readings,
+branch astra/block-f-results and draft PR. Root owns Block F and shared/live state. Earlier entries
+below are preserved history; fixed cap and follow-up remain as recorded.
+
+
 **Block F RUNNING, 2026-10-16 19:07 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
 Andres directly requested the restart in [comment6207417201](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6207417201).
 Astra/chat1 fetched and detached own operator clone at **0db809154b11d2d4b1e7c764dd0bbd6b5f318da9**.
