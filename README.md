@@ -20,7 +20,8 @@ of biological feature, not another variant of response transfer. The evidence so
 is the information the agents can read, not the search. The lab now has a proposed rule for which new
 data sources are allowed, a first source derived from the genome sequence, tools that score any
 system's features on one fixed linear model against a matched null, and a paid test on Norman
-(block F), fixed in advance, that Andres has allowed: see [Can the agents find new biology?](#can-the-agents-find-new-biology)
+(block F), fixed in advance. Andres allowed DeepSeek runs on 16 October; the plan proposes an $8 ledger
+cap, which awaits his OK. See [Can the agents find new biology?](#can-the-agents-find-new-biology)
 below. None of it has run on real perturbation data yet.
 
 **13 October 2026.** B1 remains the delivered Norman ensemble by the fixed
@@ -526,14 +527,15 @@ measured gene.
 ### Can the agents find new biology?
 
 On 15 October Andres asked for one biological feature that the current linear model lacks, found
-by the agents without being told where to look. The plan he and his machine-learning collaborator set
-that day: if one holds up, the work becomes a biology paper; if the agents only raise the score, a
+by the agents without being told where to look. He reported the plan he and his machine-learning
+collaborator set in their conversation that day: if one holds up, the work becomes a biology paper; if the agents only raise the score, a
 machine-learning paper comparing systems. Holding up
 means naming the biology, replicating on another cohort and passing a wet-lab test.
 [`docs/NOVEL_FEATURE_NEEDS.md`](docs/NOVEL_FEATURE_NEEDS.md) sets out what that takes; in short:
 
-- **The limit is information, not search.** Every winning model so far copies the measured
-  responses of knockdowns whose targets resemble the new one ([`docs/NEXT_LEVER.md`](docs/NEXT_LEVER.md)).
+- **The limit is information, not search.** On Adamson, every winning model so far copies the measured
+  responses of knockdowns whose targets resemble the new one ([`docs/NEXT_LEVER.md`](docs/NEXT_LEVER.md));
+  on Norman the agents start from the additive pair rule.
   In leave-one-out over Adamson's 50 training perturbations, only another K562 perturbation screen
   added clearly (Replogle 2022, +0.072 ± 0.020 paired SE over gene-set neighbours); a learned mix
   of the bundle's own gene sets, interactions and co-expression added +0.010, inside the noise.
@@ -544,17 +546,17 @@ means naming the biology, replicating on another cohort and passing a wet-lab te
   recruitment screens) only as separately labelled arms; perturbation screens, Replogle included,
   and expression atlases stay out of the main claim (section 7 of the needs document).
 - **A first tier-1 source.** `tools/build_gene_annotation.py` turns GENCODE and the hg38 sequence
-  into a per-gene knowledge file: locus, shared promoters, neighbours, message lengths, promoter CpG
+  into a per-gene knowledge file: locus, opposite-strand TSS partners, neighbours, message lengths, promoter CpG
   content and amino-acid composition. For Norman's 2,083 genes it matched 2,041; the other 42 are
-  retired symbols (SEPP1, KIAA0101, TCEB1, …). Of the measured genes, 96 share a promoter with
-  another (opposite strand, within 1 kb), so a CRISPRa or CRISPRi guide at one can also reach the
-  other. That is known biology: if the agents find it, it is a methods result, not a new rule.
+  retired symbols (SEPP1, KIAA0101, TCEB1, …). Of the measured genes, 96 have their TSS within 1 kb of
+  another's on the opposite strand (mostly head-to-head shared promoters; 16 of the 48 pairs overlap at
+  their 5' ends instead), so a CRISPRa or CRISPRi guide at one can also reach the other. That is known biology: if the agents find it, it is a methods result, not a new rule.
   Adamson names some targets by retired symbols too (SRPR, MARS, ATP5B), so they may get no gene
   sets or interactions from the knowledge files; `tools/knowledge_coverage.py` counts this per
   target once it runs on the Mac's data.
 - **A stricter test of a feature.** The planner still calls a feature helpful after a +0.002
-  visible gain, which does not separate signal from noise (drop-one standard errors in the
-  [feature audit](docs/results/feature_audit_v3.md) reach 0.0104). `tools/feature_compare.py` refits
+  visible gain: one parent-to-child difference on the visible validation perturbations, with no
+  standard error, so it cannot separate signal from noise. `tools/feature_compare.py` refits
   one fixed ridge model, the lab's starting model plus either a system's whole feature set or one of
   its features, out of fold on the training perturbations. It reports pearson_delta, MSE and four
   metrics on each perturbation's 20 most-changed genes, a paired gain whose standard error allows
@@ -578,8 +580,10 @@ means naming the biology, replicating on another cohort and passing a wet-lab te
   file. The agents get no list of hypotheses, so whatever they build from it is theirs. The primary
   reading is `tools/feature_compare.py` on every feature that reads the file; the comparison with B2
   on Norman's sealed set is one more look at a set already read many times. The needs document's
-  prior expectation is that a table of this kind usually adds 0.01 or less. Andres gave permission
-  to run it on 16 October; the plan caps it at $8 on the ledger (about $4 billed). It has not run.
+  prior expectation is that a table of this kind usually adds 0.01 or less. Andres allowed DeepSeek
+  runs on 16 October; the plan proposes an $8 ledger cap (about $4 billed), which awaits his OK. It has
+  not run. Block F keeps B2's Replogle file, a perturbation screen outside tier 1, so only
+  gene_annotation features that do not also read the Replogle file can support a tier-1 claim.
 - **Genes and cost.** The bundles keep about 2,000 genes. The LLM bill does not grow with genes
   (agents write code and never read the matrix); CPU time and memory do. A feature is code, so one
   found on 2,000 genes can be rescored on all expressed genes without an LLM call. More

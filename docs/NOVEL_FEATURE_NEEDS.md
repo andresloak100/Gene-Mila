@@ -6,7 +6,7 @@ Written 2026-10-15/16 for Andres's question "what do you need to be able to find
 
 ## 0. Summary
 
-1. **The limit is information, not search.** Every winning model carries the same feature family: copying the response of training knockdowns whose targets resemble the new target, by co-expression, gene sets, PPI or symbol family (`docs/NEXT_LEVER.md:12-15`). The lab's own conclusion: "the limit is information about the targets, not search" (`docs/LAB_STATE.md:163`). The metric, pearson_delta, is a per-perturbation correlation across genes and does not depend on scale. So a per-perturbation magnitude cannot raise it. A new feature must change the *pattern across genes* (`docs/NEXT_LEVER.md:15-18`).
+1. **The limit is information, not search.** On Adamson, every winning model carries the same feature family: copying the response of training knockdowns whose targets resemble the new target, by co-expression, gene sets, PPI or symbol family (`docs/NEXT_LEVER.md:12-15`). The lab's own conclusion: "the limit is information about the targets, not search" (`docs/LAB_STATE.md:163`). The metric, pearson_delta, is a per-perturbation correlation across genes and does not depend on scale. So a per-perturbation magnitude cannot raise it. A new feature must change the *pattern across genes* (`docs/NEXT_LEVER.md:15-18`). `docs/NEXT_LEVER.md` covers Adamson only; on Norman the starting model is the additive pair rule (B2 starts from `baseline_ridge_additive`), and no Norman audit of what the gains are made of exists yet.
 2. **How much room is left, stated precisely.** On the 50 training perturbations:
    - A pure mix of the *other* perturbations' responses, fitted on the truth with hindsight, reaches 0.734 (non-negative weights) to 0.780 (any sign).
    - The lab's models score about 0.60 out of fold.
@@ -15,7 +15,7 @@ Written 2026-10-15/16 for Andres's question "what do you need to be able to find
    
    This bounds a pure response mix. It does not bound every linear model.
 3. **The only measured lever so far was a perturbation screen.** Replogle 2022 K562 added +0.072 ± 0.020 over gene-set kNN in free leave-one-out (`docs/results/external_loo_replogle2022_k562.md:23`). Recombining the bundle's own prior knowledge with a learned similarity added +0.010, "inside the noise" (`docs/results/ceiling_analysis.md:32`). The agents' features named after a mechanism added little: `half_life_modulated_pathway_response_e926` +0.0043 (SE 0.0028); the half-life × PPI and splicing × intron features ≤ 0 (`docs/results/feature_audit_v3.md:104-110`). **Prior expectation: new annotation-type tables will usually add ≤ 0.01.**
-4. **Nothing today separates a real gain from noise or from proxies.** The planner is told a feature "helps" if any experiment that added it raised the visible score by more than 0.002 over its parent (`genemila/research_state.py:18`; `genemila/exploit.py:25-37`; `genemila/worker.py:113-116`). For comparison, the drop-one standard errors in the audit run from 0.0002 to 0.0104 (`docs/results/feature_audit_v3.md:104-110`), and the leave-one-out paired SE on Adamson is about 0.017–0.035 (`docs/results/external_loo_replogle2022_k562.md:19-23`). No matched-null test of a feature exists (Part 3).
+4. **Nothing today separates a real gain from noise or from proxies.** The planner is told a feature "helps" if any experiment that added it raised the visible score by more than 0.002 over its parent (`genemila/research_state.py:18`; `genemila/exploit.py:25-37`; `genemila/worker.py:113-116`). That 0.002 is compared with one parent-to-child difference on the visible validation perturbations (the largest, if the feature was added more than once), which carries no standard error. For scale, the leave-one-out paired SE on Adamson is about 0.017–0.035 (`docs/results/external_loo_replogle2022_k562.md:19-23`). No matched-null test of a feature exists (Part 3).
 
 ## 1. Prerequisites
 
@@ -24,9 +24,9 @@ Written 2026-10-15/16 for Andres's question "what do you need to be able to find
 | **R0** | **Gene-symbol check (hygiene, done first).** The knowledge loader keeps a gene only on an exact string match and has no alias handling (`genemila/data/knowledge.py:95,116,141`; `grep -i alias` finds nothing). The Adamson bundle uses outdated symbols: SRPR, ATP5B, SLMO2, MARS, AARS, DARS and others (`docs/mac/adamson_cf_ncells.json`). The Replogle build needed `--alias SLMO2=PRELID3B, SRPR=SRPRA, ATP5B=ATP5F1B`, and its first build missed SLMO2 and SRPR (`docs/LAB_STATE.md:199-200`). If the current Reactome, GO 2023, CollecTRI and STRING v12 sources use HGNC symbols (SRPRA, MARS1, AARS1, ...), those targets would have no gene sets and no edges. That would fit SRPR scoring about 0.02 under every similarity predictor although SRPRB is its hindsight best relative at 0.79 (`docs/results/ceiling_analysis.md:39,89`). **UNVERIFIED** until counted on the Mac. An alias-fixed bundle copy would be its own arm and a data-hygiene fix, not a discovery | Mac, free, read-only |
 | R1 | **The Mac.** No `data/` or `runs/` exists here (checked with `ls`). Plugin sources and `cv.npz` files are only in the Mac's runs. Only one example plugin is committed (`docs/example_run/tf_gated_coexpression_e26.py`) | Mac owner, free |
 | R2 | **DeepSeek is reachable only from the Mac.** Free runs (`--planner-provider scripted --worker-provider mock`) need no approval (`AGENTS.md`, "Money and usage") | Mac |
-| R3 | **A current ledger reading and a cap decision.** The ledger is the shared record of DeepSeek spend. The last committed figure is $43.599822392 against the $48 block (`HANDOFF.md:69`). The B4 one-worker runs of 15 Oct ran "under PR39" (`HANDOFF.md:17-18`). PR #39 (open draft) uses `budget.cumulative_usd.deepseek=52` and starts a run only at a ledger of $49.50 or less (PR #39 diff: `docs/PLAN_B4_SINGLE_WORKER.md`, `docs/mac/block_b4/norman_b4_run.sh`). The B4 costs are not in the repo. Which cap and block govern new spend is Andres's decision | Mac reading, then Andres |
+| R3 | **A current ledger reading and a cap decision.** The ledger is the shared record of DeepSeek spend. The last committed figure is $43.599822392 against the $48 block (`HANDOFF.md` section 1, the 14 October model-quality entry). The B4 one-worker runs of 15 Oct ran "under PR39" (`HANDOFF.md` section 1, Astra's #40 entry of 15 October 22:04 UTC). PR #39 (open draft) uses `budget.cumulative_usd.deepseek=52` and starts a run only at a ledger of $49.50 or less (PR #39 diff: `docs/PLAN_B4_SINGLE_WORKER.md`, `docs/mac/block_b4/norman_b4_run.sh`). The B4 costs are not in the repo. Block F (`docs/PLAN_F_GENOME_ANNOTATION.md`) proposes an $8 ledger cap under Andres's general permission of 16 October ("you have permission to run the deep seek agents", issue #41); the amount itself awaits his OK | Mac reading, then Andres |
 | R4 | **Network.** Reachable from here: the S3 buckets `encode-public`, `4dn-open-data-public`, `gnomad-public-us-east-1` and `ngi-igenomes` (GTF/FASTA), plus PyPI (`pyjaspar`) and GitHub. Blocked: encodeproject.org, zenodo, NCBI, rest.uniprot.org, depmap.org, data.4dnucleome.org and api.deepseek.com (reviewer probes, curl 000/403). Everything else must be downloaded on the Mac, as Replogle was (`docs/LAB_STATE.md:196-200`) | Here or Mac |
-| R5 | **No overlapping paid runs, nothing else while a driver runs** (`AGENTS.md`, Money and Mac sections). Astra's entry says no run was active at 22:04 UTC on 15 Oct (`HANDOFF.md:15-16`); this was not re-checked | Whoever runs |
+| R5 | **No overlapping paid runs, nothing else while a driver runs** (`AGENTS.md`, Money and Mac sections). Astra's entry says no run was active at 22:04 UTC on 15 Oct (`HANDOFF.md` section 1, Astra's #40 entry); this was not re-checked | Whoever runs |
 | R6 | **Gene lists.** The Norman gene list is committed (`docs/results/norman_frozen_export_20261013/manifest.json:1179`). The Adamson 2,055-gene list is not; only its 90 perturbation names are (`docs/mac/adamson_cf_ncells.json`). Adamson tables must be restricted on the Mac | — |
 
 ## 2. Getting new information to the agents
@@ -92,16 +92,16 @@ The three claims are: (a) it predicts better, (b) the specific biology carries t
 
 R0 alias check → build the table into a bundle copy → pre-register (M5) → free leave-one-out against the stack + matched null (M2, M3), with Holm over m → novelty audit (M4) → agent arm with the file (paid; M8 attribution) → replicate with the expected sign (M6) → one untouched, modality-matched test (M7) → wet-lab predictions (M9).
 
-A hand-built feature scored by humans first is a **human-led positive control for the plumbing**, not agent discovery (`HANDOFF.md:8-10`: the agents should choose and test "automatically"). If agent discovery is the claim, run the agent arm before any human scores a hand-built version, and hash and seal the hand-built version.
+A hand-built feature scored by humans first is a **human-led positive control for the plumbing**, not agent discovery (`HANDOFF.md` section 1, Astra's #40 entry: Andres asked that the agents choose and test "automatically"). If agent discovery is the claim, run the agent arm before any human scores a hand-built version, and hash and seal the hand-built version.
 
 ## 5. Decisions for Andres
 
 | # | Decision | Options and consequences | Status |
 |---|---|---|---|
-| D1 | Allowed sources | Clean: ranks 1, 2, 4, 7 and controls C1–C3. Borderline: 3 (MitoCarta) and 6 (half-lives). Screen-derived: 5 (effector domains), ENCODE-rE2G and thresholded ABC. Each is its own arm, not CellForge-comparable (`docs/NEXT_LEVER.md:96-100`) | Open; the Replogle exception was chosen 11 Oct (`HANDOFF.md:447-449`) |
-| D2 | Which spend cap and block | Last committed $43.60 of $48 (`HANDOFF.md:69`). B4 ran under a $52 block, gate $49.50 (PR #39, open draft), costs not in the repo. PR #38 (open draft) asks for $10–30 more. Money is needed only for agent arms (M8) and agent runs with new files | Open |
+| D1 | Allowed sources | Clean: ranks 1, 2, 4, 7 and controls C1–C3. Borderline: 3 (MitoCarta) and 6 (half-lives). Screen-derived: 5 (effector domains), ENCODE-rE2G and thresholded ABC. Each is its own arm, not CellForge-comparable (`docs/NEXT_LEVER.md:96-100`) | Open; the Replogle exception was chosen 11 Oct (`HANDOFF.md` section 1, the "Results on Adamson" paragraph) |
+| D2 | Which spend cap and block | Last committed $43.60 of $48 (`HANDOFF.md` section 1, the 14 October model-quality entry). B4 ran under a $52 block, gate $49.50 (PR #39, open draft), costs not in the repo. PR #38 (open draft) asks for $10–30 more. Money is needed only for agent arms (M8) and agent runs with new files | Block F (`docs/PLAN_F_GENOME_ANNOTATION.md`) proposes an $8 ledger cap under Andres's general permission of 16 October ("you have permission to run the deep seek agents"); the amount itself awaits his OK |
 | D3 | Feed human hypotheses (Astra's 200, your review) to the agents? | Yes → the claim becomes "the agent selected a human hypothesis" unless M8 shows otherwise; each reviewed list adds to m | Open; #40 is building the bank |
-| D4 | Fresh test cohort and evaluator holder | CRISPRa cohorts (GSM4367986, GSE220974) confirm Norman features only; CRISPRi needs a sealed Replogle slice. Without these, no "beats CellForge on test" claim. CellForge is not comparable today (`docs/results/norman_b1_frozen_test_review_20261013.md:68-83`) | Deferred 13 Oct, "deferred, not approved" (#22, last updated 2026-10-13T22:41Z; `HANDOFF.md:66-67`); re-raised in PR #38 §6 (reviewer-reported, not re-read) |
+| D4 | Fresh test cohort and evaluator holder | CRISPRa cohorts (GSM4367986, GSE220974) confirm Norman features only; CRISPRi needs a sealed Replogle slice. Without these, no "beats CellForge on test" claim. CellForge is not comparable today (`docs/results/norman_b1_frozen_test_review_20261013.md:68-83`) | Deferred 13 Oct, "deferred, not approved" (#22, last updated 2026-10-13T22:41Z; `HANDOFF.md` section 1, the 14 October model-quality entry); re-raised in PR #38 §6 (reviewer-reported, not re-read) |
 | D5 | Build the Replogle K562 replication bundle (M6) | Free, Mac CPU, untested size | Not yet asked |
 | D6 | Adapt CellForge's multi-expert discussion | No claim, plan or PR covers it. `docs/mac/cellforge_notes.md:49-53` cites CellForge's `Method_Design/experts.py`, `graph_discussion.py` and `refinement.py` only for preprocessing defaults. It overlaps the planner files held by #40 | Open, unowned |
 
@@ -115,7 +115,7 @@ A hand-built feature scored by humans first is a **human-led positive control fo
 
 ## 6. Smallest first step: exact commands (free, read-only, no protected files)
 
-**Step A, Mac, from any clone. Read the state and the ledger.** The default `--runs` is the clone's own `runs/` (`handoff_state.py:152-153`), so point it at the main checkout (`HANDOFF.md:546`):
+**Step A, Mac, from any clone. Read the state and the ledger.** The default `--runs` is the clone's own `runs/` (`handoff_state.py:152-153`), so point it at the main checkout (`HANDOFF.md` section 1, the "Live sources" table):
 ```bash
 python handoff_state.py --fetch --runs ~/Documents/Mila/Gene-Mila/gene-mila/runs
 sqlite3 ~/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite \
@@ -148,8 +148,11 @@ np.savez_compressed(out, resid=y - cv["delta"][0], perts=cv["perts"], genes=pub[
 ```
 
 **Step D, free tools (claim #41).** `tools/feature_compare.py` scores any feature file against the same parent model
-with a gene-permutation matched null and Holm correction (M2, M3), and `tools/export_task_package.py` gives other
-systems the identical task. Still open: the residual dump as a tool (M1), per-gene table builders for the sources in
+with a matched null and Holm correction, and `tools/export_task_package.py` gives other systems the identical task.
+`feature_compare` is a first, partial implementation of M2 (gene permutation within control-mean bins only) and a
+weaker form of M3 (2·SE, wins on most perturbations, Holm-adjusted null p, top-20 MSE not significantly worse).
+Still missing from M2: bins on mean × variance, degree-preserving network rewiring, target-identity permutation and
+cell shuffles; from M3: the partition-SD term, the 0.01 floor and the MSE ratio guard (≤ 1.01). Also still open: the residual dump as a tool (M1), per-gene table builders for the sources in
 section 2.1 (the genome annotation is reachable from the cloud through the iGenomes S3 bucket; most others must be
 downloaded on the Mac), and the nonlinear-derivability check (M4). The genome annotation builder is done
 (`tools/build_gene_annotation.py`; section 9).
@@ -162,8 +165,13 @@ responses the lab predicts.** Unperturbed K562 measurements are allowed for the 
 | Tier | Admission | Sources | Why |
 |---|---|---|---|
 | 1 | Allowed by default; any system in a comparison gets the same files | genome sequence and annotation (GENCODE, hg38: built, `tools/build_gene_annotation.py`); protein sequence features (UniProt signal peptides, transmembrane topology); curated physical complexes (CORUM); paralogs (Ensembl Compara); population constraint (gnomAD LOEUF; Collins 2022 pHaplo/pTriplo); unperturbed-K562 measurements (ENCODE TF ChIP-seq, DNase/ATAC, histone marks; Hi-C) | No perturbation or expression response behind them; K562 measurements describe the starting state, like `control_cells` |
-| 2 | Allowed, each as its own labelled arm, never pooled with tier 1 | MitoCarta3.0 (its integration uses some expression evidence); K562 mRNA half-lives (metabolic labelling, a kinetic measurement); effector-domain recruitment screens (Tycko 2020, DelRosso 2023) | Clean in intent; each carries an expression-derived or screen-derived component that must be visible in the arm's name |
+| 2 | Allowed, each as its own labelled arm, never pooled with tier 1 | Each is an explicit exception to the tier-3 criterion: MitoCarta3.0 (excepted from the co-expression exclusion; its integration uses expression and co-expression evidence); K562 mRNA half-lives (excepted as an expression measurement; metabolic labelling of unperturbed cells, a kinetic rate rather than an atlas); effector-domain recruitment screens (Tycko 2020, DelRosso 2023; excepted from the perturbation-screen exclusion; they score protein domains recruited to a reporter, not responses of the genes the lab measures) | Clean in intent; each carries an expression-derived or screen-derived component that must be visible in the arm's name |
 | 3 | Not allowed for the main claim | anything derived from perturbation screens (Replogle 2022, already its own arm; DepMap fitness), expression atlases or co-expression (GTEx, STRING's co-expression channel, Enrichr GEO libraries), and anything built from the evaluated datasets themselves | They can carry the answer: a response measured for the same target in another screen, or genes that move together because they respond together |
+
+Tier 1 extends the "only curated knowledge" rule of `genemila/data/knowledge.py:13-16` to unperturbed measurements
+(ENCODE, Hi-C, gnomAD). The bundle's existing `gene_sets` fall under this policy too: MSigDB Hallmark sets were refined
+with expression data and Enrichr's GO BP carries no evidence codes, so some annotations may be expression-derived.
+Whether they stay in tier 1, as today, is Andres's call.
 
 Recommended first step: approve tier 1 and start with the genome annotation table (block F,
 `docs/PLAN_F_GENOME_ANNOTATION.md`); next, signal peptides and CORUM complexes, which match Adamson's ER-stress
@@ -172,7 +180,8 @@ knockdowns. Tier 2 one arm at a time afterwards. The existing Replogle arm stays
 ## 8. 2,000 genes instead of 20,000 (Andres's question of 16 October)
 
 - **The lab already works on about 2,000 genes:** each bundle keeps the 2,000 most variable genes, ranked on control
-  cells, plus every target (`prepare_data.py --hvg 2000`; Adamson 2,055 and Norman 2,083 genes; `README.md`,
+  cells (Adamson) or on control plus training-perturbation cells (Norman, `--gene-selection control+train`), plus
+  every target (`prepare_data.py --hvg 2000`; Adamson 2,055 and Norman 2,083 genes; `README.md`,
   `docs/NORMAN_PLAN.md` §3 item 4).
 - **The DeepSeek bill does not depend on the number of genes.** The agents write feature code; their prompts carry the
   research state, never the expression matrix (`docs/ARCHITECTURE.md`, "Token efficiency"). What grows with genes is
@@ -196,8 +205,9 @@ knockdowns. Tier 2 one arm at a time afterwards. The existing Replogle arm stays
   genes; the 42 unmatched are retired or renamed symbols (for example SEPP1, KIAA0101, TCEB1, SEP15, HN1). The knowledge
   loader matches symbols exactly, so the current gene-set, interaction and regulatory files may miss these genes too.
   Counting it needs the Mac (`tools/knowledge_coverage.py`, R0).
-- **96 Norman genes share a promoter with another measured gene** (TSS on the other strand within 1 kb, for example
-  ALYREF and ANAPC11, AAMP and PNKD). A CRISPRa or CRISPRi guide at one of these TSSs can reach the other gene; the lab
+- **96 Norman genes have their TSS within 1 kb of another measured gene's TSS on the opposite strand** (48 pairs, for
+  example ALYREF and ANAPC11, AAMP and PNKD). Most are head-to-head shared promoters; in 16 of the 48 pairs the two
+  genes overlap at their 5' ends instead. A CRISPRa or CRISPRi guide at one of these TSSs can reach the other gene; the lab
   had no way to represent this before the annotation table.
 - **Values checked by hand** on the representative transcripts: KLF1 362 amino acids, CEBPA 358, SET 290 and HBG1 147,
   as in UniProt; MYC's CCDS transcript with the longest coding sequence is the 454-residue CUG-initiated isoform.
