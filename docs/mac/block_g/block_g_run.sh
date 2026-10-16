@@ -3,7 +3,7 @@
 # three new tables, DeepSeek planner + 4 workers, fresh start, code <G_COMMIT>.
 # Usage: block_g_run.sh <norman|adamson_cf> <g0|g1> <seed 0|2|3>. Contains no key: DEEPSEEK_API_KEY must be in the
 # environment of the process. Every check that can refuse comes before the run, so a refusal costs nothing.
-G_COMMIT="<G_COMMIT>"  # 7 characters; filled in by the dated note of the plan that names the code, before the chain
+G_COMMIT="baa7dfd"  # 7 characters; named by the dated note of 2026-10-16 23:40 UTC in docs/PLAN_G_CLEAN_ARM.md
 DS="$1"; ARM="$2"; S="$3"
 case "$DS" in norman|adamson_cf) ;; *) echo "usage: $0 norman|adamson_cf g0|g1 0|2|3"; exit 1 ;; esac
 case "$ARM" in g0|g1) ;; *) echo "usage: $0 norman|adamson_cf g0|g1 0|2|3"; exit 1 ;; esac

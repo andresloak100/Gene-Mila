@@ -249,3 +249,27 @@ Nothing is chosen from a sealed score. A positive reading 1 is a candidate, not 
   `block_g_run.sh`. Andres's written confirmation of the $20 cap (or the amount he names), with its date.
 - The raw downloads' URLs as used and their sha256; the prepare script's output (md5 and line length per file).
 - The cap record line, and the ledger reading at the start.
+
+## Note, 2026-10-16 23:40 UTC: the code is `baa7dfd`; the cap awaits Andres's line; the readings wait for the corrected test
+
+- **`<G_COMMIT>` = `baa7dfd`**, the integration head after PR #48 (the builder, this plan, the scripts and the
+  planner-state change together, one pull request rather than the two the text above expected). `block_g_run.sh` now
+  carries `G_COMMIT="baa7dfd"`; the runs use the dedicated checkout `gene-mila-baa7dfd` (step 2), and the operator's
+  clone is at this note's commit or later. Full test suite at `baa7dfd`: 552 passed.
+- **The cap:** $20 over the ledger's reading at the start, as Money says, decided by the lead under Andres's delegation
+  of 16 October (`docs/ROADMAP.md`, D1). The chain starts only after Andres has written his one line on #41
+  (ROADMAP, section 7, item 1); the operator records that line, with its date, below.
+- **The readings wait for the corrected fair test** (`docs/ROADMAP.md`, D2): the gene-permutation null above cannot fail
+  for a candidate that is a parent column times a per-perturbation number, and the 20·m − 1 rule puts the p floor at
+  the cutoff. Reading 1 therefore uses `tools/feature_compare.py` and `tools/block_f_readings.py` at or after the
+  commit of that fix, with the perturbation-level null and the family-wise max-gain correction in place of the text
+  above under "Criterion"; the other criteria, readings 2 to 4, the arms, the chain, the caps and the stop rules are
+  unchanged. The runs themselves do not depend on the tool, so the chain need not wait for it.
+- **Known biology is pre-registered before reading** in `docs/PREREG_G_KNOWN_BIOLOGY.md` and
+  `docs/CANDIDATE_LITERATURE_CHECK.md` (ROADMAP, D3); the run checkout `baa7dfd` predates them, so the agents never see
+  them.
+- **Raw downloads:** the nine files are on the Mac with URL, UTC time and sha256 receipts (issue #47, 21:50 UTC; the
+  CORUM file comes from the project's public API, the static path having moved). The operator stores them under the
+  names in the table above and commits the receipts as `docs/mac/block_g/downloads.md`.
+- Still to be filled in by the operator, below: Andres's cap line and its date; the prepare script's output (md5 and
+  summary-line length per file); the cap record line and the ledger reading at the start.

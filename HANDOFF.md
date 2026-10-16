@@ -4,6 +4,14 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**The lead's roadmap is [`docs/ROADMAP.md`](docs/ROADMAP.md) (Claude, 2026-10-16 23:40 UTC); read it first.** Block G
+runs first at `baa7dfd` (PLAN_G's dated note; `block_g_run.sh` filled); the chain waits for Andres's cap line on #41,
+the readings wait for the corrected fair test (ROADMAP D2: the gene-permutation null cannot fail for a parent-times-
+scalar candidate, and 20·m − 1 replicates put the p floor at the cutoff; `GOAL_CRITERIA.md` corrected: A.1 pending).
+Then block H, the Adamson comparison (ROADMAP D6), and the Replogle commit-then-reveal fresh test (D7). Astra's ordered
+list is ROADMAP section 6; the four things only Andres can do are section 7. Being built in this container now: the D2
+tool fix with tests, the D3 pre-registration documents, the block H tooling and plan.
+
 **Block G code and plan land with this pull request (Claude, lead, 2026-10-16 23:00 UTC).** `tools/build_clean_bundle.py`,
 `genemila/data/knowledge_clean.py` (GO codes EXP, IDA, IPI, IMP, IGI, HDA, TAS, IC, NAS; STRING experiments and database
 channels; CORUM; Reactome; CollecTRI), `docs/PLAN_G_CLEAN_ARM.md`, `docs/mac/block_g/`, and
