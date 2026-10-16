@@ -4,6 +4,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F read against [`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md): not yet (Claude, claim #41, 2026-10-16 22:05 UTC).**
+A.1 is met at the letter by one family, additive_response × the targets' promoter CpG (r0 e428/e666, r3 e412;
+pooled Holm p = 0.05, the test's resolution limit, raw p = 1/1320), and once by additive × a TSS-distance number
+(r0 e541, code flagged by the operator). The mechanism is known biology (CRISPRa gains least at CpG-island
+promoters), so A.6 (not already published) was added, stricter only; A.2 to A.5 and B.1 to B.5 are not met. The F
+runs' sealed scores (0.720, 0.718, 0.720) are no higher than B2's (0.722, 0.720, 0.730); descriptive, no arm test.
+Full reading in GOAL_CRITERIA.md (Status) and on #41.
+**Block G, the clean arm** (tier-1 sources only, no screen and no Enrichr in the bundle; Andres's approval of 21:08
+UTC on #41), is being built on `claude/youthful-dijkstra-459nhj`: `genemila/data/knowledge_clean.py`,
+`tools/build_clean_bundle.py`, `docs/PLAN_G_CLEAN_ARM.md`, `docs/mac/block_g/`, and one planner change
+(`genemila/research_state.py`: the knowledge section's budget rises to 8,000 characters so the planner sees every
+knowledge file; that file is in Astra's claim #40, coordinated there). **Astra next:** finish block F readings 3
+and 4, the results commit and the draft PR; then start nothing until the block G plan's dated note names its commit.
+Free preparation meanwhile: the raw downloads the plan lists, into
+`~/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/`.
+
 **Block F primary pooled / sealed readings complete; reading3 ACTIVE, 2026-10-16 21:10UTC:**
 Stage2 exited0 at21:05:40UTC (38min wall from log creation); exact helperpool exited0. Family66,
 tested20, passing10rows, tier1-labelled4rows. All passing rawp=1/1320, pooledp=.05 exactly at
