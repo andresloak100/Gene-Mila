@@ -394,10 +394,8 @@ def score(parts, data: Data, seeds, alphas, keep: bool = True) -> dict:
     The val1 tier fits all training rows at the alpha best on the mean OOF score over all seeds."""
     O = oof_predictions(parts, data, seeds, alphas)
     P = {s: fa.pearson_rows(O[s], data.Y) for s in seeds}
-    pick = {s: int(np.argmax(P[s].mean(axis=1))) for s in seeds}
-    pairs = [(a, b) for a in seeds for b in seeds if a != b] or [(seeds[0], seeds[0])]
-    out = {"oof": {"reports": [{"select_seed": a, "report_seed": b, "alpha": alphas[pick[a]]} for a, b in pairs],
-                   "m1": [P[b][pick[a]] for a, b in pairs]}}
+    reports, m1, pick, pairs = _honest_reports(P, seeds, alphas)
+    out = {"oof": {"reports": reports, "m1": m1}}
     if keep:
         out["oof"]["preds"] = [O[b][pick[a]] for a, b in pairs]
     if data.val1 is not None:
@@ -486,15 +484,111 @@ def gene_permutation(control_mean: np.ndarray, n_bins: int, seed: int) -> np.nda
     return perm
 
 
+FAST_NULL = True  # the NullEngine below; False refits every replicate from scratch (the reference the tests compare)
+
+
+class NullEngine:
+    """The honest refit of score() for a permuted candidate, computing only what a gene permutation changes.
+
+    Permuting genes within every perturbation's row leaves the multiset of a candidate column's training values
+    unchanged, so its standardisation (mean, sd) and its own Gram block c'c are the same for every replicate, and the
+    fixed columns (the parent) do not change at all. Per fold only the cross terms P'c and c'(y - ybar) and the
+    prediction c_fold @ w are recomputed: milliseconds instead of a full design rebuild. The result equals score()
+    on the permuted parts up to floating-point summation order (tests pin it)."""
+
+    def __init__(self, fixed, res: dict, feats: list[str], data: Data, seeds, alphas):
+        self.data, self.seeds, self.alphas = data, list(seeds), list(alphas)
+        self.folds = {s: [self._fit(fixed, res, feats, data, ("fold", s, i), fold["rows"],
+                                    len(fold["rows"]) - len(fold["predict"]), [data.pos[p] for p in fold["predict"]])
+                          for i, fold in enumerate(data.folds[s])] for s in self.seeds}
+        self.full = None
+        if data.val1 is not None:
+            self.full = self._fit(fixed, res, feats, data, ("full",), data.train, len(data.train), None,
+                                  eval_rows=data.val1_rows)
+
+    @staticmethod
+    def _std(Xtr: np.ndarray):
+        mu, sd = Xtr.mean(axis=0), Xtr.std(axis=0)
+        sd[sd == 0] = 1.0
+        return mu, sd
+
+    def _fit(self, fixed, res, feats, data, where, rows, n_tr, out_rows, eval_rows=None):
+        """Everything constant across replicates for one fit: the standardised fixed columns of the training and
+        predicted rows, their Gram and label products, and the candidate's raw blocks with its standardisation."""
+        n_g = data.n_genes
+        Xf = design(fixed, where) if fixed else np.zeros((len(rows), n_g, 0))
+        if eval_rows is None:
+            Xf_tr, Xf_out = Xf[:n_tr].reshape(-1, Xf.shape[2]), Xf[n_tr:].reshape(-1, Xf.shape[2])
+        else:
+            Xf_tr = Xf.reshape(-1, Xf.shape[2])
+            Xe = design(fixed, ("eval",))[eval_rows] if fixed else np.zeros((len(eval_rows), n_g, 0))
+            Xf_out = Xe.reshape(-1, Xe.shape[2])
+        mu_f, sd_f = self._std(Xf_tr)
+        Ps_tr, Ps_out = (Xf_tr - mu_f) / sd_f, (Xf_out - mu_f) / sd_f
+        src = res["folds"][where[1]][where[2]]["blocks"] if where[0] == "fold" else res["full"]
+        C = np.concatenate([src[f] for f in feats], axis=2)
+        if eval_rows is None:
+            C_tr, C_out = C[:n_tr], C[n_tr:]
+        else:
+            C_tr, C_out = C, np.concatenate([res["eval"][f][eval_rows] for f in feats], axis=2)
+        k = C.shape[2]
+        mu_c, sd_c = self._std(C_tr.reshape(-1, k))
+        y = data.Y[[data.pos[p] for p in rows[:n_tr]]].reshape(-1) if eval_rows is None else data.Y.reshape(-1)
+        ybar = float(y.mean())
+        yc = y - ybar
+        cs = ((C_tr - mu_c) / sd_c).reshape(-1, k)
+        return {"Ps_tr": Ps_tr, "Ps_out": Ps_out, "Gpp": Ps_tr.T @ Ps_tr, "bp": Ps_tr.T @ yc, "yc": yc,
+                "ybar": ybar, "C_tr": C_tr, "C_out": C_out, "mu_c": mu_c, "sd_c": sd_c, "Gcc": cs.T @ cs,
+                "out_rows": out_rows, "n_out": C_out.shape[0]}
+
+    def _predict(self, fit: dict, perm: np.ndarray, alphas) -> np.ndarray:
+        """(n_alpha, n_out_rows) predictions of the fixed columns plus the permuted candidate."""
+        k = fit["C_tr"].shape[2]
+        cs = ((fit["C_tr"][:, perm, :] - fit["mu_c"]) / fit["sd_c"]).reshape(-1, k)
+        co = ((fit["C_out"][:, perm, :] - fit["mu_c"]) / fit["sd_c"]).reshape(-1, k)
+        Gpc = fit["Ps_tr"].T @ cs
+        G = np.block([[fit["Gpp"], Gpc], [Gpc.T, fit["Gcc"]]])
+        b = np.concatenate([fit["bp"], cs.T @ fit["yc"]])
+        W = fa.ridge_weight_grid(G, b, np.arange(G.shape[0]), alphas)
+        cp = fit["Gpp"].shape[0]
+        return (fit["Ps_out"] @ W[:cp] + co @ W[cp:]).T + fit["ybar"]
+
+    def score(self, perm: np.ndarray) -> dict:
+        """score(..., keep=False) for the candidate permuted by perm."""
+        data, alphas = self.data, self.alphas
+        O = {}
+        for s in self.seeds:
+            O[s] = np.zeros((len(alphas), len(data.train), data.n_genes))
+            for fit in self.folds[s]:
+                O[s][:, fit["out_rows"]] = self._predict(fit, perm, alphas).reshape(len(alphas), -1, data.n_genes)
+        P = {s: fa.pearson_rows(O[s], data.Y) for s in self.seeds}
+        out = {"oof": {"m1": _honest_reports(P, self.seeds, alphas)[1]}}
+        if self.full is not None:
+            k = int(np.argmax(np.mean([P[s].mean(axis=1) for s in self.seeds], axis=0)))
+            V = self._predict(self.full, perm, [alphas[k]])[0].reshape(len(data.val1_rows), data.n_genes)
+            out["val1"] = {"m1": [fa.pearson_rows(V, data.val1.means - data.cm)]}
+        return out
+
+
+def _honest_reports(P: dict, seeds, alphas):
+    """The reports of score(): alpha chosen on one seed's mean OOF pearson_delta, the other seed's scores reported
+    (one seed: itself). Returns (reports, per-report per-perturbation scores, the chosen alpha index per seed)."""
+    pick = {s: int(np.argmax(P[s].mean(axis=1))) for s in seeds}
+    pairs = [(a, b) for a in seeds for b in seeds if a != b] or [(seeds[0], seeds[0])]
+    reports = [{"select_seed": a, "report_seed": b, "alpha": alphas[pick[a]]} for a, b in pairs]
+    return reports, [P[b][pick[a]] for a, b in pairs], pick, pairs
+
+
 def gene_null(fixed, res: dict, feats: list[str], data: Data, a, parent_sc: dict, observed: dict) -> dict:
     """The matched null per tier: replicate b permutes the candidate's genes (gene_permutation, seed null_seed + b)
     identically everywhere, refits with the full honest procedure and records the mean pearson_delta gain."""
     if a.null_reps < 1 or not feats:
         return {t: None for t in observed}
     got = {t: [] for t in observed}
+    engine = NullEngine(fixed, res, feats, data, a.seeds, a.alphas) if FAST_NULL else None
     for b in range(a.null_reps):
         perm = gene_permutation(data.cm, a.null_bins, a.null_seed + b)
-        sc = score(fixed + [(res, feats, perm)], data, a.seeds, a.alphas, keep=False)
+        sc = engine.score(perm) if engine else score(fixed + [(res, feats, perm)], data, a.seeds, a.alphas, keep=False)
         for t in observed:
             got[t].append(float(np.mean(report_deltas(sc, parent_sc, t))))
     out = {}

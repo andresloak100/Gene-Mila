@@ -300,3 +300,61 @@ as `tools/feature_audit.py` does, and never writes into a run directory. This ch
 the caps, the readings or the criterion. A pre-run refusal does not stop the block (`block_f_stopped.txt` is written
 only after a run), so the operator restarts the chain the same way from a clone at the commit that carries this
 note; the chain has no passed seed to skip.
+
+## Amendment, 2026-10-16 04:20 UTC, before any score is read: a two-stage null that keeps the pooled rule feasible
+
+Run r0 produced about 60 `gene_annotation` plugins (operator's report, no score read). With three runs, `m_total`
+may reach 150 to 200, and the pre-registered replicate count `max(199, 20·m_total − 1)` then means several thousand
+refits per feature: days of CPU for every row. The rule is therefore made cheaper in a way that can only be more
+conservative, never more permissive, and is fixed now, before any reading:
+
+1. **Stage 1, every row, no null.** `tools/feature_compare.py` runs once with `--null-reps 0` over the three
+   per-run `--source` directories; every `gene_annotation` add-one row gets its paired OOF gain and `se_adj`.
+   `m_total` is the number of those rows with status ok, counted from this JSON.
+2. **Stage 2, the null for the top rows only.** The `k = 20` rows with the largest gain / `se_adj` (ties by name)
+   are scored again as one `--source` directory of exactly those files with `--null-reps` = `20·m_total − 1`.
+3. **Pooled Holm over `m_total`, untested rows at p = 1.** The raw null p of the k tested rows and p = 1 for
+   every other row enter one Holm procedure of size `m_total`. Assigning p = 1 to untested rows can only make
+   rejection harder, so this is a conservative version of the pre-registered pooled rule; the other criteria of the
+   rule (gain above twice `se_adj`, wins above half, every fold-seed report positive, M2 gain, `mse_top` not worse,
+   source not reading `replogle2022_k562` for a tier-1 claim) are unchanged.
+4. A row outside the top k is reported as "not tested against the null" and counts as not found.
+
+If the stage-2 call is still too slow on the Mac, the operator reports the measured time per replicate and stops;
+the number k is not lowered after the fact.
+
+## Note, 2026-10-16 05:05 UTC: the null in `feature_compare` is faster, the rule unchanged
+
+`tools/feature_compare.py` now refits a null replicate by recomputing only what a gene permutation changes (the
+candidate's cross terms and predictions; the parent columns, the candidate's standardisation and its own Gram block
+are unchanged by a permutation within rows), with a test that its replicate gains equal a full refit to 1e-8 and give
+the same p. Measured on a Norman-sized synthetic bundle: about 0.33 s per replicate per feature (0.84 before), so
+stage 2 of the amendment (20 features × `20·m_total − 1` replicates) is hours on the Mac. This is an optimisation of
+the tool; the amendment's rule and the replicate count are unchanged.
+
+## Note, 2026-10-16 05:30 UTC: exact commands for the amended feature-level reading
+
+`tools/block_f_readings.py` (with its test) carries out the amendment of 04:20 UTC so the operator makes no choice:
+`select` ranks the stage-1 rows by gain / SE_adj, copies the top 20 plugin files into one directory per run (a
+feature name can recur across runs) and prints `m_total` and the replicate count; `pool` applies the one Holm
+procedure of size `m_total` with untested rows at p = 1 and writes the table. Stage 2 uses the three per-run
+directories as three `--source` entries; the tool's own per-source Holm column is not the criterion. In the
+operator's clone (`$M`, `$C`, `$P` as in "Readings"), after the plugin copy of reading 1:
+```bash
+cd "$C"
+PYTHONPATH="$C" "$M/.venv/bin/python" tools/feature_compare.py --data "$M/data/norman_ga" \
+  --out docs/results/norman_f_stage1 --null-reps 0 \
+  --source f_r0="$P/r0" --source f_r2="$P/r2" --source f_r3="$P/r3" \
+  --source-run f_r0_selected="$M/runs/norman_ga_ds_addstart_w4_r0" \
+  --source-run f_r2_selected="$M/runs/norman_ga_ds_addstart_w4_r2" \
+  --source-run f_r3_selected="$M/runs/norman_ga_ds_addstart_w4_r3"
+"$M/.venv/bin/python" tools/block_f_readings.py select --stage1 docs/results/norman_f_stage1/feature_compare.json \
+  --plugins "$P" --out docs/results/norman_f_top --k 20
+reps=$("$M/.venv/bin/python" -c "import json; print(json.load(open('docs/results/norman_f_top/selection.json'))['null_reps'])")
+PYTHONPATH="$C" "$M/.venv/bin/python" tools/feature_compare.py --data "$M/data/norman_ga" \
+  --out docs/results/norman_f_stage2 --null-reps "$reps" \
+  --source f_r0=docs/results/norman_f_top/r0 --source f_r2=docs/results/norman_f_top/r2 --source f_r3=docs/results/norman_f_top/r3
+"$M/.venv/bin/python" tools/block_f_readings.py pool --stage1 docs/results/norman_f_stage1/feature_compare.json \
+  --stage2 docs/results/norman_f_stage2/feature_compare.json --plugins "$P" --out docs/results/norman_f_pooled_holm
+```
+A `--source` directory for a run with no top file is left out of the stage-2 call. Readings 2 to 4 are unchanged.
