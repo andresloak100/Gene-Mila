@@ -1,0 +1,860 @@
+{
+  "generated_utc": "2026-10-16T21:27:54.320522+00:00",
+  "scope": "All docs/results/norman_f_* files except this manifest; unchanged copied artifacts and derived readings",
+  "paid_run_code": "ce1b53043125cad78d060d1155e5ffe6efab5c0a",
+  "evaluation_code": "b6638c3450710c7dcc4579c0b0afd73611a7952b",
+  "files": [
+    {
+      "path": "docs/results/norman_f_arm_vs_b2/feature_compare.json",
+      "bytes": 418844,
+      "md5": "e8ebe81ed33996777b9b73668b09ea38",
+      "sha256": "bb1a430fa65bdbd8fdfb265cd5e1e17530d91882acd413ca24648c6a31b94299"
+    },
+    {
+      "path": "docs/results/norman_f_arm_vs_b2/feature_compare.md",
+      "bytes": 37512,
+      "md5": "faaac3bd452134a48b9c55b031d8b10b",
+      "sha256": "70b34d3830ab0aa3483b83cf571e7c97046a189cce88940595ab43514f998886"
+    },
+    {
+      "path": "docs/results/norman_f_collect_metadata.py",
+      "bytes": 6813,
+      "md5": "419ef2e1166a3f7a4c7453946af542d9",
+      "sha256": "4430f2e1b5b0e18d2a84a5bc9a7faec57d8db74063e63a1e0060908acaed5182"
+    },
+    {
+      "path": "docs/results/norman_f_metadata.json",
+      "bytes": 231123,
+      "md5": "21fd8c2704a03d3403a89d3766b5c770",
+      "sha256": "cb614f513fed29bef9151b7bb7ec16d421699fc326bd2530923fe4223f2c9348"
+    },
+    {
+      "path": "docs/results/norman_f_plugin_manifest.json",
+      "bytes": 32555,
+      "md5": "1eef226eac4e52d50d7cef2c2aedda84",
+      "sha256": "454870969583e051a7c8d024fa96f550012f97023fe23443f6548739729cf98d"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_sq_times_promoter_cpg_e400.py",
+      "bytes": 1655,
+      "md5": "d45b958adce0713e2933f51ded2baa5f",
+      "sha256": "7d9cfbee140019baadf82f41b3be71228b71f9ba3492bfd75b48bfeeac727c99"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_bidirectional_count_e485.py",
+      "bytes": 3596,
+      "md5": "728c2151b2c63301bfbd77e57984f683",
+      "sha256": "23d7b1ee05b705b47e65e673f80c6d7137643547949dcf34d4e7afab88dd96c7"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_bidirectional_partner_e469.py",
+      "bytes": 1436,
+      "md5": "04416bfeb54209f0421221db95609edd",
+      "sha256": "2a0aa37847af33cdd5d14c07f031e4f69ff6e26eb7a73ff013e9477990dcb632"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_bidirectional_proximity_e541.py",
+      "bytes": 2764,
+      "md5": "9b3f907c77a0482a9a1c208ad0f182ba",
+      "sha256": "75e90d8c18a4fd6415f8f15918c47dd4c2d126239ababf567f468a114de81b7d"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_bidirectional_proximity_e542.py",
+      "bytes": 4271,
+      "md5": "33f79f6e5e6163fc1d8d24054135d54f",
+      "sha256": "a5ab000c05c232cbf40aaf54da2e4c57bebf371137ec860dc92db5866c1aec9e"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_cds_length_e445.py",
+      "bytes": 1969,
+      "md5": "7a249a51f0834ddab1d1cb712e2d2315",
+      "sha256": "dea94d85c0c7847bc66e42bd9181279fe9d217ae114955117b152433200740da"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_cds_length_e449.py",
+      "bytes": 1859,
+      "md5": "c3ebf384386966bd6e7a85b497d2e8d0",
+      "sha256": "1744b683b50a581e8d1dff9e321486b024b45f6d904ae94e6bfde1274ba576cb"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_cpg_oe_promoter_e455.py",
+      "bytes": 2412,
+      "md5": "20ede0dea071390fb22cd2a901b6bb31",
+      "sha256": "5647f7f0d2e9202bb03da0a7cff31e23aa264f15e35a3cfb7a74f4fc968e375a"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_cpg_oe_promoter_squared_e473.py",
+      "bytes": 1536,
+      "md5": "305142d7019e039cf1f8711bd6acb6f2",
+      "sha256": "89f3eb2b810da8904ae9941882011924a44a3dd315995150be18929c58d4e456"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_cpg_promoter_e325.py",
+      "bytes": 1860,
+      "md5": "ef661ae654b7a81c1c75b5324189c603",
+      "sha256": "c5d9fdf57193e702b4c20f5b65ee64334fc210582b9edc69ac0f186df9401881"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_exon_count_e415.py",
+      "bytes": 1866,
+      "md5": "5b229d6126e79d319eeb13067476d6bd",
+      "sha256": "b763d0d3bc440199ec79af9090c4458adc878a560fcfe01dfda9665f93373e78"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_gc_cds_e418.py",
+      "bytes": 2051,
+      "md5": "27e549e5b9eb08c2748e5d4e1cfbeff2",
+      "sha256": "cb3078a956ab9efe5d5a630aad999845d76f7e9a08b3a250ec56bb209aa56324"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_gene_span_e331.py",
+      "bytes": 1619,
+      "md5": "528d79cd1041a9be5b39384000fdc1b7",
+      "sha256": "da6289cb2c7a2f88e83e3a24bb5b17c4527186006fe89afc9ae165f30577057f"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_gene_span_e347.py",
+      "bytes": 1995,
+      "md5": "d60bf0622d0c5d816b465690f160f7e7",
+      "sha256": "64deff1404645819a90597832f58ea532f0ceeaedd767edcb9a68a3a7974d79e"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_intron_length_e443.py",
+      "bytes": 2005,
+      "md5": "5e712f1b0e604dd9c06515605b7150a6",
+      "sha256": "c9849ff255963ebd671e864d481db281b071db601454f8b628cb01cdb08621aa"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_n_transcripts_e453.py",
+      "bytes": 1977,
+      "md5": "09505255ca2f59581ee6e6a8180a0106",
+      "sha256": "a6fe8f6138b9d022c7c790d17550b4175f98b1322e99b2c10ff5f0eaec46fff3"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_promoter_cpg_e420.py",
+      "bytes": 1965,
+      "md5": "73ea67eee499f3495506d98644b834c8",
+      "sha256": "83aa2ccc56c98073c84a941f940295a42f75f416ede53b78f17949fab23bc14e"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_cpg_promoter_e489.py",
+      "bytes": 3070,
+      "md5": "534cb8aa839328936d0a4ca606250e28",
+      "sha256": "3c36fdaefd41daaf395b7071f264081b3e00e48382bfb20780cd58fb276887b1"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_exon_count_e548.py",
+      "bytes": 1455,
+      "md5": "6f17a35f62ba3dfdbce46d3d6ff26fb1",
+      "sha256": "e1b4c0771bd5daf2a0966946b468b4b42c2eae62b7b2c76ca7803847552a06cb"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_gene_span_e401.py",
+      "bytes": 2118,
+      "md5": "e1326558c73e91ed0803ecfd948b15d2",
+      "sha256": "cc46426a4832e3a77faaf8074d63fc8d81d8c0888248417c497bba2c13dc1a7b"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_hydrophobic_fracti_e679.py",
+      "bytes": 4021,
+      "md5": "182e55f18a39f3d45ce3e0460cacc0b0",
+      "sha256": "98d472b8d3a86bcd35a5ae91667699ee0e54026e5b23c2afa80a86c5da89f11d"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_promoter_cpg_e428.py",
+      "bytes": 2379,
+      "md5": "6772b70df70d58590fb7c6b4305bf033",
+      "sha256": "1a42537943d11953ba01bf128e2f3acb4b94257acba0ec010abe0bbad8e452ff"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_promoter_cpg_e666.py",
+      "bytes": 2373,
+      "md5": "c7692941e105316f47d8a167eaf76c1e",
+      "sha256": "abbf48391642b1d414a4d63ac68eaa94faaaaf41e38a966df478cfbe2319b93e"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_span_product_e545.py",
+      "bytes": 2098,
+      "md5": "8a18c3d75cf88727751822a24bd92771",
+      "sha256": "324744e8c76721deca30541ba3a6d1f415cba41b212f5e05bc1dfc1521aa91b9"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_target_transcript_length_e407.py",
+      "bytes": 1943,
+      "md5": "47664c0c54a47a6affa58386a7207206",
+      "sha256": "375e6451e677ed0d0b9a287d5aeace1275ae7c2eb48fa0d00b686f75c858b309"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_transcript_length_e310.py",
+      "bytes": 2107,
+      "md5": "2c1b6169bf964346d8ea55a58e588a99",
+      "sha256": "b92867585bb90eb2f9be50397e1221d122423428c7e099cb0c0eb477e20a6c6f"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_transcript_length_e316.py",
+      "bytes": 2654,
+      "md5": "2fafee7fb11ac4c75c03c9a290ce79f5",
+      "sha256": "047831710d8186945492b3029bead7ff2ee6236dfb2f75debb9896b19b99844d"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_utr3_length_e441.py",
+      "bytes": 1977,
+      "md5": "2ad5d169b3378cdd68e8ee42375ecbb6",
+      "sha256": "6feba2717f1fb94909ca4b0ce6f48db6045e1dbcc2b2c6202eb439270d089b77"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/additive_times_utr3_length_e451.py",
+      "bytes": 2561,
+      "md5": "9581b5250377fdc6332d18d42f15724d",
+      "sha256": "3cccc8bf7b1243bb3537feea23b2917d0814143b2173da282507299ff3bc7d9b"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/gene_annotation_ppi_random_projection_e721.py",
+      "bytes": 4729,
+      "md5": "2d3eed473addcafd772f5099676de325",
+      "sha256": "262456d236373dc37cf1275faa1bc597700b0a0c4b975c87d10b101b9c650f08"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/gene_annotation_random_projection_e697.py",
+      "bytes": 2944,
+      "md5": "960f0b327ad7e73b364ada2a1d33e1d6",
+      "sha256": "cf3f71637668b410bb80aa516c2dfb3026fb273a1795741cb3abf8b304c6d143"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/pair_screen_delta_abs_diff_e361.py",
+      "bytes": 1835,
+      "md5": "cb89c3bcaa4a23623308bcb48e6195be",
+      "sha256": "f645972e34e07f7452614df04442e563dcb3c502128958c7454296909b66a399"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_over_transcript_length_e348.py",
+      "bytes": 1881,
+      "md5": "a0ecc8f05a70754a14b4a48a63a3020e",
+      "sha256": "07b61e5e1f43695604d61427a153e4ca4ed4fbd3fcc20c2a862d62fc7f90cad7"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_over_transcript_length_e416.py",
+      "bytes": 4521,
+      "md5": "a007b32e00ed11f72632c0ce210ebd7c",
+      "sha256": "2c90cd064c99fd39dbeb2efc1e849a130e9450d45a5b5eec98b78f1af3cf2944"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_over_transcript_length_e546.py",
+      "bytes": 3414,
+      "md5": "3e346a868cb4f040d478ec9a07c808e3",
+      "sha256": "d75c60a8aeecf237588c58c7285acfc0f4a650f33bfa6f4d93d9a603b479150c"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_over_transcript_length_e547.py",
+      "bytes": 2611,
+      "md5": "58078d333adf61dca21d71e5abc6f01e",
+      "sha256": "01285fe92bb54cf93ed2d7836862cf33a7604faf8a230c5acb761016285daadd"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_bidirectional_flag_e464.py",
+      "bytes": 1571,
+      "md5": "5f5aa42826693a4d7267ec782b3c3f1f",
+      "sha256": "eb92ac2b479290ca15e8c69e573b0debae241014f397241e070d1604ecfe64cd"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_cds_length_e446.py",
+      "bytes": 3479,
+      "md5": "5ba5d87d930bea101649732e2803069f",
+      "sha256": "1958996ea4993c9acc623ad0396293fc9f206548be55abf055b3a19843311c22"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_gc_cds_e452.py",
+      "bytes": 2770,
+      "md5": "c73408f07afb39708eb7169c9d490b61",
+      "sha256": "ce10ef3a8d893eda5a0cc852bf215b050470a1f627c87e45ca31db7ed10d7dcf"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_gc_promoter_e472.py",
+      "bytes": 2047,
+      "md5": "612f5a520f06b575871aa0f6ae388f33",
+      "sha256": "db7074f63a012f1dc0575d5480f2e457af97660f279b7387e0c404233bd137d9"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_intron_length_e419.py",
+      "bytes": 2336,
+      "md5": "badab020448f77db7380d8ded8494872",
+      "sha256": "e72870f769faf9fd5f1af2b04c9a5deabe0aa58bcf53165fa62baee5b2bf18ef"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_intron_length_e444.py",
+      "bytes": 2058,
+      "md5": "3517e9a589a7cfca8aad6b130d42cbef",
+      "sha256": "a100d9779cab7d0fb323c5cb1af0bc3249360326df8ef9590cdd5ba4a80811b7"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_intron_length_e450.py",
+      "bytes": 1780,
+      "md5": "06d75d06e4f0859ab0c6cc7bbc8bb2eb",
+      "sha256": "c65c94a53b78e315e7cd9d5a8c1dd1a48957fa9069dbab722d07872f8763171f"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_n_exons_e454.py",
+      "bytes": 1702,
+      "md5": "4d6b30cc19ec16771c8559dc51a3d9f5",
+      "sha256": "206c108864d36a8d8df7e33a06efd6f2da0a8e0188098c21360832c0a1d534c7"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_promoter_cpg_e377.py",
+      "bytes": 4470,
+      "md5": "88ac765624269d6c1411496ae8587bbd",
+      "sha256": "f4551028c949aaecdacc37392c135e99c7dbfed274698dd693022bc717a5ee64"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_target_exon_count_e490.py",
+      "bytes": 2640,
+      "md5": "a47cafbff3dc75eb3226624937ce5acc",
+      "sha256": "3b1221e437dad43809cd4e4a8289185c4cc000f5648dbf5a3aad886a8bf78e41"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_target_gc_cds_e549.py",
+      "bytes": 2778,
+      "md5": "d5611bef8fab629459d0529630553361",
+      "sha256": "35c8ff742d9d46b5c494bc66936d76681a0813e0883dc6997238bcd79934af2e"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_target_gc_cds_e550.py",
+      "bytes": 3186,
+      "md5": "5280db0c62172fca218fbe5e163101c2",
+      "sha256": "87f21b11311056e84da3a4bd28bc6d0f9bda65f752c698ade5314003e0c26c07"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_target_gene_span_e488.py",
+      "bytes": 2045,
+      "md5": "38f5db18326d997d77aed566a4b9d91b",
+      "sha256": "198740eccf60e00ef8c554e460ed8d834908ff0e5f15d497854e9f089b7d86e9"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_target_gene_span_e667.py",
+      "bytes": 2374,
+      "md5": "4335a9868322c9b6aae169c3ea69a739",
+      "sha256": "0793914febe9b5da22fa353d47faff6c61e708ceec24858b79b1d045431dcd27"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_target_promoter_cpg_e694.py",
+      "bytes": 2591,
+      "md5": "a0500ae7db289700430521dd9d835b7d",
+      "sha256": "5d97376f3edb500d8a41e18e56c635178c718f846ea5faf53b032bcd12da9c36"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_transcript_length_e324.py",
+      "bytes": 2069,
+      "md5": "08c78f41615974d760df2b449ac7f3c3",
+      "sha256": "91b33bd087d0ffad9d8411feea1df0f5f07e8cecdc89d58297e327563210bb15"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_delta_times_utr5_length_e456.py",
+      "bytes": 2433,
+      "md5": "58482668af224b05ff97f940b86ba7ff",
+      "sha256": "9ef95718f9ef6c6298e6807324034f9e5457171e3a429f5501206783ca52bd0a"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_times_promoter_cpg_e366.py",
+      "bytes": 1962,
+      "md5": "ab18eb6651a918b6f9d4d27b1d2ed632",
+      "sha256": "cd97dba1c416136de165b723be72fda6c3ee81850f8c78e8925db8a9936b0b9e"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/screen_times_promoter_cpg_e367.py",
+      "bytes": 1866,
+      "md5": "16d273ff32990b44c9e887b35a243503",
+      "sha256": "4cd67f0b52b30a5ad6acc14e8fadc2ace55b0d4ac9dab23aaf301bef8d82266c"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/target_gene_span_times_screen_e717.py",
+      "bytes": 3839,
+      "md5": "6f44641ff514055832502bbda5945f80",
+      "sha256": "49ca940ecd8c84b8c9ea49b1072ee6efc5dbf1bff30bb0d26ac54c714210ba32"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/target_hydrophobic_fraction_e675.py",
+      "bytes": 2743,
+      "md5": "d38d2eb58fa154bf4cda946023a123fd",
+      "sha256": "96c027e3f137c6f09287d1ef571ac87cc9acef825adc298b65617b6444756082"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/target_promoter_cpg_e406.py",
+      "bytes": 1264,
+      "md5": "32459f07b7249c2e542fc56621c5612d",
+      "sha256": "fe03332523651de8d9a4dcb4cb9bb53c19db0a3a544ff66d7f82c1499be20444"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/target_promoter_cpg_times_additive_sq_e718.py",
+      "bytes": 3125,
+      "md5": "f70091758c58b3c14344a017265d26ce",
+      "sha256": "990c42165d296b0c01a4cb72be7088df6930dc9d1e349f0bcded9457108d2b1a"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r0/target_promoter_gc_e80_e81.py",
+      "bytes": 1906,
+      "md5": "d2eeca89ef87d6fc0ae240654528fa24",
+      "sha256": "7368766ed446ebbdb6e2f9d5c61de709af803c4df34174a80248f95189c6bfbb"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r2/tf_binding_motif_score_e192.py",
+      "bytes": 4136,
+      "md5": "8588db8061050268a76d792743157efb",
+      "sha256": "11dba350796fcf2a55ee3d169588f414ba8923f2e95cf192818c12e82f0067e6"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/additive_response_x_gene_span_e128.py",
+      "bytes": 2078,
+      "md5": "6aea0d307d94f81358662d28257f7364",
+      "sha256": "dc294c4e177e7209b6479e75d472b21a32a38c826cdabe76216bda2dd4196546"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/additive_response_x_mean_target_gene_spa_e303.py",
+      "bytes": 2934,
+      "md5": "cfd4437c222a92b8418f5d45ccc7d85a",
+      "sha256": "a872db5ee6a95d3caf14340107f5c27392a03b2b2e387033d42bf468e48d4454"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/additive_response_x_mean_target_span_e296.py",
+      "bytes": 3600,
+      "md5": "9003c83533ea07bcc4c900d1dad650ec",
+      "sha256": "f4054ba117856749461b18f019bcdb0e242fe4bd028cde395c889f16070ca5db"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/additive_response_x_target_promoter_cpg_e412.py",
+      "bytes": 3023,
+      "md5": "ce7e200154469e2a2a599bf30c3873b8",
+      "sha256": "9c56f25e86460a34153426c92385c4eee73cb8c4af0eceb65f0994973fe8188f"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/additive_response_x_target_promoter_cpg_e509.py",
+      "bytes": 2277,
+      "md5": "058830a442ba6cf2c2848223f8ea912f",
+      "sha256": "ce3fb62a7d20d210130aa84a964580e6f0daf396f74237287017a6a7344a9478"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/bidirectional_partner_coexpression_with__e531.py",
+      "bytes": 3927,
+      "md5": "6e4efeecd7838926a116668ca22674b6",
+      "sha256": "eef4a54dddc2e218ba3b573c2f836f1b3bc02c7a767431122ce5a0395c9b2481"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/cpg_oe_promoter_x_additive_e129.py",
+      "bytes": 1906,
+      "md5": "8ddd07d52ea3d443e23aa91f9e2a4979",
+      "sha256": "bdaeac6d216dedcb7350810da1efb0634a7cf19482bb1b2f17fe98eba328500f"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/cpg_promoter_x_additive_response_e142.py",
+      "bytes": 2299,
+      "md5": "a004826e11dd641bf03e01fd455cce31",
+      "sha256": "1e13c044eb573945616eaf5267f1256ba09a72773990deb9284af407a31cf847"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/gene_annotation_random_projection_e567.py",
+      "bytes": 4386,
+      "md5": "f4fed91b936643c1b661852f401e335c",
+      "sha256": "b343b103062201fb6fb0f477143b5953cf62f805b67d6e1b633492ef735b0b61"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/gene_span_x_additive_response_e143.py",
+      "bytes": 1717,
+      "md5": "882e57b693b999cfe33eb9a6e2a1cfe8",
+      "sha256": "46637ffe0bfa8ca8a1e18d240915298d9a531348f1f6e5215c98d29fa0db15bc"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/mean_target_promoter_gc_e295.py",
+      "bytes": 1883,
+      "md5": "df01a206425b2c10f938f72e877a657c",
+      "sha256": "db2471718726e3fca2d5256c0b9d6918c4e5c8b9683fa00c9b15fe7c7fd10b36"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/mean_target_span_x_target_coexpression_e323.py",
+      "bytes": 2051,
+      "md5": "6e8b4261f22791eef68cde1f5a8e8ce6",
+      "sha256": "2ee8d54fbb4dd563e2a41f685f4f0835ba578527c3d9af7ced7a97cb8c3e29f4"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/promoter_similarity_target_g_e564.py",
+      "bytes": 2499,
+      "md5": "8bfa8a2e5c0e6432de9fa2f6140afda2",
+      "sha256": "72198caceb5510cbcd1de46de449bfa1d3a4156b6d2d7f1a67770d82fc83166f"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_gene_promoter_cpg_e5_e540.py",
+      "bytes": 2514,
+      "md5": "af023444ed4a2f5f6c454c5a41b3f24d",
+      "sha256": "cab2b8682f512ca063f14250e161b20feeda4771861e6a9e1458da7de94c94ae"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_intron_length_e448.py",
+      "bytes": 2544,
+      "md5": "fb58d80dbd75de5be8621e187f0400fc",
+      "sha256": "fb2780e633ab4c0d56e9e4c7ccad9ed25e33cd6a9b9327117c79610fadea1527"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_mean_target_gene_spa_e337.py",
+      "bytes": 2478,
+      "md5": "88089ebf87dc012ff8501ccaac2b06d5",
+      "sha256": "b2fd948b1b4af2a14efdd19522c406753d248c9dec0f70fb23ba5f7abfa52584"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_mean_target_promoter_e301.py",
+      "bytes": 3336,
+      "md5": "7dc24f30a78694ae8b22ae2cc549d476",
+      "sha256": "957169a8e7ee89622b823644ce1daef65460791d72c87a1d4543346bc75b9058"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_mean_target_span_e31_e310.py",
+      "bytes": 4573,
+      "md5": "f8a40ad819c7e83e58602749e597235e",
+      "sha256": "a4f17b8686823954bc8b154195cedd4c13638c16844e934672facd68a4a7b293"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_promoter_cpg_island_e507.py",
+      "bytes": 4206,
+      "md5": "45b84befa084e0391c753f536badfdf6",
+      "sha256": "225dba345a2b612aac0dbe63bbf55d233c428571052ec3b507a372aadbd52c35"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_promoter_cpg_oe_e391.py",
+      "bytes": 1686,
+      "md5": "90dbc6c5614ca5ec312d9df91264b492",
+      "sha256": "b6a7a04cfabfb3e84f81c6c68d8eda8f29929ebe6879fa1e15a1d37a7ae25f36"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_promoter_cpg_oe_e441.py",
+      "bytes": 3014,
+      "md5": "b69d4ead141971c45db86c36fab3b07f",
+      "sha256": "b512d3da68d96a3490e6c0fc4060a5a680bc6533d21e6115978a4d04f4ace2b6"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_promoter_gc_e300_e274.py",
+      "bytes": 2503,
+      "md5": "ba5112764b9606d1a1573581338254fa",
+      "sha256": "7857f7ce279eb3199ae08bee670c86ebe6398522e91dd4321ddab6064cdc5c57"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_target_promoter_cpg__e558.py",
+      "bytes": 3772,
+      "md5": "ea6617b70f4c741fff98f100143079c7",
+      "sha256": "bd8d7c1c19df2483256ac8d86e0dd19e11164943f431f87216934785081f83db"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_target_promoter_cpg__e590.py",
+      "bytes": 2251,
+      "md5": "6d9f47f3c0cb3d3ae52f55406316db8a",
+      "sha256": "e0691ea22bd87f55d5cabb44c25a3ca809f970df99ef0cc802c675002921c82a"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_target_promoter_cpg_e460.py",
+      "bytes": 3766,
+      "md5": "12029d2ee4ff565117e6e3a190ad9208",
+      "sha256": "0cff41776314cc793c7f6e8c71fa2d6c9728d3f7228ba1cec4b8448ade8891c1"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_target_promoter_cpg_e528.py",
+      "bytes": 2365,
+      "md5": "277dd707640dec8c40322dcc5cea48b4",
+      "sha256": "de76b3fc8f918fee6cb53f003236fac25c0eda5bce8e5d5eb2de8a467752ae66"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_target_promoter_gc_e328.py",
+      "bytes": 2931,
+      "md5": "515ed41c25e3e97c680f8d9d8b0ca6de",
+      "sha256": "632ef1e83fc939bed10f5cfd96e5a04a338812df672c4ecce0077c9f7ac3b78d"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/replogle_additive_x_target_promoter_gc_e382.py",
+      "bytes": 2052,
+      "md5": "21647cc985610baf8ff97439afd274a1",
+      "sha256": "19baa629fe673e75f098a20171bf4fd295a16cdedbf7f21166d7eaebb972e673"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/target_annotation_random_projection_e575.py",
+      "bytes": 2720,
+      "md5": "f16ffbcdcdc0afd26d0b5c576331f023",
+      "sha256": "447e4fd52c5096a8ebf98a021219694f3b519ceaca13f3a63e00b28085629dd1"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/target_chromatin_accessibility_e242.py",
+      "bytes": 2608,
+      "md5": "6525a6fe6149b18617e3fdb9a77fa909",
+      "sha256": "3f58f97d67d4236f9fb8ffb0073bc6484199a52a2051dc5c471016e68e70e454"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/target_mean_cpg_oe_promoter_e402_e350.py",
+      "bytes": 1656,
+      "md5": "9618130ea4896a9c81e1f3778356b666",
+      "sha256": "ce50ce3970652076e369654ad8f02aa11009355e339d55495add9dacb7d7be65"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/target_promoter_cpg_mean_e521.py",
+      "bytes": 2227,
+      "md5": "4136f334fd61994b86bd22d271475953",
+      "sha256": "20a96e2f95445e627a55ff8f8628d4ca04e8676e3ceac6858a9d4fbed257568a"
+    },
+    {
+      "path": "docs/results/norman_f_plugins/r3/target_promoter_cpg_x_gene_control_varia_e594.py",
+      "bytes": 1934,
+      "md5": "586404f806ca85b9448d7e233831d11f",
+      "sha256": "5d23c3e54d0e76e4a93322f731113e4d6d92621e031383201df58aa73a280a22"
+    },
+    {
+      "path": "docs/results/norman_f_pooled_holm/pooled_holm.json",
+      "bytes": 23742,
+      "md5": "d80d4120a2568e6da9c598a8fa2d67f8",
+      "sha256": "ec262a8b47d2e8906f508d92cc15610f6ae58c6c38b9cf9336f59200a05e697c"
+    },
+    {
+      "path": "docs/results/norman_f_pooled_holm/pooled_holm.md",
+      "bytes": 10457,
+      "md5": "52fceaa61e038d833235d5e102e41851",
+      "sha256": "5017f50f59fdb6ff4c6fa50c1cbf28577a581d6fc64ab77c922f7bd0f2d4f9f3"
+    },
+    {
+      "path": "docs/results/norman_f_primary_audit.md",
+      "bytes": 3093,
+      "md5": "76c24c76cdd22aec93f5151a286fe188",
+      "sha256": "9708702dbdbaa69676691ed3c13b8fabb7752d7d0dd2ab820a4e5030487678b3"
+    },
+    {
+      "path": "docs/results/norman_f_pytest.exit",
+      "bytes": 2,
+      "md5": "897316929176464ebc9ad085f31e7284",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/norman_f_pytest.log",
+      "bytes": 1862,
+      "md5": "fc43d12e6c50c447e696218c651b288e",
+      "sha256": "fe5bd8374910f73ac513c2c19bbae67eda67f334d1b81f3a60cbdbde5a62a2d2"
+    },
+    {
+      "path": "docs/results/norman_f_r0_sealed_reading.json",
+      "bytes": 24764,
+      "md5": "673a634fe2e7190db5d2d6840d5706c0",
+      "sha256": "167bec13d50d6d9721ba4e004e4c1bf1d4f05569dba01af9c289743d7dcd51b2"
+    },
+    {
+      "path": "docs/results/norman_f_r0_sealed_reading.md",
+      "bytes": 5771,
+      "md5": "31e7d40c7798625fbe80342392ef536a",
+      "sha256": "78d7d1dc3155992e04d23a111b2f30d67dbffd38070ee838c038e3a551af0cae"
+    },
+    {
+      "path": "docs/results/norman_f_r2_sealed_reading.json",
+      "bytes": 24058,
+      "md5": "55ca4db30121caa0b308b4593014b36f",
+      "sha256": "65c43a88b9e17fc664a951e0058cc6555f4c753e20bbb3893aac5c53d4a49e97"
+    },
+    {
+      "path": "docs/results/norman_f_r2_sealed_reading.md",
+      "bytes": 5782,
+      "md5": "ce3de53a34fcc6c0620b25dd7fb7810c",
+      "sha256": "d4f96d2df0455c751dda9bcd5221bf06ce352d0c253a1b92e8a7430ff9afddd8"
+    },
+    {
+      "path": "docs/results/norman_f_r3_sealed_reading.json",
+      "bytes": 24696,
+      "md5": "75289c5a550789d68a2742f5cac4bcc7",
+      "sha256": "32542a729ce7e6324ba81db05e987412d0db8839f446ccaff27e3b19ca05a5bc"
+    },
+    {
+      "path": "docs/results/norman_f_r3_sealed_reading.md",
+      "bytes": 5793,
+      "md5": "0884b4de1bebf1a55c80dd721f342af6",
+      "sha256": "4f7430569945bf99886848ce8dc8354c590f138c18865d0ab8ef87e802c43002"
+    },
+    {
+      "path": "docs/results/norman_f_readings.md",
+      "bytes": 13438,
+      "md5": "85f445fcfcc8837864e3742e9309528e",
+      "sha256": "2239a7cb28c23332db9de93de2d8e19aeaf1efbb895076b766b235b218f3e1e0"
+    },
+    {
+      "path": "docs/results/norman_f_sealed_summary.json",
+      "bytes": 16857,
+      "md5": "f9a99d529a3bcf9e403f6854949f9dcd",
+      "sha256": "6f294641bd3c67e385d562ebbb92ef9035f561f1f031bd82b0e5bb5ea9082935"
+    },
+    {
+      "path": "docs/results/norman_f_source_inventory.md",
+      "bytes": 10540,
+      "md5": "c394f229bfee3b823bfedd140fab1a95",
+      "sha256": "1505303f2b07cb111e4f2a2409c620061e200baafc0307328005ffd46b8401e7"
+    },
+    {
+      "path": "docs/results/norman_f_stage1/feature_compare.json",
+      "bytes": 514554,
+      "md5": "b950d8f47e0d68343865873952889a6e",
+      "sha256": "794d7e9e85cd4768e151390ea0c8e5600b2a7088d4e553ed665255efe111f81c"
+    },
+    {
+      "path": "docs/results/norman_f_stage1/feature_compare.md",
+      "bytes": 46106,
+      "md5": "ec5127136a547fb27c7d9289675d852b",
+      "sha256": "c24b9cc49db93ae17bd4a2d30954d2020c408e055087e09f2854f717e1f2a3ff"
+    },
+    {
+      "path": "docs/results/norman_f_stage1_audit.md",
+      "bytes": 2667,
+      "md5": "cea4f339eb2b776106f06bc1042c66bd",
+      "sha256": "56533b9b9ac98665f4eeb725b64d92a4d2effb02fce65d5778e73073aa629908"
+    },
+    {
+      "path": "docs/results/norman_f_stage2/feature_compare.json",
+      "bytes": 86169,
+      "md5": "cc482b5d57894d91817840342035de79",
+      "sha256": "8e9eaf77f69e01771186ed05312d48069fba064cb7742ce16ed528d05062b596"
+    },
+    {
+      "path": "docs/results/norman_f_stage2/feature_compare.md",
+      "bytes": 7245,
+      "md5": "e83fe5acddb597130912a43fa6a778a8",
+      "sha256": "69aed77e260e7c3ca443f39586c9da866910ab5ccffed45e51fda236136f8e04"
+    },
+    {
+      "path": "docs/results/norman_f_stage2.exit",
+      "bytes": 2,
+      "md5": "897316929176464ebc9ad085f31e7284",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/norman_f_stage2.log",
+      "bytes": 76,
+      "md5": "bc412ba8d2d147877471adb75ee4d9e8",
+      "sha256": "98e296c6bf4ec6f746c9eab26f674c9d57bda594f3412c79c5758f1b4b3687b2"
+    },
+    {
+      "path": "docs/results/norman_f_summary.json",
+      "bytes": 50668,
+      "md5": "26e0cd4f057ca149c3446563eb2b86b6",
+      "sha256": "e1340b376e9422ff86179cb7aced04843e742429ca69b10d6701892626e5d1db"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_bidirectional_count_e485.py",
+      "bytes": 3596,
+      "md5": "728c2151b2c63301bfbd77e57984f683",
+      "sha256": "23d7b1ee05b705b47e65e673f80c6d7137643547949dcf34d4e7afab88dd96c7"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_bidirectional_proximity_e541.py",
+      "bytes": 2764,
+      "md5": "9b3f907c77a0482a9a1c208ad0f182ba",
+      "sha256": "75e90d8c18a4fd6415f8f15918c47dd4c2d126239ababf567f468a114de81b7d"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_bidirectional_proximity_e542.py",
+      "bytes": 4271,
+      "md5": "33f79f6e5e6163fc1d8d24054135d54f",
+      "sha256": "a5ab000c05c232cbf40aaf54da2e4c57bebf371137ec860dc92db5866c1aec9e"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_target_exon_count_e548.py",
+      "bytes": 1455,
+      "md5": "6f17a35f62ba3dfdbce46d3d6ff26fb1",
+      "sha256": "e1b4c0771bd5daf2a0966946b468b4b42c2eae62b7b2c76ca7803847552a06cb"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_target_hydrophobic_fracti_e679.py",
+      "bytes": 4021,
+      "md5": "182e55f18a39f3d45ce3e0460cacc0b0",
+      "sha256": "98d472b8d3a86bcd35a5ae91667699ee0e54026e5b23c2afa80a86c5da89f11d"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_target_promoter_cpg_e428.py",
+      "bytes": 2379,
+      "md5": "6772b70df70d58590fb7c6b4305bf033",
+      "sha256": "1a42537943d11953ba01bf128e2f3acb4b94257acba0ec010abe0bbad8e452ff"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/additive_times_target_promoter_cpg_e666.py",
+      "bytes": 2373,
+      "md5": "c7692941e105316f47d8a167eaf76c1e",
+      "sha256": "abbf48391642b1d414a4d63ac68eaa94faaaaf41e38a966df478cfbe2319b93e"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/screen_delta_over_transcript_length_e546.py",
+      "bytes": 3414,
+      "md5": "3e346a868cb4f040d478ec9a07c808e3",
+      "sha256": "d75c60a8aeecf237588c58c7285acfc0f4a650f33bfa6f4d93d9a603b479150c"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/screen_delta_over_transcript_length_e547.py",
+      "bytes": 2611,
+      "md5": "58078d333adf61dca21d71e5abc6f01e",
+      "sha256": "01285fe92bb54cf93ed2d7836862cf33a7604faf8a230c5acb761016285daadd"
+    },
+    {
+      "path": "docs/results/norman_f_top/r0/target_promoter_cpg_e406.py",
+      "bytes": 1264,
+      "md5": "32459f07b7249c2e542fc56621c5612d",
+      "sha256": "fe03332523651de8d9a4dcb4cb9bb53c19db0a3a544ff66d7f82c1499be20444"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/additive_response_x_target_promoter_cpg_e412.py",
+      "bytes": 3023,
+      "md5": "ce7e200154469e2a2a599bf30c3873b8",
+      "sha256": "9c56f25e86460a34153426c92385c4eee73cb8c4af0eceb65f0994973fe8188f"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/bidirectional_partner_coexpression_with__e531.py",
+      "bytes": 3927,
+      "md5": "6e4efeecd7838926a116668ca22674b6",
+      "sha256": "eef4a54dddc2e218ba3b573c2f836f1b3bc02c7a767431122ce5a0395c9b2481"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/gene_annotation_random_projection_e567.py",
+      "bytes": 4386,
+      "md5": "f4fed91b936643c1b661852f401e335c",
+      "sha256": "b343b103062201fb6fb0f477143b5953cf62f805b67d6e1b633492ef735b0b61"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/replogle_additive_x_promoter_cpg_oe_e441.py",
+      "bytes": 3014,
+      "md5": "b69d4ead141971c45db86c36fab3b07f",
+      "sha256": "b512d3da68d96a3490e6c0fc4060a5a680bc6533d21e6115978a4d04f4ace2b6"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/replogle_additive_x_target_promoter_cpg__e558.py",
+      "bytes": 3772,
+      "md5": "ea6617b70f4c741fff98f100143079c7",
+      "sha256": "bd8d7c1c19df2483256ac8d86e0dd19e11164943f431f87216934785081f83db"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/replogle_additive_x_target_promoter_cpg__e590.py",
+      "bytes": 2251,
+      "md5": "6d9f47f3c0cb3d3ae52f55406316db8a",
+      "sha256": "e0691ea22bd87f55d5cabb44c25a3ca809f970df99ef0cc802c675002921c82a"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/replogle_additive_x_target_promoter_cpg_e460.py",
+      "bytes": 3766,
+      "md5": "12029d2ee4ff565117e6e3a190ad9208",
+      "sha256": "0cff41776314cc793c7f6e8c71fa2d6c9728d3f7228ba1cec4b8448ade8891c1"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/replogle_additive_x_target_promoter_gc_e328.py",
+      "bytes": 2931,
+      "md5": "515ed41c25e3e97c680f8d9d8b0ca6de",
+      "sha256": "632ef1e83fc939bed10f5cfd96e5a04a338812df672c4ecce0077c9f7ac3b78d"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/target_mean_cpg_oe_promoter_e402_e350.py",
+      "bytes": 1656,
+      "md5": "9618130ea4896a9c81e1f3778356b666",
+      "sha256": "ce50ce3970652076e369654ad8f02aa11009355e339d55495add9dacb7d7be65"
+    },
+    {
+      "path": "docs/results/norman_f_top/r3/target_promoter_cpg_mean_e521.py",
+      "bytes": 2227,
+      "md5": "4136f334fd61994b86bd22d271475953",
+      "sha256": "20a96e2f95445e627a55ff8f8628d4ca04e8676e3ceac6858a9d4fbed257568a"
+    },
+    {
+      "path": "docs/results/norman_f_top/selection.json",
+      "bytes": 2359,
+      "md5": "4815515ae22e577c24dde0607f151d2c",
+      "sha256": "71f3476b9bf166881ee14b9d1503187a5e4a90a7fafad2bc4de8103b7e17441b"
+    }
+  ]
+}

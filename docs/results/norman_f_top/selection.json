@@ -1,0 +1,107 @@
+{
+ "m_total": 66,
+ "null_reps": 1319,
+ "k": 20,
+ "selected": [
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_promoter_cpg_e412",
+   "z": 3.6767951658477505
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_promoter_cpg_e428",
+   "z": 3.6767951658477505
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_promoter_cpg_e666",
+   "z": 3.6767951658477505
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_proximity_e541",
+   "z": 3.116206433300766
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_gc_e328",
+   "z": 2.694508733206891
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_promoter_cpg_oe_e441",
+   "z": 2.4954523668583932
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_hydrophobic_fracti_e679",
+   "z": 2.434007695675854
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_count_e485",
+   "z": 2.3344837993424403
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_over_transcript_length_e547",
+   "z": 2.2459521725144107
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_cpg__e590",
+   "z": 2.2268106072937957
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_cpg__e558",
+   "z": 2.14060637690296
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_cpg_e460",
+   "z": 2.047503136540172
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_mean_cpg_oe_promoter_e402_e350",
+   "z": 1.4878341945108968
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_promoter_cpg_e406",
+   "z": 1.4878341945108968
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_mean_e521",
+   "z": 1.4878341945108968
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_over_transcript_length_e546",
+   "z": 1.3994547528985763
+  },
+  {
+   "source": "f_r3",
+   "feature": "bidirectional_partner_coexpression_with__e531",
+   "z": 1.3976019044045664
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_exon_count_e548",
+   "z": 1.2535668436508358
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_proximity_e542",
+   "z": 1.0357690628507887
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_annotation_random_projection_e567",
+   "z": 0.5312864980649477
+  }
+ ]
+}
