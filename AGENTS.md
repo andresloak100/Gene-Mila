@@ -64,7 +64,11 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   goes in blocks, each pre-specified in the repository before it starts: the current one,
   [`docs/PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md), lets the ledger reach **$48**; every paid run in it
   passes `--set budget.cumulative_usd.deepseek=48` and starts only when the ledger plus its own worker
-  and planner caps stays at or below $48. Earlier caps were $15, then $34 (02:39 the same day). Every paid run starts only on
+  and planner caps stays at or below $48. Earlier caps were $15, then $34 (02:39 the same day). After it, block B4
+  ([PR #39](https://github.com/andresloak100/Gene-Mila/pull/39), 15 October) ran under a $52 cap on Andres's "run the
+  deepseek agents if needed", and block F ([`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md))
+  proposes the next one on his permission of 16 October: the ledger may rise at most $8 over its reading when the
+  block starts, and the chain waits for his written confirmation of that cap. Every paid run starts only on
   Andres's own words. Runs with `--planner-provider scripted --worker-provider mock` cost nothing and
   need no approval.
 - Always pass `--planner-provider` explicitly. The default planner is the Claude CLI (Opus),
