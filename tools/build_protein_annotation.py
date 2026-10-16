@@ -6,9 +6,12 @@ its protein goes. The motivating use is rank 1 of docs/NOVEL_FEATURE_NEEDS.md, s
 receptor, the translocon or the OST complex should hit the messages of ER-targeted proteins (signal peptide or
 transmembrane spans) through SRP-dependent decay, so the gene side of that interaction is "is this protein
 ER-targeted", which no bundle file carries. The nine localisation flags give the same kind of gene-side term for
-other compartments (mitochondrial import, nuclear, secretory). UniProt's reviewed (Swiss-Prot) annotation is curated
-protein knowledge from sequence, structure and literature, with no perturbation screen or expression response behind
-it: tier 1 of the data-source policy (section 7). Features read it with ctx.knowledge("protein_annotation").
+other compartments (mitochondrial import, nuclear, secretory). The signal peptide, its length and the membrane spans
+are the "protein sequence features (UniProt signal peptides, transmembrane topology)" that tier 1 of the data-source
+policy names (section 7). The localisation flags are UniProt's curated annotation (literature, microscopy of
+unperturbed cells, inference by similarity), not sequence features: they satisfy the same rule (no perturbation
+screen, no expression response behind them) and are proposed for tier 1 under it, pending Andres's confirmation of
+the policy. Features read it with ctx.knowledge("protein_annotation").
 
 Input: a UniProt REST TSV export of the reviewed human proteome. UniProt is not reachable from the cloud sessions, so
 this runs on the Mac. The export used for the first build (about 20,400 entries, a few MB):
@@ -22,12 +25,14 @@ How the rows are read: an entry is assigned to every name in "Gene Names (primar
 "; "-separated); a gene with several entries keeps the longest protein (one row per gene, as the other tables).
 UniProt writes features as "SIGNAL 1..22; /evidence=..." and "TRANSMEM 12..34; /note=...; TRANSMEM 56..78; ...":
 the signal peptide length is the end of the SIGNAL range (null when UniProt writes "?" or "<"/">" for an unknown end,
-the flag still 1), and n_transmembrane counts the TRANSMEM occurrences. The localisation flags are 0/1 by substring in
-the lower-cased subcellular-location text and keywords together: secreted ("secreted"), membrane ("membrane", any
-membrane), endoplasmic_reticulum, golgi, mitochondrion ("mitochondri"), nucleus ("nucleus", "nucleolus",
-"nucleoplasm"; not "nucle", which would catch nucleotide-binding), cytoplasm ("cytoplasm", "cytosol"), lysosome,
-peroxisome. UniProt's text also names compartments in "Note=" sentences and isoform-specific locations, so a flag
-means "UniProt mentions this compartment for the protein", not "its main location".
+the flag still 1), and n_transmembrane counts the TRANSMEM occurrences. The localisation flags are 0/1 by a regular
+expression over the lower-cased subcellular-location text and keywords together (LOCALISATION): secreted
+("secreted"), membrane ("membrane", any membrane), endoplasmic_reticulum, golgi, mitochondrion ("mitochondri"),
+nucleus ("nucleus", "nucleolus", "nucleoplasm"; not "nucle", which would catch nucleotide-binding), cytoplasm
+("cytoplasm" as a whole word or "cytosol"; not "cytoplasmic", which would flag every membrane protein with a
+"cytoplasmic side" or a "cytoplasmic vesicle" location), lysosome, peroxisome. UniProt's text also names compartments
+in "Note=" sentences and isoform-specific locations, so a flag means "UniProt mentions this compartment for the
+protein", not "its main location".
 
 The output (JSON): description (shown to the planner), columns, column_units, genes {symbol: [value per column]},
 source {file, sha256, url, n_entries}, and with --genes-from (a bundle or public directory) only the bundle's genes,
@@ -52,14 +57,15 @@ URL = ("https://rest.uniprot.org/uniprotkb/stream?format=tsv&query=organism_id:9
        "&fields=accession,gene_primary,length,ft_signal,ft_transmem,cc_subcellular_location,keyword")
 HEADERS = {"entry": "Entry", "gene": "Gene Names (primary)", "length": "Length", "signal": "Signal peptide",
            "transmem": "Transmembrane", "location": "Subcellular location [CC]", "keywords": "Keywords"}
-LOCALISATION = {"secreted": ("secreted",), "membrane": ("membrane",),
-                "endoplasmic_reticulum": ("endoplasmic reticulum",), "golgi": ("golgi",),
-                "mitochondrion": ("mitochondri",), "nucleus": ("nucleus", "nucleolus", "nucleoplasm"),
-                "cytoplasm": ("cytoplasm", "cytosol"), "lysosome": ("lysosom",), "peroxisome": ("peroxisom",)}
+LOCALISATION = {"secreted": "secreted", "membrane": "membrane", "endoplasmic_reticulum": "endoplasmic reticulum",
+                "golgi": "golgi", "mitochondrion": "mitochondri", "nucleus": "nucleus|nucleolus|nucleoplasm",
+                "cytoplasm": r"cytoplasm\b|cytosol", "lysosome": "lysosom", "peroxisome": "peroxisom"}
+_LOCALISATION = {k: re.compile(v) for k, v in LOCALISATION.items()}
 COLUMNS = ["protein_length", "has_signal_peptide", "signal_peptide_length", "n_transmembrane"] + list(LOCALISATION)
 UNITS = ("protein_length: amino acids; has_signal_peptide: 0/1; signal_peptide_length: amino acids (0 without one, "
          "null when UniProt leaves the end open); n_transmembrane: UniProt TRANSMEM segments; "
-         + ", ".join(LOCALISATION) + ": 0/1, UniProt names the compartment in the subcellular location or keywords")
+         + ", ".join(LOCALISATION) + ": 0/1, UniProt names the compartment in the subcellular location or keywords "
+         "(cytoplasm as a word, so a 'cytoplasmic side' or 'cytoplasmic vesicle' alone does not count)")
 _SIGNAL = re.compile(r"\bSIGNAL\s+[<>]?(\d+|\?)\.\.([<>]?)(\d+|\?)")
 _TRANSMEM = re.compile(r"\bTRANSMEM\b")
 
@@ -86,7 +92,7 @@ def row_values(r: dict) -> list:
     has_sp, sp_len = parse_signal(r[HEADERS["signal"]])
     text = f"{r[HEADERS['location']]} {r[HEADERS['keywords']]}".lower()
     return ([int(r[HEADERS["length"]]), has_sp, sp_len, len(_TRANSMEM.findall(r[HEADERS["transmem"]] or ""))]
-            + [int(any(w in text for w in words)) for words in LOCALISATION.values()])
+            + [int(bool(rx.search(text))) for rx in _LOCALISATION.values()])
 
 
 def build(tsv: Path, keep: set[str] | None) -> dict:

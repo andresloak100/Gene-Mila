@@ -30,15 +30,21 @@ def _gnomad_row(**v):
 
 
 def _gnomad_table(tmp: Path, gz: bool = True) -> Path:
-    """CONSTR: a constrained gene; TOLER: tolerant, with a missing oe_mis_upper and a syn_outlier flag; DUP: one clean
-    row and one no_exp_lof row with all values missing, as gnomAD lists 46 symbols twice."""
+    """CONSTR: a constrained gene; TOLER: tolerant, with a missing oe_mis_upper and a two-part flag; DUP: one clean
+    row and one no_exp_lof row with all values missing, as gnomAD lists 46 symbols twice; NANG: the RPS17 case, three
+    cells written as the literal "NaN" (gnomAD's one such row)."""
     rows = [
         _gnomad_row(gene="CONSTR", transcript="ENST1", oe_lof="0.1", oe_lof_lower="0.05", oe_lof_upper="0.25",
                     pLI="0.99", pNull="0.0", pRec="0.01", oe_mis="0.5", oe_mis_upper="0.6", mis_z="3.5", syn_z="0.1",
                     lof_z="6.0", obs_lof="2", exp_lof="20", oe_lof_upper_bin="0", constraint_flag=""),
         _gnomad_row(gene="TOLER", transcript="ENST2", oe_lof="1.2", oe_lof_lower="0.9", oe_lof_upper="1.6",
                     pLI="1e-10", pNull="0.9", pRec="0.1", oe_mis="1.1", oe_mis_upper="NA", mis_z="-1.0", syn_z="-4.0",
-                    lof_z="-0.5", obs_lof="30", exp_lof="25", oe_lof_upper_bin="9", constraint_flag="syn_outlier"),
+                    lof_z="-0.5", obs_lof="30", exp_lof="25", oe_lof_upper_bin="9",
+                    constraint_flag="mis_too_many|syn_outlier"),
+        _gnomad_row(gene="NANG", transcript="ENST5", oe_lof="0.0", oe_lof_lower="0.0", oe_lof_upper="1.849",
+                    pLI="0.33", pNull="0.17", pRec="0.5", oe_mis="NaN", oe_mis_upper="1.9", mis_z="NaN", syn_z="NaN",
+                    lof_z="0.59", obs_lof="0", exp_lof="0.41", oe_lof_upper_bin="9",
+                    constraint_flag="no_exp_mis|no_exp_syn|no_variants"),
         _gnomad_row(gene="DUP", transcript="ENST4", constraint_flag="no_exp_lof"),
         _gnomad_row(gene="DUP", transcript="ENST3", oe_lof="0.5", oe_lof_lower="0.3", oe_lof_upper="0.8", pLI="0.2",
                     pNull="0.3", pRec="0.5", oe_mis="0.9", oe_mis_upper="1.0", mis_z="0.0", syn_z="0.0", lof_z="1.0",
@@ -58,18 +64,26 @@ def _gnomad_table(tmp: Path, gz: bool = True) -> Path:
 def test_gene_constraint_known_values(tmp_path):
     t = bgc.build(_gnomad_table(tmp_path), None)
     col = {c: i for i, c in enumerate(t["columns"])}
-    assert sorted(t["genes"]) == ["CONSTR", "DUP", "TOLER"]
+    assert sorted(t["genes"]) == ["CONSTR", "DUP", "NANG", "TOLER"]
     c, tol = t["genes"]["CONSTR"], t["genes"]["TOLER"]
     assert c[col["pLI"]] == 0.99 and c[col["oe_lof_upper"]] == 0.25 and c[col["obs_lof"]] == 2
     assert c[col["oe_lof_upper_bin"]] == 0 and tol[col["oe_lof_upper_bin"]] == 9
     assert tol[col["oe_mis_upper"]] is None and tol[col["pLI"]] == 0.0  # 1e-10 rounds to 0 at 6 decimals
     assert tol[col["syn_z"]] == -4.0
-    assert t["flags"] == {"TOLER": "syn_outlier"}  # the flagged row is kept, and marked; clean genes are absent
+    # flagged rows are kept and marked with gnomAD's whole "|"-joined string; clean genes are absent
+    assert t["flags"] == {"TOLER": "mis_too_many|syn_outlier", "NANG": "no_exp_mis|no_exp_syn|no_variants"}
     assert t["genes"]["DUP"][col["exp_lof"]] == 10 and "DUP" not in t["flags"]  # the clean duplicate wins
-    assert t["source"]["n_rows"] == 4 and t["source"]["n_genes_in_table"] == 3 and len(t["source"]["sha256"]) == 64
+    nan = t["genes"]["NANG"]  # "NaN" cells become null, like "NA"; the other cells of the row are kept
+    assert [nan[col[k]] for k in ("oe_mis", "mis_z", "syn_z")] == [None, None, None]
+    assert nan[col["oe_mis_upper"]] == 1.9 and nan[col["obs_lof"]] == 0 and nan[col["exp_lof"]] == 0.41
+    assert "NaN" not in json.dumps(t, allow_nan=False)  # what main() writes is valid JSON
+    assert t["source"]["n_rows"] == 5 and t["source"]["n_genes_in_table"] == 4 and len(t["source"]["sha256"]) == 64
     assert t["source"]["url"].startswith("https://gnomad-public")
-    assert t["description"].startswith("gnomAD v2.1.1") and len(t["description"]) < 900
+    # the planner's knowledge section is cut at 2,500 characters and the Norman bundle uses 2,322 before this file
+    # (module docstring): the description stays near 500 so the file fits next to gene_annotation or the Replogle file
+    assert t["description"].startswith("gnomAD v2.1.1") and len(t["description"]) <= 550
     assert "LOEUF" in t["description"] and "pLI" in t["description"] and "v19" in t["description"]
+    assert "'|'" in t["description"] and "lof_too_many" in t["description"]  # features must test flags with `in`
 
 
 def test_gene_constraint_genes_from_and_cli(tmp_path):
@@ -81,7 +95,7 @@ def test_gene_constraint_genes_from_and_cli(tmp_path):
     assert bgc.main(["--table", str(table), "--genes-from", str(pub), "--out", str(out)]) == 0
     t = json.loads(out.read_text())
     assert sorted(t["genes"]) == ["DUP", "TOLER"] and t["unmatched"] == ["SELENOP"]
-    assert t["flags"] == {"TOLER": "syn_outlier"}
+    assert t["flags"] == {"TOLER": "mis_too_many|syn_outlier"}
     # a table that is not gnomAD's: exit 2, nothing written
     bad = tmp_path / "bad.txt"
     bad.write_text("gene\ttranscript\tpLI\nX\tT\t0.5\n")
@@ -108,6 +122,11 @@ def _uniprot_tsv(tmp: Path, header=None) -> Path:
         ["P00003", "SECR", "120", "", "", "SUBCELLULAR LOCATION: Cytoplasm.", "Cytoplasm"],
         # mitochondrial protein whose signal peptide has an open end
         ["P00004", "MITO", "80", "SIGNAL 1..?", "", "SUBCELLULAR LOCATION: Mitochondrion matrix.", "Mitochondrion"],
+        # a membrane receptor: "cytoplasmic side" and "cytoplasmic vesicle" are not the cytoplasm, and
+        # "Nucleotide-binding" is not the nucleus
+        ["P00005", "RECP", "400", "SIGNAL 1..20", "TRANSMEM 30..50; /note=\"Helical\"",
+         "SUBCELLULAR LOCATION: [Isoform 1]: Cell membrane; Single-pass membrane protein. Note=Signals from the "
+         "cytoplasmic side. Cytoplasmic vesicle membrane.", "Cell membrane;Nucleotide-binding;Transmembrane"],
     ]
     tmp.mkdir(exist_ok=True)
     path = tmp / "uniprot.tsv"
@@ -118,7 +137,7 @@ def _uniprot_tsv(tmp: Path, header=None) -> Path:
 def test_protein_annotation_known_values(tmp_path):
     t = bpa.build(_uniprot_tsv(tmp_path), None)
     col = {c: i for i, c in enumerate(t["columns"])}
-    assert sorted(t["genes"]) == ["MITO", "NUCA", "NUCB", "SECR"]
+    assert sorted(t["genes"]) == ["MITO", "NUCA", "NUCB", "RECP", "SECR"]
     s = t["genes"]["SECR"]
     assert s[col["protein_length"]] == 300  # the longest of the two SECR entries
     assert s[col["has_signal_peptide"]] == 1 and s[col["signal_peptide_length"]] == 22 and s[col["n_transmembrane"]] == 2
@@ -131,7 +150,10 @@ def test_protein_annotation_known_values(tmp_path):
     assert n[col["membrane"]] == 0 and n[col["secreted"]] == 0
     m = t["genes"]["MITO"]
     assert m[col["has_signal_peptide"]] == 1 and m[col["signal_peptide_length"]] is None and m[col["mitochondrion"]] == 1
-    assert t["source"]["n_entries"] == 4 and t["source"]["n_genes_in_table"] == 4 and len(t["source"]["sha256"]) == 64
+    r = t["genes"]["RECP"]
+    assert r[col["membrane"]] == 1 and r[col["n_transmembrane"]] == 1 and r[col["signal_peptide_length"]] == 20
+    assert r[col["cytoplasm"]] == 0 and r[col["nucleus"]] == 0  # prefix hits "cytoplasmic", "nucleotide" do not count
+    assert t["source"]["n_entries"] == 5 and t["source"]["n_genes_in_table"] == 5 and len(t["source"]["sha256"]) == 64
     assert t["source"]["url"].startswith("https://rest.uniprot.org/uniprotkb/stream?")
     assert t["description"].startswith("Protein features from UniProt") and len(t["description"]) < 900
 
