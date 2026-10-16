@@ -82,3 +82,14 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
   (r0 e666) and −0.0100 (r3 e412), each conditional on that model's other columns; the add-one coefficient of the fair
   test is not saved. No sign can be stated, so A.2 stays unmet and the mechanism stays "known biology, direction not
   tested here".
+- 2026-10-16 23:40 UTC, correction after the lead's review (`docs/ROADMAP.md`, section 1): **A.1 is not met; it is
+  pending a corrected test.** The entry of 22:05 UTC above is withdrawn on two points. First, the gene-permutation
+  null of `tools/feature_compare.py` cannot fail for a feature that is a parent column times a per-perturbation
+  number: permuting the product across genes scrambles the additive_response factor the parent already holds, so the
+  null gain is a spike at zero (null sd 0.00001 against the observed 0.00056), and 14 of the 20 tested rows, a random
+  projection among them, hit the same p floor (`docs/results/norman_f_stage2/feature_compare.json`). Second, with
+  20·m − 1 replicates the smallest pooled Holm p equals the 0.05 cutoff by construction, so "found" was a flag for "no
+  replicate exceeded", not a p-value; that rule was this session's amendment of 04:20 UTC, and the error is its. The
+  tool gets a perturbation-level null and a family-wise max-gain correction before any block G score is read, and
+  block F's stage 2 is re-read under it (ROADMAP D2). Everything else above stands: known biology, mixed signs, no arm
+  gain, not yet on either path.
