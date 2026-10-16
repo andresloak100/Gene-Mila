@@ -4,6 +4,24 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Direct two-stage decision received, 2026-10-16 20:22 UTC — Block F readings starting:**
+Andres explicitly said use PR44/b6638c3 two-stage test, do not run original single-stage, follow
+comments6223733089/6223972936 exactly, stage2 at nice19, then readings2–4 and draftresultsPR.
+Full direct message [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6223988752).
+This supersedes the pending-choice notes below. Own operator clone now at **b6638c3**, branch
+**astra/block-f-results**. Exact reading1 copy produced94unchanged annotation plugins: r0=60,
+r2=1,r3=33; byte equality and secret-pattern scan passed, MD5/SHA256 in
+`docs/results/norman_f_plugin_manifest.json`. No primary/sealed evaluation has run yet.
+Allthreepaidruns passed; no lab/scale/feature_compare process before evaluation, STOPpresent.
+**Exact next:** exact amended stage1 OOF `--null-reps 0` into norman_f_stage1; helper select top20
+with fixed tie rule/replicate count; stage2 nice19 with sources that have topfiles, leave running;
+helper pool over full stage1 family, then readings2–4 unchanged. No original all-feature null,
+val1 opt-in, threshold/k change, new paid run, private-label/manual sealed access or model selection.
+After success, commit all norman_f_* artifacts/plugins on own results branch, secret-scan, draftPR,
+post pooled_holm.md and sealed readings with run directories on41. Keep state current at each stage.
+Root owns sole evaluation/shared/live state. Prior operator0db run scripts/maincode/data/cap intact.
+
+
 **All three Block F runs PASSED, 2026-10-16 20:17:25 UTC; readings await the direct plan choice:**
 `gene-mila/runs/norman_ga_ds_addstart_w4_r0`: finished19:30UTC, rc0,1203s,60annotation plugins,
 selected EXP_0715 ridge28features, ledgercost1.288493. `_r2`: finished19:54UTC,rc0,1231.2s,
