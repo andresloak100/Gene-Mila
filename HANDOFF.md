@@ -4,6 +4,33 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Astra follow-up COMPLETE — 2026-10-16 21:51 UTC; claim #47 closed.**
+Block F readings 3/4 and original results remain preserved. Coefficient addendum **b9d550a** is pushed
+in [draft PR #46](https://github.com/andresloak100/Gene-Mila/pull/46), posted on
+[#41/comment6225228232](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225228232).
+Existing creation-fit standardized interaction coefficients (ridge alpha100): F r0 EXP_0428/e428
++.014724067753942987; EXP_0666/e666 +.01434165272419911; F r3 EXP_0412/e412 -.00996105446986751.
+These original multifeature fits have mixed conditional signs, not a universal negative-CpG mechanism;
+the primary common-parent OOF coefficient was not saved. No refit or new score. Selected r0 retains
+e666 positively; e428 and selected r3/e412 are absent. Full artifact hashes/model columns and addendum
+manifest are in `docs/results/norman_f_coefficient_signs.*` / `norman_f_coefficient_manifest.json`.
+All 142 original result hashes remain unchanged; independent addendum audit and PR checks passed.
+All **9** requested public references are downloaded, **4,483,967,213 bytes** total, in
+`~/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/`. Every SHA256/size independently verified;
+HTTP200/curl0/TLS verification succeeded, all transfer processes ended normally and no partial remains.
+`downloads.md` records requested/final URLs, UTC dates and SHA256, including CORUM official API move
+(current5.3/date2026-04-14; old static ZIP path serves HTML) and GO OBO redirect. Document SHA256:
+`cd22243dcaba2b3e4c169b08f5919ea4894b8a69881213b428d12a4f848217da`.
+[Full exact receipt on #47](https://github.com/andresloak100/Gene-Mila/issues/47#issuecomment-6225365762);
+[completion cross-link on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225366353).
+The initial pending receipt entries are retained as history and explicitly resolved by final completion.
+**Exact next:** review PR #46 and the download receipt. No transfer, coefficient extraction, F reading,
+paid run or test needs repeating. No Block G preprocessing, bundle/build or run occurred; start nothing
+for G until `docs/PLAN_G_CLEAN_ARM.md` on integration has the dated note naming its commit, as Andres
+explicitly directed. This completed task initiates no later work. STOP present, Block F cap/hash unchanged,
+no lab/driver active, main checkout/existing bundles/runs/ledger untouched, F heartbeat remains PAUSED.
+Earlier ACTIVE download/process notes are historical; do not restart them.
+
 **Coefficient addendum published; free downloads active — Astra, 2026-10-16 21:42 UTC, claim #47.**
 Reading 4 saved-fit sign addendum **b9d550a** is pushed to draft PR #46 and posted on #41,
 [comment 6225228232](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225228232).
