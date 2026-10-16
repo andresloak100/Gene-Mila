@@ -212,3 +212,26 @@ knockdowns. Tier 2 one arm at a time afterwards. The existing Replogle arm stays
   had no way to represent this before the annotation table.
 - **Values checked by hand** on the representative transcripts: KLF1 362 amino acids, CEBPA 358, SET 290 and HBG1 147,
   as in UniProt; MYC's CCDS transcript with the longest coding sequence is the 454-residue CUG-initiated isoform.
+
+## 10. Second batch (16 October): constraint and protein builders, residual mining, CellForge-translated features
+
+- `tools/build_gene_constraint.py` turns gnomAD v2.1.1 by-gene constraint (LOEUF, pLI, observed/expected LoF and
+  missense, z scores, flags) into a knowledge file; built for Norman: 2,018 of 2,083 genes matched, 65 unmatched (mostly
+  non-coding RNAs, which gnomAD does not score, plus about 18 symbols gnomAD lists under GENCODE v19 names). Tier 1.
+- **A limit found while building it:** the planner reads every knowledge file's description in one section cut at
+  2,500 characters. Norman's five bundle files plus the Replogle file take about 2,320; `gene_annotation` adds 895, so
+  block F fits, but `gene_constraint` (546) on top does not: the cut would hide the Replogle description. Adding a
+  second new file to the same bundle needs the planner state to render knowledge differently
+  (`genemila/research_state.py`, held by #40) or its own arm without Replogle. The item is for the lab-code owner.
+- `tools/build_protein_annotation.py` reads a UniProt TSV export (signal peptide, transmembrane segments, localisation)
+  into a knowledge file; UniProt is not reachable from the cloud, so it runs on the Mac, and it refuses an export whose
+  header names differ from the ones it expects rather than guess.
+- `tools/residual_mining.py` (M1) ranks the training perturbations the parent model predicts worst, out of fold, next
+  to their similarity to other training targets (gene sets, PPI, co-expression) and finds per-gene residual
+  correlations with control statistics and with every numeric `gene_annotation` column. Hypothesis generation only:
+  a source chosen from it is selected on the labels `feature_compare`'s OOF tier scores, so that tier only screens it.
+- `docs/comparison/cellforge_c2/`: four features we translated from CellForge's design ideas (arm A5-C2 of the
+  comparison protocol), with their source citations and the statement that they are our translations. One of them,
+  the pair interaction term, is zero on every out-of-fold row under gene-grouped folds (a pair's singles are hidden
+  with it), so on Norman it can only be read on the visible-validation tier.
+
