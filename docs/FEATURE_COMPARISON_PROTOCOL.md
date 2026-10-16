@@ -4,6 +4,8 @@ Written 2026-10-16 for Andres and his ML collaborator, claim [#41](https://githu
 It is step 2 of the paper proposal in draft [PR #38](https://github.com/andresloak100/Gene-Mila/pull/38)
 ([`docs/PAPER_FRAMEWORK_PROPOSAL.md`](https://github.com/andresloak100/Gene-Mila/blob/claude/paper-framework-proposal/docs/PAPER_FRAMEWORK_PROPOSAL.md)
 on its branch). PR #38 says why we compare systems. This file says how. Nothing here has run on real data.
+Commands and criteria follow `tools/feature_compare.py` with its review fixes (commit `2136bf3`) and the task
+package of commit `dd9a2d8`; if either changes, its own docstring wins over this file.
 **Unverified** marks every statement that could not be checked from this repository or the local clones.
 
 ## 1. Purpose and the claim
@@ -22,7 +24,7 @@ on its branch). PR #38 says why we compare systems. This file says how. Nothing 
 | tier | what it is | who saw it before scoring | use |
 |---|---|---|---|
 | OOF | training perturbations, scored out of fold (gene-grouped folds on Norman) | every arm: every arm selects on OOF scores of the same labels, whatever the fold seed | screen, and parity check |
-| V (opt-in `--with-val1`) | visible validation, fit on all training perturbations | lab arms A1/A2 (the lab selects on V + OOF, `genemila/lab.py:426-437`); not the package arms | first unselected number for package arms; optimistic for lab arms |
+| V (opt-in `--with-val1`) | visible validation, fit on all training perturbations | lab arms A1/A2 (the lab selects on V + OOF, `genemila/lab.py:426-437`); not the package arms | first unselected number for package arms; optimistic for lab arms (the tool marks their V verdicts "optimistic: source selected on val1") |
 | S | sealed set behind the oracle | nobody's features, but people have read it many times | indicative only ("worn") |
 | F | fresh test, outside the Mac | nobody | the paper's numbers |
 
@@ -35,17 +37,19 @@ A second parent P1 (a strong known set, for example N2's selected features) test
 | arm | what runs | cost | status |
 |---|---|---|---|
 | **A0** classic | Unperturbed, mean response, additive rule (Norman), ridge on P0, linear regression and random forest reruns (`genemila/benchmark/table.py:132-165`) | free | partly run (section 5) |
-| **A1** our multi-agent lab | `run_research.py`, DeepSeek planner `deepseek-v4-pro`, 4 `deepseek-flash` workers, 20 min, start from P0 (B2 settings) | paid; Andres's go per run | B1/B2 exist on Norman |
+| **A1** our multi-agent lab | `run_research.py`, DeepSeek planner `deepseek-v4-pro`, 4 `deepseek-flash` workers, 20 min, start from P0, knowledge file `replogle2022_k562` (B2 settings; `block_b2_run.sh` checks its md5 `d9eff528…`) | paid; Andres's go per run | B2 is an A1 instance on Norman; B1 is not (it warm-started from N2) |
 | **A2** one worker | the same with `--workers 1` (block B4, draft [PR #39](https://github.com/andresloak100/Gene-Mila/pull/39)) | paid; Andres's go | runs reported in HANDOFF.md section 1 under PR #39 (15 Oct); results not in the repository |
-| **A3** autoresearch-style coding agent | Claude Code or Codex on the task package (section 4), `program.md` loop, one `features/` folder, fixed `evaluate.py` | LLM paid by someone: **decision** | not run |
-| **A4** Biomni | Biomni's A1 agent on the same task package | DeepSeek; about $0.5–2 per run at ledger prices (estimate, **unverified**) | not run |
+| **A3** autoresearch-style coding agent | Claude Code or Codex on the task package (section 4), `program.md` loop, one `features/` folder, fixed `evaluate.py` | LLM paid by someone (decision 2); paid, so Andres's go per run, inside the block of decision 6 | not run |
+| **A4** Biomni | Biomni's A1 agent on the same task package | DeepSeek; about $0.5–2 per run at ledger prices (estimate, **unverified**); Andres's go per run, inside the block of decision 6; the runner writes `provider="deepseek"` ledger rows, so the cap counts them | not run |
 | **A5** CellForge | C2 / C1 / C0 below | C2 free; C1 about $0.2 per debate (estimate); C0 needs a GPU | not run |
 | **A6** STATE | its own model, scored by our evaluator: an outcome row only | GPU | not feasible here |
 
 **A3 autoresearch-style.** One coding agent with a shell works inside a copy of the task package. It may change
 one feature file per step and run `python evaluate.py`. The script keeps or discards the change itself
 (OOF pearson_delta, with a noise rule). It works like karpathy/autoresearch: fixed harness, one editable surface,
-`results.tsv`, "never stop" until the wall clock kills it. The arm returns its `features/` folder.
+`results.tsv`, "never stop" until the wall clock kills it. The arm returns `runs/kept/features/`, the state its
+keep rule accepted (`evaluate.py` copies `features/` there on a keep). The working `features/` may hold an edit
+that was never evaluated or is about to be discarded, so it is kept as an artefact and never scored.
 
 **A4 Biomni** (`snap-stanford/Biomni`, read locally; facts from its code unless marked).
 - Biomni is a general coding agent with tool retrieval. It has no Perturb-seq prediction tool. Here it is
@@ -60,8 +64,10 @@ one feature file per step and run `python evaluate.py`. The script keeps or disc
   with the user's rights and full network. On the Mac it could read `data/*/private` or download the source
   screens. It must run in a container that mounts only the package. (2) Two routes print the key:
   `BIOMNI_CUSTOM_API_KEY` (the full key, through the config print at `biomni/agent/a1.py:124-135`) and
-  `api_key=` (last 4 characters, `a1.py:145`). Use neither. (3) Agent code shares the process environment:
-  the runner removes the key from `os.environ` after the client exists. (4) There is no token count and no
+  `api_key=` (last 4 characters, `a1.py:145`). Use neither. (3) Agent code shares the process: deleting the key
+  from `os.environ` does not hide it (it stays in the client object and in `/proc/self/environ`). So the real key
+  never enters the container: a host-side proxy to api.deepseek.com adds the key and counts tokens, and the
+  container gets a dummy key and a network route to that proxy only. (4) There is no token count and no
   budget cap; the recursion limit is 500 (`a1.py:1774`) and the context is never trimmed. The runner must count
   tokens and stop at a cap. (5) Whether `deepseek-v4-pro` accepts Biomni's consecutive assistant messages is
   **unverified** (one paid call would settle it).
@@ -120,12 +126,15 @@ the embedding file as a knowledge file.
    paid run or the worker-scaling driver. Run CPU-heavy tools with `nice -n 19`. One paid run at a time.
 9. **Embedded labels.** A foreign file could paste training labels into its source and lift its OOF score.
    `tools/task_package/literal.py` caps literals and bans decoding helpers. That makes it expensive, not
-   impossible. So OOF is never the deciding number for a foreign file.
+   impossible. So OOF alone never decides anything about a foreign file beyond screening (section 6.2 adds a
+   V check), and only F makes a claim.
 
 ## 4. Exact commands
 
-Run from a clone that is not the main checkout. Never print, echo or log a key. `$API_KEY` stays in the
-caller's environment (AGENTS.md, "Secrets").
+Run from a clone that is not the main checkout. `data/` and `runs/` exist only in the main checkout, so they are
+read through `<MAIN>`, its absolute path (as in `docs/PLAN_AFTER_N4.md`); nothing is written there except the lab's
+own run directories. Write paths after `=` with `$HOME`, not `~`: zsh, the Mac's shell, does not expand `~` after
+`=`. Never print, echo or log a key. `$API_KEY` stays in the caller's environment (AGENTS.md, "Secrets").
 
 ```
 # 0. On the Mac, always first. If run_research.py is running, stop here.
@@ -133,7 +142,7 @@ python handoff_state.py --fetch
 pgrep -fl run_research.py
 
 # 1. Task package, once per bundle, outside the checkout
-python tools/export_task_package.py --data data/norman --out ~/gm_packages/norman
+python tools/export_task_package.py --data <MAIN>/data/norman --out ~/gm_packages/norman
 
 # 2. One working copy per search of a package arm (A3, A4): cp -R, never edit the original
 cp -R ~/gm_packages/norman ~/gm_work/norman_A3_r0
@@ -145,41 +154,56 @@ cd ~/gm_work/norman_A3_r0          # inside the no-network container
 timeout --kill-after=30 20m claude -p "$(cat program.md)"     # or: codex exec "$(cat program.md)"
 ```
 macOS has no `timeout` by default; Homebrew's coreutils installs it as `gtimeout` (**unverified** on the Mac).
-The final state is the `features/` folder at the kill; also keep `results.tsv`, `runs/` and the transcript.
+The final state is `runs/kept/features/` at the kill (not `features/`, section 2); also keep `features/`,
+`results.tsv`, `runs/` and the transcript.
 
 **A4, Biomni runner outline** (a small script in its own environment, not lab code; not written yet):
-1. Start with `OPENAI_API_KEY="$API_KEY" OPENAI_BASE_URL=https://api.deepseek.com/v1 python run_biomni.py`.
-2. Build `A1(path=<package>, llm="deepseek-v4-pro", source="OpenAI", expected_data_lake_files=[])`, then delete
-   `OPENAI_API_KEY` from `os.environ`.
-3. Wrap the LLM call: add up input, cache-hit and output tokens, price them with `configs/default.toml`
-   `[pricing."deepseek-v4-pro"]`, write each call to the shared ledger, stop at the cap.
-4. `agent.go(<program.md text>)`, run inside the container; the agent runs `evaluate.py` from Bash only.
-5. Save the transcript; hand back `features/`.
+1. On the host, outside the container: a forwarding proxy to api.deepseek.com, started with
+   `DEEPSEEK_API_KEY="$API_KEY"`. It adds the Authorization header, adds up input, cache-hit and output tokens,
+   prices them with `configs/default.toml` `[pricing."deepseek-v4-pro"]`, writes each call to the shared ledger
+   (`SpendLedger.add`) and refuses calls past the cap.
+2. In the container: `OPENAI_API_KEY=dummy OPENAI_BASE_URL=<proxy URL>/v1 python run_biomni.py`, with network to
+   the proxy only. It builds `A1(path=<package>, llm="deepseek-v4-pro", source="OpenAI", expected_data_lake_files=[])`.
+3. `agent.go(<program.md text>)`; the agent runs `evaluate.py` from Bash only.
+4. Save the transcript and scan it for the real key before keeping it; hand back `runs/kept/features/`.
 
-**A1 and A2, the lab** (paid; Andres's go for each run; flags from AGENTS.md; `<cap>` is the block's cap):
+**A1 and A2, the lab** (paid; Andres's go for each run; run by whoever owns the Mac runs, flags as in B2's
+`block_b2_run.sh`; `<cap>` is the block's cap; `data/norman/knowledge/` must hold `replogle2022_k562` only, as for B2):
 ```
 DEEPSEEK_API_KEY="$API_KEY" python run_research.py --minutes 20 --workers 4 --dataset norman \
   --planner-provider deepseek --planner-model deepseek-v4-pro \
   --worker-provider deepseek --worker-model deepseek-flash --no-watchdog \
-  --run-dir runs/<name> --set run.seed=<S> \
-  --set budget.ledger=<absolute path to the shared ledger> --set budget.cumulative_usd.deepseek=<cap> \
+  --run-dir <MAIN>/runs/<name> --set run.seed=<S> --set run.data_dir=<MAIN>/data/norman \
+  --set budget.ledger=<MAIN>/runs/spend_ledger.sqlite --set budget.cumulative_usd.deepseek=<cap> \
   --set budget.max_total_usd=1.0 --set budget.max_planner_usd=1.5
 ```
-A2 is the same with `--workers 1` (PR #39). After the start, check `config.json` in the run directory:
-`--set` accepts misspelled keys silently.
+A2 is the same with `--workers 1` (PR #39). After the start, check `config.json` in the run directory
+(`run.external_knowledge` must read `['replogle2022_k562']`): `--set` accepts misspelled keys silently.
 
 **Scoring every arm** (free; `nice -n 19` on the Mac):
 ```
-nice -n 19 python tools/feature_compare.py --data data/norman --out runs/compare_norman_p0 \
+nice -n 19 python tools/feature_compare.py --data <MAIN>/data/norman --out $HOME/gm_compare/norman_p0 \
   --parent builtin \
-  --source-run A1_r0=runs/norman_ds_addstart_w4_r0 --source-run A2_r0=runs/norman_ds_addstart_w1_r0 \
-  --source A3_r0=~/gm_work/norman_A3_r0/features --source A4_r0=~/gm_work/norman_A4_r0/features \
+  --source-run A1_r0=<MAIN>/runs/norman_ds_addstart_w4_r0 --source-run A2_r0=<MAIN>/runs/norman_ds_addstart_w1_r0 \
+  --source A3_r0=$HOME/gm_work/norman_A3_r0/runs/kept/features \
+  --source A4_r0=$HOME/gm_work/norman_A4_r0/runs/kept/features \
   --source A5_C2=<folder of the translated plugins> \
-  --fold-seeds 101,102,103 --null-reps 99
+  --fold-seeds 101,102,103 --null-reps 499
 ```
-Add `--with-val1` only after Andres allows it (section 7). For parent P1 use `--parent-run <run>` and a
-second `--out`. Use `--null-reps 199` for the paper. Run every search seed of every arm in one call, so all
-rows share one scoring.
+The report is `feature_compare.md` and `feature_compare.json` in `--out`. For parent P1 use `--parent-run <run>`
+and a second `--out`. Run every search seed of every arm in one call, so all rows share one parent scoring; the
+Holm families stay per source (section 6), so one call does not change any verdict.
+
+**Null replicates.** The null p is never below 1/(B+1), and Holm multiplies the smallest p by the family size m
+(a source's add-one rows), so no row can pass unless B ≥ 20m − 1. A lab run adds up to about 20 features beyond P0
+(the B1 runs selected 13, 23 and 21 features, B2's r0 24), so B = 499 (m ≤ 25) is the default here. The report
+lists each source's family size; a verdict "null too coarse for a family of m" means rerun with the B it names, not that the feature
+failed. The null refits the whole procedure per replicate, so B drives the run time.
+
+**Visible validation.** Add `--with-val1` only after Andres allows it (section 7). It makes V the deciding tier
+for every row, and the lab arms selected on V, so their V verdicts read "optimistic" and screen nothing. With
+`--with-val1`, run the same command a second time without it (another `--out`): the lab arms' screening verdicts
+come from that OOF-decided call, the package arms' from the V-decided one.
 
 ## 5. The metrics table
 
@@ -234,10 +258,10 @@ b1/b2 `combined_vs_additive.json`.
 | Additive rule, EXP_0003 (N1) | 0.7126 | 0.7107 | 0.0059 | 0.1100 / 0.8500 / 0.900 | 0.1016 / 0.9412 / 0.8463 | reference | 0.7259 | 0.5461 (0) |
 | N1 no-LLM control, EXP_0076 | 0.7170 | 0.706 | 0.0055 | – | 0.1186 / 0.9335 / 0.8328 | +0.004 ± 0.008 (28) | 0.7749 | 0.5654 (0) |
 | N2 control + Replogle, EXP_0198 | 0.7188 | 0.708 | 0.0054 | – | 0.1104 / 0.9374 / 0.8424 | +0.006 ± 0.007 (32) | 0.7746 | 0.5678 (0) |
-| N4, EXP_0790 (lost its planner; own arm) | 0.7264 | 0.716 | 0.0055 | – | 0.1285 / 0.9277 / 0.8190 | +0.014 ± 0.008 (37) | 0.7770 | 0.5730 (0) |
-| B1 arm, 3 runs (b1) | 0.7188 ± 0.0073 | – | – | – | 0.1077 ± 0.0068 / 0.9387 ± 0.0034 / 0.8465 ± 0.0083 | – | 0.7769 / 0.7815 / 0.7763 | 0.5854 / 0.6061 / 0.5765 (1/2/3) |
-| B1 combined (delivered model, b1) | 0.7229 | 0.7131 | 0.0052 | 0.1144 / 0.8562 / 0.9045 | not computed | +0.010 ± 0.007 (36) | 0.7801 | – |
-| B2 arm, runs r0/r2/r3 (b2) | 0.7239 ± 0.0054 | – | – | – | 0.1196 ± 0.0217 / 0.9314 ± 0.0109 / 0.8283 ± 0.0269 | – | 0.7344 / 0.7326 / 0.7735 | 0.5681 / 0.6045 / 0.5799 (0/2/3) |
+| N4, EXP_0790 (continued from N2; lost its planner; own arm) | 0.7264 | 0.716 | 0.0055 | – | 0.1285 / 0.9277 / 0.8190 | +0.014 ± 0.008 (37) | 0.7770 | 0.5730 (0) |
+| B1 arm, 3 runs, continued from N2 (b1; not A1) | 0.7188 ± 0.0073 | – | – | – | 0.1077 ± 0.0068 / 0.9387 ± 0.0034 / 0.8465 ± 0.0083 | – | 0.7769 / 0.7815 / 0.7763 | 0.5854 / 0.6061 / 0.5765 (1/2/3) |
+| B1 combined (delivered model, continued from N2, b1) | 0.7229 | 0.7131 | 0.0052 | 0.1144 / 0.8562 / 0.9045 | not computed | +0.010 ± 0.007 (36) | 0.7801 | – |
+| B2 arm, runs r0/r2/r3, from P0 (b2; an A1 instance) | 0.7239 ± 0.0054 | – | – | – | 0.1196 ± 0.0217 / 0.9314 ± 0.0109 / 0.8283 ± 0.0269 | – | 0.7344 / 0.7326 / 0.7735 | 0.5681 / 0.6045 / 0.5799 (0/2/3) |
 | B2 combined (b2) | 0.7269 | 0.7196 | 0.0053 | 0.1234 / 0.8466 / 0.9107 | not computed | +0.014 ± 0.003 (45) | 0.7505 | – |
 | CellForge-Models, reported, other split: **not comparable** | – | – | 0.0034 | – | 0.1736 / 0.8109 / 0.5975 (their top-20) | – | – | – |
 | A2 one worker, A3, A4, A5 (C0/C1/C2), A6 | | | | | | | | |
@@ -264,7 +288,11 @@ The 8-worker mean includes one hash-sensitive model (`README.md`, note †).
 
 ### Template for the comparison itself (from `feature_compare.py`; empty until it runs)
 
-One block per bundle and parent (P0, P1). System rows first, then add-one rows.
+One block per bundle and parent (P0, P1). System rows first (the tool's Table 1), then add-one rows (its
+Table 2). Gains are candidate minus parent, so positive is better; for the MSE metrics M3 and M4 the tool takes
+parent minus candidate, so a positive ΔM3 or ΔM4 is also an improvement. The tool's tables print ΔM1, ΔM2, ΔM4,
+ΔM5 and ΔM7; ΔM6 is in `feature_compare.json`, and ΔM3 (pooled MSE, no paired difference) is the difference of the
+two rows' M3.
 
 | arm | search | row | tier | n | P M1 | P+x M1 | ΔM1 ± SE_adj | wins | null p (Holm) | ΔM2 | ΔM3 | ΔM4 | ΔM5 | ΔM6 | ΔM7 | M12 | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -277,21 +305,27 @@ and on F once it exists; number of features; number with a development verdict.
 
 ## 6. What counts as a useful feature
 
-1. **Development verdict.** `feature_compare.py` prints "meaningful (development)" when its pre-set criteria
-   hold. They include: the paired OOF gain beats twice its overlap-robust SE and wins on more than half the
-   perturbations; the gain keeps its sign under every fold seed; it beats the gene-permutation null after Holm
-   correction over that system's candidates; with `--with-val1`, the same holds on V for systems that never saw
-   V. The tool's report states the exact list; this file does not override it. The verdict screens; it proves
-   nothing, because every arm selected on OOF.
+1. **Development verdict.** `feature_compare.py` prints "meaningful (development, …)" when, on the deciding tier
+   (OOF, or V with `--with-val1`): the mean M1 gain beats twice its overlap-adjusted SE with wins on more than
+   half the perturbations; the Holm-adjusted null p is at most 0.05; M2 gains and M4 is not significantly worse;
+   and every OOF report (fold-seed pair) gains. Holm runs within one source's add-one rows; a source's system row
+   is a family of one. The parenthesis says how far a pass can be trusted: "OOF only, not held out", "val1", or
+   "optimistic: source selected on val1" (a lab run under `--with-val1`, which screens nothing; section 4). The
+   tool's docstring is the exact list. The verdict screens; it proves nothing, because every arm selected on OOF.
 2. **Pre-registration.** Before `feature_compare.py` runs, each arm's candidate list is fixed and recorded in
    the claim issue: the files and their sha256. Proposal: tier F receives each arm's system row, plus at most 3
-   single features per arm, the ones with a development verdict and the largest OOF gain. No other feature may
-   be added after any score is seen.
-3. **Multiplicity.** Holm within each system at the development tier. At tier F, Holm over every feature sent
-   there, across all arms. Report raw and adjusted p.
-4. **Fresh test.** One scoring of frozen P + x predictions by the separate evaluator. A feature is useful when
-   its F gain passes the reading rule after correction, and the arm's mean gain over searches exceeds the
-   spread between searches.
+   single features per arm, the ones with a development verdict (V-decided for package arms when V is allowed,
+   OOF-decided for lab arms) and the largest gain on that tier. Before choosing, read each candidate's literal
+   report and its arm's transcript; where V is allowed, drop a package candidate whose V gain falls more than
+   2·SE_adj below its OOF gain (a sign of labels pasted into the file, section 3.9). No other feature may be
+   added after any score is seen.
+3. **Multiplicity.** At the development tier, Holm within each source (the tool does it; item 1). At tier F
+   (proposal, to be fixed before anything is scored): every candidate sent there, system rows and single features
+   of all arms, gets a one-sided p from its paired M1 gain, p = 1 − Φ(Δ / SE_adj), with SE_adj widened by the
+   gene-overlap ratio as in `tools/sealed_reading.py`; Holm runs over all of them at 0.05. Report raw and adjusted p.
+4. **Fresh test.** One scoring of frozen P + x predictions by the separate evaluator. A feature is useful when its
+   Holm-adjusted F p is at most 0.05 and it wins on more than half the perturbations; an arm is better than its
+   parent when, in addition, its mean gain over searches exceeds the spread between searches (the arm rule).
 5. **Biology, then the wet lab.** A useful feature must say which knowledge and which genes carry it (PR #38,
    section 1, point 4). A wet-lab test of the biological hypothesis it encodes is a later, separate decision.
 
