@@ -4,6 +4,30 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Coefficient addendum published; free downloads active — Astra, 2026-10-16 21:42 UTC, claim #47.**
+Reading 4 saved-fit sign addendum **b9d550a** is pushed to draft PR #46 and posted on #41,
+[comment 6225228232](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6225228232).
+Creation fits (all ridge alpha100): F r0 EXP_0428/e428 +.014724067753942987,
+EXP_0666/e666 +.01434165272419911; F r3 EXP_0412/e412 -.00996105446986751.
+Selected r0 EXP_0715 retains e666 positively; e428 and selected r3 EXP_0603/e412 are absent.
+These are original standardized interaction-column coefficients, not the unsaved common-parent OOF
+coefficient; signs vary with model context and do not confirm a universal negative-CpG mechanism.
+No new fit, label access, scoring, alpha/model choice or lab/tool code change. All 142 original artifact
+hashes remain unchanged; separate addendum JSON/MD/manifest and independent audit pass; PR checks pass.
+Seven of nine named downloads are complete with local receipts. GTF and FASTA remain active in
+`data_downloads/clean_knowledge/`: managed download session8677, Python76820, GTFcurl76876,
+FASTAcurl76958. Preserve those processes/partials; do not duplicate or restart.
+Partial names: `gencode.v27.primary_assembly.annotation.gtf.partial-34e2f95ac2` and
+`Homo_sapiens_assembly38.fasta.partial-c13bc1f84e`; per-file header/transfer receipts share suffixes.
+Downloader `download_sources.py` writes exclusive completed receipts; `download_receipts.json` appears
+when all nine finish. Local `downloads.md` already records seven completions and two pending entries.
+CORUM official release/file APIs independently verified:5.3/date2026-04-14, complete/allComplexes/txt;
+legacy ZIP path returns HTML, actual API path and GO OBO redirect are recorded.
+**Exact next:** download worker completes both existing transfers, appends final URL/UTC/SHA256 receipts;
+root verifies receipts, posts full downloads.md to #47/links #41, updates state and stops. No G build/run,
+API spend or additional experiment. The direct gate remains: no G action before its integration-plan
+dated note names a commit; this free-preparation task itself authorizes no later run.
+
 **Astra follow-up authorized — coefficient-sign addendum and free downloads, 2026-10-16 21:38 UTC; claim #47.**
 Andres directly requested the fitted coefficient signs for promoter-CpG e428/e666 (F r0) and e412
 (F r3), plus the named public-reference downloads into `data_downloads/clean_knowledge/` with
