@@ -4,6 +4,25 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**All three Block F runs PASSED, 2026-10-16 20:17:25 UTC; readings await the direct plan choice:**
+`gene-mila/runs/norman_ga_ds_addstart_w4_r0`: finished19:30UTC, rc0,1203s,60annotation plugins,
+selected EXP_0715 ridge28features, ledgercost1.288493. `_r2`: finished19:54UTC,rc0,1231.2s,
+1annotation plugin,selected EXP_0260 ridge11features,cost0.288034. `_r3`: finished20:17UTC,rc0,
+1231s,33annotation plugins,selected EXP_0603 ridge24features,cost1.247662. All three `.passed`
+markers present; every check codece1b530431/fourworkers/exactknowledge/DeepSeek mixedFalse/no
+exhaustion, no failed/stopped marker. Counts/selection are process evidence, not improvement.
+Total ledger accounting **$2.824189** rounded; ending **$47.264645**; original cap52.44 untouched.
+At20:18UTC no screen session or lab/chain/scale process. **STOP PRESENT**, normal exit trap.
+Completion [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6223930718).
+**Exact next:** direct Andres choice already pending in Astra chat: original all-feature null
+reading versus PR44 two-stage amendment. No evaluation/source update/sealed or summary.md/log-end
+read until his choice is recorded on41/HANDOFF1/liveSTATE. Monitor
+`finish-block-f-and-publish-its-readings` paused after clean completion; do not start another run.
+Then execute only the chosen exact plan in own clone, remaining readings, astra/block-f-results,
+secret-scanned draftPR and numeric findings. Operator clone0db8091, amendedtool/planb6638c3.
+No original-data/main-code/script/cap change or model promotion. Earlier notes below are history.
+
+
 **Reading-version clarification pending, 2026-10-16 20:11 UTC — seed3 continues unchanged:**
 Routine state check found mergedPR44 **b6638c3**, operator comment6223733089: a two-stage primary
 reading (all-row OOF screen, null only for top20, full status-ok stage1 family with untested p=1)
