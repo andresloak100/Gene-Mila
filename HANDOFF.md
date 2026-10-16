@@ -4,6 +4,31 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F STOPPED before any run, 2026-10-16 03:13 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
+Andres authorized one detached-screen retry, with STOP restored, the prior startup log renamed
+unchanged to `block_f_chain.log.stale-20261016T0157Z`, and the existing cap kept; his full decision
+and pre-launch receipts are [recorded on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6207215151).
+Both requested `ls | grep norman_ga` checks found no run directory/log; no lab/chain/scale process
+or screen session was active. Executed his exact login-zsh `screen -dmS blockf zsh -lc` command,
+without attaching. New chain log: `2026-10-16T03:13:03Z block F started`, then SQLite
+`Error: in prepare, unable to open database file (14)`, then
+`NOT STARTED: cannot read planner_rounds.state_chars of norman_ds_addstart_w4_r0`, then
+`2026-10-16T03:13:04Z block F stopped at seed 0`.
+At03:13:38UTC all three pgrep checks returned no match; screen had no sockets. **STOP present**
+(restored by exit trap). No F run directory/log, `.check.txt` or reading was created. DeepSeek ledger
+unchanged **44.440456384**, **F spend $0**; cap unchanged **52.44 44.440456 2026-10-16T01:55Z**,
+SHA256 `beea162caed4540e4f506d931558459653318db7182d00bfe98e8862fe27c080`.
+New refusal log remains `block_f_chain.log`; all stale archives retained. No third retry, script
+edit, sealed reading, cap reset, file deletion, original-data/main-codecheckout change or model
+selection. Operator clone remains f95111a, scripts identical to986c4d6. Full refusal and process
+receipt [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6207232510).
+**Exact next:** hold Block F with STOP/cap/data/scripts/logs preserved. The lab-code owner must
+resolve/document the inaccessible B2 seed-0 planner-state database prerequisite before any new
+launch; filesystem cause is not established and no workaround is authorized. Do not rerun
+preparation, weaken a check, retry or make readings. Root owns Block F operation/shared/live state;
+chat2 Claim40 remains separate. Earlier notes below are chronological history.
+
+
 **Block F operator HOLD after startup,2026-10-16 01:59UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
 Authorized archival, cap and preparation completed as recorded below. The exact login-zsh launch
 printed only **2026-10-16T01:57:02Z block F started**, then disappeared: no caffeinate/chain/run/model
