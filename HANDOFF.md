@@ -4,6 +4,28 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F operator HOLD, 2026-10-16 01:27 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), draft [PR #42](https://github.com/andresloak100/Gene-Mila/pull/42):**
+Andres explicitly handed the Mac block to Astra/chat1 and confirmed **+$8 over the starting DeepSeek
+ledger**, requiring exact execution and stopping to ask on any unclear/failing condition. His whole
+message is recorded [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6205851106).
+Own clone gene-mila-block-f under the project workspace, detached exact **986c4d693eec01cdac73df2c6f9d176ee3b7b3d8**;
+plan/scripts unchanged. Required handoff/pgrep: no lab run or scaling driver; B4 ended15Oct18:44UTC with
+spend recorded. STOP present. No F preparation or paid run has started.
+
+Preflight found pre-existing block_f_cap.txt and block_f_chain.log (both16Oct00:13:36UTC).
+Cap contains ONLY **52.44**, lacking the starting ledger and UTC-date fields required by the final plan;
+the write-once command refuses existing files and the run script rejects the incomplete format.
+Chain-log tail: **bash: norman_f_chain.sh: No such file or directory**.
+No F .check.txt exists. F scripts in logs and data/norman_ga(.partial) are absent. Existing files are
+preserved; no cap rewrite, file deletion/overwrite, launch/retry, script edit, sealed run-log-ending/
+summary.md read, main-checkout mutation or paid call occurred. Failure details posted on issue41.
+
+**Exact next:** wait for Andres's decision on preserving/archiving those two failed-start files and
+creating the required three-field cap before continuing the unchanged plan. Do not remove/overwrite
+them, create STOP, retry, infer a fresh allowance or start any paid run without his answer. Root owns
+BlockF operation/shared/live state; chat2's Claim40 remains separate. The current block is F, on hold.
+
+
 **Active, 2026-10-16 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), draft
 [PR #42](https://github.com/andresloak100/Gene-Mila/pull/42): framework to find and fairly test new biological
 features.** A Claude cloud session on `claude/youthful-dijkstra-459nhj` (final block F commit `986c4d6`), on Andres's
