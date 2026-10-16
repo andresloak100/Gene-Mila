@@ -272,3 +272,31 @@ confirmation of the +$8 cap is recorded in
 Account reading he gave at the same time (DeepSeek console, 16 October about 01:48 UTC): topped-up balance $28.19,
 granted credit $16.25 (DeepSeek's refund of 8 to 14 October usage after its outage), total cost $22.22 over the last
 30 days. His words: "we only have this, use it well". Block F's expected cost is about $4 billed.
+
+## Note, 2026-10-16 02:05 UTC: the chain must run in a detached session
+
+The operator's first start (`nohup caffeinate -i bash norman_f_chain.sh … &` from a tool shell) printed the chain's
+start line and died before `norman_f_run.sh` began: the launching shell's process group was cleaned up, and `nohup`
+ignores only the hangup signal. No run directory, run log or spend resulted; the chain had removed STOP and did not
+get to restore it. Decision: STOP is restored by hand, the dead chain's log is renamed `block_f_chain.log.stale-20261016T0157Z`,
+the cap record stays (its start reading is unchanged), and the same command is started inside a detached `screen`
+session from a login zsh, so no tool shell owns it:
+```bash
+cd ~/Documents/Mila/Gene-Mila/genemila_scale_logs
+screen -dmS blockf zsh -lc 'DEEPSEEK_API_KEY="$API_KEY" caffeinate -i bash norman_f_chain.sh > block_f_chain.log 2>&1'
+screen -ls; pgrep -fl norman_f_chain.sh; tail -3 block_f_chain.log
+```
+Before the retry the operator checks that no `norman_ga_*` run directory or run log exists; if one does, the block
+stops and the cause is written up here first. A second death before a run starts is reported, not retried.
+
+## Note, 2026-10-16 03:35 UTC: the planner-state check could not open B2's databases; fixed, chain to be restarted
+
+The detached `screen` start of 03:13 UTC ran to `norman_f_run.sh`'s pre-spend checks and was refused there
+("unable to open database file (14)" from `sqlite3 -readonly`, then "cannot read planner_rounds.state_chars of
+norman_ds_addstart_w4_r0"); no run, no spend, STOP restored by the exit trap. Cause: the lab's `lab.db` is in
+write-ahead mode (`genemila/db.py`), and `sqlite3 -readonly` cannot open such a database without creating its `-shm`
+file beside it. The check now queries a private copy of each B2 database and its `-wal` file in a temporary directory,
+as `tools/feature_audit.py` does, and never writes into a run directory. This changes a safety check, not the arm,
+the caps, the readings or the criterion. A pre-run refusal does not stop the block (`block_f_stopped.txt` is written
+only after a run), so the operator restarts the chain the same way from a clone at the commit that carries this
+note; the chain has no passed seed to skip.
