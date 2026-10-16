@@ -1,0 +1,1001 @@
+{
+ "family": 66,
+ "tested": 20,
+ "rows": [
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_count_e485",
+   "tested": true,
+   "p": 0.6446969696969697,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 2.3344837993424403,
+   "other_failed": [],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_partner_e469",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.5187023477737083,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_proximity_e541",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 3.116206433300766,
+   "other_failed": [],
+   "reads_replogle": false,
+   "found": true,
+   "found_tier1": true
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_bidirectional_proximity_e542",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 1.0357690628507887,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_cds_length_e445",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 0.16361149790993226,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_cds_length_e449",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 0.16361149790993226,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_cpg_oe_promoter_e455",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.949579374926923,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_cpg_oe_promoter_squared_e473",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.0074207616458324,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_cpg_promoter_e325",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.949579374926923,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_exon_count_e415",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.12998689842696792,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_gc_cds_e418",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1007070967386454,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_gene_span_e331",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.09588317040681,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_gene_span_e347",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.3881853033372024,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_intron_length_e443",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.662858476638505,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_n_transcripts_e453",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.6186566702461949,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_promoter_cpg_e420",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.949579374926923,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_cpg_promoter_e489",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.6762868421875372,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_exon_count_e548",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 1.2535668436508358,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_gene_span_e401",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1497546907926222,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_hydrophobic_fracti_e679",
+   "tested": true,
+   "p": 1.0,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 2.434007695675854,
+   "other_failed": [],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_promoter_cpg_e428",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 3.6767951658477505,
+   "other_failed": [],
+   "reads_replogle": false,
+   "found": true,
+   "found_tier1": true
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_promoter_cpg_e666",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 3.6767951658477505,
+   "other_failed": [],
+   "reads_replogle": false,
+   "found": true,
+   "found_tier1": true
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_span_product_e545",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1609246940610207,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_target_transcript_length_e407",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.3270763006129425,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_transcript_length_e310",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.7713250319463809,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_transcript_length_e316",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.7713157919002785,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_utr3_length_e441",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.3757901846609757,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "additive_times_utr3_length_e451",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1625397059422005,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_annotation_ppi_random_projection_e721",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.9396894852491351,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_annotation_random_projection_e697",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.3534589715799286,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_over_transcript_length_e416",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1788792976154006,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_over_transcript_length_e546",
+   "tested": true,
+   "p": 1.0,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 1.3994547528985763,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_over_transcript_length_e547",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 2.2459521725144107,
+   "other_failed": [],
+   "reads_replogle": true,
+   "found": true,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_times_cds_length_e446",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.784361114174221,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_times_promoter_cpg_e377",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -2.983739738526438,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "screen_delta_times_target_promoter_cpg_e694",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -2.2590268556053172,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_gene_span_times_screen_e717",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.133716438314925,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_hydrophobic_fraction_e675",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -2.317144784083125,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_promoter_cpg_e406",
+   "tested": true,
+   "p": 1.0,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 1.4878341945108968,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_promoter_gc_e80_e81",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.6266364763207333,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r2",
+   "feature": "tf_binding_motif_score_e192",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -2.170454938880661,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_gene_span_e128",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.09588317040681,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_mean_target_gene_spa_e303",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1497546907926222,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_mean_target_span_e296",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.352417625773576,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_promoter_cpg_e412",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 3.6767951658477505,
+   "other_failed": [],
+   "reads_replogle": false,
+   "found": true,
+   "found_tier1": true
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_promoter_cpg_e509",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 0.1968211326623716,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "bidirectional_partner_coexpression_with__e531",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 1.3976019044045664,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "cpg_oe_promoter_x_additive_e129",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.1226626426930797,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "cpg_promoter_x_additive_response_e142",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -0.949579374926923,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_annotation_random_projection_e567",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 0.5312864980649477,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_span_x_additive_response_e143",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.09588317040681,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "mean_target_promoter_gc_e295",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.6266364763207333,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "promoter_similarity_target_g_e564",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -2.4032497322827906,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_mean_target_span_e31_e310",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.4649153707187141,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_promoter_cpg_island_e507",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.8287646738690124,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": true,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_promoter_cpg_oe_e391",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 0.021573676791933973,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_promoter_cpg_oe_e441",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 2.4954523668583932,
+   "other_failed": [],
+   "reads_replogle": true,
+   "found": true,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_cpg__e558",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 2.14060637690296,
+   "other_failed": [],
+   "reads_replogle": true,
+   "found": true,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_cpg__e590",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 2.2268106072937957,
+   "other_failed": [],
+   "reads_replogle": true,
+   "found": true,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_cpg_e460",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 2.047503136540172,
+   "other_failed": [],
+   "reads_replogle": true,
+   "found": true,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "replogle_additive_x_target_promoter_gc_e328",
+   "tested": true,
+   "p": 0.0007575757575757576,
+   "p_holm_pooled": 0.05,
+   "z_stage1": 2.694508733206891,
+   "other_failed": [],
+   "reads_replogle": true,
+   "found": true,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_annotation_random_projection_e575",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -2.654330497263396,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_chromatin_accessibility_e242",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -1.6266364763207333,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_mean_cpg_oe_promoter_e402_e350",
+   "tested": true,
+   "p": 1.0,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 1.4878341945108968,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_mean_e521",
+   "tested": true,
+   "p": 1.0,
+   "p_holm_pooled": 1.0,
+   "z_stage1": 1.4878341945108968,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_x_gene_control_varia_e594",
+   "tested": false,
+   "p": null,
+   "p_holm_pooled": 1.0,
+   "z_stage1": -3.0476646933381435,
+   "other_failed": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "an OOF report does not gain",
+    "no M2 gain",
+    "mse_top significantly worse"
+   ],
+   "reads_replogle": false,
+   "found": false,
+   "found_tier1": false
+  }
+ ]
+}
