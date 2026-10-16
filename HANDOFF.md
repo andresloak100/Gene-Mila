@@ -4,6 +4,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F operator HOLD after startup,2026-10-16 01:59UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
+Authorized archival, cap and preparation completed as recorded below. The exact login-zsh launch
+printed only **2026-10-16T01:57:02Z block F started**, then disappeared: no caffeinate/chain/run/model
+process by01:57:45 or01:58:39. No F run directory, .passed, .check.txt, block_f_stopped.txt or run-start
+progress entry exists. No refusal/exit/signal is recorded, so cause is unestablished; do not infer one.
+DeepSeek ledger still **44.440456384**, no F spending. Valid cap stays **52.44 44.440456 2026-10-16T01:55Z**.
+STOP is **absent** after chain entry; normal restoration did not happen. Operator has not created
+STOP, killed a process, edited a script, overwritten/deleted a file or retried. Current startup-only
+block_f_chain.log and cap are preserved; detailed evidence posted on41.
+**Exact next:** WAIT for Andres's decision before restoring STOP, archiving this new startup-only log
+or relaunching. Proposed persistent login-zsh terminal with the unchanged command and same cap is
+not yet approved. No automatic retry/reset/spend/readings. Own clone f95111a; main codecheckout and
+originaldata/norman unchanged; approveddata/norman_ga and verified script copies remain ready.
+Root owns operation/shared/live state. Earlier preparation/HOLD notes below are chronological history.
+
+
 **Block F operator preparation complete, 2026-10-16 01:56UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
 Andres directly authorized renaming both false-start files to their exact .stale-20261016T0013Z names,
 then the plan's write-once cap and unchanged preparation/copy/launch. Decision also in
