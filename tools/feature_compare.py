@@ -12,10 +12,11 @@ no run used, and optionally on the visible validation perturbations (--with-val1
 Why each step is the way it is:
 - Foreign code never runs in this process. Every file is checked statically first (the lab's plugin guard, and the
   literal caps of tools/task_package/literal.py so a file cannot paste a table of training labels); a file that fails
-  never reaches a directory any plugin loader reads. Each passing candidate is smoke-tested in a limited subprocess,
-  and all feature blocks are computed in limited child processes of this script (the hidden "_blocks" command),
-  every feature recomputed in every fold view, nothing sliced, as the lab's cross_validate does for features that
-  read labels. This process only fits and scores arrays.
+  never reaches a directory any plugin loader reads. Each passing candidate is smoke-tested in a limited subprocess
+  (the hidden "_smoke" command) with the params it will be scored with, and all feature blocks are computed in
+  limited child processes of this script (the hidden "_blocks" command), every feature recomputed in every fold
+  view, nothing sliced, as the lab's cross_validate does for features that read labels. Both load plugin files one
+  at a time, so a file that raises on import costs only its own row. This process only fits and scores arrays.
 - The ridge penalty is chosen honestly, on out-of-fold scores only: chosen on one fold seed, reported on another,
   over every ordered pair of seeds. The lab itself also chooses on the visible validation set; a tool that did so
   would leave no held-out tier for package arms.
@@ -25,15 +26,21 @@ Why each step is the way it is:
   into it, so the null is label-safe for label-dependent features too.
 - The paired standard error is widened by the target-gene overlap of the perturbations (tools/sealed_reading.py),
   which matters on a bundle with pairs.
+- A --source file is scored with its own class params only: a params file next to it would be a channel for training
+  labels that neither the guard nor the literal caps see. A --source-run feature uses the params the run recorded.
 - OOF scores are not held out for any system that selected features on these labels, which every system has; the
-  report says so whenever OOF is the deciding tier.
+  report says so whenever OOF is the deciding tier. The visible validation set is not held out for lab runs either
+  (the lab selects on it): their rows carry exposure "val1+oof" and, when val1 decides, an "optimistic" verdict.
+- Holm adjusts the null p within one source's add-one rows (one family per system, so a system's verdicts do not
+  depend on how many candidates the others sent). The smallest null p is 1/(B+1), so a family of m rows needs
+  B >= 20m - 1 replicates before any row can pass; below that the verdict says the null is too coarse.
 
 Labels read: training labels through FeatureContext of a public copy (public.npz, knowledge/, manifest.json), and,
 only with --with-val1, the visible validation labels (val1.npz) in one function, load_val1. Nothing else.
 
     python tools/feature_compare.py --data data/adamson --out out/fc --source astra=pkg_astra/features
-    python tools/feature_compare.py --data data/norman --out out/fc --parent-run runs/n2 --source-run n4=runs/n4 \
-        --with-val1
+    python tools/feature_compare.py --data data/norman --out out/fc --parent-run <parent_run_dir> \
+        --source-run lab=<source_run_dir> --with-val1
 """
 from __future__ import annotations
 
@@ -56,9 +63,10 @@ sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 import feature_audit as fa  # noqa: E402  (read_run, plugin loading, standardise, ridge_weight_grid, pearson_rows)
-from genemila import sandbox  # noqa: E402
+from genemila import pipeline, sandbox  # noqa: E402
 from genemila.benchmark.evaluator import evaluate, metric_values, paired_summary  # noqa: E402
-from genemila.data.bundle import LabelSet  # noqa: E402  (visible validation labels, load_val1 only)
+from genemila.data.bundle import LabelSet, added_knowledge  # noqa: E402  (LabelSet: load_val1 only)
+from genemila.features import registry  # noqa: E402
 from genemila.features.api import FeatureContext  # noqa: E402
 from genemila.features.registry import ALL_BUILTIN_FEATURES, BUILTIN_FEATURES  # noqa: E402
 from genemila.guard import CodeViolation, check_plugin_source  # noqa: E402
@@ -159,11 +167,10 @@ def child_main(job_path: str) -> int:
     return 0
 
 
-def run_child(name: str, work: Path, public: Path, plugins: Path, features: list[str], params: dict, a) -> dict:
-    """compute_blocks in a limited child process (sandbox.run_limited, PYTHONHASHSEED=0). Returns the blocks, or
-    {"failed": reason} when the child itself died (time-out, memory, crash)."""
-    d = work / "blocks" / name
-    d.mkdir(parents=True, exist_ok=True)
+def run_child(d: Path, public: Path, plugins: Path, features: list[str], params: dict, a) -> dict:
+    """compute_blocks in a limited child process (sandbox.run_limited, PYTHONHASHSEED=0), working in its own new
+    directory d. Returns the blocks, or {"failed": reason} when the child itself died (time-out, memory, crash)."""
+    d.mkdir(parents=True)
     job = {"public": str(public), "plugins": str(plugins), "features": features, "params": params, "seeds": a.seeds,
            "k": a.k, "groups": a.groups, "with_eval": a.with_val1, "out": str(d / "blocks")}
     (d / "job.json").write_text(json.dumps(job))
@@ -176,15 +183,43 @@ def run_child(name: str, work: Path, public: Path, plugins: Path, features: list
     return load_blocks(d / "blocks")
 
 
-def smoke(name: str, public: Path, plugins: Path, work: Path, a) -> tuple[str, str] | None:
-    """pipeline smoke (shape, finiteness, determinism, own-label leakage, pair order) in a limited subprocess: None
-    when it passed, else (status, reason): "smoke" for the smoke test's problems, "error" when computing the feature
-    raised (a dependency that was rejected, say) or the process died."""
-    o = work / "smoke" / name
-    r = sandbox.run_limited([sys.executable, "-m", "genemila.pipeline", "smoke", "--feature", name, "--public",
-                             str(public), "--plugins", str(plugins), "--out", str(o)],
+def smoke_main(job_path: str) -> int:
+    """pipeline.smoke on one candidate, with two changes. The plugin directory is loaded one file at a time
+    (feature_audit.load_run_plugins), so another file of the source that raises on import costs only its own row,
+    not every candidate's; and the candidate runs with the params it will be scored with, so the shape, determinism
+    and own-label leakage checks see those params. Exit codes and output files are pipeline main's."""
+    job = json.loads(Path(job_path).read_text())
+    out, f = Path(job["out"]), job["feature"]
+    try:
+        errors = fa.load_run_plugins(Path(job["plugins"]))
+        if f in errors:
+            raise ImportError(f"{f}.py failed to import: {errors[f]}")
+        get = registry.get
+
+        def with_params(name):
+            cls = get(name)
+            if name == f:
+                cls.params = {**cls.params, **job["params"]}
+            return cls
+
+        registry.load_plugins, registry.get = (lambda _dir: []), with_params  # loaded above, file by file
+        return 0 if pipeline.smoke(f, Path(job["public"]), Path(job["plugins"]), out)["status"] == "ok" else 3
+    except Exception as exc:  # noqa: BLE001  (reported as the row's reason)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "error.json").write_text(json.dumps({"error_type": type(exc).__name__, "error": str(exc)[:2000]}))
+        return 2
+
+
+def smoke(name: str, params: dict, public: Path, plugins: Path, o: Path, a) -> tuple[str, str] | None:
+    """smoke_main (shape, finiteness, determinism, own-label leakage, pair order) in a limited subprocess: None
+    when it passed, else (status, reason): "smoke" for the smoke test's problems, "error" when importing or computing
+    the feature raised (a dependency that was rejected, say) or the process died."""
+    o.mkdir(parents=True)
+    (o / "job.json").write_text(json.dumps({"feature": name, "params": params, "public": str(public),
+                                            "plugins": str(plugins), "out": str(o)}))
+    r = sandbox.run_limited([sys.executable, str(Path(__file__).resolve()), "_smoke", str(o / "job.json")],
                             cwd=REPO_ROOT, log_dir=o, timeout_s=a.timeout_s, ram_mb=a.ram_mb, cpu_s=a.timeout_s,
-                            name="smoke")
+                            env={"PYTHONHASHSEED": "0"}, name="smoke")
     if r.returncode == 0:
         return None
     if (o / "smoke.json").exists():
@@ -454,7 +489,7 @@ def gene_permutation(control_mean: np.ndarray, n_bins: int, seed: int) -> np.nda
 def gene_null(fixed, res: dict, feats: list[str], data: Data, a, parent_sc: dict, observed: dict) -> dict:
     """The matched null per tier: replicate b permutes the candidate's genes (gene_permutation, seed null_seed + b)
     identically everywhere, refits with the full honest procedure and records the mean pearson_delta gain."""
-    if a.null_reps < 1:
+    if a.null_reps < 1 or not feats:
         return {t: None for t in observed}
     got = {t: [] for t in observed}
     for b in range(a.null_reps):
@@ -481,8 +516,10 @@ def holm(ps: list[float]) -> list[float]:
 
 
 def evaluate_row(row: dict, parent_tiers: dict, parent_sc: dict, fixed, res, feats, data: Data, a) -> None:
-    """Every number of an add-one or set row: per-tier metrics, paired gains, report deltas, the null."""
-    sc = score(fixed + [(res, feats, None)], data, a.seeds, a.alphas)
+    """Every number of an add-one or set row: per-tier metrics, paired gains over the parent, report deltas, the
+    null. The row's model is fixed (the parent, or the part of it a run kept) plus feats of res; the null permutes
+    feats."""
+    sc = score(fixed + ([(res, feats, None)] if feats else []), data, a.seeds, a.alphas)
     row["tiers"], observed = {}, {}
     for t in a.tiers:
         tm = tier_metrics(sc, data, t)
@@ -510,9 +547,11 @@ def feature_facts(res: dict, f: str, parent_full: np.ndarray, data: Data) -> dic
     return {"n_columns": int(full.shape[2]), "label_dependent": bool(dep), "max_abs_r_parent": float(r.max())}
 
 
-def verdict(row: dict, deciding: str) -> None:
+def verdict(row: dict, deciding: str, family: int, a) -> None:
     """Meaningful (development) iff, on the deciding tier: mean M1 gain > 2 SE_adj with wins > n/2, a Holm-adjusted
-    null p <= 0.05, a mean M2 gain > 0 and mse_top not significantly worse; and every OOF report gains."""
+    null p <= 0.05, a mean M2 gain > 0 and mse_top not significantly worse; every OOF report gains; and the alpha
+    was chosen honestly (more than one fold seed). A null too coarse for the family is said so, not blamed on the
+    feature."""
     t = row["tiers"][deciding]
     m1, m2, m4 = (t["delta"][m] for m in ("pearson_delta", "pearson_delta_nontarget", "mse_top"))
     failed = []
@@ -520,13 +559,23 @@ def verdict(row: dict, deciding: str) -> None:
         failed.append("M1 gain not above 2 SE_adj with wins > n/2")
     if not all(d > 0 for d in row["tiers"]["oof"]["report_deltas"]):
         failed.append("an OOF report does not gain")
-    if t.get("null") is None or not t["null"].get("p_holm", 1.0) <= P_MAX:
+    if t.get("null") is None:
+        failed.append("no null (--null-reps 0, or nothing beyond the parent to permute)")
+    elif family / (a.null_reps + 1) > P_MAX:
+        failed.append(f"null too coarse for a family of {family} (need --null-reps >= {20 * family - 1})")
+    elif not t["null"]["p_holm"] <= P_MAX:
         failed.append(f"null p (Holm) > {P_MAX}")
+    if len(a.seeds) == 1:
+        failed.append("one fold seed: alpha chosen and reported on the same OOF predictions")
     if not m2.get("mean_diff", -1.0) > 0:
         failed.append("no M2 gain")
     if "se_adj" in m4 and m4["mean_diff"] < -2 * m4["se_adj"]:
         failed.append("mse_top significantly worse")
     row["failed_criteria"], row["meaningful"] = failed, not failed
+    # how far a pass can be trusted: OOF is never held out; val1 is not held out for a run that selected on it
+    how = ("OOF only, not held out" if deciding == "oof" else
+           "optimistic: source selected on val1" if row.get("exposure") == "val1+oof" else "val1")
+    row["verdict"] = f"meaningful (development, {how})" if not failed else "not: " + "; ".join(failed)
 
 
 # ================================================================== the run
@@ -537,9 +586,11 @@ def parse(argv):
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--parent", choices=["builtin"], default="builtin")
     g.add_argument("--parent-run", help="finished run: its selected single model is the parent")
-    ap.add_argument("--source", action="append", default=[], metavar="NAME=DIR", help="every *.py in DIR")
+    ap.add_argument("--source", action="append", default=[], metavar="NAME=DIR",
+                    help="every *.py in DIR, each with its own class params")
     ap.add_argument("--source-run", action="append", default=[], metavar="NAME=RUN_DIR",
-                    help="the run's selected features that the parent lacks")
+                    help="add-one rows: the run's selected features that the parent lacks; set row: the run's "
+                         "selected model with its recorded params")
     ap.add_argument("--fold-seeds", default="101,102,103")
     ap.add_argument("--k", type=int, default=5)
     ap.add_argument("--groups", choices=["auto", "none", "gene"], default="auto")
@@ -591,8 +642,8 @@ def run(a) -> int:
         manifest = public_copy(data_dir, pub)
         data = make_data(pub)
         pr = read_selected(Path(a.parent_run)) if a.parent_run else None
-        if pr and pr["split_id"] and manifest.get("split_id") and pr["split_id"] != manifest["split_id"]:
-            raise Unusable(f"the parent run used split {pr['split_id']}, --data holds {manifest['split_id']}")
+        if pr:
+            same_split(pr, manifest, "the parent run")
         a.groups = resolve_groups(a.groups, data, manifest, pr["cv_groups"] if pr else None)
         if a.with_val1:
             data.val1 = load_val1(data_dir, data.ctx)
@@ -601,8 +652,8 @@ def run(a) -> int:
 
         # ---- the parent: built-ins, or a run's selected model with its guard-passing plugin files
         parent_files = {}
-        pdir = work / "exec_parent"
-        pdir.mkdir()
+        pdir = work / "parent" / "exec"
+        pdir.mkdir(parents=True)
         if pr:
             p_feats, p_params = pr["features"], {f: dict(v) for f, v in pr["params"].items()}
             for f in sorted((Path(a.parent_run) / "feature_store").glob("*.py")):
@@ -611,7 +662,7 @@ def run(a) -> int:
         else:
             p_feats = list(BUILTIN_FEATURES) + (["additive_response"] if data.pair_ids else [])
             p_params = {}
-        p_res = run_child("parent", work, pub, pdir, p_feats, p_params, a)
+        p_res = run_child(work / "parent" / "blocks", pub, pdir, p_feats, p_params, a)
         if "failed" in p_res or p_res["errors"]:
             raise Unusable(f"the parent cannot be computed: {p_res.get('failed') or p_res['errors']}")
         data.folds = {s: [{"predict": fd["predict"], "rows": fd["rows"]} for fd in fs]
@@ -626,28 +677,33 @@ def run(a) -> int:
         rows = []
         for name, src_dir in sources:
             rows += score_source(name, src_dir, name in run_sources, data, a, work, pub, pdir, p_feats, p_params,
-                                 fixed, parent_sc, parent_tiers, parent_full)
+                                 fixed, parent_sc, parent_tiers, parent_full, manifest)
 
+    # Holm within each source's add-one rows; a source's set row is a family of one
     deciding = "val1" if a.with_val1 else "oof"
     families = {}
-    for kind in ("add_one", "set"):
-        fam = [r for r in rows if r["kind"] == kind and r["status"] == "ok"]
-        families[kind] = len(fam)
-        for t in a.tiers:
-            with_p = [r for r in fam if r["tiers"][t].get("null")]
-            for r, ph in zip(with_p, holm([r["tiers"][t]["null"]["p"] for r in with_p])):
-                r["tiers"][t]["null"]["p_holm"] = ph
-        for r in fam:
-            verdict(r, deciding)
+    for name, _ in sources:
+        for kind in ("add_one", "set"):
+            fam = [r for r in rows if r["source"] == name and r["kind"] == kind and r["status"] == "ok"]
+            families.setdefault(name, {})[kind] = len(fam)
+            for t in a.tiers:
+                with_p = [r for r in fam if r["tiers"][t].get("null")]
+                for r, ph in zip(with_p, holm([r["tiers"][t]["null"]["p"] for r in with_p])):
+                    r["tiers"][t]["null"]["p_holm"] = ph
+            for r in fam:
+                verdict(r, deciding, len(fam), a)
     caveats = [TOP_CAVEAT, "ridge on the tool's alpha grid with an honest OOF alpha; a parent run's own model type "
                "and alpha are not reused", "the literal caps make pasting labels into a file expensive, not impossible"]
     if deciding == "oof":
         caveats.insert(0, OOF_CAVEAT)
+    elif pr or run_sources:
+        caveats.insert(0, "val1 decides, but a lab run selected its model on val1: rows of a --source-run are marked "
+                          "optimistic" + (", and the parent's own val1 scores are optimistic too" if pr else ""))
     if len(a.seeds) == 1:
         caveats.append("one fold seed: alpha selected and reported on the same OOF predictions (not honest)")
     result = {
         "tool": "feature_compare", "format": 1, "lab_commit": _commit(),
-        "data": data_dir.name, "split_id": manifest.get("split_id"),
+        "data": data_record(data_dir, manifest), "split_id": manifest.get("split_id"),
         "settings": {"model": "ridge", "alphas": a.alphas, "alpha_rule": "honest_oof", "fold_seeds": a.seeds,
                      "k": a.k, "groups": a.groups, "null": "gene permutation within control-mean bins",
                      "null_reps": a.null_reps, "null_seed": a.null_seed, "null_bins": a.null_bins,
@@ -656,7 +712,9 @@ def run(a) -> int:
                                     + (["visible validation labels (val1.npz)"] if a.with_val1 else []),
                      "timeout_s": a.timeout_s, "ram_mb": a.ram_mb},
         "caveats": caveats,
-        "parent": {"source": pr["run"] if pr else "builtin", **({"experiment_id": pr["experiment_id"]} if pr else {}),
+        "parent": {"source": pr["run"] if pr else "builtin", "exposure": "val1+oof" if pr else "none",
+                   **({"run_id": pr["run_id"], "split_id": pr["split_id"], "experiment_id": pr["experiment_id"]}
+                      if pr else {}),
                    "features": p_feats, "params": p_params, "n_columns": int(parent_full.shape[2]),
                    "files": parent_files,
                    "tiers": {t: {"n": parent_tiers[t]["n"], "metrics": parent_tiers[t]["metrics"],
@@ -670,17 +728,45 @@ def run(a) -> int:
     return 0
 
 
+def same_split(sel: dict, manifest: dict, who: str) -> None:
+    """A run's features were selected on its split's labels: refuse a run from another split of the data (its
+    visible validation perturbations may be training ones here, or the reverse). AGENTS.md: compare runs only
+    within the same bundle and split. A side without a split_id cannot be checked; the output records both."""
+    if sel["split_id"] and manifest.get("split_id") and sel["split_id"] != manifest["split_id"]:
+        raise Unusable(f"{who} used split {sel['split_id']}, --data holds {manifest['split_id']}")
+
+
+def data_record(data_dir: Path, manifest: dict) -> dict:
+    """What the numbers were computed on: the bundle's name, knowledge files added after it was built, and the
+    hashes of the public files read, so two outputs on the same directory name can be told apart."""
+    h = {"public.npz": hashlib.sha256((data_dir / "public.npz").read_bytes()).hexdigest()}
+    for f in sorted(x for x in (data_dir / "knowledge").glob("*") if x.is_file()):
+        h[f"knowledge/{f.name}"] = hashlib.sha256(f.read_bytes()).hexdigest()
+    added = added_knowledge(data_dir) if manifest else None
+    return {"name": data_dir.name, "added_knowledge": added, "sha256": h}
+
+
 def score_source(name, src_dir, from_run, data, a, work, pub, pdir, p_feats, p_params, fixed, parent_sc,
-                 parent_tiers, parent_full) -> list[dict]:
+                 parent_tiers, parent_full, manifest) -> list[dict]:
     """One source's rows: static checks of every file, smoke of each candidate, its blocks in one child, then an
-    add-one row per candidate and one set row. The source's blocks are dropped when its rows are done."""
-    edir = work / f"exec_{name}"
+    add-one row per candidate and one set row. For a --source the set row is the parent plus every candidate that
+    passed; for a --source-run it is the run's selected model: the parent features it kept, its own features, and
+    the parent features it retuned (recomputed with its recorded params). The source's blocks are dropped when its
+    rows are done."""
+    home = work / "sources" / name
+    edir = home / "exec"
     shutil.copytree(pdir, edir)
+    p_res, kept, retuned, info, files = fixed[0][0], list(p_feats), [], {"exposure": "oof"}, {}
     if from_run:
         sel = read_selected(src_dir)
+        same_split(sel, manifest, f"--source-run {name}")
         cands = [f for f in sel["features"] if f not in p_feats]
-        params = {f: dict(sel["params"].get(f, {})) for f in cands}
-        files = {}
+        params = {f: dict(sel["params"].get(f, {})) for f in sel["features"]}
+        retuned = [f for f in p_feats if f in params and params[f] != p_params.get(f, {})]
+        kept = [f for f in p_feats if f in params and f not in retuned]
+        info = {"exposure": "val1+oof", "run": sel["run"], "run_id": sel["run_id"], "split_id": sel["split_id"],
+                "experiment_id": sel["experiment_id"], "selected": sel["features"],
+                "dropped_parent": [f for f in p_feats if f not in params], "retuned_parent": retuned}
         for f in sorted((src_dir / "feature_store").glob("*.py")):
             c = static_check(f, data, imported=True, enforce_literal=False)
             if c["status"] == "ok" and (edir / f.name).exists() and (edir / f.name).read_bytes() != f.read_bytes():
@@ -694,36 +780,52 @@ def score_source(name, src_dir, from_run, data, a, work, pub, pdir, p_feats, p_p
         copy_files([Path(c["file"]) for f, c in files.items()
                     if c["status"] == "ok" and not (edir / f"{f}.py").exists()], edir)
     else:
-        given = json.loads((src_dir / "params.json").read_text()) if (src_dir / "params.json").exists() else {}
         taken = set(p_feats) | set(ALL_BUILTIN_FEATURES) | {p.stem for p in pdir.glob("*.py")}
         rows = {f.stem: {"source": name, "kind": "add_one", "feature": f.stem,
                          **static_check(f, data, imported=False, enforce_literal=True, taken=taken)}
                 for f in sorted(src_dir.glob("*.py"))}
-        params = {f: dict(given.get(f, {})) for f in rows}
+        params = {f: {} for f in rows}
         copy_files([Path(r["file"]) for r in rows.values() if r["status"] == "ok"], edir)
     for f, r in rows.items():
         if r["status"] == "ok" and r["file"] != "builtin":
-            failed = smoke(f, pub, edir, work / name, a)
+            failed = smoke(f, params[f], pub, edir, home / "smoke" / f, a)
             if failed:
                 r.update(status=failed[0], reason=failed[1][:500])
                 (edir / f"{f}.py").unlink()  # nothing that failed its smoke test is executed again
     live = [f for f, r in rows.items() if r["status"] == "ok"]
-    res = run_child(name, work, pub, edir, live, {**p_params, **params}, a) if live else {"errors": {}}
+    res = (run_child(home / "blocks", pub, edir, live + retuned, {**p_params, **params}, a) if live + retuned
+           else {"errors": {}})
+    errors = res.get("errors", {})
     for f in live:
-        if "failed" in res or f in res["errors"]:
-            rows[f].update(status="error", reason=(res.get("failed") or res["errors"][f])[:500])
+        if "failed" in res or f in errors:
+            rows[f].update(status="error", reason=(res.get("failed") or errors[f])[:500])
     live = [f for f in live if rows[f]["status"] == "ok"]
+    for f in rows:
+        rows[f]["exposure"] = info["exposure"]
     for f in live:
         rows[f].update(feature_facts(res, f, parent_full, data))
         rows[f]["params"] = params.get(f, {})
         evaluate_row(rows[f], parent_tiers, parent_sc, fixed, res, [f], data, a)
     out = list(rows.values())
-    set_row = {"source": name, "kind": "set", "feature": "(set)", "features": live, "status": "ok", "reason": ""}
-    if live:
-        set_row["n_columns"] = int(sum(res["full"][f].shape[2] for f in live))
-        evaluate_row(set_row, parent_tiers, parent_sc, fixed, res, live, data, a)
-    else:
+    set_row = {"source": name, "kind": "set", "feature": "(set)", "features": live, **info, "status": "ok",
+               "reason": ""}
+    # a run's model is rebuilt exactly or not at all: every own feature passed, every parent feature it uses is the
+    # parent's file (not a different one of the same name) and every retuned one computes with the run's params
+    lost = ([f for f in rows if f not in live] + [f for f in retuned if f in errors]
+            + [f for f in kept + retuned if from_run and f in files and files[f]["status"] != "ok"])
+    if "failed" in res:
+        set_row.update(status="error", reason=res["failed"][:500])
+    elif from_run and lost:
+        set_row.update(status="error", reason=f"the run's model cannot be rebuilt: {', '.join(lost)} failed a "
+                                              "check, could not be computed or differs from the parent's file")
+    elif not live and not from_run:
         set_row.update(status="error", reason="no feature of this source passed the checks")
+    else:
+        own = live + retuned
+        set_row["model"] = kept + own
+        set_row["n_columns"] = int(sum(p_res["full"][f].shape[2] for f in kept)
+                                   + sum(res["full"][f].shape[2] for f in own))
+        evaluate_row(set_row, parent_tiers, parent_sc, [(p_res, kept, None)] if kept else [], res, own, data, a)
     del res
     return out + [set_row]
 
@@ -750,10 +852,11 @@ def _wins(d: dict) -> str:
 
 
 def markdown(r: dict) -> str:
-    s, p = r["settings"], r["parent"]
-    L = [f"# Feature comparison: {r['data']}", "",
-         f"- data: `{r['data']}`" + (f", split `{r['split_id']}`" if r["split_id"] else "")
-         + f"; lab commit `{r['lab_commit']}`",
+    s, p, dd = r["settings"], r["parent"], r["data"]
+    L = [f"# Feature comparison: {dd['name']}", "",
+         f"- data: `{dd['name']}`" + (f", split `{r['split_id']}`" if r["split_id"] else "")
+         + f", knowledge added after the build: {', '.join(dd['added_knowledge'] or []) or 'none'}"
+         + f" (public.npz sha256 {dd['sha256']['public.npz'][:12]}); lab commit `{r['lab_commit']}`",
          f"- parent: `{p['source']}`" + (f" ({p['experiment_id']})" if p.get("experiment_id") else "")
          + f", {len(p['features'])} features, {p['n_columns']} columns: {', '.join(p['features'])}",
          f"- fold seeds {s['fold_seeds']}, k = {s['k']}, groups {s['groups']}; ridge, alpha grid {s['alphas']}, "
@@ -761,7 +864,8 @@ def markdown(r: dict) -> str:
          f"- tiers: {', '.join(s['tiers'])}; deciding tier: {s['deciding_tier']}; labels read: "
          + "; ".join(s["labels_read"]),
          f"- null: {s['null']}, {s['null_reps']} replicates (seed {s['null_seed']}, {s['null_bins']} bins); Holm "
-         f"families: add-one n = {s['families']['add_one']}, set n = {s['families']['set']}",
+         "within each source's add-one rows, family sizes: "
+         + (", ".join(f"{k} {v['add_one']}" for k, v in s["families"].items()) or "none"),
          "- metrics: M1 pearson_delta, M2 pearson_delta_nontarget, M3 mse, M4 mse_top, M5 r2_top, M6 "
          "pearson_delta_top, M7 direction_acc_top, M12 delta scale ratio; gains are candidate minus parent (M4: "
          "parent minus candidate), ± the overlap-adjusted paired SE", ""]
@@ -774,15 +878,18 @@ def markdown(r: dict) -> str:
         L.append(_md(["parent", t, len(p["features"]), p["n_columns"], *(_f(m[k]) for k in LABEL), "", "", "", ""]))
     for row in (x for x in r["rows"] if x["kind"] == "set"):
         if row["status"] != "ok":
-            L.append(_md([f"{row['source']} (set)", "", len(p["features"]), p["n_columns"], *[""] * 11,
-                          row["reason"]]))
+            L.append(_md([f"{row['source']} (set)", "", "", "", *[""] * 11, row["reason"]]))
             continue
         for t in s["tiers"]:
             tt = row["tiers"][t]
             m, d1, nul = tt["metrics"], tt["delta"]["pearson_delta"], tt.get("null") or {}
-            L.append(_md([f"{row['source']} (set)", t, len(p["features"]) + len(row["features"]),
-                          p["n_columns"] + row["n_columns"], *(_f(m[k]) for k in LABEL), _gain(d1), _wins(d1),
-                          _f(nul.get("p_holm"), 3), _verdict(row, t, s)]))
+            L.append(_md([f"{row['source']} (set)", t, len(row["model"]), row["n_columns"], *(_f(m[k]) for k in LABEL),
+                          _gain(d1), _wins(d1), _f(nul.get("p_holm"), 3), _verdict(row, t, s)]))
+    for row in (x for x in r["rows"] if x["kind"] == "set" and "run" in x):
+        L.append(f"\n`{row['source']} (set)` is run `{row['run']}`, {row['experiment_id']}, split "
+                 f"`{row['split_id']}`: {', '.join(row['selected'])}; parent features it dropped: "
+                 f"{', '.join(row['dropped_parent']) or 'none'}; recomputed with its own params: "
+                 f"{', '.join(row['retuned_parent']) or 'none'}.")
     L += ["", "## Table 2. Single features added to the parent", "",
           _md(["source", "feature", "tier", "status", "ΔM1 ± SE_adj", "wins/n", "ΔM2", "ΔM4", "ΔM5", "ΔM7",
                "null p raw / Holm", "excess", "max abs r", "label-dependent",
@@ -812,11 +919,11 @@ def _md(cells) -> str:
 def _verdict(row: dict, tier: str, s: dict) -> str:
     if tier != s["deciding_tier"]:
         return "(deciding tier: " + s["deciding_tier"] + ")"
-    return "meaningful (development)" if row["meaningful"] else "not: " + "; ".join(row["failed_criteria"])
+    return row["verdict"]
 
 
 if __name__ == "__main__":
     sandbox.reexec_under_hash_seed("feature_compare")
-    if len(sys.argv) == 3 and sys.argv[1] == "_blocks":
-        sys.exit(child_main(sys.argv[2]))
+    if len(sys.argv) == 3 and sys.argv[1] in ("_blocks", "_smoke"):
+        sys.exit((child_main if sys.argv[1] == "_blocks" else smoke_main)(sys.argv[2]))
     sys.exit(main())

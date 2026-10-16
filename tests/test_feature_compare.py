@@ -3,6 +3,7 @@ lab's cross_validate ones, a planted feature is meaningful and noise is not, for
 run, the gene null permutes within bins of control expression, and the visible validation labels are read only on
 request, in one function."""
 
+import argparse
 import ast
 import json
 import shutil
@@ -126,6 +127,7 @@ def main_run(tmp_path_factory, dataset):
     _plugin(bad, "mean_response", NOISE)
     _plugin(bad, "shape_feat", "        return np.ones((len(perts), 3))")
     _plugin(bad, "dep_feat", "        return ctx.feature('guard_feat', perts)")
+    _plugin(bad, "zz_broken", NOISE, prefix="X = 1 // 0\n")  # passes the guard, raises on import
     out = tmp / "out"
     r = subprocess.run([sys.executable, str(TOOL), "--data", str(bundle), "--out", str(out),
                         "--source", f"planted={tmp / 'planted'}", "--source", f"noise={tmp / 'noise'}",
@@ -144,10 +146,13 @@ def test_a_planted_feature_is_meaningful_with_the_smallest_null_p(main_run):
     res = main_run["json"]
     row = _row(res, "planted_feat")
     assert row["status"] == "ok" and row["meaningful"], row.get("failed_criteria")
-    assert res["settings"]["families"] == {"add_one": 2, "set": 2}
+    # Holm within each source: planted's family is itself, whatever the other sources sent
+    assert res["settings"]["families"] == {"planted": {"add_one": 1, "set": 1}, "noise": {"add_one": 1, "set": 1},
+                                           "bad": {"add_one": 0, "set": 0}}
     for t in ("oof", "val1"):
         assert row["tiers"][t]["null"]["p"] == pytest.approx(1 / 40)
-    assert row["tiers"]["val1"]["null"]["p_holm"] == pytest.approx(2 / 40)
+        assert row["tiers"][t]["null"]["p_holm"] == pytest.approx(1 / 40)
+    assert row["exposure"] == "oof" and row["verdict"] == "meaningful (development, val1)"
     assert all(d > 0 for d in row["tiers"]["oof"]["report_deltas"]) and len(row["tiers"]["oof"]["report_deltas"]) == 2
     assert row["tiers"]["oof"]["delta"]["pearson_delta"]["overlap_ratio"] == pytest.approx(1.0)  # single targets
     assert row["label_dependent"] is False and _row(res, "(set)", "planted")["meaningful"]
@@ -161,12 +166,15 @@ def test_a_noise_feature_is_not_meaningful(main_run):
 def test_rejected_files_are_rows_and_never_run(main_run):
     res = main_run["json"]
     want = {"guard_feat": "guard", "literal_feat": "literal", "mean_response": "collision", "shape_feat": "smoke",
-            "dep_feat": "error"}
+            "dep_feat": "error", "zz_broken": "error"}
     assert {f: _row(res, f, "bad")["status"] for f in want} == want
     assert "guard_feat" in _row(res, "dep_feat")["reason"]  # its dependency was rejected, so it cannot compute
     assert "import of 'os'" in _row(res, "guard_feat")["reason"]
     assert "30 elements" in _row(res, "literal_feat")["reason"]
     assert "shape" in _row(res, "shape_feat")["reason"]
+    # a file that raises on import costs only its own row
+    assert "ZeroDivisionError" in _row(res, "zz_broken")["reason"]
+    assert not any("ZeroDivisionError" in _row(res, f, "bad")["reason"] for f in ("shape_feat", "dep_feat"))
     assert not main_run["marker"].exists()  # the guard-rejected file never executed, anywhere
     assert _row(res, "(set)", "bad")["status"] == "error"
 
@@ -204,7 +212,9 @@ def test_pair_bundle_groups_by_gene_reports_overlap_and_a_set_row(pair_bundle, t
     ratio = _row(res, "noise_feat")["tiers"]["oof"]["delta"]["pearson_delta"]["overlap_ratio"]
     assert ratio is not None and ratio > 0 and ratio != pytest.approx(1.0)
     s = _row(res, "(set)", "s")
-    assert s["status"] == "ok" and s["features"] == ["noise_feat", "second_feat"] and s["n_columns"] == 2
+    assert s["status"] == "ok" and s["features"] == ["noise_feat", "second_feat"]
+    assert s["model"] == res["parent"]["features"] + ["noise_feat", "second_feat"]
+    assert s["n_columns"] == res["parent"]["n_columns"] + 2
     assert fc.OOF_CAVEAT in (out / "feature_compare.md").read_text()
 
 
@@ -224,7 +234,8 @@ def test_val1_is_required_to_exist_and_not_read_without_the_flag(dataset, tmp_pa
 
 
 # ------------------------------------------------------------------ run directories as parent and source
-def _fake_run(d: Path, features: list[str], plugins: dict[str, str], hp: dict) -> Path:
+def _fake_run(d: Path, features: list[str], plugins: dict[str, str], hp: dict, params: dict | None = None,
+              split_id: str | None = None) -> Path:
     """A minimal finished run: lab.db with the selected experiment, and feature_store/."""
     (d / "feature_store").mkdir(parents=True)
     for name, text in plugins.items():
@@ -234,9 +245,9 @@ def _fake_run(d: Path, features: list[str], plugins: dict[str, str], hp: dict) -
     c.execute("CREATE TABLE experiments (experiment_id TEXT, status TEXT, kind TEXT, primary_score REAL, "
               "finished_at REAL, feature_set_json TEXT, new_feature TEXT, feature_params_json TEXT, "
               "hyperparameters_json TEXT, delta_from_parent REAL)")
-    c.execute("INSERT INTO runs VALUES ('r', NULL, 'synthetic', '', '{}')")
-    c.execute("INSERT INTO experiments VALUES ('EXP_1', 'completed', 'new_feature', 0.5, 1, ?, NULL, '{}', ?, NULL)",
-              (json.dumps(features), json.dumps(hp)))
+    c.execute("INSERT INTO runs VALUES ('r', ?, 'synthetic', '', '{}')", (split_id,))
+    c.execute("INSERT INTO experiments VALUES ('EXP_1', 'completed', 'new_feature', 0.5, 1, ?, NULL, ?, ?, NULL)",
+              (json.dumps(features), json.dumps(params or {}), json.dumps(hp)))
     c.commit()
     c.close()
     return d
@@ -265,3 +276,74 @@ def test_runs_as_parent_and_as_source(dataset, tmp_path):
     res = json.loads((out2 / "feature_compare.json").read_text())
     assert res["parent"]["features"] == base + ["noise_feat"] and res["parent"]["files"]["noise_feat"]["status"] == "ok"
     assert _row(res, "second_feat")["status"] == "ok"
+
+
+LEAKY = ("        if not params.get('leak'):\n"
+         "            return np.cos(ctx.control_mean)[None, :, None] * np.ones((len(perts), 1, 1))\n"
+         "        names, Y = ctx.train_delta()\n"
+         "        pos = {p: i for i, p in enumerate(names)}\n"
+         "        return np.array([Y[pos[p]] if p in pos else ctx.control_mean for p in perts])[:, :, None]")
+
+
+def test_a_source_run_is_scored_as_its_own_model_from_its_own_split(dataset, tmp_path):
+    """The set row of a --source-run is the run's selected model (a parent feature it dropped stays out), a feature
+    is smoke-tested with the params the run recorded for it, and a run from another split is refused."""
+    noise = PLUGIN.format(prefix="", name="noise_feat", body=NOISE)
+    leaky = PLUGIN.format(prefix="", name="leaky_feat", body=LEAKY)
+    dropped = _fake_run(tmp_path / "dropped", ["control_mean", "mean_response", "noise_feat"], {"noise_feat": noise},
+                        {"cv_folds": 5})
+    leak = _fake_run(tmp_path / "leak", ["control_mean", "mean_response", "is_target", "leaky_feat"],
+                     {"leaky_feat": leaky}, {"cv_folds": 5}, params={"leaky_feat": {"leak": True}})
+    out = tmp_path / "out"
+    common = ["--data", str(dataset), "--fold-seeds", "101,102", "--null-reps", "3"]
+    # "parent" as a source name must not collide with the parent's own work directory
+    assert fc.main(common + ["--out", str(out), "--source-run", f"parent={dropped}", "--source-run",
+                             f"leak={leak}"]) == 0
+    res = json.loads((out / "feature_compare.json").read_text())
+    s = _row(res, "(set)", "parent")
+    assert s["status"] == "ok" and s["model"] == ["control_mean", "mean_response", "noise_feat"]
+    assert s["dropped_parent"] == ["is_target"] and s["n_columns"] == 3 and s["exposure"] == "val1+oof"
+    assert _row(res, "noise_feat")["exposure"] == "val1+oof"
+    lk = _row(res, "leaky_feat")
+    assert lk["status"] == "smoke" and "label leakage" in lk["reason"]
+    assert _row(res, "(set)", "leak")["status"] == "error"
+    assert "dropped: is_target" in (out / "feature_compare.md").read_text()
+    other = _fake_run(tmp_path / "other", ["control_mean", "noise_feat"], {"noise_feat": noise}, {"cv_folds": 5},
+                      split_id="split_OTHER")
+    assert fc.main(common + ["--out", str(tmp_path / "out2"), "--source-run", f"o={other}"]) == 2
+
+
+def test_a_source_params_file_is_ignored(dataset, tmp_path):
+    """A params file next to a --source would carry training labels past the guard and the literal caps."""
+    src = tmp_path / "src"
+    _plugin(src, "table_feat", "        t = params.get('t')\n"
+                               "        if t is None:\n"
+                               "            i = np.arange(len(perts))[:, None]\n"
+                               "            return np.sin(ctx.control_mean + i)[:, :, None]\n"
+                               "        return np.array([t[p] for p in perts])[:, :, None]")
+    names, Y = FeatureContext(dataset).train_delta()
+    (src / "params.json").write_text(json.dumps({"table_feat": {"t": dict(zip(names, Y.tolist()))}}))
+    out = tmp_path / "out"
+    assert fc.main(["--data", str(dataset), "--out", str(out), "--source", f"s={src}", "--fold-seeds", "101",
+                    "--null-reps", "0"]) == 0
+    res = json.loads((out / "feature_compare.json").read_text())
+    row = _row(res, "table_feat")
+    assert row["status"] == "ok" and row["params"] == {}
+    assert row["tiers"]["oof"]["metrics"]["pearson_delta"] < 0.99
+    assert {"one fold seed: alpha chosen and reported on the same OOF predictions",
+            "no null (--null-reps 0, or nothing beyond the parent to permute)"} <= set(row["failed_criteria"])
+
+
+def test_the_verdict_names_a_null_too_coarse_for_its_family():
+    d = {"mean_diff": 1.0, "se_adj": 0.1, "wins_a": 9, "n": 10}
+    row = {"exposure": "oof", "tiers": {"oof": {"delta": dict.fromkeys(("pearson_delta", "pearson_delta_nontarget",
+                                                                         "mse_top"), d),
+                                                "report_deltas": [1.0, 1.0], "null": {"p": 0.01, "p_holm": 0.06}}}}
+    a = argparse.Namespace(null_reps=99, seeds=[1, 2])
+    fc.verdict(row, "oof", 6, a)
+    assert row["failed_criteria"] == ["null too coarse for a family of 6 (need --null-reps >= 119)"]
+    fc.verdict(row, "oof", 5, a)
+    assert row["failed_criteria"] == ["null p (Holm) > 0.05"]
+    row["tiers"]["oof"]["null"]["p_holm"] = 0.01
+    fc.verdict(row, "oof", 1, a)
+    assert row["meaningful"] and row["verdict"] == "meaningful (development, OOF only, not held out)"
