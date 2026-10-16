@@ -125,8 +125,9 @@ sqlite3 ~/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite \
 **Step B, Mac. R0 symbol-coverage check.** `tools/knowledge_coverage.py` (added with this document) reads only the
 bundle's `public.npz` and `knowledge/`, never `private/` or `splits.json`. It lists every target's gene sets, interaction
 partners, regulatory edges and external-screen rows; with HGNC's complete set (download `hgnc_complete_set.txt` from
-genenames.org on the Mac) and the raw knowledge sources it also says what each retired symbol's current symbol would
-bring:
+genenames.org on the Mac) and the raw knowledge sources it also reports, in three separate sections, targets under a
+retired symbol with what the current symbol would bring, targets that are only an alias of another gene (to check by
+Ensembl id before mapping), and unannotated targets that are themselves approved symbols (labelled, never renamed):
 ```bash
 MAIN=~/Documents/Mila/Gene-Mila/gene-mila
 python tools/knowledge_coverage.py --data "$MAIN/data/adamson_cf" --out coverage_adamson.md \

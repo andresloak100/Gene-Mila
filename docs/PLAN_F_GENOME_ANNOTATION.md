@@ -89,8 +89,9 @@ Two things are asked, in this order:
 Andres allowed DeepSeek runs on 16 October: "you have permission to run the deep seek agents" (issue #41). The $8 cap
 below is this plan's proposal; he may lower or veto it before the chain starts. `AGENTS.md` still names
 `docs/PLAN_AFTER_N4.md` ($48) as the current block, and the B4 runs of 15 October (PR #39) already went past it. The
-chain waits until Andres has agreed to the cap and `AGENTS.md` and `HANDOFF.md` section 1 name block F as the current
-block. The ledger overstates real cost about twofold (`AGENTS.md`). B2's runs cost $1.29, $1.37 and $1.19 by the
+chain waits until Andres has confirmed the cap in writing (his message to the operator, recorded on issue #41) and
+`HANDOFF.md` section 1 names block F as the current block; `AGENTS.md` names it in the pull request that carries this
+plan, so the two files stay true together. The ledger overstates real cost about twofold (`AGENTS.md`). B2's runs cost $1.29, $1.37 and $1.19 by the
 ledger, so three runs are expected to cost about $4.
 
 - **Block cap:** the shared DeepSeek ledger (provider `deepseek` only) may rise by at most **$8** over its reading when
@@ -182,8 +183,11 @@ uses the tool at ce1b530 from the worktree.
        --source-run f_r3_selected="$M/runs/norman_ga_ds_addstart_w4_r3" --null-reps "$reps"
      ```
      The parent is the built-in start (the additive model) and the fold seeds are the tool's default (101, 102,
-     103). Out-of-fold tier only, unless Andres has approved `--with-val1` by then. With `m_total` 0 the reading is
-     negative without scoring.
+     103). Out-of-fold tier only, unless Andres has approved `--with-val1` by then; the pooled Holm below always reads
+     the OOF tier's null p, whatever tier decides the tool's own verdict. A plugin copied into a per-run directory
+     is scored with its class default params (the tool never reads a params file for `--source` files), so a
+     feature a run tuned through params is scored at its defaults here; the run's tuned version appears only in
+     the descriptive `_selected` rows. With `m_total` 0 the reading is negative without scoring.
    - **Criterion (the one rule).** Holm is applied once, pooled over every `gene_annotation` add-one row of `f_r0`,
      `f_r2` and `f_r3` that the tool scored (status ok, with a null), using the raw null p values in
      `feature_compare.json`. A feature counts as found when two things hold. First, the tool's verdict fails it on
