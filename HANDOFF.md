@@ -4,6 +4,26 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F amended stage2 ACTIVE, 2026-10-16 20:27UTC — leave running at nice19:**
+Own clone `gene-mila-block-f`, astra/block-f-results atb6638c3. Stage1 exited0 (156reportrows;
+JSON/MD in norman_f_stage1); exact helperselect exited0: **66status-ok annotation add-one rows**,
+**20selected**, **1319null replicates/feature**. Sources10f_r0/0f_r2/10f_r3; emptyr2 omitted in
+stage2 as plan permits. Original single-stage not run. Pluginmanifest records94copied unchanged
+files(r0=60,r2=1,r3=33) and MD5/SHA256. No operator selection or threshold change.
+Stage2 launched20:27UTC, detached **screen29493.blockfnull**, PythonPID**29504**, `ps` verified
+**NI19**, running. Output ownclone `docs/results/norman_f_stage2/`; log
+`docs/results/norman_f_stage2.log`; exit-code marker `docs/results/norman_f_stage2.exit` appears
+only on exit. Credentials unset for CPU process. Source/branch must remain unchanged while active.
+Receipt [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6224090858).
+**Exact next:** lightweight existing monitor; takes hours, no arbitrary timeout/reduction/retry or
+duplicate/heavy job. On nonzeroexit/refusal preserve evidence/report/hold. On exit0 exact helperpool
+into norman_f_pooled_holm, then readings2–4 unchanged (ce1b530 sealedtool, six-run OOF, source/count
+and cost description), secret-scanned resultscommit/draftPR and pooledtable/sealedreadings on41.
+No primary null verdict yet, summary.md/run-log-ending/sealed reading, val1opt-in, model promotion
+or paid call. Direct human authority comment6223988752; shared/live state owned by root. Prior
+notes below preserved as history; session77318 completed successfully and must not be restarted.
+
+
 **Block F amended stage1 ACTIVE, 2026-10-16 20:26UTC:** exact OOF/null0 comparison in own
 `gene-mila-block-f`, branch astra/block-f-results atb6638c3; managed execsession77318, process27213,
 active3minutes at20:26:13UTC. No output JSON yet; do not duplicate/restart. Directtwo-stage decision
