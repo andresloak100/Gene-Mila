@@ -4,6 +4,23 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F operator preparation complete, 2026-10-16 01:56UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41):**
+Andres directly authorized renaming both false-start files to their exact .stale-20261016T0013Z names,
+then the plan's write-once cap and unchanged preparation/copy/launch. Decision also in
+[comment6206200655](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6206200655)
+and the dated PLAN_F note. Both renames completed with identical SHA256 before/after; deleted nothing.
+Cap record **52.44 44.440456 2026-10-16T01:55Z**. This is the confirmed+$8 block, not another allowance.
+Own gene-mila-block-f at **f95111a4c78f124ced5def568f4221708cc2775e**, authorized986c4d6 descendant;
+all block_f script bytes unchanged from986c4d6. Preparation exited0:2083genes=2041annotated+42unmatched,
+copy byte-for-byte and exact knowledge inventory/md5 checks PASS. Original data/norman unchanged;
+approved data/norman_ga created. Both scripts copied/byte-verified in genemila_scale_logs.
+No F paid run started yet; no lab/scaling driver active before preparation; B4 ended15Oct18:44UTC.
+**Exact next:** operator's exact login-zsh chain command, seeds0/2/3, then monitor progress.md,
+block_f_chain.log and .check.txt only. No run-log ending/summary.md before readings. Stop/report any
+refusal without edits/retry; readings only after allthreepass, results branch astra/block-f-results.
+Root owns operation/shared/live state; no main codecheckout changes or script edits.
+
+
 **Block F operator HOLD, 2026-10-16 01:27 UTC — Claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), draft [PR #42](https://github.com/andresloak100/Gene-Mila/pull/42):**
 Andres explicitly handed the Mac block to Astra/chat1 and confirmed **+$8 over the starting DeepSeek
 ledger**, requiring exact execution and stopping to ask on any unclear/failing condition. His whole
