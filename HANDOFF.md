@@ -4,6 +4,24 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Reading-version clarification pending, 2026-10-16 20:11 UTC — seed3 continues unchanged:**
+Routine state check found mergedPR44 **b6638c3**, operator comment6223733089: a two-stage primary
+reading (all-row OOF screen, null only for top20, full status-ok stage1 family with untested p=1)
+plus faster null engine/helper. This changes the original primary procedure/family definition;
+no primary/sealed F reading has occurred. Current direct handoff/heartbeat says original unchanged
+reading. Astra presented Andres one explicit choice in this chat: adopt PR44 or keep original.
+**No new procedure/approval is inferred from another agent's comment or broad merge permission.**
+Paid run3 remains untouched/active; this is not a lab failure and no STOP/kill/retry is requested.
+Actual amendment commit times19:45:48/19:52:37/20:04:35UTC, merge20:06:41UTC, while runs in flight;
+plan headings04:20/05:05/05:30 differ. Preserve actual provenance; do not say before runs began.
+Source-only audit: scientific non-null gates unchanged, untested rows cannot pass; helper retains
+max(199,20*m_total-1). [Operator receipt](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6223793338).
+**Exact next:** continue only allowed monitoring to allthreepass or report an actual run failure.
+**Do not start any evaluation until Andres's direct reading-version choice arrives and is recorded**
+on41/HANDOFF1/liveSTATE. If runs finish while choice pending, report completion and hold readings;
+no sealed/runlog/summary.md read, new paid arm or method change. Earlier entries below preserved.
+
+
 **Block F milestone, 2026-10-16 19:57 UTC — seeds0/2 PASSED, seed3 active:**
 Run `gene-mila/runs/norman_ga_ds_addstart_w4_r2` finished19:54UTC rc0, codece1b530431,1231.2s,
 seed2/four workers, exact knowledge pair, DeepSeek planner mixedFalse/no exhaustion; `.passed`
