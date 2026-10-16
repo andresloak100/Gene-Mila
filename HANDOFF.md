@@ -4,6 +4,24 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F all readings complete; final validation/publication active — Astra, 2026-10-16 21:25 UTC.**
+Readings 1–4 all exited 0, including the six-run descriptive OOF comparison and source/count/usage audit.
+F OOF M1 = 0.580526 ± 0.002321; B2 = 0.582457 ± 0.008062 (sample SD across search seeds 0/2/3).
+F has no established arm gain. Primary: 10 passing rows, four tier-1-labelled rows representing two
+computational families; CpG reports repeat identically, and the numeric TSS code ignores chromosome/strand,
+includes self-target distance 0 and never reads the bidirectional map. No biological-discovery claim.
+Selected sealed Pearson = 0.719579 ± 0.001206 on the already inspected split; only r0 establishes a gain
+against its start. Full unedited pooled/sealed tables are already on #41, comment 6224750231.
+Own `gene-mila-block-f`, branch `astra/block-f-results`, evaluation source b6638c3; all raw JSON/Markdown,
+94 unchanged plugins, manifests, metadata collector and final report are in `docs/results/norman_f_*`.
+Independent final arithmetic/source/report audit passes; two reproduction wording corrections applied.
+Required full pytest is running at nice 19, managed session 15408 / Python 50906; do not duplicate.
+**Exact next:** await test exit; on success save checks/artifact hashes, secret-scan, commit/push results,
+open/attach a draft PR into integration, post final arm/cost interpretation with run directories on #41,
+update this section/live STATE and pause the Block F monitor. Do not rerun any scientific reading.
+No model promotion, merge, further paid run or follow-on arm is part of this handoff. Main checkout,
+existing data/runs, cap and ledger untouched; STOP remains present. Earlier notes below are history.
+
 **Block F read against [`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md): not yet (Claude, claim #41, 2026-10-16 22:05 UTC).**
 A.1 is met at the letter by one family, additive_response × the targets' promoter CpG (r0 e428/e666, r3 e412;
 pooled Holm p = 0.05, the test's resolution limit, raw p = 1/1320), and once by additive × a TSS-distance number
@@ -25,7 +43,7 @@ Stage2 exited0 at21:05:40UTC (38min wall from log creation); exact helperpool ex
 tested20, passing10rows, tier1-labelled4rows. All passing rawp=1/1320, pooledp=.05 exactly at
 permutation-resolution boundary. Independent arithmetic/non-null/hash audit passed. Tier1rows are
 two computational families: CpG×additive repeated3times with identical saved reports; numeric
-TSS-distance×additive once. TSS code ignores chromosome/strand/self-distance and does not use
+TSS-distance×additive once. TSS code ignores chromosome/strand, includes self-target distance 0 and does not use
 bidirectional mapping; do not claim a bidirectional-promoter mechanism or novel discovery.
 Allthree ce1b530 sealed readings exited0, JSON/MD in ownclone; tooldiscloses4oracle scorings/run
 outside run caps, one previously unscored start/run. No sealed outcome used for selection/change.
