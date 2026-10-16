@@ -288,3 +288,15 @@ screen -ls; pgrep -fl norman_f_chain.sh; tail -3 block_f_chain.log
 ```
 Before the retry the operator checks that no `norman_ga_*` run directory or run log exists; if one does, the block
 stops and the cause is written up here first. A second death before a run starts is reported, not retried.
+
+## Note, 2026-10-16 03:35 UTC: the planner-state check could not open B2's databases; fixed, chain to be restarted
+
+The detached `screen` start of 03:13 UTC ran to `norman_f_run.sh`'s pre-spend checks and was refused there
+("unable to open database file (14)" from `sqlite3 -readonly`, then "cannot read planner_rounds.state_chars of
+norman_ds_addstart_w4_r0"); no run, no spend, STOP restored by the exit trap. Cause: the lab's `lab.db` is in
+write-ahead mode (`genemila/db.py`), and `sqlite3 -readonly` cannot open such a database without creating its `-shm`
+file beside it. The check now queries a private copy of each B2 database and its `-wal` file in a temporary directory,
+as `tools/feature_audit.py` does, and never writes into a run directory. This changes a safety check, not the arm,
+the caps, the readings or the criterion. A pre-run refusal does not stop the block (`block_f_stopped.txt` is written
+only after a run), so the operator restarts the chain the same way from a clone at the commit that carries this
+note; the chain has no passed seed to skip.

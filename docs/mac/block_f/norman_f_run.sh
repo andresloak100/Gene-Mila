@@ -33,12 +33,19 @@ k=$(PYTHONPATH="$WT" "$PY" -c 'import sys; from genemila.data.bundle import adde
 # the section, nor push the tail of the state (feature_registry last) past the total cut that B2's planner states
 # stayed within. B2's largest planner_rounds.state_chars also counts the focus line added after the cut, so the check
 # errs towards refusing.
-b2=0
+# lab.db is in write-ahead mode (genemila/db.py): sqlite3 cannot open it read-only without creating its -shm file
+# next to it, so the query runs on a private copy of the database and its -wal file (as tools/feature_audit.py
+# does); the run directory itself is never written to.
+b2=0; dbtmp="$(mktemp -d)"
 for s in 0 2 3; do
-  m=$(sqlite3 -readonly "$MAIN/runs/norman_ds_addstart_w4_r$s/lab.db" "select coalesce(max(state_chars),0) from planner_rounds")
-  num "$m" || { echo "NOT STARTED: cannot read planner_rounds.state_chars of norman_ds_addstart_w4_r$s"; exit 1; }
+  src="$MAIN/runs/norman_ds_addstart_w4_r$s/lab.db"
+  [ -r "$src" ] || { echo "NOT STARTED: $src is missing or unreadable"; rm -rf "$dbtmp"; exit 1; }
+  cp "$src" "$dbtmp/b2_$s.db" && { [ -e "$src-wal" ] && cp "$src-wal" "$dbtmp/b2_$s.db-wal"; true; }
+  m=$(sqlite3 "$dbtmp/b2_$s.db" "select coalesce(max(state_chars),0) from planner_rounds")
+  num "$m" || { echo "NOT STARTED: cannot read planner_rounds.state_chars of norman_ds_addstart_w4_r$s (got '$m')"; rm -rf "$dbtmp"; exit 1; }
   [ "$m" -gt "$b2" ] && b2=$m
 done
+rm -rf "$dbtmp"
 "$PY" - "$DATA/knowledge" "$b2" <<'PY' || { echo "NOT STARTED: the planner would see the knowledge differently from B2 (above)"; exit 1; }
 import json, sys
 from pathlib import Path
