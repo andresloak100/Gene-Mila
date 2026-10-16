@@ -4,6 +4,23 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block F milestone, 2026-10-16 19:57 UTC — seeds0/2 PASSED, seed3 active:**
+Run `gene-mila/runs/norman_ga_ds_addstart_w4_r2` finished19:54UTC rc0, codece1b530431,1231.2s,
+seed2/four workers, exact knowledge pair, DeepSeek planner mixedFalse/no exhaustion; `.passed`
+present. Selected EXP_0260 ridge11features by visible rule; one annotation-reading plugin. Ledger
+seed2cost **$0.288034**, ending **$46.016983**, completed seeds0+2 cost **$1.576527** rounded;
+cap52.44 unchanged, accounting not invoice. No model-improvement claim. Seed3 started19:54UTC at
+`gene-mila/runs/norman_ga_ds_addstart_w4_r3`; preflightpassed, process1094 active at19:57:57UTC,
+screen65924.blockf/chain65926 active. Both earlier passed markers present; no failed/stopped check.
+Milestone [on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6223591100).
+**Exact next:** existing five-minute monitor, allowed progress/chain/check/process reads only until
+allthreepass and no lab/driver. Then unchanged PLAN_F primary OOF pooled shuffled-gene criterion,
+per-run sealed and six-run descriptive readings, results branch/draftPR. No val1 opt-in inferred,
+early sealed reading/scoring, overlapping lab/heavy job, script/cap/code/data edit or new arm.
+Any failure: report exact evidence and hold, no retry. Root owns Block F/shared/live state; prior
+entries below retained as history.
+
+
 **Block F milestone, 2026-10-16 19:30 UTC — seed0 PASSED, seed2 started:**
 Run `gene-mila/runs/norman_ga_ds_addstart_w4_r0` finished rc0; permitted check: codece1b530431,
 duration1203s, seed0/four workers, exact knowledge pair, planner DeepSeek mixedFalse, no duration
