@@ -331,3 +331,30 @@ are unchanged by a permutation within rows), with a test that its replicate gain
 the same p. Measured on a Norman-sized synthetic bundle: about 0.33 s per replicate per feature (0.84 before), so
 stage 2 of the amendment (20 features × `20·m_total − 1` replicates) is hours on the Mac. This is an optimisation of
 the tool; the amendment's rule and the replicate count are unchanged.
+
+## Note, 2026-10-16 05:30 UTC: exact commands for the amended feature-level reading
+
+`tools/block_f_readings.py` (with its test) carries out the amendment of 04:20 UTC so the operator makes no choice:
+`select` ranks the stage-1 rows by gain / SE_adj, copies the top 20 plugin files into one directory per run (a
+feature name can recur across runs) and prints `m_total` and the replicate count; `pool` applies the one Holm
+procedure of size `m_total` with untested rows at p = 1 and writes the table. Stage 2 uses the three per-run
+directories as three `--source` entries; the tool's own per-source Holm column is not the criterion. In the
+operator's clone (`$M`, `$C`, `$P` as in "Readings"), after the plugin copy of reading 1:
+```bash
+cd "$C"
+PYTHONPATH="$C" "$M/.venv/bin/python" tools/feature_compare.py --data "$M/data/norman_ga" \
+  --out docs/results/norman_f_stage1 --null-reps 0 \
+  --source f_r0="$P/r0" --source f_r2="$P/r2" --source f_r3="$P/r3" \
+  --source-run f_r0_selected="$M/runs/norman_ga_ds_addstart_w4_r0" \
+  --source-run f_r2_selected="$M/runs/norman_ga_ds_addstart_w4_r2" \
+  --source-run f_r3_selected="$M/runs/norman_ga_ds_addstart_w4_r3"
+"$M/.venv/bin/python" tools/block_f_readings.py select --stage1 docs/results/norman_f_stage1/feature_compare.json \
+  --plugins "$P" --out docs/results/norman_f_top --k 20
+reps=$("$M/.venv/bin/python" -c "import json; print(json.load(open('docs/results/norman_f_top/selection.json'))['null_reps'])")
+PYTHONPATH="$C" "$M/.venv/bin/python" tools/feature_compare.py --data "$M/data/norman_ga" \
+  --out docs/results/norman_f_stage2 --null-reps "$reps" \
+  --source f_r0=docs/results/norman_f_top/r0 --source f_r2=docs/results/norman_f_top/r2 --source f_r3=docs/results/norman_f_top/r3
+"$M/.venv/bin/python" tools/block_f_readings.py pool --stage1 docs/results/norman_f_stage1/feature_compare.json \
+  --stage2 docs/results/norman_f_stage2/feature_compare.json --plugins "$P" --out docs/results/norman_f_pooled_holm
+```
+A `--source` directory for a run with no top file is left out of the stage-2 call. Readings 2 to 4 are unchanged.
