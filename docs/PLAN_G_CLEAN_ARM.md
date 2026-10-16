@@ -1,25 +1,29 @@
 # Block G: the clean tier-1 arm, with and without the three tables (Adamson and Norman), fixed before any run
 
 Written 2026-10-16 by a Claude cloud session on Andres's decisions of 16 October: tier 1 only as the clean inputs
-(`docs/NOVEL_FEATURE_NEEDS.md` §7, approved), no Replogle screen and no Enrichr GO or Hallmark sets; block G is that
-clean bundle with and without the three new tables, three seeds each, Norman and Adamson; "approved, do what you think
-is best"; "we don't care about re-running agents"; "please don't overengineer". **Nothing below has run.** Every number
-these runs produce is read by the rules here; from the first run on, a change is a new, dated section, never an edit.
-The cloud session cannot reach DeepSeek and has no data, so the block runs on the Mac with `docs/mac/block_g/`.
+(`docs/NOVEL_FEATURE_NEEDS.md` §7; his approval of 21:08 UTC on issue #41, in `HANDOFF.md` section 1), no Replogle
+screen and no Enrichr GO or Hallmark sets; block G is that clean bundle with and without the three new tables, three
+seeds each, Norman and Adamson; "approved, do what you think is best" and "please don't overengineer" (Claude project,
+16 October). **Nothing below has run.** Every number these runs produce is read by the rules here; from the first run
+on, a change is a new, dated section, never an edit. The session has no data and no DeepSeek, so the block runs on the
+Mac with `docs/mac/block_g/`.
 
 **The code commit is not fixed yet.** Block G runs on the integration branch head after two merges: the clean-bundle
-builder (`tools/build_clean_bundle.py`) and the planner-state change that renders the knowledge section with a larger
-budget. That head is `<G_COMMIT>` here. A dated note at the end of this file names it, with its date, before the chain
-starts, and the same commit fills `G_COMMIT=` at the top of `block_g_run.sh`, which refuses to run until then and
-refuses unless the checkout it runs from is at that commit and clean.
+builder (`tools/build_clean_bundle.py`, `genemila/data/knowledge_clean.py`; its own pull request) and the planner-state
+change (`genemila/research_state.py`: the knowledge section gets its own 8,000-character budget,
+`KNOWLEDGE_SECTION_CHARS`, so the planner sees every knowledge file). That file is inside Astra's open claim #40, so
+the change is coordinated with Astra on #40 before it merges; the chain cannot start before both merges. That head is
+`<G_COMMIT>` here. A dated note at the end of this file names it, with its date, before the chain starts, and the same
+commit fills `G_COMMIT=` at the top of `block_g_run.sh`, which refuses to run until then and refuses unless the
+checkout it runs from is at that commit and clean.
 
 ## Question
 
 Block F gave the agents one new table next to the Replogle screen, so a feature that read it could still be lifted by
 the screen (tier 3). Block G removes every tier-2 and tier-3 input from the bundle and asks, on two datasets:
 1. With only tier-1 knowledge, do the agents build a feature from the three per-gene tables (genome annotation,
-   gnomAD constraint, UniProt protein annotation) that adds to the model beyond a matched null? This is the
-   feature-level reading, the paper's question, and `docs/GOAL_CRITERIA.md` A.1 is read from it.
+   gnomAD constraint, UniProt protein annotation) that adds to the model beyond a matched null? The feature-level
+   reading, the paper's question; `docs/GOAL_CRITERIA.md` A.1 is read from it.
 2. Do the agents do better with the tables than without them, on the same clean bundle? G0 is G1's control; the two
    arms share code, bundle base, split, settings and seeds. Read on the development tier, descriptively.
 
@@ -42,30 +46,36 @@ The agents get the files and their own descriptions, no hypothesis (`docs/NOVEL_
     the raw inputs below: `gene_sets.json` (Reactome; GO restricted to curated and experimental evidence codes;
     CORUM complexes), `prior_network.json` and `transcription_factors.json` (CollecTRI), `ppi_network.json` (STRING
     physical links, experimental and database channels only), `targets.json`. Five files, the same names as today,
-    so every existing feature plugin still loads. The builder's docstring is the authority on the filtering; this
-    plan fixes the file names, the split and the exclusions (no Replogle, no Enrichr GO BP, no Hallmark, no STRING
-    text-mining or co-expression channel).
+    so every existing feature plugin still loads. This plan fixes the file names, the split, the exclusions (no
+    Replogle, no Enrichr GO BP, no Hallmark, no STRING text-mining or co-expression channel) and the **GO evidence
+    codes admitted: EXP, IDA, IPI, IMP, IGI, HDA, TAS, IC, NAS.** Out: IEP, HEP (inferred from expression), IEA, the
+    computational codes, and **HMP, HGI** (high-throughput mutant-phenotype and genetic-interaction annotations come
+    from perturbation screens: tier 3 by §7); IMP and IGI stay (a single-gene mutant phenotype is not a screen and
+    carries no expression response). `prepare_clean_bundles.sh` refuses a bundle whose manifest records another list
+    (`clean_knowledge.provenance.go_evidence_codes`); the builder's `GO_CURATED_EVIDENCE` must match.
   - `data/<ds>_clean_tables`: the same plus `gene_annotation.json`, `gene_constraint.json` and
     `protein_annotation.json`, passed to the builder as build-time knowledge, so the manifest hashes cover them and
     `added_knowledge` is empty for both arms: neither run records an `external_knowledge` list, and
-    `run.external_knowledge` other than empty stops the block.
-  - The tables are built first, per dataset, with `--genes-from` the existing bundle:
-    `tools/build_gene_annotation.py`, `tools/build_gene_constraint.py`, `tools/build_protein_annotation.py`.
-    The script prints every knowledge file's md5 and its knowledge-summary line length; the operator pastes that
-    output into the dated note that names `<G_COMMIT>`, so the md5s are on record before the first run.
-  - The builder's command line assumed by the script: `tools/build_clean_bundle.py --from <bundle> --raw <dir>
-    --out <dir> [--knowledge <file>]...`. If the merged builder's flags differ, the note that fills `<G_COMMIT>`
-    also fixes those two lines of `prepare_clean_bundles.sh`; the checks after each build (same split_id,
-    `verify_bundle` clean, exactly the expected files, `added_knowledge` empty, everything outside `knowledge/` and
-    `manifest.json` byte for byte the source) do not change.
+    `run.external_knowledge` other than empty stops the block. The script refuses unless the five shared files are
+    byte for byte the same in both bundles (G0 is G1's control).
+  - The tables are built first, per dataset, with `--genes-from` the existing bundle: `tools/build_gene_annotation.py`,
+    `tools/build_gene_constraint.py`, `tools/build_protein_annotation.py`.
+    The script prints each knowledge file's md5 and summary-line length for the dated note (on record before any run).
+  - The builder's command line: `tools/build_clean_bundle.py --bundle <bundle> --sources <dir> --out <dir>
+    [--table <name>=<file>]...`, the sources directory being the download directory below (the builder reads the
+    seven files `knowledge_clean.SOURCE_FILES` names from it). The checks after each build: same `split_id`,
+    `verify_bundle` clean, exactly the expected files, `added_knowledge` empty, the GO code list above, everything
+    outside `knowledge/` and `manifest.json` byte for byte the source.
 - **Differences from B2**, all intended: the code (`<G_COMMIT>` instead of ce1b530), the knowledge files (B2:
   the five Enrichr-and-STRING-700 files plus Replogle; G: the five clean files, with or without the three tables),
   and no Replogle screen in either arm. B2 is therefore not G0's control: G0 is. B2's numbers appear only as context.
-- **No planner-state size check.** Block F checked that its one new file kept the knowledge section within
-  2,500 characters and the planner state within 20,000 as B2's. Block G runs on the integration head, whose
-  planner state gives the knowledge section a larger budget (the change merged before `<G_COMMIT>`), and no arm
-  on this code has state sizes to match; the check is dropped. `prepare_clean_bundles.sh` prints the section's
-  length for the record.
+- **Planner-state size.** The run script checks the bundle's knowledge summary against the knowledge-section budget
+  of the code it runs (`research_state.KNOWLEDGE_SECTION_CHARS`, 8,000 after the change; `SECTION_CHARS`, 2,500,
+  before it, which the eight-file bundle exceeds), so a g1 run on a head without the change is refused before any
+  money. The whole state is still cut at 20,000 characters (`TOTAL_CHARS`); a G1 state is longer than a G0 state by
+  the three table lines (about 2,300 characters), so near that cut G1 loses more of its tail (`feature_registry`,
+  rendered last). No arm on this code has state sizes to match (block F matched B2's), so each run's `.check.txt`
+  records its largest `planner_rounds.state_chars` and whether 20,000 was reached; reading 4 reports it per arm.
 
 ## Raw downloads (operator, Mac, into `~/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/`)
 
@@ -77,7 +87,7 @@ whose exact path may have moved; the operator records the URL actually used and 
 | `goa_human.gaf.gz` | https://current.geneontology.org/annotations/goa_human.gaf.gz |
 | `go-basic.obo` | https://purl.obolibrary.org/obo/go/go-basic.obo |
 | `corum_allComplexes.txt` | CORUM current release, allComplexes: https://mips.helmholtz-muenchen.de/corum/download (UNVERIFIED path) |
-| `string_physical_detailed.txt.gz` | https://stringdb-downloads.org/download/protein.physical.links.detailed.v12.0/9606.protein.physical.links.detailed.v12.0.txt.gz |
+| `string_physical_detailed.txt.gz` | https://stringdb-downloads.org/download/protein.physical.links.detailed.v12.0/9606.protein.physical.links.detailed.v12.0.txt.gz (UNVERIFIED path; new to this repository) |
 | `string_info.txt.gz` | https://stringdb-downloads.org/download/protein.info.v12.0/9606.protein.info.v12.0.txt.gz (the file `genemila/data/knowledge.py` already uses) |
 | `collectri.tsv` | https://omnipathdb.org/interactions?datasets=collectri&genesymbols=yes&loops=yes (as `knowledge.py`) |
 | `reactome.gmt.zip` | copy of the existing raw knowledge directory's file (`data/raw/knowledge/reactome.gmt.zip` in the main checkout, from `prepare_data.py knowledge`); if absent, https://reactome.org/download/current/ReactomePathways.gmt.zip |
@@ -88,9 +98,11 @@ whose exact path may have moved; the operator records the URL actually used and 
 
 ## Money
 
-Andres's approval of 16 October: "approved, do what you think is best"; "we don't care about re-running agents". The
-ledger overstates real cost about twofold (`AGENTS.md`). B2's runs cost $1.29, $1.37 and $1.19 by the ledger; twelve
-runs are expected to cost about $14 to $16 by the ledger, about $8 billed.
+Andres approved the block on 16 October ("approved, do what you think is best") without naming an amount. The $20 cap
+below is this plan's proposal; he may lower or veto it. **The chain waits until he has confirmed the cap in writing**
+(recorded with its date in the dated note below and on the claim issue), as block F did; `AGENTS.md` names block G in
+the pull request that carries this plan. The ledger overstates real cost about twofold (`AGENTS.md`). B2's runs cost
+$1.29, $1.37 and $1.19 by the ledger; twelve runs are expected to cost about $14 to $16 by the ledger, about $8 billed.
 
 - **Block cap:** the shared DeepSeek ledger (provider `deepseek` only) may rise by at most **$20** over its reading
   when the block starts. The operator writes the cap once, before the chain, into `block_g_cap.txt` as one line
@@ -125,8 +137,10 @@ runs are expected to cost about $14 to $16 by the ledger, about $8 billed.
    ```bash
    python handoff_state.py --fetch --runs ~/Documents/Mila/Gene-Mila/gene-mila/runs; pgrep -fl 'run_research.py|feature_compare.py|scale_seq.sh'
    ```
-2. **The code.** The main checkout (or a dedicated worktree, named in `G_WT`) at `<G_COMMIT>` and clean; the operator's
-   clone of this branch is at the same commit. `block_g_run.sh` carries that commit at its top.
+2. **The code.** The runs use a dedicated checkout `~/Documents/Mila/Gene-Mila/gene-mila-<G_COMMIT>` at `<G_COMMIT>`
+   and clean, made without touching the main checkout (as block F's `gene-mila-ce1b530`; `G_WT=<path>` names another
+   one), never the main checkout; the main checkout's `.venv` as before. The operator's clone of this branch is at a
+   descendant of `<G_COMMIT>` that carries the filled-in `block_g_run.sh` and the dated note.
 3. **Free preparation**, from the operator's clone, after the raw downloads. Builds the six tables and four bundles,
    refuses if any exists, prints the md5s and line lengths (into the dated note):
    ```bash
@@ -145,9 +159,10 @@ runs are expected to cost about $14 to $16 by the ledger, about $8 billed.
    - `progress.md`, `block_g_chain.log` and each run's `.check.txt` say where it is; the `.check.txt` counts the
      features reading each of the three tables. Read no run's log end or `summary.md` before the readings.
    - Before spending, each run checks: the key; `G_COMMIT` filled in; the cap line (at most $20 over the start);
-     the checkout at `<G_COMMIT>` and clean; no run directory or log; no STOP file; no stopped block; no lab run and
-     no scaling driver; the bundle (`verify_bundle` clean, `added_knowledge` empty, exactly the arm's files, the
-     existing bundle's `split_id`); the ledger gate.
+     the checkout at `<G_COMMIT>` and clean; no run directory or log; no STOP file; no stopped block; no lab run, no
+     scaling driver and no `feature_compare` reading; the bundle (`verify_bundle` clean, `added_knowledge` empty,
+     exactly the arm's files, the existing bundle's `split_id`, the knowledge summary within the code's
+     knowledge-section budget); the ledger gate.
    - **Resume.** The chain skips a run whose `.passed` marker exists. A pre-run refusal (exit 1 or 2) is fixed and
      the chain restarted the same way; the cap file stays. A stop after a run (`block_g_stopped.txt`) is not
      resumed: the cause is written up here first.
@@ -176,15 +191,15 @@ M=~/Documents/Mila/Gene-Mila/gene-mila; C=<your clone>; ds=<adamson_cf|norman>; 
    "$M/.venv/bin/python" tools/block_f_readings.py select --stage1 docs/results/${ds}_g_stage1/feature_compare.json \
      --plugins "$P" --out docs/results/${ds}_g_top --k 20
    reps=$("$M/.venv/bin/python" -c "import json; print(json.load(open('docs/results/${ds}_g_top/selection.json'))['null_reps'])")
+   S2=(); for s in 0 2 3; do [ -d docs/results/${ds}_g_top/r$s ] && S2+=(--source f_r$s=docs/results/${ds}_g_top/r$s); done
    PYTHONPATH="$C" nice -n 19 "$M/.venv/bin/python" tools/feature_compare.py --data "$M/data/${ds}_clean_tables" \
-     --out docs/results/${ds}_g_stage2 --null-reps "$reps" \
-     --source f_r0=docs/results/${ds}_g_top/r0 --source f_r2=docs/results/${ds}_g_top/r2 --source f_r3=docs/results/${ds}_g_top/r3
+     --out docs/results/${ds}_g_stage2 --null-reps "$reps" "${S2[@]}"
    "$M/.venv/bin/python" tools/block_f_readings.py pool --stage1 docs/results/${ds}_g_stage1/feature_compare.json \
      --stage2 docs/results/${ds}_g_stage2/feature_compare.json --plugins "$P" --out docs/results/${ds}_g_pooled_holm
    ```
    Stage 1 scores every row with no null; `m_total` is its status-ok add-one rows; stage 2 scores the top 20 by
    gain / SE_adj with `20·m_total − 1` replicates (at least 199); `pool` applies one Holm of size `m_total` with
-   untested rows at p = 1. A `--source` directory with no top file is left out of the stage-2 call. Parent: the
+   untested rows at p = 1. The `S2` loop leaves a `--source` with no top file out of stage 2 (block F's r2). Parent: the
    built-in start; fold seeds the tool's default; OOF tier only (no `--with-val1`). A plugin is scored with its
    class defaults; the run's tuned version appears only in the `_selected` rows. With `m_total` 0 the reading is
    negative without scoring. No Replogle split: the bundle has no screen, so the tool's `reads_replogle` column
@@ -211,7 +226,8 @@ M=~/Documents/Mila/Gene-Mila/gene-mila; C=<your clone>; ds=<adamson_cf|norman>; 
    Reported: each run's `(set)` row (OOF M1 to M12, ΔM1 ± SE_adj over the start, wins), and per arm the mean ± sd of
    M1 and ΔM1 over its three runs. A run whose model cannot be rebuilt is named and its arm reported with fewer runs.
    No test; no difference is claimed that lies within either arm's spread. OOF is not held out for either arm.
-3. **Per run, sealed**, with the tool at `<G_COMMIT>`; the reading rule as for B1, B2, B4 and F (a gain counts only
+3. **Per run, sealed**, with the tool from `$C` (at `<G_COMMIT>` or later, as the other readings); the reading rule
+   as for B1, B2, B4 and F (a gain counts only
    above twice its paired SE with wins on more than half; categories under 10 perturbations reported, not read):
    ```bash
    for arm in g0 g1; do for s in 0 2 3; do PYTHONPATH="$C" "$M/.venv/bin/python" tools/sealed_reading.py \
@@ -220,7 +236,8 @@ M=~/Documents/Mila/Gene-Mila/gene-mila; C=<your clone>; ds=<adamson_cf|norman>; 
    Adamson's sealed set has been read in every earlier Adamson block and is worn: its readings are indicative
    only. Norman's has been read for B1, B2, B4 and F; this is its fifth reading, said so in the report.
 4. **Descriptive:** per run (from its `.check.txt` and plugin sources), the number of experiments and of selected
-   features that read each table, and which columns or keys they use.
+   features that read each table, which columns or keys they use, and the largest planner state (whether the
+   20,000-character cut was reached), per arm.
 
 Nothing is chosen from a sealed score. A positive reading 1 is a candidate, not a discovery
 (`docs/NOVEL_FEATURE_NEEDS.md` §3–4, `GOAL_CRITERIA.md` A.2–A.5).
@@ -228,6 +245,6 @@ Nothing is chosen from a sealed score. A positive reading 1 is a candidate, not 
 ## To be filled in before the chain (dated notes go below this line)
 
 - `<G_COMMIT>`: the integration head after the builder and the planner-state change are merged; the same commit in
-  `block_g_run.sh`. Confirmed flags of `tools/build_clean_bundle.py`, or the two fixed lines of the prepare script.
+  `block_g_run.sh`. Andres's written confirmation of the $20 cap (or the amount he names), with its date.
 - The raw downloads' URLs as used and their sha256; the prepare script's output (md5 and line length per file).
 - The cap record line, and the ledger reading at the start.

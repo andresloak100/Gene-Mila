@@ -39,10 +39,10 @@ for ds in norman adamson_cf; do
 done
 # 2. the four bundles: the existing bundle's public.npz, private/ and splits (so the same split_id) with knowledge/
 #    rebuilt from the tier-1 inputs only; the _tables bundle also carries the three tables as build-time knowledge
-build() {  # build <dataset> <bundle name> [--knowledge <table file>]...
+build() {  # build <dataset> <bundle name> [--table <name>=<table file>]...
   local ds="$1" name="$2"; shift 2
   local SRC="$MAIN/data/$ds" OUT="$MAIN/data/$name" PART="$MAIN/data/$name.partial"
-  "$PY" tools/build_clean_bundle.py --from "$SRC" --raw "$DL" --out "$PART" "$@" || no "build of $name failed; $PART is left for you to look at"
+  "$PY" tools/build_clean_bundle.py --bundle "$SRC" --sources "$DL" --out "$PART" "$@" || no "build of $name failed; $PART is left for you to look at"
   # byte for byte the source outside knowledge/ and manifest.json (diff prints only file names; nothing is read)
   diff -rq --exclude=knowledge --exclude=manifest.json "$SRC" "$PART" || no "$PART differs from $SRC outside knowledge/ and manifest.json"
   "$PY" - "$SRC" "$PART" "$#" <<'PY' || no "$name failed its checks (above)"
@@ -55,7 +55,11 @@ want = ["gene_sets.json", "ppi_network.json", "prior_network.json", "targets.jso
 if n_tables:
     want += ["gene_annotation.json", "gene_constraint.json", "protein_annotation.json"]
 problems = verify_bundle(part)
+# the GO evidence codes the plan fixes (PLAN_G, Bundles): HMP and HGI, high-throughput perturbation annotations, are out
+go_want = ["EXP", "HDA", "IC", "IDA", "IGI", "IMP", "IPI", "NAS", "TAS"]
+go_got = sorted(((mp.get("clean_knowledge") or {}).get("provenance") or {}).get("go_evidence_codes") or [])
 bad = [m for m, h in [(f"split_id {mp.get('split_id')} is not the source's {ms.get('split_id')}", mp.get("split_id") != ms.get("split_id")),
+                      (f"GO evidence codes {go_got}, not the plan's {go_want}", go_got != go_want),
                       (f"knowledge_files {mp.get('knowledge_files')}, not {sorted(want)}", sorted(mp.get("knowledge_files") or []) != sorted(want)),
                       (f"verify_bundle: {problems}", bool(problems)),
                       (f"added_knowledge {added_knowledge(part)} (must be empty)", bool(added_knowledge(part)))] if h]
@@ -68,8 +72,13 @@ PY
 }
 for ds in norman adamson_cf; do
   build "$ds" "${ds}_clean"
-  build "$ds" "${ds}_clean_tables" --knowledge "$T/$ds/gene_annotation.json" --knowledge "$T/$ds/gene_constraint.json" \
-    --knowledge "$T/$ds/protein_annotation.json"
+  build "$ds" "${ds}_clean_tables" --table gene_annotation="$T/$ds/gene_annotation.json" \
+    --table gene_constraint="$T/$ds/gene_constraint.json" --table protein_annotation="$T/$ds/protein_annotation.json"
+  # G0 is G1's control only if the five shared files are byte for byte the same in both bundles (two builder calls)
+  for f in gene_sets ppi_network prior_network targets transcription_factors; do
+    cmp -s "$MAIN/data/${ds}_clean/knowledge/$f.json" "$MAIN/data/${ds}_clean_tables/knowledge/$f.json" \
+      || no "$f.json differs between ${ds}_clean and ${ds}_clean_tables; the builder is not deterministic"
+  done
 done
 # 3. the record: every knowledge file's md5, and the length of its line in the planner's knowledge summary
 #    (genemila.lab.Lab.knowledge_summary at 60f1f44: a self-describing file shows its description cut at 900
