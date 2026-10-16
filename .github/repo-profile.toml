@@ -32,16 +32,16 @@ path = "README.md"
 results_labels = ["synthetic", "Adamson", "Norman"]
 # Headings contributors and the build scripts rely on; rename them here first if they move.
 required_headings = [
+  "Abstract",
+  "Current status",
   "Results on Adamson",
-  "What one run looks like",
-  "How it works",
+  "Results on Norman",
+  "Can the agents find new biology?",
+  "Methods",
+  "Synthetic check of the machinery",
   "Limitations",
-  "Where this is going",
-  "Quick start",
-  "Data",
-  "cell-eval",
-  "Configuration",
-  "Providers",
-  "Outputs of a run",
+  "Data and code availability",
+  "Reproducibility",
+  "References",
 ]
 max_badges = 3
