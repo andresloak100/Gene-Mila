@@ -112,8 +112,9 @@ def build(tsv: Path, keep: set[str] | None) -> dict:
                                                                                     prev[HEADERS["entry"]]):
                 best[name] = r
     genes = {n: row_values(best[n]) for n in sorted(best) if keep is None or n in keep}
-    # Kept short: the planner's state shows all knowledge files in one section cut at 2,500 characters
-    # (genemila/research_state.py SECTION_CHARS), so a long description would hide the files listed after it.
+    # Kept short: the planner's state shows all knowledge files in one section cut at 8,000 characters
+    # (genemila/research_state.py KNOWLEDGE_SECTION_CHARS; 2,500 before 16 October 2026), so a long description
+    # would hide the files listed after it.
     description = ("Protein features from UniProt reviewed human entries (curated sequence annotation; no perturbation "
                    "or expression response); one entry per gene, the longest protein. genes[symbol] = values in the "
                    "order of columns: protein_length, has_signal_peptide (0/1: ER-targeted, secretory or membrane "

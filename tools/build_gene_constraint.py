@@ -40,6 +40,8 @@ description, after its sign instruction but before its rule for multi-gene pertu
 transcription_factors entirely (at the builder's first 935-character line it also removed the sign instruction).
 Adding this file to a bundle that holds both needs the planner state to render knowledge differently (the lab-code
 owner's call), and the pre-run check in docs/mac/block_f/norman_f_run.sh (summary <= 2,500) is the gate to extend.
+Done on 16 October 2026: the knowledge section now has its own budget, research_state.KNOWLEDGE_SECTION_CHARS = 8,000
+(the measurements above describe the 2,500 cut of code ce1b530); a later block's gate reads that constant.
 
     python tools/build_gene_constraint.py --table gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz \\
         --genes-from data/norman --out gene_constraint.json
@@ -116,8 +118,9 @@ def build(table: Path, keep: set[str] | None) -> dict:
     genes = {n: [_num(best[n][c]) for c in COLUMNS] for n in names}
     flags = {n: best[n]["constraint_flag"] for n in names if best[n]["constraint_flag"]}
     # Kept short (about 500 characters; the module docstring has the measurement): the planner's state shows all
-    # knowledge files in one section cut at 2,500 characters (genemila/research_state.py SECTION_CHARS), and the
-    # Norman bundle with gene_annotation and the Replogle file already uses 2,322. The column glosses live in UNITS.
+    # knowledge files in one section, cut at 2,500 characters when this was written (8,000 since 16 October 2026,
+    # genemila/research_state.py KNOWLEDGE_SECTION_CHARS), so every file's description stays readable whole. The
+    # column glosses live in UNITS.
     description = ("gnomAD v2.1.1 per-gene loss-of-function (LoF) constraint: variants seen vs expected in 125k "
                    "exomes (no perturbation or response data). genes[symbol] = values in the order of columns "
                    "(oe_lof_upper is LOEUF; low LOEUF or high pLI = LoF-intolerant; null = none; each column in "
