@@ -64,6 +64,22 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
   echo "ok: checks; ledger \$$spent, block cap \$$CAP (ledger \$$START at $CAPDATE), isolation $MODE $ACCOUNT, A3 client $A3_CLIENT$([ "$A3_CLIENT" = codex ] && echo " (wire format $H_CODEX_WIRE_API)")"
 }
 
+miss_rate() {  # miss_rate <model>: input_cache_miss for the model from the operator's clone's configs/default.toml (the
+  # lab's rate card), for run_biomni.py's --miss-usd-per-mtok: in Docker and account mode only tools/baselines/ is
+  # beside the runner, never configs/, so without this the first-call cost pre-estimate would be skipped. Prints the
+  # rate; exit 1 (and NOT STARTED) when the file or the entry is missing. Call as RATE=$(miss_rate <model>) || exit 1.
+  "$PY" - "$C/configs/default.toml" "$1" <<'PY' || no "no input_cache_miss rate for $1 in $C/configs/default.toml"
+import sys, tomllib
+from pathlib import Path
+path = Path(sys.argv[1])
+pricing = tomllib.loads(path.read_text()).get("pricing", {}) if path.is_file() else {}
+entry = pricing.get(sys.argv[2]) or pricing.get("default")
+if not entry or "input_cache_miss" not in entry:
+    sys.exit(1)
+print(float(entry["input_cache_miss"]))
+PY
+}
+
 pkg_checks() {  # the package source: the tier Andres decided (tier.txt: harness or none), MANIFEST.json equal to the record
   read -r TIER 2> /dev/null < "$H/tier.txt"
   case "$TIER" in harness|none) ;; *) no "$H/tier.txt must read 'harness' or 'none': Andres's word on the harness tier (plan, The task package; ROADMAP section 7, item 3)" ;; esac
