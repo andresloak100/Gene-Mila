@@ -282,3 +282,39 @@ def test_outputs_cannot_append_to_historical_source_or_package(archived):
     with pytest.raises(ValueError, match="outside source"):
         predict_ensemble(package, sha256(package / "manifest.json"), query_path, package / "new-predictions")
     assert not (package / "new-predictions").exists()
+
+
+def test_predict_targets_matches_the_query_path_and_refuses_outside_the_universe(archived):
+    """The new-cohort path of docs/PLAN_R_FRESH_TEST.md: symbols in, the frozen universe's delta matrix out.
+    The saved B1 prediction arrays are not in the repository (local to the Mac), so the bit-for-bit reproduction is
+    the synthetic fixture's: the original condition's saved delta, and a new target via the strict query path."""
+    from tools.frozen_model import main, predict_targets
+    package, _ = export(archived)
+    pin = sha256(package / "manifest.json")
+    got = predict_targets(package, pin, {"C1": ["C"], "newD": ["D"]}, archived["tmp"] / "targets")
+    assert got["perts"] == ["C1", "newD"] and got["genes"] == ["A", "B", "C", "D"]
+    assert got["delta"].shape == (2, 4) and got["delta"].dtype == np.float32
+    np.testing.assert_allclose(got["delta"][0], archived["saved"][0], rtol=0, atol=1e-7)
+    via_query, receipt = predict(package, [query("newD", ["D"])], archived["tmp"] / "via-query")
+    np.testing.assert_array_equal(got["delta"][1], via_query[0])
+    assert got["receipt"]["anchor_sha256"] == receipt["anchor_sha256"]
+    assert got["receipt"]["scoring"].startswith("none")
+    # The deposit keeps the query bytes the receipt pins, so the holder can verify query_sha256.
+    assert sha256(archived["tmp"] / "targets" / "queries.json") == got["receipt"]["query_sha256"]
+    assert json.loads((archived["tmp"] / "targets" / "queries.json").read_text())["queries"][1] == {
+        "condition_id": "newD", "target_genes": ["D"]}
+    with pytest.raises(ValueError, match="outside frozen gene universe"):
+        predict_targets(package, pin, {"newZ": ["Z"]}, archived["tmp"] / "refused")
+    assert not (archived["tmp"] / "refused").exists()
+    with pytest.raises(ValueError, match="nonempty mapping"):
+        predict_targets(package, pin, {}, archived["tmp"] / "empty")
+    out = archived["tmp"] / "cli"
+    assert main(["predict-targets", "--package", str(package), "--manifest-sha256", pin, "--target", "D",
+                 "--out", str(out)]) == 0
+    with np.load(out / "predictions.npz", allow_pickle=False) as z:
+        assert z["perts"].tolist() == ["D"]
+        np.testing.assert_array_equal(z["delta"][0], via_query[0])
+    assert sha256(out / "queries.json") == json.loads((out / "receipt.json").read_text())["query_sha256"]
+    with pytest.raises(SystemExit):
+        main(["predict-targets", "--package", str(package), "--manifest-sha256", pin, "--target", "Z",
+              "--out", str(archived["tmp"] / "cli-refused")])

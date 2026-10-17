@@ -29,6 +29,15 @@ kept state in runs/kept/. Why it works this way:
   the perturbations and is positive under every seed; a deletion is kept when it loses less than one plain SE
   (gain_se_plain). "strict" (autoresearch as published, one evaluation): keep when the gain under the first fold
   seed is above zero.
+- The visible validation tier (MANIFEST.json "harness_val1", harness/val1.npz, when the exporter shipped it): the
+  labels the lab's own controller scores every experiment on. Each run also fits the model on all training rows at
+  every alpha, as the lab's experiment does (pipeline.run), and scores those perturbations; then, as the lab selects
+  (genemila/lab.py, Lab.evaluate_artifact and Lab._combine_visible), the alpha per fold seed and the keep rule go by
+  the mean pearson_delta over the visible validation and the out-of-fold training perturbations together, each
+  weighing the same (combined_primary below). oof_pearson_delta and val1_pearson_delta are reported beside the
+  combined score, and gain is the combined gain (oof_gain and val1_gain its parts). The file is readable from the
+  shell and the agent is told so (program.md); feature code cannot open it (the guard), cannot paste it (literal.py),
+  and a file whose source names the tier is rejected. Without the tier the deciding score is the out-of-fold one.
 - The decision is applied here, not left to the agent: kept means the files evaluated become runs/kept/features;
   discarded, rejected or crashed means features/ is restored from it. Every attempt is copied to runs/attempts/ and
   logged in results.tsv and runs/evals.jsonl. The files are read once, into runs/work/features, and everything runs
@@ -43,7 +52,8 @@ values match the lab's) with the time and memory limits of MANIFEST.json; it nev
 also runs from an agent that executes Python inside its own interpreter. The evaluation also gets eval_timeout_s
 CPU seconds as a kernel limit, so it ends even when this process is killed and nothing watches it any more. Exit 0 when the attempt was scored
 (baseline, keep, discard), 1 when it was rejected or crashed. Grep-able lines: status:, decision:,
-oof_pearson_delta:, parent:, gain:, gain_se:, gain_se_plain:, wins:, seeds_positive:, harness_ok:, cpu_s:.
+oof_pearson_delta:, parent:, gain:, gain_se:, gain_se_plain:, wins:, seeds_positive:, harness_ok:, cpu_s:, and
+with the visible tier val1_pearson_delta:, combined_pearson_delta:, deciding:, oof_gain:, val1_gain:.
 """
 from __future__ import annotations
 
@@ -144,10 +154,17 @@ def report(row: dict) -> None:
         print(f"problem: {problem}")
     if row.get("oof_pearson_delta") is not None:
         print(f"oof_pearson_delta: {row['oof_pearson_delta']:.6f}")
+        if row.get("val1_pearson_delta") is not None:
+            print(f"val1_pearson_delta: {row['val1_pearson_delta']:.6f}")
+            print(f"combined_pearson_delta: {row['combined_pearson_delta']:.6f}")
+        print(f"deciding: {row['deciding']}")
         print(f"parent: {row['parent']:.6f}" if row.get("parent") is not None else "parent: none")
         print(f"gain: {row['gain']:.6f}")
         print(f"gain_se: {row['gain_se']:.6f}")
         print(f"gain_se_plain: {row['gain_se_plain']:.6f}")
+        if row.get("val1_gain") is not None:
+            print(f"oof_gain: {row['oof_gain']:.6f}")
+            print(f"val1_gain: {row['val1_gain']:.6f}")
         print(f"wins: {row['wins']}/{row['n_perts']}")
         print(f"seeds_positive: {row['seeds_positive']}/{len(row['seed_gains'])}")
     print(f"harness_ok: {str(row['harness_ok']).lower()}")
@@ -207,6 +224,62 @@ def overlap_ratio(d, genes_of) -> float:
         return 1.0
     overlap = np.array([[bool(a & b) for b in genes_of] for a in genes_of], dtype=np.float64)
     return float(np.sqrt(max(0.0, float(e @ overlap @ e)) / plain))
+
+
+def combined_primary(val1_mean: float, oof_mean: float, n_val1: int, n_train: int) -> float:
+    """The lab's selection score (genemila/lab.py, Lab._combine_visible, selection rule pearson_delta): the metric
+    averaged over the visible validation and the out-of-fold training perturbations, each weighing the same."""
+    return (n_val1 * val1_mean + n_train * oof_mean) / (n_val1 + n_train)
+
+
+def keep_decision(rule: str, kind: str, cur, old, genes_of) -> dict:
+    """The keep rule on per-perturbation scores cur and old of shape (n_seeds, n_perts), the deciding tier's (the
+    combined vector with the visible tier, else the out-of-fold one). "noise": the gain averaged over the seeds
+    beats max(2 SE_adj, MIN_GAIN), wins on more than half the perturbations and is positive under every seed; a
+    deletion is kept when it loses less than one plain SE; "strict": the first seed's gain is above zero."""
+    import numpy as np
+    d_seed = cur - old
+    d = d_seed.mean(axis=0)
+    gain, se = float(d.mean()), float(d.std(ddof=1) / np.sqrt(len(d)))
+    se_adj = se * max(1.0, overlap_ratio(d, genes_of))
+    wins, seed_gains = int((d > 0).sum()), [float(g) for g in d_seed.mean(axis=1)]
+    if rule == "strict":
+        keep = seed_gains[0] > 0
+    elif kind == "deleted":
+        keep = -gain < se
+    else:
+        keep = gain > max(2 * se_adj, MIN_GAIN) and wins > len(d) / 2 and all(g > 0 for g in seed_gains)
+    return {"gain": gain, "gain_se": se_adj, "gain_se_plain": se, "wins": wins, "seed_gains": seed_gains,
+            "seeds_positive": sum(g > 0 for g in seed_gains), "keep": bool(keep)}
+
+
+def val1_scores(ctx, feats: list[str], alphas: list[float], val1_perts: list[str], val1_means, cache) -> list[dict]:
+    """Per alpha, the visible validation perturbations' pearson_delta from a ridge fitted on every training row,
+    as pipeline.run fits the lab's experiment: the features of every held-out perturbation in one batch, the
+    columns standardised by the training rows' mean and sd, the val1 rows scored by the lab's evaluator."""
+    import numpy as np
+    from genemila.benchmark.evaluator import evaluate
+    from genemila.pipeline import build_matrix, make_model
+    train = list(ctx.train_perts)
+    evals = [p for p in ctx.perts if p not in set(train)]
+    timings: dict = {}
+    X_tr, _ = build_matrix(ctx, feats, {}, train, timings, cache, {}, {})
+    X_ev, _ = build_matrix(ctx, feats, {}, evals, timings, cache, {}, {})
+    _, d_tr = ctx.train_delta()
+    mu, sd = X_tr.mean(axis=0), X_tr.std(axis=0)
+    sd[sd == 0] = 1.0
+    X_tr, X_ev = (X_tr - mu) / sd, (X_ev - mu) / sd
+    rows = [evals.index(p) for p in val1_perts]
+    out = []
+    for a in alphas:
+        model = make_model("ridge", a, 0)
+        model.fit(X_tr, d_tr.reshape(-1))
+        pred = model.predict(X_ev).reshape(len(evals), ctx.n_genes)[rows]
+        if not np.all(np.isfinite(pred)):
+            raise ValueError(f"model produced non-finite visible-validation predictions at alpha={a}")
+        res = evaluate(pred + ctx.control_mean, val1_means, ctx.control_mean, val1_perts)
+        out.append({p: float(v["pearson_delta"]) for p, v in res["per_perturbation"].items()})
+    return out
 
 
 def dependencies(source: bytes) -> tuple[set[str], list[str]]:
@@ -269,6 +342,12 @@ def inner(manifest: dict) -> int:
     targets = json.loads((data / "knowledge" / "targets.json").read_text())
     pair_ids = [p for p, v in targets.items() if len(set(v or [])) > 1]
     prefix, seeds = manifest["prefix"], [int(s) for s in manifest["fold_seeds"]]
+    tier = manifest.get("harness_val1")  # the visible validation tier, when the exporter shipped it
+    if tier:
+        v = np.load(PKG / tier["file"], allow_pickle=False)
+        val1_perts, val1_means = [str(p) for p in v["perts"]], v["means"].astype(np.float64)
+    else:
+        val1_perts, val1_means = [], None
 
     baseline = not (KEPT / "scores.json").exists()
     current = py_files(FEATURES)  # read once: every later step uses this copy, never features/
@@ -282,7 +361,8 @@ def inner(manifest: dict) -> int:
     row = {"n": n, "time": time.time(), "change": ", ".join(f"{k} {s}" for k, s in attempt) or "none",
            "feature": ",".join(s for _, s in attempt) or "-",
            "description": describe_attempt(baseline, attempt, current), "harness_ok": not bad,
-           "keep_rule": manifest["keep_rule"], "manifest_sha256": manifest_sha,
+           "keep_rule": manifest["keep_rule"], "deciding": "combined" if tier else "oof",
+           "manifest_sha256": manifest_sha,
            "sha256": {s: hashlib.sha256(src).hexdigest() for s, src in current.items()}}
     deps: dict[str, set[str]] = {}
     cache, cache_before = RUNS / "cache", None  # the cache files that existed before the scores were computed
@@ -312,7 +392,8 @@ def inner(manifest: dict) -> int:
             for stem, src in current.items():
                 (KEPT / "features" / f"{stem}.py").write_bytes(src)
             (KEPT / "scores.json").write_text(json.dumps(
-                {k: row[k] for k in ("n", "features", "oof_pearson_delta", "alphas", "per_seed")}))
+                {k: row[k] for k in ("n", "features", "oof_pearson_delta", "alphas", "per_seed", "val1_per_seed",
+                                     "val1_pearson_delta", "combined_pearson_delta") if k in row}))
         if cache_before is not None:
             prune_cache(decision)
         report(row)
@@ -332,6 +413,8 @@ def inner(manifest: dict) -> int:
             problems.append(f"{stem}.py: guard: {exc}")
         lit = literal_check(src.decode(errors="replace"), pair_ids, genes + perts)
         problems += [f"{stem}.py: literal cap: {p}" for p in lit["problems"]]
+        if tier and b"val1" in src:
+            problems.append(f"{stem}.py: names the visible validation tier (val1); feature code computes from ctx only")
         deps[stem], found = dependencies(src)
         problems += [f"{stem}.py: {p}" for p in found]
     for stem in current:  # every listed feature exists, and the list includes what listed package features use
@@ -382,14 +465,21 @@ def inner(manifest: dict) -> int:
         ctx = FeatureContext(data, RUNS / "cache" / "shared")
         feats = list(manifest["parent_features"]) + sorted(current)
         alphas = [float(a) for a in manifest["alphas"]]
-        per_seed, chosen = {}, {}
+        per_seed, val1_per_seed, chosen = {}, {}, {}
         cache_before = {p for p in cache.glob("*__*") if p.is_file()}
+        v1 = val1_scores(ctx, feats, alphas, val1_perts, val1_means, cache) if tier else None
         for s in seeds:
             cv = cross_validate(ctx, feats, {}, "ridge", alphas, 0, int(manifest["k"]), s, {}, cache,
                                 None, {}, {}, manifest["groups"])
             evals = [evaluate(cv[j] + ctx.control_mean, train_means, ctx.control_mean, train)
                      for j in range(len(alphas))]
-            j = int(np.argmax([e["metrics"]["pearson_delta"] for e in evals]))
+            oof_means = [e["metrics"]["pearson_delta"] for e in evals]
+            if tier:  # the lab's alpha choice: the combined score (Lab.evaluate_artifact)
+                j = int(np.argmax([combined_primary(float(np.mean(list(v1[j].values()))), oof_means[j],
+                                                    len(val1_perts), len(train)) for j in range(len(alphas))]))
+                val1_per_seed[str(s)] = v1[j]
+            else:
+                j = int(np.argmax(oof_means))
             chosen[str(s)] = alphas[j]
             per_seed[str(s)] = {p: float(v["pearson_delta"]) for p, v in evals[j]["per_perturbation"].items()}
     except Exception as exc:  # a feature that fails on a fold view, a deleted dependency ...
@@ -398,28 +488,32 @@ def inner(manifest: dict) -> int:
     cur = np.array([[per_seed[str(s)][p] for p in train] for s in seeds])
     oof = float(cur.mean())
     scores = {"features": feats, "alphas": chosen, "per_seed": per_seed, "oof_pearson_delta": oof,
-              "n_perts": len(train)}
+              "val1_per_seed": val1_per_seed, "n_perts": len(train)}
+    deciding_perts, dec = list(train), cur
+    if tier:  # the deciding vector is the lab's: visible validation and out-of-fold training perturbations together
+        vcur = np.array([[val1_per_seed[str(s)][p] for p in val1_perts] for s in seeds])
+        scores.update(val1_pearson_delta=float(vcur.mean()),
+                      combined_pearson_delta=combined_primary(float(vcur.mean()), oof, len(val1_perts), len(train)),
+                      n_perts=len(val1_perts) + len(train))
+        deciding_perts, dec = val1_perts + list(train), np.concatenate([vcur, cur], axis=1)
     if baseline:
         return finish("baseline", (), smoke_cpu, parent=None, gain=0.0, gain_se=0.0, gain_se_plain=0.0,
-                      wins=0, seed_gains=[0.0] * len(seeds), seeds_positive=0, **scores)
+                      wins=0, seed_gains=[0.0] * len(seeds), seeds_positive=0,
+                      **({"oof_gain": 0.0, "val1_gain": 0.0} if tier else {}), **scores)
 
-    # 4. paired comparison with the kept state and the keep rule
+    # 4. paired comparison with the kept state and the keep rule, on the deciding tier
     kept = json.loads((KEPT / "scores.json").read_text())
     old = np.array([[kept["per_seed"][str(s)][p] for p in train] for s in seeds])
-    d_seed = cur - old
-    d = d_seed.mean(axis=0)
-    gain, se = float(d.mean()), float(d.std(ddof=1) / np.sqrt(len(d)))
-    se_adj = se * max(1.0, overlap_ratio(d, [set(targets.get(p) or [p]) for p in train]))
-    wins, seed_gains = int((d > 0).sum()), [float(g) for g in d_seed.mean(axis=1)]
-    if manifest["keep_rule"] == "strict":
-        keep = seed_gains[0] > 0
-    elif attempt[0][0] == "deleted":
-        keep = -gain < se
-    else:
-        keep = gain > max(2 * se_adj, MIN_GAIN) and wins > len(d) / 2 and all(g > 0 for g in seed_gains)
-    return finish("keep" if keep else "discard", (), smoke_cpu, parent=float(kept["oof_pearson_delta"]), gain=gain,
-                  gain_se=se_adj, gain_se_plain=se, wins=wins, seed_gains=seed_gains,
-                  seeds_positive=sum(g > 0 for g in seed_gains), **scores)
+    parent = float(kept["oof_pearson_delta"])
+    parts = {}
+    if tier:
+        vold = np.array([[kept["val1_per_seed"][str(s)][p] for p in val1_perts] for s in seeds])
+        parts = {"oof_gain": float((cur - old).mean()), "val1_gain": float((vcur - vold).mean())}
+        old, parent = np.concatenate([vold, old], axis=1), float(kept["combined_pearson_delta"])
+    dec = keep_decision(manifest["keep_rule"], attempt[0][0], dec, old,
+                        [set(targets.get(p) or [p]) for p in deciding_perts])
+    keep = dec.pop("keep")
+    return finish("keep" if keep else "discard", (), smoke_cpu, parent=parent, **dec, **parts, **scores)
 
 
 def main(argv: list[str]) -> int:

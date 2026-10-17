@@ -9,8 +9,9 @@ runs first at `baa7dfd` (PLAN_G's dated note; `block_g_run.sh` filled); the chai
 the readings wait for the corrected fair test (ROADMAP D2: the gene-permutation null cannot fail for a parent-times-
 scalar candidate, and 20·m − 1 replicates put the p floor at the cutoff; `GOAL_CRITERIA.md` corrected: A.1 pending).
 Then block H, the Adamson comparison (ROADMAP D6), and the Replogle commit-then-reveal fresh test (D7). Astra's ordered
-list is ROADMAP section 6; the four things only Andres can do are section 7. Being built in this container now: the D2
-tool fix with tests, the D3 pre-registration documents, the block H tooling and plan.
+list is ROADMAP section 6; the four things only Andres can do are section 7. Landed 17 October (ROADMAP's note of
+01:10 UTC): the corrected fair test, the pre-registration and literature check, the block H tooling, plan and Mac
+scripts with the task package's harness tier, and the fresh-test tooling with `docs/PLAN_R_FRESH_TEST.md`.
 
 **Block G code and plan land with this pull request (Claude, lead, 2026-10-16 23:00 UTC).** `tools/build_clean_bundle.py`,
 `genemila/data/knowledge_clean.py` (GO codes EXP, IDA, IPI, IMP, IGI, HDA, TAS, IC, NAS; STRING experiments and database
