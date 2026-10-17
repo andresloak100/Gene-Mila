@@ -34,19 +34,22 @@ RS_USAGE = {"input_tokens": 100, "input_tokens_details": {"cached_tokens": 40}, 
 PRICING = lp.load_pricing(ROOT / "configs" / "default.toml")
 
 
-def responses_sse(served: str, usage: dict, completed: bool = True) -> str:
+def responses_sse(served: str, usage: dict, completed: bool = True, final: str = "response.completed") -> str:
     """A Responses API stream as the upstream sends it: response.created, two response.output_text.delta events and,
-    unless completed is False, response.completed with the final response object (usage inside it)."""
+    unless completed is False, the terminal event `final` (response.completed, or response.incomplete for a response
+    stopped by max_output_tokens) with the final response object (usage inside it)."""
     resp = {"id": "resp_x", "object": "response", "model": served, "status": "in_progress", "output": []}
     delta = {"type": "response.output_text.delta", "item_id": "msg_x", "output_index": 0, "content_index": 0}
     events = [("response.created", {"type": "response.created", "sequence_number": 0, "response": resp}),
               ("response.output_text.delta", {**delta, "sequence_number": 1, "delta": SECRET_TEXT[:10]}),
               ("response.output_text.delta", {**delta, "sequence_number": 2, "delta": SECRET_TEXT[10:]})]
     if completed:
-        done = {**resp, "status": "completed", "usage": usage,
+        done = {**resp, "status": final.split(".")[1], "usage": usage,
                 "output": [{"type": "message", "id": "msg_x", "role": "assistant", "status": "completed",
                             "content": [{"type": "output_text", "text": SECRET_TEXT, "annotations": []}]}]}
-        events.append(("response.completed", {"type": "response.completed", "sequence_number": 3, "response": done}))
+        if final == "response.incomplete":
+            done["incomplete_details"] = {"reason": "max_output_tokens"}
+        events.append((final, {"type": final, "sequence_number": 3, "response": done}))
     return "".join(f"event: {e}\ndata: {json.dumps(d)}\n\n" for e, d in events)
 
 
@@ -57,7 +60,9 @@ class Upstream(BaseHTTPRequestHandler):
     mode = "ok"  # or "nousage", "gzip" (compress when Accept-Encoding allows), "nodelta" (no message_delta),
     # "slow" (one SSE event every 0.2 s), "biomni" (an <execute> reply, then a <solution> once an observation is seen),
     # "nocached" (Responses usage without input_tokens_details), "nocompleted" (a Responses stream that ends without
-    # response.completed)
+    # response.completed), "incomplete" (a Responses stream that ends with response.incomplete, usage inside), "badtype"
+    # (Responses usage whose counts are not integers: input_tokens an object when plain, cached_tokens a string in a
+    # stream)
 
     def log_message(self, *a):
         pass
@@ -111,8 +116,12 @@ class Upstream(BaseHTTPRequestHandler):
                 usage = {"tokens": 3}
             if Upstream.mode == "nocached":
                 usage = {k: v for k, v in RS_USAGE.items() if k != "input_tokens_details"}
+            if Upstream.mode == "badtype":
+                usage = ({**RS_USAGE, "input_tokens_details": {"cached_tokens": "n/a"}} if req.get("stream")
+                         else {**RS_USAGE, "input_tokens": {"n": 100}})
             if req.get("stream"):
-                body = responses_sse(served, usage, completed=Upstream.mode != "nocompleted")
+                final = "response.incomplete" if Upstream.mode == "incomplete" else "response.completed"
+                body = responses_sse(served, usage, completed=Upstream.mode != "nocompleted", final=final)
                 return self._send(200, "text/event-stream", body.encode())
             doc = {"id": "resp_x", "object": "response", "model": served, "status": "completed", "usage": usage,
                    "output": [{"type": "message", "id": "msg_x", "role": "assistant", "status": "completed",
@@ -334,6 +343,51 @@ def test_responses_unknown_usage_shape_gives_502_and_halts(proxy_factory):
         status, _, data = post(b, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
         assert status == 402 and "halted" in json.loads(data)["error"]["message"]
     assert not json.loads(urllib.request.urlopen(base + "/healthz", timeout=10).read())["ok"]
+
+
+def test_responses_usage_with_a_count_that_is_not_an_integer_gives_502_and_halts(proxy_factory):
+    """A field that is present with the wrong type (an object, a string) ends in the same unpriced path as a missing
+    one: 502 (plain) or the relayed stream, the keys seen in the log line, the proxy halted; never a dead handler thread
+    that leaves the call unpriced and the proxy admitting the next one."""
+    p, base = proxy_factory()
+    p2, base2 = proxy_factory()
+    Upstream.mode = "badtype"
+    try:
+        status, _, data = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+        assert status == 502 and json.loads(data)["error"]["type"] == "unpriced_usage"
+        bad = [ln for ln in log_lines(p) if ln.get("unpriced")]
+        assert len(bad) == 1 and bad[0]["usage_keys"] == sorted(RS_USAGE) and "input_tokens" in bad[0]["error"]
+        status, _, data = post(base2, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi", "stream": True})
+        assert status == 200 and b"response.completed" in data
+        bad = [ln for ln in log_lines(p2) if ln.get("unpriced")]
+        assert len(bad) == 1 and bad[0]["stream"] is True and "cached_tokens" in bad[0]["error"]
+        assert bad[0]["usage_keys"] == sorted(RS_USAGE) and bad[0]["model_served"] == "deepseek-v4-pro"
+    finally:
+        Upstream.mode = "ok"
+    for q, b in ((p, base), (p2, base2)):
+        assert rows(q.ledger.path) == [] and "not an integer" in (q.halted or "")
+        status, _, data = post(b, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+        assert status == 402 and "halted" in json.loads(data)["error"]["message"]
+
+
+def test_a_responses_stream_ending_in_response_incomplete_is_priced_and_says_so(proxy_factory):
+    """max_output_tokens (or a filter) ends the stream with response.incomplete; its response object carries the final
+    usage and DeepSeek has billed the call, so it is priced like a completed one and the log line says incomplete."""
+    p, base = proxy_factory()
+    Upstream.mode = "incomplete"
+    try:
+        status, _, data = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi", "stream": True})
+    finally:
+        Upstream.mode = "ok"
+    assert status == 200 and data == responses_sse("deepseek-v4-pro", RS_USAGE, final="response.incomplete").encode()
+    assert p.halted is None
+    r = rows(p.ledger.path)
+    assert len(r) == 1 and (r[0]["input_tokens"], r[0]["cached_tokens"], r[0]["output_tokens"]) == (100, 40, 20)
+    assert r[0]["cost_usd"] == pytest.approx(expected_cost("deepseek-v4-pro", 40, 60, 20))
+    lines = [ln for ln in log_lines(p) if ln.get("status") == 200]
+    assert len(lines) == 1 and lines[0]["response_status"] == "incomplete" and lines[0]["stream"] is True
+    status, _, _ = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+    assert status == 200 and "response_status" not in [ln for ln in log_lines(p) if ln.get("status") == 200][1]
 
 
 def test_a_responses_stream_without_response_completed_is_not_priced(proxy_factory):
@@ -565,6 +619,12 @@ def test_usage_parsers():
         lp.usage_responses({"input_tokens": 10, "input_tokens_details": {"cached_tokens": 3}})
     with pytest.raises(lp.UnknownUsage):
         lp.usage_responses([1, 2])
+    for bad in ({"input_tokens": [1], "output_tokens": 2}, {"input_tokens": 1, "output_tokens": "n/a"},
+                {"input_tokens": 1, "output_tokens": 2, "input_tokens_details": {"cached_tokens": {"n": 1}}}):
+        with pytest.raises(lp.UnknownUsage, match="not an integer"):
+            lp.usage_responses(bad)
+    with pytest.raises(lp.UnknownUsage, match="not an integer"):
+        lp.usage_openai({"prompt_tokens": "x", "completion_tokens": 1})
     assert lp.price_key(PRICING, "deepseek-v4-pro", "something-new") == "deepseek-v4-pro"
     assert lp.price_key(PRICING, "unknown", None) == "default"
     assert time.time() > 0

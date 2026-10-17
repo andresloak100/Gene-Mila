@@ -56,8 +56,9 @@
 # Refusals: the proxy's /healthz must answer, and the proxy's jsonl log must be at $PROXY_LOG (default
 # <out dir>/../proxy.jsonl). After the start, the first new proxy log line must show a served model (printed here)
 # within $BASELINE_FIRST_CALL_S seconds (default 180); otherwise codex is killed and the run is recorded as an error.
-# That catches a Codex that ignores the provider (no line), a request to a path the proxy does not serve (a 404 row)
-# and a model name the endpoint rejects (a non-200 row with no model).
+# That catches a Codex that ignores the provider (no line), a request to a path the proxy does not serve (a 404 row
+# with "refused": "no such route"; a 404 row with route /v1/responses and "priced": false is the upstream's, the path
+# DeepSeek does not serve) and a model name the endpoint rejects (a non-200 row with no model).
 #
 # Flags (checked against codex-rs/exec/src/cli.rs at rust-v0.94.0, the last chat-capable release, and at current main,
 # read 2026-10-17; none run against the Mac's binary yet): `codex exec` (non-interactive; approval policy never is

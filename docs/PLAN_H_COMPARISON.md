@@ -366,3 +366,19 @@ streamed against the mock upstream, the cost from the pricing table, the events 
 case, the unknown shape, the stream without `response.completed`, the token replaced, nothing of a body in the log)
 and `tests/test_baselines.py` (the dry run with the new default and a chat-mode run through the variable; the stub
 `codex` speaks the configured format).
+
+**2026-10-17, review fixes to the route.** (1) A usage count that is present with the wrong JSON type (an object, a
+list, a string such as `"n/a"`) raised `TypeError`/`ValueError` past the proxy's handlers: the handler thread died with
+a traceback, the call was neither priced, logged nor halting, and the next call was admitted, the silent unpriced call
+the route was built to refuse, on the route whose field shapes are unverified. The conversion now raises the
+unpriced-usage error for any non-integer (502, the keys seen in the log line, the proxy halted), and both handlers catch
+the whole family; `tests/test_ledger_proxy.py` covers an object as `input_tokens` plain and a string as `cached_tokens`
+in a stream. (2) A stream that ends with `response.incomplete` (the Responses API's terminal event when
+`max_output_tokens` or a filter stops the response; its response object carries the same final usage as
+`response.completed`, and DeepSeek has billed the call) is now priced like a completed one, and its log line carries
+`response_status: "incomplete"` (a plain response with `status: "incomplete"` too); before, it halted the proxy
+unpriced and the billed call was missing from the ledger. `response.failed` carries no usage and still halts. This
+changes what is priced, in the direction of counting a billed call; Andres may veto it before the probe. (3) The probe
+and runner comments now tell the two 404 rows apart: the proxy's own (`"refused": "no such route"`, a route other than
+`/v1/responses`: Codex posted elsewhere, Claude Code is the fallback) and DeepSeek's (route `/v1/responses`,
+`"priced": false`: the path is not served, the proxy maps the route to `/responses` and the probe runs again).

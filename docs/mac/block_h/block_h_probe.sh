@@ -25,7 +25,10 @@ proxy_down
 #    the /v1/chat/completions route, only for a build before 0.95.0), the model alias, web search off, a read-only
 #    sandbox; its run.json lands in $O/codex_probe, beside Biomni's. It settles what the plan's note of 2026-10-17
 #    lists as unverified: that this Codex starts on a custom provider with no login, posts to the route the wire format
-#    names (a 404 row means it posted elsewhere: Claude Code is the fallback), that the proxy prices the call (a 502 row
+#    names (two 404 rows look alike only at a glance: one with "refused": "no such route" and a route other than
+#    /v1/responses is the proxy's own, Codex posted elsewhere, Claude Code is the fallback; one with route
+#    /v1/responses and "priced": false is DeepSeek's, it does not serve /v1/responses, the proxy maps the route to
+#    /responses and the probe runs again), that the proxy prices the call (a 502 row
 #    means DeepSeek's usage fields on the route are not the ones the proxy prices; it halts rather than count zero),
 #    and that the tool round trip completes (at least two status-200 rows in h_probe_codex.jsonl; a 400 after the
 #    first 200 means the route is unfit for the arm, plan note item 7).
