@@ -1,0 +1,35 @@
+Act as an independent frozen-evaluation reviewer. Use only the fixed facts below. Assess the smallest defensible way to honor a test the orchestration cannot access without building a new platform. Identify what a separate standard Mac evaluator account must demonstrate before labels arrive; a user account name alone is not proof and elevated agent access may defeat it. Assess the fixed model/baseline batch, metrics, units of uncertainty and CellForge comparison. Distinguish three training-repeat members from independent test replicates. Give a short evaluator handoff checklist and exact remaining blockers. State whether any new performance score can honestly be reported now. Do not invent an available cohort, distributed CellForge weights, baseline export or permissions. Keep under 650 words, cite supplied filenames. Do not suggest bypassing STOP or protected-code changes.
+
+Fixed evidence:
+{
+  "question": "Can the frozen Norman B1 ensemble receive a trustworthy untouched external test of unseen genetic perturbations?",
+  "frozen_model": "Equal weights of norman_ds_from_n2_w4_r1 EXP_0681 alpha20000, r2 EXP_0729 alpha0.00198, r3 EXP_0519 alpha300, selected on visible validation before this proposal.",
+  "adapter": "Merged numeric-only frozen inference; never fit or select. All three members reproduced stored predictions byte-for-byte. Fixed new-query recipe computes original119 anchor identities plus ONE new condition after original training feature priming. Genes and runtime fixed. Query schema only condition_id,target_genes; target must be in2083 output-gene universe. No dosage/modality/locus inputs.",
+  "pacalin": "GSE220974 K562 VPR-dSaCas9 activation and repression.94 guide dictionary entries:42 activation (4 enhancer-labelled guides for GATA1/MYC),40inhibition,12NTC.38 other activation guides map19 putative promoter genes, loci unverified.19 partition8 trainingtargets,2otheroriginalcontext,4outsidecontext/insideuniverse,5outsideuniverse.19 is not eligibleconditions.",
+  "four_candidate_genes": [
+    "FAM83A",
+    "GATA1",
+    "MYC",
+    "YY1"
+  ],
+  "feature_membership_verified": "Four candidates absent from all original231-context target sets and absent as direct profile keys in frozen Replogle perts dictionary. Annotation membership and fallback behavior require source-code audit. No numeric profiles/response arrays were inspected to make this statement.",
+  "pacalin_conditions": "S1activationRNA GSM6833424 guide GSM6833430. Doubles22designed:18mixedactivation/repression and4unidirectional controls split aa/ii not yetverified. Guide-library title does not prove condition composition. Needpurecondition/guide/control/sample/replicate projection; avoid response-derivedQC,efficacy,DEfields.",
+  "replogle2020": "GSM4367986/GSE146194 exp8 K562 SunTag/scFVVP64,49designed genes, mostly same-gene single/dual activating guide dosage/TSS comparisons. Exacttargets/controlconditionprojection unverified. Not automaticallydistinctgene-pair test.",
+  "exposure": "Original data and heldoutresults historically used. These public candidates may have appeared in prior LLM pretraining; nozeroexposureguarantee. Need audit of project feature/data provenance and direct priorlabexposure. Newguide/samegene differs from unseengene or unseencombination.",
+  "evaluation_protocol": "Frozenensemble plus3members, additivebaseline and scriptedreference in one predefined batch. Meanpercondition Pearsondelta primary; MSE, expressionPCC/R2, top20DE counterparts and directionaccuracy secondary; exactDEranking mustmatchunchangedprotectedevaluator. Repeatmean\u00b1sampleSD for3members; ensemblepoint with appropriatecondition/gene-dependentuncertainty. Do nottune fromtestscore.",
+  "boundary": "Currentcontroller andagents shareoneMacOSuser, canreadexistingdata. Userrequested testanswers inaccessibletoorchestration. No separate evaluator identityexists yet; userunsure. ProposedstandardMacaccountgenemilaeval for evaluator, privatefiles/logs withoutsharing/sync; testnegative read/list/report and elevation access from actualagentprocess beforetestdata. Do notclaim accountname/hiddenfile alone isolates.",
+  "cellforge": "Publishedtable lacksPearsondelta. Matchedcohort/preprocessing/immutableCellForge predictions/evaluator unavailable. Publishednumberscontextualonly. No superiorityclaim.",
+  "constraints": "No fitting, no scorequeries, no private/splits reads, no expressionor efficacy for eligibility, no newexternalprofile insertion, no protectedcodechanges, no accountchangesyet. STOP remains for modelsearch. Existingpackages reused.",
+  "sources": [
+    "docs/FROZEN_EXPORT.md",
+    "docs/FROZEN_TEST_PLAN.md",
+    "docs/EXTERNAL_COHORT_METADATA.md",
+    "docs/results/external_cohort_metadata_20261013.json",
+    "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE220974",
+    "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4367986",
+    "https://support.apple.com/guide/mac-help/add-a-user-or-group-mchl3e281fc9/mac"
+  ],
+  "pure_metadata_source_search": "Independent read-only follow-up found no verified pure exact condition-design manifest in primary paper methods, GEO descriptions or paper-linked author repos. Pacalin exactaa/ii/guide/locus/control assignments remain unknown. Replogle exp8 targets/controlsubset unknown. Next is an author-provided design-only manifest or evaluator allowlisted projection of mixed supplement; do not silently open the mixed source.",
+  "feature_fallback_nuance": "Source audit: none of four has training-single response, so additive_singles_e15 fills each with the same mean-training-single fallback; pairs made solely of them use twofills. Missing direct externaltarget rows does not remove output-gene-side random projection information: r2 external_response_random_projection_targ_e325 and external_replogle_random_projection_gene_e439 use2083output genes across85existing frozenprofile rows. Fourcandidate genes markedmeasured, exactgeneordermatches; numericfeature values notinspected. FAM83A lacksPPI/priorgraph membership; others have annotations. Do not equate missing rows with allzero predictions or pooraccuracy.",
+  "additional_source_audit": "For r1, seven selected direct-target external features (15 of24rawcolumns) return rawzero when allquerytargets are fromthefour. Rawzero is not standardizedzero afterfrozencentering. r3 residualfeature explicitlyzero forunseencondition; randomprojection-control features canremaincondition-invariant. r2 prior-edgefeature haswhole-batchfallback, anotherreason preserveanchors. No inferenceor numericfeature computation performed. Missinginput is a prospective property, not evidence of pooraccuracy or reason to filter by outcomes."
+}

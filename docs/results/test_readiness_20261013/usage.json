@@ -1,0 +1,28 @@
+[
+  {
+    "cached_tokens": 0,
+    "cost_usd": 0.005277360000000001,
+    "input_tokens": 1604,
+    "latency_s": 7.392169666942209,
+    "model": "deepseek-v4-pro",
+    "ok": 1,
+    "output_tokens": 798,
+    "provider": "deepseek",
+    "purpose": "complete",
+    "role": "worker",
+    "ts": 1791926123.2708921
+  },
+  {
+    "cached_tokens": 0,
+    "cost_usd": 0.00476388,
+    "input_tokens": 1605,
+    "latency_s": 6.773691165726632,
+    "model": "deepseek-v4-pro",
+    "ok": 1,
+    "output_tokens": 668,
+    "provider": "deepseek",
+    "purpose": "complete",
+    "role": "worker",
+    "ts": 1791926130.046327
+  }
+]

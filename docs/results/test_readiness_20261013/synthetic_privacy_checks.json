@@ -1,0 +1,10 @@
+{
+  "checks_passed": [
+    "credential_echo_in_text_sanitized_before_gateway_with_usage_preserved",
+    "credential_echo_in_model_sanitized_before_gateway_with_usage_preserved",
+    "credential_echo_in_finish_reason_sanitized_before_gateway_with_usage_preserved",
+    "provider_error_body_suppressed_no_retry"
+  ],
+  "real_api_calls": 0,
+  "shared_ledger_writes": 0
+}

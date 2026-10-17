@@ -1,5 +1,12 @@
 # Frozen-model evaluation: prospective requirements, 13 October 2026
 
+
+**Implementation update, 13 October:** the feedback fix and frozen numeric adapter are merged in
+PRs #13/#19; saved predictions were reproduced. The [test-readiness follow-up](TEST_READINESS_20261013.md)
+records two authorized DeepSeek reviews, source-only coverage checks, corrections to reviewer errors,
+and the unresolved cohort/evaluator gates. No new model score exists. Later “none exists yet” and draft
+PR wording below describe the original proposal; use this update and newest HANDOFF section 1 for status.
+
 Status: proposed protocol, not an executed clean test. Andres asked for a test set the orchestration
 cannot access, the best model evaluated against CellForge using Pearson delta and at least three other
 metrics, and measures against overfitting if performance drops. He subsequently authorized necessary
