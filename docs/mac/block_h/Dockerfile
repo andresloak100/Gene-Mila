@@ -10,7 +10,7 @@
 FROM python:3.12-slim
 ARG PKG_REQS="numpy scipy scikit-learn"
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git nodejs npm \
-    && npm install -g @anthropic-ai/claude-code && rm -rf /var/lib/apt/lists/*
+    && npm install -g @anthropic-ai/claude-code @openai/codex && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir $PKG_REQS biomni langchain langgraph==0.3.18 openai
 COPY tools/baselines /lab/tools/baselines
 ENV PYTHONDONTWRITEBYTECODE=1
