@@ -1,0 +1,45 @@
+{
+  "preparation_exit": 1,
+  "operator_commit": "d34bd93",
+  "run_commit": "baa7dfd",
+  "run_started": false,
+  "files": [
+    {
+      "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean/knowledge/gene_sets.json",
+      "bytes": 1405828,
+      "sha256": "fb4862044f3063d0ffdaa7e73fd8f92e6175d6beb05e8d5aea78ea7c25e51348"
+    },
+    {
+      "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean_tables/knowledge/gene_sets.json",
+      "bytes": 1405828,
+      "sha256": "7636a000c401bd3d7e64ccd4430b21ff2f156deefc517fdcfc4f07a7c40b6cf0"
+    }
+  ],
+  "parsed_equal": true,
+  "key_count": 5773,
+  "key_positions_different": 2293,
+  "canonical_sha256": "738be120526d87f75970fdddb1f45d1620e060dcd364498e9db23f9ed0e160be",
+  "other_shared_files": [
+    {
+      "filename": "ppi_network.json",
+      "byte_equal": true,
+      "sha256": "35ce7e7169337730252119d026396a7edb889e9f7fa490250984972ae4b6aad0"
+    },
+    {
+      "filename": "prior_network.json",
+      "byte_equal": true,
+      "sha256": "f16a9ff0c5e2468f356bbf5fc22bc83d1d7547e6ddbd4bb7efcaf00c0dca5e60"
+    },
+    {
+      "filename": "targets.json",
+      "byte_equal": true,
+      "sha256": "f02c03f13588ea93b8a14a7979e9c31b8bc317d6cb18b9c24e38362b3bb7662c"
+    },
+    {
+      "filename": "transcription_factors.json",
+      "byte_equal": true,
+      "sha256": "09ba9bf4fa864172b884239cf9eda3f27d6ee2478de9aa41a7c7994021e63923"
+    }
+  ],
+  "diagnosis": "go_curated iterates ancestor sets; Python hash randomization changes dictionary insertion order between builder processes. build_clean_bundle serializes without sorting. Byte-equality check remains valid; no workaround applied."
+}

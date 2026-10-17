@@ -1,0 +1,39 @@
+2041 genes written to /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables/norman/gene_annotation.json; 42 bundle genes unmatched
+2018 genes written to /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables/norman/gene_constraint.json (52 flagged); 65 bundle genes unmatched
+1921 genes written to /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables/norman/protein_annotation.json; 162 bundle genes unmatched
+1990 genes written to /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables/adamson_cf/gene_annotation.json; 65 bundle genes unmatched
+2024 genes written to /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables/adamson_cf/gene_constraint.json (56 flagged); 31 bundle genes unmatched
+1882 genes written to /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables/adamson_cf/protein_annotation.json; 173 bundle genes unmatched
+norman_clean: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean.partial (split split_a391fa9e7b4eccb7, 2083 genes); dropped replogle2022_k562.json
+  gene_sets.json: 5773 entries, 1836 genes covered
+  prior_network.json: 1502 entries, 560 genes covered
+  transcription_factors.json: 121 entries, 121 genes covered
+  ppi_network.json: 7606 entries, 1135 genes covered
+planner knowledge summary: 329 characters in 5 lines (planner section limit 8000)
+    118  gene_sets: dict of 5773 entries, e.g. 'REACTOME:2-LTR circle formation': ['BANF1', 'HMGA1', 'PSIP1',...
+     57  ppi_network: list of 7606, e.g. ['AAK1', 'AP2B1', 0.8375]
+     53  prior_network: list of 1502, e.g. ['AHR', 'AHR', 1.0]
+     49  targets: dict of 231 entries, e.g. 'AHR': ['AHR']
+     44  transcription_factors: list of 121, e.g. AHR
+norman_clean.partial: split_id split_a391fa9e7b4eccb7, 2083 genes, knowledge_files ['gene_sets.json', 'ppi_network.json', 'prior_network.json', 'targets.json', 'transcription_factors.json']
+done: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean
+norman_clean_tables: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean_tables.partial (split split_a391fa9e7b4eccb7, 2083 genes); dropped replogle2022_k562.json
+  gene_sets.json: 5773 entries, 1836 genes covered
+  prior_network.json: 1502 entries, 560 genes covered
+  transcription_factors.json: 121 entries, 121 genes covered
+  ppi_network.json: 7606 entries, 1135 genes covered
+  gene_annotation.json: 9 entries, 2041 genes covered
+  gene_constraint.json: 7 entries, 2018 genes covered
+  protein_annotation.json: 6 entries, 1921 genes covered
+planner knowledge summary: 2726 characters in 8 lines (planner section limit 8000)
+    895  gene_annotation: Per-gene annotation from the genome sequence and GENCODE transcript models (gencode...
+    650  gene_constraint: gnomAD v2.1.1 per-gene loss-of-function (LoF) constraint: variants seen vs expected...
+    118  gene_sets: dict of 5773 entries, e.g. 'REACTOME:2-LTR circle formation': ['BANF1', 'HMGA1', 'PSIP1',...
+     57  ppi_network: list of 7606, e.g. ['AAK1', 'AP2B1', 0.8375]
+     53  prior_network: list of 1502, e.g. ['AHR', 'AHR', 1.0]
+    846  protein_annotation: Protein features from UniProt reviewed human entries (curated sequence annotatio...
+     49  targets: dict of 231 entries, e.g. 'AHR': ['AHR']
+     44  transcription_factors: list of 121, e.g. AHR
+norman_clean_tables.partial: split_id split_a391fa9e7b4eccb7, 2083 genes, knowledge_files ['gene_annotation.json', 'gene_constraint.json', 'gene_sets.json', 'ppi_network.json', 'prior_network.json', 'protein_annotation.json', 'targets.json', 'transcription_factors.json']
+done: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean_tables
+NOT DONE: gene_sets.json differs between norman_clean and norman_clean_tables; the builder is not deterministic

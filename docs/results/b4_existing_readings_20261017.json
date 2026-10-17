@@ -1,0 +1,537 @@
+{
+  "generated_at_utc": "2026-10-17T01:39:52.139572+00:00",
+  "reading_source_commit": "1a958733115fb7956149828b636a99ccbb5b9fb4",
+  "plan": "docs/PLAN_B4_SINGLE_WORKER.md",
+  "scope": "ROADMAP section6 step4: existing summary.json and ledger rows only. No fit, scorer, oracle, benchmark-label access, new API call, original-run mutation, summary.md or original-run-log ending. Run DB queried only llm_calls metadata with existing read-only snapshot helper.",
+  "ledger_path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite",
+  "read_only_method": "spend ledger SQLite mode=ro&immutable=1 when no live WAL; otherwise DB/WAL copied to temporary scratch then mode=ro. Run llm_calls via tools/feature_audit.open_db_readonly. No SpendLedger/Database/Lab/QueryOracle construction.",
+  "cost_checks": "Per-run ledger sum agrees with summary.llm_usage.all.cost_usd and run llm_calls cost sum within 1e-12. No ledger rows exists for r3; two failed run-db planner calls each recorded cost0.",
+  "runs": [
+    {
+      "seed": 0,
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w1_r0",
+      "summary_sha256": "a446774470c79df5a2817bfa0e5d00acb12b8325dfeb23d9a3bc75b77746153f",
+      "dataset": "norman",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "base_commit": "ce1b53043125cad78d060d1155e5ffe6efab5c0a",
+      "summary_finished_at_utc": "2026-10-15T17:31:45.946755+00:00",
+      "summary_duration_s": 1200.7,
+      "workers": 1,
+      "experiments_proposed": 188,
+      "experiments_completed": 165,
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 22,
+            "queued": 163
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "clean_configured_arm": true,
+      "arm_label": "clean DeepSeek planner + one worker",
+      "selected": {
+        "experiment_id": "EXP_0189",
+        "visible_score": 0.6245315353180895,
+        "selection_source": "summary.best experiment_id chosen on visible score, never sealed outcome",
+        "stored_sealed_pearson_delta": 0.7229600870058898,
+        "stored_sealed_comparable": {
+          "cellforge_mse": 0.00513111591328283,
+          "cellforge_pcc": 0.9891327296092826,
+          "cellforge_r2": 0.97572126601833,
+          "cellforge_mse_de": 0.10505937651237854,
+          "cellforge_pcc_de": 0.9392270839461879,
+          "cellforge_r2_de": 0.8476621754318275,
+          "cellforge_mse_deset": 0.025863897500536952,
+          "cellforge_pcc_deset": 0.948059434727608,
+          "cellforge_r2_deset": 0.8736041665789828,
+          "cellforge_n_perts_deset": 56,
+          "vcworld_de_accuracy": 0.7520317536520129,
+          "vcworld_de_precision": 0.5368846500537932,
+          "vcworld_de_recall": 0.5868666963320831,
+          "vcworld_de_f1": 0.56076412615978,
+          "vcworld_de_auroc": 0.7649277350117217,
+          "vcworld_de_auprc": 0.5295099750794946,
+          "vcworld_dir_accuracy": 0.9493674909414532,
+          "vcworld_dir_precision": 0.8623625948289209,
+          "vcworld_dir_recall": 0.8877908830092445,
+          "vcworld_dir_f1": 0.8748920128799184,
+          "vcworld_dir_auroc": 0.9762138669389804,
+          "vcworld_dir_auprc": 0.9266017333994153,
+          "vcworld_n_de_pairs": 31462
+        },
+        "stored_sealed_cell_eval": {
+          "overlap_at_N": 0.4945256239433456,
+          "overlap_at_50": 0.3232027900566436,
+          "overlap_at_100": 0.33054439619062254,
+          "overlap_at_200": 0.36673487238109864,
+          "overlap_at_500": 0.4496432562764137,
+          "precision_at_N": 0.3594964513488064,
+          "precision_at_50": 0.31857142857142867,
+          "precision_at_100": 0.32321428571428573,
+          "precision_at_200": 0.35741071428571425,
+          "precision_at_500": 0.42899999999999994,
+          "de_spearman_sig": 0.47149302955026334,
+          "de_direction_match": 0.9084740666906653,
+          "de_spearman_lfc_sig": 0.6200976804535655,
+          "de_sig_genes_recall": 0.8041464930608291,
+          "de_nsig_counts_real": 611.7678571428571,
+          "de_nsig_counts_pred": 1355.892857142857,
+          "pr_auc": 0.4507532266496166,
+          "roc_auc": 0.7068251353393518,
+          "pearson_delta": 0.6864335944077798,
+          "mse": 0.005973009989247657,
+          "mae": 0.05376522628856557,
+          "mse_delta": 0.005973009980932277,
+          "mae_delta": 0.05376522628856557,
+          "discrimination_score_l1": 0.7901785714285715,
+          "discrimination_score_l2": 0.7997448979591837,
+          "discrimination_score_cosine": 0.7267219387755102,
+          "pearson_edistance": 0.5451724895083466,
+          "clustering_agreement": 0.4350290298601426
+        }
+      },
+      "additive": {
+        "experiment_id": "EXP_0003",
+        "stored_sealed_pearson_delta": 0.7125920757739331
+      },
+      "selected_minus_additive_point_difference": 0.010368011231956631,
+      "ensemble": null,
+      "summary_llm_usage": {
+        "all": {
+          "calls": 155,
+          "input_tokens": 324670,
+          "output_tokens": 128588,
+          "cached_tokens": 141440,
+          "cost_usd": 0.389612324,
+          "failed_calls": 0
+        },
+        "worker": {
+          "calls": 133,
+          "input_tokens": 228585,
+          "output_tokens": 91050,
+          "cached_tokens": 118912,
+          "cost_usd": 0.142875372,
+          "failed_calls": 0
+        },
+        "planner": {
+          "calls": 22,
+          "input_tokens": 96085,
+          "output_tokens": 37538,
+          "cached_tokens": 22528,
+          "cost_usd": 0.24673695199999998,
+          "failed_calls": 0
+        }
+      },
+      "ledger_cost_usd": 0.389612324,
+      "ledger_by_role_model": [
+        {
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "role": "planner",
+          "calls": 22,
+          "input_tokens": 96085,
+          "output_tokens": 37538,
+          "cached_tokens": 22528,
+          "cost_usd": 0.24673695199999998,
+          "first_ts": 1792084330.661471,
+          "last_ts": 1792085511.8121018
+        },
+        {
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "role": "worker",
+          "calls": 133,
+          "input_tokens": 228585,
+          "output_tokens": 91050,
+          "cached_tokens": 118912,
+          "cost_usd": 0.142875372,
+          "first_ts": 1792084333.1461408,
+          "last_ts": 1792085484.035007
+        }
+      ],
+      "run_db_calls_by_role_model": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "calls": 22,
+          "failed_calls": 0,
+          "cost_usd": 0.24673695199999998
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "calls": 133,
+          "failed_calls": 0,
+          "cost_usd": 0.142875372
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w1_r2",
+      "summary_sha256": "19fdf25b48da7febf2642c8bef5ebf2ae675f00f7ba3bcc006e8a0afbbdca1c9",
+      "dataset": "norman",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "base_commit": "ce1b53043125cad78d060d1155e5ffe6efab5c0a",
+      "summary_finished_at_utc": "2026-10-15T17:55:08.489038+00:00",
+      "summary_duration_s": 1238.8,
+      "workers": 1,
+      "experiments_proposed": 186,
+      "experiments_completed": 138,
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 24,
+            "queued": 161
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "clean_configured_arm": true,
+      "arm_label": "clean DeepSeek planner + one worker",
+      "selected": {
+        "experiment_id": "EXP_0182",
+        "visible_score": 0.6426493515548418,
+        "selection_source": "summary.best experiment_id chosen on visible score, never sealed outcome",
+        "stored_sealed_pearson_delta": 0.7198906130252636,
+        "stored_sealed_comparable": {
+          "cellforge_mse": 0.005410361361978025,
+          "cellforge_pcc": 0.9886746077267086,
+          "cellforge_r2": 0.9744486182424476,
+          "cellforge_mse_de": 0.10699561421722996,
+          "cellforge_pcc_de": 0.9379753897616087,
+          "cellforge_r2_de": 0.8446993930050679,
+          "cellforge_mse_deset": 0.026226416801955418,
+          "cellforge_pcc_deset": 0.9466637712448664,
+          "cellforge_r2_deset": 0.8691115803892625,
+          "cellforge_n_perts_deset": 56,
+          "vcworld_de_accuracy": 0.743621836636719,
+          "vcworld_de_precision": 0.5221804082563576,
+          "vcworld_de_recall": 0.5821626088614837,
+          "vcworld_de_f1": 0.5505425471159338,
+          "vcworld_de_auroc": 0.7529036464375309,
+          "vcworld_de_auprc": 0.5098256871263445,
+          "vcworld_dir_accuracy": 0.9472379378297628,
+          "vcworld_dir_precision": 0.8692381562099872,
+          "vcworld_dir_recall": 0.8656359579215811,
+          "vcworld_dir_f1": 0.867433317361444,
+          "vcworld_dir_auroc": 0.9726217720649546,
+          "vcworld_dir_auprc": 0.9153252836452218,
+          "vcworld_n_de_pairs": 31462
+        },
+        "stored_sealed_cell_eval": {
+          "overlap_at_N": 0.48613054355292834,
+          "overlap_at_50": 0.304523651734648,
+          "overlap_at_100": 0.3197920133165689,
+          "overlap_at_200": 0.35314727647446376,
+          "overlap_at_500": 0.44037195039825655,
+          "precision_at_N": 0.3550713704959057,
+          "precision_at_50": 0.2985714285714286,
+          "precision_at_100": 0.3119642857142857,
+          "precision_at_200": 0.3419642857142859,
+          "precision_at_500": 0.4199642857142856,
+          "de_spearman_sig": 0.46907524994800226,
+          "de_direction_match": 0.9010872638827359,
+          "de_spearman_lfc_sig": 0.6046210056594266,
+          "de_sig_genes_recall": 0.8102368068063116,
+          "de_nsig_counts_real": 611.7678571428571,
+          "de_nsig_counts_pred": 1391.232142857143,
+          "pr_auc": 0.447406198597164,
+          "roc_auc": 0.702579610683123,
+          "pearson_delta": 0.684802752786449,
+          "mse": 0.006230606655922851,
+          "mae": 0.055138369157378166,
+          "mse_delta": 0.006230606647607472,
+          "mae_delta": 0.055138369157378166,
+          "discrimination_score_l1": 0.7627551020408162,
+          "discrimination_score_l2": 0.7889030612244897,
+          "discrimination_score_cosine": 0.7238520408163265,
+          "pearson_edistance": 0.5199382543248492,
+          "clustering_agreement": 0.41944249883336104
+        }
+      },
+      "additive": {
+        "experiment_id": "EXP_0003",
+        "stored_sealed_pearson_delta": 0.7125920757739331
+      },
+      "selected_minus_additive_point_difference": 0.00729853725133045,
+      "ensemble": null,
+      "summary_llm_usage": {
+        "all": {
+          "calls": 187,
+          "input_tokens": 385560,
+          "output_tokens": 157735,
+          "cached_tokens": 162560,
+          "cost_usd": 0.451021668,
+          "failed_calls": 0
+        },
+        "worker": {
+          "calls": 163,
+          "input_tokens": 275875,
+          "output_tokens": 119286,
+          "cached_tokens": 137984,
+          "cost_usd": 0.18533840399999998,
+          "failed_calls": 0
+        },
+        "planner": {
+          "calls": 24,
+          "input_tokens": 109685,
+          "output_tokens": 38449,
+          "cached_tokens": 24576,
+          "cost_usd": 0.265683264,
+          "failed_calls": 0
+        }
+      },
+      "ledger_cost_usd": 0.451021668,
+      "ledger_by_role_model": [
+        {
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "role": "planner",
+          "calls": 24,
+          "input_tokens": 109685,
+          "output_tokens": 38449,
+          "cached_tokens": 24576,
+          "cost_usd": 0.265683264,
+          "first_ts": 1792085696.923094,
+          "last_ts": 1792086780.501295
+        },
+        {
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "role": "worker",
+          "calls": 163,
+          "input_tokens": 275875,
+          "output_tokens": 119286,
+          "cached_tokens": 137984,
+          "cost_usd": 0.18533840399999998,
+          "first_ts": 1792085699.508769,
+          "last_ts": 1792086793.002892
+        }
+      ],
+      "run_db_calls_by_role_model": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "calls": 24,
+          "failed_calls": 0,
+          "cost_usd": 0.265683264
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "calls": 163,
+          "failed_calls": 0,
+          "cost_usd": 0.18533840399999998
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w1_r3",
+      "summary_sha256": "46e8e37b64983b58e7a5842f91ecd1c94425e0e773bfde6a76777ebd1dc6bf6b",
+      "dataset": "norman",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "base_commit": "ce1b53043125cad78d060d1155e5ffe6efab5c0a",
+      "summary_finished_at_utc": "2026-10-15T18:07:32.802735+00:00",
+      "summary_duration_s": 28.3,
+      "workers": 1,
+      "experiments_proposed": 10,
+      "experiments_completed": 10,
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [],
+        "rounds": {},
+        "switches": [],
+        "failed_rounds": 1,
+        "exhausted_at_min": 0.2,
+        "mixed": true
+      },
+      "clean_configured_arm": false,
+      "arm_label": "DeepSeek planner unusable/lost; separate arm",
+      "selected": {
+        "experiment_id": "EXP_0013",
+        "visible_score": 0.6196971838723709,
+        "selection_source": "summary.best experiment_id chosen on visible score, never sealed outcome",
+        "stored_sealed_pearson_delta": 0.7161239562155572,
+        "stored_sealed_comparable": {
+          "cellforge_mse": 0.005418019921550035,
+          "cellforge_pcc": 0.9885373060941735,
+          "cellforge_r2": 0.9744072538935619,
+          "cellforge_mse_de": 0.10907435083157502,
+          "cellforge_pcc_de": 0.9365108895123143,
+          "cellforge_r2_de": 0.8426895066184507,
+          "cellforge_mse_deset": 0.027275540240872403,
+          "cellforge_pcc_deset": 0.9441582120080876,
+          "cellforge_r2_deset": 0.8612063267006024,
+          "cellforge_n_perts_deset": 56,
+          "vcworld_de_accuracy": 0.7487826623688362,
+          "vcworld_de_precision": 0.53153864141237,
+          "vcworld_de_recall": 0.5779988557625072,
+          "vcworld_de_f1": 0.553796022779182,
+          "vcworld_de_auroc": 0.7573478382699194,
+          "vcworld_de_auprc": 0.5207714142919566,
+          "vcworld_dir_accuracy": 0.9489542940690356,
+          "vcworld_dir_precision": 0.8737988468930173,
+          "vcworld_dir_recall": 0.8696206566783551,
+          "vcworld_dir_f1": 0.8717047451669596,
+          "vcworld_dir_auroc": 0.9736671654089522,
+          "vcworld_dir_auprc": 0.917943643528695,
+          "vcworld_n_de_pairs": 31462
+        },
+        "stored_sealed_cell_eval": {
+          "overlap_at_N": 0.4850118522321955,
+          "overlap_at_50": 0.3062328354081174,
+          "overlap_at_100": 0.3186985335517817,
+          "overlap_at_200": 0.3510935836770948,
+          "overlap_at_500": 0.4398249220216489,
+          "precision_at_N": 0.3537770593262839,
+          "precision_at_50": 0.30464285714285716,
+          "precision_at_100": 0.31392857142857145,
+          "precision_at_200": 0.3425892857142857,
+          "precision_at_500": 0.42107142857142854,
+          "de_spearman_sig": 0.5494789329840266,
+          "de_direction_match": 0.9061946679010798,
+          "de_spearman_lfc_sig": 0.5994652035560536,
+          "de_sig_genes_recall": 0.8083872307826266,
+          "de_nsig_counts_real": 611.7678571428571,
+          "de_nsig_counts_pred": 1391.392857142857,
+          "pr_auc": 0.44180618936557253,
+          "roc_auc": 0.6967827538578754,
+          "pearson_delta": 0.6816825703052538,
+          "mse": 0.006232386078668891,
+          "mae": 0.054847874745194404,
+          "mse_delta": 0.0062323860703535116,
+          "mae_delta": 0.054847874745194404,
+          "discrimination_score_l1": 0.7570153061224489,
+          "discrimination_score_l2": 0.7831632653061226,
+          "discrimination_score_cosine": 0.7213010204081634,
+          "pearson_edistance": 0.5293975092947746,
+          "clustering_agreement": 0.3940463953513946
+        }
+      },
+      "additive": {
+        "experiment_id": "EXP_0003",
+        "stored_sealed_pearson_delta": 0.7125920757739331
+      },
+      "selected_minus_additive_point_difference": 0.0035318804416241134,
+      "ensemble": null,
+      "summary_llm_usage": {
+        "all": {
+          "calls": 2,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_tokens": 0,
+          "cost_usd": 0.0,
+          "failed_calls": 2
+        },
+        "worker": {
+          "calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_tokens": 0,
+          "cost_usd": 0,
+          "failed_calls": 0
+        },
+        "planner": {
+          "calls": 2,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_tokens": 0,
+          "cost_usd": 0.0,
+          "failed_calls": 2
+        }
+      },
+      "ledger_cost_usd": 0.0,
+      "ledger_by_role_model": [],
+      "run_db_calls_by_role_model": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "calls": 2,
+          "failed_calls": 2,
+          "cost_usd": 0.0
+        }
+      ]
+    }
+  ],
+  "clean_partial_arm_descriptive": {
+    "n_clean": 2,
+    "search_seeds": [
+      0,
+      2
+    ],
+    "run_dirs": [
+      "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w1_r0",
+      "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_addstart_w1_r2"
+    ],
+    "selected_stored_sealed_pearson_delta": {
+      "mean": 0.7214253500155767,
+      "sample_sd": 0.0021704458663764376
+    },
+    "metrics": {
+      "cellforge_mse": {
+        "mean": 0.005270738637630427,
+        "sample_sd": 0.00019745635038785235
+      },
+      "cellforge_pcc": {
+        "mean": 0.9889036686679955,
+        "sample_sd": 0.0003239410897780169
+      },
+      "cellforge_r2": {
+        "mean": 0.9750849421303888,
+        "sample_sd": 0.0008998978723884435
+      },
+      "cellforge_mse_de": {
+        "mean": 0.10602749536480424,
+        "sample_sd": 0.0013691268110895165
+      },
+      "cellforge_pcc_de": {
+        "mean": 0.9386012368538983,
+        "sample_sd": 0.0008850814458877652
+      },
+      "cellforge_r2_de": {
+        "mean": 0.8461807842184477,
+        "sample_sd": 0.0020950035451420663
+      }
+    }
+  },
+  "total_ledger_cost_usd": 0.840633992,
+  "planned_reading_status": {
+    "per_run_paired_selected_vs_start_and_additive": "No saved B4 sealed_reading artifact found; point scores only. No paired SE/wins/verdict inferred.",
+    "primary_combined_b4_vs_b2": "Not available: no saved B4 arm_reading artifact found. Cannot reconstruct prediction-average score or paired comparison from aggregate metrics; no scoring performed. B4 lacks three clean planned repeats because r3 lost its planner.",
+    "secondary_arm_rule_and_combined_vs_start_additive": "No saved B4 arm readings found. No recomputation or retry.",
+    "ensemble": "summary.ensemble is null in all three runs; no retained within-run ensemble score. No cross-run averaged-prediction score is stored in these summaries."
+  },
+  "artifact_search": "Filename search b4/w1 and content search norman_ds_addstart_w1_r[023]/norman_b4 across own project-clone docs/results, main/pinned docs/results and genemila_scale_logs JSON/MD: plans/state/progress only, no B4 sealed_reading or arm_reading outputs. Main/pinned docs/results queried by filenames only; original run-log endings and summary.md excluded.",
+  "limitations": [
+    "r3 planner.mixed=true, used=[], exhausted_at_min=0.2;2 failed planner calls,0 worker calls;summary research duration28.3s. Separate unusable-planner arm under AGENTS and B4 plan, excluded from configured-arm mean. No source directory renamed or retried.",
+    "Only two clean search repeats remain. Their mean/sample SD is descriptive, not the planned three-repeat B4 arm or an arm comparison.",
+    "All reported sealed scores belong to the repeatedly inspected Norman split, not a fresh test. No feature/model/hyperparameter chosen from them.",
+    "The labels cellforge_* name lab metric implementations; published CellForge rows remain not comparable.",
+    "Averaging per-run Pearson scores differs from Pearson score of averaged predictions. No combined-model score or paired standard error/win rate can be inferred from these summaries."
+  ]
+}

@@ -280,3 +280,65 @@ Nothing is chosen from a sealed score. A positive reading 1 is a candidate, not 
   `p_fwer_pooled` (the pooled max-gain step-down p), with `p_fwer_pert_pooled` ≤ 0.05 also required for a row
   proportional to a parent column and the gain above max(2 SE_adj, 0.002); `p_holm_pooled` is no longer written.
   The rest of reading 1 and readings 2 to 4 are unchanged.
+
+## Operator note, 2026-10-17 01:52 UTC: cap confirmed and written once
+
+Andres directly instructed Astra to use the confirmation recorded on #41 and start G when the corrected F re-read
+is not running. The confirmation is dated **17 October 2026, 01:46 UTC**, recorded by Claude in
+[#41/comment6228138730](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6228138730):
+
+> **Block G's cap is confirmed**: the ledger may rise at most **$20** over its reading when the block starts, inside the balance he has given (`docs/PLAN_G_CLEAN_ARM.md`, Money; `docs/ROADMAP.md` D1). Operator: copy this line and its date into the plan's dated note, write `block_g_cap.txt` as the plan says, and start the chain under the timing rule of my 01:30 UTC comment (never beside the block F re-read).
+
+The Money section's write-once command succeeded, recording this immutable line in
+`~/Documents/Mila/Gene-Mila/genemila_scale_logs/block_g_cap.txt` and appending its receipt to `progress.md`:
+
+```text
+67.26 47.264645 2026-10-17T01:52Z
+```
+
+This is the cumulative ledger ceiling, original ledger reading, and UTC creation date. It is not reset on a resume.
+No paid G run has started at this checkpoint. The corrected F re-read has not started either: G will run first,
+after the required free bundle preparation passes, then the corrected F re-read after the chain ends and no lab
+run or driver remains. The dedicated research checkout stays clean at `baa7dfd`; this note changes no scripts,
+run code, arms, data rules or reading criteria. Raw receipts are in `docs/mac/block_g/downloads.md`; the full
+prepare output and its checks will be appended before the chain starts.
+
+## Operator note, 2026-10-17 02:03 UTC: preparation refused; no chain started
+
+The unchanged preparation script ran once from validated own checkout `gene-mila-string-header` at `d34bd93`
+([draft PR #54](https://github.com/andresloak100/Gene-Mila/pull/54)). The compatibility patch accepts STRING's actual
+`experimental` header; the research checkout remains clean at `baa7dfd`. Required validation passed: 589 tests,
+one optional integration skip, eight existing warnings, 720.81 seconds, exit 0. Credentials were unset for preparation.
+
+Preparation exited **1** at its shared-knowledge determinism check:
+
+```text
+NOT DONE: gene_sets.json differs between norman_clean and norman_clean_tables; the builder is not deterministic
+```
+
+The six per-gene tables were written under `data_downloads/clean_knowledge/tables/{norman,adamson_cf}`.
+`data/norman_clean` and `data/norman_clean_tables` passed their individual checks and were renamed from `.partial`;
+the subsequent cross-arm `gene_sets.json` byte comparison refused. Neither Adamson clean bundle was built.
+No partial bundle remains, no G run directory/log exists, the chain scripts were not copied or started, STOP remains
+present, and corrected F has not started. Existing source bundles and all new outputs are preserved unchanged.
+The final MD5/line-length recording loop was not reached, so its complete output is not claimed.
+
+The full stdout/stderr is preserved verbatim in [prepare_20261017T0201Z.txt](mac/block_g/prepare_20261017T0201Z.txt),
+SHA256 `3a5bf5cf4ce797d7f4c9331ae2ad17ea5b89c637fffef97c5f238bff7169803f`, and live `block_g_prepare.log`.
+The cap stays `67.26 47.264645 2026-10-17T01:52Z`; no new paid call occurred.
+Do not repeat preparation over its existing outputs, change the inputs/criteria/run pin, or bypass the failed check.
+The immediate next step is a read-only diagnosis of the public knowledge difference and a reviewed recovery
+that preserves the existing files; the chain and corrected F remain held.
+
+Read-only diagnosis (independently repeated by Astra and a second reader): both `gene_sets.json` files have
+5,773 identical keys and equal list values, but 2,293 dictionary key positions differ, all in the GO sections.
+`go_curated()` iterates the set from `_ancestors()`; separate Python processes use different hash iteration orders,
+and `build_clean_bundle.py` writes the insertion order without sorting. The other four shared knowledge files
+are byte-identical. Canonical compact sorted-JSON SHA256 is the same for both:
+`738be120526d87f75970fdddb1f45d1620e060dcd364498e9db23f9ed0e160be`.
+Raw hashes and absolute paths are in [the diagnosis receipt](results/block_g_prepare_refusal_20261017.json).
+The failed check is valid: plugins can observe order. A minimal stable GO-ordering source fix and regression
+are needed before any rebuild; do not edit the existing files or their manifests to force a pass. The proposed
+recovery preserves both unused Norman bundles and both table directories unchanged under dated archive names,
+then reruns the original preparation from a reviewed, tested operator checkout, retaining the same cap and run pin.
+No archive, source fix, retry, paid G run or corrected F re-read has been performed at this checkpoint.
