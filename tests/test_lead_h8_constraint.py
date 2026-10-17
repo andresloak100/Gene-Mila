@@ -1,8 +1,9 @@
 """docs/comparison/lead_h8_constraint: the lead's pre-registered hypothesis (PREREG_G_KNOWN_BIOLOGY family 8,
 ROADMAP D4) as a feature plugin. The file passes the guard and the literal caps; on a copy of the pair bundle with a
-synthetic gene_constraint table (a known linear relation to log1p control mean plus noise) and CORUM/Reactome sets the
+synthetic gene_constraint table (a known linear relation to control mean plus noise) and CORUM/Reactome sets the
 feature has the right shape, is zero for a perturbation whose targets have no constraint value and equals
-additive_response times the hand-computed residual mean elsewhere; the pipeline smoke passes; and feature_compare
+additive_response times the hand-computed residual mean elsewhere; the Reactome word rule selects the public GMT's
+ribosome, proteasome and mRNA splicing pathways and nothing else; the pipeline smoke passes; and feature_compare
 reports the row as proportional to additive_response with a perturbation null."""
 
 import json
@@ -29,13 +30,15 @@ PLUGINS = ROOT / "docs" / "comparison" / "lead_h8_constraint"
 FILE = PLUGINS / "h8_constraint_residual.py"
 NAME = "h8_constraint_residual"
 NO_VALUE = "G23"  # a single whose gene gets no constraint value
+MODULE = "genemila_plugin_h8_constraint_residual"  # the registry's module name for the plugin file
 
 
 @pytest.fixture(scope="module")
 def h8_bundle(tmp_path_factory):
-    """make_pair_bundle plus gene_constraint in the builder's JSON shape (LOEUF a known linear function of log1p
-    control mean plus noise, null for G23 and ten non-target genes) and gene_sets with a CORUM set, a Reactome
-    ribosome set and a GO set that must be ignored."""
+    """make_pair_bundle plus gene_constraint in the builder's JSON shape (LOEUF a known linear function of control
+    mean plus noise, null for G23 and ten non-target genes) and gene_sets with two CORUM sets, a Reactome ribosome set,
+    a Reactome mRNA splicing set, two Reactome sets the word rule must not match (one of them about splicing) and a GO
+    set that must be ignored."""
     bundle = make_pair_bundle(tmp_path_factory.mktemp("h8") / "pair")
     z = np.load(bundle / "public.npz")
     genes = [str(g) for g in z["genes"]]
@@ -46,7 +49,7 @@ def h8_bundle(tmp_path_factory):
     for j, g in enumerate(genes):
         vals = [None] * len(bgc.COLUMNS)
         if g != NO_VALUE and not (60 <= j < 70):
-            vals[k] = round(float(1.2 - 0.3 * np.log1p(cm[j]) + 0.2 * (j % 3 == 0) + rng.normal(0, 0.05)), 6)
+            vals[k] = round(float(1.2 - 0.3 * cm[j] + 0.2 * (j % 3 == 0) + rng.normal(0, 0.05)), 6)
         rows[g] = vals
     table = {"description": "synthetic constraint", "columns": bgc.COLUMNS, "column_units": bgc.UNITS, "genes": rows,
              "flags": {}, "source": {"file": "synthetic", "sha256": "0" * 64, "url": bgc.URL, "n_rows": len(genes)}}
@@ -55,12 +58,19 @@ def h8_bundle(tmp_path_factory):
     (kn / "gene_sets.json").write_text(json.dumps({
         "CORUM:Complex alpha": genes[0:9], "CORUM:Complex beta": genes[30:40],
         "REACTOME:Cytosolic Ribosome": genes[5:12] + genes[45:50],
+        "REACTOME:mRNA Splicing - Major Pathway": genes[50:58], "REACTOME:FGFR2 alternative splicing": genes[70:76],
         "REACTOME:Signaling by WNT": genes[12:20], "GOBP:some process": genes[20:30]}))
     return bundle
 
 
+def _words():
+    registry.load_plugins(PLUGINS)
+    return sys.modules[MODULE].ESSENTIAL_WORDS
+
+
 def _expected(bundle: Path) -> tuple[np.ndarray, np.ndarray]:
     """The OLS residual recomputed here, from the files, and which genes have a value."""
+    words = _words()
     z = np.load(bundle / "public.npz")
     genes = [str(g) for g in z["genes"]]
     cm = z["control_cells"].astype(np.float64).mean(axis=0)
@@ -70,8 +80,12 @@ def _expected(bundle: Path) -> tuple[np.ndarray, np.ndarray]:
     s = np.array([np.nan if table["genes"][g][k] is None else -table["genes"][g][k] for g in genes])
     has = np.isfinite(s)
     e = np.array([float(any(g in m for n, m in sets.items() if n.startswith("CORUM:"))) for g in genes])
-    r = np.array([float(any(g in m for n, m in sets.items() if n == "REACTOME:Cytosolic Ribosome")) for g in genes])
-    x = np.column_stack([np.ones(len(genes)), np.log1p(cm), e, r])
+    r = np.array([float(any(g in m for n, m in sets.items()
+                            if n.startswith("REACTOME:") and any(w in n.lower() for w in words))) for g in genes])
+    assert r[[genes.index(g) for g in sets["REACTOME:mRNA Splicing - Major Pathway"]]].all()
+    decoys = sets["REACTOME:FGFR2 alternative splicing"] + sets["REACTOME:Signaling by WNT"]
+    assert not r[[genes.index(g) for g in decoys]].any()
+    x = np.column_stack([np.ones(len(genes)), cm, e, r])
     beta, *_ = np.linalg.lstsq(x[has], s[has], rcond=None)
     rho = np.zeros(len(genes))
     rho[has] = s[has] - x[has] @ beta
@@ -126,12 +140,28 @@ def test_without_gene_sets_the_residual_removes_basal_expression_only(h8_bundle,
     z = np.load(bundle / "public.npz")
     cm = z["control_cells"].astype(np.float64).mean(axis=0)
     assert (has == _expected(h8_bundle)[1]).all()
-    x = np.column_stack([np.ones(ctx.n_genes), np.log1p(cm)])[has]
+    x = np.column_stack([np.ones(ctx.n_genes), cm])[has]
     table = json.loads((bundle / "knowledge" / "gene_constraint.json").read_text())
     k = table["columns"].index("oe_lof_upper")
     s = np.array([-table["genes"][g][k] for g in np.array(ctx.genes)[has]])
     beta, *_ = np.linalg.lstsq(x, s, rcond=None)
     assert rho[has] == pytest.approx(s - x @ beta) and np.abs(rho[~has]).max() == 0
+
+
+def test_the_word_rule_selects_the_public_reactome_sets_it_names():
+    """Pathway names from the public ReactomePathways.gmt.zip (2,868 pathways, read 2026-10-17), the file
+    knowledge_clean.reactome() reads. No name there contains "spliceosom": the spliceosome sets are "mRNA Splicing"."""
+    words = _words()
+    hit = lambda n: any(w in n.lower() for w in words)  # noqa: E731
+    for name in ("GTP hydrolysis and joining of the 60S ribosomal subunit",
+                 "Ribosomal scanning and start codon recognition", "Ribosome-associated quality control",
+                 "Proteasome assembly",
+                 "Antigen processing: Ubiquitination & Proteasome degradation", "mRNA Splicing",
+                 "mRNA Splicing - Major Pathway", "mRNA Splicing - Minor Pathway"):
+        assert hit(name), name
+    for name in ("FGFR2 alternative splicing", "Eukaryotic Translation Elongation", "Signaling by WNT",
+                 "Processing of Capped Intron-Containing Pre-mRNA"):
+        assert not hit(name), name
 
 
 def test_smoke_passes_on_the_bundle_with_knowledge(h8_bundle, tmp_path):

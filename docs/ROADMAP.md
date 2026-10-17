@@ -283,3 +283,12 @@ adapter exists, since it needs the same new-target prediction path.
 - D5: the harness tier is on by default in the exported package until Andres vetoes it (section 7, item 3); a package
   exported with `--no-harness-val1` keeps the protocol's earlier rules. The sentence recording this in `AGENTS.md`
   (Scientific integrity) carries his veto line.
+
+## Note, 2026-10-17 (UTC): scoring the lead's family 8 plugin joins Astra's list
+
+- D4's hand-written hypothesis is the plugin in `docs/comparison/lead_h8_constraint/` (README, tests), fixed before
+  any block G score. Its scoring is step 6a of section 6, after the G readings: free, at `nice -n 19`, never beside a
+  paid run, the README's pre-run command (the Reactome sets and counts the real bundle gives it, posted on #41) and
+  then its `feature_compare` command per dataset at 999 replicates; the result is posted on the same results PR and
+  reported as the lead's hypothesis, never as A.1. The dated note at the end of `docs/PREREG_G_KNOWN_BIOLOGY.md`
+  records how family 8's wording was turned into code.
