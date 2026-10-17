@@ -36,7 +36,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 17:34 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 17:39 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -136,9 +136,13 @@ caffeinate,exact projectPython -m pytest -q in frozen C2f2e683; no scientific/he
 Exclusive docs/results/g_f_h8_publication_pytest.command.txt/.log/.exit. Allow suite tofinish;
 do notduplicate/restart/reducechecks orchangeprotected/scientificcodetoobtainresult.
 NormanH8/fullscientificcompletion/testlaunch posted[#51/comment6237719856](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6237719856).
-**Exact next:** monitor existing fullsuite at five-minute cadence (next>=17:37:29Z).
-Whileactive prepare consolidated results/JSONMD and exhaustive exact-file rows DIRECTLY in docs/results/README.md,
-preserving alreadyreferenced outputpaths. Afterexplicitexit0,verify142oldFhashesbothclonesand94plugins,
+**Exact next:** monitor existing fullsuite at five-minute cadence (next>=17:42:36Z).
+Consolidated g_f_h8_readings.{json,md} is prepared and independently audited; one sealed-match count sentence
+was scoped explicitly bydataset, rawresultsunchanged. Report audit twins retain finalreporthashes.
+Exhaustive exact-file rows DIRECTLY in docs/results/README.md currentlycover1169newfiles; regenerate after
+finaltest/verification/exportreceipts. No oldoutputs moved. Preservation audit PASS:142oldFfilesbothclones,
+94pluginsbothclones+originalsource feature_store (284artifact/282pluginchecks),all6frozen tools match.
+Preliminarysecret/pathscan clear; final exactstagedscan/hash/indexchecks remain. Only trackedchangeisresultsREADME. Afterexplicitexit0,verify142oldFhashesbothclonesand94plugins,
 secret-scan exactstagedallowlist,ensureonlynewresults/index,commit/pushownbranch/openONEdraftPR
 into integration/attach/postallresults51; nevermerge. NoPR/exportyet.
 Then exportONLYAdamson fromM/data/adamson_cf_clean_tables,unusedoutandsibling.export.jsonabsent,
