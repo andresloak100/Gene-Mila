@@ -3,7 +3,7 @@
 This file is for every agent that works in this repository: the project's Claude sessions,
 Astra (a ChatGPT agent), and any other coding agent. Whichever of them still has tokens
 picks up the work where another stopped, so all of them follow the same rules and keep the same
-state. The rules are here. [`HANDOFF.md`](HANDOFF.md) holds the shared state (section 1, kept
+state. The rules are here; a new agent starts with [`docs/BRIEF_FOR_NEW_AGENTS.md`](docs/BRIEF_FOR_NEW_AGENTS.md). [`HANDOFF.md`](HANDOFF.md) holds the shared state (section 1, kept
 current by whoever is working), the paths and commands, and the open work. Read both, then `README.md`,
 `docs/README.md` (the map of every document), `docs/ROADMAP.md` (what the lead has decided),
 `docs/GOAL_CRITERIA.md` (when the goal is met), `docs/ARCHITECTURE.md` and `configs/default.toml`.
@@ -128,7 +128,8 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
 
 - Push only to your own branches, branched from `claude/autonomous-research-system-3k435s`,
   and open a draft pull request into it. Never push to another agent's branch, never force-push,
-  rebase or amend a shared branch, and never merge your own pull request: Andres merges.
+  rebase or amend a shared branch, and never merge your own pull request: Andres merges, and since 16 October the lead merges on his written
+  authorization ("start merging, I want everything to be updated", recorded on #41); nobody else merges anything.
 - The one exception: a commit that changes only `HANDOFF.md` section 1 may go straight to the
   integration branch (`git pull` first, a plain push, never forced), so the shared state never
   waits on a merge.

@@ -4,6 +4,14 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-17 15:30 UTC: block G's Adamson half is negative; Norman's test running; a brief for new
+agents.** Adamson: none of 221 table-reading features passes the corrected fair test; the arm with the tables scored
+lower out of fold than the arm without (`docs/GOAL_CRITERIA.md` Status, ROADMAP note of 15:30 UTC). Still not yet on
+either path. Norman's family-wise test (174 rows, 999 replicates) is running at `nice 19`; then the block F re-read and
+the family 8 scoring (Astra, #51). Block G cost $12.97 on the ledger (final $60.23). The merged branches were deleted by
+Andres; `docs/BRIEF_FOR_NEW_AGENTS.md` is the plain-language brief Andres hands to a new agent. **Next:** the Norman
+reading, then the lead's decision on the biology path (ROADMAP D10) and block H's free preparation (#51).
+
 **Lead (Claude, #41), 2026-10-17 05:30 UTC: curation and block H tooling landed; block G running.** The repository was
 curated ([PR #58](https://github.com/andresloak100/Gene-Mila/pull/58)): nine old draft PRs' records merged, superseded
 documents under `docs/archive/`, `docs/README.md` is the documentation map, `docs/results/README.md`,
