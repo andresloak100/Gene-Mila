@@ -1,0 +1,42 @@
+{
+  "pre_score_utc": "2026-10-17T17:20:32.576133+00:00",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "protocol_integration_commit": "561bc2815688e6c4baae0d818362fac76ef79154",
+  "readme_sha256": "beb3e9ae4691c0fd693e44289523fd82e74bfff03fb0336fa4cd3bca490c8dc8",
+  "plugin_sha256": "d561229865326a42fd0e562f7cb294f40b77788aa0b6ce547c277935311a23ad",
+  "protocol_source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-coordination/docs/comparison/lead_h8_constraint/README.md",
+  "clarification_url": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6236891780",
+  "fixed_parent_columns": {
+    "adamson_cf": "mean_response",
+    "norman": "additive_response"
+  },
+  "unchanged": "formula, source plugin, sign prediction, two nulls, minimum effect, all gates",
+  "post_score_refusal": "If Adamson not proportional or no perturbation null, post row and stop; never change criterion afterwards",
+  "pre_run_python_code": "\nimport json, sys\nb = sys.argv[1]\nsets = json.load(open(b + '/knowledge/gene_sets.json')); con = json.load(open(b + '/knowledge/gene_constraint.json'))\nk = con['columns'].index('oe_lof_upper'); genes = set(con['genes'])\nwords = ('ribosom', 'proteasom', 'mrna splicing')\nr = [n for n in sorted(sets) if n.startswith('REACTOME:') and any(w in n.lower() for w in words)]\ne = {g for n in sets if n.startswith('CORUM:') for g in sets[n]}\nprint('valued', sum(v[k] is not None for v in con['genes'].values()), 'of', len(genes))\nrg = {g for n in r for g in sets[n]} & genes\nprint('corum genes', len(e & genes), 'reactome sets', len(r), 'reactome genes', len(rg))\nprint('\\n'.join(r))\n",
+  "inputs": {
+    "adamson_cf": {
+      "public.npz": "e8908ef34d851c1111556be7b8d97eb511bc7554513683a0cf3844248d153718",
+      "manifest.json": "dceab43e7e54b48d466ec0c32b8eedb662e80b14d42570dcfbeae6dbc47ec411",
+      "knowledge/gene_annotation.json": "ac2e774960a14c9e0213c6ec1afd8eecc7836cb4682d236048b6404bd409c7bf",
+      "knowledge/gene_constraint.json": "1069daa45f301a62cd5da06316ce3dac8947e1df4382c78a3bd40ab1f5f8390f",
+      "knowledge/gene_sets.json": "2221426e64ee8323044a7a9e2a415ba907210aebf121b5deb49d60a984ec1d88",
+      "knowledge/ppi_network.json": "ee4e7e3d7ed051324cede42467ef20e3f3be8e2ecd969776d8c9dcbd215c8b28",
+      "knowledge/prior_network.json": "27c0cd0f06f778a94e4a546a8d4fbaacb98f4978b76b08ad95892791e5bba513",
+      "knowledge/protein_annotation.json": "b17571ef1ce61d6bf0f1397e3948159463f510686acc700a15e383b17d462acd",
+      "knowledge/targets.json": "e0795293a743ca84d49b8a2cb74b861c30359ed890990d366f7035655fd47f3b",
+      "knowledge/transcription_factors.json": "6d89a663d7dc7023b68ce13006cb5b6d93501e5b738fd4f6a05cd1927b984cf8"
+    },
+    "norman": {
+      "public.npz": "b2c7eb3d34806a8d05b3a7719670833aa547d235e9d00767acce4126cbdc5411",
+      "manifest.json": "34b04689c87a24890d95b76908e2754fc2c4b624f30cae426a5540e11231ec69",
+      "knowledge/gene_annotation.json": "eab0a9a5ac06054be65b0fbea8e4acc1b3f18d5038b83f832fb0579f952d463c",
+      "knowledge/gene_constraint.json": "2eacb9040583aaf0bf7038e79c2e71964291c05b5a3fe0a47e056217146a7fbc",
+      "knowledge/gene_sets.json": "615de5b9c8129a9af1cb0842531e60cb0b993fbce084bb40e989b0a48ab90a6e",
+      "knowledge/ppi_network.json": "35ce7e7169337730252119d026396a7edb889e9f7fa490250984972ae4b6aad0",
+      "knowledge/prior_network.json": "f16a9ff0c5e2468f356bbf5fc22bc83d1d7547e6ddbd4bb7efcaf00c0dca5e60",
+      "knowledge/protein_annotation.json": "671e6f81dde52a3f176e307f053be311d7742d17e32bd06e84ca7929c01e741e",
+      "knowledge/targets.json": "f02c03f13588ea93b8a14a7979e9c31b8bc317d6cb18b9c24e38362b3bb7662c",
+      "knowledge/transcription_factors.json": "09ba9bf4fa864172b884239cf9eda3f27d6ee2478de9aa41a7c7994021e63923"
+    }
+  }
+}

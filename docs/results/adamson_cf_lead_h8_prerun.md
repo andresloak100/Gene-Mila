@@ -1,0 +1,29 @@
+# adamson_cf lead H8 exact pre-run receipt
+
+lead pre-registered family8 hypothesis
+
+Fixed-word counts: {"ribosom": 7, "proteasom": 9, "mrna splicing": 3}
+
+```
+valued 2018 of 2024
+corum genes 628 reactome sets 19 reactome genes 286
+REACTOME:Antigen processing: Ub, ATP-independent proteasomal degradation
+REACTOME:Antigen processing: Ubiquitination & Proteasome degradation
+REACTOME:Degradation of GLI1 by the proteasome
+REACTOME:Degradation of GLI2 by the proteasome
+REACTOME:GLI3 is processed to GLI3R by the proteasome
+REACTOME:GSK3B-mediated proteasomal degradation of PD-L1(CD274)
+REACTOME:GTP hydrolysis and joining of the 60S ribosomal subunit
+REACTOME:Mitochondrial ribosome-associated quality control
+REACTOME:PELO:HBS1L and ABCE1 dissociate a ribosome on a non-stop mRNA
+REACTOME:Proteasome assembly
+REACTOME:Regulation of activated PAK-2p34 by proteasome mediated degradation
+REACTOME:Ribosomal scanning and start codon recognition
+REACTOME:Ribosome Quality Control (RQC) complex extracts and degrades nascent peptide
+REACTOME:Ribosome-associated quality control
+REACTOME:SPOP-mediated proteasomal degradation of PD-L1(CD274)
+REACTOME:ZNF598 and the Ribosome-associated Quality Trigger (RQT) complex dissociate a ribosome stalled on a no-go mRNA
+REACTOME:mRNA Splicing
+REACTOME:mRNA Splicing - Major Pathway
+REACTOME:mRNA Splicing - Minor Pathway
+```

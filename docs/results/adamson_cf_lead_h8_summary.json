@@ -1,0 +1,157 @@
+{
+  "recorded_utc": "2026-10-17T17:27:43.500638+00:00",
+  "dataset": "adamson_cf_clean_tables",
+  "split_id": "split_450515be1a0d8d2e",
+  "label": "Lead's pre-registered hypothesis, never agent discovery/A.1",
+  "pre_score_clarification": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6236891780",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "raw_result": "adamson_cf_lead_h8/feature_compare.json",
+  "status": "ok",
+  "proportional": true,
+  "proportional_in_folds": true,
+  "parent_column": "mean_response",
+  "metrics": {
+    "pearson_delta": 0.48288343794512145,
+    "pearson_delta_nontarget": 0.48108081249036805,
+    "mse_top": 0.13675895888841202,
+    "r2_top": 0.7686950455746994,
+    "pearson_delta_top": 0.6299532082780934,
+    "direction_acc_top": 0.8503333333333332,
+    "mse": 0.006768728873178611,
+    "delta_scale_ratio": 0.6197085866903729
+  },
+  "parent_metrics": {
+    "pearson_delta": 0.48423026976318995,
+    "pearson_delta_nontarget": 0.48120369724236334,
+    "mse_top": 0.13525475833368783,
+    "r2_top": 0.7698010545313738,
+    "pearson_delta_top": 0.6304818740870558,
+    "direction_acc_top": 0.8503333333333332,
+    "mse": 0.0066812035665043635,
+    "delta_scale_ratio": 0.6207568291104039
+  },
+  "delta": {
+    "pearson_delta": {
+      "n": 50,
+      "mean_diff": -0.0013468318180684053,
+      "se": 0.0010790910362433385,
+      "wins_a": 25,
+      "wins_b": 25,
+      "ties": 0,
+      "verdict": "none",
+      "overlap_ratio": 1.0,
+      "se_adj": 0.0010790910362433385,
+      "verdict_adj": "none"
+    },
+    "pearson_delta_nontarget": {
+      "n": 50,
+      "mean_diff": -0.00012288475199521588,
+      "se": 5.3365267126241335e-05,
+      "wins_a": 18,
+      "wins_b": 32,
+      "ties": 0,
+      "verdict": "b",
+      "overlap_ratio": 1.0,
+      "se_adj": 5.3365267126241335e-05,
+      "verdict_adj": "b"
+    },
+    "mse_top": {
+      "n": 50,
+      "mean_diff": -0.001504200554724161,
+      "se": 0.0022587641936025965,
+      "wins_a": 29,
+      "wins_b": 21,
+      "ties": 0,
+      "verdict": "none",
+      "overlap_ratio": 1.0,
+      "se_adj": 0.0022587641936025965,
+      "verdict_adj": "none"
+    },
+    "r2_top": {
+      "n": 50,
+      "mean_diff": -0.001106008956674514,
+      "se": 0.003625050882053239,
+      "wins_a": 29,
+      "wins_b": 21,
+      "ties": 0,
+      "verdict": "none",
+      "overlap_ratio": 1.0,
+      "se_adj": 0.003625050882053239,
+      "verdict_adj": "none"
+    },
+    "pearson_delta_top": {
+      "n": 50,
+      "mean_diff": -0.0005286658089623854,
+      "se": 0.0019185293045562045,
+      "wins_a": 28,
+      "wins_b": 22,
+      "ties": 0,
+      "verdict": "none",
+      "overlap_ratio": 1.0,
+      "se_adj": 0.0019185293045562045,
+      "verdict_adj": "none"
+    },
+    "direction_acc_top": {
+      "n": 50,
+      "mean_diff": 0.0,
+      "se": 0.0,
+      "wins_a": 0,
+      "wins_b": 0,
+      "ties": 50,
+      "verdict": "none",
+      "overlap_ratio": null,
+      "se_adj": 0.0,
+      "verdict_adj": "none"
+    }
+  },
+  "coef_candidate_std": [
+    0.00534388171913087,
+    0.00561826202090763,
+    0.005427295638596714,
+    0.00561826202090763,
+    0.005427295638596714,
+    0.00534388171913087
+  ],
+  "nulls": {
+    "null": {
+      "reps": 999,
+      "mean": -0.00041746271362467493,
+      "sd": 0.00010558593882336926,
+      "p95": -0.0002403023616663521,
+      "p": 1.0,
+      "excess": -0.0009293691044437642,
+      "observed": -0.001346831818068439,
+      "p_holm": 1.0,
+      "p_fwer": 1.0
+    },
+    "null_pert": {
+      "reps": 999,
+      "mean": -0.0013496029897592185,
+      "sd": 0.0032313530694837284,
+      "p95": 0.0009543809046568147,
+      "p": 0.769,
+      "excess": 2.771171690779369e-06,
+      "observed": -0.001346831818068439,
+      "parent_column": "mean_response",
+      "p_holm": 0.769,
+      "p_fwer": 0.769
+    }
+  },
+  "min_effect": 0.002158182072486677,
+  "failed_criteria": [
+    "M1 gain not above 2 SE_adj with wins > n/2",
+    "M1 gain not above the minimum effect 0.002",
+    "an OOF report does not gain",
+    "null p (FWER) > 0.05",
+    "perturbation null p (FWER) > 0.05",
+    "no M2 gain"
+  ],
+  "meaningful": false,
+  "verdict": "Not supported on Adamson under the fixed pre-registered criteria.",
+  "limitations": [
+    "OOF only: every system has selected on these labels; not held out",
+    "M4-M7 use each perturbation's top 20 genes by |true delta| (genemila.benchmark.evaluator), not CellForge's Wilcoxon DE top 20",
+    "ridge on the tool's alpha grid with an honest OOF alpha; a parent run's own model type and alpha are not reused",
+    "the literal caps make pasting labels into a file expensive, not impossible"
+  ]
+}

@@ -1,0 +1,4 @@
+feature_compare: null estimate 47 members x 999 replicates x 0.060 s = 46.9 min (measured on the first replicate)
+feature_compare: null estimate 94 members x 999 replicates x 0.045 s = 70.0 min (measured on the first replicate)
+feature_compare: null estimate 92 members x 999 replicates x 0.045 s = 69.1 min (measured on the first replicate)
+feature_compare: 177 rows -> /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g_stage2/feature_compare.md

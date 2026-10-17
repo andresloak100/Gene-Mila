@@ -1,0 +1,45 @@
+# Sealed reading
+
+Pre-specified (docs/NORMAN_PLAN.md section 5). Metric pearson_delta per sealed perturbation, paired. Reading rule, pooled and in every category: a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations; a category with fewer than 10 sealed perturbations is reported, not read. The tool made 4 sealed scorings on oracles of its own, outside the runs' caps; 1 of the compared models had never been scored on the sealed set and are scored here for the first time (norman_g1_ds_w4_r0:EXP_0007); every other one was scored when its run ended. Wins are counted per perturbation; the visible and out-of-fold rows pair the same models on the visible validation perturbations and, out of fold, the training ones. Tool code 2f2e683.
+
+## norman_g1_ds_w4_r0: selected model against the additive baseline
+
+Selected EXP_0745 (ridge, 11 features, visible 0.634); additive baseline EXP_0003 (visible 0.611). External knowledge: none. Code baa7dfd; hash seed recorded: 0; the run's own sealed queries: 4 of 5. Planner: deepseek:deepseek-v4-pro, unchanged.
+
+| set | n | selected | additive | selected − additive (SE) | wins selected/additive | verdict |
+|---|---|---|---|---|---|---|
+| sealed, pooled | 56 | 0.727 | 0.713 | +0.015 ± 0.005 | 40/16 | selected better |
+| sealed, pair_seen0 | 8 | 0.629 | 0.613 | +0.016 ± 0.004 | 8/0 | reported, not read |
+| sealed, pair_seen1 | 27 | 0.852 | 0.835 | +0.017 ± 0.009 | 22/5 | no difference established |
+| sealed, pair_seen2 | 5 | 0.885 | 0.879 | +0.007 ± 0.014 | 2/3 | reported, not read |
+| sealed, single | 16 | 0.517 | 0.504 | +0.013 ± 0.007 | 8/8 | no difference established |
+| visible and out-of-fold, pooled | 175 | | | +0.023 ± 0.006 | 112/63 | selected better |
+| visible and out-of-fold, pair_seen0 | 19 | | | +0.012 ± 0.004 | 15/4 | selected better |
+| visible and out-of-fold, pair_seen1 | 65 | | | +0.035 ± 0.016 | 43/22 | selected better |
+| visible and out-of-fold, pair_seen2 | 5 | | | +0.006 ± 0.007 | 4/1 | no difference established |
+| visible and out-of-fold, single | 86 | | | +0.018 ± 0.004 | 50/36 | selected better |
+
+Other sealed metrics, selected against additive: pearson_delta without own targets 0.719 against 0.711. Shared genes: on the visible validation perturbations the overlap-robust SE is 0.89 times the plain paired SE (63 perturbations, 42 genes, 416 ordered pairs sharing a gene); the leave-one-gene-out jackknife first specified, which exceeds 1 even for independent pairs, gives 1.43; the arm reading inflates the sealed SE by the first when above 1.
+
+## norman_g1_ds_w4_r0: selected model against its starting model
+
+The run started fresh; its starting model, the built-in additive start (ridge on the built-ins plus additive_response), is EXP_0007 (4 features, visible 0.615); selected EXP_0745. The difference is what the run's own search added.
+
+| set | n | selected | start | selected − start (SE) | wins selected/start | verdict |
+|---|---|---|---|---|---|---|
+| sealed, pooled | 56 | 0.727 | 0.716 | +0.011 ± 0.005 | 42/14 | selected better |
+| sealed, pair_seen0 | 8 | 0.629 | 0.620 | +0.009 ± 0.002 | 7/1 | reported, not read |
+| sealed, pair_seen1 | 27 | 0.852 | 0.834 | +0.018 ± 0.011 | 23/4 | no difference established |
+| sealed, pair_seen2 | 5 | 0.885 | 0.890 | -0.005 ± 0.015 | 2/3 | reported, not read |
+| sealed, single | 16 | 0.517 | 0.511 | +0.006 ± 0.003 | 10/6 | no difference established |
+| visible and out-of-fold, pooled | 175 | | | +0.018 ± 0.008 | 113/62 | selected better |
+| visible and out-of-fold, pair_seen0 | 19 | | | +0.005 ± 0.004 | 12/7 | no difference established |
+| visible and out-of-fold, pair_seen1 | 65 | | | +0.040 ± 0.021 | 47/18 | no difference established |
+| visible and out-of-fold, pair_seen2 | 5 | | | +0.002 ± 0.006 | 4/1 | no difference established |
+| visible and out-of-fold, single | 86 | | | +0.006 ± 0.002 | 50/36 | selected better |
+
+Other sealed metrics, selected against start: pearson_delta without own targets 0.719 against 0.710. No stored sealed score to check for EXP_0007 (scored on the sealed set here first). Shared genes: on the visible validation perturbations the overlap-robust SE is 0.98 times the plain paired SE (63 perturbations, 42 genes, 416 ordered pairs sharing a gene); the leave-one-gene-out jackknife first specified, which exceeds 1 even for independent pairs, gives 1.51; the arm reading inflates the sealed SE by the first when above 1.
+
+## Reading
+
+norman_g1_ds_w4_r0, sealed pooled: selected minus additive +0.015 ± 0.005 paired SE, selected better on 40 and worse on 16 of 56: selected better; by category: pair_seen0 (n 8) reported, not read; pair_seen1 selected minus additive +0.017 ± 0.009 paired SE, selected better on 22 and worse on 5 of 27: no difference established; pair_seen2 (n 5) reported, not read; single selected minus additive +0.013 ± 0.007 paired SE, selected better on 8 and worse on 8 of 16: no difference established. norman_g1_ds_w4_r0 against its starting model, sealed pooled: selected minus start +0.011 ± 0.005 paired SE, selected better on 42 and worse on 14 of 56: selected better; by category: pair_seen0 (n 8) reported, not read; pair_seen1 selected minus start +0.018 ± 0.011 paired SE, selected better on 23 and worse on 4 of 27: no difference established; pair_seen2 (n 5) reported, not read; single selected minus start +0.006 ± 0.003 paired SE, selected better on 10 and worse on 6 of 16: no difference established. Each verdict follows the rule as stated, pooled and in every category of at least 10 sealed perturbations; smaller categories are reported, not read.

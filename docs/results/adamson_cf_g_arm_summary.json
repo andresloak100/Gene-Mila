@@ -1,0 +1,264 @@
+{
+  "source_json": "docs/results/adamson_cf_g1_vs_g0/feature_compare.json",
+  "formula": "statistics.mean and statistics.stdev (sample SD, denominator n-1) over independent runs 0/2/3; set rows only",
+  "caveats": [
+    "OOF only: every system has selected on these labels; not held out",
+    "M4-M7 use each perturbation's top 20 genes by |true delta| (genemila.benchmark.evaluator), not CellForge's Wilcoxon DE top 20",
+    "ridge on the tool's alpha grid with an honest OOF alpha; a parent run's own model type and alpha are not reused",
+    "the literal caps make pasting labels into a file expensive, not impossible"
+  ],
+  "runs": [
+    {
+      "source": "g0_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+      "experiment_id": "EXP_0289",
+      "metrics": {
+        "pearson_delta": 0.5405242525066865,
+        "pearson_delta_nontarget": 0.5395586215779743,
+        "mse_top": 0.12068849361556949,
+        "r2_top": 0.7911158258644159,
+        "pearson_delta_top": 0.7039312846125274,
+        "direction_acc_top": 0.8706666666666665,
+        "mse": 0.006484480888404337,
+        "delta_scale_ratio": 0.7059997072066011
+      },
+      "delta_M1": {
+        "n": 50,
+        "mean_diff": 0.05629398274349654,
+        "se": 0.012857118880463128,
+        "wins_a": 36,
+        "wins_b": 14,
+        "ties": 0,
+        "verdict": "a",
+        "overlap_ratio": 1.0,
+        "se_adj": 0.012857118880463128,
+        "verdict_adj": "a"
+      },
+      "n_columns": 19
+    },
+    {
+      "source": "g0_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+      "experiment_id": "EXP_0812",
+      "metrics": {
+        "pearson_delta": 0.4857361809536658,
+        "pearson_delta_nontarget": 0.47716485450769164,
+        "mse_top": 0.14285534165487698,
+        "r2_top": 0.7559706924947909,
+        "pearson_delta_top": 0.633465378312169,
+        "direction_acc_top": 0.8403333333333332,
+        "mse": 0.006946125911878209,
+        "delta_scale_ratio": 0.5729924681915031
+      },
+      "delta_M1": {
+        "n": 50,
+        "mean_diff": 0.0015059111904758493,
+        "se": 0.007592511102913863,
+        "wins_a": 30,
+        "wins_b": 20,
+        "ties": 0,
+        "verdict": "none",
+        "overlap_ratio": 1.0,
+        "se_adj": 0.007592511102913863,
+        "verdict_adj": "none"
+      },
+      "n_columns": 23
+    },
+    {
+      "source": "g0_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+      "experiment_id": "EXP_0613",
+      "metrics": {
+        "pearson_delta": 0.5515899822641843,
+        "pearson_delta_nontarget": 0.545047822256769,
+        "mse_top": 0.11190290586790853,
+        "r2_top": 0.8093966545438951,
+        "pearson_delta_top": 0.7282628157971363,
+        "direction_acc_top": 0.8721666666666665,
+        "mse": 0.006097250843439229,
+        "delta_scale_ratio": 0.6870065819792077
+      },
+      "delta_M1": {
+        "n": 50,
+        "mean_diff": 0.0673597125009943,
+        "se": 0.013528519035888876,
+        "wins_a": 38,
+        "wins_b": 12,
+        "ties": 0,
+        "verdict": "a",
+        "overlap_ratio": 1.0,
+        "se_adj": 0.013528519035888876,
+        "verdict_adj": "a"
+      },
+      "n_columns": 19
+    },
+    {
+      "source": "g1_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "experiment_id": "EXP_0777",
+      "metrics": {
+        "pearson_delta": 0.48641095918291966,
+        "pearson_delta_nontarget": 0.47784069261027773,
+        "mse_top": 0.13802792006611064,
+        "r2_top": 0.7681689987966073,
+        "pearson_delta_top": 0.6346333130925201,
+        "direction_acc_top": 0.8413333333333333,
+        "mse": 0.006892279086348538,
+        "delta_scale_ratio": 0.6335421853038286
+      },
+      "delta_M1": {
+        "n": 50,
+        "mean_diff": 0.002180689419729774,
+        "se": 0.004815695322964189,
+        "wins_a": 30,
+        "wins_b": 20,
+        "ties": 0,
+        "verdict": "none",
+        "overlap_ratio": 1.0,
+        "se_adj": 0.004815695322964189,
+        "verdict_adj": "none"
+      },
+      "n_columns": 23
+    },
+    {
+      "source": "g1_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "experiment_id": "EXP_0730",
+      "metrics": {
+        "pearson_delta": 0.4912104502872275,
+        "pearson_delta_nontarget": 0.4850119022544114,
+        "mse_top": 0.13915797424447598,
+        "r2_top": 0.7637556825839604,
+        "pearson_delta_top": 0.6423909872223058,
+        "direction_acc_top": 0.8489999999999999,
+        "mse": 0.006745737963658869,
+        "delta_scale_ratio": 0.5750567510839063
+      },
+      "delta_M1": {
+        "n": 50,
+        "mean_diff": 0.006980180524037527,
+        "se": 0.00281664752675858,
+        "wins_a": 28,
+        "wins_b": 22,
+        "ties": 0,
+        "verdict": "a",
+        "overlap_ratio": 1.0,
+        "se_adj": 0.00281664752675858,
+        "verdict_adj": "a"
+      },
+      "n_columns": 26
+    },
+    {
+      "source": "g1_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "experiment_id": "EXP_0796",
+      "metrics": {
+        "pearson_delta": 0.49527187449148186,
+        "pearson_delta_nontarget": 0.4853040779206054,
+        "mse_top": 0.1336657987682267,
+        "r2_top": 0.7725905276646127,
+        "pearson_delta_top": 0.6345268716041527,
+        "direction_acc_top": 0.8433333333333334,
+        "mse": 0.006773227143766884,
+        "delta_scale_ratio": 0.642868201656694
+      },
+      "delta_M1": {
+        "n": 50,
+        "mean_diff": 0.011041604728291998,
+        "se": 0.004619171454657455,
+        "wins_a": 31,
+        "wins_b": 19,
+        "ties": 0,
+        "verdict": "a",
+        "overlap_ratio": 1.0,
+        "se_adj": 0.004619171454657455,
+        "verdict_adj": "a"
+      },
+      "n_columns": 22
+    }
+  ],
+  "arms": {
+    "g0": {
+      "n_runs": 3,
+      "metrics": {
+        "pearson_delta": {
+          "mean": 0.5259501385748455,
+          "sample_sd": 0.035263073950451675
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.5205904327808116,
+          "sample_sd": 0.037707671199494315
+        },
+        "mse_top": {
+          "mean": 0.125148913712785,
+          "sample_sd": 0.01595101347467722
+        },
+        "r2_top": {
+          "mean": 0.7854943909677006,
+          "sample_sd": 0.02715296950503917
+        },
+        "pearson_delta_top": {
+          "mean": 0.6885531595739443,
+          "sample_sd": 0.049234170915186476
+        },
+        "direction_acc_top": {
+          "mean": 0.8610555555555554,
+          "sample_sd": 0.01796163607164923
+        },
+        "mse": {
+          "mean": 0.006509285881240592,
+          "sample_sd": 0.0004249808068684111
+        },
+        "delta_scale_ratio": {
+          "mean": 0.6553329191257706,
+          "sample_sd": 0.07193849523391321
+        }
+      },
+      "delta_M1": {
+        "mean": 0.04171986881165556,
+        "sample_sd": 0.03526307395045165
+      }
+    },
+    "g1": {
+      "n_runs": 3,
+      "metrics": {
+        "pearson_delta": {
+          "mean": 0.4909644279872097,
+          "sample_sd": 0.004435577781468558
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.4827188909284315,
+          "sample_sd": 0.004227168766255704
+        },
+        "mse_top": {
+          "mean": 0.13695056435960445,
+          "sample_sd": 0.002900261945796379
+        },
+        "r2_top": {
+          "mean": 0.7681717363483934,
+          "sample_sd": 0.0044174231765163295
+        },
+        "pearson_delta_top": {
+          "mean": 0.6371837239729928,
+          "sample_sd": 0.004509936292049516
+        },
+        "direction_acc_top": {
+          "mean": 0.8445555555555555,
+          "sample_sd": 0.00397678448181623
+        },
+        "mse": {
+          "mean": 0.00680374806459143,
+          "sample_sd": 7.789236237122883e-05
+        },
+        "delta_scale_ratio": {
+          "mean": 0.6171557126814763,
+          "sample_sd": 0.03675575561662054
+        }
+      },
+      "delta_M1": {
+        "mean": 0.006734158224019766,
+        "sample_sd": 0.004435577781468567
+      }
+    }
+  }
+}

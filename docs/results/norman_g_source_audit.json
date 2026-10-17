@@ -1,0 +1,1679 @@
+{
+  "dataset": "norman",
+  "generated_utc": "2026-10-17T15:50:34.422032+00:00",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "tables": [
+    "gene_annotation",
+    "gene_constraint",
+    "protein_annotation"
+  ],
+  "schemas": {
+    "gene_annotation": [
+      "gene_span_kb",
+      "n_transcripts",
+      "n_exons",
+      "transcript_length",
+      "cds_length",
+      "utr5_length",
+      "utr3_length",
+      "intron_length_kb",
+      "gc_cds",
+      "gc_utr3",
+      "gc_promoter",
+      "cpg_oe_promoter",
+      "n_upstream_atg",
+      "nearest_tss_kb",
+      "n_tss_within_100kb",
+      "aa_A",
+      "aa_C",
+      "aa_D",
+      "aa_E",
+      "aa_F",
+      "aa_G",
+      "aa_H",
+      "aa_I",
+      "aa_K",
+      "aa_L",
+      "aa_M",
+      "aa_N",
+      "aa_P",
+      "aa_Q",
+      "aa_R",
+      "aa_S",
+      "aa_T",
+      "aa_V",
+      "aa_W",
+      "aa_Y"
+    ],
+    "gene_constraint": [
+      "oe_lof",
+      "oe_lof_lower",
+      "oe_lof_upper",
+      "pLI",
+      "pNull",
+      "pRec",
+      "oe_mis",
+      "oe_mis_upper",
+      "mis_z",
+      "syn_z",
+      "lof_z",
+      "obs_lof",
+      "exp_lof",
+      "oe_lof_upper_bin"
+    ],
+    "protein_annotation": [
+      "protein_length",
+      "has_signal_peptide",
+      "signal_peptide_length",
+      "n_transmembrane",
+      "secreted",
+      "membrane",
+      "endoplasmic_reticulum",
+      "golgi",
+      "mitochondrion",
+      "nucleus",
+      "cytoplasm",
+      "lysosome",
+      "peroxisome"
+    ]
+  },
+  "limitations": [
+    "Source mentions are static direct text matches, as in the prescribed grep/check; they do not measure runtime use or resolve transitive/dynamic dependencies.",
+    "schema_column_literals are column-name strings present in source; numeric/dynamic indexing and flag/get/subscript expressions remain in key_accesses and the unchanged plugin sources. No guessed field mapping.",
+    "Total experiment counts are absent from the permitted .check receipts and are reported missing.",
+    "Every recorded planner is DeepSeek mixed=False, no exhaustion and empty external knowledge in the check receipts."
+  ],
+  "runs": [
+    {
+      "source": "g0_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/norman_g0_ds_w4_r0.check.txt",
+      "check_sha256": "686fd99d3f97bc77f8b53e7e1a7df2e77e88a84d8a29edc8c29597e1bbf9c1f2",
+      "check_text": "run: code baa7dfdbf1, 1231.0 s, seed 0, workers 4, data norman_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.422, planner $0.704\nselected EXP_0697 (ridge, 28 features) visible 0.6288936177606917\nfeatures reading gene_annotation: 0 []\nfeatures reading gene_constraint: 0 []\nfeatures reading protein_annotation: 0 []\nlargest planner state 15102 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 308,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_experiment": "EXP_0697",
+      "selected_total_features": 28,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [],
+      "largest_planner_state_chars": 15102,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g0_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/norman_g0_ds_w4_r2.check.txt",
+      "check_sha256": "3115961833f5ebc0cf2bbb84c24b257cf8e3597f63a7abab3896098a0caaf367",
+      "check_text": "run: code baa7dfdbf1, 1216.2 s, seed 2, workers 4, data norman_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.387, planner $0.720\nselected EXP_0787 (ridge, 18 features) visible 0.6433711390080543\nfeatures reading gene_annotation: 0 []\nfeatures reading gene_constraint: 0 []\nfeatures reading protein_annotation: 0 []\nlargest planner state 14045 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 318,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_experiment": "EXP_0787",
+      "selected_total_features": 18,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [],
+      "largest_planner_state_chars": 14045,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g0_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/norman_g0_ds_w4_r3.check.txt",
+      "check_sha256": "791df197b345776057515141680d8f2dc6ced16a5777f80f68d2ef923613718a",
+      "check_text": "run: code baa7dfdbf1, 1203.7 s, seed 3, workers 4, data norman_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.395, planner $0.644\nselected EXP_0737 (ridge, 19 features) visible 0.6275715218620986\nfeatures reading gene_annotation: 0 []\nfeatures reading gene_constraint: 0 []\nfeatures reading protein_annotation: 0 []\nlargest planner state 13907 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 260,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_experiment": "EXP_0737",
+      "selected_total_features": 19,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [],
+      "largest_planner_state_chars": 13907,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g1_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/norman_g1_ds_w4_r0.check.txt",
+      "check_sha256": "ece7f3cf99d30912b7bb39eae8d1ce1db37be911cb0c152d7f316fa6daa7e139",
+      "check_text": "run: code baa7dfdbf1, 1209.8 s, seed 0, workers 4, data norman_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.507, planner $0.684\nselected EXP_0745 (ridge, 11 features) visible 0.6338006323137072\nfeatures reading gene_annotation: 18 ['bidirectional_target_overlap_e582', 'bidirectional_target_proximity_e566', 'chromatin_proximity_to_target_e552', 'distance_to_nearest_target_tss_e182', 'distance_weighted_target_similarity_e204', 'gene_annotation_random_projection_e680', 'genomic_distance_weighted_neighbor_respo_e635', 'genomic_distance_weighted_response_simil_e581', 'nearest_target_neighbor_distance_e567', 'nearest_target_tss_distance_e189', 'pair_genomic_distance_e676', 'random_projection_annotation_target_simi_e692', 'target_gc_promoter_mean_e427', 'target_promoter_cpg_content_e180', 'target_promoter_cpg_density_e547', 'target_promoter_cpg_interaction_e161', 'target_promoter_cpg_oe_e191', 'target_response_similarity_weighted_by_g_e219']\nfeatures reading gene_constraint: 26 ['constraint_interaction_e462', 'constraint_weighted_additive_response_e415', 'constraint_weighted_target_mean_similari_e332', 'constraint_weighted_target_response_simi_e179', 'constraint_weighted_target_response_simi_e234', 'constraint_weighted_target_similarity_e2_e250', 'essentiality_weighted_response_similarit_e368', 'essentiality_weighted_response_similarit_e379', 'essentiality_weighted_response_similarit_e397', 'gene_annotation_random_projection_e680', 'loef_weighted_target_response_similarity_e287', 'loeuf_weighted_target_response_similarit_e664', 'loeuf_weighted_target_similarity_e262', 'lof_inverse_weighted_target_response_sim_e274', 'lof_response_similarity_interaction_e570', 'lof_weighted_neighbor_response_similarit_e471', 'lof_weighted_pair_additivity_residual_e1_e646', 'lof_weighted_random_projection_e478', 'lof_weighted_response_similarity_v2_e495', 'lof_weighted_target_response_similarity_e201']\nfeatures reading protein_annotation: 13 ['compartment_weighted_target_response_sim_e231', 'gene_annotation_random_projection_e680', 'protein_annotation_random_projection_e668', 'protein_feature_weighted_target_similari_e380', 'protein_length_weighted_target_similarit_e260', 'protein_length_weighted_target_similarit_e263', 'protein_localization_similarity_e475', 'protein_localization_similarity_e484', 'protein_localization_similarity_e661', 'random_projection_annotation_target_simi_e692', 'target_compartment_diversity_e73', 'target_mean_protein_length_e444', 'transmembrane_count_difference_e662']\nlargest planner state 15366 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 258,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 18,
+        "gene_constraint": 26,
+        "protein_annotation": 13
+      },
+      "selected_experiment": "EXP_0745",
+      "selected_total_features": 11,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [
+          "lof_weighted_target_response_similarity_e201"
+        ],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [
+        {
+          "feature": "lof_weighted_target_response_similarity_e201",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0/feature_store/lof_weighted_target_response_similarity_e201.py",
+          "sha256": "19b649462d9555e09fb3d2ab9e1e2863d27b9fc955ef091b157d19ffb3ffe0e9",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 27,
+              "expression": "params.get('weight_type', 'inverse_loeuf')",
+              "literal_key": "weight_type"
+            },
+            {
+              "line": 62,
+              "expression": "ctx.cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 76,
+              "expression": "cache[p]",
+              "literal_key": null
+            },
+            {
+              "line": 24,
+              "expression": "params.get('weight_type', 'inverse_loeuf')",
+              "literal_key": "weight_type"
+            },
+            {
+              "line": 26,
+              "expression": "ctx.cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 31,
+              "expression": "kn.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 32,
+              "expression": "kn.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 68,
+              "expression": "cache[p]",
+              "literal_key": null
+            },
+            {
+              "line": 34,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 38,
+              "expression": "cols.index('pLI')",
+              "literal_key": "pLI"
+            },
+            {
+              "line": 43,
+              "expression": "genes.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 97,
+              "expression": "ctx.gene_index.get(t)",
+              "literal_key": null
+            },
+            {
+              "line": 100,
+              "expression": "weights[ti]",
+              "literal_key": null
+            },
+            {
+              "line": 126,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 104,
+              "expression": "r.shape[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 108,
+              "expression": "rv[:m]",
+              "literal_key": null
+            },
+            {
+              "line": 108,
+              "expression": "r[:m]",
+              "literal_key": null
+            },
+            {
+              "line": 48,
+              "expression": "vals[i_pli]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "deltas[id_to_row[t]]",
+              "literal_key": null
+            },
+            {
+              "line": 106,
+              "expression": "r.shape[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 50,
+              "expression": "weights[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 52,
+              "expression": "vals[i_loeuf]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "id_to_row[t]",
+              "literal_key": null
+            },
+            {
+              "line": 54,
+              "expression": "weights[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 56,
+              "expression": "vals[i_pli]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "weights[gi]",
+              "literal_key": null
+            }
+          ]
+        }
+      ],
+      "largest_planner_state_chars": 15366,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g1_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/norman_g1_ds_w4_r2.check.txt",
+      "check_sha256": "3066db61fc9382ab62ffff19ce4e5876afa45fe962d48b7e33ba554a421d0379",
+      "check_text": "run: code baa7dfdbf1, 1207.9 s, seed 2, workers 4, data norman_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.420, planner $0.693\nselected EXP_0671 (ridge, 26 features) visible 0.6435525176175997\nfeatures reading gene_annotation: 33 ['target_aa_fraction_similarity_e341', 'target_annotation_random_projection_e488', 'target_bidirectional_count_e89', 'target_chromatin_accessibility_mean_e587', 'target_cpg_mean_nonlinear_e298', 'target_cpg_mean_times_additive_response_e375', 'target_cpg_promoter_times_additive_respo_e369', 'target_cpg_times_additive_response_e137', 'target_cpg_times_control_mean_e103', 'target_cpg_times_control_mean_e162', 'target_cpg_times_gene_gc_promoter_e115', 'target_cpg_times_target_similarity_respo_e174', 'target_cpg_variance_times_additive_e578', 'target_exon_count_times_additive_respons_e438', 'target_expression_variance_mean_e585', 'target_expression_variance_times_additiv_e596', 'target_g_cpg_overlap_e555', 'target_gc_cds_times_additive_response_e435', 'target_gc_promoter_times_additive_e482', 'target_gc_promoter_times_additive_e611']\nfeatures reading gene_constraint: 25 ['is_target_times_target_loeuf_e377', 'target_conservation_composite_e265', 'target_conservation_score_e276', 'target_conservation_times_additive_e558', 'target_constraint_response_e77', 'target_essentiality_times_additive_e319', 'target_essentiality_times_additive_respo_e450', 'target_gene_essentiality_product_e203', 'target_loeuf_mean_e85', 'target_loeuf_squared_times_additive_e505', 'target_loeuf_squared_times_additive_e569', 'target_loeuf_squared_times_additive_resp_e553', 'target_loeuf_times_additive_response_e104', 'target_loeuf_times_additive_response_v2_e415', 'target_loeuf_times_control_mean_e116', 'target_loeuf_times_control_mean_e163', 'target_loeuf_times_is_target_v2_e149', 'target_loeuf_times_nonadditivity_e331', 'target_loeuf_times_target_similarity_res_e173', 'target_loeuf_variance_times_additive_e651']\nfeatures reading protein_annotation: 30 ['is_target_times_target_protein_length_e118', 'target_compartment_count_times_additive__e470', 'target_compartment_diversity_e503', 'target_compartment_diversity_times_addit_e493', 'target_compartment_similarity_times_addi_e322', 'target_conservation_composite_e265', 'target_localization_additive_interaction_e138', 'target_localization_diversity_e277', 'target_localization_diversity_e397', 'target_localization_diversity_e413', 'target_localization_diversity_e430', 'target_localization_diversity_times_addi_e613', 'target_localization_entropy_e539', 'target_localization_entropy_times_additi_e520', 'target_membrane_fraction_times_additive__e441', 'target_nuclear_fraction_e86', 'target_nuclear_fraction_times_additive_r_e148', 'target_nuclear_fraction_times_additive_r_e159', 'target_nuclear_fraction_times_additive_r_e370', 'target_nuclear_fraction_times_additive_r_e384']\nlargest planner state 17111 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 315,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 33,
+        "gene_constraint": 25,
+        "protein_annotation": 30
+      },
+      "selected_experiment": "EXP_0671",
+      "selected_total_features": 26,
+      "selected_table_source_mentions": {
+        "gene_annotation": [
+          "target_bidirectional_count_e89",
+          "target_cpg_times_additive_response_e137",
+          "target_weighted_cpg_promoter_e459",
+          "target_neighbor_count_times_additive_e515",
+          "target_expression_variance_mean_e585"
+        ],
+        "gene_constraint": [
+          "target_loeuf_times_additive_response_e104"
+        ],
+        "protein_annotation": [
+          "target_protein_length_mean_e231"
+        ]
+      },
+      "selected_table_plugins": [
+        {
+          "feature": "target_bidirectional_count_e89",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_bidirectional_count_e89.py",
+          "sha256": "6612c505b3071264eadbf34ee6464e8bbc8834ac1a61abad3d67dd26fd220a3c",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": []
+          },
+          "key_accesses": [
+            {
+              "line": 37,
+              "expression": "ctx.cache['bidir_vec']",
+              "literal_key": "bidir_vec"
+            },
+            {
+              "line": 23,
+              "expression": "params.get('scale', 1.0)",
+              "literal_key": "scale"
+            },
+            {
+              "line": 36,
+              "expression": "ctx.cache['bidir_vec']",
+              "literal_key": "bidir_vec"
+            },
+            {
+              "line": 60,
+              "expression": "bidir_vec[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 61,
+              "expression": "corr[:, idx]",
+              "literal_key": null
+            },
+            {
+              "line": 73,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "corr[np.ix_(idx, idx)]",
+              "literal_key": null
+            },
+            {
+              "line": 30,
+              "expression": "bd.get('bidirectional', {})",
+              "literal_key": "bidirectional"
+            },
+            {
+              "line": 35,
+              "expression": "vec[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 48,
+              "expression": "cm[0]",
+              "literal_key": 0
+            }
+          ]
+        },
+        {
+          "feature": "target_loeuf_times_additive_response_e104",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_loeuf_times_additive_response_e104.py",
+          "sha256": "d23e771296d40ccb920cbc54e27ba25a0a6f803b543585eea07c79ac8e9a6745",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 77,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 26,
+              "expression": "add[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 44,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 60,
+              "expression": "kc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 61,
+              "expression": "kc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 28,
+              "expression": "add[:, None]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "loeuf.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 44,
+              "expression": "add[i]",
+              "literal_key": null
+            },
+            {
+              "line": 63,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 66,
+              "expression": "vals[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 76,
+              "expression": "m[sym]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_cpg_times_additive_response_e137",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_cpg_times_additive_response_e137.py",
+          "sha256": "43af4e147ef5993d6019f7440e0469fea8c2845f88537315ebad19d104798fdd",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 48,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 21,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 25,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 30,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 64,
+              "expression": "add[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 27,
+              "expression": "cols.index('cpg_oe_promoter')",
+              "literal_key": "cpg_oe_promoter"
+            },
+            {
+              "line": 66,
+              "expression": "add[:, None]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "add[i]",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "vals[ci]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "scores[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "cpg[finite]",
+              "literal_key": null
+            },
+            {
+              "line": 74,
+              "expression": "cpg_filled[tidx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_protein_length_mean_e231",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_protein_length_mean_e231.py",
+          "sha256": "5844a816bae6d6df686a73d7496eb9fe72cddf7bb7a52c097ca7967abe191b31",
+          "tables_mentioned": [
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "protein_length"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 20,
+              "expression": "annot.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 21,
+              "expression": "annot.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 43,
+              "expression": "cache['protein_length_map']",
+              "literal_key": "protein_length_map"
+            },
+            {
+              "line": 23,
+              "expression": "cols.index('protein_length')",
+              "literal_key": "protein_length"
+            },
+            {
+              "line": 42,
+              "expression": "cache['protein_length_map']",
+              "literal_key": "protein_length_map"
+            },
+            {
+              "line": 33,
+              "expression": "vals[pl_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "pl_map[g]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 41,
+              "expression": "pl_map[sym]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_weighted_cpg_promoter_e459",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_weighted_cpg_promoter_e459.py",
+          "sha256": "31a25e1d9b46f9024b144c7850dd0aec5435b99fc0a12f74a56a5f6480c4ed52",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 103,
+              "expression": "out[~np.isfinite(out)]",
+              "literal_key": null
+            },
+            {
+              "line": 25,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 26,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 52,
+              "expression": "add[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 63,
+              "expression": "ctx.genes[gene_col]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 101,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 28,
+              "expression": "cols.index('cpg_oe_promoter')",
+              "literal_key": "cpg_oe_promoter"
+            },
+            {
+              "line": 61,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 87,
+              "expression": "w[valid]",
+              "literal_key": null
+            },
+            {
+              "line": 88,
+              "expression": "cpg_vals[valid]",
+              "literal_key": null
+            },
+            {
+              "line": 96,
+              "expression": "cpg_vals[np.isfinite(cpg_vals)]",
+              "literal_key": null
+            },
+            {
+              "line": 101,
+              "expression": "add[i]",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "genes_map.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 73,
+              "expression": "deltas.shape[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 82,
+              "expression": "cpg[t]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "vals[cpg_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "cpg[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "deltas[j, gene_col]",
+              "literal_key": null
+            },
+            {
+              "line": 74,
+              "expression": "deltas[:, gene_col]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_neighbor_count_times_additive_e515",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_neighbor_count_times_additive_e515.py",
+          "sha256": "b860d0926ad4901d8f37943b67370e885bac999b0b7544c2710099be672d89ca",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": []
+          },
+          "key_accesses": [
+            {
+              "line": 52,
+              "expression": "cache['_neigh_count']",
+              "literal_key": "_neigh_count"
+            },
+            {
+              "line": 64,
+              "expression": "cache.get('_corr_deg')",
+              "literal_key": "_corr_deg"
+            },
+            {
+              "line": 51,
+              "expression": "cache['_neigh_count']",
+              "literal_key": "_neigh_count"
+            },
+            {
+              "line": 63,
+              "expression": "cache['_corr_deg']",
+              "literal_key": "_corr_deg"
+            },
+            {
+              "line": 84,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 24,
+              "expression": "add[:, :, None]",
+              "literal_key": null
+            },
+            {
+              "line": 31,
+              "expression": "cm[None, :, None]",
+              "literal_key": null
+            },
+            {
+              "line": 84,
+              "expression": "add[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 25,
+              "expression": "add.shape[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 25,
+              "expression": "add.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 39,
+              "expression": "kn.get('neighbours', {})",
+              "literal_key": "neighbours"
+            },
+            {
+              "line": 50,
+              "expression": "counts[g]",
+              "literal_key": null
+            },
+            {
+              "line": 70,
+              "expression": "ctx.gene_index[g]",
+              "literal_key": null
+            },
+            {
+              "line": 80,
+              "expression": "counts.get(g, 0)",
+              "literal_key": null
+            },
+            {
+              "line": 44,
+              "expression": "entry[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 45,
+              "expression": "entry[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 72,
+              "expression": "corr_deg[idx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_expression_variance_mean_e585",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_expression_variance_mean_e585.py",
+          "sha256": "4fd55437d8a28496a379772bb4cbf2e4d364fd8a6e22601a5dcd70e310d284f9",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "gene_span_kb",
+              "n_exons",
+              "transcript_length"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 79,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 29,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "idx.get('n_exons')",
+              "literal_key": "n_exons"
+            },
+            {
+              "line": 48,
+              "expression": "idx.get('transcript_length')",
+              "literal_key": "transcript_length"
+            },
+            {
+              "line": 49,
+              "expression": "idx.get('gene_span_kb')",
+              "literal_key": "gene_span_kb"
+            },
+            {
+              "line": 93,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "X.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 44,
+              "expression": "ann.get('genes')",
+              "literal_key": "genes"
+            },
+            {
+              "line": 45,
+              "expression": "ann.get('columns')",
+              "literal_key": "columns"
+            },
+            {
+              "line": 54,
+              "expression": "genes_tbl.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 69,
+              "expression": "seq[have]",
+              "literal_key": null
+            },
+            {
+              "line": 66,
+              "expression": "seq[j]",
+              "literal_key": null
+            },
+            {
+              "line": 67,
+              "expression": "have[j]",
+              "literal_key": null
+            },
+            {
+              "line": 88,
+              "expression": "var[idxs]",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "vals[i_exon]",
+              "literal_key": null
+            },
+            {
+              "line": 60,
+              "expression": "vals[i_exon]",
+              "literal_key": null
+            },
+            {
+              "line": 61,
+              "expression": "vals[i_tlen]",
+              "literal_key": null
+            },
+            {
+              "line": 63,
+              "expression": "vals[i_span]",
+              "literal_key": null
+            },
+            {
+              "line": 62,
+              "expression": "vals[i_tlen]",
+              "literal_key": null
+            },
+            {
+              "line": 64,
+              "expression": "vals[i_span]",
+              "literal_key": null
+            }
+          ]
+        }
+      ],
+      "largest_planner_state_chars": 17111,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g1_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/norman_g1_ds_w4_r3.check.txt",
+      "check_sha256": "36737a8390204e0efbdb2522b7a2bd7326c0f75e9c90284b11a7e48b3cb10e08",
+      "check_text": "run: code baa7dfdbf1, 1205.8 s, seed 3, workers 4, data norman_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.410, planner $0.634\nselected EXP_0652 (ridge, 17 features) visible 0.6273724193004856\nfeatures reading gene_annotation: 29 ['additive_response_x_target_cpg_oe_e523', 'additive_response_x_target_gc_cds_e575', 'additive_response_x_target_gc_promoter_e312', 'additive_response_x_target_n_transcripts_e220', 'additive_response_x_target_n_transcripts_e574', 'additive_response_x_target_promoter_cpg__e644', 'additive_response_x_target_promoter_cpg_e589', 'additive_response_x_target_promoter_gc_e447', 'bidirectional_promoter_overlap_e252', 'chromatin_state_similarity_with_target_e634', 'promoter_cpg_overlap_with_target_e519', 'promoter_motif_count_for_target_tf_e361', 'promoter_motif_divergence_to_target_e609', 'promoter_motif_similarity_to_target_e623', 'promoter_motif_similarity_with_target_e660', 'protein_domain_random_projection_e613', 'target_chromatin_accessibility_e590', 'target_cpg_island_overlap_e125_e139', 'target_cpg_promoter_e190', 'target_gene_cpg_similarity_e304']\nfeatures reading gene_constraint: 29 ['additive_response_x_constraint_e170_e182', 'additive_response_x_gene_constraint_e315', 'additive_response_x_gene_essentiality_e4_e399', 'additive_response_x_loeuf_e203', 'additive_response_x_target_conservation_e662', 'additive_response_x_target_constraint_e1_e138', 'additive_response_x_target_constraint_e302', 'additive_response_x_target_constraint_e360', 'additive_response_x_target_constraint_e81', 'additive_response_x_target_constraint_v2_e154', 'additive_response_x_target_constraint_v2_e171', 'additive_response_x_target_essentiality_e391', 'additive_response_x_target_essentiality_e419', 'additive_response_x_target_essentiality_e448', 'additive_response_x_target_essentiality_e658', 'additive_response_x_target_loeuf_e535', 'additive_response_x_target_lof_intoleran_e412', 'essentiality_interaction_e281', 'pair_target_constraint_aggregate_e433', 'pair_target_constraint_interaction_e242']\nfeatures reading protein_annotation: 26 ['additive_response_x_compartment_similari_e461', 'additive_response_x_log_target_protein_l_e466', 'additive_response_x_target_cytoplasm_e543', 'additive_response_x_target_membrane_e544', 'additive_response_x_target_membrane_secr_e559', 'additive_response_x_target_nuclear_cytop_e648', 'additive_response_x_target_nuclear_e542', 'additive_response_x_target_nuclear_local_e530', 'additive_response_x_target_protein_lengt_e442', 'additive_response_x_target_protein_lengt_e453', 'additive_response_x_target_protein_lengt_e657', 'additive_response_x_target_total_protein_e573', 'compartment_overlap_with_target_e82', 'compartment_overlap_with_target_v2_e170', 'pair_target_compartment_similarity_e431', 'protein_compartment_overlap_e77', 'protein_domain_random_projection_e613', 'protein_localization_similarity_e251', 'target_compartment_similarity_e121_e135', 'target_gene_compartment_overlap_e411']\nlargest planner state 16620 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 274,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 29,
+        "gene_constraint": 29,
+        "protein_annotation": 26
+      },
+      "selected_experiment": "EXP_0652",
+      "selected_total_features": 17,
+      "selected_table_source_mentions": {
+        "gene_annotation": [
+          "promoter_cpg_overlap_with_target_e519"
+        ],
+        "gene_constraint": [
+          "target_constraint_interaction_e91",
+          "pair_target_constraint_interaction_e242",
+          "pair_target_constraint_aggregate_e433"
+        ],
+        "protein_annotation": [
+          "additive_response_x_target_protein_lengt_e453",
+          "additive_response_x_target_nuclear_e542"
+        ]
+      },
+      "selected_table_plugins": [
+        {
+          "feature": "target_constraint_interaction_e91",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/target_constraint_interaction_e91.py",
+          "sha256": "991457f5a3b921572204c4fca9ded35a55f59ba225cc84be10901864c097f4b2",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 19,
+              "expression": "params.get('intolerance_metric', 'loeuf')",
+              "literal_key": "intolerance_metric"
+            },
+            {
+              "line": 25,
+              "expression": "ctx.cache[cache_key]",
+              "literal_key": null
+            },
+            {
+              "line": 87,
+              "expression": "ctx.cache[cache_key]",
+              "literal_key": null
+            },
+            {
+              "line": 95,
+              "expression": "out[i, idx, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 95,
+              "expression": "intol[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 30,
+              "expression": "kc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 31,
+              "expression": "kc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 33,
+              "expression": "columns.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 37,
+              "expression": "columns.index('pLI')",
+              "literal_key": "pLI"
+            },
+            {
+              "line": 42,
+              "expression": "genes_tbl.get(gname)",
+              "literal_key": null
+            },
+            {
+              "line": 76,
+              "expression": "intol[valid]",
+              "literal_key": null
+            },
+            {
+              "line": 77,
+              "expression": "intol[valid]",
+              "literal_key": null
+            },
+            {
+              "line": 48,
+              "expression": "vals[i_loeuf]",
+              "literal_key": null
+            },
+            {
+              "line": 55,
+              "expression": "vals[i_pli]",
+              "literal_key": null
+            },
+            {
+              "line": 64,
+              "expression": "intol[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 69,
+              "expression": "intol[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 66,
+              "expression": "intol[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 71,
+              "expression": "intol[gi]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "pair_target_constraint_interaction_e242",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/pair_target_constraint_interaction_e242.py",
+          "sha256": "f3187f113a2cfba20e021c56564d41a906a69e417c0060e8860bd070585d8545",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 74,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 78,
+              "expression": "params.get('agg', 'min')",
+              "literal_key": "agg"
+            },
+            {
+              "line": 79,
+              "expression": "params.get('multiplier', 'additive_response')",
+              "literal_key": "multiplier"
+            },
+            {
+              "line": 28,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "knowledge.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 34,
+              "expression": "knowledge.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 101,
+              "expression": "norm[g]",
+              "literal_key": null
+            },
+            {
+              "line": 118,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "row[oe_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 56,
+              "expression": "gene_vals[g]",
+              "literal_key": null
+            },
+            {
+              "line": 95,
+              "expression": "add_resp[:, :, None]",
+              "literal_key": null
+            },
+            {
+              "line": 106,
+              "expression": "scores[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 121,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 124,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 72,
+              "expression": "norm[g]",
+              "literal_key": null
+            },
+            {
+              "line": 96,
+              "expression": "add_resp.shape[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 96,
+              "expression": "add_resp.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 117,
+              "expression": "mask[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 121,
+              "expression": "add_resp[i, :, 0]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "pair_target_constraint_aggregate_e433",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/pair_target_constraint_aggregate_e433.py",
+          "sha256": "f043a950304e50ac5c1003ff0d74b631c8ff864329ec92c9f24ba97bf4707ac7",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 24,
+              "expression": "params.get('constraint_metric', 'loeuf')",
+              "literal_key": "constraint_metric"
+            },
+            {
+              "line": 77,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 81,
+              "expression": "params.get('aggregation', 'min')",
+              "literal_key": "aggregation"
+            },
+            {
+              "line": 19,
+              "expression": "params.get('constraint_metric', 'loeuf')",
+              "literal_key": "constraint_metric"
+            },
+            {
+              "line": 22,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 29,
+              "expression": "kd.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 30,
+              "expression": "kd.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 110,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 38,
+              "expression": "cols.index(col)",
+              "literal_key": null
+            },
+            {
+              "line": 91,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 55,
+              "expression": "raw[g]",
+              "literal_key": null
+            },
+            {
+              "line": 98,
+              "expression": "vals[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 44,
+              "expression": "vals[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 93,
+              "expression": "scores[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "scores[ctx.gene_index[g]]",
+              "literal_key": null
+            },
+            {
+              "line": 73,
+              "expression": "scores[ctx.gene_index[g]]",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "ctx.gene_index[g]",
+              "literal_key": null
+            },
+            {
+              "line": 73,
+              "expression": "ctx.gene_index[g]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "additive_response_x_target_protein_lengt_e453",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/additive_response_x_target_protein_lengt_e453.py",
+          "sha256": "4d6a4242d2a6199b0ba3dfbd7b0e8ca523e107b5082b388084c42199bfa03f4d",
+          "tables_mentioned": [
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "protein_length"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 66,
+              "expression": "cache.get(key)",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "add[:, :, None]",
+              "literal_key": null
+            },
+            {
+              "line": 39,
+              "expression": "pa.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 40,
+              "expression": "pa.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 76,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 79,
+              "expression": "mean_map.get(p, 0.0)",
+              "literal_key": null
+            },
+            {
+              "line": 80,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 42,
+              "expression": "cols.index('protein_length')",
+              "literal_key": "protein_length"
+            },
+            {
+              "line": 80,
+              "expression": "add[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "vals[pl_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "prot_len[g]",
+              "literal_key": null
+            },
+            {
+              "line": 71,
+              "expression": "prot_len[g]",
+              "literal_key": null
+            },
+            {
+              "line": 73,
+              "expression": "mean_map[p]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "mean_map[p]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "promoter_cpg_overlap_with_target_e519",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/promoter_cpg_overlap_with_target_e519.py",
+          "sha256": "65f6e870b0e5a710aaa4c95ea30c2d84fa7b9b45c8306ef122cecc7bf26b4c24",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 51,
+              "expression": "ctx.cache['e519_cache']",
+              "literal_key": "e519_cache"
+            },
+            {
+              "line": 70,
+              "expression": "cache['tss']",
+              "literal_key": "tss"
+            },
+            {
+              "line": 71,
+              "expression": "cache['cpg']",
+              "literal_key": "cpg"
+            },
+            {
+              "line": 20,
+              "expression": "ctx.cache['e519_cache']",
+              "literal_key": "e519_cache"
+            },
+            {
+              "line": 68,
+              "expression": "params.get('window_bp', 2000)",
+              "literal_key": "window_bp"
+            },
+            {
+              "line": 77,
+              "expression": "tss.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 80,
+              "expression": "gene_cpg[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 102,
+              "expression": "gene_tss[valid]",
+              "literal_key": null
+            },
+            {
+              "line": 106,
+              "expression": "out[i, valid, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 24,
+              "expression": "ann.get('loci', {})",
+              "literal_key": "loci"
+            },
+            {
+              "line": 25,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 26,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 34,
+              "expression": "loci.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 50,
+              "expression": "cache['cpg'][g]",
+              "literal_key": null
+            },
+            {
+              "line": 79,
+              "expression": "gene_tss[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 80,
+              "expression": "cpg.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 40,
+              "expression": "loc[2]",
+              "literal_key": 2
+            },
+            {
+              "line": 47,
+              "expression": "genes_tab.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 50,
+              "expression": "cache['cpg']",
+              "literal_key": "cpg"
+            },
+            {
+              "line": 91,
+              "expression": "gene_cpg[ti]",
+              "literal_key": null
+            },
+            {
+              "line": 104,
+              "expression": "g_tss[:, None]",
+              "literal_key": null
+            },
+            {
+              "line": 104,
+              "expression": "tgt_tss[None, :]",
+              "literal_key": null
+            },
+            {
+              "line": 42,
+              "expression": "cache['tss'][g]",
+              "literal_key": null
+            },
+            {
+              "line": 43,
+              "expression": "cache['strand'][g]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "row[cpg_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 91,
+              "expression": "gene_tss[ti]",
+              "literal_key": null
+            },
+            {
+              "line": 92,
+              "expression": "gene_tss[ti]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "loc[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 42,
+              "expression": "cache['tss']",
+              "literal_key": "tss"
+            },
+            {
+              "line": 43,
+              "expression": "cache['strand']",
+              "literal_key": "strand"
+            }
+          ]
+        },
+        {
+          "feature": "additive_response_x_target_nuclear_e542",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/additive_response_x_target_nuclear_e542.py",
+          "sha256": "90f2c231bb3f5ac6c2825f71ad75c1e0810e965cbc2ce017187bedc9256966ef",
+          "tables_mentioned": [
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "nucleus"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 58,
+              "expression": "out[~np.isfinite(out)]",
+              "literal_key": null
+            },
+            {
+              "line": 23,
+              "expression": "add[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 30,
+              "expression": "pa['columns']",
+              "literal_key": "columns"
+            },
+            {
+              "line": 56,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 32,
+              "expression": "cols.index('nucleus')",
+              "literal_key": "nucleus"
+            },
+            {
+              "line": 36,
+              "expression": "pa['genes']",
+              "literal_key": "genes"
+            },
+            {
+              "line": 56,
+              "expression": "add[i]",
+              "literal_key": null
+            },
+            {
+              "line": 38,
+              "expression": "genes_dict.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 41,
+              "expression": "vals[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 45,
+              "expression": "nuclear_flag[col]",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "nuclear_flag[tgt_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "nuclear_flag[col]",
+              "literal_key": null
+            }
+          ]
+        }
+      ],
+      "largest_planner_state_chars": 16620,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    }
+  ]
+}

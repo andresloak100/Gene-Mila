@@ -1,0 +1,2819 @@
+{
+  "dataset": "norman",
+  "created_utc": "2026-10-17T15:50:14.005382+00:00",
+  "scope": "PLAN_G reading3: six fixed separate run-only sealed calls; fifth Norman reading after B1/B2/B4/F, worn and indicative",
+  "limitation": "No cross-arm sealed test, selection, feature/model/hyperparameter change or fresh-test/CellForge victory claim. Categories n<10 reported, not interpreted.",
+  "runs": [
+    {
+      "source": "g0_r0",
+      "run": "norman_g0_ds_w4_r0",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "selected_experiment": "EXP_0697",
+      "start_experiment": "EXP_0007",
+      "selected_metrics": {
+        "rmse": 0.07203882359325846,
+        "mae": 0.048270655281175384,
+        "mse": 0.005189592104700612,
+        "pearson_delta": 0.7205716606386202,
+        "pearson_delta_top": 0.7949307148535111,
+        "direction_acc_top": 0.9098214285714287,
+        "mse_top": 0.11026204335133295,
+        "r2_top": 0.8580700733230598,
+        "pearson_expr": 0.9891607521840344,
+        "pearson_delta_nontarget": 0.7115473755888203,
+        "primary": 0.7205716606386202,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6185546289745278,
+              "sd": 0.23013969295280362
+            },
+            "pearson_delta_top": {
+              "mean": 0.6300520211946995,
+              "sd": 0.37948039701582914
+            },
+            "direction_acc_top": {
+              "mean": 0.88125,
+              "sd": 0.14865468134476723
+            },
+            "mse_top": {
+              "mean": 0.3086776046001222,
+              "sd": 0.20215912585150492
+            },
+            "r2_top": {
+              "mean": 0.6711923616067506,
+              "sd": 0.16805615520532036
+            },
+            "pearson_expr": {
+              "mean": 0.9803864068990433,
+              "sd": 0.006968271417541814
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6158942109076345,
+              "sd": 0.2330747781168193
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.851612557721233,
+              "sd": 0.1334923659544105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9343267562046262,
+              "sd": 0.09672154612355693
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.04465760847047225
+            },
+            "mse_top": {
+              "mean": 0.06750873020866896,
+              "sd": 0.06841787247917254
+            },
+            "r2_top": {
+              "mean": 0.886297936684467,
+              "sd": 0.13813778733329612
+            },
+            "pearson_expr": {
+              "mean": 0.9904841066876757,
+              "sd": 0.005025286590119948
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8482053746050922,
+              "sd": 0.13939184668968985
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8414581341220855,
+              "sd": 0.11492861117718581
+            },
+            "pearson_delta_top": {
+              "mean": 0.9534558467689658,
+              "sd": 0.025056739538185217
+            },
+            "direction_acc_top": {
+              "mean": 0.99,
+              "sd": 0.022360679774997918
+            },
+            "mse_top": {
+              "mean": 0.0491125912027744,
+              "sd": 0.0275599143642424
+            },
+            "r2_top": {
+              "mean": 0.9600325075365909,
+              "sd": 0.020607025155267897
+            },
+            "pearson_expr": {
+              "mean": 0.9898075838942898,
+              "sd": 0.006211483752713056
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.7803726180348693,
+              "sd": 0.24987931285165874
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5126716396801749,
+              "sd": 0.3260958129952671
+            },
+            "pearson_delta_top": {
+              "mean": 0.5926001381793304,
+              "sd": 0.42851399912111443
+            },
+            "direction_acc_top": {
+              "mean": 0.7875,
+              "sd": 0.19621416870348585
+            },
+            "mse_top": {
+              "mean": 0.10230968245160833,
+              "sd": 0.09602978020634095
+            },
+            "r2_top": {
+              "mean": 0.8720111490671116,
+              "sd": 0.1236581462787152
+            },
+            "pearson_expr": {
+              "mean": 0.9911126291921803,
+              "sd": 0.007932031473498264
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5072556963250645,
+              "sd": 0.33303167782055915
+            }
+          }
+        }
+      },
+      "start_metrics": {
+        "rmse": 0.0736072002765097,
+        "mae": 0.049242874573633785,
+        "mse": 0.005418019932546211,
+        "pearson_delta": 0.7161239557215406,
+        "pearson_delta_top": 0.7876461940326257,
+        "direction_acc_top": 0.9160714285714285,
+        "mse_top": 0.11739655331349022,
+        "r2_top": 0.8516350500580112,
+        "pearson_expr": 0.9885373060487631,
+        "pearson_delta_nontarget": 0.7096685400509034,
+        "primary": 0.7161239557215406,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6197061824576452,
+              "sd": 0.2281196092129948
+            },
+            "pearson_delta_top": {
+              "mean": 0.6323862421361646,
+              "sd": 0.36822308216918304
+            },
+            "direction_acc_top": {
+              "mean": 0.8875,
+              "sd": 0.15059406173077156
+            },
+            "mse_top": {
+              "mean": 0.29566781193890374,
+              "sd": 0.192490852459031
+            },
+            "r2_top": {
+              "mean": 0.6847061163299282,
+              "sd": 0.164304403922673
+            },
+            "pearson_expr": {
+              "mean": 0.9809209110998025,
+              "sd": 0.006326334289070972
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157818850256103,
+              "sd": 0.23376590482306508
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8341209415576818,
+              "sd": 0.12372676003055386
+            },
+            "pearson_delta_top": {
+              "mean": 0.919448366797728,
+              "sd": 0.09256889446674596
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.037648093143994935
+            },
+            "mse_top": {
+              "mean": 0.08640666267265987,
+              "sd": 0.0727915741076266
+            },
+            "r2_top": {
+              "mean": 0.86887878731731,
+              "sd": 0.1381110296823444
+            },
+            "pearson_expr": {
+              "mean": 0.9890479250699931,
+              "sd": 0.005515928074285944
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8310899852153546,
+              "sd": 0.13184442475118366
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8903929165935477,
+              "sd": 0.017987162298742105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9626466004754441,
+              "sd": 0.017924290579060413
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047043465690737085,
+              "sd": 0.03989548173620584
+            },
+            "r2_top": {
+              "mean": 0.9609509963634497,
+              "sd": 0.03235514528734495
+            },
+            "pearson_expr": {
+              "mean": 0.9898126463758581,
+              "sd": 0.008453255525529158
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8570691233842329,
+              "sd": 0.09298641968821189
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5107538784824984,
+              "sd": 0.3267439511810834
+            },
+            "pearson_delta_top": {
+              "mean": 0.5881723764263654,
+              "sd": 0.43874261617350263
+            },
+            "direction_acc_top": {
+              "mean": 0.803125,
+              "sd": 0.20693698718853204
+            },
+            "mse_top": {
+              "mean": 0.10254170433929508,
+              "sd": 0.0963355809965025
+            },
+            "r2_top": {
+              "mean": 0.8718394770765366,
+              "sd": 0.12374596037718882
+            },
+            "pearson_expr": {
+              "mean": 0.9910852900727005,
+              "sd": 0.007925895543907475
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5056504965568726,
+              "sd": 0.33274683579957637
+            }
+          }
+        }
+      },
+      "selected_vs_start": {
+        "n": 56,
+        "mean_diff": 0.004447704917079745,
+        "se": 0.007531009753309156,
+        "wins_a": 39,
+        "wins_b": 17,
+        "ties": 0,
+        "verdict": "none",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": -0.0011515534831174276,
+            "se": 0.0007403054778821738,
+            "wins_a": 3,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.01749161616355155,
+            "se": 0.012848745041252739,
+            "wins_a": 23,
+            "wins_b": 4,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.04893478247146223,
+            "se": 0.04436779260388306,
+            "wins_a": 2,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.0019177611976765301,
+            "se": 0.0009036849626942682,
+            "wins_a": 11,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "a"
+          }
+        }
+      },
+      "selected_vs_additive": {
+        "n": 56,
+        "mean_diff": 0.007979584864687136,
+        "se": 0.00665391126598599,
+        "wins_a": 39,
+        "wins_b": 17,
+        "ties": 0,
+        "verdict": "none",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.005719979587839964,
+            "se": 0.0024983231846217656,
+            "wins_a": 7,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.016481394979904737,
+            "se": 0.010663677571782633,
+            "wins_a": 21,
+            "wins_b": 6,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.03719923687438893,
+            "se": 0.04375145293732332,
+            "wins_a": 2,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.00888096472714229,
+            "se": 0.00487080862566039,
+            "wins_a": 9,
+            "wins_b": 7,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_stored": {
+        "pearson_delta": 0.7205716606386202,
+        "cellforge_mse_de": 0.10261333489361682,
+        "cellforge_pcc_de": 0.9400060033928482,
+        "cellforge_r2_de": 0.8488320743382246
+      },
+      "additive_stored": {
+        "pearson_delta": 0.7125920757739331,
+        "cellforge_mse_de": 0.10157863005339843,
+        "cellforge_pcc_de": 0.9411594512618892,
+        "cellforge_r2_de": 0.846266496815894
+      },
+      "protocol": {
+        "metric": "pearson_delta",
+        "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+        "min_read": 10,
+        "expected": null,
+        "sealed_scorings": 4,
+        "first_sealed_scorings": [
+          "norman_g0_ds_w4_r0:EXP_0007"
+        ]
+      },
+      "matches_stored": [
+        true,
+        null,
+        true,
+        true
+      ],
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 53,
+            "queued": 493
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "first_sealed_scorings": [
+        "norman_g0_ds_w4_r0:EXP_0007"
+      ],
+      "category_reporting": {
+        "pair_seen0": {
+          "n": 8,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "pair_seen1": {
+          "n": 27,
+          "read": true,
+          "limitation": "worn indicative reading"
+        },
+        "pair_seen2": {
+          "n": 5,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "single": {
+          "n": 16,
+          "read": true,
+          "limitation": "worn indicative reading"
+        }
+      },
+      "report_sha256": "92f62b2f66e7281c351c6adaeae10aa1dea4198bfc360ef1928461aebe04f737"
+    },
+    {
+      "source": "g0_r2",
+      "run": "norman_g0_ds_w4_r2",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "selected_experiment": "EXP_0787",
+      "start_experiment": "EXP_0007",
+      "selected_metrics": {
+        "rmse": 0.07417963055097558,
+        "mae": 0.05005604806305574,
+        "mse": 0.005502617588679229,
+        "pearson_delta": 0.7192373010051486,
+        "pearson_delta_top": 0.7912377939595212,
+        "direction_acc_top": 0.9035714285714286,
+        "mse_top": 0.11758552931696621,
+        "r2_top": 0.8511162811442737,
+        "pearson_expr": 0.9885573114821274,
+        "pearson_delta_nontarget": 0.7115658857749736,
+        "primary": 0.7192373010051486,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6201920497370441,
+              "sd": 0.2315529579440581
+            },
+            "pearson_delta_top": {
+              "mean": 0.6281118746530105,
+              "sd": 0.36596544088137234
+            },
+            "direction_acc_top": {
+              "mean": 0.8625,
+              "sd": 0.15294723646688468
+            },
+            "mse_top": {
+              "mean": 0.3007919117576267,
+              "sd": 0.19509009530979063
+            },
+            "r2_top": {
+              "mean": 0.6795504481669036,
+              "sd": 0.16321975451520132
+            },
+            "pearson_expr": {
+              "mean": 0.9809143650142601,
+              "sd": 0.006593589273559893
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157185324777266,
+              "sd": 0.23893487552902745
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8388516589231059,
+              "sd": 0.12461002771412844
+            },
+            "pearson_delta_top": {
+              "mean": 0.9203818844603122,
+              "sd": 0.0963191490291822
+            },
+            "direction_acc_top": {
+              "mean": 0.9722222222222222,
+              "sd": 0.04236592728681617
+            },
+            "mse_top": {
+              "mean": 0.08285852232699768,
+              "sd": 0.06883538886775413
+            },
+            "r2_top": {
+              "mean": 0.8718539707194327,
+              "sd": 0.13558567763281168
+            },
+            "pearson_expr": {
+              "mean": 0.9891263895290798,
+              "sd": 0.005852408727746223
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8360864782760108,
+              "sd": 0.1316912632486893
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8826065912604136,
+              "sd": 0.010700242409425327
+            },
+            "pearson_delta_top": {
+              "mean": 0.9620841998999173,
+              "sd": 0.015308977753144434
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047909839713857684,
+              "sd": 0.035824935751127926
+            },
+            "r2_top": {
+              "mean": 0.9601582693603401,
+              "sd": 0.029353119755124214
+            },
+            "pearson_expr": {
+              "mean": 0.9893377838882447,
+              "sd": 0.008439687209138501
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8415537682118766,
+              "sd": 0.10020270215303949
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5158577944478778,
+              "sd": 0.32269937318106867
+            },
+            "pearson_delta_top": {
+              "mean": 0.6014805990363177,
+              "sd": 0.40632735052524543
+            },
+            "direction_acc_top": {
+              "mean": 0.778125,
+              "sd": 0.2089407810840191
+            },
+            "mse_top": {
+              "mean": 0.10635781539317925,
+              "sd": 0.10157087756968011
+            },
+            "r2_top": {
+              "mean": 0.8678287251573578,
+              "sd": 0.12813035645722065
+            },
+            "pearson_expr": {
+              "mean": 0.991174567884918,
+              "sd": 0.008881328541370798
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5087398493165648,
+              "sd": 0.333634123794391
+            }
+          }
+        }
+      },
+      "start_metrics": {
+        "rmse": 0.0736072002765097,
+        "mae": 0.049242874573633785,
+        "mse": 0.005418019932546211,
+        "pearson_delta": 0.7161239557215406,
+        "pearson_delta_top": 0.7876461940326257,
+        "direction_acc_top": 0.9160714285714285,
+        "mse_top": 0.11739655331349022,
+        "r2_top": 0.8516350500580112,
+        "pearson_expr": 0.9885373060487631,
+        "pearson_delta_nontarget": 0.7096685400509034,
+        "primary": 0.7161239557215406,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6197061824576452,
+              "sd": 0.2281196092129948
+            },
+            "pearson_delta_top": {
+              "mean": 0.6323862421361646,
+              "sd": 0.36822308216918304
+            },
+            "direction_acc_top": {
+              "mean": 0.8875,
+              "sd": 0.15059406173077156
+            },
+            "mse_top": {
+              "mean": 0.29566781193890374,
+              "sd": 0.192490852459031
+            },
+            "r2_top": {
+              "mean": 0.6847061163299282,
+              "sd": 0.164304403922673
+            },
+            "pearson_expr": {
+              "mean": 0.9809209110998025,
+              "sd": 0.006326334289070972
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157818850256103,
+              "sd": 0.23376590482306508
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8341209415576818,
+              "sd": 0.12372676003055386
+            },
+            "pearson_delta_top": {
+              "mean": 0.919448366797728,
+              "sd": 0.09256889446674596
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.037648093143994935
+            },
+            "mse_top": {
+              "mean": 0.08640666267265987,
+              "sd": 0.0727915741076266
+            },
+            "r2_top": {
+              "mean": 0.86887878731731,
+              "sd": 0.1381110296823444
+            },
+            "pearson_expr": {
+              "mean": 0.9890479250699931,
+              "sd": 0.005515928074285944
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8310899852153546,
+              "sd": 0.13184442475118366
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8903929165935477,
+              "sd": 0.017987162298742105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9626466004754441,
+              "sd": 0.017924290579060413
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047043465690737085,
+              "sd": 0.03989548173620584
+            },
+            "r2_top": {
+              "mean": 0.9609509963634497,
+              "sd": 0.03235514528734495
+            },
+            "pearson_expr": {
+              "mean": 0.9898126463758581,
+              "sd": 0.008453255525529158
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8570691233842329,
+              "sd": 0.09298641968821189
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5107538784824984,
+              "sd": 0.3267439511810834
+            },
+            "pearson_delta_top": {
+              "mean": 0.5881723764263654,
+              "sd": 0.43874261617350263
+            },
+            "direction_acc_top": {
+              "mean": 0.803125,
+              "sd": 0.20693698718853204
+            },
+            "mse_top": {
+              "mean": 0.10254170433929508,
+              "sd": 0.0963355809965025
+            },
+            "r2_top": {
+              "mean": 0.8718394770765366,
+              "sd": 0.12374596037718882
+            },
+            "pearson_expr": {
+              "mean": 0.9910852900727005,
+              "sd": 0.007925895543907475
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5056504965568726,
+              "sd": 0.33274683579957637
+            }
+          }
+        }
+      },
+      "selected_vs_start": {
+        "n": 56,
+        "mean_diff": 0.0031133452836079973,
+        "se": 0.0018445777352688233,
+        "wins_a": 27,
+        "wins_b": 29,
+        "ties": 0,
+        "verdict": "none",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.0004858672793989008,
+            "se": 0.00161626317525539,
+            "wins_a": 4,
+            "wins_b": 4,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.004730717365424296,
+            "se": 0.003331903937115426,
+            "wins_a": 14,
+            "wins_b": 13,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.007786325333133992,
+            "se": 0.0033621180888641147,
+            "wins_a": 1,
+            "wins_b": 4,
+            "ties": 0,
+            "verdict": "b"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.005103915965379414,
+            "se": 0.0025254128104960846,
+            "wins_a": 8,
+            "wins_b": 8,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_vs_additive": {
+        "n": 56,
+        "mean_diff": 0.006645225231215389,
+        "se": 0.002011549256222158,
+        "wins_a": 40,
+        "wins_b": 16,
+        "ties": 0,
+        "verdict": "a",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.007357400350356293,
+            "se": 0.002140298748552734,
+            "wins_a": 7,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.003720496181777485,
+            "se": 0.001774227488784304,
+            "wins_a": 21,
+            "wins_b": 6,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": 0.003949220263939313,
+            "se": 0.0036064123775545985,
+            "wins_a": 3,
+            "wins_b": 2,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.012067119494845175,
+            "se": 0.006121859880773623,
+            "wins_a": 9,
+            "wins_b": 7,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_stored": {
+        "pearson_delta": 0.7192373010051486,
+        "cellforge_mse_de": 0.10904597769082215,
+        "cellforge_pcc_de": 0.9370445396035688,
+        "cellforge_r2_de": 0.8434429195056473
+      },
+      "additive_stored": {
+        "pearson_delta": 0.7125920757739331,
+        "cellforge_mse_de": 0.10157863005339843,
+        "cellforge_pcc_de": 0.9411594512618892,
+        "cellforge_r2_de": 0.846266496815894
+      },
+      "protocol": {
+        "metric": "pearson_delta",
+        "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+        "min_read": 10,
+        "expected": null,
+        "sealed_scorings": 4,
+        "first_sealed_scorings": [
+          "norman_g0_ds_w4_r2:EXP_0007"
+        ]
+      },
+      "matches_stored": [
+        true,
+        null,
+        true,
+        true
+      ],
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 56,
+            "queued": 547
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "first_sealed_scorings": [
+        "norman_g0_ds_w4_r2:EXP_0007"
+      ],
+      "category_reporting": {
+        "pair_seen0": {
+          "n": 8,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "pair_seen1": {
+          "n": 27,
+          "read": true,
+          "limitation": "worn indicative reading"
+        },
+        "pair_seen2": {
+          "n": 5,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "single": {
+          "n": 16,
+          "read": true,
+          "limitation": "worn indicative reading"
+        }
+      },
+      "report_sha256": "fe9a05d9c3b982c95f65aa1cac5e4fb5aadc3cf5e8f8ade2141f0c6ca5648509"
+    },
+    {
+      "source": "g0_r3",
+      "run": "norman_g0_ds_w4_r3",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "selected_experiment": "EXP_0737",
+      "start_experiment": "EXP_0007",
+      "selected_metrics": {
+        "rmse": 0.07350114467040894,
+        "mae": 0.049498865130186545,
+        "mse": 0.005402418267860384,
+        "pearson_delta": 0.7181528963761016,
+        "pearson_delta_top": 0.7893487281048799,
+        "direction_acc_top": 0.9124999999999999,
+        "mse_top": 0.11024058022406304,
+        "r2_top": 0.8587701619838484,
+        "pearson_expr": 0.988783372451354,
+        "pearson_delta_nontarget": 0.7113817441231397,
+        "primary": 0.7181528963761016,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6183974184757033,
+              "sd": 0.2327302955291058
+            },
+            "pearson_delta_top": {
+              "mean": 0.6324154677490053,
+              "sd": 0.3660138834945436
+            },
+            "direction_acc_top": {
+              "mean": 0.90625,
+              "sd": 0.16132819255878905
+            },
+            "mse_top": {
+              "mean": 0.2778649792385004,
+              "sd": 0.1848534902150372
+            },
+            "r2_top": {
+              "mean": 0.6992988122786834,
+              "sd": 0.17017151414263473
+            },
+            "pearson_expr": {
+              "mean": 0.9808271209995031,
+              "sd": 0.006055473048610839
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6138466293751463,
+              "sd": 0.23921739473025314
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8399414635118208,
+              "sd": 0.12240297019396114
+            },
+            "pearson_delta_top": {
+              "mean": 0.9214276810370721,
+              "sd": 0.09770507482620285
+            },
+            "direction_acc_top": {
+              "mean": 0.9722222222222222,
+              "sd": 0.04236592728681617
+            },
+            "mse_top": {
+              "mean": 0.07682182898931389,
+              "sd": 0.06712323547018029
+            },
+            "r2_top": {
+              "mean": 0.8794026835001792,
+              "sd": 0.13408444367398278
+            },
+            "pearson_expr": {
+              "mean": 0.9894626861685639,
+              "sd": 0.0049187521389387175
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8370432327632829,
+              "sd": 0.13099834663911433
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8676062825103947,
+              "sd": 0.04212634967436017
+            },
+            "pearson_delta_top": {
+              "mean": 0.9473886998939103,
+              "sd": 0.013031140288178138
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.0507435990686117,
+              "sd": 0.027376126037010607
+            },
+            "r2_top": {
+              "mean": 0.9583405912938343,
+              "sd": 0.021578582690886854
+            },
+            "pearson_expr": {
+              "mean": 0.9900831476861303,
+              "sd": 0.0063538855566307615
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8339941915781273,
+              "sd": 0.11634584480747692
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5158082451178078,
+              "sd": 0.32765845637221713
+            },
+            "pearson_delta_top": {
+              "mean": 0.5955446340256713,
+              "sd": 0.4303289599944375
+            },
+            "direction_acc_top": {
+              "mean": 0.7875,
+              "sd": 0.20371548787463362
+            },
+            "mse_top": {
+              "mean": 0.10141533003656215,
+              "sd": 0.09473712499769231
+            },
+            "r2_top": {
+              "mean": 0.8725726976182517,
+              "sd": 0.12356344349436449
+            },
+            "pearson_expr": {
+              "mean": 0.9912089765186194,
+              "sd": 0.007841690365509682
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5097791495872112,
+              "sd": 0.33465793679521283
+            }
+          }
+        }
+      },
+      "start_metrics": {
+        "rmse": 0.0736072002765097,
+        "mae": 0.049242874573633785,
+        "mse": 0.005418019932546211,
+        "pearson_delta": 0.7161239557215406,
+        "pearson_delta_top": 0.7876461940326257,
+        "direction_acc_top": 0.9160714285714285,
+        "mse_top": 0.11739655331349022,
+        "r2_top": 0.8516350500580112,
+        "pearson_expr": 0.9885373060487631,
+        "pearson_delta_nontarget": 0.7096685400509034,
+        "primary": 0.7161239557215406,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6197061824576452,
+              "sd": 0.2281196092129948
+            },
+            "pearson_delta_top": {
+              "mean": 0.6323862421361646,
+              "sd": 0.36822308216918304
+            },
+            "direction_acc_top": {
+              "mean": 0.8875,
+              "sd": 0.15059406173077156
+            },
+            "mse_top": {
+              "mean": 0.29566781193890374,
+              "sd": 0.192490852459031
+            },
+            "r2_top": {
+              "mean": 0.6847061163299282,
+              "sd": 0.164304403922673
+            },
+            "pearson_expr": {
+              "mean": 0.9809209110998025,
+              "sd": 0.006326334289070972
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157818850256103,
+              "sd": 0.23376590482306508
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8341209415576818,
+              "sd": 0.12372676003055386
+            },
+            "pearson_delta_top": {
+              "mean": 0.919448366797728,
+              "sd": 0.09256889446674596
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.037648093143994935
+            },
+            "mse_top": {
+              "mean": 0.08640666267265987,
+              "sd": 0.0727915741076266
+            },
+            "r2_top": {
+              "mean": 0.86887878731731,
+              "sd": 0.1381110296823444
+            },
+            "pearson_expr": {
+              "mean": 0.9890479250699931,
+              "sd": 0.005515928074285944
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8310899852153546,
+              "sd": 0.13184442475118366
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8903929165935477,
+              "sd": 0.017987162298742105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9626466004754441,
+              "sd": 0.017924290579060413
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047043465690737085,
+              "sd": 0.03989548173620584
+            },
+            "r2_top": {
+              "mean": 0.9609509963634497,
+              "sd": 0.03235514528734495
+            },
+            "pearson_expr": {
+              "mean": 0.9898126463758581,
+              "sd": 0.008453255525529158
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8570691233842329,
+              "sd": 0.09298641968821189
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5107538784824984,
+              "sd": 0.3267439511810834
+            },
+            "pearson_delta_top": {
+              "mean": 0.5881723764263654,
+              "sd": 0.43874261617350263
+            },
+            "direction_acc_top": {
+              "mean": 0.803125,
+              "sd": 0.20693698718853204
+            },
+            "mse_top": {
+              "mean": 0.10254170433929508,
+              "sd": 0.0963355809965025
+            },
+            "r2_top": {
+              "mean": 0.8718394770765366,
+              "sd": 0.12374596037718882
+            },
+            "pearson_expr": {
+              "mean": 0.9910852900727005,
+              "sd": 0.007925895543907475
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5056504965568726,
+              "sd": 0.33274683579957637
+            }
+          }
+        }
+      },
+      "selected_vs_start": {
+        "n": 56,
+        "mean_diff": 0.0020289406545609396,
+        "se": 0.0022024446150150836,
+        "wins_a": 34,
+        "wins_b": 22,
+        "ties": 0,
+        "verdict": "none",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": -0.0013087639819420044,
+            "se": 0.0018691754797082328,
+            "wins_a": 5,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.0058205219541393955,
+            "se": 0.003394231747571632,
+            "wins_a": 16,
+            "wins_b": 11,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.022786634083152825,
+            "se": 0.011350851904232703,
+            "wins_a": 0,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "b"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.005054366635309318,
+            "se": 0.001254089497226344,
+            "wins_a": 13,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "a"
+          }
+        }
+      },
+      "selected_vs_additive": {
+        "n": 56,
+        "mean_diff": 0.005560820602168331,
+        "se": 0.0019581856808358416,
+        "wins_a": 41,
+        "wins_b": 15,
+        "ties": 0,
+        "verdict": "a",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.0055627690890153875,
+            "se": 0.001617122344978536,
+            "wins_a": 8,
+            "wins_b": 0,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.0048103007704925855,
+            "se": 0.0019265224569234463,
+            "wins_a": 20,
+            "wins_b": 7,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.01105108848607952,
+            "se": 0.010785280458543994,
+            "wins_a": 2,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.012017570164775079,
+            "se": 0.004411092727721648,
+            "wins_a": 11,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "a"
+          }
+        }
+      },
+      "selected_stored": {
+        "pearson_delta": 0.7181528963761016,
+        "cellforge_mse_de": 0.10177550173104928,
+        "cellforge_pcc_de": 0.9409920266425856,
+        "cellforge_r2_de": 0.8514414589813318
+      },
+      "additive_stored": {
+        "pearson_delta": 0.7125920757739331,
+        "cellforge_mse_de": 0.10157863005339843,
+        "cellforge_pcc_de": 0.9411594512618892,
+        "cellforge_r2_de": 0.846266496815894
+      },
+      "protocol": {
+        "metric": "pearson_delta",
+        "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+        "min_read": 10,
+        "expected": null,
+        "sealed_scorings": 4,
+        "first_sealed_scorings": [
+          "norman_g0_ds_w4_r3:EXP_0007"
+        ]
+      },
+      "matches_stored": [
+        true,
+        null,
+        true,
+        true
+      ],
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 50,
+            "queued": 480
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "first_sealed_scorings": [
+        "norman_g0_ds_w4_r3:EXP_0007"
+      ],
+      "category_reporting": {
+        "pair_seen0": {
+          "n": 8,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "pair_seen1": {
+          "n": 27,
+          "read": true,
+          "limitation": "worn indicative reading"
+        },
+        "pair_seen2": {
+          "n": 5,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "single": {
+          "n": 16,
+          "read": true,
+          "limitation": "worn indicative reading"
+        }
+      },
+      "report_sha256": "c8cabafbc3d2e055f443d594ba933baf9fdd107e4ddba358760f17ed8abf3902"
+    },
+    {
+      "source": "g1_r0",
+      "run": "norman_g1_ds_w4_r0",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "selected_experiment": "EXP_0745",
+      "start_experiment": "EXP_0007",
+      "selected_metrics": {
+        "rmse": 0.07106304834640158,
+        "mae": 0.04695863754662823,
+        "mse": 0.0050499568402830085,
+        "pearson_delta": 0.7273959247841034,
+        "pearson_delta_top": 0.802287849802793,
+        "direction_acc_top": 0.913392857142857,
+        "mse_top": 0.1163853305262167,
+        "r2_top": 0.8558363455779581,
+        "pearson_expr": 0.9893005118259143,
+        "pearson_delta_nontarget": 0.7188129502270196,
+        "primary": 0.7273959247841034,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6289505100484236,
+              "sd": 0.2305677243281934
+            },
+            "pearson_delta_top": {
+              "mean": 0.6332270372239888,
+              "sd": 0.3664043231893444
+            },
+            "direction_acc_top": {
+              "mean": 0.8937499999999999,
+              "sd": 0.15683817866104632
+            },
+            "mse_top": {
+              "mean": 0.3458576687948959,
+              "sd": 0.22020068189978123
+            },
+            "r2_top": {
+              "mean": 0.6421364837864814,
+              "sd": 0.1575410548398762
+            },
+            "pearson_expr": {
+              "mean": 0.979206704579357,
+              "sd": 0.00887221852441211
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6256805108756052,
+              "sd": 0.24169082902856626
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8520530348990669,
+              "sd": 0.12608716681417828
+            },
+            "pearson_delta_top": {
+              "mean": 0.9392071421037334,
+              "sd": 0.08776270836043812
+            },
+            "direction_acc_top": {
+              "mean": 0.9833333333333334,
+              "sd": 0.036689969285267146
+            },
+            "mse_top": {
+              "mean": 0.06336518169160471,
+              "sd": 0.07189957896595077
+            },
+            "r2_top": {
+              "mean": 0.896154903159385,
+              "sd": 0.13792349703807855
+            },
+            "pearson_expr": {
+              "mean": 0.9909896261090837,
+              "sd": 0.00495236907937879
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8481055538724044,
+              "sd": 0.13389592203970843
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8853983521422876,
+              "sd": 0.045832156758373335
+            },
+            "pearson_delta_top": {
+              "mean": 0.9708868013409508,
+              "sd": 0.024347098739346058
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.03810389920832722,
+              "sd": 0.023202301869647893
+            },
+            "r2_top": {
+              "mean": 0.9690949835475404,
+              "sd": 0.01708793081389639
+            },
+            "pearson_expr": {
+              "mean": 0.9914476819891609,
+              "sd": 0.005087118855720052
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8375443531985717,
+              "sd": 0.1482352057557491
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.51688400028351,
+              "sd": 0.321606691710655
+            },
+            "pearson_delta_top": {
+              "mean": 0.6030797779786838,
+              "sd": 0.3985026877917656
+            },
+            "direction_acc_top": {
+              "mean": 0.778125,
+              "sd": 0.20653389552322882
+            },
+            "mse_top": {
+              "mean": 0.11558360983712526,
+              "sd": 0.1138600870122633
+            },
+            "r2_top": {
+              "mean": 0.8592553861895438,
+              "sd": 0.13609071349475196
+            },
+            "pearson_expr": {
+              "mean": 0.9908260444203293,
+              "sd": 0.010411265197465285
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.51009433782253,
+              "sd": 0.3347470472247868
+            }
+          }
+        }
+      },
+      "start_metrics": {
+        "rmse": 0.0736072002765097,
+        "mae": 0.049242874573633785,
+        "mse": 0.005418019932546211,
+        "pearson_delta": 0.7161239557215406,
+        "pearson_delta_top": 0.7876461940326257,
+        "direction_acc_top": 0.9160714285714285,
+        "mse_top": 0.11739655331349022,
+        "r2_top": 0.8516350500580112,
+        "pearson_expr": 0.9885373060487631,
+        "pearson_delta_nontarget": 0.7096685400509034,
+        "primary": 0.7161239557215406,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6197061824576452,
+              "sd": 0.2281196092129948
+            },
+            "pearson_delta_top": {
+              "mean": 0.6323862421361646,
+              "sd": 0.36822308216918304
+            },
+            "direction_acc_top": {
+              "mean": 0.8875,
+              "sd": 0.15059406173077156
+            },
+            "mse_top": {
+              "mean": 0.29566781193890374,
+              "sd": 0.192490852459031
+            },
+            "r2_top": {
+              "mean": 0.6847061163299282,
+              "sd": 0.164304403922673
+            },
+            "pearson_expr": {
+              "mean": 0.9809209110998025,
+              "sd": 0.006326334289070972
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157818850256103,
+              "sd": 0.23376590482306508
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8341209415576818,
+              "sd": 0.12372676003055386
+            },
+            "pearson_delta_top": {
+              "mean": 0.919448366797728,
+              "sd": 0.09256889446674596
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.037648093143994935
+            },
+            "mse_top": {
+              "mean": 0.08640666267265987,
+              "sd": 0.0727915741076266
+            },
+            "r2_top": {
+              "mean": 0.86887878731731,
+              "sd": 0.1381110296823444
+            },
+            "pearson_expr": {
+              "mean": 0.9890479250699931,
+              "sd": 0.005515928074285944
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8310899852153546,
+              "sd": 0.13184442475118366
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8903929165935477,
+              "sd": 0.017987162298742105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9626466004754441,
+              "sd": 0.017924290579060413
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047043465690737085,
+              "sd": 0.03989548173620584
+            },
+            "r2_top": {
+              "mean": 0.9609509963634497,
+              "sd": 0.03235514528734495
+            },
+            "pearson_expr": {
+              "mean": 0.9898126463758581,
+              "sd": 0.008453255525529158
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8570691233842329,
+              "sd": 0.09298641968821189
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5107538784824984,
+              "sd": 0.3267439511810834
+            },
+            "pearson_delta_top": {
+              "mean": 0.5881723764263654,
+              "sd": 0.43874261617350263
+            },
+            "direction_acc_top": {
+              "mean": 0.803125,
+              "sd": 0.20693698718853204
+            },
+            "mse_top": {
+              "mean": 0.10254170433929508,
+              "sd": 0.0963355809965025
+            },
+            "r2_top": {
+              "mean": 0.8718394770765366,
+              "sd": 0.12374596037718882
+            },
+            "pearson_expr": {
+              "mean": 0.9910852900727005,
+              "sd": 0.007925895543907475
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5056504965568726,
+              "sd": 0.33274683579957637
+            }
+          }
+        }
+      },
+      "selected_vs_start": {
+        "n": 56,
+        "mean_diff": 0.011271969062562823,
+        "se": 0.0054019974070809,
+        "wins_a": 42,
+        "wins_b": 14,
+        "ties": 0,
+        "verdict": "a",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.009244327590778405,
+            "se": 0.0023486291396658753,
+            "wins_a": 7,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.01793209334138543,
+            "se": 0.010657528429299366,
+            "wins_a": 23,
+            "wins_b": 4,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.004994564451260142,
+            "se": 0.015088244079068475,
+            "wins_a": 2,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.00613012180101156,
+            "se": 0.003099390790098117,
+            "wins_a": 10,
+            "wins_b": 6,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_vs_additive": {
+        "n": 56,
+        "mean_diff": 0.014803849010170216,
+        "se": 0.0046767245841497305,
+        "wins_a": 40,
+        "wins_b": 16,
+        "ties": 0,
+        "verdict": "a",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.016115860661735797,
+            "se": 0.003554876451539022,
+            "wins_a": 8,
+            "wins_b": 0,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.016921872157738622,
+            "se": 0.008516942781793858,
+            "wins_a": 22,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": 0.006740981145813163,
+            "se": 0.014208040360243498,
+            "wins_a": 2,
+            "wins_b": 3,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.01309332533047732,
+            "se": 0.0068286457273669665,
+            "wins_a": 8,
+            "wins_b": 8,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_stored": {
+        "pearson_delta": 0.7273959247841034,
+        "cellforge_mse_de": 0.10887359698652534,
+        "cellforge_pcc_de": 0.9364455819252838,
+        "cellforge_r2_de": 0.8411666006607917
+      },
+      "additive_stored": {
+        "pearson_delta": 0.7125920757739331,
+        "cellforge_mse_de": 0.10157863005339843,
+        "cellforge_pcc_de": 0.9411594512618892,
+        "cellforge_r2_de": 0.846266496815894
+      },
+      "protocol": {
+        "metric": "pearson_delta",
+        "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+        "min_read": 10,
+        "expected": null,
+        "sealed_scorings": 4,
+        "first_sealed_scorings": [
+          "norman_g1_ds_w4_r0:EXP_0007"
+        ]
+      },
+      "matches_stored": [
+        true,
+        null,
+        true,
+        true
+      ],
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 53,
+            "queued": 490
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "first_sealed_scorings": [
+        "norman_g1_ds_w4_r0:EXP_0007"
+      ],
+      "category_reporting": {
+        "pair_seen0": {
+          "n": 8,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "pair_seen1": {
+          "n": 27,
+          "read": true,
+          "limitation": "worn indicative reading"
+        },
+        "pair_seen2": {
+          "n": 5,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "single": {
+          "n": 16,
+          "read": true,
+          "limitation": "worn indicative reading"
+        }
+      },
+      "report_sha256": "251ddd3b67248af62bcc6dc55933da1446d291d33ed5cf26d5b84614e591bbd7"
+    },
+    {
+      "source": "g1_r2",
+      "run": "norman_g1_ds_w4_r2",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "selected_experiment": "EXP_0671",
+      "start_experiment": "EXP_0007",
+      "selected_metrics": {
+        "rmse": 0.07580410666905384,
+        "mae": 0.051557613688712055,
+        "mse": 0.005746262587893292,
+        "pearson_delta": 0.7182274509766211,
+        "pearson_delta_top": 0.7901915372273834,
+        "direction_acc_top": 0.9107142857142857,
+        "mse_top": 0.11238319724031512,
+        "r2_top": 0.8522908167055311,
+        "pearson_expr": 0.9881586470947993,
+        "pearson_delta_nontarget": 0.7117146766700007,
+        "primary": 0.7182274509766211,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6200246120916391,
+              "sd": 0.22914631221126286
+            },
+            "pearson_delta_top": {
+              "mean": 0.6321854901773183,
+              "sd": 0.36943816209408675
+            },
+            "direction_acc_top": {
+              "mean": 0.89375,
+              "sd": 0.15683817866104632
+            },
+            "mse_top": {
+              "mean": 0.2819709316542016,
+              "sd": 0.18300791139343697
+            },
+            "r2_top": {
+              "mean": 0.6923001821922079,
+              "sd": 0.16713786553160495
+            },
+            "pearson_expr": {
+              "mean": 0.980127784369762,
+              "sd": 0.0059535094787141985
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6161335664007537,
+              "sd": 0.235060649725055
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8375000769354373,
+              "sd": 0.12362592891360395
+            },
+            "pearson_delta_top": {
+              "mean": 0.9216175522845702,
+              "sd": 0.09355486304544457
+            },
+            "direction_acc_top": {
+              "mean": 0.9685185185185184,
+              "sd": 0.04417654300154044
+            },
+            "mse_top": {
+              "mean": 0.08201846832083444,
+              "sd": 0.06141190202684641
+            },
+            "r2_top": {
+              "mean": 0.8668374537680937,
+              "sd": 0.13603811401014648
+            },
+            "pearson_expr": {
+              "mean": 0.988556560175784,
+              "sd": 0.004803664816012901
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8347149423965633,
+              "sd": 0.13138005173475825
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8833594860230509,
+              "sd": 0.02142806456846277
+            },
+            "pearson_delta_top": {
+              "mean": 0.9594120282926841,
+              "sd": 0.01923019830565937
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.041044673869871026,
+              "sd": 0.028875567352975653
+            },
+            "r2_top": {
+              "mean": 0.9655631568576997,
+              "sd": 0.025253280187351304
+            },
+            "pearson_expr": {
+              "mean": 0.9900574396224237,
+              "sd": 0.007502360551466212
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8507833068387104,
+              "sd": 0.09520255667610956
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5144525531616003,
+              "sd": 0.3258841179279505
+            },
+            "pearson_delta_top": {
+              "mean": 0.5945317568855067,
+              "sd": 0.4300359110637777
+            },
+            "direction_acc_top": {
+              "mean": 0.79375,
+              "sd": 0.20320351046836435
+            },
+            "mse_top": {
+              "mean": 0.10112309863825933,
+              "sd": 0.09306970539409982
+            },
+            "r2_top": {
+              "mean": 0.8723410776215659,
+              "sd": 0.12284896314329527
+            },
+            "pearson_expr": {
+              "mean": 0.9909092274682731,
+              "sd": 0.007700368472234917
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5084833364633277,
+              "sd": 0.33337789122877376
+            }
+          }
+        }
+      },
+      "start_metrics": {
+        "rmse": 0.0736072002765097,
+        "mae": 0.049242874573633785,
+        "mse": 0.005418019932546211,
+        "pearson_delta": 0.7161239557215406,
+        "pearson_delta_top": 0.7876461940326257,
+        "direction_acc_top": 0.9160714285714285,
+        "mse_top": 0.11739655331349022,
+        "r2_top": 0.8516350500580112,
+        "pearson_expr": 0.9885373060487631,
+        "pearson_delta_nontarget": 0.7096685400509034,
+        "primary": 0.7161239557215406,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6197061824576452,
+              "sd": 0.2281196092129948
+            },
+            "pearson_delta_top": {
+              "mean": 0.6323862421361646,
+              "sd": 0.36822308216918304
+            },
+            "direction_acc_top": {
+              "mean": 0.8875,
+              "sd": 0.15059406173077156
+            },
+            "mse_top": {
+              "mean": 0.29566781193890374,
+              "sd": 0.192490852459031
+            },
+            "r2_top": {
+              "mean": 0.6847061163299282,
+              "sd": 0.164304403922673
+            },
+            "pearson_expr": {
+              "mean": 0.9809209110998025,
+              "sd": 0.006326334289070972
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157818850256103,
+              "sd": 0.23376590482306508
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8341209415576818,
+              "sd": 0.12372676003055386
+            },
+            "pearson_delta_top": {
+              "mean": 0.919448366797728,
+              "sd": 0.09256889446674596
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.037648093143994935
+            },
+            "mse_top": {
+              "mean": 0.08640666267265987,
+              "sd": 0.0727915741076266
+            },
+            "r2_top": {
+              "mean": 0.86887878731731,
+              "sd": 0.1381110296823444
+            },
+            "pearson_expr": {
+              "mean": 0.9890479250699931,
+              "sd": 0.005515928074285944
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8310899852153546,
+              "sd": 0.13184442475118366
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8903929165935477,
+              "sd": 0.017987162298742105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9626466004754441,
+              "sd": 0.017924290579060413
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047043465690737085,
+              "sd": 0.03989548173620584
+            },
+            "r2_top": {
+              "mean": 0.9609509963634497,
+              "sd": 0.03235514528734495
+            },
+            "pearson_expr": {
+              "mean": 0.9898126463758581,
+              "sd": 0.008453255525529158
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8570691233842329,
+              "sd": 0.09298641968821189
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5107538784824984,
+              "sd": 0.3267439511810834
+            },
+            "pearson_delta_top": {
+              "mean": 0.5881723764263654,
+              "sd": 0.43874261617350263
+            },
+            "direction_acc_top": {
+              "mean": 0.803125,
+              "sd": 0.20693698718853204
+            },
+            "mse_top": {
+              "mean": 0.10254170433929508,
+              "sd": 0.0963355809965025
+            },
+            "r2_top": {
+              "mean": 0.8718394770765366,
+              "sd": 0.12374596037718882
+            },
+            "pearson_expr": {
+              "mean": 0.9910852900727005,
+              "sd": 0.007925895543907475
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5056504965568726,
+              "sd": 0.33274683579957637
+            }
+          }
+        }
+      },
+      "selected_vs_start": {
+        "n": 56,
+        "mean_diff": 0.002103495255080448,
+        "se": 0.0008346021950873563,
+        "wins_a": 42,
+        "wins_b": 14,
+        "ties": 0,
+        "verdict": "a",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.00031842963399374147,
+            "se": 0.0004980750558180348,
+            "wins_a": 7,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.0033791353777558823,
+            "se": 0.001345980817016108,
+            "wins_a": 20,
+            "wins_b": 7,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.007033430570496835,
+            "se": 0.0022553292274214176,
+            "wins_a": 0,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "b"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.0036986746791019074,
+            "se": 0.000979876883582822,
+            "wins_a": 15,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "a"
+          }
+        }
+      },
+      "selected_vs_additive": {
+        "n": 56,
+        "mean_diff": 0.005635375202687841,
+        "se": 0.0020663432693211496,
+        "wins_a": 37,
+        "wins_b": 19,
+        "ties": 0,
+        "verdict": "a",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.007189962704951133,
+            "se": 0.0029065476028864484,
+            "wins_a": 7,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.0023689141941090723,
+            "se": 0.0030263387428028964,
+            "wins_a": 16,
+            "wins_b": 11,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": 0.00470211502657647,
+            "se": 0.0017101516347626476,
+            "wins_a": 4,
+            "wins_b": 1,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.010661878208567668,
+            "se": 0.004775752126460234,
+            "wins_a": 10,
+            "wins_b": 6,
+            "ties": 0,
+            "verdict": "a"
+          }
+        }
+      },
+      "selected_stored": null,
+      "additive_stored": {
+        "pearson_delta": 0.7125920757739331,
+        "cellforge_mse_de": 0.10157863005339843,
+        "cellforge_pcc_de": 0.9411594512618892,
+        "cellforge_r2_de": 0.846266496815894
+      },
+      "protocol": {
+        "metric": "pearson_delta",
+        "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+        "min_read": 10,
+        "expected": null,
+        "sealed_scorings": 4,
+        "first_sealed_scorings": [
+          "norman_g1_ds_w4_r2:EXP_0007",
+          "norman_g1_ds_w4_r2:EXP_0671"
+        ]
+      },
+      "matches_stored": [
+        null,
+        null,
+        null,
+        true
+      ],
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 55,
+            "queued": 473
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "first_sealed_scorings": [
+        "norman_g1_ds_w4_r2:EXP_0007",
+        "norman_g1_ds_w4_r2:EXP_0671"
+      ],
+      "category_reporting": {
+        "pair_seen0": {
+          "n": 8,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "pair_seen1": {
+          "n": 27,
+          "read": true,
+          "limitation": "worn indicative reading"
+        },
+        "pair_seen2": {
+          "n": 5,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "single": {
+          "n": 16,
+          "read": true,
+          "limitation": "worn indicative reading"
+        }
+      },
+      "report_sha256": "44fdfca4b7eb97f8f86ed316c4a1b9c8649671493d3014d93c25ec439234dcee"
+    },
+    {
+      "source": "g1_r3",
+      "run": "norman_g1_ds_w4_r3",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "selected_experiment": "EXP_0652",
+      "start_experiment": "EXP_0007",
+      "selected_metrics": {
+        "rmse": 0.07787210336444059,
+        "mae": 0.052799394425380876,
+        "mse": 0.006064064482402118,
+        "pearson_delta": 0.71472607669544,
+        "pearson_delta_top": 0.7861966718226937,
+        "direction_acc_top": 0.9089285714285714,
+        "mse_top": 0.1156254495821404,
+        "r2_top": 0.8500226905283838,
+        "pearson_expr": 0.9880552002010015,
+        "pearson_delta_nontarget": 0.7107641385918366,
+        "primary": 0.71472607669544,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6174049627458833,
+              "sd": 0.23158448302218812
+            },
+            "pearson_delta_top": {
+              "mean": 0.6218634464338001,
+              "sd": 0.37238355698286946
+            },
+            "direction_acc_top": {
+              "mean": 0.875,
+              "sd": 0.15811388300841897
+            },
+            "mse_top": {
+              "mean": 0.2881019347637869,
+              "sd": 0.18151576133462569
+            },
+            "r2_top": {
+              "mean": 0.6879525884822926,
+              "sd": 0.17119028563313823
+            },
+            "pearson_expr": {
+              "mean": 0.9804217563777082,
+              "sd": 0.006505223880644155
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6141404256875307,
+              "sd": 0.23642107478557914
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8361322892461485,
+              "sd": 0.12357513781960354
+            },
+            "pearson_delta_top": {
+              "mean": 0.9217251454188923,
+              "sd": 0.09003245380704221
+            },
+            "direction_acc_top": {
+              "mean": 0.9722222222222222,
+              "sd": 0.04236592728681617
+            },
+            "mse_top": {
+              "mean": 0.08198772626466926,
+              "sd": 0.06955994551491929
+            },
+            "r2_top": {
+              "mean": 0.8676027869168502,
+              "sd": 0.1416344240645917
+            },
+            "pearson_expr": {
+              "mean": 0.9883140513810537,
+              "sd": 0.005804438960736213
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8350966433860928,
+              "sd": 0.13131696864628536
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8624946501397469,
+              "sd": 0.05116017060732371
+            },
+            "pearson_delta_top": {
+              "mean": 0.932164827883808,
+              "sd": 0.039527810956526035
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.0551223397807869,
+              "sd": 0.028068089216169094
+            },
+            "r2_top": {
+              "mean": 0.9549016571125298,
+              "sd": 0.02197320287708137
+            },
+            "pearson_expr": {
+              "mean": 0.9898591766793811,
+              "sd": 0.006498217090463997
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8356514985151561,
+              "sd": 0.10971182447188559
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5123359707895525,
+              "sd": 0.32437628465036056
+            },
+            "pearson_delta_top": {
+              "mean": 0.5940439365544572,
+              "sd": 0.42354681148595286
+            },
+            "direction_acc_top": {
+              "mean": 0.790625,
+              "sd": 0.2115173357749509
+            },
+            "mse_top": {
+              "mean": 0.10505808690247265,
+              "sd": 0.09961334648928433
+            },
+            "r2_top": {
+              "mean": 0.8686166518383465,
+              "sd": 0.1280747339941133
+            },
+            "pearson_expr": {
+              "mean": 0.9908713680968162,
+              "sd": 0.00790857044346916
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5102375932276446,
+              "sd": 0.33428927363292416
+            }
+          }
+        }
+      },
+      "start_metrics": {
+        "rmse": 0.0736072002765097,
+        "mae": 0.049242874573633785,
+        "mse": 0.005418019932546211,
+        "pearson_delta": 0.7161239557215406,
+        "pearson_delta_top": 0.7876461940326257,
+        "direction_acc_top": 0.9160714285714285,
+        "mse_top": 0.11739655331349022,
+        "r2_top": 0.8516350500580112,
+        "pearson_expr": 0.9885373060487631,
+        "pearson_delta_nontarget": 0.7096685400509034,
+        "primary": 0.7161239557215406,
+        "selection_rule": "pearson_delta",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "pearson_delta": {
+              "mean": 0.6197061824576452,
+              "sd": 0.2281196092129948
+            },
+            "pearson_delta_top": {
+              "mean": 0.6323862421361646,
+              "sd": 0.36822308216918304
+            },
+            "direction_acc_top": {
+              "mean": 0.8875,
+              "sd": 0.15059406173077156
+            },
+            "mse_top": {
+              "mean": 0.29566781193890374,
+              "sd": 0.192490852459031
+            },
+            "r2_top": {
+              "mean": 0.6847061163299282,
+              "sd": 0.164304403922673
+            },
+            "pearson_expr": {
+              "mean": 0.9809209110998025,
+              "sd": 0.006326334289070972
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.6157818850256103,
+              "sd": 0.23376590482306508
+            }
+          },
+          "pair_seen1": {
+            "n": 27,
+            "pearson_delta": {
+              "mean": 0.8341209415576818,
+              "sd": 0.12372676003055386
+            },
+            "pearson_delta_top": {
+              "mean": 0.919448366797728,
+              "sd": 0.09256889446674596
+            },
+            "direction_acc_top": {
+              "mean": 0.975925925925926,
+              "sd": 0.037648093143994935
+            },
+            "mse_top": {
+              "mean": 0.08640666267265987,
+              "sd": 0.0727915741076266
+            },
+            "r2_top": {
+              "mean": 0.86887878731731,
+              "sd": 0.1381110296823444
+            },
+            "pearson_expr": {
+              "mean": 0.9890479250699931,
+              "sd": 0.005515928074285944
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8310899852153546,
+              "sd": 0.13184442475118366
+            }
+          },
+          "pair_seen2": {
+            "n": 5,
+            "pearson_delta": {
+              "mean": 0.8903929165935477,
+              "sd": 0.017987162298742105
+            },
+            "pearson_delta_top": {
+              "mean": 0.9626466004754441,
+              "sd": 0.017924290579060413
+            },
+            "direction_acc_top": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "mse_top": {
+              "mean": 0.047043465690737085,
+              "sd": 0.03989548173620584
+            },
+            "r2_top": {
+              "mean": 0.9609509963634497,
+              "sd": 0.03235514528734495
+            },
+            "pearson_expr": {
+              "mean": 0.9898126463758581,
+              "sd": 0.008453255525529158
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.8570691233842329,
+              "sd": 0.09298641968821189
+            }
+          },
+          "single": {
+            "n": 16,
+            "pearson_delta": {
+              "mean": 0.5107538784824984,
+              "sd": 0.3267439511810834
+            },
+            "pearson_delta_top": {
+              "mean": 0.5881723764263654,
+              "sd": 0.43874261617350263
+            },
+            "direction_acc_top": {
+              "mean": 0.803125,
+              "sd": 0.20693698718853204
+            },
+            "mse_top": {
+              "mean": 0.10254170433929508,
+              "sd": 0.0963355809965025
+            },
+            "r2_top": {
+              "mean": 0.8718394770765366,
+              "sd": 0.12374596037718882
+            },
+            "pearson_expr": {
+              "mean": 0.9910852900727005,
+              "sd": 0.007925895543907475
+            },
+            "pearson_delta_nontarget": {
+              "mean": 0.5056504965568726,
+              "sd": 0.33274683579957637
+            }
+          }
+        }
+      },
+      "selected_vs_start": {
+        "n": 56,
+        "mean_diff": -0.0013978790261005207,
+        "se": 0.002515975468086608,
+        "wins_a": 28,
+        "wins_b": 28,
+        "ties": 0,
+        "verdict": "none",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": -0.0023012197117618233,
+            "se": 0.001554956630338528,
+            "wins_a": 3,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.002011347688466784,
+            "se": 0.0028997934487251797,
+            "wins_a": 15,
+            "wins_b": 12,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.027898266453800846,
+            "se": 0.015363866002033884,
+            "wins_a": 0,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.001582092307054155,
+            "se": 0.00445518376228476,
+            "wins_a": 10,
+            "wins_b": 6,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_vs_additive": {
+        "n": 56,
+        "mean_diff": 0.0021340009215068713,
+        "se": 0.002863309644809412,
+        "wins_a": 28,
+        "wins_b": 28,
+        "ties": 0,
+        "verdict": "none",
+        "by_category": {
+          "pair_seen0": {
+            "n": 8,
+            "mean_diff": 0.004570313359195569,
+            "se": 0.002054917468544859,
+            "wins_a": 6,
+            "wins_b": 2,
+            "ties": 0,
+            "verdict": "a"
+          },
+          "pair_seen1": {
+            "n": 27,
+            "mean_diff": 0.0010011265048199742,
+            "se": 0.0027603790489706573,
+            "wins_a": 11,
+            "wins_b": 16,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "pair_seen2": {
+            "n": 5,
+            "mean_diff": -0.01616272085672754,
+            "se": 0.014845651070141588,
+            "wins_a": 0,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "none"
+          },
+          "single": {
+            "n": 16,
+            "mean_diff": 0.008545295836519915,
+            "se": 0.007315646998329095,
+            "wins_a": 11,
+            "wins_b": 5,
+            "ties": 0,
+            "verdict": "none"
+          }
+        }
+      },
+      "selected_stored": {
+        "pearson_delta": 0.71472607669544,
+        "cellforge_mse_de": 0.10696306312689664,
+        "cellforge_pcc_de": 0.9381529044333388,
+        "cellforge_r2_de": 0.8434415075265466
+      },
+      "additive_stored": {
+        "pearson_delta": 0.7125920757739331,
+        "cellforge_mse_de": 0.10157863005339843,
+        "cellforge_pcc_de": 0.9411594512618892,
+        "cellforge_r2_de": 0.846266496815894
+      },
+      "protocol": {
+        "metric": "pearson_delta",
+        "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+        "min_read": 10,
+        "expected": null,
+        "sealed_scorings": 4,
+        "first_sealed_scorings": [
+          "norman_g1_ds_w4_r3:EXP_0007"
+        ]
+      },
+      "matches_stored": [
+        true,
+        null,
+        true,
+        true
+      ],
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 49,
+            "queued": 461
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "first_sealed_scorings": [
+        "norman_g1_ds_w4_r3:EXP_0007"
+      ],
+      "category_reporting": {
+        "pair_seen0": {
+          "n": 8,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "pair_seen1": {
+          "n": 27,
+          "read": true,
+          "limitation": "worn indicative reading"
+        },
+        "pair_seen2": {
+          "n": 5,
+          "read": false,
+          "limitation": "reported only, n<10"
+        },
+        "single": {
+          "n": 16,
+          "read": true,
+          "limitation": "worn indicative reading"
+        }
+      },
+      "report_sha256": "69467fbfbacbbb1d659fe5c14c629e5ad72476ab1fadd13a5305998089c8161d"
+    }
+  ],
+  "arms": {
+    "g0": {
+      "n_runs": 3,
+      "selected_metrics": {
+        "rmse": {
+          "mean": 0.07323986627154766,
+          "sample_sd": 0.001094058229179849
+        },
+        "mae": {
+          "mean": 0.049275189491472554,
+          "sample_sd": 0.0009134713678672156
+        },
+        "mse": {
+          "mean": 0.005364875987080075,
+          "sample_sd": 0.0001598540132109688
+        },
+        "pearson_delta": {
+          "mean": 0.7193206193399568,
+          "sample_sd": 0.0012115327474301874
+        },
+        "pearson_delta_top": {
+          "mean": 0.7918390789726374,
+          "sample_sd": 0.0028391551147695614
+        },
+        "direction_acc_top": {
+          "mean": 0.9086309523809524,
+          "sample_sd": 0.004581786999506098
+        },
+        "mse_top": {
+          "mean": 0.11269605096412073,
+          "sample_sd": 0.004234426063667477
+        },
+        "r2_top": {
+          "mean": 0.8559855054837273,
+          "sample_sd": 0.004231375696412048
+        },
+        "pearson_expr": {
+          "mean": 0.988833812039172,
+          "sample_sd": 0.00030486601023061957
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.7114983351623112,
+          "sample_sd": 0.00010139408049375847
+        }
+      },
+      "delta_M1_vs_own_start": {
+        "mean": 0.0031966636184162273,
+        "sample_sd": 0.0012115327474302737
+      }
+    },
+    "g1": {
+      "n_runs": 3,
+      "selected_metrics": {
+        "rmse": {
+          "mean": 0.074913086126632,
+          "sample_sd": 0.003490880371043074
+        },
+        "mae": {
+          "mean": 0.05043854855357372,
+          "sample_sd": 0.0030769855884754662
+        },
+        "mse": {
+          "mean": 0.005620094636859473,
+          "sample_sd": 0.0005186929162347884
+        },
+        "pearson_delta": {
+          "mean": 0.7201164841520549,
+          "sample_sd": 0.006542751516057226
+        },
+        "pearson_delta_top": {
+          "mean": 0.7928920196176233,
+          "sample_sd": 0.00837860107964361
+        },
+        "direction_acc_top": {
+          "mean": 0.9110119047619047,
+          "sample_sd": 0.002246974534306704
+        },
+        "mse_top": {
+          "mean": 0.1147979924495574,
+          "sample_sd": 0.002125507395712187
+        },
+        "r2_top": {
+          "mean": 0.8527166176039577,
+          "sample_sd": 0.0029301238988626204
+        },
+        "pearson_expr": {
+          "mean": 0.988504786373905,
+          "sample_sd": 0.0006910568436754113
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.713763921829619,
+          "sample_sd": 0.0043983401957816606
+        }
+      },
+      "delta_M1_vs_own_start": {
+        "mean": 0.00399252843051425,
+        "sample_sd": 0.006542751516057191
+      }
+    }
+  },
+  "sd_definition": "sample SD over independent runs 0,2,3; arm aggregates descriptive only",
+  "first_scoring_note": "matches_stored=null is expected when no stored score exists; every available match is true. QueryOracle instances belong to the tool, outside run caps. Run content unchanged; SQLite may remove empty WAL/SHM sidecars as documented."
+}

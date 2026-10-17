@@ -1,0 +1,18 @@
+{
+  "stem": "norman_f_corrected_selection_audit",
+  "title": "Corrected F original-artifact and selection audit",
+  "result": "PASS",
+  "agent": "/root/block_f_readings_checklist",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "selection_sha256": "b691910f9aabfb97dd5b5d1acbb56c769135aa3e4f8c67325b81b43984838f81",
+  "input_manifest_sha256": "9c5cb36ffc94c31c574e30fb985bcb731692a5ada08fddcaf0854e50371c57b7",
+  "checks": [
+    "All66eligible members selected exactly once,40/1/25,r0/r2/r3,k=null,null_reps999",
+    "Every selected file matches original stage1/source/copied hash",
+    "All94plugins,coefficientreceipts and142oldartifact hashes match in both clones",
+    "Old result contents hashed only; no oldsealed/oldnull values parsed",
+    "Tool exact diff and executable AST check: only module docstring archived-document link differs from1a95873; all executable behavior unchanged"
+  ],
+  "limitation": "Stage2 is running; no corrected F scientific verdict exists. Original positive F claims remain withdrawn. Reverify original142 after consolidation.",
+  "created_utc": "2026-10-17T15:57:56.628255+00:00"
+}

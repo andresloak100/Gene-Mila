@@ -1,0 +1,529 @@
+{
+  "generated_utc": "2026-10-17T11:01:22.494126+00:00",
+  "scope": "PLAN_G reading4, independent static selected-source audit; no plugin import/evaluation/DB read",
+  "source_audit": "adamson_cf_g_source_audit.json",
+  "counts": [
+    {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+      "source": "g0_r0",
+      "selected_total": 10,
+      "selected_direct_table_calls": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "source_table_mentions": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "features": [],
+      "largest_planner_state_chars": 12541,
+      "experiment_count": null
+    },
+    {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+      "source": "g0_r2",
+      "selected_total": 23,
+      "selected_direct_table_calls": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "source_table_mentions": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "features": [],
+      "largest_planner_state_chars": 14717,
+      "experiment_count": null
+    },
+    {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+      "source": "g0_r3",
+      "selected_total": 19,
+      "selected_direct_table_calls": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "source_table_mentions": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "features": [],
+      "largest_planner_state_chars": 14826,
+      "experiment_count": null
+    },
+    {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "g1_r0",
+      "selected_total": 23,
+      "selected_direct_table_calls": {
+        "gene_annotation": 3,
+        "gene_constraint": 5,
+        "protein_annotation": 3
+      },
+      "source_table_mentions": {
+        "gene_annotation": 3,
+        "gene_constraint": 5,
+        "protein_annotation": 3
+      },
+      "features": [
+        {
+          "feature": "essentiality_selfdelta_interaction_e234_e249",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_selfdelta_interaction_e234_e249.py",
+          "sha256": "05cccaa7d06741d66a65c3fe81ced3230d8669e913b2774d2f287a5b40bde6ec",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 23,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        },
+        {
+          "feature": "essentiality_response_interaction_e329",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_response_interaction_e329.py",
+          "sha256": "d703dc59d10ce5afdb04afc72431ee96f4e3a7fe05f981a6e17017e4ef758841",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 31,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        },
+        {
+          "feature": "combined_annotation_projection_target_in_e398",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_projection_target_in_e398.py",
+          "sha256": "3d9a371a11b6fab6e1d13adb746044390f5277afb89098034f418151f875281d",
+          "source_mentions": [
+            "gene_annotation",
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_annotation",
+              "line": 32,
+              "expression": "ctx.knowledge('gene_annotation')"
+            },
+            {
+              "table": "protein_annotation",
+              "line": 53,
+              "expression": "ctx.knowledge('protein_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "full_annotation_projection_target_e459",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/full_annotation_projection_target_e459.py",
+          "sha256": "e63d03c471378c63cd920bdb74431e0d610e1c119b6c60645a5fd6a2b44a4ed2",
+          "source_mentions": [
+            "gene_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_annotation",
+              "line": 45,
+              "expression": "ctx.knowledge('gene_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_annotation": []
+          }
+        },
+        {
+          "feature": "nuclear_gene_x_loeuf_target_e467",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_gene_x_loeuf_target_e467.py",
+          "sha256": "c77c72395af382d9904376a668c45d9bcf093f13c94efa14677fa57b2936059a",
+          "source_mentions": [
+            "gene_constraint",
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "protein_annotation",
+              "line": 27,
+              "expression": "ctx.knowledge('protein_annotation')"
+            },
+            {
+              "table": "gene_constraint",
+              "line": 54,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ],
+            "protein_annotation": [
+              "nucleus"
+            ]
+          }
+        },
+        {
+          "feature": "gene_loeuf_x_target_selfdelta_e569",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_loeuf_x_target_selfdelta_e569.py",
+          "sha256": "9194f29fb5d447141f2ea62d849fc4908d02b9ef5dad6ef6572571baa93520f4",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 26,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        },
+        {
+          "feature": "target_loeuf_x_ppi_neighbor_response_e62_e628",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_ppi_neighbor_response_e62_e628.py",
+          "sha256": "7c4c5e7381330d6cd3dcf7babc37225ad922abfc1af38b3d4a57c9c63ad7875b",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 24,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        },
+        {
+          "feature": "full_annotation_projection_with_protein_e645",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/full_annotation_projection_with_protein_e645.py",
+          "sha256": "7acc0264a0f53c30c9e2fc22095bc6a02de32b0637c39bb0b9cafd88583bb9a4",
+          "source_mentions": [
+            "gene_annotation",
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_annotation",
+              "line": 21,
+              "expression": "ctx.knowledge('gene_annotation')"
+            },
+            {
+              "table": "protein_annotation",
+              "line": 48,
+              "expression": "ctx.knowledge('protein_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [],
+            "protein_annotation": [
+              "protein_length"
+            ]
+          }
+        }
+      ],
+      "largest_planner_state_chars": 16967,
+      "experiment_count": null
+    },
+    {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "g1_r2",
+      "selected_total": 22,
+      "selected_direct_table_calls": {
+        "gene_annotation": 1,
+        "gene_constraint": 3,
+        "protein_annotation": 4
+      },
+      "source_table_mentions": {
+        "gene_annotation": 2,
+        "gene_constraint": 3,
+        "protein_annotation": 4
+      },
+      "features": [
+        {
+          "feature": "protein_stability_proxy_e81",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/protein_stability_proxy_e81.py",
+          "sha256": "b9df63d35edc3e768500ca700a4880ea4e63589d30e8f546e81d82bfd7388ef5",
+          "source_mentions": [
+            "gene_constraint",
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "protein_annotation",
+              "line": 30,
+              "expression": "ctx.knowledge('protein_annotation')"
+            },
+            {
+              "table": "gene_constraint",
+              "line": 67,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ],
+            "protein_annotation": [
+              "has_signal_peptide",
+              "n_transmembrane",
+              "protein_length"
+            ]
+          }
+        },
+        {
+          "feature": "target_has_signal_peptide_x_is_target_e247",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_has_signal_peptide_x_is_target_e247.py",
+          "sha256": "bcf9c9256f4b9c68cc6d340ffd268eda1e58ed96da55961747e0b14382be5739",
+          "source_mentions": [
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "protein_annotation",
+              "line": 22,
+              "expression": "ctx.knowledge('protein_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "has_signal_peptide"
+            ]
+          }
+        },
+        {
+          "feature": "target_protein_length_x_gene_membrane_e2_e300",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_gene_membrane_e2_e300.py",
+          "sha256": "95dc04d5e9dbbc85b68940342f82427ac128aef4c23b4c649ad349dc3f15fb05",
+          "source_mentions": [
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "protein_annotation",
+              "line": 20,
+              "expression": "ctx.knowledge('protein_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "membrane",
+              "n_transmembrane",
+              "protein_length"
+            ]
+          }
+        },
+        {
+          "feature": "target_cpg_promoter_x_gene_tf_indicator_e321",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_promoter_x_gene_tf_indicator_e321.py",
+          "sha256": "9dce8a8988b5b909d968d69fb4467b58cfebe4dd1a4c2d5b9f058a9925dc827b",
+          "source_mentions": [
+            "gene_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_annotation",
+              "line": 20,
+              "expression": "ctx.knowledge('gene_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          }
+        },
+        {
+          "feature": "target_compartment_x_gene_annotation_e333",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_annotation_e333.py",
+          "sha256": "dc3d720d913a73f61092e282b125a2e4a16e156acb164b6e36df0542e764e5f3",
+          "source_mentions": [
+            "gene_annotation",
+            "protein_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "protein_annotation",
+              "line": 26,
+              "expression": "ctx.knowledge('protein_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [],
+            "protein_annotation": [
+              "cytoplasm",
+              "endoplasmic_reticulum",
+              "golgi",
+              "lysosome",
+              "membrane",
+              "mitochondrion",
+              "nucleus",
+              "peroxisome",
+              "secreted"
+            ]
+          }
+        },
+        {
+          "feature": "target_loeuf_x_gene_loeuf_e380",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_loeuf_e380.py",
+          "sha256": "ce34d5fb0dcc476e866f4747d1a455a5737fb6abae168b13426ec0ee08d615e6",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 23,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        },
+        {
+          "feature": "target_loeuf_x_gene_control_expression_e523",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_control_expression_e523.py",
+          "sha256": "d878bf16ae77cce6929bdbc5169c9483d982eaf94128c02d6dcbd97cc2f51d31",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 28,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        }
+      ],
+      "largest_planner_state_chars": 16834,
+      "experiment_count": null
+    },
+    {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "g1_r3",
+      "selected_total": 22,
+      "selected_direct_table_calls": {
+        "gene_annotation": 1,
+        "gene_constraint": 2,
+        "protein_annotation": 0
+      },
+      "source_table_mentions": {
+        "gene_annotation": 1,
+        "gene_constraint": 2,
+        "protein_annotation": 0
+      },
+      "features": [
+        {
+          "feature": "target_essentiality_score_e284",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_essentiality_score_e284.py",
+          "sha256": "b5962594f45c2001b756e1e9681f216483c9f15400fd650b7bda2418ba09ffe1",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 23,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          }
+        },
+        {
+          "feature": "target_promoter_cpg_island_e444",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_cpg_island_e444.py",
+          "sha256": "3877f21bf815a782bcad658fe5c8de6f705dc97d75c98cd4619e04139d36d3d1",
+          "source_mentions": [
+            "gene_annotation"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_annotation",
+              "line": 35,
+              "expression": "ctx.knowledge('gene_annotation')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          }
+        },
+        {
+          "feature": "coessentiality_correlation_e725",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/coessentiality_correlation_e725.py",
+          "sha256": "0247e3510ca92b2491f638b5843703b296c5e8711cc7112fe5a147ad41766562",
+          "source_mentions": [
+            "gene_constraint"
+          ],
+          "direct_calls": [
+            {
+              "table": "gene_constraint",
+              "line": 30,
+              "expression": "ctx.knowledge('gene_constraint')"
+            }
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ]
+          }
+        }
+      ],
+      "largest_planner_state_chars": 16605,
+      "experiment_count": null
+    }
+  ],
+  "notes": [
+    "g1_r2 target_compartment_x_gene_annotation_e333 mentions gene_annotation only in its feature name; its direct knowledge call is protein_annotation. Raw mentions 2/3/4 therefore differ from direct calls 1/3/4.",
+    "Counts exclude transitive/dynamic dependencies; no runtime use is inferred from static source.",
+    "g1_r0 fields: oe_lof_upper; nucleus; full numeric annotation projections. full_annotation_projection_with_protein_e645 skips protein_length.",
+    "g1_r2 fields: cpg_oe_promoter; oe_lof_upper; protein_length, has_signal_peptide, n_transmembrane, membrane, secreted and a compartment parameter.",
+    "g1_r3 source uses promoter CpG/OE names with fallbacks; oe_lof_upper/pLI/flags. coessentiality_correlation_e725 names source=depmap but reads gnomAD/network proxies, not a DepMap input. Case-sensitive pLI availability was not validated; target_essentiality_score_e284 falls back to indices 0/1.",
+    "Total experiments are not emitted by .check.txt; selected experiment IDs and plugin-file counts are not total experiments. All planner maxima are below 20000."
+  ]
+}

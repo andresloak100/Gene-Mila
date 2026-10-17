@@ -1,0 +1,23 @@
+{
+  "independent_auditor": "/root/block_f_readings_checklist",
+  "result": "PASS",
+  "checks": 135,
+  "result_sha256": "d61802ceda08388e42a02dc802e5b50e0f3b6d799e2910f2e09fab0772cd6a5a",
+  "proportional": true,
+  "proportional_in_folds": true,
+  "parent_column": "additive_response",
+  "null_gene": 0.199,
+  "null_perturbation": 0.526,
+  "null_reps": 999,
+  "coefficient_mean": -0.0004211652846104793,
+  "sign": "Allsixnegative;recordedonly,notpredicted",
+  "verdict": "Not supported under the fixed criteria",
+  "checks_scope": [
+    "source/plugin/README/pre-run hashes and authority",
+    "finite999gains eachnull and reconstructed raw/Holm/FWER p",
+    "fullandfold proportionality,parent,coefficient signs",
+    "all fixed failed gates and all8metrics",
+    "prerun pathway lists/counts"
+  ],
+  "pre_score_clarification": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6236891780"
+}

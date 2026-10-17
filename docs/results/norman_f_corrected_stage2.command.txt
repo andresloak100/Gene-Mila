@@ -1,0 +1,13 @@
+UTC launch: 2026-10-17T15:54:22.998691+00:00
+Tool commit: 2f2e6838316915198c52abeb34cf02f2b3aacc87
+Credentials unset; nice19; caffeinate; original F stage1/plugins preserved; all66rows/999replicates; OOF only.
+Selection SHA256: b691910f9aabfb97dd5b5d1acbb56c769135aa3e4f8c67325b81b43984838f81
+Input manifest SHA256: 9c5cb36ffc94c31c574e30fb985bcb731692a5ada08fddcaf0854e50371c57b7
+set -C
+cd /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings || exit 98
+{
+/usr/bin/caffeinate -i nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/feature_compare.py --data /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_ga --out /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_stage2 --null-reps 999 --source f_r0=/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_top/r0 --source f_r2=/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_top/r2 --source f_r3=/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_top/r3
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_stage2.exit
+exit "$rc"
+} > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_stage2.log 2>&1

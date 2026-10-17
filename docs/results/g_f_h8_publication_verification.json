@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-17T17:47:48.891673+00:00",
+  "status": "PASS",
+  "scientific_source_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "test": {
+    "command": "project Python -m pytest -q",
+    "exit": 0,
+    "summary": "656 passed, 1 skipped, 8 warnings in 762.10s (0:12:42)",
+    "command_receipt": "g_f_h8_publication_pytest.command.txt",
+    "log": "g_f_h8_publication_pytest.log",
+    "exit_receipt": "g_f_h8_publication_pytest.exit",
+    "log_sha256": "edccf9c0a3e825ad28ca24bd76727967384d623b9182fff7b12d664c2be052d3"
+  },
+  "final_integrity_checks": {
+    "original_artifacts_both_clones": 284,
+    "plugins_both_clones_and_source": 282,
+    "frozen_scientific_tools": 6,
+    "consolidated_source_hashes": 11,
+    "final_report_hashes": 2
+  },
+  "old_values_parsed": false,
+  "tracked_changes": "results README only; all other additions are new results/evidence/source snapshots",
+  "policy": "Exact final allowlist, index coverage, content-token scan and staged diff check immediately before commit. No data/runs/private/harness/package contents staged."
+}
