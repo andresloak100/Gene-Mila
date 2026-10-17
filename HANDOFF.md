@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-17 05:30 UTC: curation and block H tooling landed; block G running.** The repository was
+curated ([PR #58](https://github.com/andresloak100/Gene-Mila/pull/58)): nine old draft PRs' records merged, superseded
+documents under `docs/archive/`, `docs/README.md` is the documentation map, `docs/results/README.md`,
+`docs/mac/README.md` and `tools/README.md` index the records and tools; `docs/mac/STATE.md` is archived (section 1 here
+is the live mirror). Block H's tooling is complete ([PR #59](https://github.com/andresloak100/Gene-Mila/pull/59)): the
+autoresearch-style arm runs through the Codex CLI the Mac has, the ledger proxy serves the Responses API; the lead's
+family 8 hypothesis plugin is in `docs/comparison/lead_h8_constraint/` (PR #57). Block G: 6 of 12 runs passed by 04:50
+UTC (all Adamson; Norman running), ledger $53.61 against the $67.26 cap. **Next:** Astra finishes the chain, then the G
+readings, the block F re-read and the family 8 scoring with the tool at `1a95873` or later, then the block H free
+preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
+the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
+
 **Andres's current handoff — Astra, 2026-10-17 05:15 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
