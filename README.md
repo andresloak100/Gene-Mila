@@ -2,7 +2,7 @@
 
 *Agent-discovered features for linear prediction of genetic perturbation responses*
 
-Research software · Adamson and Norman Perturb-seq · Updated 16 October 2026
+Research software · Adamson and Norman Perturb-seq · Updated 17 October 2026
 
 ## Abstract
 
@@ -15,28 +15,35 @@ lasso, elastic net or OLS. On the Adamson CRISPRi screen (21 sealed knockdowns),
 model. Nearly all of that gain is one feature family, transfer of measured responses between related
 knockdowns, and a control given one hand-written feature of that kind reaches 0.593. On the Norman
 CRISPRa screen (56 sealed perturbations), neither of two repeated agent arms establishes a mean gain
-over its start; averaging each arm's three models gives a small secondary gain. Every feature, every
+over its start; averaging each arm's three models gives a small secondary gain. A third arm given a
+per-gene table derived from the genome sequence scored no higher than the arm without it (0.720 ± 0.001
+against 0.724 ± 0.005), and the one feature it built from the table restates known biology. Every feature, every
 failure and every score stays readable. The reference point is that linear baselines are still hard
 to beat ([Ahlmann-Eltze, Huber and Anders, *Nature Methods*, 2025](https://www.nature.com/articles/s41592-025-02772-6)).
 
-## Current status, 16 October 2026
+## Current status, 17 October 2026
 
-The next question is whether the agents can find a *new kind* of biological feature, not another
-variant of response transfer; the evidence so far says the limit is the information they can read,
-not the search ([below](#can-the-agents-find-new-biology)). Ready but not run: a proposed rule for
-which data sources are allowed (awaiting Andres's confirmation), a first source derived from the
-genome sequence, tools that score any system's features on one fixed linear model against a matched
-null, and a paid test on Norman (block F) fixed in advance; Andres allowed DeepSeek runs on
-16 October, and the plan's $8 ledger cap awaits his OK. B1 remains the delivered Norman ensemble by
+Block G is running on Andres's Mac: twelve 20-minute DeepSeek runs on Adamson and Norman from bundles
+whose knowledge is tier 1 only (Reactome, curated GO, CORUM, CollecTRI, STRING physical links; no
+perturbation screen, no Enrichr sets), half with three per-gene tables (genome annotation, gnomAD
+constraint, UniProt protein annotation) and half without
+([`docs/PLAN_G_CLEAN_ARM.md`](docs/PLAN_G_CLEAN_ARM.md); the ledger may rise at most $20, confirmed
+by Andres on 17 October). No G score is read until the chain ends, and the readings use the corrected fair test.
+Before it, block F (three Norman runs with a genome-annotation table beside B2's inputs, $2.82 on the
+ledger) raised no score, and the one feature the agents built from the table restates known biology;
+its first "pass" of the fair test was withdrawn because the null could not fail it
+([below](#can-the-agents-find-new-biology)). Planned, not run and not dated: block H, this lab against
+Biomni and an autoresearch-style coding agent on one Adamson task package
+([`docs/PLAN_H_COMPARISON.md`](docs/PLAN_H_COMPARISON.md)), and a fresh test on a slice of the Replogle
+2022 K562 screen held and scored once by Andres's ML collaborator
+([`docs/PLAN_R_FRESH_TEST.md`](docs/PLAN_R_FRESH_TEST.md)). B1 remains the delivered Norman ensemble by
 the fixed visible-validation rule; its three saved members reproduce exactly from the
-[frozen export](https://github.com/andresloak100/Gene-Mila/pull/19). Both real-data sealed sets have
-been scored repeatedly, so later readings on them are descriptive; a fresh test needs a separate
-evaluator and an untouched cohort, and the
-[cohort audit](https://github.com/andresloak100/Gene-Mila/blob/66ed4c69462b723bf2b800fb8a503ee198cc15c9/docs/EXTERNAL_COHORT_METADATA.md)
-approves none yet. Continuation steps:
-[HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true); what is
-the lead's decisions: [`docs/ROADMAP.md`](docs/ROADMAP.md); the rule for "goal met":
-[`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md); every document, by group: [documentation map](docs/README.md).
+[frozen export](docs/results/norman_frozen_export_20261013/report.md). Both real-data sealed sets have
+been scored repeatedly, so later readings on them are descriptive. Continuation steps:
+[HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true); the lead's
+decisions: [`docs/ROADMAP.md`](docs/ROADMAP.md); the rule for "goal met":
+[`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md); every document, by group:
+[documentation map](docs/README.md).
 
 ## Results on Adamson
 
@@ -119,13 +126,14 @@ Table 1 layout) and [`scaling.md`](docs/results/scaling.md) (cost, throughput an
   CellForge's published rows are not placed beside these: a fixed Table 1 evaluator was not located
   in the inspected release, and no tested metric definition reproduces its own baseline rows (its
   unperturbed baseline has PCC 0.0001; on this data it scores 0.98;
-  [comparability audit](https://github.com/andresloak100/Gene-Mila/pull/13)).
+  [comparability audit](docs/results/norman_b1_frozen_test_review_20261013.md)).
 
 ## Results on Norman
 
 The Norman et al. 2019 screen (CRISPRa activation in K562, single genes and gene pairs) is read
 only at points fixed in advance ([`NORMAN_PLAN.md`](docs/NORMAN_PLAN.md),
-[`PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md)). The bundle has 231 perturbations on a split that
+[`PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md), [`PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md)).
+The bundle has 231 perturbations on a split that
 keeps every held-out single gene out of training: 112 training, 63 visible and 56 sealed. The
 reference is the additive baseline (a pair predicted as control plus its two single-gene
 responses). A single model's gain counts when it exceeds twice its paired standard error and the
@@ -194,36 +202,60 @@ additive baseline: R²_DE 0.847 ± 0.008 for B1's runs and 0.828 ± 0.027 for B2
 (N4: 0.819). B2's most shrunk run (ridge alpha 300,000) has its best pearson_delta and its worst DE
 scores. A development-only diagnostic on four built-in features under three fixed fold seeds did
 not support a benefit from magnitude calibration
-([saved report](https://github.com/andresloak100/Gene-Mila/blob/a699d449050e5aee8def1e9eed848df720b5ce96/docs/results/norman_development_shrinkage_20261013/report.md));
+([saved report](docs/results/norman_development_shrinkage_20261013/report.md));
 it does not diagnose B1's larger feature models, and B1 is unchanged.
 
 **Development tests on B1, 13 October, training cohort only.** A fixed gene-hidden comparison
 supports a simpler r1+r2 average over the three-member refit ensemble: pearson_delta 0.584 ± 0.011
 against 0.459 ± 0.021, paired gain 0.125 ± 0.016, with lower overall and top-20 error but mean
 errors still above additive ([results](docs/B1_TWO_MEMBER_RESULTS.md)). Three further fixed tests
-failed their gates and stay unmerged: a
-[nested blend](https://github.com/andresloak100/Gene-Mila/blob/72e26bd/docs/B1_NESTED_BLEND_RESULTS.md)
+failed their gates and are merged records: a
+[nested blend](docs/B1_NESTED_BLEND_RESULTS.md)
 (too much correlation lost), a
-[stronger r2 penalty](https://github.com/andresloak100/Gene-Mila/blob/618c4da/docs/B1_R2_REGULARIZATION_RESULTS.md)
+[stronger r2 penalty](docs/B1_R2_REGULARIZATION_RESULTS.md)
 (over its top-20 error limit) and a
-[copied per-pair feature correction](https://github.com/andresloak100/Gene-Mila/blob/dab64d0/docs/B1_PAIR_BATCH_RESULTS.md)
+[copied per-pair feature correction](docs/B1_PAIR_BATCH_RESULTS.md)
 (Pearson change −0.000003 ± 0.000028; additive MSE guard failed). The
 [recipe diagnosis](docs/B1_DIAGNOSTIC_RESULTS.md) explains B1's weakness. All are partitions of one
 training cohort after member selection, not a fresh held-out evaluation; B1 stays delivered.
 
+**Block F: a genome-annotation table beside B2's inputs, 16 October.** Three fresh DeepSeek runs from
+B2's start (`norman_ga_ds_addstart_w4_r0`, `_r2`, `_r3`; 4 workers, 20 minutes each) with one change
+from B2: a per-gene table built from GENCODE and the hg38 sequence added to the bundle, no hypothesis
+given. The selected models score 0.720, 0.718 and 0.720 sealed (0.720 ± 0.001) against B2's 0.722,
+0.720 and 0.730; each is +0.006 to +0.008 over the additive baseline (paired SE about 0.002), and over
+its start only r0 clears the reading rule (+0.004 ± 0.002, 38 of 56). The plan fixed no sealed arm
+test. Out of fold, descriptively, each run's selected feature set refit on one ridge scores
+0.5805 ± 0.0023 for F against 0.5825 ± 0.0081 for B2 (mean ± sd over seeds). The table did not raise
+the score; what the agents built from it is read in the next section
+([`norman_f_readings.md`](docs/results/norman_f_readings.md)).
+
 Norman's sealed set has now been scored for many models (B2's readings alone made 58 sealed
-scorings), so from here on comparisons on it are descriptive
+scorings, block F's four more per run), so from here on comparisons on it are descriptive
 ([`PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md), "What happens after"). By the spend ledger, B1 cost
-$4.11 and B2 $5.51, its killed run included; the ledger counts about twice what DeepSeek bills.
+$4.11, B2 $5.51, its killed run included, and F $2.82 ($1.41 billed); the ledger counts about twice
+what DeepSeek bills.
 
 ## Can the agents find new biology?
 
 On 15 October Andres asked for one biological feature that the current linear model lacks, found by
 the agents without being told where to look. The plan he and his machine-learning collaborator set
 that day: if one holds up, the work becomes a biology paper; if the agents only raise the score, a
-machine-learning paper comparing systems. Holding up means naming the biology, replicating on
-another cohort and passing a wet-lab test. [`docs/NOVEL_FEATURE_NEEDS.md`](docs/NOVEL_FEATURE_NEEDS.md)
-sets out what that takes. Nothing in this section has run on real perturbation data.
+machine-learning paper comparing systems. Holding up is six criteria fixed before any score was read
+([`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md)): found by the agents from an allowed source and
+passing the fair test below; a named mechanism with a predicted sign; replication on a second cohort
+of the same modality; a fresh test held outside the Mac; a wet-lab confirmation (a collaborating lab
+would run it, Andres said on 17 October); and not already in the literature.
+[`docs/NOVEL_FEATURE_NEEDS.md`](docs/NOVEL_FEATURE_NEEDS.md) sets out what that takes. Status on
+17 October: not yet, on either path, and no candidate stands.
+
+The lead's odds for the window to early November, written down before block G ran
+([`docs/ROADMAP.md`](docs/ROADMAP.md), section 1):
+a new feature testable in vitro, 3 to 5 percent, since every family the tier-1 tables allow has a
+known rule behind it; a computational result meeting every criterion but the wet lab, about 10
+percent; the comparison's first three criteria (three systems run, every feature scored alike,
+CellForge reported as not comparable), about 65 percent; this lab beating every baseline on a fresh
+cohort, about 20 percent, as the arms with and without the first table are level out of fold.
 
 **The limit is information, not search.** On Adamson, every winning model so far copies the
 measured responses of knockdowns whose targets resemble the new one
@@ -232,20 +264,25 @@ rule. In leave-one-out over Adamson's 50 training perturbations, only another K5
 screen added clearly (Replogle 2022, +0.072 ± 0.020 paired SE over gene-set neighbours); a learned
 mix of the bundle's own gene sets, interactions and co-expression added +0.010, inside the noise.
 
-**Which data may be added.** Proposed rule, awaiting Andres's confirmation: a source is allowed if
+**Which data may be added.** The rule, approved by Andres on 16 October: a source is allowed if
 it was measured or derived without perturbing genes and holds none of the responses being
 predicted. Tier 1 (genome and protein sequence, curated complexes, population constraint,
-unperturbed K562 chromatin and binding maps) is allowed; tier 2 (MitoCarta, mRNA half-lives,
-recruitment screens) only as separately labelled arms; perturbation screens, Replogle included, and
-expression atlases stay out of the main claim (needs document, section 7).
+unperturbed K562 chromatin and binding maps) is allowed and is all that block G's bundles hold;
+tier 2 (MitoCarta, mRNA half-lives, recruitment screens) only as separately labelled arms;
+perturbation screens, Replogle included, and expression atlases stay out of the main claim (needs
+document, section 7; the approval is recorded in
+[`docs/PLAN_G_CLEAN_ARM.md`](docs/PLAN_G_CLEAN_ARM.md)).
 
-**A first tier-1 source.** `tools/build_gene_annotation.py` turns GENCODE and the hg38 sequence
+**Three tier-1 tables.** `tools/build_gene_annotation.py` turns GENCODE and the hg38 sequence
 into a per-gene table: locus, opposite-strand TSS partners, neighbours, message lengths, promoter
 CpG content and amino-acid composition. For Norman's 2,083 genes it matched 2,041; the other 42 are
 retired symbols (SEPP1, KIAA0101, TCEB1, …). Of the measured genes, 96 have their TSS within 1 kb
 of another's on the opposite strand (mostly head-to-head shared promoters; 16 of the 48 pairs
 overlap at their 5' ends instead), so a CRISPRa or CRISPRi guide at one can also reach the other.
-That is known biology: if the agents find it, it is a methods result, not a new rule. Adamson names
+That is known biology: if the agents find it, it is a methods result, not a new rule.
+`tools/build_gene_constraint.py` adds gnomAD's loss-of-function and missense constraint per gene, and
+`tools/build_protein_annotation.py` UniProt's protein length, signal peptide, transmembrane segments
+and location. Block F gave the agents the first table; block G gives them all three. Adamson names
 some targets by retired symbols too (SRPR, MARS, ATP5B), so they may get no gene sets or
 interactions from the knowledge files; `tools/knowledge_coverage.py` counts this per target once it
 runs on the Mac's data.
@@ -253,32 +290,83 @@ runs on the Mac's data.
 **A stricter test of a feature.** The planner calls a feature helpful after a +0.002 visible gain:
 one parent-to-child difference, with no standard error. `tools/feature_compare.py` refits one fixed
 ridge model, the lab's starting model plus a system's feature set or one feature, out of fold on
-the training perturbations, and reports pearson_delta, MSE and four metrics on each perturbation's
-20 most-changed genes, a paired gain whose standard error allows for shared target genes, and a
-matched null (the feature's values shuffled between genes of similar control expression),
-Holm-corrected within each system. Every system has seen these training labels, so a verdict only
-screens candidates; a claim needs the fresh test, whose separate evaluator does not exist yet.
+the training perturbations under fold seeds no run used, and reports pearson_delta, MSE and four
+metrics on each perturbation's 20 most-changed genes, a paired gain whose standard error allows for
+shared target genes, and two matched nulls: the feature's values shuffled between genes of similar
+control expression, and, for a feature that is a parent column times a per-perturbation number,
+that number shuffled between perturbations of similar target expression with the parent left in
+place. Rows with identical predictions count once, the family-wise p is a max-gain step-down
+permutation test at 999 or more replicates (floor 0.001), and the feature's standardised
+coefficient is saved so a sign can be read. The second null and the step-down were added on
+17 October, after block F's first reading passed a feature the first null could not fail (below).
+Every system has seen these training labels, so a verdict only screens candidates; a claim needs
+the fresh test.
 
 **Other systems on the same task.** `tools/export_task_package.py` writes the task as a folder in
 the style of [karpathy/autoresearch](https://github.com/karpathy/autoresearch): the public data
-every lab experiment receives, a fixed evaluator that keeps or discards each change by an
-out-of-fold noise rule, caps on the constants a file may hold (so training labels cannot be pasted
-in), and one editable `features/` directory, for a coding agent (Claude Code or Codex) or Biomni
-to work in. [`docs/FEATURE_COMPARISON_PROTOCOL.md`](docs/FEATURE_COMPARISON_PROTOCOL.md) fixes the
-arms (the lab with four workers and with one, a coding agent, Biomni, CellForge, STATE), the
-fairness controls and the metrics table. No outside system has run yet; who pays, an isolating
-container on the Mac and a GPU for CellForge and STATE are Andres's decisions.
+every lab experiment receives, a fixed evaluator that keeps or discards each change by a noise
+rule, caps on the constants a file may hold (so training labels cannot be pasted in), the visible
+validation labels in a disclosed harness folder, so a foreign agent gets the feedback the lab's own
+controller gives (Andres may veto this tier), and one editable `features/` directory.
+[`docs/FEATURE_COMPARISON_PROTOCOL.md`](docs/FEATURE_COMPARISON_PROTOCOL.md) fixes the fairness
+controls and the metrics table; [`docs/PLAN_H_COMPARISON.md`](docs/PLAN_H_COMPARISON.md) (block H)
+fixes the arms, all on the clean Adamson bundle with the three tables, 20 minutes each: block G's
+four-worker runs and their no-table control, the lab with one worker (three runs), Biomni's agent
+and an autoresearch-style Claude Code loop (three sessions each, DeepSeek V4 Pro through a proxy that
+writes the ledger and caps a session at $2.50), the scripted no-LLM control, and four features
+translated by hand from CellForge's design
+([`docs/comparison/cellforge_c2/`](docs/comparison/cellforge_c2/README.md)). Block cap: $15 over the
+ledger, confirmed by Andres on 17 October. STATE is out: its public weights were trained on the Replogle K562
+screen the fresh test will use. No outside system has run; the arms wait for isolation (Docker on
+the Mac, or a second macOS account holding only the package), Andres's decision.
 
-**The first paid test is fixed before it runs.**
-[`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md) (block F) repeats the three
-B2 Norman runs with one change: the genome annotation file is added beside B2's Replogle file. The
-agents get no list of hypotheses, so whatever they build from it is theirs. The primary reading is
-`tools/feature_compare.py` on every feature that reads the file; the comparison with B2 on Norman's
-sealed set is one more look at a set already read many times, and the prior expectation is that a
-table of this kind usually adds 0.01 or less. Andres allowed DeepSeek runs on 16 October; the plan's $8
-ledger cap (about $4 billed) awaits his OK. It has not run. Because F keeps B2's Replogle file, a
-perturbation screen outside tier 1, only gene_annotation features that do not also read that file
-can support a tier-1 claim.
+**Block F ran, and its first reading was withdrawn.**
+[`docs/PLAN_F_GENOME_ANNOTATION.md`](docs/PLAN_F_GENOME_ANNOTATION.md) repeated the three B2 Norman
+runs with one change: the genome annotation file added beside B2's Replogle file, no list of
+hypotheses. The three runs wrote 94 plugins, 66 of them scoreable as add-one rows, and in two runs
+independently the agents built the same feature: the additive prediction scaled by the targets'
+mean promoter CpG observed/expected ratio (r0 twice, r3 once). Its gain over the parent is
++0.00056 ± 0.00015 pearson_delta, a thousandth of the score, and under the pre-registered rule it
+first passed. That pass is withdrawn ([`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md), Status,
+23:40 UTC): a feature that is a parent column times a per-perturbation number cannot fail the
+gene-permutation null, because shuffling it across genes scrambles the parent factor the model
+already holds (null sd 0.00001), and with 20·m − 1 replicates the smallest pooled Holm p equalled
+the 0.05 cutoff by construction, so "found" meant "no replicate exceeded"; 14 of the 20 tested rows,
+a random projection among them, hit the same floor. Criterion A.1 is pending a re-read of all 66
+rows under the corrected test, after block G. The feature is known biology either way: CRISPRa
+raises highly expressed genes the least, and CpG-island promoters mark that class (Konermann et al.
+2015; Chavez et al. 2016; [literature check](docs/CANDIDATE_LITERATURE_CHECK.md)). Its coefficients
+in the runs' own models were +0.0147, +0.0143 and −0.0100, so no sign is stated
+([`norman_f_coefficient_signs.md`](docs/results/norman_f_coefficient_signs.md)). Six other passing
+rows multiplied the Replogle screen's response by the same promoter columns; because F kept that
+screen, a perturbation screen outside tier 1, only features that do not read it can support a
+tier-1 claim. Sealed and out-of-fold arm readings: [Results on Norman](#results-on-norman).
+
+**Block G, running now.** [`docs/PLAN_G_CLEAN_ARM.md`](docs/PLAN_G_CLEAN_ARM.md) removes every
+tier-2 and tier-3 input: the bundles' knowledge is Reactome, GO restricted to curated and
+experimental evidence codes, CORUM, CollecTRI and STRING physical links, with (G1) and without (G0)
+the three tables. Twelve runs, Adamson then Norman, seeds 0, 2 and 3, a DeepSeek planner and four
+DeepSeek workers, 20 minutes each, code `baa7dfd`; the ledger may rise at most $20, confirmed by
+Andres on 17 October at 01:46 UTC. G0 is G1's control; B2 is context only. Before any score is read, the known biology of
+every family the tables allow (promoter CpG class, bidirectional promoters, constraint, signal
+peptides and transmembrane segments, gene length) is written down with the sign each modality
+predicts, in a file the pinned run code predates, so no agent sees it
+([`docs/PREREG_G_KNOWN_BIOLOGY.md`](docs/PREREG_G_KNOWN_BIOLOGY.md)); a family on that list is a
+methods result and gets no novelty sentence. The one open family with power, constraint
+residualised on control expression and on tier-1 essentiality proxies, is also written as a
+hand-made plugin by the lead and is reported as a human hypothesis, never as the agents'. The block
+stops on a run failure, a run over $2.00, a planner change or an unlisted knowledge file, never on
+a sealed score. Progress: [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true).
+
+**The fresh test.** Both sealed sets are worn, and the public CRISPRa cohorts audited give Norman
+four usable genes ([cohort audit](docs/EXTERNAL_COHORT_METADATA.md)), so Norman gets no fresh test.
+The plan is a slice of the Replogle 2022 K562 CRISPRi screen with targets outside Adamson's and
+Norman's, held and scored once by Andres's ML collaborator after the predictions' hashes are posted
+(commit, then reveal; [`docs/PLAN_R_FRESH_TEST.md`](docs/PLAN_R_FRESH_TEST.md)). The raw file has
+been on the Mac since 10 October, and a knowledge file built from it was in later Adamson and
+Norman bundles, so the test is held out by protocol and by the holder, not by physical separation;
+every manifest says so. No holder is named and no deposit is dated: the frozen-model adapter must
+first reproduce the frozen B1 export on a new cohort path.
 
 **Genes and cost.** The bundles keep about 2,000 genes. The LLM bill does not grow with genes
 (agents write code and never read the matrix); CPU time and memory do, and a feature found on
@@ -388,10 +476,11 @@ direction metrics are computed on Adamson and Norman, not on its data
 
 - **Both sealed sets are worn.** Adamson's 21 sealed perturbations have been scored for dozens of
   finalists across about 30 runs, and the hand-written transfer feature was designed after 26
-  sealed results had been read. Norman's 56 were read only at pre-specified points, but after B1
-  and B2 the set has been scored for many models. Later readings on either set are descriptive.
+  sealed results had been read. Norman's 56 were read only at pre-specified points, but after B1,
+  B2 and F the set has been scored for many models. Later readings on either set are descriptive,
+  and the one unseen tier, the fresh test, has no holder and no date.
 - **Few, short runs, and no established arm on Norman.** Two runs per agent arm on Adamson; on
-  Norman three per arm for B1 and B2, one for N3 and N4; 20 minutes each, one split per dataset.
+  Norman three per arm for B1, B2 and F, one for N3 and N4; 20 minutes each, one split per dataset.
   Most differences between arms are inside run-to-run noise; the no-LLM control is deterministic,
   so its six identical runs are not a noise estimate. On Norman no arm's mean gain over its start is
   established, and the averaged models' gains pass only as secondary readings.
@@ -399,6 +488,11 @@ direction metrics are computed on Adamson and Norman, not on its data
   pearson_delta (+0.01 to +0.05 by arm, the smallest inside run-to-run spread) disappears against
   a control given one hand-written transfer feature, written after the agent runs had shown what
   works; their lead on the DE columns remains.
+- **The fair test screens on a seen tier.** `tools/feature_compare.py` scores out of fold on
+  training perturbations every system selected on, and the task package ships the visible
+  validation labels to foreign systems so that feedback is equal. Its first version passed a
+  feature its null could not fail, and block F's rows are being re-read under the corrected one. A
+  verdict there ranks candidates for the fresh test; it is not a result.
 - **Continuation feedback and the oracle.** Warm starts used to expose the prior winner's
   aggregate sealed score to the planner; [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13)
   removed that path, but historical exposure remains part of the record. The oracle shares
@@ -424,7 +518,10 @@ The code is public in this repository. The Adamson et al. 2016 screen (scPerturb
 gene, keeps 2,000 highly variable genes plus every target, and splits by perturbation. Prior
 knowledge comes from Reactome, GO Biological Process, MSigDB Hallmark, CollecTRI and STRING v12;
 the Replogle 2022 K562 screen was added as audited external knowledge, recorded in each run's
-configuration. Data bundles and fitted run artifacts stay on Andres's Mac, excluded from Git.
+configuration. Block G's clean bundles hold instead Reactome, curated GO, CORUM, CollecTRI and
+STRING physical links, plus tables from GENCODE, hg38, gnomAD and UniProt, with download receipts
+in [`docs/mac/block_g/`](docs/mac/block_g/). Data bundles and fitted run artifacts stay on
+Andres's Mac, excluded from Git.
 Committed here: the dated [result reports](docs/results/), the [Mac archives](docs/mac/)
 (summaries, configurations, checksums), the Norman split and manifest
 (`docs/results/norman_splits.json`, `docs/results/norman_manifest.json`), the
@@ -465,6 +562,10 @@ outputs of a run, scaling and the synthetic example in detail: [`docs/USAGE.md`]
 - Ahlmann-Eltze, C., Huber, W. and Anders, S. [Deep-learning-based gene perturbation effect prediction
   does not yet outperform simple linear baselines](https://www.nature.com/articles/s41592-025-02772-6).
   *Nature Methods* **22**, 1657–1661 (2025).
+- Konermann, S. et al. [Genome-scale transcriptional activation by an engineered CRISPR-Cas9
+  complex](https://www.nature.com/articles/nature14136). *Nature* **517**, 583–588 (2015).
+- Chavez, A. et al. [Comparison of Cas9 activators in multiple
+  species](https://www.nature.com/articles/nmeth.3871). *Nature Methods* **13**, 563–567 (2016).
 - [CellForge](https://arxiv.org/abs/2508.02276), arXiv 2508.02276. Dataset and reported-metric reference;
   its published rows remain contextual until both methods are evaluated on identical locked data.
 - [VCWorld](https://proceedings.iclr.cc/paper_files/paper/2026/file/767ff070c27c8954babe74eccf3fbe91-Paper-Conference.pdf),

@@ -39,6 +39,10 @@ CI checks only the README (`readme_check.py`); run `python -m pytest -q` (about 
 | `replay_selection.py` | `docs/results/selection_replay.md` (4 October) |
 | `b1_development_diagnostic.py` | `docs/B1_DIAGNOSTIC_RESULTS.md` (hashes `docs/B1_DIAGNOSTIC_PLAN.md` by path) |
 | `b1_two_member_test.py` | `docs/B1_TWO_MEMBER_RESULTS.md` (hashes `docs/B1_TWO_MEMBER_PLAN.md` by path) |
+| `shrinkage_diagnostic.py` | `docs/results/norman_development_shrinkage_20261013/report.md` (13 October; hashes `docs/NORMAN_SHRINKAGE_PLAN.md` by path) |
+| `b1_nested_blend.py` | `docs/B1_NESTED_BLEND_RESULTS.md` (13 to 14 October; hashes `docs/B1_NESTED_BLEND_PLAN.md` by path; imports `b1_development_diagnostic.py`) |
+| `b1_r2_regularization.py` | `docs/B1_R2_REGULARIZATION_RESULTS.md` (13 to 14 October; hashes `docs/B1_R2_REGULARIZATION_PLAN.md` by path; imports `b1_development_diagnostic.py`) |
+| `b1_pair_batch_correction.py`, `feature_variants/pair_target_prior_edge_e34.py` | `docs/B1_PAIR_BATCH_RESULTS.md` (13 to 14 October; hashes `docs/B1_PAIR_BATCH_PLAN.md` and the variant by path; imports `b1_development_diagnostic.py`). The variant is the copied e34 plugin, version 3, with a per-pair fallback; it is installed in no bundle |
 
 ## Drivers and checks
 

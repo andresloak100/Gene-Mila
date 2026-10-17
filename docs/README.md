@@ -45,26 +45,35 @@ not integrated merely because a document describes it.
 - Plan R, the fresh test (commit, then reveal): [PLAN_R_FRESH_TEST.md](PLAN_R_FRESH_TEST.md), with
   [FROZEN_TEST_PLAN.md](FROZEN_TEST_PLAN.md), [FROZEN_EXPORT.md](FROZEN_EXPORT.md) and
   [EXTERNAL_COHORT_METADATA.md](EXTERNAL_COHORT_METADATA.md).
+  [TEST_READINESS_20261013.md](TEST_READINESS_20261013.md): the untouched-test preparation of 13 October (two DeepSeek
+  text reviews of fixed metadata; no cohort approved, no model scored); records in
+  [results/test_readiness_20261013/](results/test_readiness_20261013/).
 
 ## Completed blocks (pre-registered plans and their readings; records, never edited)
 
 - Norman N1 to N4: [NORMAN_PLAN.md](NORMAN_PLAN.md) (section 8 is the log); scripts [mac/block_norman_n/](mac/block_norman_n/).
 - B1 and B2, the paid block after N4: [PLAN_AFTER_N4.md](PLAN_AFTER_N4.md); scripts [mac/block_after_n4/](mac/block_after_n4/).
-  The B1 and B2 run records are in draft PRs [#6](https://github.com/andresloak100/Gene-Mila/pull/6) and
-  [#7](https://github.com/andresloak100/Gene-Mila/pull/7) until they are merged.
+  Run records in [mac/README.md](mac/README.md), readings in [results/README.md](results/README.md); Astra's
+  verification of the B2 records: [results/b2_handoff_verification_20261013.md](results/b2_handoff_verification_20261013.md).
 - B4, one worker against four: [PLAN_B4_SINGLE_WORKER.md](PLAN_B4_SINGLE_WORKER.md); scripts [mac/block_b4/](mac/block_b4/);
   reading [results/b4_existing_readings_20261017.md](results/b4_existing_readings_20261017.md).
 - Block F, genome annotation on Norman: [PLAN_F_GENOME_ANNOTATION.md](PLAN_F_GENOME_ANNOTATION.md); scripts
   [mac/block_f/](mac/block_f/); reading [results/norman_f_readings.md](results/norman_f_readings.md).
 - Development screens of 13 October ($0, training folds only): [B1_DIAGNOSTIC_PLAN.md](B1_DIAGNOSTIC_PLAN.md) and
   [B1_DIAGNOSTIC_RESULTS.md](B1_DIAGNOSTIC_RESULTS.md); [B1_TWO_MEMBER_PLAN.md](B1_TWO_MEMBER_PLAN.md) and
-  [B1_TWO_MEMBER_RESULTS.md](B1_TWO_MEMBER_RESULTS.md). Three more (nested blend, r2 penalty, pair-batch
-  correction) and the singleton-transfer comparison are in draft PRs
-  [#31](https://github.com/andresloak100/Gene-Mila/pull/31), [#33](https://github.com/andresloak100/Gene-Mila/pull/33),
-  [#35](https://github.com/andresloak100/Gene-Mila/pull/35) and [#25](https://github.com/andresloak100/Gene-Mila/pull/25).
-  These plans stay at the top of `docs/` because `tools/b1_development_diagnostic.py`, `tools/b1_two_member_test.py`
-  and `tests/test_b1_two_member_test.py` hash them by path, and nine code and test files cite `docs/NORMAN_PLAN.md`
-  and `docs/PLAN_AFTER_N4.md` by path.
+  [B1_TWO_MEMBER_RESULTS.md](B1_TWO_MEMBER_RESULTS.md). Three more, each rejected by its predeclared gate:
+  [B1_NESTED_BLEND_PLAN.md](B1_NESTED_BLEND_PLAN.md) and [B1_NESTED_BLEND_RESULTS.md](B1_NESTED_BLEND_RESULTS.md)
+  (one nested error-calibration weight); [B1_R2_REGULARIZATION_PLAN.md](B1_R2_REGULARIZATION_PLAN.md) and
+  [B1_R2_REGULARIZATION_RESULTS.md](B1_R2_REGULARIZATION_RESULTS.md) (r2's ridge penalty fixed at 20000);
+  [B1_PAIR_BATCH_PLAN.md](B1_PAIR_BATCH_PLAN.md) and [B1_PAIR_BATCH_RESULTS.md](B1_PAIR_BATCH_RESULTS.md) (a per-pair
+  fallback in the r2 prior-edge feature). [NORMAN_SHRINKAGE_PLAN.md](NORMAN_SHRINKAGE_PLAN.md): the training-only
+  shrinkage diagnostic of four built-in features; its report is
+  [results/norman_development_shrinkage_20261013/report.md](results/norman_development_shrinkage_20261013/report.md).
+  The singleton-transfer comparison remains in draft PR [#25](https://github.com/andresloak100/Gene-Mila/pull/25).
+  These plans stay at the top of `docs/` because `tools/b1_development_diagnostic.py`, `tools/b1_two_member_test.py`,
+  `tools/b1_nested_blend.py`, `tools/b1_r2_regularization.py`, `tools/b1_pair_batch_correction.py` and
+  `tools/shrinkage_diagnostic.py` hash them by path (`tests/test_b1_two_member_test.py` and the three screens' tests
+  check the recorded paths), and code and test files cite `docs/NORMAN_PLAN.md` and `docs/PLAN_AFTER_N4.md` by path.
 
 ## Records
 

@@ -340,7 +340,10 @@ Claude planner reported $0.225.
 
 The README's section "Can the agents find new biology?" describes these tools; the plans are
 [`NOVEL_FEATURE_NEEDS.md`](NOVEL_FEATURE_NEEDS.md), [`FEATURE_COMPARISON_PROTOCOL.md`](FEATURE_COMPARISON_PROTOCOL.md)
-and [`PLAN_F_GENOME_ANNOTATION.md`](PLAN_F_GENOME_ANNOTATION.md). None has run on real perturbation data.
+and [`PLAN_F_GENOME_ANNOTATION.md`](PLAN_F_GENOME_ANNOTATION.md). Block F ran on 16 October (`results/norman_f_readings.md`);
+the tool gained a perturbation-level null, a family-wise max-gain correction and the saved coefficient sign on
+17 October (`docs/ROADMAP.md` D2), and `tools/build_gene_constraint.py` and `tools/build_protein_annotation.py`
+build the two further per-gene tables block G uses.
 
 ```bash
 # the genome annotation file for the Norman genes

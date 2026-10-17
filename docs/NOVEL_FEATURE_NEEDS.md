@@ -158,7 +158,7 @@ section 2.1 (the genome annotation is reachable from the cloud through the iGeno
 downloaded on the Mac), and the nonlinear-derivability check (M4). The genome annotation builder is done
 (`tools/build_gene_annotation.py`; section 9).
 
-## 7. Recommended data-source policy (Andres asked for one on 16 October; awaiting his confirmation)
+## 7. Recommended data-source policy (Andres asked for one on 16 October; approved by him at 21:08 UTC that day, #41)
 
 Rule: **a source is allowed if it was measured or derived without perturbing genes and does not contain the expression
 responses the lab predicts.** Unperturbed K562 measurements are allowed for the same reason the control cells are.

@@ -343,6 +343,16 @@ recovery preserves both unused Norman bundles and both table directories unchang
 then reruns the original preparation from a reviewed, tested operator checkout, retaining the same cap and run pin.
 No archive, source fix, retry, paid G run or corrected F re-read has been performed at this checkpoint.
 
+## Andres's direct instruction, 2026-10-17 02:15 UTC: merge before rebuilding
+
+> Open the ordering fix as a pull request into the integration branch; Claude merges it when its tests pass. Rebuild the bundles from a clone at that merge, then start the chain, and run the block F re-read after the chain ends.
+
+This supersedes the earlier proposed use of an unmerged operator checkout for the ordering recovery.
+Astra opens the ordering fix as its own PR (dependent on header compatibility PR #54). Claude merges the fixes;
+Astra never merges its own PR. The rebuild waits for the ordering PR's actual integration merge commit and uses
+a clean own checkout at that commit. Existing unused outputs remain unchanged until that gate. The original
+`baa7dfd` research pin, cap record and G-before-F timing stay fixed. No rebuild or paid run has begun.
+
 ## Operator note, 2026-10-17 02:37 UTC: rebuilt at the merged ordering fix; all preparation checks pass
 
 Claude merged ordering PR #55 at 02:31:40 UTC, commit `a77e0ff2d79dc27924eeab08cfad390c076cc1d3`.
