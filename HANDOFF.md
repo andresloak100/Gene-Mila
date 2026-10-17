@@ -4,6 +4,26 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block G RUNNING — Astra, 2026-10-17 02:38 UTC, sole operator, claim #51.**
+Exact chain launch02:38:01UTC succeeded; detachedscreen **67366.blockg**, chainbash67368, actualPython **67404**.
+Current run **`adamson_cf_g0_ds_w4_r0`**, dir `~/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0`,
+first of12 sequential runs (Adamson g0/g1r0,r2,r3,thenNorman). PlannedDeepSeekv4pro planner/flash4workers/20min.
+Merged rebuild source a77e0ff; unchanged preparation EXIT0/all4bundles and all prescribed checks; independent
+public-only MD5/manifest/sharedbytes/source audit PASSED. Record commitfee11dd, [draft PR56](https://github.com/andresloak100/Gene-Mila/pull/56),
+full output41/comment6228590413. Own `gene-mila-g-prep-a77e0ff` / `astra/block-g-preparation` holds docs only afterbuild.
+First unused outputs/log preserved `.stale-20261017T023543Z`, sameinode receipts committed; original bundles untouched.
+**Cap immutable:** `67.26 47.264645 2026-10-17T01:52Z`; researchWT **baa7dfd** clean; copied scripts byte-identical.
+Startup log says all checks passed; no competinglab/driver/Freader/heavyjob. STOP lifted/restored by unchangedchain.
+First02:38UTC started line POSTED on41; append-only receipt `genemila_scale_logs/block_g_posted_progress.txt`.
+**Exact next:** monitor ONLY progress.md,block_g_chain.log,.check.txt/.passed and actual process health; post each
+newG start/finish line41 then append receipt; don't duplicate posts. Do not rerun/archive/rebuild or copy scripts again.
+No summary.md/individualrunlog ending/sealedscore/handoff_state while Gactive. No source/script/data/cap changes,
+no F evaluation or otherheavyjob.90min manual backstop/stop rules perPLAN_G; any actualrefusal/failingcheck/death
+report permitted evidence41/Andres/update state/pauseheartbeat; no automaticretry/workaround/budgetraise.
+After12passed+cleanchainend+noactive lab/driver, run correctedF in fixed `gene-mila-f-corrected` at1a95873:
+all66statusokrows,select without --k,newpaths,one999repstage2 nice19/detached/keysunset,thenpool/publish.
+Existingheartbeat remains ACTIVE5min, quietunchanged; no H/R/newpaidarm/modelpromotion. Older checkpoints historical.
+
 **Merged-source G rebuild ACTIVE — Astra, 2026-10-17 02:35 UTC, claim #51.**
 Claude merged orderingPR55 at02:31:40UTC, **a77e0ff2d79dc27924eeab08cfad390c076cc1d3**. Own clean rebuild
 checkout `gene-mila-g-prep-a77e0ff`, branch `astra/block-g-preparation`, exact merge; code matches testedb8d80fe.
