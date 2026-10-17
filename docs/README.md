@@ -48,6 +48,8 @@ not integrated merely because a document describes it.
   [TEST_READINESS_20261013.md](TEST_READINESS_20261013.md): the untouched-test preparation of 13 October (two DeepSeek
   text reviews of fixed metadata; no cohort approved, no model scored); records in
   [results/test_readiness_20261013/](results/test_readiness_20261013/).
+- [WETLAB_CANDIDATES.md](WETLAB_CANDIDATES.md): the wet-lab prediction package for pre-registration of ROADMAP D13
+  and GOAL_CRITERIA A.5 (`tools/wetlab_candidates.py`).
 
 ## Completed blocks (pre-registered plans and their readings; records, never edited)
 
