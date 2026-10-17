@@ -22,7 +22,7 @@ CI checks only the README (`readme_check.py`); run `python -m pytest -q` (about 
 | `baselines/` (`run_codex.sh`, `run_autoresearch.sh`, `run_biomni.py`, `collect_handback.py`, `ledger_proxy.py`) | the comparison's other systems and the hand-back collector (block H) |
 | `frozen_model.py` | export a pinned frozen ensemble, or predict target-only queries without fitting (`docs/FROZEN_EXPORT.md`) |
 | `replogle_slice_manifest.py` | eligibility manifest of a candidate fresh-test cohort from its obs and var tables (ROADMAP D7) |
-| `wetlab_candidates.py` | the pre-registered wet-lab prediction package: where the model with a feature and its parent disagree, matched negatives, power (`docs/WETLAB_CANDIDATES.md`, ROADMAP D13) |
+| `wetlab_candidates.py` | the wet-lab prediction package for pre-registration: where the model with a feature and its parent disagree on perturbations in no dataset, matched negatives, power (`docs/WETLAB_CANDIDATES.md`, ROADMAP D13) |
 | `noise_ceiling.py`, `count_target_cells.py` | the noise ceiling of pearson_delta from cell-sampling noise, and the cell counts it needs |
 | `external_loo.py` | does an external screen carry information the transfer features lack (leave-one-out on visible data) |
 | `readme_check.py` | deterministic checks on the public face (README links, numbers, commands, figures, About box) |
