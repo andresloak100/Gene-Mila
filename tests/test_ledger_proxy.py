@@ -1,8 +1,12 @@
 """The ledger proxy (tools/baselines/ledger_proxy.py) against a mock upstream: it replaces the client's token with the
 key from its own environment, prices OpenAI and Anthropic usage (plain and SSE) with the lab's table into a ledger
 with the lab's schema, logs the served model and never a body or a token, and refuses at the session cap, at the block
-cap and on a usage shape it does not know."""
+cap and on a usage shape it does not know; it asks the upstream for an uncompressed body, prices a stream whose client
+went away, halts on a stream without its output usage, reserves for calls in flight, and merges Biomni's consecutive
+assistant messages only when asked."""
+import gzip
 import json
+import socket
 import sqlite3
 import sys
 import threading
@@ -30,7 +34,8 @@ PRICING = lp.load_pricing(ROOT / "configs" / "default.toml")
 class Upstream(BaseHTTPRequestHandler):
     """Canned DeepSeek: OpenAI chat completions and Anthropic messages, plain or SSE; records what it received."""
     seen: list = []
-    mode = "ok"  # or "nousage"
+    mode = "ok"  # or "nousage", "gzip" (compress when Accept-Encoding allows), "nodelta" (no message_delta),
+    # "slow" (one SSE event every 0.2 s), "biomni" (an <execute> reply, then a <solution> once an observation is seen)
 
     def log_message(self, *a):
         pass
@@ -46,15 +51,30 @@ class Upstream(BaseHTTPRequestHandler):
         n = int(self.headers.get("Content-Length") or 0)
         req = json.loads(self.rfile.read(n) or b"{}")
         Upstream.seen.append({"path": self.path, "auth": self.headers.get("Authorization"),
-                              "x-api-key": self.headers.get("x-api-key"), "body": req})
+                              "x-api-key": self.headers.get("x-api-key"), "body": req,
+                              "accept-encoding": self.headers.get("Accept-Encoding")})
         model = req.get("model")
         served = "deepseek-chat" if model == "deepseek-flash" else model  # the legacy name, as the real API does
         if self.path == "/v1/chat/completions":
+            reply = SECRET_TEXT
+            if Upstream.mode == "biomni":
+                last = (req.get("messages") or [{}])[-1]  # Biomni appends the observation as an assistant message
+                seen_obs = last.get("role") == "assistant" and str(last.get("content") or "").lstrip().startswith(
+                    "<observation>")
+                reply = "<solution>4</solution>" if seen_obs else "<execute>print(2 + 2)</execute>"
             doc = {"id": "x", "object": "chat.completion", "model": served, "usage": dict(OA_USAGE),
-                   "choices": [{"index": 0, "message": {"role": "assistant", "content": SECRET_TEXT},
+                   "choices": [{"index": 0, "message": {"role": "assistant", "content": reply},
                                 "finish_reason": "stop"}]}
             if Upstream.mode == "nousage":
                 doc["usage"] = {"tokens": 3}
+            if Upstream.mode == "gzip" and "gzip" in (self.headers.get("Accept-Encoding") or ""):
+                body = gzip.compress(json.dumps(doc).encode())
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Encoding", "gzip")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                return self.wfile.write(body)
             if req.get("stream"):
                 chunks = [{"id": "x", "object": "chat.completion.chunk", "model": served,
                            "choices": [{"index": 0, "delta": {"content": SECRET_TEXT}}]},
@@ -76,6 +96,20 @@ class Upstream(BaseHTTPRequestHandler):
                           ("message_delta", {"type": "message_delta", "delta": {"stop_reason": "end_turn"},
                                              "usage": {"output_tokens": AN_USAGE["output_tokens"]}}),
                           ("message_stop", {"type": "message_stop"})]
+                if Upstream.mode == "nodelta":
+                    events = [ev for ev in events if ev[0] != "message_delta"]
+                if Upstream.mode == "slow":  # close-delimited body, one event at a time
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/event-stream")
+                    self.end_headers()
+                    for e, d in events:
+                        try:
+                            self.wfile.write(f"event: {e}\ndata: {json.dumps(d)}\n\n".encode())
+                            self.wfile.flush()
+                        except OSError:
+                            return
+                        time.sleep(0.2)
+                    return
                 body = "".join(f"event: {e}\ndata: {json.dumps(d)}\n\n" for e, d in events)
                 return self._send(200, "text/event-stream", body.encode())
             doc = {"id": "m", "type": "message", "role": "assistant", "model": served,
@@ -104,10 +138,10 @@ def proxy_factory(upstream, tmp_path, monkeypatch):
     monkeypatch.setenv(lp.KEY_ENV, KEY)
     made = []
 
-    def start(session_cap=2.5, block_cap=100.0, ledger=None, arm="biomni", run_id="h_test_r7"):
+    def start(session_cap=2.5, block_cap=100.0, ledger=None, arm="biomni", run_id="h_test_r7", merge=False):
         ledger = ledger or tmp_path / f"ledger{len(made)}.sqlite"
         p = lp.Proxy(upstream, ledger, run_id, arm, session_cap, block_cap, tmp_path / f"proxy{len(made)}.jsonl",
-                     PRICING, KEY)
+                     PRICING, KEY, merge_assistant=merge)
         srv = lp.make_server("127.0.0.1:0", p)
         _serve(srv)
         made.append(srv)
@@ -118,10 +152,11 @@ def proxy_factory(upstream, tmp_path, monkeypatch):
         srv.shutdown()
 
 
-def post(base, path, body, token=DUMMY, header="Authorization"):
+def post(base, path, body, token=DUMMY, header="Authorization", **headers):
     req = urllib.request.Request(base + path, data=json.dumps(body).encode(), method="POST",
                                  headers={"Content-Type": "application/json",
-                                          header: (f"Bearer {token}" if header == "Authorization" else token)})
+                                          header: (f"Bearer {token}" if header == "Authorization" else token),
+                                          **headers})
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             return r.status, r.headers.get("Content-Type", ""), r.read()
@@ -266,18 +301,118 @@ def test_unknown_usage_shape_gives_502_and_halts(proxy_factory):
     assert not json.loads(urllib.request.urlopen(base + "/healthz", timeout=10).read())["ok"]
 
 
-def test_other_routes_are_refused_and_startup_needs_the_key(proxy_factory, monkeypatch, tmp_path, upstream):
+def test_other_routes_are_refused_and_startup_needs_the_key_and_an_existing_ledger(proxy_factory, monkeypatch,
+                                                                                    tmp_path, upstream):
     p, base = proxy_factory()
     status, _, data = post(base, "/v1/embeddings", {"model": "x", "input": "y"})
     assert status == 404 and rows(p.ledger.path) == []
     assert log_lines(p)[-1]["route"] == "/v1/embeddings" and log_lines(p)[-1]["status"] == 404
+    argv = ["--ledger", str(tmp_path / "missing.sqlite"), "--run-id", "r", "--session-cap-usd", "1",
+            "--block-cap-usd", "2", "--log", str(tmp_path / "l.jsonl"), "--upstream", upstream]
+    with pytest.raises(SystemExit, match="does not exist"):  # a mistyped path would start an empty ledger
+        lp.build(lp.parse(argv))
     monkeypatch.delenv(lp.KEY_ENV, raising=False)
-    args = lp.parse(["--ledger", str(tmp_path / "l.sqlite"), "--run-id", "r", "--session-cap-usd", "1",
-                     "--block-cap-usd", "2", "--log", str(tmp_path / "l.jsonl"), "--upstream", upstream])
     with pytest.raises(SystemExit, match=lp.KEY_ENV):
-        lp.build(args)
-    assert lp.main(["--listen", "0.0.0.0:8787", "--ledger", str(tmp_path / "l.sqlite"), "--run-id", "r",
-                    "--session-cap-usd", "1", "--block-cap-usd", "2", "--log", str(tmp_path / "l.jsonl")]) == 2
+        lp.build(lp.parse(argv))
+    for listen in ("0.0.0.0:8787", "[::1]:8787"):  # IPv6 loopback is not accepted: the server binds AF_INET
+        assert lp.main(["--listen", listen, "--ledger", str(p.ledger.path), "--run-id", "r", "--session-cap-usd", "1",
+                        "--block-cap-usd", "2", "--log", str(tmp_path / "l.jsonl")]) == 2
+
+
+def test_upstream_is_asked_for_an_uncompressed_body(proxy_factory):
+    """Both real clients ask for gzip; the proxy cannot read the usage of a compressed body, so it must not forward it."""
+    p, base = proxy_factory()
+    Upstream.seen.clear()
+    Upstream.mode = "gzip"
+    try:
+        status, _, body = post(base, "/v1/chat/completions", {"model": "deepseek-v4-pro", "messages": []},
+                               **{"Accept-Encoding": "gzip, deflate, zstd"})
+    finally:
+        Upstream.mode = "ok"
+    assert status == 200 and json.loads(body)["choices"][0]["message"]["content"] == SECRET_TEXT
+    assert Upstream.seen[-1]["accept-encoding"] == "identity"
+    assert len(rows(p.ledger.path)) == 1 and p.halted is None
+
+
+def test_a_stream_whose_client_goes_away_is_still_priced(proxy_factory):
+    """Claude Code is killed at the wall clock with a request in flight; the upstream has billed it."""
+    p, base = proxy_factory()
+    Upstream.mode = "slow"
+    try:
+        host, port = base[len("http://"):].split(":")
+        body = json.dumps({"model": "deepseek-v4-pro", "stream": True, "max_tokens": 8, "messages": []}).encode()
+        with socket.create_connection((host, int(port)), timeout=10) as sock:
+            sock.sendall(b"POST /anthropic/v1/messages HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\n"
+                         b"Authorization: Bearer " + DUMMY.encode() + b"\r\nContent-Length: " + str(len(body)).encode()
+                         + b"\r\n\r\n" + body)
+            first = sock.recv(4096)
+        assert b"200" in first
+        deadline = time.time() + 15
+        while time.time() < deadline and not rows(p.ledger.path):
+            time.sleep(0.2)
+    finally:
+        Upstream.mode = "ok"
+    r = rows(p.ledger.path)
+    assert len(r) == 1 and (r[0]["input_tokens"], r[0]["output_tokens"]) == (65, 7) and p.halted is None
+    line = [ln for ln in log_lines(p) if ln.get("status") == 200][-1]
+    assert line["stream"] and line["client_gone"] is True
+
+
+def test_an_anthropic_stream_without_message_delta_is_not_priced(proxy_factory):
+    p, base = proxy_factory()
+    Upstream.mode = "nodelta"
+    try:
+        status, _, data = post(base, "/anthropic/v1/messages", {"model": "deepseek-v4-pro", "stream": True, "messages": []})
+    finally:
+        Upstream.mode = "ok"
+    assert status == 200 and "message_stop" in data.decode()  # relayed; priced it is not
+    assert rows(p.ledger.path) == [] and "message_delta" in (p.halted or "")
+    status, _, data = post(base, "/anthropic/v1/messages", {"model": "deepseek-v4-pro", "messages": []})
+    assert status == 402 and "halted" in json.loads(data)["error"]["message"]
+
+
+def test_concurrent_requests_cannot_all_pass_the_session_cap(proxy_factory):
+    one_call = expected_cost("deepseek-v4-pro", 40, 60, 20)
+    p, base = proxy_factory(session_cap=1.5 * one_call)
+    Upstream.mode = "slow"  # Anthropic streams of about 1.2 s, so the eight requests overlap
+    results = []
+    body = {"model": "deepseek-v4-pro", "stream": True, "max_tokens": 8, "messages": []}
+
+    def one():
+        results.append(post(base, "/anthropic/v1/messages", body)[0])
+
+    try:
+        threads = [threading.Thread(target=one) for _ in range(8)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=60)
+    finally:
+        Upstream.mode = "ok"
+    priced = len(rows(p.ledger.path))
+    assert 1 <= priced <= 2, (priced, results)  # settled plus the in-flight reservation; never all eight
+    assert results.count(200) == priced and results.count(402) == 8 - priced
+    refused = [ln["refused"] for ln in log_lines(p) if ln.get("status") == 402]
+    assert all("session cap" in why for why in refused) and any("in flight" in why for why in refused)
+    assert p.inflight == 0
+
+
+def test_consecutive_assistant_messages_are_merged_only_when_asked(proxy_factory):
+    msgs = [{"role": "system", "content": "s"}, {"role": "user", "content": "u"},
+            {"role": "assistant", "content": "<execute>print(2 + 2)</execute>"},
+            {"role": "assistant", "content": "<observation>4</observation>"}, {"role": "user", "content": "go on"}]
+    merged, n = lp.merge_consecutive_assistant(msgs)
+    assert n == 1 and [m["role"] for m in merged] == ["system", "user", "assistant", "user"]
+    assert merged[2]["content"] == "<execute>print(2 + 2)</execute>\n\n<observation>4</observation>"
+    assert lp.merge_consecutive_assistant([{"role": "assistant", "content": [{"type": "text", "text": "a"}]},
+                                           {"role": "assistant", "content": "b"}])[1] == 0  # only string content
+    p, base = proxy_factory()
+    Upstream.seen.clear()
+    assert post(base, "/v1/chat/completions", {"model": "deepseek-v4-pro", "messages": msgs})[0] == 200
+    assert len(Upstream.seen[-1]["body"]["messages"]) == 5 and "merged_messages" not in log_lines(p)[-1]
+    p2, base2 = proxy_factory(merge=True)
+    assert post(base2, "/v1/chat/completions", {"model": "deepseek-v4-pro", "messages": msgs})[0] == 200
+    assert len(Upstream.seen[-1]["body"]["messages"]) == 4 and log_lines(p2)[-1]["merged_messages"] == 1
 
 
 def test_usage_parsers():

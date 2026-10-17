@@ -3,13 +3,17 @@
 #
 #   tools/baselines/run_autoresearch.sh [--dry-run] <package dir> <proxy url> <minutes> <seed> <out dir>
 #
-# Claude Code runs non-interactively (claude -p) with program.md as the prompt, cwd = the package directory,
-# ANTHROPIC_BASE_URL=<proxy>/anthropic and ANTHROPIC_AUTH_TOKEN=proxy-token-<seed> (a dummy; the proxy adds the key),
-# ANTHROPIC_API_KEY unset. The model is $BASELINE_ANTHROPIC_MODEL (default below), also passed as --model. Web tools
-# are denied and no MCP server is loaded. A python watchdog enforces the wall clock (gtimeout is not stock macOS):
-# SIGTERM to claude's process group at <minutes>, SIGKILL 20 s later, exit 124. The transcript (stream-json, one event
-# per line) goes to <out>/transcript.txt, run.json records the exit reason (ended_by: solution|timeout|cap|error), and
-# results.tsv, features/ and runs/kept/features/ are copied into <out>/.
+# Claude Code runs non-interactively (claude -p) with program.md as the prompt (exactly what the Biomni arm gets; its
+# sha256 goes into run.json as task_sha256), cwd = the package directory, and an environment built from an allowlist
+# (env -i: PATH, HOME, LANG, LC_ALL, TMPDIR, TZ, USER, TERM, SHELL when set) plus ANTHROPIC_BASE_URL=<proxy>/anthropic and
+# ANTHROPIC_AUTH_TOKEN=proxy-token-<seed> (a dummy; the proxy adds the key); no other variable of this shell reaches
+# claude or its Bash tool. The model is $BASELINE_ANTHROPIC_MODEL (default below), also passed as --model. Web tools
+# are denied and no MCP server is loaded. BASH_DEFAULT_TIMEOUT_MS and BASH_MAX_TIMEOUT_MS are set to MANIFEST.json's
+# eval_timeout_s plus 30 s, so one `python evaluate.py` fits in one Bash call, as it does in the Biomni arm. A python
+# watchdog enforces the wall clock (gtimeout is not stock macOS): SIGTERM to claude's process group at <minutes>,
+# SIGKILL 20 s later, exit 124. The transcript (stream-json, one event per line) goes to <out>/transcript.txt, run.json
+# records the exit reason (ended_by: solution|timeout|cap|error), and results.tsv, features/ and runs/kept/features/
+# are copied into <out>/.
 #
 # Isolation is the caller's job (Docker or a second macOS account holding only the package, ROADMAP D6): claude runs
 # shell commands with the rights of whoever starts this script.
@@ -54,19 +58,34 @@ fi
 if [ -n "${DEEPSEEK_API_KEY:-}" ] || [ -n "${API_KEY:-}" ]; then
   echo "refusing: DEEPSEEK_API_KEY or API_KEY is set in this shell; only the proxy may hold the key" >&2; exit 2
 fi
+# One evaluation must fit in one Bash call: MANIFEST.json's eval_timeout_s (export_task_package.py default 600) + 30 s.
+EVAL_MS=$(python3 -c 'import json, sys
+try: t = float(json.load(open(sys.argv[1]))["eval_timeout_s"])
+except Exception: t = 600.0
+print(int((t + 30) * 1000))' "$PKG/MANIFEST.json")
+TASK_SHA=$(python3 -c 'import hashlib, sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' "$PKG/program.md")
 
 # The tools Claude Code may use without a prompt: file edits (acceptEdits) and the shell commands program.md needs.
-ALLOWED="Read Edit Write Glob Grep Bash(python evaluate.py*) Bash(python3 evaluate.py*) Bash(grep *) Bash(tail *) Bash(head *) Bash(cat *) Bash(ls *) Bash(wc *) Bash(mkdir *) Bash(python *) Bash(python3 *)"
-DENIED="WebSearch WebFetch Task"
-# shellcheck disable=SC2206  # the two lists are split on spaces on purpose
+# One rule per word: a Bash rule holds a space, so the list is an array, never an unquoted string.
+ALLOWED=(Read Edit Write Glob Grep "Bash(python evaluate.py*)" "Bash(python3 evaluate.py*)" "Bash(grep *)"
+         "Bash(tail *)" "Bash(head *)" "Bash(cat *)" "Bash(ls *)" "Bash(wc *)" "Bash(mkdir *)" "Bash(python *)"
+         "Bash(python3 *)")
+DENIED=(WebSearch WebFetch Task)
 CMD=(claude -p --model "$BASELINE_ANTHROPIC_MODEL" --permission-mode acceptEdits
-     --allowedTools $ALLOWED --disallowedTools $DENIED --strict-mcp-config --no-session-persistence
+     --allowedTools "${ALLOWED[@]}" --disallowedTools "${DENIED[@]}" --strict-mcp-config --no-session-persistence
      --output-format stream-json --verbose)
-ENV_LINE="ANTHROPIC_BASE_URL=$PROXY/anthropic ANTHROPIC_AUTH_TOKEN=proxy-token-$SEED ANTHROPIC_MODEL=$BASELINE_ANTHROPIC_MODEL ANTHROPIC_SMALL_FAST_MODEL=$BASELINE_ANTHROPIC_MODEL (ANTHROPIC_API_KEY unset)"
+# The whole environment claude gets (env -i), the dummy token included; nothing else of this shell.
+CHILD_ENV=(ANTHROPIC_BASE_URL="$PROXY/anthropic" ANTHROPIC_AUTH_TOKEN="proxy-token-$SEED"
+           ANTHROPIC_MODEL="$BASELINE_ANTHROPIC_MODEL" ANTHROPIC_SMALL_FAST_MODEL="$BASELINE_ANTHROPIC_MODEL"
+           BASH_DEFAULT_TIMEOUT_MS="$EVAL_MS" BASH_MAX_TIMEOUT_MS="$EVAL_MS")
+for v in PATH HOME LANG LC_ALL TMPDIR TZ USER TERM SHELL; do
+  if [ -n "${!v:-}" ]; then CHILD_ENV+=("$v=${!v}"); fi
+done
+ENV_LINE="env -i ${CHILD_ENV[*]} (ANTHROPIC_API_KEY unset; task_sha256 $TASK_SHA)"
 
 if [ "$DRY_RUN" = 1 ]; then
   echo "dry run; would run in $PKG for $SECS s (seed $SEED), transcript to $OUT/transcript.txt, proxy log $PROXY_LOG:"
-  echo "  env $ENV_LINE"
+  echo "  $ENV_LINE"
   printf '  '; printf '%q ' "${CMD[@]}"; echo '"$(cat program.md)"'
   exit 0
 fi
@@ -97,9 +116,7 @@ try:
     sys.exit(p.wait(timeout=secs))
 except subprocess.TimeoutExpired:
     stop(124)'
-env -u ANTHROPIC_API_KEY ANTHROPIC_BASE_URL="$PROXY/anthropic" ANTHROPIC_AUTH_TOKEN="proxy-token-$SEED" \
-    ANTHROPIC_MODEL="$BASELINE_ANTHROPIC_MODEL" ANTHROPIC_SMALL_FAST_MODEL="$BASELINE_ANTHROPIC_MODEL" \
-    python3 -c "$WATCHDOG" "$SECS" "$PKG" "${CMD[@]}" "$PROMPT" > "$OUT/transcript.txt" 2>&1 &
+env -i "${CHILD_ENV[@]}" python3 -c "$WATCHDOG" "$SECS" "$PKG" "${CMD[@]}" "$PROMPT" > "$OUT/transcript.txt" 2>&1 &
 LOOP=$!
 
 # The first proxy log line after the start must show the served model.
@@ -138,11 +155,12 @@ if [ -n "$ABORT" ] || [ -z "$SERVED" ]; then ENDED_BY="error"; fi
 [ -f "$PKG/MANIFEST.json" ] && cp "$PKG/MANIFEST.json" "$OUT/"
 [ -d "$PKG/features" ] && { rm -rf "$OUT/features"; cp -R "$PKG/features" "$OUT/features"; }
 [ -d "$PKG/runs/kept/features" ] && { rm -rf "$OUT/kept_features"; cp -R "$PKG/runs/kept/features" "$OUT/kept_features"; }
-python3 - "$OUT" "$SEED" "$MINUTES" "$STARTED" "$BASELINE_ANTHROPIC_MODEL" "$SERVED" "$PKG" "$CODE" "$ENDED_BY" "$PROXY" "$ABORT" <<'EOF'
+python3 - "$OUT" "$SEED" "$MINUTES" "$STARTED" "$BASELINE_ANTHROPIC_MODEL" "$SERVED" "$PKG" "$CODE" "$ENDED_BY" "$PROXY" "$ABORT" "$TASK_SHA" "$EVAL_MS" <<'EOF'
 import json, sys, time
-out, seed, minutes, started, model, served, pkg, code, ended_by, proxy, abort = sys.argv[1:]
+out, seed, minutes, started, model, served, pkg, code, ended_by, proxy, abort, task_sha, eval_ms = sys.argv[1:]
 json.dump({"arm": "autoresearch", "seed": int(seed), "model": model, "model_served": served or None,
-           "minutes": float(minutes), "package": pkg, "out": out, "proxy": proxy, "started": float(started),
+           "minutes": float(minutes), "package": pkg, "out": out, "proxy": proxy, "task_sha256": task_sha,
+           "bash_timeout_ms": int(eval_ms), "started": float(started),
            "ended": time.time(), "wall_s": round(time.time() - float(started), 1), "exit_code": int(code),
            "ended_by": ended_by, "error": abort or None}, open(f"{out}/run.json", "w"), indent=1)
 EOF

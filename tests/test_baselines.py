@@ -1,11 +1,15 @@
 """The block H runners and the hand-back collector (tools/baselines/): collect_handback sorts a session's kept features
-into accepted and rejected --source files with a manifest; run_biomni refuses an unsafe place and, where biomni is
-installed, runs its probe against the mock endpoint through the proxy; the autoresearch script parses and dry-runs."""
+into accepted and rejected --source files with a manifest that hashes and scans the transcript; run_biomni refuses an
+unsafe place or a key, gives its child an allowlisted environment and the package's evaluation timeout, and, where
+biomni is installed, runs its probe (one execute round) against the mock endpoint through the proxy; the autoresearch
+script parses and dry-runs with one permission rule per word and an env -i environment."""
+import hashlib
 import json
 import os
 import subprocess
 import sys
 import threading
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
@@ -15,6 +19,9 @@ sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "tools" / "baselines"))
 import collect_handback as ch  # noqa: E402
 import export_task_package as etp  # noqa: E402
+import ledger_proxy as lp  # noqa: E402
+import run_biomni  # noqa: E402
+from test_ledger_proxy import KEY, PRICING, Upstream  # noqa: E402
 from test_task_package import FEATURE, HELPFUL  # noqa: E402
 
 BASELINES = ROOT / "tools" / "baselines"
@@ -39,13 +46,30 @@ def package(dataset, tmp_path):
     return pkg
 
 
+@pytest.fixture
+def proxy(tmp_path):
+    """A mock upstream and a ledger proxy in front of it; yields (proxy object, proxy url)."""
+    up = ThreadingHTTPServer(("127.0.0.1", 0), Upstream)
+    threading.Thread(target=up.serve_forever, daemon=True).start()
+    px = lp.Proxy(f"http://127.0.0.1:{up.server_address[1]}", tmp_path / "ledger.sqlite", "probe", "biomni", 0.25,
+                  100.0, tmp_path / "proxy.jsonl", PRICING, KEY)
+    srv = lp.make_server("127.0.0.1:0", px)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        yield px, f"http://127.0.0.1:{srv.server_address[1]}"
+    finally:
+        srv.shutdown()
+        up.shutdown()
+
+
 def test_collect_handback_sorts_kept_features_and_writes_the_manifest(package, tmp_path):
     for spec in (HELPFUL, BAD, UNGUARDED):
         _write(package, spec)
     out = tmp_path / "out_r2"
     out.mkdir()
     (out / "run.json").write_text(json.dumps({"arm": "biomni", "seed": 2, "model": "deepseek-v4-pro",
-                                              "ended_by": "timeout", "minutes": 20}))
+                                              "ended_by": "timeout", "minutes": 20, "task_sha256": "ab" * 32}))
+    (out / "transcript.txt").write_text("step 1\nreading https://example.org/x\nimport socket\nfine\n")
     dest = tmp_path / "handback"
     assert ch.main(["--out", str(out), "--package", str(package), "--dest", str(dest)]) == 0
     assert sorted(p.name for p in (dest / "biomni_r2").iterdir()) == ["ar_target_corr.py"]
@@ -55,6 +79,8 @@ def test_collect_handback_sorts_kept_features_and_writes_the_manifest(package, t
     m = json.loads((dest / "manifest.json").read_text())
     s = m["sessions"]["biomni_r2"]
     assert s["origin"] == "features/ (no results.tsv)" and s["run"]["ended_by"] == "timeout" and s["results_tsv_sha256"] is None
+    assert s["run"]["task_sha256"] == "ab" * 32 and s["transcript_sha256"] == ch.sha256(out / "transcript.txt")
+    assert [(f["line"], f["match"]) for f in s["transcript_flags"]] == [(2, "https://"), (3, "socket")]
     files = s["files"]
     assert files["ar_target_corr"]["ok"] and files["ar_target_corr"]["literal"]["ok"] and files["ar_target_corr"]["guard"]["ok"]
     assert files["ar_target_corr"]["sha256"] == ch.sha256(package / "features" / "ar_target_corr.py")
@@ -81,6 +107,7 @@ def test_collect_handback_sorts_kept_features_and_writes_the_manifest(package, t
     assert set(m["sessions"]) == {"biomni_r2", "autoresearch_r3"}
     s3 = m["sessions"]["autoresearch_r3"]
     assert s3["origin"] == "runs/kept/features" and sorted(s3["files"]) == kept
+    assert s3["transcript_sha256"] is None and s3["transcript_flags"] is None
     assert s3["results_tsv_sha256"] == ch.sha256(package / "results.tsv")
     assert sorted(p.stem for p in (dest / "autoresearch_r3").glob("*.py")) == kept
 
@@ -101,7 +128,7 @@ def test_collect_handback_reads_results_tsv_without_a_kept_state(package, tmp_pa
 
 
 def test_run_biomni_refuses_a_checkout_and_a_key_in_its_environment(package, tmp_path):
-    env = {k: v for k, v in os.environ.items() if k != "DEEPSEEK_API_KEY"}
+    env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
     base = [sys.executable, str(BASELINES / "run_biomni.py"), "--out", str(tmp_path / "o"), "--probe"]
     # the package inside this repository's checkout
     r = subprocess.run(base + ["--package", str(ROOT / "tools" / "task_package")], cwd=tmp_path, env=env,
@@ -114,51 +141,99 @@ def test_run_biomni_refuses_a_checkout_and_a_key_in_its_environment(package, tmp
     r = subprocess.run(base + ["--package", str(package)], cwd=tmp_path, env={**env, "DEEPSEEK_API_KEY": "x"},
                        capture_output=True, text=True)
     assert r.returncode == 2 and "DEEPSEEK_API_KEY" in r.stderr
-    # a proxy that is not local
+    r = subprocess.run(base + ["--package", str(package)], cwd=tmp_path, env={**env, "API_KEY": "x"},  # the Mac's name
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "API_KEY" in r.stderr
+    # a proxy that is not local, and one that does not answer
     r = subprocess.run(base + ["--package", str(package), "--proxy", "https://api.deepseek.com"], cwd=tmp_path, env=env,
                        capture_output=True, text=True)
     assert r.returncode == 2 and "--proxy" in r.stderr
+    r = subprocess.run(base + ["--package", str(package), "--proxy", "http://127.0.0.1:9"], cwd=tmp_path, env=env,
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "healthz" in r.stderr
 
 
-def test_run_biomni_probe_through_the_proxy(package, tmp_path, monkeypatch):
-    pytest.importorskip("biomni")
-    pytest.importorskip("langchain_openai")
-    from http.server import ThreadingHTTPServer
-    import ledger_proxy as lp
-    from test_ledger_proxy import KEY, PRICING, Upstream
-    up = ThreadingHTTPServer(("127.0.0.1", 0), Upstream)
-    threading.Thread(target=up.serve_forever, daemon=True).start()
-    proxy = lp.Proxy(f"http://127.0.0.1:{up.server_address[1]}", tmp_path / "ledger.sqlite", "probe", "biomni", 0.05,
-                     100.0, tmp_path / "proxy.jsonl", PRICING, KEY)
-    srv = lp.make_server("127.0.0.1:0", proxy)
-    threading.Thread(target=srv.serve_forever, daemon=True).start()
+def test_run_biomni_child_gets_an_allowlisted_environment_and_the_packages_timeout(package, tmp_path, proxy):
+    """A stub in place of the Biomni interpreter prints what the child would see."""
+    px, url = proxy
+    stub = tmp_path / "stub_python"
+    stub.write_text("#!/bin/sh\nexec python3 -c 'import json, os, sys; print(json.dumps({\"env\": dict(os.environ), "
+                    "\"argv\": sys.argv[1:]})); print(\"BIOMNI_ENDED_BY: solution (0 steps)\")' \"$@\"\n")
+    stub.chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
+    env.update(GH_TOKEN="not-for-the-child", SOME_OTHER_SECRET="nope", OPENAI_API_KEY="nope")
+    out = tmp_path / "o"
+    r = subprocess.run([sys.executable, str(BASELINES / "run_biomni.py"), "--package", str(package), "--proxy", url,
+                        "--seed", "3", "--out", str(out), "--python", str(stub)], cwd=tmp_path, env=env,
+                       capture_output=True, text=True, timeout=120)
+    assert r.returncode == 0, r.stdout + r.stderr
+    seen = json.loads((out / "transcript.txt").read_text().splitlines()[0])
+    child_env = seen["env"]
+    assert child_env["OPENAI_BASE_URL"] == url + "/v1" and child_env["OPENAI_API_KEY"] == "proxy-token-3"
+    assert "PATH" in child_env and "GH_TOKEN" not in child_env and "SOME_OTHER_SECRET" not in child_env
+    shell_added = {"PWD", "OLDPWD", "SHLVL", "_", "LC_CTYPE"}  # the stub is a shell; sh and python add these
+    assert set(child_env) - shell_added <= set(("OPENAI_BASE_URL", "OPENAI_API_KEY", "PYTHONUNBUFFERED")
+                                                + run_biomni.ENV_ALLOWLIST)
+    eval_timeout = json.loads((package / "MANIFEST.json").read_text())["eval_timeout_s"]
+    argv = seen["argv"]
+    assert argv[argv.index("--timeout-s") + 1] == str(int(eval_timeout) + 30)
+    assert argv[argv.index("--session-cap-usd") + 1] == "0.25"
+    assert float(argv[argv.index("--miss-usd-per-mtok") + 1]) == PRICING["deepseek-v4-pro"]["input_cache_miss"]
+    run = json.loads((out / "run.json").read_text())
+    assert run["ended_by"] == "solution" and run["execute_timeout_s"] == int(eval_timeout) + 30
+    assert run["task_sha256"] == hashlib.sha256((package / "program.md").read_bytes()).hexdigest()  # program.md alone
+    assert run["session_cap_usd"] == 0.25
+
+
+def test_run_biomni_probe_through_the_proxy(package, tmp_path, proxy):
+    """Needs biomni in this interpreter (BIOMNI_PYTHON names another one). The mock answers an <execute> reply, then a
+    <solution> once it sees the observation: the probe must send the reply and the observation as two consecutive
+    assistant messages, the shape ROADMAP D6 and section 8 have the probe check."""
+    python = os.environ.get("BIOMNI_PYTHON") or sys.executable
+    if python == sys.executable:
+        pytest.importorskip("biomni")
+        pytest.importorskip("langchain_openai")
+    px, url = proxy
+    Upstream.seen.clear()
+    Upstream.mode = "biomni"
     try:
-        env = {k: v for k, v in os.environ.items() if k != "DEEPSEEK_API_KEY"}
-        r = subprocess.run([sys.executable, str(BASELINES / "run_biomni.py"), "--package", str(package), "--proxy",
-                            f"http://127.0.0.1:{srv.server_address[1]}", "--model", "deepseek-v4-pro", "--seed", "1",
-                            "--out", str(tmp_path / "probe"), "--probe"], cwd=tmp_path, env=env, capture_output=True,
-                           text=True, timeout=240)
-        run = json.loads((tmp_path / "probe" / "run.json").read_text())
-        assert run["probe"] and run["minutes"] == 2 and run["ended_by"] in ("solution", "error"), r.stdout + r.stderr
-        assert proxy.calls >= 1 and (tmp_path / "probe" / "transcript.txt").exists()
-        assert KEY not in (tmp_path / "probe" / "transcript.txt").read_text()
+        env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
+        r = subprocess.run([sys.executable, str(BASELINES / "run_biomni.py"), "--package", str(package), "--proxy", url,
+                            "--model", "deepseek-v4-pro", "--seed", "1", "--out", str(tmp_path / "probe"), "--probe",
+                            "--python", python], cwd=tmp_path, env=env, capture_output=True, text=True, timeout=240)
     finally:
-        srv.shutdown()
-        up.shutdown()
+        Upstream.mode = "ok"
+    run = json.loads((tmp_path / "probe" / "run.json").read_text())
+    transcript = (tmp_path / "probe" / "transcript.txt").read_text()
+    assert run["probe"] and run["minutes"] == 2 and run["ended_by"] == "solution", r.stdout + r.stderr + transcript
+    assert run["task_sha256"] == hashlib.sha256(run_biomni.PROBE_TASK.encode()).hexdigest()
+    assert px.calls >= 2 and KEY not in transcript and "first main call estimate" in transcript
+    roles = [[m.get("role") for m in s["body"].get("messages", [])] for s in Upstream.seen]
+    assert any(r[-2:] == ["assistant", "assistant"] or ("assistant", "assistant") in zip(r, r[1:]) for r in roles), roles
+    assert (tmp_path / "probe" / "final.txt").read_text().strip().endswith("4") or "4" in transcript
 
 
 def test_run_autoresearch_script_parses_and_dry_runs(package, tmp_path):
     script = BASELINES / "run_autoresearch.sh"
     assert subprocess.run(["bash", "-n", str(script)], capture_output=True, text=True).returncode == 0
     env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
+    env["GH_TOKEN"] = "not-for-claude"
     r = subprocess.run(["bash", str(script), "--dry-run", str(package), "http://127.0.0.1:8787", "20", "4",
                         str(tmp_path / "out")], capture_output=True, text=True, env=env)
     assert r.returncode == 0, r.stderr
     assert "claude -p" in r.stdout and "--permission-mode acceptEdits" in r.stdout
     assert "--disallowedTools WebSearch WebFetch" in r.stdout and "--strict-mcp-config" in r.stdout
-    assert "ANTHROPIC_BASE_URL=http://127.0.0.1:8787/anthropic" in r.stdout
+    # one permission rule per argv word (printf %q escapes the space inside a word, so a split rule shows unescaped)
+    assert "Bash\\(python\\ evaluate.py\\*\\)" in r.stdout and "Bash\\(grep\\ \\*\\)" in r.stdout
+    assert "Bash\\(python evaluate.py" not in r.stdout
+    assert "env -i" in r.stdout and "ANTHROPIC_BASE_URL=http://127.0.0.1:8787/anthropic" in r.stdout
     assert "ANTHROPIC_AUTH_TOKEN=proxy-token-4" in r.stdout and "ANTHROPIC_API_KEY unset" in r.stdout
     assert "for 1200 s" in r.stdout and "ANTHROPIC_MODEL=deepseek-v4-pro" in r.stdout
+    eval_timeout = json.loads((package / "MANIFEST.json").read_text())["eval_timeout_s"]
+    assert f"BASH_DEFAULT_TIMEOUT_MS={int((eval_timeout + 30) * 1000)}" in r.stdout
+    assert f"BASH_MAX_TIMEOUT_MS={int((eval_timeout + 30) * 1000)}" in r.stdout
+    assert hashlib.sha256((package / "program.md").read_bytes()).hexdigest() in r.stdout  # task_sha256
+    assert "not-for-claude" not in r.stdout  # nothing of the caller's shell beyond the allowlist
     # the refusals that need no claude: a wrong argument count, a key in the shell, a non-local proxy
     assert subprocess.run(["bash", str(script), str(package)], capture_output=True, env=env).returncode == 2
     r = subprocess.run(["bash", str(script), str(package), "http://127.0.0.1:8787", "20", "4", str(tmp_path / "o")],

@@ -3,7 +3,8 @@
 
     DEEPSEEK_API_KEY="$API_KEY" python tools/baselines/ledger_proxy.py --listen 127.0.0.1:8787 \\
         --upstream https://api.deepseek.com --ledger <MAIN>/runs/spend_ledger.sqlite --run-id h_biomni_r0 \\
-        --arm biomni --session-cap-usd 2.50 --block-cap-usd <cap> --log <dir>/proxy.jsonl [--pricing configs/default.toml]
+        --arm biomni --session-cap-usd 2.50 --block-cap-usd <cap> --log <dir>/proxy.jsonl [--pricing configs/default.toml] \\
+        [--merge-consecutive-assistant]
 
 Foreign agents (Biomni, Claude Code) run in an isolated place with a dummy token and a network route to this proxy only
 (docs/FEATURE_COMPARISON_PROTOCOL.md, fairness control 7). The proxy:
@@ -12,7 +13,12 @@ Foreign agents (Biomni, Claude Code) run in an isolated place with a dummy token
   JSON or SSE streaming, Claude Code with ANTHROPIC_BASE_URL=http://127.0.0.1:8787/anthropic) to the upstream, with
   the client's Authorization and x-api-key headers dropped and `Authorization: Bearer <DEEPSEEK_API_KEY>` from its own
   environment added. Only loopback clients are accepted; any token they send is ignored. POST
-  /anthropic/v1/messages/count_tokens is forwarded unpriced (it has no usage). Everything else is 404.
+  /anthropic/v1/messages/count_tokens is forwarded unpriced (it has no usage). Everything else is 404. The client's
+  Accept-Encoding is dropped too, so the upstream answers uncompressed and the usage can be read (the proxy does not
+  decompress). Two body edits, both logged: OpenAI streams get stream_options.include_usage (DeepSeek sends a
+  stream's usage only when asked), and with --merge-consecutive-assistant adjacent assistant messages on the OpenAI
+  route are joined into one (Biomni sends its reply and the tool observation as two assistant messages; this is the
+  fallback ROADMAP section 5 names if the endpoint rejects that shape). Off by default.
 - prices every response from its usage object with the lab's table (`configs/default.toml` [pricing], peak rates, the
   ledger convention) and the lab's formula (genemila/llm.py LLMGateway.cost: cache hits at input_cache_hit, the other
   prompt tokens at input_cache_miss, output at output; Anthropic cache_creation tokens count as misses, as
@@ -22,7 +28,10 @@ Foreign agents (Biomni, Claude Code) run in an isolated place with a dummy token
   cache_read_input_tokens, cache_creation_input_tokens; for SSE the message_start event carries the input side and
   message_delta the output side. A usage object without the required keys is not priced: the client gets 502, the
   log line names the keys seen, and the proxy refuses every later request (it can no longer bound the spend). DeepSeek
-  has billed the unpriced call, so the operator adds it to the ledger by hand from the console reading.
+  has billed the unpriced call, so the operator adds it to the ledger by hand from the console reading. A stream
+  whose client goes away (Claude Code killed at the wall clock) is still read to its end and priced; a stream the
+  upstream cuts before its usage arrives (an Anthropic stream without message_delta included) halts the proxy the
+  same way.
 - writes one row per priced call to the shared ledger with the lab's own writer (genemila.llm.SpendLedger: provider
   "deepseek", the model, input/output/cached tokens, cost_usd, this run id, role "baseline:<arm>"), so every cap the
   lab reads counts it, and one line per request to the jsonl log: timestamp, route, model requested and served, tokens,
@@ -30,8 +39,11 @@ Foreign agents (Biomni, Claude Code) run in an isolated place with a dummy token
   and never an Authorization value.
 - refuses with HTTP 402 and a JSON body when the session has spent its cap, or when the ledger total plus what this
   session may still spend (session cap minus session spend) would exceed the block cap, or when the ledger total alone
-  reaches it. The ledger is read at startup and again after every call, so another run writing to it is seen. The
-  check is on settled spend: one call can overshoot the session cap by at most its own cost.
+  reaches it. The ledger is read at startup and before every call, so another run writing to it is seen. The check
+  is on settled spend plus a reservation for every call still in flight (the largest priced call so far, $0.01 before
+  the first), so concurrent requests cannot all pass at the same settled total; the session cap can still be
+  overshot by the cost of the calls in flight when it is reached, each above the reservation at most by how much it
+  exceeds the largest call seen before it.
 - GET /healthz answers {"ok": true, ...} with the caps and the spend, so a runner can check the proxy before starting.
 
 Caveats. The proxy is HTTP/1.0 with Connection: close; the Anthropic and OpenAI SDKs handle that. It verifies the
@@ -64,7 +76,8 @@ KEY_ENV = "DEEPSEEK_API_KEY"
 ROUTES = {"/v1/chat/completions": "openai", "/anthropic/v1/messages": "anthropic",
           "/anthropic/v1/messages/count_tokens": "free"}
 DROP_HEADERS = {"host", "connection", "content-length", "transfer-encoding", "authorization", "x-api-key",
-                "proxy-authorization", "keep-alive", "te", "upgrade"}
+                "proxy-authorization", "keep-alive", "te", "upgrade", "accept-encoding"}
+MIN_RESERVATION_USD = 0.01  # per in-flight call before any call has been priced
 
 
 class UnknownUsage(ValueError):
@@ -108,6 +121,23 @@ def usage_openai(u: dict) -> Usage:
     return Usage(input_tokens=prompt, output_tokens=completion, cached_tokens=cached)
 
 
+def merge_consecutive_assistant(messages: list) -> tuple[list, int]:
+    """Join adjacent assistant messages with string content into one (content joined by a blank line); the count of
+    messages removed is returned for the log."""
+    out: list = []
+    merged = 0
+    for m in messages:
+        prev = out[-1] if out else None
+        if (isinstance(m, dict) and isinstance(prev, dict) and m.get("role") == prev.get("role") == "assistant"
+                and isinstance(m.get("content"), str) and isinstance(prev.get("content"), str)
+                and set(m) <= {"role", "content", "name"} and set(prev) <= {"role", "content", "name"}):
+            out[-1] = {**prev, "content": prev["content"] + "\n\n" + m["content"]}
+            merged += 1
+        else:
+            out.append(m)
+    return out, merged
+
+
 def usage_anthropic(u_in: dict, u_out: dict | None = None) -> Usage:
     """Anthropic usage, where input_tokens excludes the cache read and creation counts (the lab's convention:
     input_tokens = all prompt tokens, cached_tokens = reads, creation priced as a miss). u_out is the message_delta
@@ -127,13 +157,13 @@ class Proxy:
     """The shared state of one proxy process: key, pricing, caps, ledger, log."""
 
     def __init__(self, upstream: str, ledger: Path, run_id: str, arm: str, session_cap: float, block_cap: float,
-                 log: Path, pricing: dict, key: str):
+                 log: Path, pricing: dict, key: str, merge_assistant: bool = False):
         u = urlsplit(upstream)
         if u.scheme not in ("http", "https") or not u.hostname:
             raise SystemExit(f"refusing: --upstream must be http(s)://host[:port], got {upstream!r}")
         self.scheme, self.host, self.port = u.scheme, u.hostname, u.port or (443 if u.scheme == "https" else 80)
         self.base_path = u.path.rstrip("/")
-        self.key, self.pricing = key, pricing
+        self.key, self.pricing, self.merge_assistant = key, pricing, merge_assistant
         self.run_id, self.role = run_id, f"baseline:{arm}"
         self.session_cap, self.block_cap = float(session_cap), float(block_cap)
         self.ledger = SpendLedger(ledger)
@@ -142,34 +172,46 @@ class Proxy:
         self.lock = threading.Lock()
         self.session_spent = 0.0
         self.calls = 0
+        self.inflight = 0
+        self.max_call_cost = 0.0
         self.halted: str | None = None
         self.ledger_total = self.ledger.total(PROVIDER)
         self.ssl_ctx = ssl.create_default_context() if self.scheme == "https" else None
 
     # ----------------------------------------------------------------- caps
-    def refusal(self) -> str | None:
-        """Why the next call may not go out, or None. Reads settled spend only; the ledger is re-read here so a
-        write by another run since the last call is seen."""
+    def refusal(self, admit: bool = False) -> str | None:
+        """Why the next call may not go out, or None. Settled spend plus a reservation per call in flight; the ledger
+        is re-read here so a write by another run since the last call is seen. With admit=True a call that passes is
+        counted as in flight until release()."""
         total = self.ledger.total(PROVIDER)
         with self.lock:
             self.ledger_total = total
             if self.halted:
                 return self.halted
-            if self.session_spent >= self.session_cap:
-                return f"session cap reached: ${self.session_spent:.4f} of ${self.session_cap:.2f}"
+            reserved = self.inflight * max(self.max_call_cost, MIN_RESERVATION_USD)
+            if self.session_spent + reserved >= self.session_cap:
+                return (f"session cap reached: ${self.session_spent:.4f} settled plus ${reserved:.4f} reserved for "
+                        f"{self.inflight} call(s) in flight, of ${self.session_cap:.2f}")
             remaining = self.session_cap - self.session_spent
             if self.ledger_total >= self.block_cap:
                 return f"block cap reached: ledger ${self.ledger_total:.4f} of ${self.block_cap:.2f}"
             if self.ledger_total + remaining > self.block_cap:
                 return (f"block cap: ledger ${self.ledger_total:.4f} plus this session's remaining ${remaining:.4f} "
                         f"would exceed ${self.block_cap:.2f}")
+            if admit:
+                self.inflight += 1
         return None
+
+    def release(self) -> None:
+        with self.lock:
+            self.inflight = max(0, self.inflight - 1)
 
     def settle(self, model: str, usage: Usage, cost: float) -> None:
         self.ledger.add(self.run_id, PROVIDER, model, self.role, usage, cost)
         with self.lock:
             self.session_spent += cost
             self.calls += 1
+            self.max_call_cost = max(self.max_call_cost, cost)
             self.ledger_total = self.ledger.total(PROVIDER)
 
     def halt(self, reason: str) -> None:
@@ -245,7 +287,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._error(404, "not_found", f"this proxy forwards only {sorted(ROUTES)}")
         length = int(self.headers.get("Content-Length") or 0)
         body = self.rfile.read(length) if length else b""
-        requested, stream = None, False
+        requested, stream, merged = None, False, 0
         try:
             req = json.loads(body) if body else {}
             requested, stream = req.get("model"), bool(req.get("stream"))
@@ -254,27 +296,35 @@ class Handler(BaseHTTPRequestHandler):
                 opts["include_usage"] = True
                 req["stream_options"] = opts
                 body = json.dumps(req).encode()
+            if kind == "openai" and p.merge_assistant and isinstance(req.get("messages"), list):
+                req["messages"], merged = merge_consecutive_assistant(req["messages"])
+                if merged:
+                    body = json.dumps(req).encode()
         except (ValueError, AttributeError):
             pass
         if kind != "free":
-            why = p.refusal()
+            why = p.refusal(admit=True)
             if why:
                 p.log(route=path, model_requested=requested, status=402, refused=why)
                 return self._error(402, "budget_cap", f"ledger proxy refuses: {why}")
         t0 = time.monotonic()
         try:
-            self._forward(path, kind, body, requested, stream, t0)
+            self._forward(path, kind, body, requested, stream, t0, merged)
         except (OSError, http.client.HTTPException, socket.timeout) as exc:
             p.log(route=path, model_requested=requested, status=502, error=type(exc).__name__)
             try:
                 self._error(502, "upstream_error", f"upstream connection failed: {type(exc).__name__}")
             except OSError:
                 pass
+        finally:
+            if kind != "free":
+                p.release()
 
     # ------------------------------------------------------------ forward
-    def _forward(self, path: str, kind: str, body: bytes, requested, stream: bool, t0: float) -> None:
+    def _forward(self, path: str, kind: str, body: bytes, requested, stream: bool, t0: float, merged: int = 0) -> None:
         p = self.proxy
         headers = {k: v for k, v in self.headers.items() if k.lower() not in DROP_HEADERS}
+        headers["Accept-Encoding"] = "identity"  # the usage must be readable; the proxy does not decompress
         headers["Authorization"] = f"Bearer {p.key}"
         if kind != "openai":
             headers["x-api-key"] = p.key  # the Anthropic SDK's own header; same key
@@ -286,7 +336,7 @@ class Handler(BaseHTTPRequestHandler):
             resp = conn.getresponse()
             ctype = resp.getheader("Content-Type", "") or ""
             if "text/event-stream" in ctype:
-                return self._stream(path, kind, resp, requested, t0)
+                return self._stream(path, kind, resp, requested, t0, merged)
             data = resp.read()
             latency = round(time.monotonic() - t0, 3)
             if resp.status != 200 or kind == "free":
@@ -299,7 +349,7 @@ class Handler(BaseHTTPRequestHandler):
                 usage = usage_openai(doc.get("usage")) if kind == "openai" else usage_anthropic(doc.get("usage"))
             except (ValueError, UnknownUsage, AttributeError) as exc:
                 return self._unpriced(path, requested, exc, data, latency)
-            self._settle(path, requested, served, usage, latency, stream=False)
+            self._settle(path, requested, served, usage, latency, stream=False, merged=merged)
             self._relay(200, ctype, data)
         finally:
             conn.close()
@@ -325,30 +375,49 @@ class Handler(BaseHTTPRequestHandler):
                        usage_keys=keys, error=str(exc)[:200])
         self._error(502, "unpriced_usage", "ledger proxy could not price the upstream usage; the proxy is halted")
 
-    def _settle(self, path, requested, served, usage: Usage, latency: float, stream: bool) -> None:
+    def _settle(self, path, requested, served, usage: Usage, latency: float, stream: bool, merged: int = 0,
+                **extra) -> None:
         p = self.proxy
         key = price_key(p.pricing, requested, served)
         cost = cost_of(p.pricing, key, usage)
         p.settle(served or requested or key, usage, cost)
+        if merged:
+            extra["merged_messages"] = merged
         p.log(route=path, model_requested=requested, model_served=served, priced_as=key, status=200, stream=stream,
               input_tokens=usage.input_tokens, cached_tokens=usage.cached_tokens, output_tokens=usage.output_tokens,
-              cost_usd=round(cost, 8), latency_s=latency)
+              cost_usd=round(cost, 8), latency_s=latency, **extra)
 
-    def _stream(self, path: str, kind: str, resp, requested, t0: float) -> None:
-        """Relay an SSE body line by line while reading its usage events; price at the end."""
-        self.send_response(resp.status)
-        self.send_header("Content-Type", resp.getheader("Content-Type"))
-        self.send_header("Cache-Control", "no-cache")
-        self.send_header("Connection", "close")
-        self.end_headers()
+    def _stream(self, path: str, kind: str, resp, requested, t0: float, merged: int = 0) -> None:
+        """Relay an SSE body line by line while reading its usage events; price at the end. A client that goes away
+        stops the relay, not the reading: the upstream has billed the call, so its usage is still read and priced."""
+        client_gone = False
+        try:
+            self.send_response(resp.status)
+            self.send_header("Content-Type", resp.getheader("Content-Type"))
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "close")
+            self.end_headers()
+        except OSError:
+            client_gone = True
         served, u_in, u_out, usage_oa, raw_keys = None, None, None, None, []
         event, data_lines = None, []
         while True:
-            line = resp.readline()
+            try:
+                line = resp.readline()
+            except (OSError, http.client.HTTPException) as exc:
+                self.proxy.halt(f"halted after an unpriced stream: upstream read failed ({type(exc).__name__})")
+                self.proxy.log(route=path, model_requested=requested, model_served=served, status=502, stream=True,
+                               latency_s=round(time.monotonic() - t0, 3), unpriced=True, usage_keys=raw_keys,
+                               error=type(exc).__name__, client_gone=client_gone)
+                return
             if not line:
                 break
-            self.wfile.write(line)
-            self.wfile.flush()
+            if not client_gone:
+                try:
+                    self.wfile.write(line)
+                    self.wfile.flush()
+                except OSError:
+                    client_gone = True
             s = line.decode("utf-8", errors="replace").rstrip("\r\n")
             if s.startswith("event:"):
                 event = s[6:].strip()
@@ -382,14 +451,17 @@ class Handler(BaseHTTPRequestHandler):
         if u_in is None and isinstance(u_out, dict) and "input_tokens" in u_out:
             u_in = u_out  # a server that reports the whole usage in message_delta only
         try:
+            if kind == "anthropic" and u_out is None:
+                raise UnknownUsage("no message_delta usage (the output side)")  # message_start's count is a placeholder
             usage = usage_openai(usage_oa) if kind == "openai" else usage_anthropic(u_in, u_out)
         except (UnknownUsage, AttributeError) as exc:
             keys = sorted(usage_oa) if isinstance(usage_oa, dict) else raw_keys
             self.proxy.halt(f"halted after an unpriced stream: {exc}; keys seen: {keys}")
             self.proxy.log(route=path, model_requested=requested, model_served=served, status=502, stream=True,
-                           latency_s=latency, unpriced=True, usage_keys=keys, error=str(exc)[:200])
+                           latency_s=latency, unpriced=True, usage_keys=keys, error=str(exc)[:200],
+                           client_gone=client_gone)
             return  # the stream has already been relayed; the next request gets the 402-style halt
-        self._settle(path, requested, served, usage, latency, stream=True)
+        self._settle(path, requested, served, usage, latency, stream=True, merged=merged, client_gone=client_gone)
 
 
 def make_server(listen: str, proxy: Proxy) -> ThreadingHTTPServer:
@@ -406,8 +478,12 @@ def build(args: argparse.Namespace) -> Proxy:
         raise SystemExit(f"refusing: {KEY_ENV} is not set in the proxy's environment")
     if args.session_cap_usd <= 0 or args.block_cap_usd <= 0:
         raise SystemExit("refusing: both caps must be positive")
+    if not Path(args.ledger).is_file():
+        raise SystemExit(f"refusing: --ledger {args.ledger} does not exist; the shared ledger is never created here "
+                         "(a new empty one would hide the block's spend from every cap)")
     return Proxy(args.upstream, Path(args.ledger), args.run_id, args.arm or args.run_id, args.session_cap_usd,
-                 args.block_cap_usd, Path(args.log), load_pricing(Path(args.pricing)), key)
+                 args.block_cap_usd, Path(args.log), load_pricing(Path(args.pricing)), key,
+                 merge_assistant=bool(args.merge_consecutive_assistant))
 
 
 def parse(argv=None) -> argparse.Namespace:
@@ -421,18 +497,21 @@ def parse(argv=None) -> argparse.Namespace:
     ap.add_argument("--block-cap-usd", type=float, required=True)
     ap.add_argument("--log", required=True, help="the jsonl log (one line per request; never a body or a token)")
     ap.add_argument("--pricing", default=str(REPO_ROOT / "configs" / "default.toml"))
+    ap.add_argument("--merge-consecutive-assistant", action="store_true",
+                    help="OpenAI route: join adjacent assistant messages into one (the fallback for an endpoint that "
+                         "rejects Biomni's reply-then-observation pairs); logged per request")
     return ap.parse_args(argv)
 
 
 def main(argv=None) -> int:
     args = parse(argv)
-    if not args.listen.startswith(("127.0.0.1:", "localhost:", "[::1]:")):
-        print("refusing: --listen must be a loopback address", file=sys.stderr)
+    if not args.listen.startswith(("127.0.0.1:", "localhost:")):
+        print("refusing: --listen must be a loopback IPv4 address (127.0.0.1:<port> or localhost:<port>)", file=sys.stderr)
         return 2
     proxy = build(args)
     srv = make_server(args.listen, proxy)
     proxy.log(route="start", status=0, upstream=proxy.health()["upstream"], session_cap_usd=proxy.session_cap,
-              block_cap_usd=proxy.block_cap, role=proxy.role)
+              block_cap_usd=proxy.block_cap, role=proxy.role, merge_consecutive_assistant=proxy.merge_assistant)
     why = proxy.refusal()
     print(f"ledger proxy on http://{args.listen} -> {proxy.health()['upstream']}; ledger ${proxy.ledger_total:.4f}, "
           f"session cap ${proxy.session_cap:.2f}, block cap ${proxy.block_cap:.2f}; role {proxy.role}"

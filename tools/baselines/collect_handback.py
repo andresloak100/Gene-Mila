@@ -11,13 +11,17 @@ baseline are taken from features/; without results.tsv, every features/*.py. Eac
 them). A file that passes both is copied to <dest>/<arm>_r<seed>/<stem>.py (the arm and seed come from
 <out>/run.json); one that fails goes to <dest>/rejected/<arm>_r<seed>/<stem>.py with the reason. <dest>/manifest.json
 records, per session, every file's sha256, size, literal verdict, guard verdict and destination, the session's run.json
-summary (ended_by, model), and the sha256 of results.tsv; it is merged, so one dest collects every session of a block.
+summary (ended_by, model, task_sha256), the sha256 of results.tsv, and the sha256 of <out>/transcript.txt with the
+lines in it that name a network call (http://, https://, requests, urllib, socket, curl, wget; fairness control 7 of
+docs/FEATURE_COMPARISON_PROTOCOL.md). A flagged transcript is not rejected here; the operator reads the lines. The
+manifest is merged, so one dest collects every session of a block.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -34,6 +38,21 @@ from task_package.literal import literal_check  # noqa: E402
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+NETWORK = re.compile(r"https?://|\brequests\b|\burllib\b|\bsocket\b|\bcurl\b|\bwget\b")
+
+
+def transcript_flags(path: Path, limit: int = 200) -> list[dict]:
+    """Lines of the transcript that name a network call, for the operator to read (at most `limit`)."""
+    flags = []
+    for n, line in enumerate(path.read_text(errors="replace").splitlines(), 1):
+        m = NETWORK.search(line)
+        if m:
+            flags.append({"line": n, "match": m.group(0), "text": line.strip()[:200]})
+            if len(flags) >= limit:
+                break
+    return flags
 
 
 def kept_files(pkg: Path) -> tuple[list[Path], str]:
@@ -97,9 +116,12 @@ def main(argv=None) -> int:
     manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {"sessions": {}}
     session = {"package": str(pkg.resolve()), "out": str(out.resolve()), "origin": origin,
                "run": {k: run.get(k) for k in ("arm", "seed", "model", "model_served", "ended_by", "minutes",
-                                               "wall_s", "exit_code")},
+                                               "wall_s", "exit_code", "task_sha256")},
                "results_tsv_sha256": sha256(pkg / "results.tsv") if (pkg / "results.tsv").is_file() else None,
                "manifest_sha256": sha256(pkg / "MANIFEST.json"), "files": {}}
+    transcript = out / "transcript.txt"
+    session["transcript_sha256"] = sha256(transcript) if transcript.is_file() else None
+    session["transcript_flags"] = transcript_flags(transcript) if transcript.is_file() else None
     n_ok = 0
     for f in files:
         entry = check(f, pair_ids, names)
