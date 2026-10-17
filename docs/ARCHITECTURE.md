@@ -1,18 +1,15 @@
 # Architecture and design notes
 
-**Current-state pointer, 13 October 2026:** the design below describes the integrated lab; active work
-and exact commits are in [HANDOFF section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true).
-Real Adamson and Norman ingestion and campaigns have now run on the Mac; the original build-environment
-limitation below is historical. The current planner state bound in `genemila/research_state.py` is
-20,000 characters, with 2,500 per section and 8,000 for the knowledge section (`KNOWLEDGE_SECTION_CHARS`,
-16 October 2026). The warm-start description below must be read alongside
-[merged PR #13](https://github.com/andresloak100/Gene-Mila/pull/13): legacy warm starts exposed
-an aggregate sealed score to the planner; the integrated fix removes that explicit path. The local controller/oracle
-still shares filesystem access with orchestration. The stronger inaccessible-test boundary is proposed,
-not deployed. The top-20 DE builder in `genemila/benchmark/reference.py` ranks the absolute Wilcoxon
-rank-sum statistic with absolute log fold change as a tie-breaker; the older Welch description below
-is superseded. Paired reading `mse_top`/`r2_top` instead uses the largest absolute changes from control.
-[Documentation status](DOCUMENTATION_STATUS.md) distinguishes integrated, pending and historical material.
+Design as of 16 October 2026. Live work is [HANDOFF section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true);
+every document is listed in [the documentation map](README.md). The text below was written before the real data ran, so
+these dated corrections apply to it: real Adamson and Norman ingestion and campaigns ran on the Mac from 11 October,
+and the build-environment limitation below is historical. The planner-state bound in `genemila/research_state.py` is
+20,000 characters, with 2,500 per section and 8,000 for the knowledge section (`KNOWLEDGE_SECTION_CHARS`, 16 October).
+Legacy warm starts exposed an aggregate sealed score to the planner; [PR #13](https://github.com/andresloak100/Gene-Mila/pull/13)
+removed that path (the local controller and oracle still share filesystem access; the inaccessible-test boundary is
+`docs/PLAN_R_FRESH_TEST.md`, not deployed). The top-20 DE builder in `genemila/benchmark/reference.py` ranks the
+absolute Wilcoxon rank-sum statistic with absolute log fold change as the tie-breaker; the older Welch description
+below is superseded. The paired reading `mse_top`/`r2_top` instead uses the largest absolute changes from control.
 
 ## Scientific framing
 
