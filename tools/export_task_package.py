@@ -2,7 +2,7 @@
 """Export one bundle as a self-contained task package: the lab's feature-discovery problem as an autoresearch-style
 task (karpathy/autoresearch), so that a single coding agent (Claude Code, Codex), Biomni or CellForge's agents work
 on exactly the task the lab's agents work on and hand back feature files that tools/feature_compare.py scores
-beside the lab's own (Claim issue #41, docs/PAPER_FRAMEWORK_PROPOSAL.md).
+beside the lab's own (Claim issue #41, docs/archive/plans/PAPER_FRAMEWORK_PROPOSAL.md).
 
     python tools/export_task_package.py --data data/norman --out ~/pkg_norman [--prefix ar] [--fold-seeds 0,1,2]
         [--k 5] [--groups auto|none|gene] [--keep-rule noise|strict] [--eval-timeout-s 600] [--ram-mb 4096]
