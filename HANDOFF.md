@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**G milestone — Astra, 2026-10-17 03:01 UTC, claim #51: 1/12 passed; Adamson table arm seed0 active.**
+`adamson_cf_g0_ds_w4_r0` finished02:59UTC rc0, ledger47.712116, runcost.447471; .passed/check good,
+DeepSeek planner mixedFalse, externalknowledge empty. **Current `adamson_cf_g1_ds_w4_r0` started02:59UTC,
+actualPython83910**, screen67366.blockg/chain67368 alive. Both source run dirs under `gene-mila/runs/`.
+Both new verbatim progress lines posted[#41/comment6228801516](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6228801516),
+then appended to `genemila_scale_logs/block_g_posted_progress.txt`; no duplicate post. No stopped marker.
+Cap67.26/originalrecord and researchpinbaa7dfd/scripts/data unchanged. No sealed reading/model comparison.
+**Exact next:** safe5min process/progress/chain/.check/.passed monitoring; post each new line+appendreceipt;
+next expected g1r0finish then g0r2. Current90minbackstop04:29UTC if same run stillalive; planstop/report rules apply.
+Do not touch main/source/scripts/cap, run heavyjobs/F, readsummary.md/runlogend/seals or handoff_state.
+Afterall12passed/cleanend/nojob: correctedF1a95873 all66rows999reps/nice19/newoutputs. Older checkpoints historical.
+
 **Block G RUNNING — Astra, 2026-10-17 02:38 UTC, sole operator, claim #51.**
 Exact chain launch02:38:01UTC succeeded; detachedscreen **67366.blockg**, chainbash67368, actualPython **67404**.
 Current run **`adamson_cf_g0_ds_w4_r0`**, dir `~/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0`,
