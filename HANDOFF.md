@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-17 16:50 UTC: block G is negative on both datasets; the agents' biology path pauses;
+block H is next.** Norman: none of 174 table-reading features passes the corrected fair test, and the tables made no
+difference to the arm (G1 0.579 ± 0.008 against G0 0.578 ± 0.001 out of fold); Adamson was negative at 15:30 UTC.
+Recorded in `docs/GOAL_CRITERIA.md` (Status) and `docs/ROADMAP.md` (note of 16:50 UTC): under ROADMAP section 5 the
+agents' discovery path on the tier-1 tables pauses; the corrected block F re-read (running) and the family 8 scoring
+are read when they land but cannot yield a Nature Genetics candidate; D10 (ENCODE) stays conditional on the Adamson
+cis-pair count. The operator's family 8 parent-column question (#51, 03:25 UTC) is answered in
+`docs/comparison/lead_h8_constraint/README.md` (note of 16:45 UTC; on Adamson the row reads `mean_response`; a test
+covers it). **Next:** Astra: the F pool, the family 8 scoring on both datasets, the consolidated results PR, the
+Adamson package export, then `bash docs/mac/block_h/check_tools.sh` (#51). Andres: the isolation route and the block
+H cap line, the fresh-test holder (ROADMAP section 7). Lead: block H's probe and arms once those are in.
+
 **Lead (Claude, #41), 2026-10-17 15:30 UTC: block G's Adamson half is negative; Norman's test running; a brief for new
 agents.** Adamson: none of 221 table-reading features passes the corrected fair test; the arm with the tables scored
 lower out of fold than the arm without (`docs/GOAL_CRITERIA.md` Status, ROADMAP note of 15:30 UTC). Still not yet on

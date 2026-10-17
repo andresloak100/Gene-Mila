@@ -108,3 +108,22 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
     the tables (reading 4). The worn Adamson sealed set, indicative only: G0 0.566 ± 0.036, G1 0.491 ± 0.069.
   - Norman's family-wise test is running (174 rows, 999 replicates); the block F re-read and the family 8 scoring
     follow. Block G cost $12.97 on the ledger (final ledger $60.23).
+- 2026-10-17 16:50 UTC, block G, Norman half read (operator's readings on
+  [#51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6236179594), tool at `2f2e683`; runs
+  `norman_g1_ds_w4_r0`, `_r2`, `_r3` and the `g0` controls on Andres's Mac, split `split_a391fa9e7b4eccb7`): still
+  **not yet**, and block G is negative on both datasets.
+  - **A.1 on Norman is not met.** 174 add-one rows that read the genome, constraint or protein table, from the three
+    G1 runs, were tested at 999 replicates under both nulls with the family-wise correction (158 unique predictions;
+    56 of the 59 proportional rows carried a valid perturbation null, the other 3 fail the fold-consistency gate);
+    none passes. Nine further plugins could not be scored (six missing keys, one constant feature, two literal caps)
+    and are listed, not repaired.
+  - **Descriptive:** the tables made no difference on Norman: G1 0.579 ± 0.008 against G0 0.578 ± 0.001 out of fold
+    (mean ± sd over seeds 0, 2, 3; gain over the parent 0.011 ± 0.008 against 0.010 ± 0.001; no test with three runs
+    a side), and the G1 agents did read the tables (reading 4). On the worn Norman sealed set, its fifth reading,
+    indicative only: G0 0.719 ± 0.001, G1 0.720 ± 0.007.
+  - **Decision (lead, under `docs/ROADMAP.md` section 5):** no family passes on either dataset after block G, so the
+    agents' discovery path on the tier-1 tables pauses. Two pre-registered readings remain in this window and are
+    read when they land, neither of them a Nature Genetics candidate: the corrected block F re-read (its family
+    encodes a known dependence, so a pass would be methods-level under A.6) and the lead's family 8 hypothesis
+    (reported as a human hypothesis, never as A.1). The ENCODE block can reopen the path only under D10, on the
+    Adamson cis-pair count. The effort turns to path B (block H).

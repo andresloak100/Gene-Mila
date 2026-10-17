@@ -324,3 +324,25 @@ Status). So the three per-gene tables, on their own and on clean knowledge, gave
 survives the test, and may have cost them search time. Norman's reading is running. D1 to D13 stand: the block G runs
 are block H's lab rows (g1 and g0) whatever the Norman reading says, and the decision on the biology path (pause, or
 the ENCODE block under D10) is taken when Norman's reading and the block F re-read are in, not before.
+
+## Note, 2026-10-17 16:50 UTC: block G's Norman half is negative too; the biology path pauses
+
+Norman (operator's readings on [#51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6236179594)):
+none of the 174 table-reading features passes the corrected fair test (158 unique predictions, 999 replicates, both
+nulls, complete family), and the tables made no measurable difference to the arm (G1 0.579 ± 0.008 against G0
+0.578 ± 0.001 out of fold; `docs/GOAL_CRITERIA.md` Status). With the Adamson half (note of 15:30 UTC) block G is
+negative on both datasets. The rule of section 5 applies: **the agents' biology path pauses.** What that means:
+
+- No further paid block on tier-1 tables in this window. The two readings still owed, the corrected block F re-read
+  (running, free) and the family 8 scoring (free), are read when they land; neither can produce a Nature Genetics
+  candidate (F's family is KNOWN, so methods-level under A.6; family 8 is the lead's hypothesis, never A.1).
+- D10 stands as written: the ENCODE block is proposed only if the Adamson cis-pair count (section 6, item 10, free)
+  supports a pre-registered cis-restricted metric. Until then the biology result is reported as methods-level, as
+  D13 says, and the wet-lab package tool stays unused.
+- Block H is the next paid block, with the twelve block G runs as its lab rows (g1 and g0 on Adamson), the task
+  package from `data/adamson_cf_clean_tables`. It still waits on section 7, items 1 and 3: Andres's isolation
+  answer and his block H cap line (ledger + $15 from the reading when it starts; the ledger reads $60.23 now).
+- The fresh test (D7) still waits on section 7, item 2: the holder's name.
+- The operator's source-only question on the family 8 plugin's parent column is answered in the plugin's README
+  (note of 16:45 UTC): on Adamson the parent has no `additive_response` column, so the row reads `mean_response`,
+  fixed before any score and covered by a test.

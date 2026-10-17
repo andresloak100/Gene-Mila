@@ -144,7 +144,8 @@ default fold seeds are 101, 102 and 103, the protocol's.
 
 In the row `h8_constraint_residual` of each report (a family of one):
 
-1. `proportional` is `true` and `parent_column` is `additive_response`; otherwise the file did not run as written.
+1. `proportional` is `true` and `parent_column` is `additive_response` on Norman and `mean_response` on Adamson
+   (the note of 2026-10-17 16:45 UTC below says why); otherwise the file did not run as written.
 2. Both nulls pass: `null.p_fwer` and `null_pert.p_fwer` are each at most 0.05.
 3. The gain is above the minimum effect: the mean out-of-fold M1 gain exceeds `max(2 SE_adj, 0.002)`.
 4. The sign: `coef_candidate_std` is positive in every fold seed on Adamson (the prediction); on Norman the sign is
@@ -161,5 +162,24 @@ is A.1. **Nothing has run.**
 synthetic `gene_constraint` table and `CORUM:` and `REACTOME:` sets (a ribosome set, an mRNA splicing set, two sets
 the words must not match), the shape, a zero row for a perturbation whose targets have no value, and equality with
 `additive_response` times the hand-computed residual mean; the fit without `gene_sets`; the word rule against the
-public Reactome pathway names; the pipeline smoke; and `tools/feature_compare.py` reporting the row as proportional to
-`additive_response` with a `null_pert`.
+public Reactome pathway names; the pipeline smoke; `tools/feature_compare.py` reporting the row as proportional to
+`additive_response` with a `null_pert` on the pair bundle; and, on a single-target bundle, the same row proportional
+to `mean_response` with a `null_pert` (the Adamson reading below).
+
+## Note, 2026-10-17 16:45 UTC: what `parent_column` reads on Adamson
+
+Written before any score of this plugin exists, in answer to the operator's source-only question of 03:25 UTC on
+[#51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229018744). The comparison tool's default
+parent is the three built-in features (`control_mean`, `mean_response`, `is_target`) plus `additive_response` only on
+a bundle with pairs (`tools/feature_compare.py`, the `data.pair_ids` test; `genemila/features/registry.py` builds
+`additive_response` in on pair bundles only). On Adamson, a single-target bundle, the parent therefore has no
+`additive_response` column, and the detector can never name it. The plugin still computes `additive_response`
+times its scalar, as written: on unique single targets `additive_response` leaving p out is the mean training change
+(`additive_delta`, the fill for a gene without a training single), which is the column `mean_response`, so the row is
+proportional to `mean_response` and the perturbation null is applied with that parent. The reading rule, fixed now:
+on Adamson, check 1 passes with `parent_column` equal to `mean_response`; on Norman it must read
+`additive_response`. Nothing else changes: not the formula, the sign, the nulls, the minimum effect or the verdict
+vocabulary. If the Adamson row came out not proportional (`proportional` false, no `null_pert`), the operator posts
+the row and stops; the lead reads it, and no rule is adjusted after the fact.
+`tests/test_lead_h8_constraint.py::test_on_a_singles_bundle_the_parent_column_reads_mean_response` checks this
+reading on a synthetic single-target bundle.
