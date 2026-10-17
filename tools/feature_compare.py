@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Feature-level comparison of research systems: what does each system's feature set, and each of its single
-features, add to one fixed linear model? (Claim issue #41; docs/PAPER_FRAMEWORK_PROPOSAL.md.)
+features, add to one fixed linear model? (Claim issue #41; docs/archive/plans/PAPER_FRAMEWORK_PROPOSAL.md.)
 
 Every system under comparison (the lab, an autoresearch-style coding agent, Biomni, a person translating CellForge or
 STATE ideas) hands in feature plugins written against genemila/features/api.py. This tool scores them all the same

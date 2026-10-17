@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Make ONE minimal DeepSeek API request to verify connectivity and pricing math.
 
-    python deepseek_check.py
+    python tools/deepseek_check.py
 
 Reads DEEPSEEK_API_KEY from the environment. Never prints the key. The call
 is recorded in the cumulative spend ledger and counts against the budget.
@@ -10,8 +10,11 @@ is recorded in the cumulative spend ledger and counts against the budget.
 import json
 import os
 import sys
+from pathlib import Path
 
-from genemila import REPO_ROOT
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from genemila import REPO_ROOT  # noqa: E402
 from genemila.config import load_config
 from genemila.llm import LLMGateway, SpendLedger
 from genemila.db import Database

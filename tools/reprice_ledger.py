@@ -5,15 +5,19 @@ Earlier versions priced calls whose served model name was missing from the
 price table (e.g. "deepseek-flash") at the pessimistic default ($3 / $15 per
 million tokens), which inflated the ledger and can block further runs.
 
-    python reprice_ledger.py            # show old vs corrected totals (changes nothing)
-    python reprice_ledger.py --apply    # rewrite the ledger's cost column (keeps a backup)
+    python tools/reprice_ledger.py      # show old vs corrected totals (changes nothing)
+    python tools/reprice_ledger.py --apply # rewrite the ledger's cost column (keeps a backup)
 """
 
 import argparse
 import shutil
 import sqlite3
+import sys
+from pathlib import Path
 
-from genemila import REPO_ROOT
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from genemila import REPO_ROOT  # noqa: E402
 from genemila.config import load_config
 
 

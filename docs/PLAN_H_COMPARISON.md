@@ -17,7 +17,7 @@ agents' image).
   predict better, out of fold on the development tier now, on the fresh test later (ROADMAP D7). No arm claim is made
   from a development tier; the development numbers screen and show spread.
 
-## Arms, all on Adamson, bundle `data/adamson_cf_clean_tables` (split `split_450515be1a0d8d2e`: the clean bundle keeps `data/adamson_cf`'s split, `docs/PLAN_G_CLEAN_ARM.md`; `docs/mac/STATE.md`, Runs on disk)
+## Arms, all on Adamson, bundle `data/adamson_cf_clean_tables` (split `split_450515be1a0d8d2e`: the clean bundle keeps `data/adamson_cf`'s split, `docs/PLAN_G_CLEAN_ARM.md`; `docs/archive/mac/STATE_20261014.md`, Runs on disk)
 
 | arm | what | runs or sessions | cost |
 |---|---|---|---|

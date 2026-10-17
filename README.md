@@ -35,7 +35,8 @@ evaluator and an untouched cohort, and the
 [cohort audit](https://github.com/andresloak100/Gene-Mila/blob/66ed4c69462b723bf2b800fb8a503ee198cc15c9/docs/EXTERNAL_COHORT_METADATA.md)
 approves none yet. Continuation steps:
 [HANDOFF section 1](HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true); what is
-integrated, draft or dated evidence: [documentation status](docs/DOCUMENTATION_STATUS.md).
+the lead's decisions: [`docs/ROADMAP.md`](docs/ROADMAP.md); the rule for "goal met":
+[`docs/GOAL_CRITERIA.md`](docs/GOAL_CRITERIA.md); every document, by group: [documentation map](docs/README.md).
 
 ## Results on Adamson
 

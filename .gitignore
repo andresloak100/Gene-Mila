@@ -5,3 +5,4 @@ __pycache__/
 /data/
 *.h5ad
 .env
+.ruff_cache/

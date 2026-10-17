@@ -2,7 +2,7 @@
 
 Written 2026-10-15 on Andres's messages of 15 October ("we need to find a framework for the agent to build this
 feature", "compare ... test our workflow is better", "run the deepseek agents if needed"). It is the first
-comparison the paper proposal (`docs/PAPER_FRAMEWORK_PROPOSAL.md`, section 3) needs: does the multi-agent loop beat
+comparison the paper proposal (`docs/archive/plans/PAPER_FRAMEWORK_PROPOSAL.md`, section 3) needs: does the multi-agent loop beat
 a single-agent loop, autoresearch-style, given the same task, start, knowledge and wall time?
 
 ## Arms

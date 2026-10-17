@@ -29,7 +29,7 @@ read [AGENTS.md](../AGENTS.md) and the current approved block in
 [HANDOFF section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true) first. Every run
 states its planner provider explicitly; the configuration default is Claude CLI. Paid runs also state
 the shared ledger, cumulative cap, and separate worker and planner caps. Credentials enter through
-the environment only. `python deepseek_check.py` makes a paid API call, so it needs spend
+the environment only. `python tools/deepseek_check.py` makes a paid API call, so it needs spend
 authorization too.
 
 Watch a run, then take it apart:
@@ -71,7 +71,7 @@ block in HANDOFF. The cumulative cap includes earlier runs' ledger spend; it is 
 the cash balance reported by DeepSeek. A run can halt partway through if that cap is left at its
 development default. Do not increase a cap or reprice the shared ledger without Andres's decision.
 
-A second synthetic test ([report](deepseek_test_2026-10-03.md)) kept Claude Opus as planner and
+A second synthetic test ([report](archive/records/deepseek_test_2026-10-03.md)) kept Claude Opus as planner and
 used DeepSeek workers. From its measurements the report projects the next limit: at 44 workers, one
 planner call every ~30 s with at most 20 hypotheses would cap supply near 40 experiments a minute,
 so the planner, not CPU or DeepSeek, would set the pace. The lab has since been changed to run
@@ -153,7 +153,7 @@ hidden reasoning counts against `worker.max_output_tokens`; the default `worker.
 keeps the whole limit for code (set `"enabled"` plus `worker.reasoning_effort` to try it). DeepSeek prices are set to the
 published peak-hour rates for `deepseek-flash` (the configured legacy `deepseek-chat` alias)
 and `deepseek-v4-pro`, as checked on the date recorded in the configuration. Prices are a dated
-snapshot. `python reprice_ledger.py` previews discrepancies without changing anything; changing
+snapshot. `python tools/reprice_ledger.py` previews discrepancies without changing anything; changing
 prices or applying a ledger rewrite requires an explicit reviewed decision under [AGENTS.md](../AGENTS.md).
 
 ## Providers
@@ -327,7 +327,7 @@ to the wins.
 
 ### Cheaper workers, same rules
 
-A second synthetic test ([report](deepseek_test_2026-10-03.md)) kept Claude Opus as
+A second synthetic test ([report](archive/records/deepseek_test_2026-10-03.md)) kept Claude Opus as
 planner and used DeepSeek workers. Four workers ran 11 experiments, each in its own worktree
 commit, and none failed. The best feature, `net_diffusion_signed` (the knockout's signed
 propagation through the prior regulatory network), reached 0.7980 on visible validation against
