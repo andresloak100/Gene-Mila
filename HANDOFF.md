@@ -4,6 +4,27 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**ROADMAP free preparation progress — Astra, 2026-10-17 01:45 UTC, claim #51.**
+Steps1/3 are posted: console/tooling #41/comment6228055333; receipts [draft PR #52](https://github.com/andresloak100/Gene-Mila/pull/52),
+branch `astra/roadmap-preparation`, commit ecd8085. All12 raw inputs ready; original nine receipts preserved.
+Step4 existing B4 JSON/MD is in that PR and [on #39](https://github.com/andresloak100/Gene-Mila/pull/39#issuecomment-6228077802):
+r0/r2 clean stored sealed Pearson .722960087/.719890613, n2 mean±sampleSD .721425350±.002170446;
+r3 separate lost-planner arm, costs .389612324/.451021668/0 (total .840633992). Planned paired combined
+B4-versus-B2 result was not found; no verdict/scoring/retry fabricated. Exactsource hashes/ledger rows preserved.
+Step2 still held BEFORE any prepare invocation/partial outputs for confirmed STRING header mismatch.
+A necessary compatibility-only patch is under review in isolated `gene-mila-string-header`, branch
+`astra/string-physical-header-compat` at1a95873: accept `experimental` as an alias of `experiments`, same
+planned channels/threshold. Actual-header regression passes all15 clean-bundle tests; independent review
+approved. Full required suite is active nice19, session59542/Python4991; log
+`/tmp/gene-mila-string-header-pytest-20261017.log`, exitmarker sameprefix `.exit`. An early F/skip was
+observed; await final traceback, do not silently ignore it or push code without required checks passing.
+No source commit/push for this patch yet; no plan/null-tool/raw-header/run-pin/cap change.
+**Exact next:** finish validation/diagnose actual failure, publish a minimal reviewed compatibility PR;
+then run unchanged prepare from validated own clone, post exact output/refusal, and launch corrected F
+all66 stage1-ok rows at999reps/nice19 in separate fixed1a95873 worktree only after prep step is resolved.
+No paid chain/cap file until Andres's cap line; never overlap chain and corrected F. No F fit started.
+Dedicated `gene-mila-baa7dfd` stays clean atbaa7dfd; main/existing bundles/runs/ledger untouched.
+
 **Astra ROADMAP steps 1–4 / corrected F handoff ACTIVE, 2026-10-17 01:40 UTC; claim #51.**
 Direct Andres instruction: read lead comments6226276557/6227968135, do ROADMAP section6 steps1–4,
 then corrected F re-read with tool1a95873 (999 replicates, EVERY status-ok row). Paid G chain only
