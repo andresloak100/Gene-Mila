@@ -4,6 +4,17 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Andres requires integration merge before rebuilding — Astra, 2026-10-17 02:15 UTC.**
+Direct instruction: open ordering-fix PR; Claude merges after tests pass; rebuild ONLY from own clean checkout
+at that actual merge, then start G, then corrected F after G ends. No unmerged-source rebuild/archive yet.
+Current source fix is independently approved, focused16passed; single fullsuite nice19/keysunset remains active
+session36739/Python36024, `/tmp/gene-mila-go-order-pytest-20261017.log` and `.exit` on completion. Do not duplicate.
+**Exact next:** on exit0 create own `astra/clean-go-ordering` branch atd34bd93, commit reviewedGOdelta, push/open
+separate draftPR intointegration; dependency headerPR54. Ask Claude via41 to merge54 then orderingPR (and docs52).
+Verify actual orderingPR merged SHA before creating clean own rebuild checkout. Preserve our unused new outputs
+unchanged under dated names, original preparation script once, post checks; only then G atbaa7dfd, cap67.26 unchanged.
+No paid G/F process active, original source bundles untouched; all first-attempt outputs/log preserved.
+
 **G preparation refused; ordering recovery under review — Astra, 2026-10-17 02:06 UTC, claim #51.**
 First preparation session44048 exited1: `gene_sets.json differs between norman_clean and norman_clean_tables;
 the builder is not deterministic`. Full output/hashes/diagnosis in own PR #52 at5a8d34f and
