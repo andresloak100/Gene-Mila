@@ -10,6 +10,7 @@ import itertools
 import json
 import time
 
+from . import discovery
 from .benchmark import METRIC_TEXT, PRIMARY_METRIC, SELECTION_RULES
 from .db import ACTIVE
 from .lab import Lab
@@ -93,6 +94,9 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         item = {"feature": name, "experiment": rows[0]["experiment_id"], "delta": d,
                 "score": rows[0]["primary_score"],
                 "description": _short(features.get(name, {}).get("description", ""), 80)}
+        dv = (rows[0].get("diagnostics_json") or {}).get("derivability")  # discovery mode only (genemila/discovery.py)
+        if dv and dv.get("r2") is not None:
+            item["derived_r2"] = round(dv["r2"], 2)
         (helpful if d is not None and d > HELP_THRESHOLD else unhelpful).append(item)
     helpful.sort(key=lambda x: -x["delta"])
 
@@ -155,7 +159,8 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         "helpful_features_missing_from_best": untested_helpful_in_best[:8],
         "possible_interactions_untested": interactions[:8],
         "failed_directions": failed_lines,
-        "unexplored_idea_areas": unexplored,
+        # discovery mode replaces the fixed idea list by what the data and the bundle say (genemila/discovery.py)
+        **(discovery.state_sections(lab) if discovery.enabled(lab.cfg) else {"unexplored_idea_areas": unexplored}),
         "in_flight": [_short(e["hypothesis"], 70) for e in sorted(inflight, key=lambda e: -(e.get("created_at") or 0))][:60],
         "recent_experiments": recent,
         "compute": {"completed": len(done), "failed": len(failed), "mean_cpu_s": round(sum(cpu) / len(cpu), 2) if cpu else None,

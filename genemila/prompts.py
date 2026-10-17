@@ -106,15 +106,48 @@ PLANNER_SCHEMA_PAIRS = {**PLANNER_SCHEMA, "hypotheses": [
      "add_features": ["for combine (a feature-set combination): existing feature names to add"]}]}
 
 
+# ----------------------------------------------- discovery mode (schedule.discovery; genemila/discovery.py)
+# A run in discovery mode renders a RESIDUAL EVIDENCE section in its state, and that heading, like the DATASET line
+# above, is what the prompt reads: the note and the three extra new_feature fields appear only then, so every other
+# run's planner message is byte for byte the one above.
+DISCOVERY_PLANNER_NOTE = (
+    " This run is in discovery mode. Read RESIDUAL EVIDENCE (where the current best model fails, from the training "
+    "folds only) and INPUTS UNEXPLORED (what the bundle offers and what no feature has read). Each new_feature must "
+    "explain part of that evidence and name in new_input one unread input it brings, by its exact name from INPUTS "
+    "UNEXPLORED (a knowledge file, a table column, or a control statistic); a product, ratio, log, rank or projection "
+    "of existing features, or of inputs already read, is derived rather than new and is left to the exploit engine. "
+    "Give the mechanism (the biology the feature encodes) and predicted_sign (the sign its coefficient must have if "
+    "the mechanism is right).")
+DISCOVERY_FEATURE_FIELDS = {
+    "new_input": "exact name of the unread input it reads (from INPUTS UNEXPLORED)",
+    "mechanism": "the biology it encodes, one sentence",
+    "predicted_sign": "positive | negative | unknown"}
+
+
+def discovery_flag(text: str) -> bool:
+    """Whether a research state (or a planner message carrying one) was rendered in discovery mode."""
+    from .discovery import EVIDENCE_HEADING
+    return EVIDENCE_HEADING + "\n" in text
+
+
+def discovery_schema(schema: dict) -> dict:
+    h = schema["hypotheses"][0]
+    return {**schema, "hypotheses": [{**h, "new_feature": {**h["new_feature"], **DISCOVERY_FEATURE_FIELDS}}]}
+
+
 def planner_user(research_state: str, n: int, mix: dict) -> str:
     pairs = dataset_flags(research_state)["pairs"]
+    discovery = discovery_flag(research_state)
+    schema = PLANNER_SCHEMA_PAIRS if pairs else PLANNER_SCHEMA
+    if discovery:
+        schema = discovery_schema(schema)
     return (
         f"RESEARCH STATE\n{research_state}\n\n"
         f"Propose {n} experiments. Target mix: about {mix.get('explore', 0):.0%} explore (new ideas), "
         f"{mix.get('exploit', 0):.0%} exploit (refine/combine what works), {mix.get('risky', 0):.0%} risky "
         "(unusual, high-variance ideas). Prefer new_feature actions for exploration. Only reference features "
-        "listed in the state." + (PAIRS_PLANNER_NOTE if pairs else "") + " Return JSON with this shape:\n"
-        + json.dumps(PLANNER_SCHEMA_PAIRS if pairs else PLANNER_SCHEMA, indent=1)
+        "listed in the state." + (PAIRS_PLANNER_NOTE if pairs else "") + (DISCOVERY_PLANNER_NOTE if discovery else "")
+        + " Return JSON with this shape:\n" + json.dumps(schema, indent=1)
     )
 
 
