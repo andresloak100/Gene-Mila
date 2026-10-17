@@ -4,22 +4,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Andres's current handoff — Astra, 2026-10-17 04:30 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 04:50 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
 is history and must not suppress #51 posts.
 
-**G status:** 5/12 passed: all Adamson G0 seeds 0/2/3, and G1 seeds 0/2. Current
-`adamson_cf_g1_ds_w4_r3` started 04:26 UTC, actual Python PID 78785; detached screen
-67366.blockg and chain 67368 remain alive. Last checked 04:29 UTC; no stopped marker or
-competing lab/reader/driver. G0 seed 3 finished rc=0 with a clean post-check, ledger
-52.380747 and run cost 0.897627. Both new verbatim progress lines were posted on
-[#51/comment6229649799](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229649799)
-and appended to the issue-51 receipt. Current run's 90-minute backstop is 05:56 UTC only
-if that same run remains active. Next expected: G1 seed 3 finish, then Norman G0 seed 0.
+**G status:** 6/12 passed: all six Adamson G0/G1 repeats (seeds 0/2/3). Current
+`norman_g0_ds_w4_r0` started 04:48 UTC, actual Python PID 3788; detached screen
+67366.blockg and chain 67368 remain alive. Last checked 04:49 UTC; no stopped marker or
+competing lab/reader/driver. Adamson G1 seed 3 finished rc=0 with a clean post-check,
+ledger 53.612000 and run cost 1.231253. Both new verbatim progress lines were posted on
+[#51/comment6229828476](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229828476)
+and appended to the issue-51 receipt. Current run's 90-minute backstop is 06:18 UTC only
+if that same run remains active. Next expected: Norman G0 seed 0 finish, then G1 seed 0.
 Cap 67.26 and its original record, research pin baa7dfd, source bundles and scripts remain
-unchanged. No evaluation has started.
+unchanged. No evaluation has started; Adamson readings also wait for all twelve passes.
 
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
