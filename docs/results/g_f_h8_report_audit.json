@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-17T17:38:54.703719+00:00",
+  "independent_auditor": "/root/block_f_readings_checklist",
+  "result": "PASS after one wording clarification",
+  "files": [
+    "g_f_h8_readings.json",
+    "g_f_h8_readings.md"
+  ],
+  "sha256": {
+    "g_f_h8_readings.json": "8823707e70e29643471c2707972489b7e8867227d4e5981e03e628cd54f26278",
+    "g_f_h8_readings.md": "29fba5b0fb801a2d6fc3ea4176c01c95d7b72da2456d524a36dbd526236a2515"
+  },
+  "checks": [
+    "All11source hashes match.",
+    "Source run directories and copied summary objects match.",
+    "All G arm means and sample SDs, G4counts, corrected F rows and H8tables agree.",
+    "No stale positive F, unsupported discovery, fresh-test or CellForge victory claim."
+  ],
+  "clarification": "Scoped16true/8null stored-score matches explicitly to Norman; Adamson separately10true/2null, with first scorings g0r3 EXP_0613 and g1r2 EXP_0730. JSON already held correct separate records.",
+  "raw_results_edited": false,
+  "scientific_jobs_rerun": false
+}

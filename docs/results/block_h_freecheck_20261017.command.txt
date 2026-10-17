@@ -1,0 +1,15 @@
+UTC launch: 2026-10-17T17:53:27.359441+00:00
+Integration source commit: 624b909179ee4f1a53c49d731a8553f873479e89
+Direct human authorized freecheck after export; post full output51 thenSTOP. No paid/agent/arm/probe job.
+H_CLONE=/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-coordination
+Credentials unset; nice19;caffeinate.
+check_tools.sh SHA256: f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74
+block_h_common.sh SHA256: 835c53f5f94335ce4ed4e455bdb20a8ba5d98f31a9f37290be935ebce09e7925
+set -C
+cd /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-coordination || exit 98
+{
+/usr/bin/caffeinate -i nice -n 19 /bin/bash docs/mac/block_h/check_tools.sh
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/block_h_freecheck_20261017.exit
+exit "$rc"
+} > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/block_h_freecheck_20261017.log 2>&1

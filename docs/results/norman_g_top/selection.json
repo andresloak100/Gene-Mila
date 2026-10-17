@@ -1,0 +1,877 @@
+{
+ "m_total": 174,
+ "null_reps": 999,
+ "k": null,
+ "selected": [
+  {
+   "source": "f_r0",
+   "feature": "loeuf_weighted_target_similarity_e262",
+   "z": 4.286055170798659
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_cpg_oe_e523",
+   "z": 3.6767951658477505
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_mean_times_additive_response_e375",
+   "z": 3.6767951658477505
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_weighted_target_response_simi_e179",
+   "z": 3.6697752462359468
+  },
+  {
+   "source": "f_r0",
+   "feature": "compartment_weighted_target_response_sim_e231",
+   "z": 3.4370253985381676
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_weighted_target_response_simi_e234",
+   "z": 3.3911320495602046
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_weighted_target_similarity_e2_e250",
+   "z": 3.387417561076983
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_length_weighted_target_similarit_e260",
+   "z": 3.3468309843763504
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_weighted_cpg_promoter_e459",
+   "z": 3.243807282045705
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_bidirectional_count_e89",
+   "z": 3.061836103679371
+  },
+  {
+   "source": "f_r0",
+   "feature": "lof_weighted_pair_additivity_residual_e1_e646",
+   "z": 3.011576461708412
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_cytoplasm_e543",
+   "z": 2.9907426899310203
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_neighbor_count_times_additive_e515",
+   "z": 2.906080247058582
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_variance_times_additive_e578",
+   "z": 2.8569438079802882
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_constraint_e360",
+   "z": 2.6210449015268256
+  },
+  {
+   "source": "f_r0",
+   "feature": "pair_genomic_distance_e676",
+   "z": 2.563253079970834
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_gc_promoter_e312",
+   "z": 2.4868519923043038
+  },
+  {
+   "source": "f_r3",
+   "feature": "pair_target_compartment_similarity_e431",
+   "z": 2.4792972329100715
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_log_target_protein_l_e466",
+   "z": 2.409875185259373
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_promoter_cpg_e589",
+   "z": 2.3344837993424403
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_nuclear_cytop_e648",
+   "z": 2.2910262172918676
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_constraint_e302",
+   "z": 2.224000131563131
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_constraint_v2_e154",
+   "z": 2.2022848274532447
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_weighted_additive_response_e415",
+   "z": 2.2022848274532447
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_conservation_times_additive_e558",
+   "z": 2.2022848274532447
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_times_additive_response_v2_e415",
+   "z": 2.20228280857143
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_constraint_e81",
+   "z": 2.2022749608661463
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_loeuf_interaction_e162",
+   "z": 2.2022749608661463
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_times_additive_response_e104",
+   "z": 2.2022749608661463
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_squared_times_additive_resp_e553",
+   "z": 2.1467266093752
+  },
+  {
+   "source": "f_r0",
+   "feature": "distance_weighted_target_similarity_e204",
+   "z": 2.1200683784322325
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_chromatin_accessibility_e590",
+   "z": 1.9557776561309312
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_squared_times_additive_e505",
+   "z": 1.9532094147652133
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_protein_lengt_e657",
+   "z": 1.87221077384263
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_chromatin_accessibility_mean_e587",
+   "z": 1.8605054482804244
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_island_e375",
+   "z": 1.782944618574006
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_upstream_atg_times_additive_e612",
+   "z": 1.6994797188600643
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_density_e201",
+   "z": 1.6706798754174497
+  },
+  {
+   "source": "f_r3",
+   "feature": "pair_target_constraint_interaction_e242",
+   "z": 1.650023621518275
+  },
+  {
+   "source": "f_r3",
+   "feature": "pair_target_constraint_product_interacti_e462",
+   "z": 1.5459007937880016
+  },
+  {
+   "source": "f_r3",
+   "feature": "pair_target_constraint_aggregate_e433",
+   "z": 1.5360346726705778
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_cpg_island_overlap_e125_e139",
+   "z": 1.4878341945108968
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_promoter_cpg_density_e547",
+   "z": 1.4878341945108968
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_promoter_cpg_oe_e84",
+   "z": 1.4878341945108968
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_cv_e460",
+   "z": 1.4353909268266367
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_ppi_degree_mean_e300",
+   "z": 1.2765899138669632
+  },
+  {
+   "source": "f_r0",
+   "feature": "lof_response_similarity_interaction_e570",
+   "z": 1.1641875426757853
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_utr5_length_times_additive_e429",
+   "z": 1.1148331621507344
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_min_loeuf_times_additive_e661",
+   "z": 1.1112165323317031
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_times_additive_e217",
+   "z": 1.1059368834294658
+  },
+  {
+   "source": "f_r0",
+   "feature": "lof_weighted_target_response_similarity_e201",
+   "z": 1.0736082779160372
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_feature_weighted_target_similari_e380",
+   "z": 1.0553796552856929
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_length_weighted_target_similarit_e263",
+   "z": 0.9665476289384821
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_nuclear_local_e530",
+   "z": 0.879274003859082
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_total_protein_e573",
+   "z": 0.8572699711808093
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_expression_variance_times_additiv_e596",
+   "z": 0.8146634992194749
+  },
+  {
+   "source": "f_r3",
+   "feature": "pair_target_lof_intolerance_e253",
+   "z": 0.7640172672987964
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_conservation_score_e276",
+   "z": 0.7640172672987964
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_constraint_score_e72",
+   "z": 0.7640172672987964
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_essentiality_score_e380",
+   "z": 0.7640172672965455
+  },
+  {
+   "source": "f_r3",
+   "feature": "promoter_cpg_overlap_with_target_e519",
+   "z": 0.7620372079173727
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_tfbs_count_e204",
+   "z": 0.7168996514906044
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_localization_additive_interaction_e138",
+   "z": 0.6563548799250555
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_mean_loeuf_times_corr_e230",
+   "z": 0.6557777099013276
+  },
+  {
+   "source": "f_r0",
+   "feature": "genomic_distance_weighted_response_simil_e581",
+   "z": 0.6372650566473924
+  },
+  {
+   "source": "f_r3",
+   "feature": "bidirectional_promoter_overlap_e252",
+   "z": 0.5498080353028176
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_constraint_e170_e182",
+   "z": 0.5374579026385818
+  },
+  {
+   "source": "f_r0",
+   "feature": "loeuf_weighted_target_response_similarit_e664",
+   "z": 0.5154833306163622
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_mean_nonlinear_e298",
+   "z": 0.47407319713808876
+  },
+  {
+   "source": "f_r2",
+   "feature": "is_target_times_target_loeuf_e377",
+   "z": 0.3929233349586132
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_constraint_interaction_e91",
+   "z": 0.392921307816919
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_promoter_gc_e447",
+   "z": 0.31755868241957164
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_constraint_response_e77",
+   "z": 0.30847924075138616
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_intron_length_times_additive_e483",
+   "z": 0.28119966248550227
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_n_transcripts_e574",
+   "z": 0.2763900865339695
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_times_gene_gc_promoter_e115",
+   "z": 0.2573300781602926
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_tf_binding_site_count_e510",
+   "z": 0.2425345972403295
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_membrane_secr_e559",
+   "z": 0.2264114613445155
+  },
+  {
+   "source": "f_r0",
+   "feature": "nearest_target_neighbor_distance_e567",
+   "z": 0.2098260002267908
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_promoter_times_additive_respo_e369",
+   "z": 0.1968211326623716
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_protein_length_x_constraint_e477",
+   "z": 0.05257357282263869
+  },
+  {
+   "source": "f_r0",
+   "feature": "lof_weighted_neighbor_response_similarit_e471",
+   "z": -0.025263059357597133
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_similarity_times_addi_e322",
+   "z": -0.05610595024498574
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_localization_overlap_e92",
+   "z": -0.1306071287808778
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_compartment_similari_e461",
+   "z": -0.14426757181033786
+  },
+  {
+   "source": "f_r3",
+   "feature": "compartment_overlap_with_target_e82",
+   "z": -0.16209522512690516
+  },
+  {
+   "source": "f_r0",
+   "feature": "essentiality_weighted_response_similarit_e379",
+   "z": -0.21810589344188058
+  },
+  {
+   "source": "f_r0",
+   "feature": "genomic_distance_weighted_neighbor_respo_e635",
+   "z": -0.26603464105110425
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_localization_similarity_e520",
+   "z": -0.3200702067053556
+  },
+  {
+   "source": "f_r0",
+   "feature": "chromatin_proximity_to_target_e552",
+   "z": -0.3455460821010996
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_pli_times_additive_response_e216",
+   "z": -0.38150403017966295
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_tf_motif_enrichment_e331_e347",
+   "z": -0.41763626618834226
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_n_transcripts_e220",
+   "z": -0.5093952851687015
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_count_times_additive__e470",
+   "z": -0.5427550495486105
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_localization_similarity_e661",
+   "z": -0.5573609419898145
+  },
+  {
+   "source": "f_r3",
+   "feature": "compartment_overlap_with_target_v2_e170",
+   "z": -0.5573609529821971
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_localization_similarity_e475",
+   "z": -0.5573609529821971
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_constraint_interaction_e553",
+   "z": -0.5596071172850552
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_times_nonadditivity_e331",
+   "z": -0.5998966752084016
+  },
+  {
+   "source": "f_r0",
+   "feature": "lof_weighted_response_similarity_v2_e495",
+   "z": -0.6000458479975525
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_gene_essentiality_e4_e399",
+   "z": -0.6724942184768312
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_gene_compartment_overlap_e411",
+   "z": -0.7696463219984567
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_membrane_e544",
+   "z": -0.8499845723327244
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_membrane_fraction_times_additive__e441",
+   "z": -0.8499845723327244
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_exon_count_times_additive_respons_e438",
+   "z": -0.8667551348956936
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_nuclear_e542",
+   "z": -0.9418264327403154
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_nuclear_fraction_times_additive_r_e148",
+   "z": -0.9418264327403154
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_annotation_random_projection_e680",
+   "z": -0.9618966515650963
+  },
+  {
+   "source": "f_r3",
+   "feature": "chromatin_state_similarity_with_target_e634",
+   "z": -1.0100916161496716
+  },
+  {
+   "source": "f_r0",
+   "feature": "bidirectional_target_proximity_e566",
+   "z": -1.0331597640465935
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_ratio_times_additi_e517",
+   "z": -1.0545271655583082
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_annotation_random_projection_e488",
+   "z": -1.0770049791563465
+  },
+  {
+   "source": "f_r0",
+   "feature": "nearest_target_tss_distance_e189",
+   "z": -1.0812760838219646
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_essentiality_e391",
+   "z": -1.1043392063911806
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_pli_times_additive_response_e475",
+   "z": -1.1043392063911806
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_conservation_e662",
+   "z": -1.1198538012432497
+  },
+  {
+   "source": "f_r0",
+   "feature": "random_projection_annotation_target_simi_e692",
+   "z": -1.1594234033428403
+  },
+  {
+   "source": "f_r3",
+   "feature": "promoter_motif_count_for_target_tf_e361",
+   "z": -1.183849375258532
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_gene_cpg_similarity_e304",
+   "z": -1.1942552907546464
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_annotation_random_projection_e668",
+   "z": -1.2211032415124652
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_promoter_activity_score_e537",
+   "z": -1.2238360461867628
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_neighbor_distance_e105",
+   "z": -1.247899460944557
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_loeuf_e203",
+   "z": -1.2673071717426478
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_conservation_composite_e265",
+   "z": -1.2717402604382602
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_constraint_e1_e138",
+   "z": -1.3235615561823484
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_constraint_v2_e171",
+   "z": -1.3235618386450578
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_aa_fraction_similarity_e341",
+   "z": -1.3257924135741281
+  },
+  {
+   "source": "f_r0",
+   "feature": "bidirectional_target_overlap_e582",
+   "z": -1.3314104300009142
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_localization_diversity_times_addi_e613",
+   "z": -1.34029793386466
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_diversity_times_addit_e493",
+   "z": -1.3426876377226467
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_essentiality_e448",
+   "z": -1.35358228225792
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_localization_diversity_e277",
+   "z": -1.3927210166551647
+  },
+  {
+   "source": "f_r2",
+   "feature": "is_target_times_target_protein_length_e118",
+   "z": -1.4051884304883626
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_loeuf_e535",
+   "z": -1.4183054787937994
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gc_promoter_times_additive_e482",
+   "z": -1.4204823244034201
+  },
+  {
+   "source": "f_r3",
+   "feature": "essentiality_interaction_e281",
+   "z": -1.4316898861367766
+  },
+  {
+   "source": "f_r3",
+   "feature": "tf_motif_promoter_score_e119",
+   "z": -1.4822945516576542
+  },
+  {
+   "source": "f_r3",
+   "feature": "promoter_motif_similarity_with_target_e660",
+   "z": -1.4942188892941666
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_gene_constraint_e315",
+   "z": -1.49759887438689
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_variance_times_additive_e651",
+   "z": -1.5124842860940797
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_gc_promoter_mean_e427",
+   "z": -1.6266364763207333
+  },
+  {
+   "source": "f_r3",
+   "feature": "pair_target_constraint_product_e476",
+   "z": -1.6710838348746806
+  },
+  {
+   "source": "f_r3",
+   "feature": "ppi_distance_weighted_constraint_e118",
+   "z": -1.6943699204355032
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_n_transcripts_times_additive_e484",
+   "z": -1.6979766591415977
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_accessibility_proxy_e379",
+   "z": -1.721245515179419
+  },
+  {
+   "source": "f_r0",
+   "feature": "transmembrane_count_difference_e662",
+   "z": -1.749054153913427
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_property_modulated_response_e105",
+   "z": -1.778008782350683
+  },
+  {
+   "source": "f_r0",
+   "feature": "loef_weighted_target_response_similarity_e287",
+   "z": -1.8818879910389532
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_diversity_e503",
+   "z": -1.9712913363855944
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_compartment_diversity_e73",
+   "z": -1.9712913363855944
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_promoter_gc_similarity_e551",
+   "z": -2.151514027924751
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_gene_motif_similarity_e262",
+   "z": -2.1707748350374425
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_mean_protein_length_e444",
+   "z": -2.2020008906716027
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_e52",
+   "z": -2.2020008906716027
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_interaction_e462",
+   "z": -2.2317048847195933
+  },
+  {
+   "source": "f_r0",
+   "feature": "essentiality_weighted_response_similarit_e397",
+   "z": -2.2783874071209116
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_essentiality_product_e203",
+   "z": -2.300203654691588
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_expression_variance_mean_e585",
+   "z": -2.500757061230797
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_response_similarity_weighted_by_g_e219",
+   "z": -2.5780407852574716
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_times_control_mean_e103",
+   "z": -2.6409742640396665
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_times_control_mean_e116",
+   "z": -2.8951434933656444
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_times_control_mean_e163",
+   "z": -2.89514354754959
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_gc_cds_e575",
+   "z": -2.902520882931399
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gc_cds_times_additive_response_e435",
+   "z": -2.902520882931399
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_nuclear_fraction_e86",
+   "z": -2.9083563824271725
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_protein_lengt_e453",
+   "z": -2.966851534203971
+  },
+  {
+   "source": "f_r0",
+   "feature": "distance_to_nearest_target_tss_e182",
+   "z": -2.974313121695341
+  },
+  {
+   "source": "f_r0",
+   "feature": "lof_weighted_random_projection_e478",
+   "z": -3.0461787636622457
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_mean_squared_e670",
+   "z": -3.0882394923768928
+  },
+  {
+   "source": "f_r3",
+   "feature": "additive_response_x_target_protein_lengt_e442",
+   "z": -3.119541655669027
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_transmembrane_count_interaction_e531",
+   "z": -3.2267788961985238
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_g_cpg_overlap_e555",
+   "z": -3.456433055167803
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_squared_times_addi_e440",
+   "z": -4.104996594273227
+  },
+  {
+   "source": "f_r3",
+   "feature": "protein_domain_random_projection_e613",
+   "z": -6.879117577678057
+  }
+ ]
+}

@@ -1,0 +1,1112 @@
+{
+ "m_total": 221,
+ "null_reps": 999,
+ "k": null,
+ "selected": [
+  {
+   "source": "f_r0",
+   "feature": "target_expression_variability_x_loeuf_e417",
+   "z": 3.0002244912640883
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_protein_length_e619",
+   "z": 2.7592178978774
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_x_gene_membrane_e2_e300",
+   "z": 2.5263138035635686
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_essentiality_e223",
+   "z": 2.3852544464161154
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_protein_length_e186",
+   "z": 2.3015727805672634
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_length_x_gene_membrane_raw_e538",
+   "z": 2.158447242884233
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_annotation_random_projection_tanh_e572",
+   "z": 2.00425647104878
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_protein_length_normalized_e446",
+   "z": 1.9401470966094665
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_loeuf_x_target_selfdelta_e569",
+   "z": 1.8017232564513588
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_essentiality_score_e284",
+   "z": 1.7702178459873088
+  },
+  {
+   "source": "f_r0",
+   "feature": "selfdelta_x_cpg_promoter_exxx_e595",
+   "z": 1.7523469707819508
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_combined_e542",
+   "z": 1.7117576577308122
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_n_exons_x_is_target_e245",
+   "z": 1.6716289797455013
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_protein_half_life_e362",
+   "z": 1.6430550664428472
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_length_x_gene_membrane_propensity_e420",
+   "z": 1.6243360887059874
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_transcript_diversity_e640",
+   "z": 1.621569185932004
+  },
+  {
+   "source": "f_r3",
+   "feature": "bidirectional_promoter_indicator_e45",
+   "z": 1.5920479210203384
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_has_signal_peptide_x_is_target_e247",
+   "z": 1.5903784735516144
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_essentiality_rank_e445",
+   "z": 1.5118031009383914
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_loeuf_x_second_neighbor_response_e746",
+   "z": 1.4906372789991285
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_knockdown_proxy_e14",
+   "z": 1.4571813032102152
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_x_gene_annotation_e333",
+   "z": 1.4478293779410796
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_compartment_flag_e82",
+   "z": 1.4461668181275047
+  },
+  {
+   "source": "f_r2",
+   "feature": "protein_stability_proxy_e81",
+   "z": 1.4315109017186551
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_has_signal_peptide_x_gene_membran_e525",
+   "z": 1.4314619567056304
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_broadcast_e253",
+   "z": 1.4255788064480035
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_loeuf_e24",
+   "z": 1.4255788064480035
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_loeuf_e34",
+   "z": 1.4255788064480035
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_depmap_essentiality_e703",
+   "z": 1.425578806446103
+  },
+  {
+   "source": "f_r0",
+   "feature": "full_annotation_projection_with_protein_e645",
+   "z": 1.4132745770870891
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_shared_domains_count_e510",
+   "z": 1.3946106190896619
+  },
+  {
+   "source": "f_r2",
+   "feature": "weighted_gene_set_similarity_e256",
+   "z": 1.3831473490737418
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_x_is_target_e241",
+   "z": 1.3371254343563939
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_gc_cds_e188",
+   "z": 1.2796303951496324
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_ppi_neighbor_essentiality_weighte_e764",
+   "z": 1.2676798658557304
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_island_e444",
+   "z": 1.2453238151136599
+  },
+  {
+   "source": "f_r3",
+   "feature": "static_annotation_random_projection_e588",
+   "z": 1.2330319306372666
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_prior_knowledge_e310",
+   "z": 1.2284172772969149
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_static_plus_target_var_e436",
+   "z": 1.172061836874872
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_annotation_random_projection_e717",
+   "z": 1.0837136929126545
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_flag_e252",
+   "z": 1.071758778481938
+  },
+  {
+   "source": "f_r2",
+   "feature": "domain_similarity_e123",
+   "z": 1.0694001076386055
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_localization_e53",
+   "z": 1.014223959194652
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_shared_domain_count_e589",
+   "z": 0.9927997228178771
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_promoter_cpg_strength_x_gene_set__e168",
+   "z": 0.9495296404624259
+  },
+  {
+   "source": "f_r2",
+   "feature": "random_projection_target_annotation_e737",
+   "z": 0.8971495576638975
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_prior_features_e301",
+   "z": 0.892303461183606
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_loeuf_e380",
+   "z": 0.8825710320484552
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_annotation_random_projection_e178",
+   "z": 0.881017539471843
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_loeuf_x_mean_response_e404",
+   "z": 0.8781658734969292
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_shared_domain_count_e694",
+   "z": 0.8603517485184083
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_promoter_broadcast_e257",
+   "z": 0.8585195871396026
+  },
+  {
+   "source": "f_r0",
+   "feature": "cpg_promoter_score_e81",
+   "z": 0.8393008254474748
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_essentiality_combo_e50",
+   "z": 0.830315973730759
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_annotation_random_projection_e201",
+   "z": 0.822529591069322
+  },
+  {
+   "source": "f_r3",
+   "feature": "static_annotation_random_proj_e545_e554",
+   "z": 0.8193620544782184
+  },
+  {
+   "source": "f_r0",
+   "feature": "cpg_target_tf_interaction_e168",
+   "z": 0.8150244469880068
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_knockdown_magnitude_e32",
+   "z": 0.765504486296852
+  },
+  {
+   "source": "f_r0",
+   "feature": "combined_annotation_projection_target_in_e398",
+   "z": 0.7545053074956493
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_loeuf_x_half_life_e134",
+   "z": 0.7544146422892991
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_half_life_interaction_e91",
+   "z": 0.7486359522957415
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_n_exons_e187",
+   "z": 0.7468630479361333
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_control_expression_e523",
+   "z": 0.706932386496168
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_control_mean_e320",
+   "z": 0.7069313455497998
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_localization_entropy_e673",
+   "z": 0.6418396248773435
+  },
+  {
+   "source": "f_r0",
+   "feature": "nuclear_gene_x_target_nuclear_e506",
+   "z": 0.5828072264441269
+  },
+  {
+   "source": "f_r3",
+   "feature": "cpg_oe_promoter_binary_e44",
+   "z": 0.5133961650005264
+  },
+  {
+   "source": "f_r0",
+   "feature": "random_projection_annotation_ppi_e525_e539",
+   "z": 0.5051381743319399
+  },
+  {
+   "source": "f_r3",
+   "feature": "prior_knowledge_random_projection_e344",
+   "z": 0.4953947165687291
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_half_life_e671",
+   "z": 0.4564692144810966
+  },
+  {
+   "source": "f_r0",
+   "feature": "nuclear_gene_x_loeuf_target_e467",
+   "z": 0.44967370830164893
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_span_x_gene_intron_length_e568",
+   "z": 0.4311733336907319
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_prior_knowledge_e328",
+   "z": 0.4289548012868308
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_static_plus_target_res_e607",
+   "z": 0.4078045848409448
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_stability_x_gene_proteasome_sensi_e725",
+   "z": 0.4045593867644389
+  },
+  {
+   "source": "f_r3",
+   "feature": "static_feature_random_projection_e390",
+   "z": 0.39436781962058015
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_length_x_gene_function_e269",
+   "z": 0.3733637386007417
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_loeuf_squared_e444",
+   "z": 0.35615490345881606
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_response_variance_over_essentiality_e651",
+   "z": 0.34134635167898614
+  },
+  {
+   "source": "f_r0",
+   "feature": "nuclear_target_x_gene_loeuf_e697",
+   "z": 0.3213979654737168
+  },
+  {
+   "source": "f_r0",
+   "feature": "utr3_length_response_e604_e581",
+   "z": 0.31900142842588985
+  },
+  {
+   "source": "f_r2",
+   "feature": "promoter_cpg_features_e35",
+   "z": 0.29370301025425183
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_ppi_neighbor_mean_response_loeuf__e775",
+   "z": 0.28918479823913257
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_accessibility_e365",
+   "z": 0.2854655460584747
+  },
+  {
+   "source": "f_r0",
+   "feature": "coessentiality_interaction_e289",
+   "z": 0.26652256026255505
+  },
+  {
+   "source": "f_r0",
+   "feature": "loeuf_product_target_gene_e217",
+   "z": 0.2636936072819751
+  },
+  {
+   "source": "f_r2",
+   "feature": "nearest_neighbor_response_e9",
+   "z": 0.2614255702704516
+  },
+  {
+   "source": "f_r0",
+   "feature": "loeuf_interaction_squared_e481",
+   "z": 0.2572933014157549
+  },
+  {
+   "source": "f_r0",
+   "feature": "essentiality_target_x_response_entropy_e433",
+   "z": 0.2531087722453526
+  },
+  {
+   "source": "f_r0",
+   "feature": "response_entropy_target_essentiality_int_e389",
+   "z": 0.25182707259207326
+  },
+  {
+   "source": "f_r3",
+   "feature": "tf_binding_site_overlap_e742",
+   "z": 0.24681125077779448
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_promoter_x_gene_cpg_promoter_e723",
+   "z": 0.2464348609092134
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_essentiality_x_ppi_interaction_e417",
+   "z": 0.2190946206254419
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_shared_domain_count_e454",
+   "z": 0.2164761640436616
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_localization_interaction_e403",
+   "z": 0.2164761640436616
+  },
+  {
+   "source": "f_r3",
+   "feature": "coessentiality_correlation_e725",
+   "z": 0.19883128816593287
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_product_exxx_e594",
+   "z": 0.19449867722496636
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_shared_protein_domain_e500_e483",
+   "z": 0.18847481504908076
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_chromatin_accessibility_e211",
+   "z": 0.17040123278786617
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_cpg_oe_promoter_e352",
+   "z": 0.1700797417878186
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_content_e317",
+   "z": 0.1696776580910232
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_mrna_stability_e363",
+   "z": 0.15386906853763355
+  },
+  {
+   "source": "f_r0",
+   "feature": "promoter_cpg_response_e602_e579",
+   "z": 0.12096014481927558
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gc_cds_x_is_target_e243",
+   "z": 0.11861230698841514
+  },
+  {
+   "source": "f_r3",
+   "feature": "static_annotation_random_projection_e530",
+   "z": 0.11190428881184857
+  },
+  {
+   "source": "f_r0",
+   "feature": "random_projection_annotation_ppi_diffusi_e701",
+   "z": 0.06120810869028675
+  },
+  {
+   "source": "f_r0",
+   "feature": "essentiality_x_response_entropy_e543",
+   "z": -0.016626812972991414
+  },
+  {
+   "source": "f_r2",
+   "feature": "random_projection_target_annotation_e750",
+   "z": -0.06633355272532436
+  },
+  {
+   "source": "f_r0",
+   "feature": "tf_target_motif_density_e600_e577",
+   "z": -0.07046697178947381
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_knockdown_proxy_e13",
+   "z": -0.11064536065682898
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_projection_target_interaction_e174",
+   "z": -0.13375780875071658
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_promoter_x_gene_tf_indicator_e321",
+   "z": -0.16512682604708356
+  },
+  {
+   "source": "f_r0",
+   "feature": "essentiality_response_interaction_e329",
+   "z": -0.26330426331616225
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_constraint_similarity_e429",
+   "z": -0.26887285004728717
+  },
+  {
+   "source": "f_r0",
+   "feature": "pathway_overlap_weighted_by_essentiality_e516",
+   "z": -0.27328087548260604
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_gene_constraint_correlation_e682",
+   "z": -0.33844955275687044
+  },
+  {
+   "source": "f_r0",
+   "feature": "tf_binding_overlap_e610_e604",
+   "z": -0.3535200802727212
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_static_features_e410",
+   "z": -0.35868746379131633
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_n_transcripts_x_is_target_e242",
+   "z": -0.37074973914441217
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_promoter_cpg_strength_x_mean_resp_e163",
+   "z": -0.3729141555067542
+  },
+  {
+   "source": "f_r3",
+   "feature": "coessentiality_correlation_e744",
+   "z": -0.4070923257823706
+  },
+  {
+   "source": "f_r0",
+   "feature": "complex_membership_interaction_e479",
+   "z": -0.4339371261928983
+  },
+  {
+   "source": "f_r0",
+   "feature": "random_projection_gene_annotation_e124",
+   "z": -0.44219570813940984
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_loeuf_product_e537",
+   "z": -0.45029511566045644
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_tfbs_x_gene_tf_e539",
+   "z": -0.47403653643594684
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_set_overlap_x_essentiality_e505",
+   "z": -0.5203743316673992
+  },
+  {
+   "source": "f_r3",
+   "feature": "static_annotation_random_projection_e518",
+   "z": -0.5564739272881335
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_cpg_x_response_entropy_e614_e619",
+   "z": -0.5621542944343942
+  },
+  {
+   "source": "f_r3",
+   "feature": "same_protein_complex_e93_e102",
+   "z": -0.5758009635053218
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_random_projection_target_inte_e379",
+   "z": -0.5954874883843445
+  },
+  {
+   "source": "f_r0",
+   "feature": "tfbs_count_promoter_e341",
+   "z": -0.6127640653211535
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_coexpression_e264",
+   "z": -0.7044303541007257
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_promoter_x_gene_loeuf_e526",
+   "z": -0.730490283261383
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_cpg_oe_promoter_x_is_target_e246",
+   "z": -0.7706061687293317
+  },
+  {
+   "source": "f_r0",
+   "feature": "full_annotation_projection_target_e459",
+   "z": -0.7710408232036554
+  },
+  {
+   "source": "f_r0",
+   "feature": "learned_annotation_projection_interactio_e300",
+   "z": -0.7838902019357875
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_annotation_random_projection_e113",
+   "z": -0.8112904163627861
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_annotation_random_projection_e736",
+   "z": -0.8112904163629322
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_connectivity_e332",
+   "z": -0.8142833801437115
+  },
+  {
+   "source": "f_r0",
+   "feature": "loeuf_interaction_target_gene_e601_e578",
+   "z": -0.8226676976734265
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_essentiality_x_gene_constraint_e500",
+   "z": -0.8226676976734265
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_compartment_x_gene_compartment_sp_e566",
+   "z": -0.9203744652789871
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_nonlinear_interaction_e224",
+   "z": -0.9363629158013252
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_loeuf_e367",
+   "z": -1.02055720740005
+  },
+  {
+   "source": "f_r3",
+   "feature": "protein_domain_similarity_e743",
+   "z": -1.048323614535291
+  },
+  {
+   "source": "f_r2",
+   "feature": "promoter_motif_similarity_e602_e609",
+   "z": -1.0556242692199425
+  },
+  {
+   "source": "f_r2",
+   "feature": "same_compartment_indicator_e268",
+   "z": -1.063165892099043
+  },
+  {
+   "source": "f_r2",
+   "feature": "localization_overlap_e604_e611",
+   "z": -1.0735959312964143
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_compartment_similarity_e169",
+   "z": -1.0735959312964143
+  },
+  {
+   "source": "f_r3",
+   "feature": "protein_compartment_similarity_e42",
+   "z": -1.0735959312964143
+  },
+  {
+   "source": "f_r3",
+   "feature": "complex_member_target_loeuf_interaction_e116",
+   "z": -1.0806938918077118
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_loeuf_similarity_e551",
+   "z": -1.1058044577419008
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_coexpression_rank_e561",
+   "z": -1.1215229381364937
+  },
+  {
+   "source": "f_r0",
+   "feature": "rbf_annotation_projection_e606_e584",
+   "z": -1.1414305775232978
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_domain_similarity_e327",
+   "z": -1.163590966713409
+  },
+  {
+   "source": "f_r3",
+   "feature": "coessentiality_rank_correlation_e809",
+   "z": -1.1661866325952082
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_is_nuclear_e35",
+   "z": -1.232309166594106
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_projection_target_interaction_e149",
+   "z": -1.2815593270821493
+  },
+  {
+   "source": "f_r3",
+   "feature": "chromatin_modifier_cpg_interaction_e87",
+   "z": -1.2854974130533339
+  },
+  {
+   "source": "f_r3",
+   "feature": "shared_compartment_similarity_e559",
+   "z": -1.361149631480581
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_compartment_similarity_e370",
+   "z": -1.361149631480581
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_static_features_e424",
+   "z": -1.4178757039962113
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_all_priors_e226",
+   "z": -1.4493194740839836
+  },
+  {
+   "source": "f_r2",
+   "feature": "chromatin_state_similarity_e720",
+   "z": -1.4526377184954278
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_cpg_x_response_entropy_e614_e620",
+   "z": -1.4602904745525607
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_neighbor_coexpression_e386",
+   "z": -1.4630014962399633
+  },
+  {
+   "source": "f_r3",
+   "feature": "essentiality_interaction_e561",
+   "z": -1.4923900936497927
+  },
+  {
+   "source": "f_r3",
+   "feature": "annotation_random_projection_similarity_e704",
+   "z": -1.4940682646222387
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_x_gene_folding_set_e353",
+   "z": -1.5888318435309925
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_essentiality_ppi_neighbor_delta_i_e515",
+   "z": -1.6117483719781471
+  },
+  {
+   "source": "f_r0",
+   "feature": "ppi_neighbor_mean_delta_x_target_essenti_e415",
+   "z": -1.6407014347193267
+  },
+  {
+   "source": "f_r0",
+   "feature": "combined_annotation_projection_x_target__e439",
+   "z": -1.6802713993784923
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_promoter_cpg_island_e78",
+   "z": -1.6999095498763113
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_protein_length_x_gene_binding_fun_e527",
+   "z": -1.717233241202956
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_nonlinear_interaction_e225",
+   "z": -1.7374115332729496
+  },
+  {
+   "source": "f_r0",
+   "feature": "tf_target_overlap_score_e476",
+   "z": -1.7548394889871282
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_coexpression_rank_x_target_l_e412",
+   "z": -1.7612451926249153
+  },
+  {
+   "source": "f_r0",
+   "feature": "pathway_overlap_x_target_loeuf_e407",
+   "z": -1.7703274629802244
+  },
+  {
+   "source": "f_r3",
+   "feature": "bidirectional_partner_coexpression_e387",
+   "z": -1.7938798697043945
+  },
+  {
+   "source": "f_r3",
+   "feature": "essentiality_interaction_e803",
+   "z": -1.8052123118524355
+  },
+  {
+   "source": "f_r2",
+   "feature": "shared_tf_motif_similarity_e175",
+   "z": -1.81141169393677
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_response_variance_over_target_essen_e430",
+   "z": -1.8225009908798095
+  },
+  {
+   "source": "f_r2",
+   "feature": "stability_x_nuclear_flag_e255",
+   "z": -1.8253291576749848
+  },
+  {
+   "source": "f_r0",
+   "feature": "complex_partner_avg_response_e154",
+   "z": -1.8387149127439748
+  },
+  {
+   "source": "f_r0",
+   "feature": "tf_motif_similarity_target_gene_e269",
+   "z": -1.8725598463876831
+  },
+  {
+   "source": "f_r0",
+   "feature": "combined_annotation_projection_x_essenti_e419",
+   "z": -1.9283514124433176
+  },
+  {
+   "source": "f_r0",
+   "feature": "protein_annotation_projection_target_int_e410",
+   "z": -1.989087302681379
+  },
+  {
+   "source": "f_r0",
+   "feature": "loeuf_weighted_ppi_neighbor_mean_delta_e_e554",
+   "z": -2.0445557014018783
+  },
+  {
+   "source": "f_r0",
+   "feature": "cpg_island_promoter_interaction_e155",
+   "z": -2.1382094886690175
+  },
+  {
+   "source": "f_r2",
+   "feature": "shared_cpg_promoter_e195",
+   "z": -2.1382094886690175
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_essentiality_x_gene_loeuf_e512",
+   "z": -2.209703342308894
+  },
+  {
+   "source": "f_r0",
+   "feature": "coessentiality_corr_target_gene_e268",
+   "z": -2.2279586665081874
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_degradation_signal_x_gene_ubiquit_e670",
+   "z": -2.271253274883641
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_essentiality_x_coexpression_e638",
+   "z": -2.287654520480187
+  },
+  {
+   "source": "f_r0",
+   "feature": "nuclear_gene_x_pathway_overlap_interacti_e519",
+   "z": -2.2892915466910204
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_static_features_e409",
+   "z": -2.3045642333328944
+  },
+  {
+   "source": "f_r3",
+   "feature": "gene_essentiality_buffering_e92",
+   "z": -2.3634008946706473
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_loeuf_e94",
+   "z": -2.3634008946706473
+  },
+  {
+   "source": "f_r3",
+   "feature": "shared_tf_binding_count_promoter_e419",
+   "z": -2.518147378132662
+  },
+  {
+   "source": "f_r3",
+   "feature": "target_loeuf_rank_e190",
+   "z": -2.5209592792530326
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_projection_target_interaction_e173",
+   "z": -2.6481553211451914
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_tf_x_gene_cpg_promoter_e653",
+   "z": -2.6881426221098383
+  },
+  {
+   "source": "f_r3",
+   "feature": "is_target_x_loeuf_gene_e37",
+   "z": -2.709532869714374
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_is_target_e240",
+   "z": -2.709532869714374
+  },
+  {
+   "source": "f_r0",
+   "feature": "chromatin_accessibility_corr_e478",
+   "z": -2.8000899999478275
+  },
+  {
+   "source": "f_r2",
+   "feature": "same_tad_indicator_e719",
+   "z": -2.8334951986543095
+  },
+  {
+   "source": "f_r0",
+   "feature": "combined_annotation_ppi_random_projectio_e185",
+   "z": -2.9027296677500214
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_projection_similarity_v2_e197",
+   "z": -2.9039961077068335
+  },
+  {
+   "source": "f_r0",
+   "feature": "target_self_delta_x_loeuf_gene_e523_e535",
+   "z": -2.910576440776984
+  },
+  {
+   "source": "f_r0",
+   "feature": "constraint_flag_x_mean_response_e468",
+   "z": -2.952312601003694
+  },
+  {
+   "source": "f_r0",
+   "feature": "combined_annotation_ppi_random_projectio_e548",
+   "z": -3.0278742049930085
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_er_membrane_x_gene_upr_set_e354",
+   "z": -3.069483355332404
+  },
+  {
+   "source": "f_r0",
+   "feature": "gene_loeuf_x_pathway_response_e712",
+   "z": -3.0956406326767976
+  },
+  {
+   "source": "f_r0",
+   "feature": "annotation_projection_elementwise_produc_e350",
+   "z": -3.1451247553910333
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_phospho_density_x_gene_signaling__e672",
+   "z": -3.1788241603141896
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_gene_loeuf_ratio_e477",
+   "z": -3.1801316303064207
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_specificity_e291_e301",
+   "z": -3.250156169225999
+  },
+  {
+   "source": "f_r3",
+   "feature": "mean_response_x_gene_loeuf_e274",
+   "z": -3.3056377259710565
+  },
+  {
+   "source": "f_r3",
+   "feature": "essentiality_times_kurtosis_e629",
+   "z": -3.5949784206128896
+  },
+  {
+   "source": "f_r3",
+   "feature": "random_projection_static_features_e425",
+   "z": -4.892732342510801
+  },
+  {
+   "source": "f_r2",
+   "feature": "target_loeuf_x_gene_cv_e397",
+   "z": -5.081797133834136
+  }
+ ]
+}

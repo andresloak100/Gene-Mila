@@ -1,0 +1,10 @@
+{
+  "launched_utc": "2026-10-17T15:32:29.959188+00:00",
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "command": "/usr/bin/nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/block_f_readings.py pool --stage1 /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g_stage1/feature_compare.json --stage2 /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g_stage2/feature_compare.json --plugins /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g_plugins --out /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g_pooled_holm",
+  "input_sha256": {
+    "docs/results/norman_g_stage1/feature_compare.json": "a8c803daa9f2c13367a31c20e32d649bdc566d3d73cb8e46674edb1355557465",
+    "docs/results/norman_g_stage2/feature_compare.json": "91ff95d26f18faa659e570020e75eb99b1745d241ef870c8354a62bc4bbfc766"
+  }
+}

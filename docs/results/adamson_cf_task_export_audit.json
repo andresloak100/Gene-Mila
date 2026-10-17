@@ -1,0 +1,8 @@
+{
+  "independent_auditor": "/root/implement_frozen_export",
+  "result": "PASS",
+  "scope": "Receipt, packageMANIFEST/programbytes and siblingmetadataonly; no label/sourcepublic/harnessreads orjobs",
+  "manifest_sha256": "cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e",
+  "program_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+  "metadata": "Bundle/split/commit/path/defaults/alphas/27filehashes/17visibleconditionmetadataagree"
+}

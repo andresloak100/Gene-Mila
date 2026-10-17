@@ -1,0 +1,1 @@
+task package for adamson_cf_clean_tables (split_450515be1a0d8d2e) at /Users/andresarriaga/gm_packages/adamson_cf_clean_tables: parent control_mean, mean_response, is_target; groups None; keep rule noise; visible tier harness/val1.npz, 17 perturbations; 27 files hashed

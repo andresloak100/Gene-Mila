@@ -1,0 +1,1290 @@
+{
+  "dataset": "norman",
+  "generated_utc": "2026-10-17T15:51:03.927606+00:00",
+  "scope": "Static direct syntax and public schema-name evidence, not runtime use",
+  "runs": [
+    {
+      "source": "g0_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0",
+      "selected_total_features": 28,
+      "selected_raw_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_direct_table_features": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_direct_table_counts": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_plugins": [
+        {
+          "feature": "similarity_response_ppi_overlap_e121",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/similarity_response_ppi_overlap_e121.py",
+          "sha256": "58531bd0b4ecb2b3e215ac09d48d5aa085b67a41b4598cdfe1b72117254492c3",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 24,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_target_gene_set_overlap_e181_e188",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/pair_target_gene_set_overlap_e181_e188.py",
+          "sha256": "1bb5455785110d4ce20eeb7bd5e5aacf25307d82690a39e2936ae96656df6f77",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_ppi_centrality_e321",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/target_ppi_centrality_e321.py",
+          "sha256": "7ebe3e5f919f494136136c41bb9f6a8f93a315fc749c849d4199eda7e5df7ae7",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 29,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_weighted_coexpression_ppi_e353",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/target_weighted_coexpression_ppi_e353.py",
+          "sha256": "d9c30d5d7133426c40b1dfb42cab0f28d3c84ec8abe5d30fa9a13ec187c015ef",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 27,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_gene_set_specificity_e419",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/target_gene_set_specificity_e419.py",
+          "sha256": "7210cab4d62dbf5e407683837fe0efe1516a803f895a92133fbad9f37d25e3fb",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 24,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "shared_tf_count_e463",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/shared_tf_count_e463.py",
+          "sha256": "6e3a759c2eccda9f0855b0ad7e2d72f7df5cecfb38d470d1e10ad748992bad28",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 20,
+              "expression": "ctx.knowledge('transcription_factors')",
+              "table_literal": "transcription_factors",
+              "table_dynamic": false
+            },
+            {
+              "line": 40,
+              "expression": "ctx.knowledge('prior_network')",
+              "table_literal": "prior_network",
+              "table_dynamic": false
+            },
+            {
+              "line": 53,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_gene_set_enrichment_e504",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/target_gene_set_enrichment_e504.py",
+          "sha256": "1e90052ac80d678f7b5fcadb4e38d91c22c7280df36301d994133f8e78355107",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 25,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "ppi_weighted_neighbor_coexpression_e541_e538",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/ppi_weighted_neighbor_coexpression_e541_e538.py",
+          "sha256": "8401007fcf6780711293cbb44bb0bcc3f4288136409ed72491c7d17bda0e959a",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 23,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_coexpression_ppi_distance_weighte_e637",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/target_coexpression_ppi_distance_weighte_e637.py",
+          "sha256": "045fcff928a0337b03fdee9e1dedba36f072bc74e049a20e8c9f21f82748385c",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 22,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pathway_crosstalk_weighted_e675_e697",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0/feature_store/pathway_crosstalk_weighted_e675_e697.py",
+          "sha256": "69f77a6fbb6ed74da0211c20092f6d3f734406f8de92033a954e3a05359d1a97",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 25,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        }
+      ],
+      "all_source_raw_mentions": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "largest_planner_state_chars": 15102,
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added."
+    },
+    {
+      "source": "g0_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2",
+      "selected_total_features": 18,
+      "selected_raw_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_direct_table_features": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_direct_table_counts": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_plugins": [
+        {
+          "feature": "additive_response_x_target_ppi_degree_e1_e160",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/additive_response_x_target_ppi_degree_e1_e160.py",
+          "sha256": "1b260b4383fab06707f4585c96e1c63afdd6c9a8896de64b736c20642eea3864",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 26,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "shared_tf_count_e190",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/shared_tf_count_e190.py",
+          "sha256": "ecff7e2d6c3598e642ab83cb55a936a15ad5fe1866c53918bf8cefe1fb13ae56",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 20,
+              "expression": "ctx.knowledge('transcription_factors')",
+              "table_literal": "transcription_factors",
+              "table_dynamic": false
+            },
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('prior_network')",
+              "table_literal": "prior_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_pagerank_influence_e237",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/target_pagerank_influence_e237.py",
+          "sha256": "aa831d52cc49347d7bc17b0b5289c1f18c04a5620e16d9e01b38b9bf363e9f04",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 23,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_specificity_pathway_penalty_e251",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/target_specificity_pathway_penalty_e251.py",
+          "sha256": "d314901f9385df94134a43bbcc27598bb671c6efbf6619520f953406dae056b4",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 43,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_ppi_shortest_path_length_e337",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/pair_ppi_shortest_path_length_e337.py",
+          "sha256": "725db1f58ad74692c5d6848e735e24004e67c63e16a7cbabff7c4aa9d1ff77c1",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_gene_pathway_jaccard_e414",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/target_gene_pathway_jaccard_e414.py",
+          "sha256": "35ebf96f1f5d365ca0bc79454dc48a6ff4400ab0a5e31088ac1f25fa7e5a3533",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 22,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_diffusion_score_e483",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2/feature_store/target_diffusion_score_e483.py",
+          "sha256": "2171cbdfa3d8d27f38d721e7487312c14775db989b971f8ab00156990eb674c9",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 26,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        }
+      ],
+      "all_source_raw_mentions": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "largest_planner_state_chars": 14045,
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added."
+    },
+    {
+      "source": "g0_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3",
+      "selected_total_features": 19,
+      "selected_raw_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_direct_table_features": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_direct_table_counts": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_plugins": [
+        {
+          "feature": "additive_residual_prediction_e211",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/additive_residual_prediction_e211.py",
+          "sha256": "77b73a4118dd86f34d713fce18d0aca79d7b034c7c53c5e727cd4c3db2c051e2",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 26,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_target_shared_genesets_e305",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/pair_target_shared_genesets_e305.py",
+          "sha256": "5c6d9d1d010c385396521dddad34c38e155335966abbe5032a3f13c950174ce5",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 18,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_target_shared_tf_binding_e490",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/pair_target_shared_tf_binding_e490.py",
+          "sha256": "aac4dcb0a8243630157e023b21040857b523e28fbe73d7e20cc45359ff46cc12",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 22,
+              "expression": "ctx.knowledge('prior_network')",
+              "table_literal": "prior_network",
+              "table_dynamic": false
+            },
+            {
+              "line": 39,
+              "expression": "ctx.knowledge('transcription_factors')",
+              "table_literal": "transcription_factors",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_target_shared_tf_binding_sites_e520",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/pair_target_shared_tf_binding_sites_e520.py",
+          "sha256": "6573b4532a7a180484aaadb0b2bac0bb20335bb3e9283cfb9a91ea86e7607130",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 30,
+              "expression": "ctx.knowledge('targets')",
+              "table_literal": "targets",
+              "table_dynamic": false
+            },
+            {
+              "line": 41,
+              "expression": "ctx.knowledge('prior_network')",
+              "table_literal": "prior_network",
+              "table_dynamic": false
+            },
+            {
+              "line": 52,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            },
+            {
+              "line": 64,
+              "expression": "ctx.knowledge('transcription_factors')",
+              "table_literal": "transcription_factors",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "ppi_neighbor_overlap_with_targets_e534",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/ppi_neighbor_overlap_with_targets_e534.py",
+          "sha256": "fcf171842b94ad0a20b7e0076091107964a65bbc370d865b0df13d40be181ecb",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "additive_response_times_geneset_overlap__e551",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/additive_response_times_geneset_overlap__e551.py",
+          "sha256": "327e54f0193d82cb604cb35d13142eaa153ec864597af085b84b1d1229e6e0e3",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 26,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "additive_response_times_shared_pathway_c_e719",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3/feature_store/additive_response_times_shared_pathway_c_e719.py",
+          "sha256": "abe416f6115fda5fab9c2c2270240f67603d63ef91cc4ea7685c4a7b656e8610",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 24,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        }
+      ],
+      "all_source_raw_mentions": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "largest_planner_state_chars": 13907,
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added."
+    },
+    {
+      "source": "g1_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0",
+      "selected_total_features": 11,
+      "selected_raw_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [
+          "lof_weighted_target_response_similarity_e201"
+        ],
+        "protein_annotation": []
+      },
+      "selected_direct_table_features": {
+        "gene_annotation": [],
+        "gene_constraint": [
+          "lof_weighted_target_response_similarity_e201"
+        ],
+        "protein_annotation": []
+      },
+      "selected_direct_table_counts": {
+        "gene_annotation": 0,
+        "gene_constraint": 1,
+        "protein_annotation": 0
+      },
+      "selected_plugins": [
+        {
+          "feature": "lof_weighted_target_response_similarity_e201",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0/feature_store/lof_weighted_target_response_similarity_e201.py",
+          "sha256": "19b649462d9555e09fb3d2ab9e1e2863d27b9fc955ef091b157d19ffb3ffe0e9",
+          "tables_raw_mentions": [
+            "gene_constraint"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 29,
+              "expression": "ctx.knowledge('gene_constraint')",
+              "table_literal": "gene_constraint",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_synergy_score_e31",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0/feature_store/pair_synergy_score_e31.py",
+          "sha256": "8c03cfc938408416dc7535287a51c14e27d550aa8e2a8866b7467fdcb64ce173",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 78,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            },
+            {
+              "line": 30,
+              "expression": "ctx.knowledge('prior_network')",
+              "table_literal": "prior_network",
+              "table_dynamic": false
+            },
+            {
+              "line": 25,
+              "expression": "ctx.knowledge(cand)",
+              "table_literal": null,
+              "table_dynamic": true
+            },
+            {
+              "line": 32,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        }
+      ],
+      "all_source_raw_mentions": {
+        "gene_annotation": 18,
+        "gene_constraint": 26,
+        "protein_annotation": 13
+      },
+      "largest_planner_state_chars": 15366,
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added."
+    },
+    {
+      "source": "g1_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2",
+      "selected_total_features": 26,
+      "selected_raw_mentions": {
+        "gene_annotation": [
+          "target_bidirectional_count_e89",
+          "target_cpg_times_additive_response_e137",
+          "target_weighted_cpg_promoter_e459",
+          "target_neighbor_count_times_additive_e515",
+          "target_expression_variance_mean_e585"
+        ],
+        "gene_constraint": [
+          "target_loeuf_times_additive_response_e104"
+        ],
+        "protein_annotation": [
+          "target_protein_length_mean_e231"
+        ]
+      },
+      "selected_direct_table_features": {
+        "gene_annotation": [
+          "target_bidirectional_count_e89",
+          "target_cpg_times_additive_response_e137",
+          "target_weighted_cpg_promoter_e459",
+          "target_neighbor_count_times_additive_e515",
+          "target_expression_variance_mean_e585"
+        ],
+        "gene_constraint": [
+          "target_loeuf_times_additive_response_e104"
+        ],
+        "protein_annotation": [
+          "target_protein_length_mean_e231"
+        ]
+      },
+      "selected_direct_table_counts": {
+        "gene_annotation": 5,
+        "gene_constraint": 1,
+        "protein_annotation": 1
+      },
+      "selected_plugins": [
+        {
+          "feature": "target_bidirectional_count_e89",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_bidirectional_count_e89.py",
+          "sha256": "6612c505b3071264eadbf34ee6464e8bbc8834ac1a61abad3d67dd26fd220a3c",
+          "tables_raw_mentions": [
+            "gene_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 27,
+              "expression": "ctx.knowledge('gene_annotation')",
+              "table_literal": "gene_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_loeuf_times_additive_response_e104",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_loeuf_times_additive_response_e104.py",
+          "sha256": "d23e771296d40ccb920cbc54e27ba25a0a6f803b543585eea07c79ac8e9a6745",
+          "tables_raw_mentions": [
+            "gene_constraint"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 56,
+              "expression": "ctx.knowledge('gene_constraint')",
+              "table_literal": "gene_constraint",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [
+              "oe_lof_upper"
+            ],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_cpg_times_additive_response_e137",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_cpg_times_additive_response_e137.py",
+          "sha256": "43af4e147ef5993d6019f7440e0469fea8c2845f88537315ebad19d104798fdd",
+          "tables_raw_mentions": [
+            "gene_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 23,
+              "expression": "ctx.knowledge('gene_annotation')",
+              "table_literal": "gene_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_gene_set_diversity_e205",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_gene_set_diversity_e205.py",
+          "sha256": "71c5e00c54f27cfb033675ec7da2041c20d8fda02f6a4e76f2a68120e2e67433",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_protein_length_mean_e231",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_protein_length_mean_e231.py",
+          "sha256": "5844a816bae6d6df686a73d7496eb9fe72cddf7bb7a52c097ca7967abe191b31",
+          "tables_raw_mentions": [
+            "protein_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 17,
+              "expression": "ctx.knowledge('protein_annotation')",
+              "table_literal": "protein_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": [
+              "protein_length"
+            ]
+          }
+        },
+        {
+          "feature": "target_network_centrality_times_additive_e365",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_network_centrality_times_additive_e365.py",
+          "sha256": "702b8004e496800f2076849334c5d7229818e4e2b62f5ec64767c25a9d6d9b55",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 25,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_pair_nonadditivity_ppi_weighted_e428",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_pair_nonadditivity_ppi_weighted_e428.py",
+          "sha256": "e3a48bd347bf311a526496b957f8f39da405ec7e003a98913e5c39b3d3ab7754",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 26,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            },
+            {
+              "line": 30,
+              "expression": "ctx.knowledge(name)",
+              "table_literal": null,
+              "table_dynamic": true
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_weighted_cpg_promoter_e459",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_weighted_cpg_promoter_e459.py",
+          "sha256": "31a25e1d9b46f9024b144c7850dd0aec5435b99fc0a12f74a56a5f6480c4ed52",
+          "tables_raw_mentions": [
+            "gene_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 23,
+              "expression": "ctx.knowledge('gene_annotation')",
+              "table_literal": "gene_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_neighbor_count_times_additive_e515",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_neighbor_count_times_additive_e515.py",
+          "sha256": "b860d0926ad4901d8f37943b67370e885bac999b0b7544c2710099be672d89ca",
+          "tables_raw_mentions": [
+            "gene_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 36,
+              "expression": "ctx.knowledge('gene_annotation')",
+              "table_literal": "gene_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_gene_set_coherence_times_additive_e575",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_gene_set_coherence_times_additive_e575.py",
+          "sha256": "7357d34a825d6ff1311f84fa4cd1b58ef6182377b70001a2aae379d2eba24ba5",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 22,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_expression_variance_mean_e585",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2/feature_store/target_expression_variance_mean_e585.py",
+          "sha256": "4fd55437d8a28496a379772bb4cbf2e4d364fd8a6e22601a5dcd70e310d284f9",
+          "tables_raw_mentions": [
+            "gene_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 42,
+              "expression": "ctx.knowledge('gene_annotation')",
+              "table_literal": "gene_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [
+              "gene_span_kb",
+              "n_exons",
+              "transcript_length"
+            ],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        }
+      ],
+      "all_source_raw_mentions": {
+        "gene_annotation": 33,
+        "gene_constraint": 25,
+        "protein_annotation": 30
+      },
+      "largest_planner_state_chars": 17111,
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added."
+    },
+    {
+      "source": "g1_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3",
+      "selected_total_features": 17,
+      "selected_raw_mentions": {
+        "gene_annotation": [
+          "promoter_cpg_overlap_with_target_e519"
+        ],
+        "gene_constraint": [
+          "target_constraint_interaction_e91",
+          "pair_target_constraint_interaction_e242",
+          "pair_target_constraint_aggregate_e433"
+        ],
+        "protein_annotation": [
+          "additive_response_x_target_protein_lengt_e453",
+          "additive_response_x_target_nuclear_e542"
+        ]
+      },
+      "selected_direct_table_features": {
+        "gene_annotation": [
+          "promoter_cpg_overlap_with_target_e519"
+        ],
+        "gene_constraint": [
+          "target_constraint_interaction_e91",
+          "pair_target_constraint_interaction_e242",
+          "pair_target_constraint_aggregate_e433"
+        ],
+        "protein_annotation": [
+          "additive_response_x_target_protein_lengt_e453",
+          "additive_response_x_target_nuclear_e542"
+        ]
+      },
+      "selected_direct_table_counts": {
+        "gene_annotation": 1,
+        "gene_constraint": 3,
+        "protein_annotation": 2
+      },
+      "selected_plugins": [
+        {
+          "feature": "target_constraint_interaction_e91",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/target_constraint_interaction_e91.py",
+          "sha256": "991457f5a3b921572204c4fca9ded35a55f59ba225cc84be10901864c097f4b2",
+          "tables_raw_mentions": [
+            "gene_constraint"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 28,
+              "expression": "ctx.knowledge('gene_constraint')",
+              "table_literal": "gene_constraint",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_target_constraint_interaction_e242",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/pair_target_constraint_interaction_e242.py",
+          "sha256": "f3187f113a2cfba20e021c56564d41a906a69e417c0060e8860bd070585d8545",
+          "tables_raw_mentions": [
+            "gene_constraint"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 30,
+              "expression": "ctx.knowledge('gene_constraint')",
+              "table_literal": "gene_constraint",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [
+              "oe_lof_upper"
+            ],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "target_is_tf_e314",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/target_is_tf_e314.py",
+          "sha256": "d71b028a791dffa61d3c44b4341f7861e1cc64f0a0dd20fe93df43ba58e8e9f9",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 16,
+              "expression": "ctx.knowledge('transcription_factors')",
+              "table_literal": "transcription_factors",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "ppi_weighted_additive_response_e387",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/ppi_weighted_additive_response_e387.py",
+          "sha256": "edc84924114d0a92dc623149d8da368598278c8367a28049f871d0a6eacbf42b",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 22,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "pair_target_constraint_aggregate_e433",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/pair_target_constraint_aggregate_e433.py",
+          "sha256": "f043a950304e50ac5c1003ff0d74b631c8ff864329ec92c9f24ba97bf4707ac7",
+          "tables_raw_mentions": [
+            "gene_constraint"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 27,
+              "expression": "ctx.knowledge('gene_constraint')",
+              "table_literal": "gene_constraint",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "additive_response_x_target_protein_lengt_e453",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/additive_response_x_target_protein_lengt_e453.py",
+          "sha256": "4d6a4242d2a6199b0ba3dfbd7b0e8ca523e107b5082b388084c42199bfa03f4d",
+          "tables_raw_mentions": [
+            "protein_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 36,
+              "expression": "ctx.knowledge('protein_annotation')",
+              "table_literal": "protein_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": [
+              "protein_length"
+            ]
+          }
+        },
+        {
+          "feature": "jaccard_pathway_overlap_with_target_e509",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/jaccard_pathway_overlap_with_target_e509.py",
+          "sha256": "2b206bee86b6c67523d588df58651332ea39d1d432ac85a3899e66dd5c8efd63",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "promoter_cpg_overlap_with_target_e519",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/promoter_cpg_overlap_with_target_e519.py",
+          "sha256": "65f6e870b0e5a710aaa4c95ea30c2d84fa7b9b45c8306ef122cecc7bf26b4c24",
+          "tables_raw_mentions": [
+            "gene_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 21,
+              "expression": "ctx.knowledge('gene_annotation')",
+              "table_literal": "gene_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "additive_response_x_target_nuclear_e542",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/additive_response_x_target_nuclear_e542.py",
+          "sha256": "90f2c231bb3f5ac6c2825f71ad75c1e0810e965cbc2ce017187bedc9256966ef",
+          "tables_raw_mentions": [
+            "protein_annotation"
+          ],
+          "direct_knowledge_calls": [
+            {
+              "line": 27,
+              "expression": "ctx.knowledge('protein_annotation')",
+              "table_literal": "protein_annotation",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": [
+              "nucleus"
+            ]
+          }
+        },
+        {
+          "feature": "target_gene_set_random_projection_e578",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/target_gene_set_random_projection_e578.py",
+          "sha256": "08409033227b9f9b48662c56637f6d41c715d73e2e03f7bfe87e9d2e61b6aa8c",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 29,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "random_projection_gene_set_diff_e601",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/random_projection_gene_set_diff_e601.py",
+          "sha256": "04c372896eb85856b53cd622408a0d2f45234c3b41c31029793cba505f4f1c43",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 24,
+              "expression": "ctx.knowledge('gene_sets')",
+              "table_literal": "gene_sets",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        },
+        {
+          "feature": "additive_response_x_target_complex_size_e646",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3/feature_store/additive_response_x_target_complex_size_e646.py",
+          "sha256": "32904b4386a9ed98a9124f720c29dd8caf377a3b6024a4a5192f04c463ff3b60",
+          "tables_raw_mentions": [],
+          "direct_knowledge_calls": [
+            {
+              "line": 23,
+              "expression": "ctx.knowledge('ppi_network')",
+              "table_literal": "ppi_network",
+              "table_dynamic": false
+            }
+          ],
+          "schema_column_string_literals": {
+            "gene_annotation": [],
+            "gene_constraint": [],
+            "protein_annotation": []
+          }
+        }
+      ],
+      "all_source_raw_mentions": {
+        "gene_annotation": 29,
+        "gene_constraint": 29,
+        "protein_annotation": 26
+      },
+      "largest_planner_state_chars": 16620,
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added."
+    }
+  ],
+  "limitations": [
+    "Counts separate raw table-name text from direct .knowledge calls with literal table arguments; names/comments alone are not direct calls",
+    "Transitive dependencies and dynamically resolved arguments are not silently counted; raw source expressions preserved",
+    "Column strings are literal intersection with public schema only, not inferred numeric/dynamic field mappings",
+    "No import, compute, private/split/labels/DB or old sealed read",
+    "Total experiments not emitted by prescribed .check receipts; never inferred from EXP IDs or plugin files"
+  ]
+}

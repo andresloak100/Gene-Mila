@@ -1,0 +1,13 @@
+UTC launch: 2026-10-17T17:26:55.231192+00:00
+Tool commit: 2f2e6838316915198c52abeb34cf02f2b3aacc87
+Lead pre-registered hypothesis; exact README scoring call; Norman fixed parent additive_response, per51/comment6236891780.
+Credentials unset; nice19;caffeinate;999reps;OOFonly.
+Plugin SHA256: d561229865326a42fd0e562f7cb294f40b77788aa0b6ce547c277935311a23ad
+set -C
+cd /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings || exit 98
+{
+/usr/bin/caffeinate -i nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/feature_compare.py --data /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean_tables --out /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_lead_h8 --source LEAD_H8=docs/comparison/lead_h8_constraint --null-reps 999
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_lead_h8.exit
+exit "$rc"
+} > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_lead_h8.log 2>&1

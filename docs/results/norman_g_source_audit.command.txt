@@ -1,0 +1,51 @@
+/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python - <<'PY'
+from pathlib import Path
+import ast,hashlib,json,re,datetime,statistics
+C=Path.cwd();R=C/'docs/results';M=Path('/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila');L=M.parent/'genemila_scale_logs'
+tables=['gene_annotation','gene_constraint','protein_annotation']
+schemas={t:json.loads((M/'data/norman_clean_tables/knowledge'/(t+'.json')).read_text())['columns'] for t in tables}
+report=json.loads((R/'norman_g1_vs_g0/feature_compare.json').read_text())
+sets={x['source']:x for x in report['rows'] if x['kind']=='set'}
+audit=[]; armrows=[]
+for arm in ['g0','g1']:
+ for seed in [0,2,3]:
+  source=f'{arm}_r{seed}';x=sets[source];run=Path(x['run']);check=L/(run.name+'.check.txt');text=check.read_text()
+  files={p.stem:p for p in sorted((run/'feature_store').glob('*.py'))}
+  code={name:p.read_text() for name,p in files.items()}
+  counts={t:sum(t in v for v in code.values()) for t in tables}
+  recorded={t:int(re.search(r'features reading '+t+r': (\d+)',text).group(1)) for t in tables}
+  assert counts==recorded,(run.name,counts,recorded)
+  selected=[]
+  for name in x['selected']:
+   if name not in files:continue
+   src=code[name];mentions=[t for t in tables if t in src]
+   if not mentions:continue
+   tree=ast.parse(src);literals={n.value for n in ast.walk(tree) if isinstance(n,ast.Constant) and isinstance(n.value,str)}
+   keys=[]
+   for node in ast.walk(tree):
+    key=None
+    if isinstance(node,ast.Subscript):key=node.slice
+    elif isinstance(node,ast.Call) and isinstance(node.func,ast.Attribute) and node.func.attr in ['get','index'] and node.args:key=node.args[0]
+    if key is not None:
+     keys.append({'line':node.lineno,'expression':ast.unparse(node),'literal_key':key.value if isinstance(key,ast.Constant) and isinstance(key.value,(str,int,float)) else None})
+   selected.append({'feature':name,'source':str(files[name]),'sha256':hashlib.sha256(src.encode()).hexdigest(),'tables_mentioned':mentions,'schema_column_literals':{t:sorted(literals.intersection(schemas[t])) for t in mentions},'key_accesses':keys})
+  largest=int(re.search(r'largest planner state (\d+) characters',text).group(1))
+  audit.append({'source':source,'run':str(run),'check_file':str(check),'check_sha256':hashlib.sha256(text.encode()).hexdigest(),'check_text':text,'experiment_count':None,'experiment_count_limitation':'The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.','source_plugin_files':len(files),'table_source_mentions_all_plugins':counts,'selected_experiment':x['experiment_id'],'selected_total_features':len(x['selected']),'selected_table_source_mentions':{t:[z['feature'] for z in selected if t in z['tables_mentioned']] for t in tables},'selected_table_plugins':selected,'largest_planner_state_chars':largest,'planner_cut':20000,'planner_cut_reached':largest>=20000})
+  tier=x['tiers']['oof'];d=tier['delta']['pearson_delta'];armrows.append({'source':source,'run':str(run),'experiment_id':x['experiment_id'],'metrics':tier['metrics'],'delta_M1':d,'n_columns':x['n_columns']})
+limits=['Source mentions are static direct text matches, as in the prescribed grep/check; they do not measure runtime use or resolve transitive/dynamic dependencies.','schema_column_literals are column-name strings present in source; numeric/dynamic indexing and flag/get/subscript expressions remain in key_accesses and the unchanged plugin sources. No guessed field mapping.','Total experiment counts are absent from the permitted .check receipts and are reported missing.','Every recorded planner is DeepSeek mixed=False, no exhaustion and empty external knowledge in the check receipts.']
+out={'dataset':'norman','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'tool_commit':'2f2e6838316915198c52abeb34cf02f2b3aacc87','tables':tables,'schemas':schemas,'limitations':limits,'runs':audit}
+for stem,obj in [('norman_g_source_audit',out)]:
+ p=R/(stem+'.json');assert not p.exists()
+ with p.open('x') as f:json.dump(obj,f,indent=2);f.write('\n')
+lines=['# Norman G source/count/planner audit','','Sources: each run directory below, its permitted .check.txt, selected names in the completed six-run OOF report, and unchanged plugin sources. No private, split, old sealed score or manual database read.','','|run|plugin files|all-source mentions GA / GC / PA|selected mentions GA / GC / PA|largest planner state|cut reached|experiments|','|---|---:|---|---|---:|---|---|']
+for x in audit:
+ lines.append('|'+x['run']+'|'+str(x['source_plugin_files'])+'|'+'/'.join(str(x['table_source_mentions_all_plugins'][t]) for t in tables)+'|'+'/'.join(str(len(x['selected_table_source_mentions'][t])) for t in tables)+'|'+str(x['largest_planner_state_chars'])+'|'+str(x['planner_cut_reached'])+'|not emitted by .check|')
+lines+=['','GA=gene_annotation; GC=gene_constraint; PA=protein_annotation.','',*['- '+s for s in limits],'']
+for x in audit:
+ lines+=['## '+x['source'],'','Run: '+x['run'],'','|selected feature|tables mentioned|schema-column string literals|','|---|---|---|']
+ for z in x['selected_table_plugins']:lines.append('|'+z['feature']+'|'+', '.join(z['tables_mentioned'])+'|'+ '; '.join(t+': '+', '.join(v) for t,v in z['schema_column_literals'].items())+'|')
+ lines+=['','Exact static key expressions, source hashes and raw check receipt are in the JSON twin.','']
+with (R/'norman_g_source_audit.md').open('x') as f:f.write('\n'.join(lines))
+print(json.dumps({'audit_rows':[{'source':x['source'],'all_source_mentions':x['table_source_mentions_all_plugins'],'selected_mentions':{t:len(v) for t,v in x['selected_table_source_mentions'].items()},'planner_chars':x['largest_planner_state_chars']} for x in audit],'files':['norman_g_source_audit.json/.md']}))
+
+PY

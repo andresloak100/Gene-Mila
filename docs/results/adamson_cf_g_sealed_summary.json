@@ -1,0 +1,487 @@
+{
+  "cohort": "Adamson sealed cohort has been repeatedly read; these are indicative per-run readings, not a fresh held-out test or a basis for choosing a model.",
+  "comparison": "Each already selected model against its own recorded fresh start EXP_0003. The tool reports no additive baseline on this singles bundle. No sealed cross-arm comparison or selection.",
+  "category_rule": "n<10 categories, if emitted, are reported without interpretation; these output paired rows have n=21.",
+  "runs": [
+    {
+      "source": "g0_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+      "report": "docs/results/adamson_cf_g0_r0_sealed_reading.json",
+      "selected_experiment": "EXP_0289",
+      "starting_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.07837967580324556,
+        "mae": 0.05177207304266465,
+        "mse": 0.006143373579021878,
+        "pearson_delta": 0.5833415877069634,
+        "pearson_delta_top": 0.7535991987045447,
+        "direction_acc_top": 0.9380952380952381,
+        "mse_top": 0.13158595879408738,
+        "r2_top": 0.8000901110392951,
+        "pearson_expr": 0.9867771906712752,
+        "primary": 0.5833415877069634,
+        "selection_rule": "pearson_delta"
+      },
+      "starting_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired_M1": {
+        "n": 21,
+        "mean_diff": 0.0637442292415224,
+        "se": 0.017117232210732896,
+        "wins_a": 18,
+        "wins_b": 3,
+        "ties": 0,
+        "verdict": "a"
+      },
+      "matches_stored": {
+        "a": true,
+        "b": true
+      },
+      "first_sealed_scorings": [],
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 23,
+            "queued": 211
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      }
+    },
+    {
+      "source": "g0_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+      "report": "docs/results/adamson_cf_g0_r2_sealed_reading.json",
+      "selected_experiment": "EXP_0812",
+      "starting_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.08453336601754947,
+        "mae": 0.055979000316826434,
+        "mse": 0.007145889970256989,
+        "pearson_delta": 0.5247386690022438,
+        "pearson_delta_top": 0.6969319564675575,
+        "direction_acc_top": 0.9071428571428571,
+        "mse_top": 0.15782430542433307,
+        "r2_top": 0.7462577414664942,
+        "pearson_expr": 0.9844466352735424,
+        "primary": 0.5247386690022438,
+        "selection_rule": "pearson_delta"
+      },
+      "starting_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired_M1": {
+        "n": 21,
+        "mean_diff": 0.005141310536802878,
+        "se": 0.011524422051329803,
+        "wins_a": 10,
+        "wins_b": 11,
+        "ties": 0,
+        "verdict": "none"
+      },
+      "matches_stored": {
+        "a": true,
+        "b": true
+      },
+      "first_sealed_scorings": [],
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 59,
+            "queued": 515
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      }
+    },
+    {
+      "source": "g0_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+      "report": "docs/results/adamson_cf_g0_r3_sealed_reading.json",
+      "selected_experiment": "EXP_0613",
+      "starting_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.07851853218836063,
+        "mae": 0.05161215385761336,
+        "mse": 0.006165159897014626,
+        "pearson_delta": 0.5909218573323676,
+        "pearson_delta_top": 0.7813098966099287,
+        "direction_acc_top": 0.9357142857142856,
+        "mse_top": 0.1280454958770725,
+        "r2_top": 0.8103177731841792,
+        "pearson_expr": 0.9867013234067328,
+        "primary": 0.5909218573323676,
+        "selection_rule": "pearson_delta"
+      },
+      "starting_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired_M1": {
+        "n": 21,
+        "mean_diff": 0.07132449886692657,
+        "se": 0.02947929712584299,
+        "wins_a": 14,
+        "wins_b": 7,
+        "ties": 0,
+        "verdict": "a"
+      },
+      "matches_stored": {
+        "a": null,
+        "b": true
+      },
+      "first_sealed_scorings": [
+        "adamson_cf_g0_ds_w4_r3:EXP_0613"
+      ],
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 46,
+            "queued": 469
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      }
+    },
+    {
+      "source": "g1_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "report": "docs/results/adamson_cf_g1_r0_sealed_reading.json",
+      "selected_experiment": "EXP_0777",
+      "starting_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.08427699700700637,
+        "mae": 0.05503065778862747,
+        "mse": 0.007102612224518961,
+        "pearson_delta": 0.41178993981984086,
+        "pearson_delta_top": 0.5962342999004264,
+        "direction_acc_top": 0.7738095238095238,
+        "mse_top": 0.17046152064412642,
+        "r2_top": 0.7339276094434327,
+        "pearson_expr": 0.9845270587913482,
+        "primary": 0.41178993981984086,
+        "selection_rule": "pearson_delta"
+      },
+      "starting_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired_M1": {
+        "n": 21,
+        "mean_diff": -0.10780741864560013,
+        "se": 0.0631189259107738,
+        "wins_a": 11,
+        "wins_b": 10,
+        "ties": 0,
+        "verdict": "none"
+      },
+      "matches_stored": {
+        "a": true,
+        "b": true
+      },
+      "first_sealed_scorings": [],
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 56,
+            "queued": 517
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      }
+    },
+    {
+      "source": "g1_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "report": "docs/results/adamson_cf_g1_r2_sealed_reading.json",
+      "selected_experiment": "EXP_0730",
+      "starting_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.08435614253129707,
+        "mae": 0.05622920916865172,
+        "mse": 0.007115958782760507,
+        "pearson_delta": 0.537368505237545,
+        "pearson_delta_top": 0.7186076854564243,
+        "direction_acc_top": 0.8880952380952382,
+        "mse_top": 0.15299885083299078,
+        "r2_top": 0.7553593001884568,
+        "pearson_expr": 0.9847496021522731,
+        "primary": 0.537368505237545,
+        "selection_rule": "pearson_delta"
+      },
+      "starting_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired_M1": {
+        "n": 21,
+        "mean_diff": 0.017771146772103907,
+        "se": 0.01121246339496879,
+        "wins_a": 13,
+        "wins_b": 8,
+        "ties": 0,
+        "verdict": "none"
+      },
+      "matches_stored": {
+        "a": null,
+        "b": true
+      },
+      "first_sealed_scorings": [
+        "adamson_cf_g1_ds_w4_r2:EXP_0730"
+      ],
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 54,
+            "queued": 512
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      }
+    },
+    {
+      "source": "g1_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "report": "docs/results/adamson_cf_g1_r3_sealed_reading.json",
+      "selected_experiment": "EXP_0796",
+      "starting_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.22826145639780768,
+        "mae": 0.21016174226717504,
+        "mse": 0.05210329247684826,
+        "pearson_delta": 0.5227209493568331,
+        "pearson_delta_top": 0.7039738755595073,
+        "direction_acc_top": 0.6166666666666665,
+        "mse_top": 0.19098396456430564,
+        "r2_top": 0.6678172031049524,
+        "pearson_expr": 0.9830030029248628,
+        "primary": 0.5227209493568331,
+        "selection_rule": "pearson_delta"
+      },
+      "starting_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired_M1": {
+        "n": 21,
+        "mean_diff": 0.0031235908913921336,
+        "se": 0.026248605811444593,
+        "wins_a": 11,
+        "wins_b": 10,
+        "ties": 0,
+        "verdict": "none"
+      },
+      "matches_stored": {
+        "a": true,
+        "b": true
+      },
+      "first_sealed_scorings": [],
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 61,
+            "queued": 535
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      }
+    }
+  ],
+  "arm_selected_metrics": {
+    "g0": {
+      "n_runs": 3,
+      "formula": "mean and sample SD over independent seeds 0/2/3",
+      "metrics": {
+        "rmse": {
+          "mean": 0.08047719133638523,
+          "sample_sd": 0.003513436360176492
+        },
+        "mae": {
+          "mean": 0.053121075739034816,
+          "sample_sd": 0.0024763265547370597
+        },
+        "mse": {
+          "mean": 0.006484807815431164,
+          "sample_sd": 0.0005726175621519019
+        },
+        "pearson_delta": {
+          "mean": 0.5663340380138583,
+          "sample_sd": 0.036221487604842256
+        },
+        "pearson_delta_top": {
+          "mean": 0.7439470172606769,
+          "sample_sd": 0.04300909962596757
+        },
+        "direction_acc_top": {
+          "mean": 0.9269841269841269,
+          "sample_sd": 0.017224233662071962
+        },
+        "mse_top": {
+          "mean": 0.139151920031831,
+          "sample_sd": 0.016267366154398912
+        },
+        "r2_top": {
+          "mean": 0.7855552085633228,
+          "sample_sd": 0.034414669232860885
+        },
+        "pearson_expr": {
+          "mean": 0.9859750497838501,
+          "sample_sd": 0.0013241892413649798
+        }
+      }
+    },
+    "g1": {
+      "n_runs": 3,
+      "formula": "mean and sample SD over independent seeds 0/2/3",
+      "metrics": {
+        "rmse": {
+          "mean": 0.13229819864537037,
+          "sample_sd": 0.08310662846517745
+        },
+        "mae": {
+          "mean": 0.10714053640815141,
+          "sample_sd": 0.08922099401955873
+        },
+        "mse": {
+          "mean": 0.022107287828042575,
+          "sample_sd": 0.025977302895047308
+        },
+        "pearson_delta": {
+          "mean": 0.49062646480473965,
+          "sample_sd": 0.06866611957210465
+        },
+        "pearson_delta_top": {
+          "mean": 0.6729386203054527,
+          "sample_sd": 0.06682964667438
+        },
+        "direction_acc_top": {
+          "mean": 0.7595238095238095,
+          "sample_sd": 0.1362770287738495
+        },
+        "mse_top": {
+          "mean": 0.17148144534714094,
+          "sample_sd": 0.01901308499678828
+        },
+        "r2_top": {
+          "mean": 0.719034704245614,
+          "sample_sd": 0.04563171769030658
+        },
+        "pearson_expr": {
+          "mean": 0.9840932212894947,
+          "sample_sd": 0.0009506910375134956
+        }
+      }
+    }
+  }
+}

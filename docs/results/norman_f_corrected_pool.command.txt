@@ -1,0 +1,4 @@
+UTC launch: 2026-10-17T17:19:27.665733+00:00
+Tool commit: 2f2e6838316915198c52abeb34cf02f2b3aacc87
+Original stage1/plugins; new corrected stage2; both pooled nulls; credentials unset.
+/usr/bin/nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/block_f_readings.py pool --stage1 /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_stage1/feature_compare.json --stage2 /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_stage2/feature_compare.json --plugins /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_plugins --out /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_f_corrected_pooled_holm

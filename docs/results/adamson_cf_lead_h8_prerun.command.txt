@@ -1,0 +1,15 @@
+UTC: 2026-10-17T17:20:32.633076+00:00
+Exact README pre-run code; project Python; nice19; credentials unset; public knowledge only.
+/usr/bin/nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -c '
+import json, sys
+b = sys.argv[1]
+sets = json.load(open(b + '"'"'/knowledge/gene_sets.json'"'"')); con = json.load(open(b + '"'"'/knowledge/gene_constraint.json'"'"'))
+k = con['"'"'columns'"'"'].index('"'"'oe_lof_upper'"'"'); genes = set(con['"'"'genes'"'"'])
+words = ('"'"'ribosom'"'"', '"'"'proteasom'"'"', '"'"'mrna splicing'"'"')
+r = [n for n in sorted(sets) if n.startswith('"'"'REACTOME:'"'"') and any(w in n.lower() for w in words)]
+e = {g for n in sets if n.startswith('"'"'CORUM:'"'"') for g in sets[n]}
+print('"'"'valued'"'"', sum(v[k] is not None for v in con['"'"'genes'"'"'].values()), '"'"'of'"'"', len(genes))
+rg = {g for n in r for g in sets[n]} & genes
+print('"'"'corum genes'"'"', len(e & genes), '"'"'reactome sets'"'"', len(r), '"'"'reactome genes'"'"', len(rg))
+print('"'"'\n'"'"'.join(r))
+' /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables

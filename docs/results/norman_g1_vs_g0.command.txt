@@ -1,0 +1,12 @@
+UTC launch: 2026-10-17T15:33:24.652297+00:00
+Tool commit: 2f2e6838316915198c52abeb34cf02f2b3aacc87
+Credentials unset; nice19; OOF only; exact six prescribed source runs.
+Input manifest SHA256: 1382f71acae94eefdb1f74b7f1df1f588bbea0e4de5a48fe8adc30189545946d
+set -C
+cd /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings || exit 98
+{
+/usr/bin/caffeinate -i nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/feature_compare.py --data /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean_tables --out /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g1_vs_g0 --null-reps 0 --source-run g1_r0=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0 --source-run g1_r2=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2 --source-run g1_r3=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3 --source-run g0_r0=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0 --source-run g0_r2=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2 --source-run g0_r3=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g1_vs_g0.exit
+exit "$rc"
+} > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/norman_g1_vs_g0.log 2>&1
