@@ -4,6 +4,69 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block G RUNNING — Astra, 2026-10-17 02:38 UTC, sole operator, claim #51.**
+Exact chain launch02:38:01UTC succeeded; detachedscreen **67366.blockg**, chainbash67368, actualPython **67404**.
+Current run **`adamson_cf_g0_ds_w4_r0`**, dir `~/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0`,
+first of12 sequential runs (Adamson g0/g1r0,r2,r3,thenNorman). PlannedDeepSeekv4pro planner/flash4workers/20min.
+Merged rebuild source a77e0ff; unchanged preparation EXIT0/all4bundles and all prescribed checks; independent
+public-only MD5/manifest/sharedbytes/source audit PASSED. Record commitfee11dd, [draft PR56](https://github.com/andresloak100/Gene-Mila/pull/56),
+full output41/comment6228590413. Own `gene-mila-g-prep-a77e0ff` / `astra/block-g-preparation` holds docs only afterbuild.
+First unused outputs/log preserved `.stale-20261017T023543Z`, sameinode receipts committed; original bundles untouched.
+**Cap immutable:** `67.26 47.264645 2026-10-17T01:52Z`; researchWT **baa7dfd** clean; copied scripts byte-identical.
+Startup log says all checks passed; no competinglab/driver/Freader/heavyjob. STOP lifted/restored by unchangedchain.
+First02:38UTC started line POSTED on41; append-only receipt `genemila_scale_logs/block_g_posted_progress.txt`.
+**Exact next:** monitor ONLY progress.md,block_g_chain.log,.check.txt/.passed and actual process health; post each
+newG start/finish line41 then append receipt; don't duplicate posts. Do not rerun/archive/rebuild or copy scripts again.
+No summary.md/individualrunlog ending/sealedscore/handoff_state while Gactive. No source/script/data/cap changes,
+no F evaluation or otherheavyjob.90min manual backstop/stop rules perPLAN_G; any actualrefusal/failingcheck/death
+report permitted evidence41/Andres/update state/pauseheartbeat; no automaticretry/workaround/budgetraise.
+After12passed+cleanchainend+noactive lab/driver, run correctedF in fixed `gene-mila-f-corrected` at1a95873:
+all66statusokrows,select without --k,newpaths,one999repstage2 nice19/detached/keysunset,thenpool/publish.
+Existingheartbeat remains ACTIVE5min, quietunchanged; no H/R/newpaidarm/modelpromotion. Older checkpoints historical.
+
+**Merged-source G rebuild ACTIVE — Astra, 2026-10-17 02:35 UTC, claim #51.**
+Claude merged orderingPR55 at02:31:40UTC, **a77e0ff2d79dc27924eeab08cfad390c076cc1d3**. Own clean rebuild
+checkout `gene-mila-g-prep-a77e0ff`, branch `astra/block-g-preparation`, exact merge; code matches testedb8d80fe.
+Independent source/pin/script audit approved. Original research checkout stays clean atbaa7dfd.
+Our unused first-attempt Norman bundles, both table directories and prepare log were RENAMED unchanged with
+suffix `.stale-20261017T023543Z`; same device+inode verified, no child/private/split reads, no deletions/overwrites.
+Archive receipt `genemila_scale_logs/block_g_prepare_archive_20261017T023543Z.jsonl`; cap untouched
+`67.26 47.264645 2026-10-17T01:52Z`. Original source bundles not moved/edited. No paid G or F fit.
+Unchanged preparation NOW active once from exact merge/keysunset, managedsession19476; new exclusive
+`genemila_scale_logs/block_g_prepare.log`. DO NOT archive/recreate/reinvoke while this job is active.
+**Exact next:** await session19476; require exit0/all4bundles/checks/fullMD5 output, independently audit safe
+preparation evidence; post full output41 and dated PLAN_G note/receipt draftPR. Copy unchanged filled scripts,
+verify process/bundle/pin/cap gates, start detachedscreenblockg EXACTplan command in separate launch shell.
+Post every G progress line41; correctedF only after Gends. On another failure preserve/report/pause, no retry.
+This supersedes WAIT_MERGE and all first-attempt state below. Heartbeat remains ACTIVE, quiet unchanged.
+
+**Ordering fix published; waiting for Claude's merge — Astra, 2026-10-17 02:19 UTC, claim #51.**
+[Draft PR #55](https://github.com/andresloak100/Gene-Mila/pull/55), commitb8d80fe, own branch
+`astra/clean-go-ordering` in `gene-mila-string-header`. Independent source review approved; focused16passed;
+coherent full suite590passed/1optional Biomni skip/8existing warnings,721.05s,exit0. New source/test delta only;
+headerPR54 merged81bf6f5, docsPR52 merged94841b7. Readiness posted41/comment6228409740; CI README checks pass.
+Andres directly requires Claude to merge55 before rebuilding. No archive/rebuild/paid G/F evaluation yet.
+Immutable cap `67.26 47.264645 2026-10-17T01:52Z`; STOPpresent; first preparation outputs/log preserved.
+**Exact next:** wait actual PR55 MERGED SHA, fetch from ownrepo/create clean own rebuild checkout at that SHA;
+source matches reviewed fixes, then preserve OUR UNUSED new outputs/log by dated rename (no child/private reads,
+no deletions/overwrites/original data changes), run original preparation once, post all checks and md5s.
+Only if all pass copy unchanged scripts/start detachedG atbaa7dfd,post every progress line; correctedF after Gends.
+No self-merge, unmerged-source rebuild, cap reset, script/evidence/criterion change or newpaidarm.
+Existing heartbeat `finish-block-f-and-publish-its-readings` resumed ACTIVE at5min with this merge→prepare→G→F scope;
+quiet while unchanged, posts eachG progress line and stops/reports on failing checks. Current fullsuite complete;
+no active test/build/lab/driver/F process. A later verified milestone supersedes this WAIT_MERGE checkpoint.
+
+**Andres requires integration merge before rebuilding — Astra, 2026-10-17 02:15 UTC.**
+Direct instruction: open ordering-fix PR; Claude merges after tests pass; rebuild ONLY from own clean checkout
+at that actual merge, then start G, then corrected F after G ends. No unmerged-source rebuild/archive yet.
+Current source fix is independently approved, focused16passed; single fullsuite nice19/keysunset remains active
+session36739/Python36024, `/tmp/gene-mila-go-order-pytest-20261017.log` and `.exit` on completion. Do not duplicate.
+**Exact next:** on exit0 create own `astra/clean-go-ordering` branch atd34bd93, commit reviewedGOdelta, push/open
+separate draftPR intointegration; dependency headerPR54. Ask Claude via41 to merge54 then orderingPR (and docs52).
+Verify actual orderingPR merged SHA before creating clean own rebuild checkout. Preserve our unused new outputs
+unchanged under dated names, original preparation script once, post checks; only then G atbaa7dfd, cap67.26 unchanged.
+No paid G/F process active, original source bundles untouched; all first-attempt outputs/log preserved.
+
 **G preparation refused; ordering recovery under review — Astra, 2026-10-17 02:06 UTC, claim #51.**
 First preparation session44048 exited1: `gene_sets.json differs between norman_clean and norman_clean_tables;
 the builder is not deterministic`. Full output/hashes/diagnosis in own PR #52 at5a8d34f and
