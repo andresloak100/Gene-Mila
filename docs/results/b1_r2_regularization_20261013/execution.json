@@ -1,0 +1,16 @@
+{
+  "source_commit": "8134cd938367232a9401043e08e6c1db4da45bf4",
+  "plan_commit": "fe64e9e",
+  "exit_code": 0,
+  "max_seconds": 7200,
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-r2-regularization/runs/b1_r2_regularization_20261013",
+  "api_cost_usd": 0,
+  "artifacts_sha256": {
+    "config.json": "fff289d1e9c9b0f8b5da0788a7fc8e5df95e69a8569a5c7bb77aaeb6ba5f2ebe",
+    "summary.json": "7f959bdd1edb389b7a1e3db81c73c107222a72470051d5827a530f5e5d807105",
+    "progress.jsonl": "8481fcd13c2a51c016b59221011af79293db506c298dd57bb00e969c34d60cc3",
+    "predictions.npz": "1c5f84b9563c03ccc5211b7d4a3b44796d4cfa30ab24b13974a28dac5a940f7f"
+  },
+  "numeric_arrays": "remain ignored locally; no fit replay",
+  "status": "completed; independently verified; fixed model gate failed"
+}

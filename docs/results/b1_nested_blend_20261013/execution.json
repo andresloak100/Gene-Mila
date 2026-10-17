@@ -1,0 +1,105 @@
+{
+  "status": "complete",
+  "gate_passed": false,
+  "plan_commit": "21f50d9",
+  "implementation_commit": "1238dac",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-nested-blend/runs/b1_nested_blend_20261013",
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-nested-blend",
+  "fit_count": 120,
+  "elapsed_s": 506.4921786249615,
+  "api_cost_usd": 0,
+  "full_tests": {
+    "passed": 490,
+    "skipped": 0,
+    "warnings": 8,
+    "seconds": 648.89
+  },
+  "focused_tests": {
+    "passed": 8,
+    "seconds": 3.73
+  },
+  "delivered_model_changed": false,
+  "command": "PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 nice -n19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/b1_nested_blend_20261013/run_with_deadline.py --package /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013/package --out runs/b1_nested_blend_20261013",
+  "files": {
+    "summary.json": {
+      "sha256": "4b195ee01ebb46743871c90e35fc86760e037fa9bbbc4659e74c9d48ef219f75",
+      "md5": "694fac24ab5541c5007f667150d62a87"
+    },
+    "config.json": {
+      "sha256": "09f2d483cb0df6adf258379cb8fb0a8c3d23731aa360c41dd3014f7ee2262591",
+      "md5": "0f92b0c6813397fdd162a3e0d443e41d"
+    },
+    "independent_verification.json": {
+      "sha256": "b7e95ee515a5adc0ed46ba18634079b278e878dee4c49b3edec781305553d077",
+      "md5": "8e9af93eef8385da677a41bb812101fc"
+    },
+    "progress.jsonl": {
+      "sha256": "d7fd8690662345b1c9ea3ea5ba1a6f4b81e2badd0b6a3a509bf91d2db093e2f1",
+      "md5": "4e2c3f6cd05b6e9a968995d335f84c62"
+    },
+    "predictions.npz": {
+      "sha256": "bc751ba45b88056fb05e6f4d365384b83cae7680f8d766cc8e5e61efd77e1b8f",
+      "md5": "122dab3ac532065edffda17fb5067eab"
+    },
+    "inner_oof/seed_6_fold_0.npz": {
+      "sha256": "2bf3bd929710590861d8b95ea911bde4f9c74a4a91a9fc04aa64c9d99aa289b4",
+      "md5": "1f47c80dabc39261188beec579e33331"
+    },
+    "inner_oof/seed_6_fold_1.npz": {
+      "sha256": "bddce8698efebde55545d326826abf267d7d5baaabda75a06f55394d853c2a89",
+      "md5": "0247c3409694d0bfed970fe16f75317d"
+    },
+    "inner_oof/seed_6_fold_2.npz": {
+      "sha256": "7cf9be8b945b863c7fc5dbdca53d6c5276e0c5293729fbf1465d64c21cab6cf7",
+      "md5": "9ef172cf6eaeea8c3d44d899eb4144d1"
+    },
+    "inner_oof/seed_6_fold_3.npz": {
+      "sha256": "b6e701d58a20ff21a7c6d0c44113b41f2145516c678624f10c3687a0635e67d4",
+      "md5": "2c9827c16ad2b551a274685437f8863a"
+    },
+    "inner_oof/seed_6_fold_4.npz": {
+      "sha256": "8d8665029c1cf66ab52e822aacef3ed79723d6d24e6ec2c34e445a784644e251",
+      "md5": "a07ac30c3ae2c4443c8eeaf1a4feefbf"
+    },
+    "inner_oof/seed_7_fold_0.npz": {
+      "sha256": "396850e574863e562c37864c87a4a9e8cafffc24584b01a3433a91f09f5bbb04",
+      "md5": "5a139970e4b32f28cf30e91031ff7483"
+    },
+    "inner_oof/seed_7_fold_1.npz": {
+      "sha256": "20f3799f9333a368291537852bc2b0404c11f5bfe1990123bf525efbe27ae60e",
+      "md5": "22846e7f421e20b7f27d826ef191fddb"
+    },
+    "inner_oof/seed_7_fold_2.npz": {
+      "sha256": "ee3578a3482e94fa16d7ecd66ae4d8f9a6b7c374620a32495b9b3768e0f6b9d3",
+      "md5": "a68643830b1106fa53b6790b1b73b199"
+    },
+    "inner_oof/seed_7_fold_3.npz": {
+      "sha256": "d2b7d5fd4407b5897cbcfcb04ea484435cc59b4def27e6ffc966ebb0665fdb59",
+      "md5": "6dcb698c54848aa3404d1e1c6db8ea5f"
+    },
+    "inner_oof/seed_7_fold_4.npz": {
+      "sha256": "ec1a665c1cd7c37988532537baf62190e7ea0cdbc5d4ec6c4672c4970c3b55dd",
+      "md5": "6c8bac72f6ac8e6f3a46a280203b37d2"
+    },
+    "inner_oof/seed_8_fold_0.npz": {
+      "sha256": "2e3400df7c6c5fe6bd50a79b1b45c163e7487da08fc7a699c974fcabdfa83e81",
+      "md5": "6f4481b2733ce7caa761531317171e36"
+    },
+    "inner_oof/seed_8_fold_1.npz": {
+      "sha256": "5f646ddf51c2cb31161eef668c27e9ec9a6b8fe7f98a4b8ecd1df10c5fe9493d",
+      "md5": "beffe60a341889511a3a8ea2b7999cc5"
+    },
+    "inner_oof/seed_8_fold_2.npz": {
+      "sha256": "d36427dfa8b59988ae97ad51c2f5542f81cbe970abcc3123c3d05ebb21114469",
+      "md5": "c4fa286b30e98e7aedad0d6f540b8d72"
+    },
+    "inner_oof/seed_8_fold_3.npz": {
+      "sha256": "9b8cebd925bcbac3bf6a78e6fdef43fc1c03ffa04a66b4b26a566d82949873b6",
+      "md5": "471bf8c222af24685e9b682b6cff09de"
+    },
+    "inner_oof/seed_8_fold_4.npz": {
+      "sha256": "7e2935623e87bec1716a2197806af1b74a88b43de68692c527da10fed643440d",
+      "md5": "9d9efa234740a024b6a06c6391dbfde4"
+    }
+  }
+}

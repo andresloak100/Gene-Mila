@@ -4,9 +4,10 @@ This file is for every agent that works in this repository: the project's Claude
 Astra (a ChatGPT agent), and any other coding agent. Whichever of them still has tokens
 picks up the work where another stopped, so all of them follow the same rules and keep the same
 state. The rules are here. [`HANDOFF.md`](HANDOFF.md) holds the shared state (section 1, kept
-current by whoever is working), the paths and commands, and the open work. Read both, then
-`docs/LAB_STATE.md` (the lab-code owner's full state, newest wins), `README.md`, `docs/ARCHITECTURE.md`
-and `configs/default.toml`.
+current by whoever is working), the paths and commands, and the open work. Read both, then `README.md`,
+`docs/README.md` (the map of every document), `docs/ROADMAP.md` (what the lead has decided),
+`docs/GOAL_CRITERIA.md` (when the goal is met), `docs/ARCHITECTURE.md` and `configs/default.toml`.
+`docs/LAB_STATE.md` is the 11 October catch-up narrative, history rather than state.
 
 ## The project
 
@@ -31,6 +32,7 @@ repository: `HANDOFF.md` section 1, GitHub issues and pull requests.
 | Agent | Owns | Branches |
 |---|---|---|
 | Claude, "Autonomous research system" | the lab code, the runs on Andres's Mac, `docs/results/`, `docs/LAB_STATE.md` | `claude/autonomous-research-system-3k435s`, the integration branch (there is no `main` yet) |
+| Claude, the lead (claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41), since 16 October) | the decisions: `docs/ROADMAP.md`, `docs/GOAL_CRITERIA.md`, the block plans (`docs/PLAN_G_CLEAN_ARM.md`, `docs/PLAN_H_COMPARISON.md`, `docs/PLAN_R_FRESH_TEST.md`), `docs/comparison/`, `docs/README.md` | `claude/youthful-dijkstra-459nhj` |
 | Claude, "Repo description design" | `README.md`, `docs/assets/`, the GitHub About box, `tools/readme_check.py` | `claude/repo-description-design-bro3vo` (PRs #1 and #5) |
 | Other Claude sessions | the tasks Andres gives them | `claude/<topic>` |
 | Astra (ChatGPT) | the tasks Andres gives it | `astra/<topic>` |
@@ -61,8 +63,9 @@ pull request and `HANDOFF.md` section 1, then continue on a branch of your own.
   19:16; DeepSeek's console then showed a balance of $33.01 and $16.98 billed). The shared spend ledger
   counts about twice what DeepSeek bills (it read $33.97 when DeepSeek had billed $16.98, likely
   off-peak pricing; not checked call by call), and its higher figure is what every cap counts. Spending
-  goes in blocks, each pre-specified in the repository before it starts: the current one,
-  [`docs/PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md), lets the ledger reach **$48**; every paid run in it
+  goes in blocks, each pre-specified in the repository before it starts. The first was
+  [`docs/PLAN_AFTER_N4.md`](docs/PLAN_AFTER_N4.md) (11 October; the sequence since, B4, F, G and H, is in
+  `docs/ROADMAP.md`); it let the ledger reach **$48**; every paid run in it
   passes `--set budget.cumulative_usd.deepseek=48` and starts only when the ledger plus its own worker
   and planner caps stays at or below $48. Earlier caps were $15, then $34 (02:39 the same day). After it, block B4
   ([PR #39](https://github.com/andresloak100/Gene-Mila/pull/39), 15 October) ran under a $52 cap on Andres's "run the

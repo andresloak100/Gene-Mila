@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "fixed_before_fitting",
+  "public_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman",
+  "dataset": "norman",
+  "split_id": "split_a391fa9e7b4eccb7",
+  "label_scope": "public training only; nested development folds",
+  "features": [
+    "control_mean",
+    "mean_response",
+    "is_target",
+    "additive_response"
+  ],
+  "alphas": [
+    0.01,
+    1.0,
+    100.0,
+    10000.0,
+    1000000.0
+  ],
+  "low_alphas": [
+    0.01,
+    1.0,
+    100.0
+  ],
+  "outer_seeds": [
+    0,
+    1,
+    2
+  ],
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "inner_seed_rule": "1000 + 100 * outer_seed + outer_fold_index",
+  "alpha_selection": "inner OOF mean Pearson delta; smaller alpha wins exact ties",
+  "calibration": "through-origin LS on selected-alpha inner OOF deltas; clip [0,4]; zero denominator ->1",
+  "recipes": [
+    "additive",
+    "ridge",
+    "ridge_low_penalty",
+    "ridge_calibrated"
+  ],
+  "metrics": [
+    "pearson_delta",
+    "mse",
+    "pearson_expr",
+    "cellforge_r2",
+    "mse_top",
+    "cellforge_pcc_de",
+    "r2_top",
+    "pearson_delta_top",
+    "direction_acc_top",
+    "delta_scale_ratio"
+  ],
+  "top_genes": "20 highest absolute true development delta; no cell-derived reference",
+  "n_train": 112,
+  "n_genes": 2083,
+  "train_order_sha256": "9e5f706dd00f69e943234b7341fa69ae8926a8b1c5a7d6e03c9c2564e4366bcc",
+  "gene_order_sha256": "b21b43e09bd8d89e1877e6acaedb79ed776dbe7d75471f2feee2a14053a185a9",
+  "input_sha256": {
+    "public.npz": "b2c7eb3d34806a8d05b3a7719670833aa547d235e9d00767acce4126cbdc5411",
+    "knowledge/targets.json": "f02c03f13588ea93b8a14a7979e9c31b8bc317d6cb18b9c24e38362b3bb7662c",
+    "manifest.json": "1bdb4f24918792bb7497d5926eb0dac31dbaac48353c2ae7170304005eddec17"
+  },
+  "source_sha256": {
+    "tools/shrinkage_diagnostic.py": "c1b65a3aa3ddca66e73afc683c3b5b59674aea812f4ad55693eca9ab43204299",
+    "docs/NORMAN_SHRINKAGE_PLAN.md": "64022dc11c5962e328e260f47e57586e998bd852071b55e94847f9cd247d4015",
+    "genemila/features/api.py": "6cded0b6c2105bceed8b08ad10d432cfefa496aa3824c5b31eb518df00f3b0d7",
+    "genemila/features/builtin.py": "7385a22d565958ddd870297c722452072b1b2701431367dbc95290deba732725",
+    "genemila/pipeline.py": "afb15b56bbe778d66f051f79db6d6bb47e7e1b1e4eaad080dd08bc90817ba82f",
+    "genemila/benchmark/evaluator.py": "4cb2a6aa8ec0973b9fe431b9d58d43bbf90105077ffe736cdb64b1cb6b283a25",
+    "genemila/benchmark/comparable.py": "94be9a12351b1e2e870dae626c9a039bbae043d7764f653607ee477ee57dc9f7",
+    "genemila/benchmark/__init__.py": "b39b000d6993ef461532198ee506b0e0b287186ee99c048a49f6c42aa3df47b8"
+  },
+  "versions": {
+    "python": "3.13.7",
+    "numpy": "2.5.3",
+    "scikit_learn": "1.9.1"
+  },
+  "max_ridge_fits": 255,
+  "api_cost_usd": 0,
+  "interpretation": "exploratory development diagnostic; seed SD is fold sensitivity, not independent replication"
+}

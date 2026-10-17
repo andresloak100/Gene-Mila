@@ -2,8 +2,8 @@
 
 Written 2026-10-16 for Andres and his ML collaborator, claim [#41](https://github.com/andresloak100/Gene-Mila/issues/41).
 It is step 2 of the paper proposal in draft [PR #38](https://github.com/andresloak100/Gene-Mila/pull/38)
-([`docs/PAPER_FRAMEWORK_PROPOSAL.md`](https://github.com/andresloak100/Gene-Mila/blob/claude/paper-framework-proposal/docs/PAPER_FRAMEWORK_PROPOSAL.md)
-on its branch). PR #38 says why we compare systems. This file says how. Nothing here has run on real data.
+([`docs/archive/plans/PAPER_FRAMEWORK_PROPOSAL.md`](archive/plans/PAPER_FRAMEWORK_PROPOSAL.md),
+archived once its sections became GOAL_CRITERIA, this protocol and ROADMAP). PR #38 says why we compare systems. This file says how. Nothing here has run on real data.
 Commands and criteria follow `tools/feature_compare.py` with its review fixes (commit `2136bf3`) and the task
 package of commit `dd9a2d8`; if either changes, its own docstring wins over this file.
 **Unverified** marks every statement that could not be checked from this repository or the local clones.

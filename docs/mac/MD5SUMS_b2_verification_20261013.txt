@@ -1,0 +1,2 @@
+614585596bbf3d95c437bc833adf5cad  docs/results/b2_handoff_verification_20261013.md
+d5a9d9bb1abdc36c0df2f893db86ffdd  docs/mac/STATE.md

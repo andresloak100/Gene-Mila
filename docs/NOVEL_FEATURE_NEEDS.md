@@ -103,7 +103,7 @@ A hand-built feature scored by humans first is a **human-led positive control fo
 | D3 | Feed human hypotheses (Astra's 200, your review) to the agents? | Yes → the claim becomes "the agent selected a human hypothesis" unless M8 shows otherwise; each reviewed list adds to m | Open; #40 is building the bank |
 | D4 | Fresh test cohort and evaluator holder | CRISPRa cohorts (GSM4367986, GSE220974) confirm Norman features only; CRISPRi needs a sealed Replogle slice. Without these, no "beats CellForge on test" claim. CellForge is not comparable today (`docs/results/norman_b1_frozen_test_review_20261013.md:68-83`) | Deferred 13 Oct, "deferred, not approved" (#22, last updated 2026-10-13T22:41Z; `HANDOFF.md` section 1, the 14 October model-quality entry); re-raised in PR #38 §6 (reviewer-reported, not re-read) |
 | D5 | Build the Replogle K562 replication bundle (M6) | Free, Mac CPU, untested size | Not yet asked |
-| D6 | Adapt CellForge's multi-expert discussion | No claim, plan or PR covers it. `docs/mac/cellforge_notes.md:49-53` cites CellForge's `Method_Design/experts.py`, `graph_discussion.py` and `refinement.py` only for preprocessing defaults. It overlaps the planner files held by #40 | Open, unowned |
+| D6 | Adapt CellForge's multi-expert discussion | No claim, plan or PR covers it. `docs/comparison/cellforge_notes.md:49-53` cites CellForge's `Method_Design/experts.py`, `graph_discussion.py` and `refinement.py` only for preprocessing defaults. It overlaps the planner files held by #40 | Open, unowned |
 
 **Fit with in-flight work.** Astra's #40 owns the hypothesis side: `genemila/biology.py`, the planner, `research_state`, prompts and `configs/biological_discovery.toml` (issue #40 body). We supply data, M1 tables, the M2 null context and the M4 checks as new files. PR #38 sets the paper criteria; Part 3 is a concrete implementation of them. PR #39 matters here only for the ledger.
 
@@ -158,7 +158,7 @@ section 2.1 (the genome annotation is reachable from the cloud through the iGeno
 downloaded on the Mac), and the nonlinear-derivability check (M4). The genome annotation builder is done
 (`tools/build_gene_annotation.py`; section 9).
 
-## 7. Recommended data-source policy (Andres asked for one on 16 October; awaiting his confirmation)
+## 7. Recommended data-source policy (Andres asked for one on 16 October; approved by him at 21:08 UTC that day, #41)
 
 Rule: **a source is allowed if it was measured or derived without perturbing genes and does not contain the expression
 responses the lab predicts.** Unperturbed K562 measurements are allowed for the same reason the control cells are.

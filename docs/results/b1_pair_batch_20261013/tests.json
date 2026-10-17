@@ -1,0 +1,20 @@
+{
+  "full": {
+    "passed": 490,
+    "skipped": 0,
+    "warnings": 8,
+    "duration_s": 648.09,
+    "exit_code": 0,
+    "command": "nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m pytest -q"
+  },
+  "focused": {
+    "passed": 8,
+    "duration_s": 3.59,
+    "source": "implementation agent report"
+  },
+  "source_sha256": {
+    "tools/b1_pair_batch_correction.py": "bd6928955d8a13598e3c7c8926d1574d2882cb9e9d6804498ce8a778089b7191",
+    "tools/feature_variants/pair_target_prior_edge_e34.py": "c352648fb928766f1864428b9eced4972a35935f25cddd6a089493000a2755fa",
+    "tests/test_b1_pair_batch_correction.py": "b86099760b036b5ffc44aeb15514be5f411544962b15278b2bfb81e4e91bd9e7"
+  }
+}

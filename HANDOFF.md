@@ -1080,8 +1080,8 @@ the runs' summaries like PR #6. Whether B3 (the Adamson re-split) runs later goe
 would need a cap above $48 and has no script yet, and it would run exactly as the plan's B3 says, on the pinned commit (bring later scripts in with
 `git fetch` and `git show origin/claude/autonomous-research-system-3k435s:<path> > ../genemila_scale_logs/<file>`,
 never by pulling). How to work on the Mac (paths, the
-key, the STOP file, how results reach GitHub): `docs/mac/MAC_HANDOFF.md` and the running log `docs/mac/STATE.md` (in
-PR #6 until it is merged). The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
+key, the STOP file, how results reach GitHub): `docs/mac/MAC_HANDOFF.md` (in
+PR #6 until it is merged) and the dated Mac snapshot `docs/archive/mac/STATE_20261014.md`. The lab now lives in `~/Documents/Mila/Gene-Mila/` (`gene-mila`,
 `genemila_scale_logs`, `gene-mila-2492e11`, `data_downloads`); symlinks with those names stay in
 `~/Documents/Loak-documents/` only because past runs record the old paths, so write nothing new there, and touch
 nothing else in `~/Documents/Mila` (Andres's checkout of andresloak100/Mila). Two paid Norman runs today

@@ -1,0 +1,47 @@
+{
+  "status": "verified",
+  "reviewer": "Codex chat2, independent data-free review",
+  "statistic_pairs_checked": 2560,
+  "maximum_rounding_difference": 2.22e-16,
+  "report_tables_verified": 6,
+  "seeds": [
+    9,
+    10,
+    11
+  ],
+  "conditions_per_seed": 112,
+  "folds": 15,
+  "ordered_member_fit_events": 45,
+  "plan_pin_verified": true,
+  "alpha_only_variant_identity_verified": true,
+  "full_hide_union_and_strata_verified": true,
+  "all_gate_arithmetic_verified": true,
+  "model_screen_passed": false,
+  "sole_failed_ratio": 1.010672297924251,
+  "fixed_limit": 1.01,
+  "no_discrepancies": true,
+  "allowed_inputs": [
+    "config.json",
+    "summary.json",
+    "progress.jsonl",
+    "docs/B1_R2_REGULARIZATION_PLAN.md",
+    "docs/B1_R2_REGULARIZATION_RESULTS.md"
+  ],
+  "not_performed": [
+    "NPZ/response-array reads",
+    "model imports/scoring/fits/tests",
+    "paid calls",
+    "edits/Git changes"
+  ],
+  "sha256": {
+    "config.json": "fff289d1e9c9b0f8b5da0788a7fc8e5df95e69a8569a5c7bb77aaeb6ba5f2ebe",
+    "summary.json": "7f959bdd1edb389b7a1e3db81c73c107222a72470051d5827a530f5e5d807105",
+    "progress.jsonl": "8481fcd13c2a51c016b59221011af79293db506c298dd57bb00e969c34d60cc3"
+  },
+  "limitations": [
+    "same-cohort post-selection development",
+    "sample SD across partitions, not independent replication",
+    "source hazards unresolved",
+    "failure rejects this fixed penalty, not all regularization methods"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "source_commit": "d3909a11056a1f00fbb79cbb99c983a62902e74c",
+  "plan_commit": "9920fec14caf457278ced87a66e2a1253ceaded5",
+  "exit_code": 0,
+  "api_cost_usd": 0,
+  "max_seconds": 7200,
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-pair-batch/runs/b1_pair_batch_20261013",
+  "artifact_sha256": {
+    "config.json": "28899787c2692313ffdca6dad8b8ffabef193d2ec6a9d4eaea7cbcb49d4d1bd5",
+    "summary.json": "cfe869a66dfdc48ab88dd0812aa2645792d296113955ca5759157755fcdb4ea7",
+    "progress.jsonl": "47923eab7dd9830a6f057bf2d23edde5434360fb53621b229140709aae20aba2",
+    "predictions.npz": "304ec2c56bfb370c2e2e4eae8eaf5f272df1d9f3198358243ecfe725c57302a1"
+  },
+  "status": "completed; independently verified; fixed model screen failed",
+  "numeric_arrays_and_plugin_copy": "remain ignored locally; no fit replay"
+}

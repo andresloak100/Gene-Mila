@@ -1,0 +1,73 @@
+{
+  "status": "source_and_metadata_only_no_inference_no_verified_eligible_conditions",
+  "package_run": "gene-mila-export/runs/norman_frozen_export_20261013",
+  "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+  "source_verification": "Selected plugins and six knowledge hashes checked against archived manifest by independent source reviewer",
+  "metadata_only": true,
+  "targets": [
+    {
+      "target": "FAM83A",
+      "in_gene_universe": true,
+      "in_original_target_context": false,
+      "own_replogle_perturbation_row": false,
+      "training_single": false,
+      "measured_output_gene": true,
+      "gene_set_memberships": 5,
+      "ppi_distinct_neighbors": 0,
+      "prior_distinct_neighbors": 0,
+      "gene_sets_sharing_training_target": 5
+    },
+    {
+      "target": "GATA1",
+      "in_gene_universe": true,
+      "in_original_target_context": false,
+      "own_replogle_perturbation_row": false,
+      "training_single": false,
+      "measured_output_gene": true,
+      "gene_set_memberships": 47,
+      "ppi_distinct_neighbors": 7,
+      "prior_distinct_neighbors": 35,
+      "gene_sets_sharing_training_target": 30
+    },
+    {
+      "target": "MYC",
+      "in_gene_universe": true,
+      "in_original_target_context": false,
+      "own_replogle_perturbation_row": false,
+      "training_single": false,
+      "measured_output_gene": true,
+      "gene_set_memberships": 158,
+      "ppi_distinct_neighbors": 19,
+      "prior_distinct_neighbors": 257,
+      "gene_sets_sharing_training_target": 121
+    },
+    {
+      "target": "YY1",
+      "in_gene_universe": true,
+      "in_original_target_context": false,
+      "own_replogle_perturbation_row": false,
+      "training_single": false,
+      "measured_output_gene": true,
+      "gene_set_memberships": 61,
+      "ppi_distinct_neighbors": 15,
+      "prior_distinct_neighbors": 47,
+      "gene_sets_sharing_training_target": 40
+    }
+  ],
+  "neighbor_count_scope": "Frozen gene universe, unique neighbors, excluding self",
+  "r1_raw_zero_columns_for_all_four_only_queries": 15,
+  "r1_total_raw_columns": 24,
+  "key_sources": [
+    "genemila/frozen.py:347-367",
+    "members/*/plugins/additive_singles_e15.py:17-30",
+    "members/0/plugins/pair_external_delta_product_e184.py:81-94",
+    "members/1/plugins/external_response_random_projection_targ_e325.py:45-103",
+    "members/1/plugins/external_replogle_random_projection_gene_e439.py:62-86",
+    "members/1/plugins/pair_target_prior_edge_e34.py:74-88",
+    "members/2/plugins/best_model_residual_e213_e247.py:29-33",
+    "members/2/plugins/pair_shared_ppi_neighbor_replogle_mean_e492.py",
+    "context/knowledge/replogle2022_k562.json (metadata and key membership only)"
+  ],
+  "numeric_feature_values_or_quality_verified": false,
+  "conditions_and_controls_verified": false
+}

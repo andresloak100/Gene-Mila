@@ -1,0 +1,42 @@
+{
+  "config_sha256": "d728e3f2a35593e3ab6d466b949471b22629bc7f4e05b1c28abd07160fb712ed",
+  "driver_sha256": "ff5f5ad0bc22936682d382ae49ba807302d0ebf5300e6e6b0986f14ba99e1483",
+  "finished_at_unix": 1791926130.048676,
+  "ledger_after": 43.599822392,
+  "ledger_before": 43.589781152,
+  "ledger_increment_usd": 0.010041239999999618,
+  "max_calls": 2,
+  "new_model_scores": false,
+  "responses_or_labels_read": false,
+  "reviews": [
+    {
+      "finish_reason": "stop",
+      "id": "cohort_review",
+      "response_sha256": "abff126d3b3ff91f3dbc09ad960e0e5cc8db1f9a8fad21cb68284a22ac27d9c0",
+      "served_model": "deepseek-v4-pro",
+      "usage": {
+        "cached_tokens": 0,
+        "cost_usd": null,
+        "input_tokens": 1604,
+        "latency_s": 7.392169666942209,
+        "output_tokens": 798
+      }
+    },
+    {
+      "finish_reason": "stop",
+      "id": "protocol_review",
+      "response_sha256": "f7f03b8f0e06ac92014b5464deeb82c0d8c6ec380d1430c83a739620862d77ce",
+      "served_model": "deepseek-v4-pro",
+      "usage": {
+        "cached_tokens": 0,
+        "cost_usd": null,
+        "input_tokens": 1605,
+        "latency_s": 6.773691165726632,
+        "output_tokens": 668
+      }
+    }
+  ],
+  "started_at_unix": 1791926115.87358,
+  "status": "completed",
+  "worst_case_total_usd": 0.03723852
+}
