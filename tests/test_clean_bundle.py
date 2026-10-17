@@ -3,6 +3,8 @@ import gzip
 import hashlib
 import io
 import json
+import os
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -155,6 +157,24 @@ def test_go_curated_filters_and_propagates(tmp_path):
     # a stricter code set
     strict = kc.go_curated(src / "goa_human.gaf.gz", src / "go-basic.obo", GENES, allowed=frozenset({"IDA"}))
     assert strict == {}  # no term reaches three IDA-annotated measured genes
+
+
+def test_go_curated_serialization_is_stable_across_hash_seeds(tmp_path):
+    src = write_sources(tmp_path / "src")
+    script = ("import json, sys; from pathlib import Path; "
+              "from genemila.data.knowledge_clean import go_curated; "
+              "print(json.dumps(go_curated(Path(sys.argv[1]), Path(sys.argv[2]), set(json.loads(sys.argv[3])))))")
+    outputs = []
+    for seed in (0, 1, 42):
+        env = {k: v for k, v in os.environ.items() if k not in ("API_KEY", "DEEPSEEK_API_KEY")}
+        env["PYTHONHASHSEED"] = str(seed)
+        result = subprocess.run([sys.executable, "-c", script, str(src / "goa_human.gaf.gz"),
+                                 str(src / "go-basic.obo"), json.dumps(sorted(GENES))], cwd=ROOT,
+                                env=env, capture_output=True, text=True, check=True)
+        outputs.append(result.stdout)
+    expected = kc.go_curated(src / "goa_human.gaf.gz", src / "go-basic.obo", GENES)
+    assert all(json.loads(output) == expected for output in outputs)
+    assert len(set(outputs)) == 1  # compare serialized order, not only mapping equality
 
 
 def test_set_size_limits(tmp_path, monkeypatch):
