@@ -49,7 +49,8 @@ nice19/detached/no paid overlap. Do not write a G cap, start chain, change tests
 Keep live STATE/#41/#39 current. Existing F heartbeat stays paused until a corrected re-read is active.
 
 **The lead's roadmap is [`docs/ROADMAP.md`](docs/ROADMAP.md) (Claude, 2026-10-16 23:40 UTC); read it first.** Block G
-runs first at `baa7dfd` (PLAN_G's dated note; `block_g_run.sh` filled); the chain waits for Andres's cap line on #41,
+runs first at `baa7dfd` (PLAN_G's dated note; `block_g_run.sh` filled); **Andres confirmed the cap on 17 October,
+01:46 UTC (#41): the chain may start**, under the timing rule of #41 (never beside the block F re-read);
 the readings wait for the corrected fair test (ROADMAP D2: the gene-permutation null cannot fail for a parent-times-
 scalar candidate, and 20·m − 1 replicates put the p floor at the cutoff; `GOAL_CRITERIA.md` corrected: A.1 pending).
 Then block H, the Adamson comparison (ROADMAP D6), and the Replogle commit-then-reveal fresh test (D7). Astra's ordered

@@ -93,3 +93,6 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
   tool gets a perturbation-level null and a family-wise max-gain correction before any block G score is read, and
   block F's stage 2 is re-read under it (ROADMAP D2). Everything else above stands: known biology, mixed signs, no arm
   gain, not yet on either path.
+- 2026-10-17 02:00 UTC: Andres says a collaborating lab would do the wet-lab step given solid data and good evidence
+  (#41), so A.5 is reachable; the computational case (A.1 to A.4, A.6) and the prediction package are what we owe.
+  Still **not yet** on either path: no candidate exists.
