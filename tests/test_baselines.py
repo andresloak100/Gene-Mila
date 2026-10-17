@@ -172,6 +172,8 @@ def test_run_biomni_child_gets_an_allowlisted_environment_and_the_packages_timeo
     assert child_env["OPENAI_BASE_URL"] == url + "/v1" and child_env["OPENAI_API_KEY"] == "proxy-token-3"
     assert "PATH" in child_env and "GH_TOKEN" not in child_env and "SOME_OTHER_SECRET" not in child_env
     shell_added = {"PWD", "OLDPWD", "SHLVL", "_", "LC_CTYPE"}  # the stub is a shell; sh and python add these
+    if sys.platform == "darwin":
+        shell_added.add("__CF_USER_TEXT_ENCODING")  # macOS adds its non-secret text encoding metadata
     assert set(child_env) - shell_added <= set(("OPENAI_BASE_URL", "OPENAI_API_KEY", "PYTHONUNBUFFERED")
                                                 + run_biomni.ENV_ALLOWLIST)
     eval_timeout = json.loads((package / "MANIFEST.json").read_text())["eval_timeout_s"]
