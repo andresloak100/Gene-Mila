@@ -4,6 +4,26 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
+2026-10-17 21:45 UTC: Andres delegated the DeepSeek runs to this session; the Mac checks start.** Andres's words in the
+project thread (UTC): 21:17 "go"; 21:18 "you have access to the deepseek agents so you can do the direct runs"; 21:20 the
+key stays in the Mac's environment and he is not to be asked about it again; 21:24 the lab meeting's notes (two branches:
+a genuinely novel feature means a biology paper and a possible wet-lab test, else a benchmark paper against CellForge,
+non-agentic deep-learning models and traditional baselines on the test set; the collaborating lab asks for a biologist's
+reading of the agents' feature lists, a CellForge-style expert panel in the planner, and every log kept); 21:27 "make
+sure we are looking for the new biology goal or the goal for the agentic workflow"; and 200 in-vitro-testable
+hypotheses of what the agents should look for (its own project thread; the list will come as a PR). The written update
+for the lab is a Claude document linked in the thread; its facts are the committed ones (GOAL_CRITERIA Status, the
+ROADMAP notes, docs/results). Rules unchanged: every paid block pre-specified here with its cap, one paid run at a time,
+no run on block G's inputs again. On the Mac now, free, `nice -n 19`, in a dedicated clone, no lab run: the key's
+authentication check from the environment (the balance read, also the D12 console reading), `docker info` then Docker
+Desktop started and `check_tools.sh` rerun (no image build, no probe), the Replogle eligibility manifest (obs and var
+only, no draw, provisional gene universe from `data/adamson_cf_clean`), the frozen adapter check against
+`docs/results/norman_frozen_export_20261013`. **Next:** the draft PR from `claude/mac-checks-20261017` with the
+results and their paths on #41 and #68; then block H's remaining gaps (the probe reset, `run_biomni.py`'s config path,
+`tier.txt`, `isolation.txt`) and, once the hypotheses list is pre-registered, a dated plan for a hypothesis-guided
+biology block on tier-1 sources. Claim #64 yields to these jobs.
+
 **Lead (Claude, #41), 2026-10-17 19:33 UTC: PR #63 verified from its files and merged; the corrected block F and the
 family 8 readings are recorded; every pre-registered reading of this window is negative for a tier-1 feature.**
 Corrected F: six passing rows, all the sign-flipped Replogle response times an annotation column (tier 3), none tier 1;
