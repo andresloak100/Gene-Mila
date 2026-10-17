@@ -1,10 +1,12 @@
 # Pre-registration: the known biology, before any block G score is read
 
-Fixed 2026-10-17 (UTC), before any block G feature-level score is read. The run checkout is pinned at `baa7dfd`
-(`docs/PLAN_G_CLEAN_ARM.md`, note of 2026-10-16 23:40 UTC; `docs/ROADMAP.md` D1), which predates this file, so no
-agent in block G ever sees it. This file is the lead's pre-registration of what is already known for each feature
-family the agents can build from the clean bundle's three per-gene tables, so the KNOWN or OPEN call is made by a
-written record fixed in advance, not after the numbers (`docs/GOAL_CRITERIA.md` A.2 and A.6; `docs/ROADMAP.md` D3).
+Fixed 2026-10-17 (UTC) by the commit that carries this file, before any block G feature-level score is read; its
+first version was committed at `4118f0d`, 2026-10-16 23:14 UTC, and the corrections since are listed in the note at
+the end. Nothing in block G has run: the plan's cap still awaits Andres's line (`docs/PLAN_G_CLEAN_ARM.md`, closing
+note in commit `fee6e79`). The run checkout is pinned at `baa7dfd` (same note; `docs/ROADMAP.md` D1), which predates
+this file, so no agent in block G ever sees it. This file is the lead's pre-registration of what is already known
+for each feature family the agents can build from the clean bundle's three per-gene tables, so the verdict is made
+by a written record fixed in advance, not after the numbers (`docs/GOAL_CRITERIA.md` A.2 and A.6; `docs/ROADMAP.md` D3).
 A change is a dated note at the end, never an edit above it.
 
 The three tables and their columns are `tools/build_gene_annotation.py` (`gene_annotation`: `gene_span_kb`,
@@ -33,6 +35,12 @@ Citation keys are defined in `docs/CANDIDATE_LITERATURE_CHECK.md`, each marked V
 - **The A.2 sign rule.** The pre-registered sign below must hold for the standardised add-one coefficient in **every**
   fold seed and on **both** datasets where the modality applies. A sign that flips in any fold seed or dataset drops
   the mechanism claim; the feature is then reported as predictive but unexplained (`docs/ROADMAP.md`, section 5, A.2).
+- **What the verdicts mean.** **KNOWN**: a published result already predicts this feature's sign for this modality
+  (`docs/GOAL_CRITERIA.md` A.6). **KNOWN by confound**: the published result is about a determinant the column proxies
+  (basal expression, mRNA stability, essentiality), not about the column itself, so no published result predicts the
+  feature's sign. Such a family that passes A.1 is reported as predictive but explained by the confound, unless the
+  same column residualised on `ctx.control_mean` also passes both nulls, in which case it is read as OPEN, like
+  family 8. **OPEN**: no published result either way.
 - **Modality.** Norman is CRISPRa (102 targets, transcription-factor and genetic-interaction panel). Adamson is
   CRISPRi (90 targets, the unfolded-protein-response and secretory-pathway panel, `docs/mac/adamson_cf_ncells.json`).
   "Not predicted" means the direction is OPEN for that modality; "N/A" means that modality has no matching
@@ -49,18 +57,27 @@ Citation keys are defined in `docs/CANDIDATE_LITERATURE_CHECK.md`, each marked V
 - **Verdict.** KNOWN [Konermann2015, Chavez2016, Wu2023, Deaton2011; Horlbeck2016, Radzisheuskaya2016, Gilbert2014].
 - **Why.** CRISPRa raises already-active, high-basal-expression genes least, and a CpG-island promoter (high CpG o/e)
   is the broadly-active class, so the feature restates the published inverse dependence of CRISPRa on basal activity.
+- **Already seen.** Block F's in-run fits of this same CpG term were read before this file and were mixed: +0.0147
+  (r0 e428), +0.0143 (r0 e666), -0.0100 (r3 e412) (`docs/GOAL_CRITERIA.md`, note of 2026-10-16 22:55 UTC). Those are
+  in-run coefficients, not the standardised add-one coefficient the D2 tool saves. The negative sign above is the
+  literature's prediction, and it is read on block G only.
 
 ### 2. TSS distance, nearest TSS and bidirectional promoters
 - **Formula shape.** A cis term: a target affects a response gene that shares or sits near its promoter; or
   `additive_response` times the targets' mean `nearest_tss_kb`.
 - **Inputs.** `gene_annotation.nearest_tss_kb`, `n_tss_within_100kb`, `bidirectional`, `loci` (chromosome, TSS, strand).
-- **Sign.** Not predicted for either modality (the block F TSS-distance plugin ignored chromosome and strand and never
-  read the bidirectional table, so its name was not its mechanism; `docs/results/norman_f_readings.md`).
+- **Sign.** The cis term: the affected neighbour moves in the modality's direction (Adamson CRISPRi negative, Norman
+  CRISPRa positive). The `nearest_tss_kb` or `n_tss_within_100kb` scaler form: not predicted (the block F
+  TSS-distance plugin ignored chromosome and strand and never read the bidirectional table, so its name was not its
+  mechanism; `docs/results/norman_f_readings.md`).
 - **Null.** Gene null for the gene-side cis term; both for the per-perturbation scaler form.
-- **Verdict.** KNOWN [Radzisheuskaya2016, Horlbeck2016, Gilbert2014].
-- **Why.** dCas9 efficacy tracks proximity to the TSS, and a dCas9 effector at a shared or bidirectional promoter acts
-  in cis on the neighbour; both are published, and cis effects touch few genes so the gain on a gene-wide metric is
-  expected to be small.
+- **Verdict.** Cis term: KNOWN [Radzisheuskaya2016, Horlbeck2016, Gilbert2014]. Scaler form: KNOWN by confound (TSS
+  density tracks promoter class and basal expression), sign not published.
+- **Why.** dCas9 efficacy tracks proximity to the target's own TSS, and a dCas9 effector at a shared or bidirectional
+  promoter acts in cis on the neighbour; both are published, and cis effects touch few genes so the gain on a
+  gene-wide metric is expected to be small. The cited papers model the guide's position relative to the target's own
+  TSS, while `nearest_tss_kb` is the distance to another gene's TSS, which is why the scaler form is only a confound
+  reading.
 
 ### 3. Gene length, exon count, transcript count, UTR lengths
 - **Formula shape.** The response gene's own size as a gene-side term, or `additive_response` times the targets' mean
@@ -69,7 +86,8 @@ Citation keys are defined in `docs/CANDIDATE_LITERATURE_CHECK.md`, each marked V
   `utr5_length`, `utr3_length`, `intron_length_kb`.
 - **Sign.** Not predicted (these columns are confounded proxies for basal expression and mRNA stability).
 - **Null.** Gene null for the gene-side term; both for the per-perturbation scaler form.
-- **Verdict.** KNOWN [KangBrent2022, Agarwal2022].
+- **Verdict.** KNOWN by confound (basal expression level and variation, and mRNA half-life), sign not published
+  [KangBrent2022, Agarwal2022].
 - **Why.** Basal expression level and variability, which gene length and UTR length track, already predict
   responsiveness and mRNA stability, so a length feature restates a known determinant rather than a new one.
 
@@ -78,22 +96,24 @@ Citation keys are defined in `docs/CANDIDATE_LITERATURE_CHECK.md`, each marked V
 - **Inputs.** `gene_annotation.n_upstream_atg`.
 - **Sign.** Not predicted on the measured mRNA delta.
 - **Null.** Gene null for the gene-side term; both for the scaler form.
-- **Verdict.** KNOWN [Calvo2009].
+- **Verdict.** OPEN (weak: the published effect is on protein output, not on the measured mRNA delta) [Calvo2009].
 - **Why.** Upstream open reading frames are a published determinant of reduced expression, though their effect is on
   protein output with only a modest effect on mRNA, which is what the lab measures, so the mRNA-response link is weak.
 
 ### 5. Amino-acid composition
 - **Formula shape.** An interaction: an aminoacyl-tRNA synthetase knockdown (Adamson has `AARS`, `CARS`, `DARS`,
-  `FARSB`, `HARS`, `IARS2`, `MARS`, `QARS`, `SARS`, `TARS`) times the response gene's content of the cognate amino
-  acid.
+  `FARSB`, `HARS`, `MARS`, `QARS`, `SARS`, `TARS`) times the response gene's content of the cognate amino acid. The
+  panel's tenth synthetase, `IARS2`, is the mitochondrial isoleucyl-tRNA synthetase, so its knockdown does not starve
+  cytosolic isoleucine charging; it is excluded from this family.
 - **Inputs.** `gene_annotation.aa_<X>`, crossed with the perturbed gene's identity.
 - **Sign.** Pre-registered hypothesis for Adamson CRISPRi: **positive** (an aa-rich message responds more to its
   cognate synthetase knockdown). Norman CRISPRa: N/A (no synthetase targets).
 - **Null.** Both.
 - **Verdict.** OPEN (underpowered) [Replogle2022].
 - **Why.** The biochemistry of synthetase inhibition starving one amino acid is textbook, but the specific link from a
-  gene's aa-composition to its mRNA response in Perturb-seq is not published; with about ten synthetase perturbations
-  on Adamson it is unlikely to clear the effect bar, so a positive result would be mechanistically unsurprising.
+  gene's aa-composition to its mRNA response in Perturb-seq is not published; with nine cytosolic synthetase
+  perturbations on Adamson it is unlikely to clear the effect bar, so a positive result would be mechanistically
+  unsurprising.
 
 ### 6. gnomAD constraint (pLI, LOEUF, o/e LoF), raw
 - **Formula shape.** `additive_response` times the targets' mean `pLI` (or `1 - oe_lof_upper`), or the response gene's
@@ -115,9 +135,12 @@ Citation keys are defined in `docs/CANDIDATE_LITERATURE_CHECK.md`, each marked V
 - **Sign.** Adamson CRISPRi: **positive** (ER-targeted messages respond more to secretory-pathway knockdowns). Norman
   CRISPRa: N/A (no secretory-pathway targets).
 - **Null.** Both.
-- **Verdict.** KNOWN [Karamyshev2014, Adamson2016].
-- **Why.** Loss of SRP, translocon or OST function triggers regulated decay of ER-targeted messages, and the Adamson
-  dataset was built to dissect exactly this response, so an ER-targeting feature recovers a published interaction.
+- **Verdict.** KNOWN [Karamyshev2014, Hollien2006, Adamson2016].
+- **Why.** Loss of SRP function triggers decay of the secretory-protein messages whose nascent chains fail to bind it
+  [Karamyshev2014], and ER stress, which the UPR and ERAD knockdowns (`HSPA5`, `XBP1`, `SEL1L`, `SYVN1`) induce,
+  drives IRE1-dependent decay of messages selected by their localisation to the ER membrane [Hollien2006]. The
+  Adamson dataset was built to dissect exactly this response, so an ER-targeting feature recovers a published
+  interaction.
 
 ### 8. Constraint residualised on control expression and tier-1 essentiality proxies
 - **Formula shape.** The residual of the targets' mean constraint after regressing out their mean control expression
@@ -135,6 +158,21 @@ Citation keys are defined in `docs/CANDIDATE_LITERATURE_CHECK.md`, each marked V
 
 A KNOWN family that passes A.1 is recorded as methods-level: it gets no replication, no wet-lab list and no novelty
 sentence (`docs/GOAL_CRITERIA.md` A.6; `docs/ROADMAP.md`, section 5). An OPEN family that passes A.1 and A.2 stays
-provisional until the citation pass of `docs/CANDIDATE_LITERATURE_CHECK.md` confirms its keys. The lead also scores the
+provisional until the citation pass of `docs/CANDIDATE_LITERATURE_CHECK.md` confirms its keys. A KNOWN-by-confound
+family that passes A.1 is reported as predictive but explained by its confound, and is read as OPEN only if the same
+column residualised on `ctx.control_mean` passes both nulls too. The lead also scores the
 residualised constraint hypothesis (family 8) as a hand-written plugin, reported as a human hypothesis and never as
 A.1 (`docs/ROADMAP.md` D4).
+
+## Note, 2026-10-17 (UTC): corrections made before this file was merged
+
+Made after the lead's review of the first version (`4118f0d`) and before any block G run started, so no score was read
+in between. Six corrections. (1) The dateline now names the commit that fixes the file and its first version, and
+cites the PLAN_G note by commit rather than by a wall-clock that postdates it. (2) The verdict vocabulary gained
+"KNOWN by confound", because A.6 defines KNOWN as a published result that predicts the feature's sign, which the gene
+length and TSS-density citations do not; such a family now carries a reading rule (residualise on `ctx.control_mean`).
+(3) Family 2's cis term keeps KNOWN with a sign; its `nearest_tss_kb` scaler form is KNOWN by confound. (4) Family 4
+is OPEN (weak), matching `docs/CANDIDATE_LITERATURE_CHECK.md`; the first version said KNOWN in one file and OPEN in
+the other. (5) `IARS2` is dropped from family 5 as mitochondrial, leaving nine cytosolic synthetases. (6) Family 7
+cites [Hollien2006] for the UPR and ERAD targets, which [Karamyshev2014] does not cover, and family 1 now discloses
+that block F's mixed in-run CpG coefficients were seen before the sign was fixed.

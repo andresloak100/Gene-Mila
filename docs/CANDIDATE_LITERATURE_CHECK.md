@@ -17,9 +17,9 @@ is done.
   (the abstract states the activation technology and targeting rules; the inverse-basal-expression dependence is in
   its figures, read as UNVERIFIED at the figure level).
 - **Chavez2016.** Comparison of Cas9 activators in multiple species. Chavez, Tuttle, Pruitt, ... Church. 2016, Nature
-  Methods. VERIFIED, https://www.nature.com/articles/nmeth.3871. Shows VPR, SAM and SunTag activate across cell types
-  with strong locus-to-locus variability in achievable fold change. Supports family 1 (activation strength is set by
-  the target locus state).
+  Methods. VERIFIED, https://www.nature.com/articles/nmeth.3871. The fetched abstract states that VPR, SAM and
+  SunTag activate best across human, mouse and fly cell lines. The locus-to-locus variability in achievable fold
+  change that family 1 leans on is in the figures, full-text level, UNVERIFIED.
 - **Wu2023.** Massively parallel characterization of CRISPR activator efficacy in human induced pluripotent stem cells
   and neurons. Wu, Wu, Karim, ... Bassett. 2023, Molecular Cell (83(7), doi 10.1016/j.molcel.2023.02.011). VERIFIED,
   https://europepmc.org/abstract/MED/36917981. The Mol Cell 2023 CRISPRa-efficacy paper: its abstract states that
@@ -28,14 +28,17 @@ is done.
 - **Horlbeck2016.** Compact and highly active next-generation libraries for CRISPR-mediated gene repression and
   activation. Horlbeck, Gilbert, Villalta, ... Weissman. 2016, eLife (doi 10.7554/eLife.19760). VERIFIED,
   https://europepmc.org/abstract/MED/27661255. A chromatin-, position- and sequence-based model of CRISPRi and CRISPRa
-  guide activity. Supports families 1 and 2 (effector outcome tracks promoter chromatin and TSS position).
+  guide activity. Supports families 1 and 2 only through promoter chromatin and the guide's position relative to the
+  target's own TSS; the abstract says nothing about bidirectional promoters or neighbouring genes.
 - **Radzisheuskaya2016.** Optimizing sgRNA position markedly improves the efficiency of CRISPR/dCas9-mediated
   transcriptional repression. Radzisheuskaya, Shlyueva, Muller, Helin. 2016, Nucleic Acids Research (44(18):e141).
   VERIFIED, https://europepmc.org/abstract/MED/27353328. CRISPRi efficiency depends on recruitment near the TSS.
   Makes the TSS-proximity reading of family 2 KNOWN.
 - **Gilbert2014.** Genome-Scale CRISPR-Mediated Control of Gene Repression and Activation. Gilbert, Horlbeck, Adamson,
   ... Weissman. 2014, Cell (doi 10.1016/j.cell.2014.09.029). VERIFIED, https://europepmc.org/abstract/MED/25307932.
-  Establishes CRISPRi and CRISPRa at endogenous genes and the TSS-window targeting rule. Supports families 1 and 2.
+  The fetched abstract establishes CRISPRi and CRISPRa at endogenous genes and states that targeting rules were
+  identified; the TSS window itself is full-text level, UNVERIFIED. Supports family 1 and family 2's TSS-proximity
+  reading only: the abstract says nothing about bidirectional promoters or neighbouring genes.
 - **Deaton2011.** CpG islands and the regulation of transcription. Deaton, Bird. 2011, Genes & Development (doi
   10.1101/gad.2037511). VERIFIED, https://europepmc.org/abstract/MED/21576262. CpG islands are the GC-rich,
   nonmethylated, broadly-active promoter class. Makes the "CpG o/e is a proxy for an active promoter" step of family 1
@@ -56,9 +59,11 @@ is done.
 - **KangBrent2022.** Predicting which genes will respond to transcription factor perturbations. Kang, Jung, Brent.
   2022, G3: Genes, Genomes, Genetics (12(8):jkac144, doi 10.1093/g3journal/jkac144; bioRxiv 2020,
   10.1101/2020.12.15.422864, titled "Predicting which genes will respond to perturbations of a TF"). VERIFIED,
-  https://europepmc.org/abstract/MED/35666184. In K562, ChIP-seq binding locations have very little utility for
-  predicting responsiveness, while pre-perturbation expression level and variation predict it well. Makes family 3
-  KNOWN and marks the TF-binding feature as already answered (negatively).
+  https://europepmc.org/abstract/MED/35666184. In human cells (the abstract does not name a cell line; K562 is
+  full-text level, UNVERIFIED), ChIP-seq binding locations have very little utility for predicting responsiveness,
+  while pre-perturbation expression level and variation predict it well. Makes family 3 KNOWN by confound (basal
+  expression level and variation); the abstract says nothing about gene length. Marks the TF-binding feature as
+  already answered (negatively).
 
 ## Molecular-architecture determinants
 
@@ -66,6 +71,11 @@ is done.
   Karamyshev, Patrick, Karamysheva, ... Thomas. 2014, Cell (doi 10.1016/j.cell.2013.12.017). VERIFIED,
   https://pmc.ncbi.nlm.nih.gov/articles/PMC3931426/. When a signal sequence fails to bind SRP, the message is degraded via
   Ago2. Makes the secretory-pathway interaction of family 7 KNOWN.
+- **Hollien2006.** Decay of endoplasmic reticulum-localized mRNAs during the unfolded protein response. Hollien,
+  Weissman. 2006, Science (doi 10.1126/science.1129631, PMID 16825573). VERIFIED,
+  https://europepmc.org/abstract/MED/16825573. IRE1 mediates rapid degradation of a subset of messages selected by
+  their localisation to the ER membrane and by the sequence they encode (RIDD). Covers family 7's UPR and ERAD
+  targets, which Karamyshev2014 does not.
 - **Adamson2016.** A Multiplexed Single-Cell CRISPR Screening Platform Enables Systematic Dissection of the Unfolded
   Protein Response. Adamson, Norman, Jost, ... Weissman. 2016, Cell (doi 10.1016/j.cell.2016.11.048). VERIFIED,
   https://europepmc.org/abstract/MED/27984733. The Adamson dataset itself: CRISPRi of UPR and secretory-pathway genes
@@ -77,7 +87,8 @@ is done.
 - **Calvo2009.** Upstream open reading frames cause widespread reduction of protein expression and are polymorphic
   among humans. Calvo, Pagliarini, Mootha. 2009, PNAS (doi 10.1073/pnas.0810916106). VERIFIED,
   https://europepmc.org/abstract/MED/19372376. uORFs typically reduce protein expression by 30 to 80 percent with a
-  modest effect on mRNA. Makes family 4 KNOWN at the protein level and marks its mRNA-response link as weak.
+  modest effect on mRNA. The protein-level effect is known; the mRNA-response link family 4 would test is weak and
+  unpublished, so family 4's verdict is OPEN (weak).
 - **Agarwal2022.** The genetic and biochemical determinants of mRNA degradation rates in mammals. Agarwal, Kelley.
   2022, Genome Biology (doi 10.1186/s13059-022-02811-x). VERIFIED, https://europepmc.org/abstract/MED/36419176. Gene
   and transcript features predict mRNA half-life. Supports the stability reading of family 3.
@@ -122,13 +133,13 @@ is done.
 ## Open questions a tier-1 feature could still answer, and what is already known
 
 - **Does constraint predict response magnitude beyond basal expression and essentiality?** OPEN with power (family 8).
-  Known: constraint correlates with essentiality [Nadig2025] and with basal expression, and essential genes respond
-  most, so the raw link is known [Karczewski2020, Replogle2022]; the residual after removing both confounds is
+  Known: constraint is validated against essential genes [Karczewski2020] and tracks basal expression, and essential
+  genes respond most [Nadig2025, Replogle2022], so the raw link is known; the residual after removing both confounds is
   untested and testable in-house.
 - **Does amino-acid composition predict a gene's mRNA response to its cognate aminoacyl-tRNA synthetase knockdown?**
   OPEN but underpowered (family 5). Known: synthetase inhibition starves one amino acid and impairs translation of
   aa-rich proteins (biochemistry); the mRNA-level response link in Perturb-seq is not published, and Adamson has about
-  ten synthetase targets.
+  nine cytosolic synthetase targets; the tenth, IARS2, is mitochondrial and excluded.
 - **Do uORFs modulate the transcriptional (mRNA) response beyond their protein-level effect?** OPEN but weak (family 4).
   Known: uORFs reduce protein output with a modest mRNA effect [Calvo2009].
 - **Does same-chromatin-loop (not just same-TAD) membership predict cis response?** OPEN but not buildable from the
