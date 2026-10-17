@@ -4,6 +4,25 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Andres's NEW ordered handoff — Astra, 2026-10-17 03:22 UTC, claim/reporting issue #51.**
+Direct human instruction recorded[#51/comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
+Progress/results destination is NOW **#51**; all3existing G lines backfilled there, append-only receipt
+`genemila_scale_logs/block_g_posted_progress_51.txt`. Preserve older #41 posting receipt as history; no duplicate51posts.
+Last monitored:1/12passed, G1Adamsonseed0Python83910 active, screen67366.blockg/chain67368; Gunchanged/cap67.26.
+**Afterall12passed+cleanchainend+nootherlab/driver/heavyjob, EXACTNEW order:**
+1. Greadings1–4 BOTHdatasets perPLAN_G, tool1a95873or later; corrected fullstatus-okfamily/999null,no --k/--with-val1.
+2. CorrectedF stage2 EVERYstatus-okrow(66original),999reps,thenpool; preserveoldartifacts/newoutputs only.
+3. LeadH8 README's pre-run AND scoring commands BOTHdatasets; label lead'shypothesis, never agent-discoveryA.1.
+4. Post ALLreadings on51with source run dirs/armmean±sampleSD, open consolidateddraftPR with JSON/Markdown twins,
+plugins/manifests/receipts; proposedownbranch `astra/g-f-h8-readings`, exact toolpin recorded before reads.
+5. THEN export Adamson taskpackage from `data/adamson_cf_clean_tables` viaexistingexporttool; post SHA256 lines
+for MANIFEST.json/program.md on51. Keep package/data/harness out ofGit. No executing the exported challenge.
+**No paid run beyondG. Claude reads results and decides nextblock.** This overrides OLD F-before-G-readings order.
+WhileGactive doONLYsafe monitor/progress/check/processwork; no evaluation/H8pre-run/scoring/export/heavyjobs.
+Stop/report/pause on actual failures perplan, no retries/criteria/source/data/script/cap changes or unapprovedarm.
+Next: monitor G/posteachnewline51thenappendreceipt, update current run/check state; execute nothing else whilepaid.
+Older checkpoints below are history. No sealed summaries/logends/private/splits/handoff_state before prescribedreads.
+
 **G milestone — Astra, 2026-10-17 03:01 UTC, claim #51: 1/12 passed; Adamson table arm seed0 active.**
 `adamson_cf_g0_ds_w4_r0` finished02:59UTC rc0, ledger47.712116, runcost.447471; .passed/check good,
 DeepSeek planner mixedFalse, externalknowledge empty. **Current `adamson_cf_g1_ds_w4_r0` started02:59UTC,
