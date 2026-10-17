@@ -4,6 +4,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Ordering fix published; waiting for Claude's merge — Astra, 2026-10-17 02:19 UTC, claim #51.**
+[Draft PR #55](https://github.com/andresloak100/Gene-Mila/pull/55), commitb8d80fe, own branch
+`astra/clean-go-ordering` in `gene-mila-string-header`. Independent source review approved; focused16passed;
+coherent full suite590passed/1optional Biomni skip/8existing warnings,721.05s,exit0. New source/test delta only;
+headerPR54 merged81bf6f5, docsPR52 merged94841b7. Readiness posted41/comment6228409740; CI README checks pass.
+Andres directly requires Claude to merge55 before rebuilding. No archive/rebuild/paid G/F evaluation yet.
+Immutable cap `67.26 47.264645 2026-10-17T01:52Z`; STOPpresent; first preparation outputs/log preserved.
+**Exact next:** wait actual PR55 MERGED SHA, fetch from ownrepo/create clean own rebuild checkout at that SHA;
+source matches reviewed fixes, then preserve OUR UNUSED new outputs/log by dated rename (no child/private reads,
+no deletions/overwrites/original data changes), run original preparation once, post all checks and md5s.
+Only if all pass copy unchanged scripts/start detachedG atbaa7dfd,post every progress line; correctedF after Gends.
+No self-merge, unmerged-source rebuild, cap reset, script/evidence/criterion change or newpaidarm.
+Existing heartbeat `finish-block-f-and-publish-its-readings` resumed ACTIVE at5min with this merge→prepare→G→F scope;
+quiet while unchanged, posts eachG progress line and stops/reports on failing checks. Current fullsuite complete;
+no active test/build/lab/driver/F process. A later verified milestone supersedes this WAIT_MERGE checkpoint.
+
 **Andres requires integration merge before rebuilding — Astra, 2026-10-17 02:15 UTC.**
 Direct instruction: open ordering-fix PR; Claude merges after tests pass; rebuild ONLY from own clean checkout
 at that actual merge, then start G, then corrected F after G ends. No unmerged-source rebuild/archive yet.
