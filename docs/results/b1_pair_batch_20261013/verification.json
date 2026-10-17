@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "verified_at_utc": "2026-10-14T02:47:40.925565+00:00",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-pair-batch/runs/b1_pair_batch_20261013",
+  "method": "Independent NumPy/stdlib reconstruction of saved prediction arithmetic, fold metadata, scoring and provenance. No project imports or fitting; member fits were not independently replayed.",
+  "reviewed_source_commit": "d3909a11056a1f00fbb79cbb99c983a62902e74c",
+  "prospective_plan_commit": "9920fec",
+  "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+  "artifact_sha256": {
+    "config.json": "28899787c2692313ffdca6dad8b8ffabef193d2ec6a9d4eaea7cbcb49d4d1bd5",
+    "summary.json": "cfe869a66dfdc48ab88dd0812aa2645792d296113955ca5759157755fcdb4ea7",
+    "progress.jsonl": "47923eab7dd9830a6f057bf2d23edde5434360fb53621b229140709aae20aba2",
+    "predictions.npz": "304ec2c56bfb370c2e2e4eae8eaf5f272df1d9f3198358243ecfe725c57302a1"
+  },
+  "source_files_verified": 14,
+  "package_files_verified": 820,
+  "runtime_source_files_verified": 6,
+  "original_r2_plugin_files_verified": 292,
+  "copied_r2_plugin_files_verified": 292,
+  "only_changed_plugin": "pair_target_prior_edge_e34.py",
+  "original_e34_sha256": "018634422eb62c58ffc022139c3bb875e0d45f82edd9675b8684c4dd834be063",
+  "published_and_copied_e34_sha256": "c352648fb928766f1864428b9eced4972a35935f25cddd6a089493000a2755fa",
+  "n_conditions": 112,
+  "n_genes": 2083,
+  "fold_seeds": [
+    12,
+    13,
+    14
+  ],
+  "folds_verified": 15,
+  "member_fit_events_verified": 45,
+  "progress_event_counts": {
+    "config_written": 1,
+    "fold_started": 15,
+    "member_completed": 45,
+    "fold_completed": 15,
+    "seed_completed": 3,
+    "diagnostic_completed": 1
+  },
+  "exact_array_checks": 21,
+  "metrics_per_arm": 10,
+  "arms_verified": [
+    "candidate",
+    "fixed_ensemble",
+    "additive",
+    "member_0",
+    "member_1",
+    "corrected_member_1"
+  ],
+  "stratum_seed_blocks_verified": 45,
+  "numeric_values_verified": {
+    "metric_values": 2880,
+    "aggregate_values": 5138
+  },
+  "max_abs_difference": {
+    "metric_values": 7.771561172376096e-16,
+    "aggregate_values": 5.594483210025203e-16
+  },
+  "comparison_tolerance": {
+    "rtol": 1e-11,
+    "atol": 1e-12
+  },
+  "checks": {
+    "source_and_plan_match_published_commits": true,
+    "original_package_and_all_files_match_manifest": true,
+    "all_original_and_copied_plugin_pins_match": true,
+    "only_e34_source_changed_and_matches_published_variant": true,
+    "e401_source_unchanged": true,
+    "original_r2_specification_including_alpha_preserved": true,
+    "both_ensembles_use_exact_shared_half_means": true,
+    "all_fold_memberships_full_hides_and_metadata_match": true,
+    "analytic_additive_arrays_match_exactly": true,
+    "all_metrics_arms_strata_and_paired_sample_sd_match": true,
+    "all_predeclared_gate_checks_match": true,
+    "all_original_result_artifacts_unchanged_during_verification": true
+  },
+  "verified_gate": {
+    "passed": false,
+    "checks": {
+      "pearson_gain_each_positive": false,
+      "pearson_gain_mean_above_threshold": false,
+      "mse_to_fixed_ensemble_within_one_percent": true,
+      "mse_top_to_fixed_ensemble_within_one_percent": true,
+      "mse_to_additive_within_one_percent": false,
+      "mse_top_to_additive_within_one_percent": true
+    },
+    "failed_checks": [
+      "pearson_gain_each_positive",
+      "pearson_gain_mean_above_threshold",
+      "mse_to_additive_within_one_percent"
+    ],
+    "primary_pearson_gains": [
+      2.992300246751345e-05,
+      -1.9049434363260787e-05,
+      -1.9008526166430784e-05
+    ],
+    "primary_pearson_gain_mean": -2.711652687392707e-06,
+    "primary_pearson_gain_sample_sd": 2.8262447809414423e-05,
+    "strict_threshold": 0.002,
+    "error_guardrails": {
+      "mse_to_fixed_ensemble": {
+        "candidate_mean": 0.008777057306446304,
+        "reference_mean": 0.017833018719993488,
+        "ratio": 0.49218012072212464,
+        "passed": true
+      },
+      "mse_top_to_fixed_ensemble": {
+        "candidate_mean": 0.19754475190821918,
+        "reference_mean": 0.21327140173316486,
+        "ratio": 0.9262599218782173,
+        "passed": true
+      },
+      "mse_to_additive": {
+        "candidate_mean": 0.008777057306446304,
+        "reference_mean": 0.00839943097800454,
+        "ratio": 1.0449585608156848,
+        "passed": false
+      },
+      "mse_top_to_additive": {
+        "candidate_mean": 0.19754475190821918,
+        "reference_mean": 0.19698779949291012,
+        "ratio": 1.0028273447225806,
+        "passed": true
+      }
+    }
+  },
+  "paired_candidate_minus_control_mse": {
+    "mean": -0.009055961413547182,
+    "sd": 0.015642979271726275,
+    "per_seed": [
+      -6.0444052516516085e-05,
+      1.1430146580043016e-05,
+      -0.027118870334705072
+    ]
+  },
+  "key_readings": {
+    "candidate": {
+      "pearson_delta": {
+        "mean": 0.5888158394762559,
+        "sd": 0.021337481636146405,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008777057306446304,
+        "sd": 0.0012144876106875947,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.19754475190821918,
+        "sd": 0.02379084088091036,
+        "n_seeds": 3
+      }
+    },
+    "fixed_ensemble": {
+      "pearson_delta": {
+        "mean": 0.5888185511289433,
+        "sd": 0.021309343649868192,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.017833018719993488,
+        "sd": 0.01669697115535351,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.21327140173316486,
+        "sd": 0.04368151929573815,
+        "n_seeds": 3
+      }
+    },
+    "additive": {
+      "pearson_delta": {
+        "mean": 0.5620237607537022,
+        "sd": 0.019968984700858446,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.00839943097800454,
+        "sd": 0.000702453201183886,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.19698779949291012,
+        "sd": 0.022189003778711625,
+        "n_seeds": 3
+      }
+    },
+    "member_0": {
+      "pearson_delta": {
+        "mean": 0.5887298195773205,
+        "sd": 0.02215560983593816,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008279761725999096,
+        "sd": 0.00078019355890468,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.2013539703499173,
+        "sd": 0.022562743482932884,
+        "n_seeds": 3
+      }
+    },
+    "member_1": {
+      "pearson_delta": {
+        "mean": 0.5857780324812519,
+        "sd": 0.020610077995816035,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.047972289223388496,
+        "sd": 0.06780191580456614,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.2470219702327859,
+        "sd": 0.10731206832139474,
+        "n_seeds": 3
+      }
+    },
+    "corrected_member_1": {
+      "pearson_delta": {
+        "mean": 0.5857716469661295,
+        "sd": 0.020659725311085037,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.010982073441841772,
+        "sd": 0.003958546376171612,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.1967851110509888,
+        "sd": 0.027630532422044413,
+        "n_seeds": 3
+      }
+    }
+  },
+  "posthoc_existing_array_offset_description": {
+    "status": "descriptive only, not a new candidate or selection criterion",
+    "definition": "Corrected r2 minus original r2 is decomposed into its mean across genes for each condition plus a centered remainder. The offset energy fraction measures how much prediction change is gene-constant.",
+    "by_seed": [
+      {
+        "seed": 12,
+        "mean_offset_rms": 0.006433210538799267,
+        "gene_varying_change_rms": 0.00038960856333847765,
+        "fraction_change_energy_in_per_condition_constant_offsets": 0.9963456387063342,
+        "median_within_condition_gene_std": 4.785514592050679e-05,
+        "maximum_within_condition_gene_std": 0.0026905924176032657
+      },
+      {
+        "seed": 13,
+        "mean_offset_rms": 0.0011425092069132906,
+        "gene_varying_change_rms": 0.0007711683085299561,
+        "fraction_change_energy_in_per_condition_constant_offsets": 0.687004292743049,
+        "median_within_condition_gene_std": 3.4168275198364465e-05,
+        "maximum_within_condition_gene_std": 0.005854687185206555
+      },
+      {
+        "seed": 14,
+        "mean_offset_rms": 0.2603244527240318,
+        "gene_varying_change_rms": 0.00021599153918755781,
+        "fraction_change_energy_in_per_condition_constant_offsets": 0.9999993115962118,
+        "median_within_condition_gene_std": 4.384078000516228e-05,
+        "maximum_within_condition_gene_std": 0.000810731685539929
+      }
+    ]
+  },
+  "limitations": [
+    "Saved-array arithmetic/provenance verified; the45model fits were not independently replayed.",
+    "Same historically selected cohort with new partitions; sample SD describes partition sensitivity, not independent replication.",
+    "Batch-behavior correctness does not establish an accuracy gain; original remaining feature assumptions persist.",
+    "The large mean MSE decrease is smaller than its paired sample SD and does not establish stable halving of error.",
+    "Post-hoc offset decomposition is descriptive evidence from existing predictions; it proves neither a unique causal mechanism nor independent generalization.",
+    "Failed gates remain unchanged; no promotion, threshold change, extra seed/candidate search or CellForge superiority follows."
+  ]
+}

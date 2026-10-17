@@ -1,0 +1,46 @@
+{
+  "status": "verified",
+  "reviewer": "Codex chat2 independent data-free review",
+  "statistic_pairs_verified": 2560,
+  "report_tables_verified": 6,
+  "folds_verified": 15,
+  "seeds": [
+    12,
+    13,
+    14
+  ],
+  "ordered_progress_events": 80,
+  "completed_member_fit_events": 45,
+  "unchanged_r2_specification_alpha": 0.00198,
+  "copied_plugin_hashes_checked": 292,
+  "only_changed_plugin": "pair_target_prior_edge_e34.py",
+  "all_gate_arithmetic_verified": true,
+  "fixed_model_screen_passed": false,
+  "primary_pearson_gain_mean": -2.711652687392707e-06,
+  "primary_pearson_gain_sample_sd": 2.8262447809414423e-05,
+  "candidate_mse_to_additive_mean_ratio": 1.0449585608156848,
+  "stable_error_gain_claim_supported": false,
+  "original_B1_unchanged": true,
+  "no_discrepancies": true,
+  "allowed_inputs": [
+    "config.json",
+    "summary.json",
+    "progress.jsonl",
+    "docs/B1_PAIR_BATCH_PLAN.md",
+    "docs/B1_PAIR_BATCH_RESULTS.md"
+  ],
+  "not_performed": [
+    "NPZ/response-array reads",
+    "model imports/scoring/fits/tests",
+    "paid calls",
+    "edits/Git changes"
+  ],
+  "sha256": {
+    "config.json": "28899787c2692313ffdca6dad8b8ffabef193d2ec6a9d4eaea7cbcb49d4d1bd5",
+    "summary.json": "cfe869a66dfdc48ab88dd0812aa2645792d296113955ca5759157755fcdb4ea7",
+    "progress.jsonl": "47923eab7dd9830a6f057bf2d23edde5434360fb53621b229140709aae20aba2",
+    "plan": "c540182f1f52d6540b43c04b51950b030d8f1b0bb150799c8f5a733f85d58780"
+  },
+  "report_review_scope": "all six numeric tables matched; final verification and independently checked offset description appended later",
+  "wording_correction": "closed single-alpha block replaced by closed source-correction block"
+}
