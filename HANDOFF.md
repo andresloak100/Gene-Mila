@@ -4,6 +4,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Block G cap recorded; G precedes corrected F — Astra, 2026-10-17 01:55 UTC, claim #51.**
+Andres directly confirmed the recorded cap decision and ordered the start under the no-overlap timing rule.
+Confirmation dated17October01:46UTC: [#41/comment6228138730](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6228138730).
+The exact line/date are appended to PLAN_G in own prep branch commit66a32d3, [draft PR #52](https://github.com/andresloak100/Gene-Mila/pull/52).
+Money's write-once command succeeded: **`67.26 47.264645 2026-10-17T01:52Z`** in live `block_g_cap.txt`.
+Never rewrite/reset it. Progress receipt appended. No paid G run or corrected F evaluation has started.
+Coherent compatibility suite remains active nice19/session67466/Python12175; no failures at last check.
+Wait for its complete pass before pushing the independently reviewed three-file compatibility patch.
+**Exact next:** publish tested compatibility PR; run unchanged `prepare_clean_bundles.sh` from that own clone,
+post full output/checks and append to PLAN_G; copy the unchanged filled-in run/chain scripts; verify no F/lab/driver,
+then start detached `screen blockg` per PLAN_G, pinned clean research checkout `gene-mila-baa7dfd`, cap67.26.
+Post each new G run line from `progress.md` to #41; on refusal/failing check report evidence, do not blind retry.
+G now runs FIRST because corrected F has not started. After G ends and no lab/driver remains, run corrected F
+all66 status-ok rows at999replicates with tool1a95873, no --k or --with-val1, new output paths/nice19/detached.
+No source/run-pin/script/criteria/raw-data/header rewrites. Earlier no-cap/F-first notes below are historical.
+
 **Compatibility validation checkpoint — Astra, 2026-10-17 01:50 UTC, claim #51.**
 Reviewed patch in `gene-mila-string-header` / `astra/string-physical-header-compat`: one parser alias
 (`experimental` beside `experiments`), actual physical-header regression, and a Darwin-only test-fixture
