@@ -14,7 +14,9 @@ Independent read-only diagnosis:5773 identical gene-set keys/list values,2293 ke
 knowledge files byte-identical. Ancestor-set hash iteration controls dict order, unsorted serialization persists it.
 Never bypass the byte-equality gate: plugins can observe order. Original existing source bundles untouched.
 Minimal one-line deterministic ancestor traversal + cross-hash-seed regression is now on own header-fix branch
-`astra/string-physical-header-compat` (PR54); independently approved, focused checks underway; no commit/push yet.
+`astra/string-physical-header-compat` (PR54); independently approved; focused16checks passed in1.16s. Full suite NOW active nice19/keysunset,
+session36739/Python36024; log `/tmp/gene-mila-go-order-pytest-20261017.log`, `.exit` on completion.
+Source frozen; do not duplicate or push before pass. No GO-fix commit/push yet.
 **Exact next:** complete focused/full required tests nice19 with keys unset and publish the reviewed fix. Only
 then preserve OUR NEW UNUSED failed-preparation directories unchanged under unique dated archive names
 (`data/norman_clean`, `data/norman_clean_tables`, clean_knowledge/tables/norman and /adamson_cf) plus prepare log;
