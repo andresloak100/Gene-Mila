@@ -299,6 +299,10 @@ def test_predict_targets_matches_the_query_path_and_refuses_outside_the_universe
     np.testing.assert_array_equal(got["delta"][1], via_query[0])
     assert got["receipt"]["anchor_sha256"] == receipt["anchor_sha256"]
     assert got["receipt"]["scoring"].startswith("none")
+    # The deposit keeps the query bytes the receipt pins, so the holder can verify query_sha256.
+    assert sha256(archived["tmp"] / "targets" / "queries.json") == got["receipt"]["query_sha256"]
+    assert json.loads((archived["tmp"] / "targets" / "queries.json").read_text())["queries"][1] == {
+        "condition_id": "newD", "target_genes": ["D"]}
     with pytest.raises(ValueError, match="outside frozen gene universe"):
         predict_targets(package, pin, {"newZ": ["Z"]}, archived["tmp"] / "refused")
     assert not (archived["tmp"] / "refused").exists()
@@ -310,6 +314,7 @@ def test_predict_targets_matches_the_query_path_and_refuses_outside_the_universe
     with np.load(out / "predictions.npz", allow_pickle=False) as z:
         assert z["perts"].tolist() == ["D"]
         np.testing.assert_array_equal(z["delta"][0], via_query[0])
+    assert sha256(out / "queries.json") == json.loads((out / "receipt.json").read_text())["query_sha256"]
     with pytest.raises(SystemExit):
         main(["predict-targets", "--package", str(package), "--manifest-sha256", pin, "--target", "Z",
               "--out", str(archived["tmp"] / "cli-refused")])

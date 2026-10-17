@@ -9,7 +9,8 @@ dated note at the end.
 
 - The holder: Andres's ML collaborator, named by Andres on #41 (GitHub handle to be filled in). The holder obtains
   the cohort file from the public record (section 2), never from the Mac or from any agent, records its sha256 on
-  #41, and keeps the file and every score on a machine no agent can reach. The holder scores once and posts once.
+  #41, and keeps the file and every score on a machine no agent can reach. The holder scores the one deposit once
+  and posts two dated reports, R1 first and R2 second (section 7); nothing changes between them.
 - The Mac (Astra, under Andres): builds the eligibility manifest from metadata (section 3), produces the frozen
   predictions (section 5), posts hashes on #41 before any reveal.
 - The lead (Claude, #41): fixes this plan, the batch and the reading rule before the deposit; reads nothing from
@@ -19,11 +20,16 @@ dated note at the end.
 
 Physical access, to be stated in the paper: the raw genome-wide file `ReplogleWeissman2022_K562_gwps.h5ad`
 (Zenodo 13350497, md5 `13db594f8f1d2ccb88fec44a13e414dc`; 1,989,578 cells by 8,248 genes) has been on the Mac since
-11 October 2026 (`docs/LAB_STATE.md`), and a knowledge file built from it, `replogle2022_k562.json`, entered the
-Norman arms' bundles and the B1 frozen export (`docs/results/norman_frozen_export_20261013/manifest.json` lists
-`context/knowledge/replogle2022_k562.json`). That file holds the Replogle responses of the development bundles' own
-targets, which section 3 excludes from every slice. The test is therefore held out by protocol and by the holder,
-not by physical separation of the raw file from the Mac. The manifest tool writes this statement into every manifest.
+10 October 2026 at the latest (the knowledge file built from it is dated "built 2026-10-10" in
+`docs/results/external_replogle2022_k562_v2.md`; `docs/LAB_STATE.md` records Andres's choice of the screen on
+11 October). That knowledge file, `replogle2022_k562.json`, was first built into the Adamson development bundle
+(`data/adamson_cf/knowledge/`, LAB_STATE.md: 82 bundle targets with a row; three Adamson runs with it are listed
+there), then into the Norman bundle (`docs/results/external_replogle2022_k562_norman.md`) and the B1 frozen export
+(`docs/results/norman_frozen_export_20261013/manifest.json` lists `context/knowledge/replogle2022_k562.json`). So the
+Adamson development arms, the modality this test scores, read it too. It holds the Replogle responses of each
+development bundle's own targets, which section 3 excludes from every slice. The test is therefore held out by
+protocol and by the holder, not by physical separation of the raw file from the Mac. The manifest tool writes this
+statement into every manifest.
 
 ## 2. The cohorts
 
@@ -34,9 +40,14 @@ library (a separate, smaller file; its availability, size and public location ar
 ROADMAP section 8 asks Astra to check before this section is fixed).
 
 - A.3, replication (R1): the essential-gene file, if it is available and its eligible count passes section 3.
-- A.4 and B.3, the fresh test (R2): the genome-wide file.
+- A.4 and B.3, the fresh test (R2): the genome-wide file. The essential-gene library is a subset of the genome-wide
+  one, so R2 excludes every target eligible in R1: the R2 manifest is built with `--exclude r1=<R1 manifest.json>`
+  (the tool reads the eligible symbols of a manifest it wrote; reason `r1 target`). Without this, the R1 report
+  would disclose how every deposited model does on much of R2 before R2 is read, and A.4 calls R2 a fresh test. The
+  cost is that R2 loses the essential genes, so its in-distribution count (section 3) is checked after the exclusion.
 - Fallback, if only the genome-wide file is available: two disjoint halves of its eligible targets, drawn by the
-  manifest tool with `--role both` (R1 the first half, R2 the second). This is weaker: the two slices share the
+  manifest tool with `--role both` (within the in-distribution targets and within the rest, R1 takes the even ranks
+  and R2 the odd ranks of the draw, as section 3 defines). This is weaker: the two slices share the
   experiment, its batch structure and its controls, so a replication on R1 does not show that a feature survives a
   change of library and run. The paper states this if it is used.
 
@@ -50,18 +61,25 @@ knockdown in K562, which is what the Adamson models predict; combinatorial label
 var tables through a guard that refuses every other key (X, layers, obsm, raw, uns), so no expression value enters
 any choice. For each label it records the cell count, the mapped symbol and the exclusion reasons:
 
-- a target of the Adamson bundle (90 targets) or the Norman bundle (102 targets), by `knowledge/targets.json` of the
-  clean bundles, matched on the raw and the mapped symbol;
+- a target of the Adamson bundle (88 knockdowns, `README.md`; ROADMAP D7 says 90, and the manifest records the count
+  it reads) or the Norman bundle (102 targets), by `knowledge/targets.json` of the clean bundles, matched on the raw
+  and the mapped symbol; with `--hgnc` each set also matches under the one-to-one current and retired HGNC forms of
+  its symbols, so a target written under a retired symbol still catches a cohort label under the current one;
 - outside the frozen gene universe (the `genes` list of the arm's frozen export manifest; Adamson's bundle measures
   2,055 genes);
 - fewer than 20 cells;
-- a label naming more than one gene.
+- a label that does not name exactly one gene. Tokens that are not gene names and look like guide suffixes
+  (`_guide1`, `_sg2`, the ingest's rule in `genemila/data/external_screen.py`) or Ensembl ids are dropped first and
+  recorded in the mapping note; a gene name is never dropped. What remains must be one symbol.
 
 Symbols: the universe keeps the symbols of the 2016 bundle, so with `--hgnc` (HGNC complete set) a retired cohort
-symbol maps to its one current symbol, and a current cohort symbol maps to the one retired symbol the universe uses
+symbol maps to its one current symbol (and on to the one retired symbol the universe uses for that gene, when the
+current one is not in the universe), and a current cohort symbol maps to the one retired symbol the universe uses
 (SRPRA to SRPR); aliases are never used; an ambiguous mapping is recorded and not applied. The same mapping gives the
-common gene panel: the universe genes the cohort measures, in universe order, recorded in the manifest and used for
-every metric.
+common gene panel: the universe genes the cohort measures through exactly one var column, in universe order, each
+with the cohort's own var symbol beside it (`common_gene_panel.genes` and `.cohort_symbols`), so the holder aligns
+the cohort's columns from the manifest alone. A universe gene matched by several cohort columns is listed under
+`common_gene_panel.ambiguous` and left out. The panel is recorded in the manifest and used for every metric.
 
 In-distribution: a target that shares at least one Reactome or CORUM class with a target of the Adamson training
 panel, the classes taken from the clean bundle's `knowledge/gene_sets.json` (`REACTOME:` and `CORUM:` sets; GO sets
@@ -92,9 +110,10 @@ contact with the holder; nothing is added after.
 For every eligible target of the slice (R1 and R2 alike), every model in the batch predicts through
 `tools/frozen_model.py predict-targets` (section 6): one condition per target, named by its symbol, giving the mean
 delta over the frozen gene universe on the original public control scale. The deposit is one archive:
-`manifest.json` and `manifest.md` of section 3, one `predictions.npz` and `receipt.json` per model, the batch list,
-and `genes.txt` (the common gene panel). Its sha256, and the sha256 of every file inside, are posted on #41 before
-the holder is told the archive exists. The holder receives the archive after that post and checks the hashes first.
+`manifest.json` and `manifest.md` of section 3, one `predictions.npz`, `receipt.json` and `queries.json` per model
+(the receipt's `query_sha256` pins the query file, so it is kept), the batch list, and `genes.txt` (the common gene
+panel, two columns: universe symbol and cohort symbol). Its sha256, and the sha256 of every file inside, are posted on
+#41 before the holder is told the archive exists. The holder receives the archive after that post and checks the hashes first.
 
 What the holder receives from the cohort side is only what Andres says: per-perturbation means (the default; the
 holder computes them from the raw file) or cells. The Mac never sends cohort data.
@@ -130,16 +149,19 @@ Reading, paired per perturbation, fixed here:
 - A.4 (a feature): the model with the feature against its parent, gain in `pearson_delta` above twice its paired
   standard error and wins on more than half the perturbations (GOAL_CRITERIA A.4), on the in-distribution subset of
   R2, the predicted sign of A.2 checked on the feature's coefficient as deposited.
-- A.3 (replication): the same rule on R1, before R2 is revealed.
+- A.3 (replication): the same rule on R1, posted before the R2 reading (below).
 - B.3 and B.4 (arms): each arm's three system models against each baseline under `tools/arm_reading.py`'s rule
   (G above k·SE, SE = sqrt(S² + sd_g²/R), one sign, most wins), on the in-distribution subset of R2; the
   out-of-distribution subset is reported beside it.
 - Holm over the batch: every paired comparison in the batch, features and arms, enters one Holm correction at 0.05;
   nothing outside the posted batch is tested.
 
-The holder posts one dated report on #41: every metric for every deposited model, both subsets, the paired
-differences, their standard errors, win counts, the Holm-adjusted p-values, the cohort file's sha256 and the deposit's
-sha256. Then nobody refits, re-exports, adds a model, changes a rule or deposits again. A second deposit on either
+The holder posts two dated reports on #41, both from the same deposit and the same scoring run, with nothing
+changed between them: first the R1 report, then the R2 report. Each gives every metric for every deposited model,
+both subsets, the paired differences, their standard errors, win counts, the Holm-adjusted p-values (one Holm
+correction over the whole batch, R1 and R2 together, so the R2 report repeats the R1 values unchanged), the cohort
+file's sha256 and the deposit's sha256. Then nobody refits, re-exports, adds a model, changes a rule or deposits
+again. A second deposit on either
 cohort is a second test and needs its own plan, its own seed and a new slice disjoint from these. The report goes
 into `docs/results/` as posted, unedited.
 
@@ -147,7 +169,8 @@ into `docs/results/` as posted, unedited.
 
 - Holder: name and GitHub handle (Andres).
 - Andres's yes or no to commit then reveal, and means or cells (ROADMAP section 7, item 2).
-- The essential-gene file: public location, size, sha256; or the fallback of section 2 declared.
+- The essential-gene file: public location, size, sha256; or the fallback of section 2 declared. The lead confirms
+  the rule that R2 excludes R1's eligible targets (section 2) once the R1 eligible count is known.
 - The seed: its public source, the exact future height or time, and, once it exists, the value.
 - The gene universe: which export's `manifest.json` (the Adamson arm's) fixes it, with that manifest's sha256.
 - The batch list with every export manifest's sha256 (section 4), posted on #41.

@@ -24,11 +24,16 @@ def predict_targets(package: Path, manifest_sha256: str, conditions: dict[str, l
     if not isinstance(conditions, dict) or not conditions:
         raise ValueError("conditions must be a nonempty mapping of condition id to target genes")
     out = Path(out)
+    # Fixed serialisation, so the receipt's query_sha256 is reproducible from the condition list alone.
+    query_bytes = (json.dumps({"schema_version": 1, "queries": [
+        {"condition_id": c, "target_genes": list(t)} for c, t in conditions.items()]}, indent=2, sort_keys=True)
+        + "\n").encode()
     with tempfile.TemporaryDirectory(prefix=".frozen-targets-") as tmp:
         query = Path(tmp) / "queries.json"
-        query.write_text(json.dumps({"schema_version": 1, "queries": [
-            {"condition_id": c, "target_genes": list(t)} for c, t in conditions.items()]}, indent=2) + "\n")
+        query.write_bytes(query_bytes)
         receipt = predict_ensemble(package, manifest_sha256, query, out)
+    # The deposit keeps the exact query bytes the receipt pins (query_sha256), beside predictions.npz and receipt.json.
+    (out / "queries.json").write_bytes(query_bytes)
     with np.load(out / "predictions.npz", allow_pickle=False) as z:
         return {"delta": z["delta"].copy(), "perts": z["perts"].tolist(), "genes": z["genes"].tolist(),
                 "receipt": receipt}

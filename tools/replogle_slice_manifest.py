@@ -3,13 +3,15 @@
 
 For every perturbation label of an h5ad file this tool records the cell count, the symbol it maps to (a retired HGNC
 symbol mapped to its current one when --hgnc is given), the exclusion reasons that apply (a target of a development
-bundle, outside the frozen gene universe, fewer than --min-cells cells, a label naming several genes), whether the
+bundle, outside the frozen gene universe, fewer than --min-cells cells, a label that does not name exactly one gene
+after guide suffixes and Ensembl ids are dropped), whether the
 target is eligible, and whether it is in-distribution: a member of at least one Reactome or CORUM class that holds a
 target of the training panel (the clean bundle's gene_sets.json, tier-1 metadata only). With --draw and --seed it adds
 the ordered random draw of the eligible targets: the rank key of a symbol is sha256(seed + "\\n" + symbol), so anyone
 with the seed can check the order with sha256sum. Role "both" splits one file into two disjoint halves (alternating
 ranks within the in-distribution and the other targets): R1 is the replication slice, R2 the fresh-test slice. Roles
-"r1" and "r2" give the file's whole eligible set in draw order under that name, for two different source files.
+"r1" and "r2" give the file's whole eligible set in draw order under that name, for two different source files; an
+R1 manifest.json passed as --exclude r1=<path> keeps R2 disjoint from R1's eligible targets.
 
 The file is opened with h5py and only its obs and var groups can be touched: X, layers, obsm, raw and every other
 key raise before any read. No expression value enters any choice. Nothing here scores a model.
@@ -31,6 +33,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import re
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -40,12 +43,16 @@ from tools.knowledge_coverage import hgnc_current  # noqa: E402
 
 ALLOWED_GROUPS = ("obs", "var")
 CLASS_PREFIXES = ("REACTOME:", "CORUM:")
+_ENSEMBL_ID = re.compile(r"^ENSG\d+$")
 ACCESS_STATEMENT = (
-    "Physical access: the raw file was present on the orchestration machine (Andres's Mac) before this manifest was "
-    "written, and the Norman development arms read a knowledge file built from it (replogle2022_k562.json, the "
-    "responses of the development bundles' own targets, which this manifest excludes). This tool opened only the obs "
-    "and var tables; no expression value of any candidate target was read for any choice here. The holder obtains the "
-    "file from the public record, never from the Mac, and scores the deposited predictions once (docs/PLAN_R_FRESH_TEST.md).")
+    "Physical access: the raw genome-wide file ReplogleWeissman2022_K562_gwps.h5ad was present on the orchestration "
+    "machine (Andres's Mac) by 10 October 2026, before this manifest was written, and the Adamson and Norman "
+    "development arms read a knowledge file built from it (replogle2022_k562.json, first built into the Adamson bundle "
+    "data/adamson_cf on 10 October, then into the Norman bundle: the responses of each development bundle's own "
+    "targets, which this manifest excludes; docs/LAB_STATE.md, docs/results/external_replogle2022_k562_v2.md, "
+    "docs/results/external_replogle2022_k562_norman.md). This tool opened only the obs and var tables; no expression "
+    "value of any candidate target was read for any choice here. The holder obtains the file from the public record, "
+    "never from the Mac, and scores the deposited predictions once (docs/PLAN_R_FRESH_TEST.md).")
 
 
 class ObsVarOnly:
@@ -76,11 +83,29 @@ def read_obs_var(h5ad: Path, label_col: str | None = None, gene_col: str | None 
 
 
 def load_symbols(path: Path) -> set[str]:
-    """A targets.json (perturbation -> target genes) or a text file with one symbol per line."""
+    """A targets.json (perturbation -> target genes), a manifest.json of this tool (its eligible symbols, so a second
+    slice can exclude a first one's), or a text file with one symbol per line."""
     text = Path(path).read_text()
     if text.lstrip().startswith("{"):
-        return {str(g) for gs in json.loads(text).values() for g in gs}
+        data = json.loads(text)
+        if data.get("tool") == "tools/replogle_slice_manifest.py":
+            return {t["symbol"] for t in data["targets"] if t["eligible"]}
+        return {str(g) for gs in data.values() for g in gs}
     return {line.strip() for line in text.splitlines() if line.strip()}
+
+
+def hgnc_forms(symbols: set[str], hgnc: dict) -> set[str]:
+    """The symbols plus their one-to-one current and retired HGNC forms, so a development target written under a
+    retired symbol still matches a cohort label under the current one, and the reverse. Aliases are never used."""
+    out = set(symbols)
+    for s in symbols:
+        current = hgnc["prev"].get(s, ())
+        if len(current) == 1:
+            out |= current
+    for old, news in hgnc["prev"].items():
+        if len(news) == 1 and next(iter(news)) in symbols:
+            out.add(old)
+    return out
 
 
 def in_distribution_classes(gene_sets: dict, panel: set[str]) -> dict[str, list[str]]:
@@ -106,7 +131,8 @@ def retired_in_universe(universe: set[str], hgnc: dict) -> dict[str, set[str]]:
 
 def map_symbol(raw: str, universe: set[str], hgnc: dict | None, back: dict | None = None) -> tuple[str, str | None]:
     """(symbol, note): the raw symbol itself when it is in the universe; a retired symbol mapped to its one current
-    symbol; a current symbol mapped to the one retired symbol the universe uses for it; else the raw symbol.
+    symbol (and on to the one retired symbol the universe uses for that gene, when the current one is not in the
+    universe); a current symbol mapped to the one retired symbol the universe uses for it; else the raw symbol.
     Aliases are never used: HGNC lets one alias stand for several genes."""
     if raw in universe or hgnc is None:
         return raw, None
@@ -119,10 +145,29 @@ def map_symbol(raw: str, universe: set[str], hgnc: dict | None, back: dict | Non
         return raw, None
     current = sorted(hgnc["prev"].get(raw, ()))
     if len(current) == 1:
-        return current[0], f"retired symbol mapped to {current[0]}"
+        note = f"retired symbol mapped to {current[0]}"
+        if current[0] not in universe:
+            old = sorted((back or {}).get(current[0], ()))
+            if len(old) == 1:
+                return old[0], f"{note}, then to the universe's retired symbol {old[0]}"
+        return current[0], note
     if current:
         return raw, f"retired symbol of several genes ({', '.join(current)}); not mapped"
     return raw, None
+
+
+def label_tokens(label: str, gene_like: set[str]) -> tuple[list[str], list[str]]:
+    """(gene tokens, dropped tokens): a token that is a known gene name stays; otherwise a guide suffix (the
+    ingest's rule, external_screen._SUFFIX) or an Ensembl id is dropped; anything else stays as a gene token."""
+    genes, dropped = [], []
+    for tok in _LABEL_SPLIT.split(label.strip()):
+        if not tok:
+            continue
+        if tok not in gene_like and (es._SUFFIX.match(tok) or _ENSEMBL_ID.match(tok)):
+            dropped.append(tok)
+        else:
+            genes.append(tok)
+    return genes, dropped
 
 
 def rank_key(seed: str, symbol: str) -> str:
@@ -153,17 +198,25 @@ def build_manifest(h5ad: Path, excluded: dict[str, set[str]], universe: list[str
     controls = {c.lower() for c in (control or CONTROL_LABELS)}
     universe_set = set(universe)
     back = retired_in_universe(universe_set, hgnc) if hgnc else None
+    matched = {k: hgnc_forms(v, hgnc) if hgnc else set(v) for k, v in excluded.items()}
+    gene_like = set(universe_set).union(*matched.values())
+    if hgnc:
+        gene_like = gene_like | hgnc["approved"] | set(hgnc["prev"])
     classes = in_distribution_classes(gene_sets, panel) if gene_sets is not None and panel is not None else None
     by_symbol: dict[str, dict] = {}
     for label, n in info["labels"].items():
         if label.strip().lower() in controls:
             continue
-        tokens = [t for t in _LABEL_SPLIT.split(label.strip()) if t]
+        tokens, dropped = label_tokens(label, gene_like)
         multi = len(tokens) != 1
         raw = label.strip() if multi else tokens[0]
         symbol, note = (raw, None) if multi else map_symbol(raw, universe_set, hgnc, back)
+        if dropped:
+            note = "; ".join(filter(None, [note, f"label tokens dropped: {', '.join(dropped)}"]))
         row = by_symbol.setdefault(symbol, {"symbol": symbol, "labels": [], "raw_symbols": [], "cells": 0,
                                             "mapping": note, "multi_gene_label": multi})
+        if note and note not in (row["mapping"] or ""):   # several labels of one symbol: every note once
+            row["mapping"] = "; ".join(filter(None, [row["mapping"], note]))
         row["labels"].append(label)
         row["raw_symbols"].append(raw)
         row["cells"] += n
@@ -171,13 +224,13 @@ def build_manifest(h5ad: Path, excluded: dict[str, set[str]], universe: list[str
     for symbol in sorted(by_symbol):
         row = by_symbol[symbol]
         names = {symbol, *row["raw_symbols"]}
-        reasons = [f"{name} target" for name, syms in excluded.items() if names & syms]
+        reasons = [f"{name} target" for name, syms in matched.items() if names & syms]
         if symbol not in universe_set and not row["multi_gene_label"]:
             reasons.append("outside the frozen gene universe")
         if row["cells"] < min_cells:
             reasons.append(f"fewer than {min_cells} cells")
         if row["multi_gene_label"]:
-            reasons.append("label names more than one gene")
+            reasons.append("label does not name exactly one gene")
         row["excluded"] = reasons
         row["eligible"] = not reasons
         if classes is None:
@@ -188,29 +241,41 @@ def build_manifest(h5ad: Path, excluded: dict[str, set[str]], universe: list[str
         targets.append(row)
     eligible = [t for t in targets if t["eligible"]]
     counts = {"labels": len(info["labels"]), "targets": len(targets), "eligible": len(eligible),
-              "eligible_in_distribution": sum(1 for t in eligible if t["in_distribution"]),
-              "eligible_other": sum(1 for t in eligible if t["in_distribution"] is False),
+              "eligible_in_distribution": sum(1 for t in eligible if t["in_distribution"]) if classes is not None
+              else None,
+              "eligible_other": sum(1 for t in eligible if t["in_distribution"] is False) if classes is not None
+              else None,
               "by_reason": {}}
     for t in targets:
         for r in t["excluded"]:
             counts["by_reason"][r] = counts["by_reason"].get(r, 0) + 1
     control_cells = sum(n for c, n in info["labels"].items() if c.strip().lower() in controls)
     # The scoring panel: universe genes the cohort measures, var symbols mapped like the targets (metadata only).
-    measured = {map_symbol(s, universe_set, hgnc, back)[0] for s in info["var_symbols"]}
-    panel_genes = [g for g in universe if g in measured]
+    # Each panel gene carries the one cohort column it came from; a gene with several cohort columns is left out.
+    columns: dict[str, list[str]] = {}
+    for s in info["var_symbols"]:
+        columns.setdefault(map_symbol(s, universe_set, hgnc, back)[0], []).append(s)
+    panel_genes = [g for g in universe if len(columns.get(g, ())) == 1]
+    ambiguous = {g: columns[g] for g in universe if len(columns.get(g, ())) > 1}
     manifest = {"schema_version": 1, "tool": "tools/replogle_slice_manifest.py", "roadmap": "D7",
                 "h5ad": {"name": Path(h5ad).name, "bytes": Path(h5ad).stat().st_size, "sha256": h5ad_sha256,
                          "label_col": info["label_col"], "gene_col": info["gene_col"], "n_cells": info["n_cells"],
                          "n_var": len(info["var_symbols"]), "control_cells": control_cells,
                          "read": "obs and var only"},
                 "rules": {"min_cells": min_cells, "excluded_sets": {k: len(v) for k, v in excluded.items()},
+                          "excluded_sets_with_hgnc_forms": {k: len(v) for k, v in matched.items()} if hgnc else None,
                           "gene_universe_size": len(universe), "hgnc": hgnc is not None,
                           "in_distribution": "member of a Reactome or CORUM class holding a training-panel target"
                           if classes is not None else None,
                           "panel_size": len(panel) if panel is not None else None},
                 "in_distribution_classes": classes, "counts": counts, "targets": targets,
                 "common_gene_panel": {"n": len(panel_genes), "genes": panel_genes,
-                                      "definition": "frozen universe genes the cohort measures, in universe order"},
+                                      "cohort_symbols": [columns[g][0] for g in panel_genes],
+                                      "ambiguous": ambiguous,
+                                      "definition": "frozen universe genes the cohort measures through exactly one var "
+                                                    "column, in universe order; cohort_symbols[i] is the cohort's var "
+                                                    "symbol for genes[i]; ambiguous lists universe genes with several "
+                                                    "cohort columns, left out"},
                 "access_statement": ACCESS_STATEMENT}
     if seed is not None:
         manifest["draw"] = draw(eligible, seed, role)
@@ -223,12 +288,15 @@ def render(m: dict) -> str:
              f"{h['n_cells']:,} cells, {h['n_var']:,} measured genes; labels from obs[{h['label_col']!r}] "
              f"({c['labels']} distinct, {h['control_cells']:,} control cells); gene symbols from var[{h['gene_col']!r}]. "
              f"Only obs and var were read. File sha256: {h['sha256'] or 'not given'}.", "",
-             f"Targets: {c['targets']}. Eligible: {c['eligible']} (in-distribution {c['eligible_in_distribution']}, "
-             f"other {c['eligible_other']}). Rules: at least {m['rules']['min_cells']} cells; not a target of "
+             f"Targets: {c['targets']}. Eligible: {c['eligible']} "
+             + (f"(in-distribution {c['eligible_in_distribution']}, other {c['eligible_other']})"
+                if c["eligible_in_distribution"] is not None else "(subsets not computed: no --panel)")
+             + f". Rules: at least {m['rules']['min_cells']} cells; not a target of "
              + ", ".join(f"{k} ({n})" for k, n in m["rules"]["excluded_sets"].items())
              + f"; inside the frozen gene universe ({m['rules']['gene_universe_size']} genes); HGNC mapping "
              f"{'on' if m['rules']['hgnc'] else 'off'}. Common gene panel for scoring: {m['common_gene_panel']['n']} "
-             f"universe genes the cohort measures.", "", "| exclusion reason | targets |", "|---|---|"]
+             f"universe genes the cohort measures through one column; {len(m['common_gene_panel']['ambiguous'])} "
+             f"with several cohort columns, left out.", "", "| exclusion reason | targets |", "|---|---|"]
     lines += [f"| {r} | {n} |" for r, n in sorted(c["by_reason"].items())] or ["| (none) | 0 |"]
     if m["in_distribution_classes"] is not None:
         lines += ["", f"In-distribution classes: {len(m['in_distribution_classes'])} Reactome or CORUM sets holding "
