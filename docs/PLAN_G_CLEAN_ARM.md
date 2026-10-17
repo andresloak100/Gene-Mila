@@ -302,3 +302,30 @@ after the required free bundle preparation passes, then the corrected F re-read 
 run or driver remains. The dedicated research checkout stays clean at `baa7dfd`; this note changes no scripts,
 run code, arms, data rules or reading criteria. Raw receipts are in `docs/mac/block_g/downloads.md`; the full
 prepare output and its checks will be appended before the chain starts.
+
+## Operator note, 2026-10-17 02:03 UTC: preparation refused; no chain started
+
+The unchanged preparation script ran once from validated own checkout `gene-mila-string-header` at `d34bd93`
+([draft PR #54](https://github.com/andresloak100/Gene-Mila/pull/54)). The compatibility patch accepts STRING's actual
+`experimental` header; the research checkout remains clean at `baa7dfd`. Required validation passed: 589 tests,
+one optional integration skip, eight existing warnings, 720.81 seconds, exit 0. Credentials were unset for preparation.
+
+Preparation exited **1** at its shared-knowledge determinism check:
+
+```text
+NOT DONE: gene_sets.json differs between norman_clean and norman_clean_tables; the builder is not deterministic
+```
+
+The six per-gene tables were written under `data_downloads/clean_knowledge/tables/{norman,adamson_cf}`.
+`data/norman_clean` and `data/norman_clean_tables` passed their individual checks and were renamed from `.partial`;
+the subsequent cross-arm `gene_sets.json` byte comparison refused. Neither Adamson clean bundle was built.
+No partial bundle remains, no G run directory/log exists, the chain scripts were not copied or started, STOP remains
+present, and corrected F has not started. Existing source bundles and all new outputs are preserved unchanged.
+The final MD5/line-length recording loop was not reached, so its complete output is not claimed.
+
+The full stdout/stderr is preserved verbatim in [prepare_20261017T0201Z.txt](mac/block_g/prepare_20261017T0201Z.txt),
+SHA256 `3a5bf5cf4ce797d7f4c9331ae2ad17ea5b89c637fffef97c5f238bff7169803f`, and live `block_g_prepare.log`.
+The cap stays `67.26 47.264645 2026-10-17T01:52Z`; no new paid call occurred.
+Do not repeat preparation over its existing outputs, change the inputs/criteria/run pin, or bypass the failed check.
+The immediate next step is a read-only diagnosis of the public knowledge difference and a reviewed recovery
+that preserves the existing files; the chain and corrected F remain held.
