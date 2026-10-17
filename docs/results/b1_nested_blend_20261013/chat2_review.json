@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "reviewer": "Codex chat2",
+  "scope": "config/summary/progress JSON(L) only; no arrays/responses/private/splits/fits/API/edits",
+  "aggregate_statistic_pairs_checked": 2080,
+  "max_rounding_difference": 2.22e-16,
+  "ordered_fit_events": 120,
+  "inner_fit_events": 90,
+  "outer_fit_events": 30,
+  "outer_folds": 15,
+  "inner_folds": 45,
+  "learned_weight_events": 15,
+  "advancement_gate_passed": false,
+  "gate_failures": [
+    "primary_mean_MSE_improvement_below_sampleSD",
+    "all_Pearson_losses_below_minus0.01",
+    "mean_Pearson_loss_below_minus0.002"
+  ],
+  "artifact_sha256": {
+    "config.json": "09f2d483cb0df6adf258379cb8fb0a8c3d23731aa360c41dd3014f7ee2262591",
+    "summary.json": "4b195ee01ebb46743871c90e35fc86760e037fa9bbbc4659e74c9d48ef219f75",
+    "progress.jsonl": "d7fd8690662345b1c9ea3ea5ba1a6f4b81e2badd0b6a3a509bf91d2db093e2f1"
+  },
+  "limits": "Metadata/arithmetic only; raw arrays independently checked elsewhere. Same-cohort development, no promotion/CellForge evidence."
+}
