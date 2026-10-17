@@ -14,7 +14,8 @@ done
 [ -d "$C" ] && echo "clone at $(git -C "$C" rev-parse --short=7 HEAD 2> /dev/null) ($(git -C "$C" status --porcelain --untracked-files=no | wc -l | tr -d ' ') changed files)"
 echo "== the A2 checkout: $HOME/Documents/Mila/Gene-Mila/gene-mila-baa7dfd at $(git -C "$HOME/Documents/Mila/Gene-Mila/gene-mila-baa7dfd" rev-parse --short=7 HEAD 2> /dev/null || echo MISSING)"
 echo "== the package: $PKG_SRC"
-if [ -e "$PKG_SRC/MANIFEST.json" ]; then pkg_checks; else echo "not exported yet (ROADMAP section 6, step 7)"; fi
+if [ -e "$PKG_SRC/MANIFEST.json" ]; then (pkg_checks); else echo "not exported yet (ROADMAP section 6, step 7)"; fi
+echo "== tier.txt (harness or none, Andres's word on the harness tier): $(cat "$H/tier.txt" 2> /dev/null || echo not written)"
 echo "== the ledger: \$$(ledger) (provider deepseek); running: $(pgrep -fl 'run_research.py|scale_seq.sh|feature_compare.py|ledger_proxy.py' | tr '\n' ';' || echo none)"
 echo "== UTC now $(date -u +%H:%M), $(date -u +%A); ROADMAP D1 names 01:00-04:00 and 06:00-10:00 UTC on weekdays as DeepSeek's peak hours: start outside them when the session allows"
 echo "== Docker"
@@ -31,6 +32,6 @@ if command -v docker > /dev/null && docker info > /dev/null 2>&1; then
   echo "isolation available: docker (write 'docker' into $H/isolation.txt once Andres has said so)"
 else
   echo "no Docker daemon; isolation needs the second macOS account (write 'account <name>' into $H/isolation.txt once Andres has created it)"
-  echo "that account needs: a Python 3.11+ venv with biomni, langchain, langgraph==0.3.18, openai and the package's requirements.txt; Claude Code (claude); $SHARED writable"
+  echo "that account needs: a Python 3.11+ venv at /Users/<account>/genemila_h_venv (or H_ACCOUNT_VENV) with biomni, langchain, langgraph==0.3.18, openai and the package's requirements.txt; Claude Code (claude) on that venv's bin or /usr/local/bin or /opt/homebrew/bin; $SHARED writable. The first session's checks verify both (sudo asks for the password)."
 fi
 echo "== done; post this output on #41"

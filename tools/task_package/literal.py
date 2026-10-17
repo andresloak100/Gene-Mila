@@ -5,7 +5,8 @@ another system's ideas) is scored on out-of-fold predictions of the training per
 a table of training labels, or a few bits per perturbation, into literals and decode them at run time; the guard
 (genemila/guard.py) stops file and network access but not that. These caps make it expensive, they do not make it
 impossible: the deciding score for a foreign file is always one on perturbations whose labels its author never had
-(visible validation or a fresh test), and tools/feature_compare.py says so in every report.
+(a fresh test; the visible validation only for a file whose author did not receive it, and a task package exported
+with the harness tier ships it), and tools/feature_compare.py says so in every report.
 
 literal_check() is side-effect free and uses the standard library only, so both tools/feature_compare.py and the task
 package's evaluate.py (which ships a byte-identical copy) import it.

@@ -72,8 +72,9 @@ also fits the model on all training perturbations and scores those, and the deci
 the mean over the validation and the out-of-fold training perturbations together (`deciding: combined`; `gain`,
 `wins` and `seeds_positive` are on that combined set, `oof_gain` and `val1_gain` its parts). The file is readable
 from your shell, and reading it changes nothing about what counts: feature code must compute from `ctx` (it cannot
-open files, and a file whose source names the tier is rejected), and your whole transcript is scanned afterwards
-for any use of those labels. Without `harness_val1` the lines `val1_pearson_delta`, `combined_pearson_delta`,
+open files, and a file whose source names the tier is rejected); afterwards every kept file goes through the guard
+and the literal caps again, and your transcript and files are scanned for reads of the tier, which are allowed and
+recorded. Without `harness_val1` the lines `val1_pearson_delta`, `combined_pearson_delta`,
 `oof_gain` and `val1_gain` are absent and `deciding: oof`.
 
 Read the result with:

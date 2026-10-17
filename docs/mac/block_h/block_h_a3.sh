@@ -9,9 +9,10 @@ name=h_a3_r$S; model="${H_A3_MODEL:-deepseek-v4-pro}"
 [ -e "$H/$name.log" ] && no "$H/$name.log exists; not overwriting"
 [ -e "$H/h_probe.passed" ] || no "the probe has not passed (block_h_probe.sh)"
 h_checks; pkg_checks
-session_dirs "a3_r$S"
+session_dirs "$name"
 echo "- $(utc) $name started (package copy $W, model $model, DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
 proxy_up "$name" 2.50
-agent_run "$name" env ANTHROPIC_MODEL="$model" bash "$TOOLS/run_autoresearch.sh" "$PKG_IN" "$PROXY_URL" 20 "$S" "$OUT_IN"
+# the runner takes the model from BASELINE_ANTHROPIC_MODEL and sets ANTHROPIC_MODEL and --model from it
+agent_run "$name" env BASELINE_ANTHROPIC_MODEL="$model" bash "$TOOLS/run_autoresearch.sh" "$PKG_IN" "$PROXY_URL" 20 "$S" "$OUT_IN"
 proxy_down
 session_after "$name" a3 "$model" || exit 3

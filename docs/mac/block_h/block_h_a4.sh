@@ -8,10 +8,10 @@ name=h_a4_r$S
 [ -e "$H/$name.log" ] && no "$H/$name.log exists; not overwriting"
 [ -e "$H/h_probe.passed" ] || no "the probe has not passed (block_h_probe.sh)"
 h_checks; pkg_checks
-session_dirs "a4_r$S"
+session_dirs "$name"
 echo "- $(utc) $name started (package copy $W, DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
 proxy_up "$name" 2.50
-agent_run "$name" python "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy "$PROXY_URL" --model deepseek-v4-pro \
+agent_run "$name" "$TOOLS_PY" "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy "$PROXY_URL" --model deepseek-v4-pro \
   --minutes 20 --seed "$S" --out "$OUT_IN"
 proxy_down
 session_after "$name" a4 deepseek-v4-pro || exit 3

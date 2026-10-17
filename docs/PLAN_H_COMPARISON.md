@@ -17,7 +17,7 @@ agents' image).
   predict better, out of fold on the development tier now, on the fresh test later (ROADMAP D7). No arm claim is made
   from a development tier; the development numbers screen and show spread.
 
-## Arms, all on Adamson, bundle `data/adamson_cf_clean_tables` (split `split_450515be1a0d8d2e`, `README.md`)
+## Arms, all on Adamson, bundle `data/adamson_cf_clean_tables` (split `split_450515be1a0d8d2e`: the clean bundle keeps `data/adamson_cf`'s split, `docs/PLAN_G_CLEAN_ARM.md`; `docs/mac/STATE.md`, Runs on disk)
 
 | arm | what | runs or sessions | cost |
 |---|---|---|---|
@@ -49,33 +49,64 @@ combined vector with the same noise rule, tells the agent the file is readable (
 whose source names the tier, and `MANIFEST.json` records the tier's sha256 and the rule. So every arm gets the feedback
 the lab's agents get, and every arm's final scoring is still out of fold on new fold seeds (B.2) and then the fresh
 test. The exporter reads that one private file through the lab's accessor and never val2, the cells or
-`splits.json`; Andres may veto the tier (ROADMAP section 7, item 3), in which case Astra exports with
-`--no-harness-val1` and this file gets a dated note.
+`splits.json`. Andres's word on the tier (keep or veto, ROADMAP section 7, item 3) is written once into
+`block_h/tier.txt` as `harness` or `none`, with his words and date in the dated note below; the export waits for it.
+On a veto Astra exports with `--no-harness-val1`, `tier.txt` reads `none`, and the scripts require the package to
+match the file either way (`pkg_checks`). With the tier shipped, the visible validation is a seen tier for A3 and A4:
+the protocol's V-based paste check does not apply to them, their candidates are chosen on out-of-fold seeds only, and
+the fresh test is the one unseen tier (protocol, note of 2026-10-17).
+
+**The runners** (`tools/baselines/ledger_proxy.py`, `run_biomni.py`, `run_autoresearch.sh`, `collect_handback.py`)
+are a sibling pull request (branch `wip2/baselines`), not this one; `H_CLONE` must hold them. The scripts here assume
+the interfaces of that branch at `b70ae10`, checked against those files on 2026-10-17: `run_biomni.py --package
+--proxy --model --minutes --seed --out [--probe]`, refusing a `DEEPSEEK_API_KEY` in its environment, a package inside a
+lab checkout, and a proxy URL not starting with `http://127.0.0.1`, `http://localhost`, `http://[::1]` or
+`http://host.docker.internal`; `run_autoresearch.sh <package> <proxy url> <minutes> <seed> <out>`, the model from
+`BASELINE_ANTHROPIC_MODEL`, the same URL and key refusals, and the proxy's log readable at `$PROXY_LOG` (it tails it for
+the first served model within 180 s); `collect_handback.py --out --package --dest`, needing `<out>/run.json`, copying
+the accepted kept files to `<dest>/<arm>_r<seed>/` (`arm` is `biomni` or `autoresearch`, from `run.json`) and merging
+`<dest>/manifest.json`; the proxy's log, one JSON object per line with `status` (200 forwarded; 0 its own start and
+stop rows; 402 a cap refusal; 404 no such route; 502 upstream), `model_served`, `input_tokens`, `cached_tokens`,
+`output_tokens`, `cost_usd`, `ts`, forwarding `/v1/chat/completions` and `/anthropic/v1/messages` only, any client
+token accepted and replaced, `--listen` loopback only. If that branch changes before it lands, the scripts change with
+it in a dated note.
 
 **Isolation (precondition; protocol, fairness control 7).** `check_tools.sh` says which of the two holds:
 1. *Docker* (if the Mac has it): image `genemila-h` built once from `docs/mac/block_h/Dockerfile` (Python, the
-   package's pinned numpy, scipy and scikit-learn, Biomni, Claude Code, `tools/baselines/` and `genemila/` copied in;
-   no data), an internal Docker network `genemila_h` with no route to the internet, and one relay container `h_relay`
-   (`alpine/socat`) on that network and on the bridge, forwarding port 8787 to the proxy on the Mac
-   (`host.docker.internal:8787`). The agent container mounts the session's package copy and its output directory and
-   nothing else; its only route out is `http://h_relay:8787`, the proxy. The run line (from `block_h_a4.sh`):
+   package's pinned numpy, scipy and scikit-learn, Biomni, Claude Code and `tools/baselines/` copied in; never
+   `genemila/`, `configs/` or a prompt of the lab, protocol controls 6 and 7; no data), an internal Docker network
+   `genemila_h` with no route to the internet, and one relay container `h_relay` (`alpine/socat`) on that network and
+   on the bridge, forwarding port 8787 to the proxy on the Mac (`host.docker.internal:8787`). The agent container
+   mounts the session's package copy, its output directory and the proxy's log (read-only) and nothing else; its only
+   route out is the relay, which `--add-host` names `host.docker.internal` inside the container (the runners accept
+   that name and refuse any other host). The run line (from `block_h_a4.sh`, `RELAY_IP` read from `docker inspect`
+   after the relay starts):
    ```bash
-   docker run --rm --name h_agent --network genemila_h --memory 8g -v "$W:/work/pkg" \
-     -v "$W.export.json:/work/pkg.export.json:ro" -v "$O:/work/out" genemila-h \
-     python /lab/tools/baselines/run_biomni.py --package /work/pkg --proxy http://h_relay:8787 \
+   docker run --rm --name h_agent --network genemila_h --memory 8g --add-host host.docker.internal:$RELAY_IP \
+     -v "$W:/work/pkg" -v "$W.export.json:/work/pkg.export.json:ro" -v "$O:/work/out" \
+     -v "$L/block_h/proxy/h_a4_r$S.jsonl:/work/proxy.jsonl:ro" -e PROXY_LOG=/work/proxy.jsonl \
+     -e OPENAI_API_KEY=proxy -e ANTHROPIC_AUTH_TOKEN=proxy -e HOME=/work/out genemila-h \
+     python /lab/tools/baselines/run_biomni.py --package /work/pkg --proxy http://host.docker.internal:8787 \
      --model deepseek-v4-pro --minutes 20 --seed $S --out /work/out
    ```
    `check_tools.sh` verifies, with a throwaway listener on the Mac, that a container on `genemila_h` cannot reach
-   `https://api.deepseek.com` and can reach the relay.
-2. *A second macOS account* that Andres creates (ROADMAP section 7, item 3), holding only the package copy, the
-   runners' virtual environment and Claude Code; the proxy runs in Andres's account on `127.0.0.1:8787`; the arm
-   scripts start the agent with `sudo -u <account> -H env -i ...`, so no variable of Andres's environment crosses.
-   The filesystem isolation holds (the account cannot read Andres's home); the network one does not, so the proxy
-   log and the transcript scan are the check, and the paper says so.
+   `https://api.deepseek.com` and can reach the relay. The proxy listens on the loopback only (it refuses any other
+   address), so if Docker Desktop's `host.docker.internal` does not reach a `127.0.0.1` listener on this Mac, Docker
+   mode is out and the arms wait for the account.
+2. *A second macOS account* that Andres creates (ROADMAP section 7, item 3), holding only the package copy, a
+   Python venv with Biomni and the package's requirements at `/Users/<account>/genemila_h_venv` (or `H_ACCOUNT_VENV`)
+   and Claude Code on that venv's `bin`, `/usr/local/bin` or `/opt/homebrew/bin`; the proxy runs in Andres's account on
+   `127.0.0.1:8787` with its log under `/Users/Shared/genemila_h/proxy/` (readable by the account; it holds no body
+   and no token), copied back under `$L/block_h/proxy/` after the session; the arm scripts start the agent with
+   `sudo -u <account> -H env -i ...`, so no variable of Andres's environment crosses. The filesystem isolation holds
+   (the account cannot read Andres's home); the network one does not, so the proxy log and the transcript scan are the
+   check, and the paper says so. The venv is the account's own and persists between sessions (Docker's image does not):
+   a weakness of this mode, stated.
 Without either, A3 and A4 wait; A2 and C0 can run. The answer is written once into `block_h/isolation.txt` as
 `docker`, `account <username>` or `none` (A2 only), with Andres's words and date in the dated note below. In account
-mode the chain runs in the foreground of the login shell, since `sudo` asks for the password once; in Docker mode it
-runs detached as below.
+mode the chain runs in the foreground of the login shell: `sudo` asks for the password at each session's checks
+(its ticket expires between 20-minute sessions) unless `Defaults timestamp_timeout` in `sudoers` covers the chain, and
+the checks verify the venv and `claude` before any spend; in Docker mode it runs detached as below.
 
 **The key** stays `API_KEY` in Andres's `~/.zshenv` and reaches only the proxy and the A2 lab run, as
 `DEEPSEEK_API_KEY` in that process's environment (`DEEPSEEK_API_KEY="$API_KEY" ...` in the login shell that starts the
@@ -119,38 +150,52 @@ when the session allows (ROADMAP D1: 01:00 to 04:00 and 06:00 to 10:00 UTC on we
    Order: the probe; A4 r0, r2, r3; A3 r0, r2, r3; A2 r0, r2, r3. A session whose `.passed` marker exists is skipped,
    so a pre-session refusal (exit 1 or 2) is fixed and the chain restarted the same way; a stop after a session
    (`block_h_stopped.txt`, exit 3) is not resumed until the cause is written up here. The cap file stays.
-6. **The probe** (`block_h_probe.sh`, session cap $0.05): one Biomni `--probe` round (execute to observation) and one
-   one-turn `claude -p` call, both through the proxy. It checks the two routes ROADMAP section 8 lists as unverified:
-   `deepseek-v4-pro` accepting Biomni's consecutive assistant messages, and Claude Code honouring the model alias on a
-   custom base URL with its web tools off (`--disallowedTools WebFetch,WebSearch`). The proxy log must show the served
-   model. If Biomni's route fails with the proxy's message merging, A4 is reported as "could not run on DeepSeek
-   v4-pro"; if Claude Code rejects the alias, A3 runs on `deepseek-flash` and the difference is disclosed (ROADMAP
-   section 5, B.1): either is a dated note here before the arm runs.
+6. **The probe** (`block_h_probe.sh`): two proxy sessions of $0.05 each (D6's cap per round; one round of either
+   client is estimated at $0.02 to $0.03, so one $0.05 cap for both would sit at the expected cost). First one Biomni
+   `--probe` round (execute to observation, run id `h_probe`), then one one-turn `claude -p` call on
+   `ANTHROPIC_BASE_URL=<proxy>/anthropic` (run id `h_probe_claude`, the flags `run_autoresearch.sh` uses). It checks
+   the two routes ROADMAP section 8 lists as unverified: `deepseek-v4-pro` accepting Biomni's consecutive assistant
+   messages, and Claude Code honouring the model alias on a custom base URL with its web tools off
+   (`--disallowedTools WebFetch,WebSearch`). The proxy logs must show the served model. The check file counts the
+   other statuses: a 402 is the proxy's cap, not a route failure, and is read before any fallback is disclosed. If
+   Biomni's route fails with the proxy's message merging, A4 is reported as "could not run on DeepSeek v4-pro"; if
+   Claude Code rejects the alias, A3 runs on `deepseek-flash` (`H_A3_MODEL`, passed to the runner as
+   `BASELINE_ANTHROPIC_MODEL`) and the difference is disclosed (ROADMAP section 5, B.1): either is a dated note here
+   before the arm runs.
 
-**What each session does** (`block_h_a4.sh`, `block_h_a3.sh`, seed `S`): checks (below); a fresh copy
-`$L/block_h/work/<arm>_r$S` of the package with its export record; the proxy up with run id `h_<arm>_r$S` and its
-own log `$L/block_h/proxy/h_<arm>_r$S.jsonl`; the agent for 20 minutes, the runner's own clock (`--minutes 20`), with a
-hard stop at 30 minutes from the script; the proxy down; `tools/baselines/collect_handback.py` into
-`$L/block_h/handback/<arm>_r$S` (`runs/kept/features/`, `features/`, `results.tsv`, `runs/`, the transcript); the
-checks after; one line in `progress.md`. `block_h_a2.sh` is block G's run script with one worker.
+**What each session does** (`block_h_a4.sh`, `block_h_a3.sh`, seed `S`, session `h_<arm>_r$S`): checks (below); a
+fresh copy `$L/block_h/work/h_<arm>_r$S` of the package with its export record (account mode: under
+`/Users/Shared/genemila_h/work/`); the proxy up with run id `h_<arm>_r$S` and its own log
+`$L/block_h/proxy/h_<arm>_r$S.jsonl`; the agent for 20 minutes, the runner's own clock (`--minutes 20`), with a hard
+stop at 30 minutes from the script; the proxy down; `tools/baselines/collect_handback.py` into
+`$L/block_h/handback/h_<arm>_r$S/`, which then holds `biomni_r$S/` or `autoresearch_r$S/` (the kept files that pass
+the guard and the literal caps), `rejected/` and `manifest.json`; `results.tsv`, `runs/` and the working `features/`
+stay in the work copy, and the runner's own copies with `run.json` and the transcript in `$L/block_h/out/h_<arm>_r$S`
+(account mode: `/Users/Shared/genemila_h/out/`); the checks after; one line in `progress.md`. `block_h_a2.sh` is
+block G's run script with one worker.
 
 **Checks before any spend, per session:** the key in the environment; the cap file valid (at most $15 over its start);
-`isolation.txt` present and its mode available; `H_CLONE` with the four runners; the package source with
-`harness_val1` in `MANIFEST.json` and its record beside it, `MANIFEST.json`'s sha256 equal to the record's; no work
+`isolation.txt` present and its mode available (account mode: the venv imports `biomni` and `claude` is on its path);
+`H_CLONE` with the four runners; `tier.txt` present and the package source matching it (`harness_val1` in
+`MANIFEST.json` for `harness`, absent for `none`), its record beside it, `MANIFEST.json`'s sha256 equal to the record's; no work
 copy, log or hand-back for this session; no STOP file; no stopped block; no lab run, driver, `feature_compare`,
 other proxy or `h_agent` container running; the probe passed (for the arms); the ledger readable, at or above the
 block's start, and plus $2.50 within the cap.
 
-**Logged per session, from the proxy log** (`--log`, one JSON line per call): calls, agent minutes (first to last
-call), input, cache-hit and output tokens, the served model per call, the priced cost; and the ledger's delta over
-the session. The script refuses the session as passed when the served model is not `deepseek-v4-pro` (or the
+**Logged per session, from the proxy log** (`--log`, one JSON line per call; the fields named above): over the
+status-200 rows, calls, agent minutes (first to last `ts`), `input_tokens`, `cached_tokens`, `output_tokens`,
+`model_served` per call, the priced `cost_usd`; the count of other statuses (402, 404, 502); the ledger's delta over
+the session; and the number of files the agent wrote or printed that name `harness/val1.npz` (reading 4). The script
+refuses the session as passed when no row has status 200, when the served model is not `deepseek-v4-pro` (or the
 disclosed `deepseek-flash` for A3), when the ledger delta exceeds $2.50, or when the runner's exit code is not 0.
 
 **Stop rules** (the session becomes its own arm, the chain stops, the cause goes in a dated note): a session's ledger
-delta over $2.50 or the cap reached; a runner error; a transcript, output or hand-back file containing a credential
-pattern (`sk-[A-Za-z0-9_-]{16,}` or `Bearer `), checked by the script before anything is kept; an agent that touched
-anything outside its package copy (Docker: impossible by construction; account mode: `ls -la` of the account's home
-compared before and after); `planner.mixed` or a non-empty `run.external_knowledge` in an A2 run.
+delta over $2.50 or the cap reached; a runner error; a transcript, output, work copy, session log or proxy file
+containing a credential pattern (`sk-[A-Za-z0-9_-]{16,}` or `Bearer sk-`; the clients' dummy `Bearer proxy` is not
+one), checked by the script before anything is kept; an agent that touched anything outside its package copy (Docker:
+impossible by construction; account mode: `find -ls` of the account's home compared before and after, with the tools'
+own state, `.claude*`, `.cache`, `.npm` and `Library`, left out); `planner.mixed` or a non-empty
+`run.external_knowledge` in an A2 run.
 
 ## Readings, fixed now, made only after the chain has ended (free; `nice -n 19`; no paid run live)
 
@@ -163,13 +208,14 @@ compared before and after); `planner.mixed` or a non-empty `run.external_knowled
      --source-run A1abl_r0=<MAIN>/runs/adamson_cf_g0_ds_w4_r0 --source-run A1abl_r2=... --source-run A1abl_r3=... \
      --source-run A2_r0=<MAIN>/runs/adamson_cf_h_a2_ds_w1_r0 --source-run A2_r2=... --source-run A2_r3=... \
      --source-run C0_r0=<MAIN>/runs/adamson_cf_h_c0_scripted_w4_r0 --source-run C0_r2=... --source-run C0_r3=... \
-     --source A3_r0=$L/block_h/handback/a3_r0/runs/kept/features --source A3_r2=... --source A3_r3=... \
-     --source A4_r0=$L/block_h/handback/a4_r0/runs/kept/features --source A4_r2=... --source A4_r3=... \
+     --source A3_r0=$L/block_h/handback/h_a3_r0/autoresearch_r0 --source A3_r2=$L/block_h/handback/h_a3_r2/autoresearch_r2 --source A3_r3=... \
+     --source A4_r0=$L/block_h/handback/h_a4_r0/biomni_r0 --source A4_r2=$L/block_h/handback/h_a4_r2/biomni_r2 --source A4_r3=... \
      --source A5_C2=docs/comparison/cellforge_c2
    ```
    OOF only, no `--with-val1` (D5). The package arms' candidate set is `runs/kept/features/` at the kill, never the
-   working `features/` (protocol, section 2). A session that handed back no kept feature is a row with the parent's
-   score, reported, not dropped.
+   working `features/` (protocol, section 2), as `collect_handback.py` copied it after the guard and the literal caps;
+   a file it rejected is listed from `rejected/` in reading 4 and is not a candidate. A session that handed back no
+   kept feature is a row with the parent's score, reported, not dropped.
 2. **The metrics table of protocol section 5**, one row per arm: the system row's OOF M1 to M7 and M12 from the call
    above (mean ± sd over the three searches), ΔM1 ± SE_adj against the parent, wins, the number of features and the
    number with a development verdict; per arm also the sessions' minutes, calls, tokens, served model and spend from
@@ -179,15 +225,21 @@ compared before and after); `planner.mixed` or a non-empty `run.external_knowled
    development verdict and the largest OOF gain, plus the additive rule and C0, listed with sha256 on #41 before any
    contact with the holder (`docs/PLAN_R_FRESH_TEST.md`, when it exists).
 4. **Descriptive:** per session, the kept features' sources read (which knowledge files), the number of attempts,
-   keeps and rejections (literal caps, guard, one-change rule), and whether the agent read `harness/val1.npz`
-   (the transcript scan reports it; it is allowed and changes nothing).
+   keeps and rejections (literal caps, guard, one-change rule), and whether the agent read `harness/val1.npz`: the
+   session script counts the files the agent wrote or printed (the transcript, `features/`, `runs/`, `scratch/`, the
+   runner's output) that name `val1.npz` or `harness/val1`, the package's own `MANIFEST.json` and `program.md` left
+   out, into `h_<arm>_r$S.val1scan.txt` and the `progress.md` line; a read is allowed, recorded and changes nothing.
+   The paste check on the kept files is the guard and the literal caps (`collect_handback.py`, the hand-back
+   `manifest.json`), read by hand before the frozen batch is listed.
 
 ## To be filled in before the chain (dated notes go below this line)
 
 - Andres's cap line on #41 (ledger + $15), with its date; the isolation answer (Docker, or the account's name), with
-  its date; his word on the harness tier (keep or veto).
+  its date; his word on the harness tier (keep or veto), written into `tier.txt` as `harness` or `none`, with its
+  date; the export runs after it.
 - `check_tools.sh`'s output on #41: docker, gtimeout, claude, codex, the image, the network test.
 - The package's `MANIFEST.json` and `program.md` sha256 on #41 (step 7 of ROADMAP section 6).
 - The console reading before the block (topped-up balance, granted credit) and after it; the cap record line and the
   ledger at the start.
-- The probe's result: served models, tokens, cost; any route that failed and the disclosed fallback.
+- The probe's result: served models, tokens, cost, the other statuses; any route that failed and the disclosed
+  fallback.

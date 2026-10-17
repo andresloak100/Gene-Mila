@@ -413,9 +413,8 @@ def inner(manifest: dict) -> int:
             problems.append(f"{stem}.py: guard: {exc}")
         lit = literal_check(src.decode(errors="replace"), pair_ids, genes + perts)
         problems += [f"{stem}.py: literal cap: {p}" for p in lit["problems"]]
-        if tier and (b"val1" in src or b"harness" in src):
-            problems.append(f"{stem}.py: names the visible validation tier (val1, harness); feature code computes "
-                            "from ctx only")
+        if tier and b"val1" in src:
+            problems.append(f"{stem}.py: names the visible validation tier (val1); feature code computes from ctx only")
         deps[stem], found = dependencies(src)
         problems += [f"{stem}.py: {p}" for p in found]
     for stem in current:  # every listed feature exists, and the list includes what listed package features use

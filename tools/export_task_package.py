@@ -129,17 +129,22 @@ def knowledge_lines(kdir: Path) -> list[str]:
     return parts
 
 
-def data_readme(manifest: dict, targets: dict, train: list[str], kdir: Path) -> str:
+def labels_note(tier: bool) -> str:
+    return ("the sealed labels are not in this package; the visible validation labels are under harness/val1.npz, "
+            "program.md says how they count" if tier else "the held-out labels are not in this package")
+
+
+def data_readme(manifest: dict, targets: dict, train: list[str], kdir: Path, tier: bool = False) -> str:
     lines = ["# Data", "", dataset_text(manifest, targets, train), "",
              "public.npz: genes, control_cells (control cells x genes, log-normalised), perts (every perturbation id, "
              "held-out ones included), train_perts, train_means (one mean expression profile per training "
-             "perturbation; the held-out labels are not in this package), train_ncells. manifest.json: the public "
+             f"perturbation; {labels_note(tier)}), train_ncells. manifest.json: the public "
              "manifest. Feature code reads all of this through ctx (features/README.md), never from the files.", "",
              "## Knowledge files (ctx.knowledge(name))", ""]
     return "\n".join(lines + [f"- {line}" for line in knowledge_lines(kdir)]) + "\n"
 
 
-def features_readme(pairs: bool, prefix: str, parent: list[str]) -> str:
+def features_readme(pairs: bool, prefix: str, parent: list[str], tier: bool = False) -> str:
     api = feature_api_doc(pairs)
     return (f"# Feature API\n\nAPI:\n```python\n{api}\n```\n\nEXAMPLE PLUGIN:\n```python\n{EXAMPLE_FEATURE}```\n\n"
             "## In this package\n\n"
@@ -150,7 +155,7 @@ def features_readme(pairs: bool, prefix: str, parent: list[str]) -> str:
             "plus every file here.\n"
             "- The example is the built-in `mean_response`, shown for style only: its name is taken and lacks the "
             "prefix.\n"
-            "- `ctx.perts` includes the held-out perturbation ids; their labels are not in this package. "
+            f"- `ctx.perts` includes the held-out perturbation ids; {labels_note(tier)}. "
             "`ctx.train_perts` are the perturbations with labels.\n"
             f"- Allowed imports: {', '.join(sorted(ALLOWED_IMPORT_ROOTS))} and genemila.features.api. No file, "
             "network or OS access (harness/genemila/guard.py checks this before any file runs).\n"
@@ -220,8 +225,9 @@ def main(argv=None) -> int:
                         "sha256": sha256(out / "harness" / "val1.npz"), "rule": HARNESS_RULE}
     (out / "features").mkdir()
     (out / "scratch").mkdir()
-    (out / "features" / "README.md").write_text(features_readme(pairs, args.prefix, parent))
-    (out / "data" / "README.md").write_text(data_readme(manifest, targets, train, out / "data" / "knowledge"))
+    (out / "features" / "README.md").write_text(features_readme(pairs, args.prefix, parent, bool(harness_val1)))
+    (out / "data" / "README.md").write_text(data_readme(manifest, targets, train, out / "data" / "knowledge",
+                                                       bool(harness_val1)))
     versions = {lib: importlib.metadata.version(lib) for lib in LIBRARIES}
     (out / "requirements.txt").write_text("".join(f"{lib}=={v}\n" for lib, v in versions.items()))
 
