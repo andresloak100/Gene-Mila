@@ -36,7 +36,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 17:39 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 17:44 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -136,7 +136,7 @@ caffeinate,exact projectPython -m pytest -q in frozen C2f2e683; no scientific/he
 Exclusive docs/results/g_f_h8_publication_pytest.command.txt/.log/.exit. Allow suite tofinish;
 do notduplicate/restart/reducechecks orchangeprotected/scientificcodetoobtainresult.
 NormanH8/fullscientificcompletion/testlaunch posted[#51/comment6237719856](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6237719856).
-**Exact next:** monitor existing fullsuite at five-minute cadence (next>=17:42:36Z).
+**Exact next:** monitor existing fullsuite at five-minute cadence (next>=17:49:27Z).
 Consolidated g_f_h8_readings.{json,md} is prepared and independently audited; one sealed-match count sentence
 was scoped explicitly bydataset, rawresultsunchanged. Report audit twins retain finalreporthashes.
 Exhaustive exact-file rows DIRECTLY in docs/results/README.md currentlycover1169newfiles; regenerate after
@@ -148,9 +148,12 @@ into integration/attach/postallresults51; nevermerge. NoPR/exportyet.
 Then exportONLYAdamson fromM/data/adamson_cf_clean_tables,unusedoutandsibling.export.jsonabsent,
 existingdefaults/keysunset/PYTHONHASHSEED0/nice19;noeval/probe/agent/Hjob. Preservepartialsfailure.
 Onexport0 verify siblingmetadata vsMANIFEST withoutlabels,postEXACTMANIFEST.json/program.md SHA256lines51,
-addreceiptonlytosamePR,updateHANDOFF/liveSTATEandPAUSEmonitor.
+addreceiptonlytosamePR. Direct human continuation in this chat, 2026-10-17 17:44 UTC: after the one draft PR and Adamson export/two SHA256 lines, run exactly bash docs/mac/block_h/check_tools.sh from an own clone at current integration HEAD, post its output on #51 and STOP. No paid run. Post the DeepSeek console reading only when next already open; no console is currently open in the supplied browser context.
+After that exact freecheck, preserve command/output/exit,secret-scan/post51,addreceiptonlytosamePR,
+updateHANDOFF/liveSTATEandPAUSEmonitor. No probe,agent,arm orpaidjob follows.
 Actual nonzero/refusal/deadwithoutstatus:preserve/scan/report/update/PAUSE,no scientificretry/workaround.
-No G/F/H8 restart,oldnull/sealedreads,H/R/probe/newpaidrun/modelpromotion ornext-blockdecision.
+No G/F/H8 restart,oldnull/sealedreads,H/R arm/probe/newpaidrun/modelpromotion ornext-blockdecision.
+Only the direct-human-authorized freecheck_tools step is added afterexport.
 Claude decidesnextblock. HeartbeatACTIVE,quietunchanged.
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
