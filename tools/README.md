@@ -19,7 +19,7 @@ CI checks only the README (`readme_check.py`); run `python -m pytest -q` (about 
 | `knowledge_coverage.py` | how much prior knowledge each target has in a bundle, and what a symbol loses |
 | `residual_mining.py` | training-only residual mining: hypothesis generation, never evidence (ROADMAP M1) |
 | `export_task_package.py`, `task_package/` (`evaluate.py`, `literal.py`, `program.md`) | the lab's problem as a self-contained task for other systems (autoresearch-style agents, Biomni) |
-| `baselines/` (`run_autoresearch.sh`, `run_biomni.py`, `collect_handback.py`, `ledger_proxy.py`) | the comparison's other systems and the hand-back collector (block H) |
+| `baselines/` (`run_codex.sh`, `run_autoresearch.sh`, `run_biomni.py`, `collect_handback.py`, `ledger_proxy.py`) | the comparison's other systems and the hand-back collector (block H) |
 | `frozen_model.py` | export a pinned frozen ensemble, or predict target-only queries without fitting (`docs/FROZEN_EXPORT.md`) |
 | `replogle_slice_manifest.py` | eligibility manifest of a candidate fresh-test cohort from its obs and var tables (ROADMAP D7) |
 | `noise_ceiling.py`, `count_target_cells.py` | the noise ceiling of pearson_delta from cell-sampling noise, and the cell counts it needs |

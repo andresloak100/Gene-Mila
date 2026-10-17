@@ -243,3 +243,142 @@ own state, `.claude*`, `.cache`, `.npm` and `Library`, left out); `planner.mixed
   ledger at the start.
 - The probe's result: served models, tokens, cost, the other statuses; any route that failed and the disclosed
   fallback.
+
+## 2026-10-17 03:52 UTC: A3 runs through the Codex CLI; Claude Code stays the fallback
+
+**Why.** Astra's check of the Mac (#41, comment 6228055333, 17 October): `docker` at `/usr/local/bin/docker` (daemon
+state unknown), `gtimeout` not found, `claude` (Claude Code) not found, `codex` found at
+`/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex`, the Codex CLI bundled with
+the ChatGPT desktop app, version unknown. The lead's decision: arm A3, the autoresearch-style loop, runs through the
+Codex CLI pointed at DeepSeek `deepseek-v4-pro` through the ledger proxy, in the OpenAI chat-completions wire format
+on the proxy's existing `/v1/chat/completions` route. The LLM, the 20-minute clock, the $2.50 session cap, the task
+package, `program.md` as the whole prompt, the env -i environment, the first-proxy-line check, the hand-back and the
+proxy-log reading are the same as with Claude Code; the client program differs, and `run.json["client"]` records
+which one ran (`codex` or absent for Claude Code). Two differences come with the client and no configuration removes
+them, so they are disclosed here, in `run.json` and in the A3 reading: Codex's shell tool cuts a command at 10 s unless
+the model itself passes `timeout_ms` (`DEFAULT_EXEC_COMMAND_TIMEOUT_MS` in `codex-rs/core/src/exec.rs`, 10_000 at
+rust-v0.80.0, 0.94.0 and main; no configuration key sets it, only the MCP timeouts exist), where `run_autoresearch.sh`
+gives Claude Code's Bash `eval_timeout_s` + 30 s so one `python evaluate.py` fits one call; `run.json["shell_timeout"]`
+says so, and reading 1 for an A3 session under Codex counts the `command_execution` items in `transcript.txt` whose
+`evaluate.py` command ended in the client's timeout, so evaluations the client cut short are reported as such and not
+attributed to the LLM. And in account mode Codex's Seatbelt sandbox (`network_access = false`) blocks the agent's shell
+commands from the network, which `program.md` forbids anyway and Claude Code's Bash is only told: the Codex arm is the
+stricter of the two there, and reading 4 reads both transcripts for network attempts; in Docker mode both arms are
+equal (the internal network is the isolation). The hand-back directory stays `autoresearch_r$S`, so reading 1 reads
+as written. Row A3 of the arms table is read with this note.
+
+**What changed** (this commit): `tools/baselines/run_codex.sh`, the Codex twin of `run_autoresearch.sh` (same
+interface and refusals, plus `--probe`): it writes a private `CODEX_HOME` under the session's output directory with
+one `config.toml` (provider `ledger_proxy` at `<proxy>/v1`, `wire_api = "chat"`, `env_key = "LEDGER_PROXY_TOKEN"`
+holding the dummy `proxy-token-<seed>`, `model = "deepseek-v4-pro"`, `web_search = "disabled"`, no `[mcp_servers]`
+table, `approval_policy = "never"`, `sandbox_mode = "workspace-write"` with `network_access = false`), and runs
+`codex exec --skip-git-repo-check -C <package> --sandbox workspace-write -m deepseek-v4-pro --json
+-o <out>/last_message.txt -` with `program.md` on stdin, under the python watchdog, the binary from `CODEX_BIN` (no
+`--ephemeral`: it first appears at rust-v0.99.0, a build with no chat wire format; the session files land under the
+private `CODEX_HOME`). The Mac's `~/.codex` (the ChatGPT app's login and configuration) is never read or written.
+`block_h_common.sh` gains `A3_CLIENT` (`codex`, the default, or `claude`), `CODEX_BIN` (on `PATH`, else the bundled
+path) and `H_CODEX_WIRE_API` (`chat` in account mode, `responses` in Docker mode unless set; forwarded to the runner as
+`CODEX_WIRE_API` by `block_h_a3.sh` and `block_h_probe.sh`, the only way a variable reaches the isolation), requires
+`run_codex.sh` as a fifth runner, and in account mode checks the selected client's binary instead of `claude`;
+`block_h_a3.sh` selects `run_codex.sh` or `run_autoresearch.sh` by `A3_CLIENT`; `block_h_probe.sh` step 2 exercises
+the selected client once (`run_codex.sh --probe`: the one-line prompt "Run the shell command `ls` and then reply with
+the single word ok.", one tool round trip, a read-only sandbox, run id `h_probe_codex`, the same $0.05 cap); `check_tools.sh` prints `codex --version`, `codex exec --help` and `docker info` (read-only);
+the `Dockerfile` installs `@openai/codex` beside Claude Code. Every earlier check stays. Tests:
+`tests/test_baselines.py` dry-runs the script and runs it once with a stub `codex` through the test proxy.
+
+**Unverified, and how the probe settles it** (nothing has run; the research of 2026-10-17 read the current Codex
+sources and OpenAI's and DeepSeek's documentation, not the Mac's binary):
+1. The bundled binary's version, and that it is the standalone Rust CLI accepting `codex exec` with these flags.
+   `check_tools.sh` prints `codex --version` and `codex exec --help`; both go on #41 before the probe.
+2. `wire_api = "chat"`. Codex removed it at rust-v0.95.0 (3 February 2026; github.com/openai/codex/discussions/7782;
+   `WireApi::Chat` is in `codex-rs/core/src/model_provider_info.rs` through rust-v0.94.0, 2 February 2026, the last
+   chat-capable release, and `CHAT_WIRE_API_REMOVED_ERROR` from 0.95.0 on, read from the tagged sources 2026-10-17):
+   such a build refuses the configuration ("no longer supported") or speaks the Responses API only, `POST
+   <base_url>/responses`, which the proxy does not serve (a 404 row with no served model, so the runner aborts the
+   session as an error). The ChatGPT desktop app ships current Codex, so the bundled binary is likely a post-0.95
+   build and the `/v1/responses` route the realistic prerequisite; `check_tools.sh` decides. Rule: if `--version` is
+   0.94.0 or older and `h_probe_codex.jsonl` shows status-200 rows with `model_served` `deepseek-v4-pro` (item 7), A3
+   runs as configured. If the build is newer, one of two disclosed paths, decided before any A3 session: the proxy
+   gets a `/v1/responses` route (forwarding to `https://api.deepseek.com/responses`, pricing the `response.completed`
+   usage: `input_tokens`, `input_tokens_details.cached_tokens`, `output_tokens`; no `[DONE]` sentinel;
+   `response.failed` ends an errored stream; its own pull request with tests) and the arm runs with
+   `H_CODEX_WIRE_API=responses` in the chain's environment; or A3 falls back to
+   Claude Code (`A3_CLIENT=claude`, Claude Code installed where the agent runs: the image has it, the account would
+   need it) and this note gets the fallback line. In both the LLM and the rest are unchanged.
+3. That `codex exec` starts with no `auth.json` in a fresh `CODEX_HOME` when the provider is custom with `env_key` and
+   `forced_login_method = "api"`. If the probe shows a login refusal, the fix is `codex login --with-api-key` into the
+   scratch `CODEX_HOME` with the dummy token (it writes `auth.json` there only), recorded here.
+4. Verified from the sources, not yet on the Mac: a build ignores configuration keys it does not know (`ConfigToml`
+   carries `schemars(deny_unknown_fields)`, a schema annotation, and no serde one, at rust-v0.94.0 and main), and the
+   top-level `web_search = "disabled"` is the key 0.94.0 honours (`WebSearchMode { Disabled, Cached, Live }`) as does
+   main. The `web_search_request = false` line of the first version was removed: that toggle lived under `[tools]`
+   (alias of `tools.web_search`), never at the top level, and its default is off.
+5. Whether DeepSeek's `output_tokens` includes the reasoning tokens (its wording implies so, as OpenAI's does): one
+   probe response against the console reading.
+6. Other HTTP requests Codex may make at start (model catalog refresh, telemetry, update checks). In Docker the
+   internal network blocks them; in account mode they would leave the Mac; one aimed at the proxy before the first
+   chat completion shows as a 404 row and the runner then aborts the session as an error (the first-proxy-line rule:
+   the first new row must carry `model_served`). The probe's proxy log (`h_probe_codex.jsonl`) and `codex_stderr.txt`
+   are read for such requests before any arm; if one exists the runner's rule needs a decision (skip 404 rows, or
+   disable the request in the configuration), recorded here.
+7. The tool round trip on the chat route. DeepSeek's chat completions in thinking mode want every earlier turn's
+   `reasoning_content` passed back when tools are present (api-docs.deepseek.com, thinking mode and tool calls), and
+   a 0.94.0 Codex builds its chat request from its own history, which has no such field; the first shell call of a
+   real session would then get a 400 after a 200 first row, which the first-line rule does not catch, and the session
+   would burn its clock and cap on retries. So the probe's prompt forces one shell command (`ls`): codex is cleared for
+   A3 only when `h_probe_codex.jsonl` holds at least two status-200 rows and no 400; otherwise the chat route is unfit
+   for the arm and one of item 2's two paths is taken.
+
+**Docker as the isolation route, pending `docker info`.** `check_tools.sh` now prints it. If the daemon runs, Docker
+mode: the image installs the current npm Codex build (`@openai/codex` 0.163.0 on 2026-10-17), which is responses-only,
+so Docker mode runs with the responses wire format by construction (`H_CODEX_WIRE_API` defaults to `responses` when
+`isolation.txt` reads `docker`) and the `/v1/responses` proxy route is a hard prerequisite for it whatever the bundled
+binary's version; inside the container the runner gets `CODEX_SANDBOX=none`
+(`--dangerously-bypass-approvals-and-sandbox`; the Linux sandbox does not start unprivileged, the container is the
+isolation, as the plan's Isolation section says). If no daemon, account mode with the bundled binary under the second
+account and the macOS Seatbelt sandbox as a second layer. Either way the probe runs the selected client through the
+proxy once, at $0.05, before any arm.
+
+**Review fixes, 2026-10-17.** The first version's command carried `--ephemeral` beside `wire_api = "chat"`, a pair no
+Codex release accepts (chat ends at 0.94.0, the flag begins at 0.99.0); it is gone. `CODEX_WIRE_API` could not reach
+the runner through `agent_run` (env -i and `docker run` pass fixed variables only), so Docker mode always wrote
+`chat`; `H_CODEX_WIRE_API` is now forwarded. The dead `web_search_request` and `preferred_auth_method` keys were
+removed, the probe exercises one tool call (item 7), and the two client differences above are disclosed.
+
+**2026-10-17 04:32 UTC: the proxy serves `/v1/responses`; `responses` is the default wire format in both modes.**
+`tools/baselines/ledger_proxy.py` forwards `POST /v1/responses` (the OpenAI Responses API, the only format a Codex
+build from 0.95.0 on speaks) to the same path under `--upstream` (`https://api.deepseek.com/v1/responses`; DeepSeek
+documents its Codex integration at `base_url` `https://api.deepseek.com/`, `/v1` being its OpenAI-compatible alias),
+with the same header handling as the chat route, plain JSON and SSE. It prices the usage of the response object (for a
+stream, `data.response.usage` of the `response.completed` event): `input_tokens` minus
+`input_tokens_details.cached_tokens` at the cache-miss rate, `cached_tokens` at the cache-hit rate, `output_tokens` at
+the output rate, the chat route's formula; the ledger row and the log line keep the other routes' schema with route
+`/v1/responses`. A stream that ends without `response.completed` is unpriced and halts the proxy like an Anthropic
+stream without `message_delta`. `run_codex.sh`'s `CODEX_WIRE_API` and `block_h_common.sh`'s `H_CODEX_WIRE_API`
+default to `responses` in both isolation modes (account mode included); `chat` stays selectable as the legacy option
+for a bundled build of 0.94.0 or older. DeepSeek's usage field names on this route are UNVERIFIED and the probe
+confirms them: a usage without `input_tokens` or `output_tokens` is not priced (502, the keys seen in the log line,
+the proxy halted), so a mismatch shows as a 502 row in `h_probe_codex.jsonl`, never as a silent zero; a usage without
+`input_tokens_details.cached_tokens` is priced with every prompt token at the miss rate and the log line says
+`cached_tokens_absent`. Should DeepSeek answer 404 on `/v1/responses` (the probe's first row), the route needs the
+root path instead: one line in the proxy, before any arm. Tests: `tests/test_ledger_proxy.py` (the route plain and
+streamed against the mock upstream, the cost from the pricing table, the events relayed unchanged, the cached-absent
+case, the unknown shape, the stream without `response.completed`, the token replaced, nothing of a body in the log)
+and `tests/test_baselines.py` (the dry run with the new default and a chat-mode run through the variable; the stub
+`codex` speaks the configured format).
+
+**2026-10-17, review fixes to the route.** (1) A usage count that is present with the wrong JSON type (an object, a
+list, a string such as `"n/a"`) raised `TypeError`/`ValueError` past the proxy's handlers: the handler thread died with
+a traceback, the call was neither priced, logged nor halting, and the next call was admitted, the silent unpriced call
+the route was built to refuse, on the route whose field shapes are unverified. The conversion now raises the
+unpriced-usage error for any non-integer (502, the keys seen in the log line, the proxy halted), and both handlers catch
+the whole family; `tests/test_ledger_proxy.py` covers an object as `input_tokens` plain and a string as `cached_tokens`
+in a stream. (2) A stream that ends with `response.incomplete` (the Responses API's terminal event when
+`max_output_tokens` or a filter stops the response; its response object carries the same final usage as
+`response.completed`, and DeepSeek has billed the call) is now priced like a completed one, and its log line carries
+`response_status: "incomplete"` (a plain response with `status: "incomplete"` too); before, it halted the proxy
+unpriced and the billed call was missing from the ledger. `response.failed` carries no usage and still halts. This
+changes what is priced, in the direction of counting a billed call; Andres may veto it before the probe. (3) The probe
+and runner comments now tell the two 404 rows apart: the proxy's own (`"refused": "no such route"`, a route other than
+`/v1/responses`: Codex posted elsewhere, Claude Code is the fallback) and DeepSeek's (route `/v1/responses`,
+`"priced": false`: the path is not served, the proxy maps the route to `/responses` and the probe runs again).
