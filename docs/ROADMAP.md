@@ -314,3 +314,13 @@ used: every block in this window fits the balance held today.
   then its `feature_compare` command per dataset at 999 replicates; the result is posted on the same results PR and
   reported as the lead's hypothesis, never as A.1. The dated note at the end of `docs/PREREG_G_KNOWN_BIOLOGY.md`
   records how family 8's wording was turned into code.
+
+## Note, 2026-10-17 15:30 UTC: block G ran; the Adamson half is negative
+
+All twelve runs passed cleanly (chain ended 07:05 UTC; $12.97 on the ledger, final ledger $60.23; #51). On Adamson the
+corrected fair test finds no feature among the 221 the agents built from the three tables, and the arm with the
+tables scored lower out of fold than the arm without (G1 0.491 ± 0.004, G0 0.526 ± 0.035; `docs/GOAL_CRITERIA.md`
+Status). So the three per-gene tables, on their own and on clean knowledge, gave the Adamson agents nothing that
+survives the test, and may have cost them search time. Norman's reading is running. D1 to D13 stand: the block G runs
+are block H's lab rows (g1 and g0) whatever the Norman reading says, and the decision on the biology path (pause, or
+the ENCODE block under D10) is taken when Norman's reading and the block F re-read are in, not before.

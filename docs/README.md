@@ -7,6 +7,8 @@ and external URLs are in [HANDOFF.md section 2](../HANDOFF.md#2-where-things-are
 
 ## Start here, in this order
 
+0. [BRIEF_FOR_NEW_AGENTS.md](BRIEF_FOR_NEW_AGENTS.md): the plain-language brief for an agent joining the project
+   (goals, the biology question, where things stand, how we work, what to take first).
 1. [README.md](../README.md): the question, the results on Adamson and Norman, methods, limitations, quick start.
 2. [AGENTS.md](../AGENTS.md): the rules every agent follows (secrets, money, the Mac, git, scientific integrity).
 3. [HANDOFF.md section 1](../HANDOFF.md#1-current-state-whoever-is-working-keeps-this-true) and

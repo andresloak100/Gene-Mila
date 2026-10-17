@@ -96,3 +96,15 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
 - 2026-10-17 02:00 UTC: Andres says a collaborating lab would do the wet-lab step given solid data and good evidence
   (#41), so A.5 is reachable; the computational case (A.1 to A.4, A.6) and the prediction package are what we owe.
   Still **not yet** on either path: no candidate exists.
+- 2026-10-17 15:30 UTC, block G, Adamson half read (operator's readings on
+  [#51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6233130270), tool at `2f2e683`, the corrected
+  fair test; runs `adamson_cf_g1_ds_w4_r0`, `_r2`, `_r3` and the `g0` controls on Andres's Mac): still **not yet**.
+  - **A.1 on Adamson is not met.** 221 add-one rows that read the genome, constraint or protein table, from the three
+    G1 runs, were tested at 999 replicates under both nulls with the family-wise correction (210 unique predictions);
+    none passes. Twenty-three further plugins could not be scored (missing keys, constant features, literal caps) and
+    are listed, not repaired.
+  - **Descriptive:** the arm with the tables scored lower out of fold than the arm without them, G1 0.491 ± 0.004
+    against G0 0.526 ± 0.035 (mean ± sd over seeds 0, 2, 3; no test with three runs a side), and the G1 agents did use
+    the tables (reading 4). The worn Adamson sealed set, indicative only: G0 0.566 ± 0.036, G1 0.491 ± 0.069.
+  - Norman's family-wise test is running (174 rows, 999 replicates); the block F re-read and the family 8 scoring
+    follow. Block G cost $12.97 on the ledger (final ledger $60.23).
