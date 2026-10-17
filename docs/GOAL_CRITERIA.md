@@ -10,8 +10,9 @@ block F score was read, so the call is made by numbers fixed in advance. The Cla
 
 1. **Found by the agents.** A feature built from an allowed source (tier 1 of `docs/NOVEL_FEATURE_NEEDS.md` §7), with
    no human hypothesis given to the agents, passes the fair test of `tools/feature_compare.py` under the block's
-   pre-registered rule: pooled Holm p ≤ 0.05 against the matched gene-permutation null, mean gain above twice its
-   overlap-robust standard error, wins on more than half the perturbations, every fold-seed report positive, a
+   pre-registered rule: family-wise max-gain step-down p ≤ 0.05 against the matched gene-permutation null (the tool's
+   `p_fwer`; first written as the pooled Holm p, restated 2026-10-17 to the statistic the tool decides on, as
+   ROADMAP section 5 says), mean gain above twice its overlap-robust standard error, wins on more than half the perturbations, every fold-seed report positive, a
    gain outside the targets, and `mse_top` not worse; its source reads no perturbation screen.
 2. **A named mechanism with a predicted sign**, written down before any replication: what biology the feature
    encodes and the direction its coefficient must have.
@@ -100,10 +101,11 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
   [#51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6233130270), tool at `2f2e683`, the corrected
   fair test; runs `adamson_cf_g1_ds_w4_r0`, `_r2`, `_r3` and the `g0` controls on Andres's Mac): still **not yet**.
   - **A.1 on Adamson is not met.** 221 add-one rows that read the genome, constraint or protein table, from the three
-    G1 runs, were tested at 999 replicates under both nulls with the family-wise correction (210 unique predictions);
+    G1 runs, were tested at 999 replicates under the gene null, and the perturbation null for the rows proportional to
+    a parent column, with the family-wise correction (210 unique predictions);
     none passes. Twenty-three further plugins could not be scored (missing keys, constant features, literal caps) and
     are listed, not repaired.
-  - **Descriptive:** the arm with the tables scored lower out of fold than the arm without them, G1 0.491 ± 0.004
+  - **Descriptive:** the arm with the tables had the lower out-of-fold mean, inside run-to-run noise, G1 0.491 ± 0.004
     against G0 0.526 ± 0.035 (mean ± sd over seeds 0, 2, 3; no test with three runs a side), and the G1 agents did use
     the tables (reading 4). The worn Adamson sealed set, indicative only: G0 0.566 ± 0.036, G1 0.491 ± 0.069.
   - Norman's family-wise test is running (174 rows, 999 replicates); the block F re-read and the family 8 scoring
@@ -113,7 +115,8 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
   `norman_g1_ds_w4_r0`, `_r2`, `_r3` and the `g0` controls on Andres's Mac, split `split_a391fa9e7b4eccb7`): still
   **not yet**, and block G is negative on both datasets.
   - **A.1 on Norman is not met.** 174 add-one rows that read the genome, constraint or protein table, from the three
-    G1 runs, were tested at 999 replicates under both nulls with the family-wise correction (158 unique predictions;
+    G1 runs, were tested at 999 replicates under the gene null, and the perturbation null for the rows proportional to
+    a parent column, with the family-wise correction (158 unique predictions;
     56 of the 59 proportional rows carried a valid perturbation null, the other 3 fail the fold-consistency gate);
     none passes. Nine further plugins could not be scored (six missing keys, one constant feature, two literal caps)
     and are listed, not repaired.
@@ -127,3 +130,28 @@ Without 5, the result is a strong computational paper (methods-level), not Natur
     encodes a known dependence, so a pass would be methods-level under A.6) and the lead's family 8 hypothesis
     (reported as a human hypothesis, never as A.1). The ENCODE block can reopen the path only under D10, on the
     Adamson cis-pair count. The effort turns to path B (block H).
+- 2026-10-17 19:33 UTC, the corrected block F re-read and the lead's family 8 hypothesis, read by the lead from the
+  files of the operator's results PR [#63](https://github.com/andresloak100/Gene-Mila/pull/63) (tool `2f2e683`; every
+  number below re-derived from the JSON, the pooled p-values recomputed from the stored null gains): still **not yet**
+  on both paths.
+  - **Block F, corrected (`docs/results/norman_f_corrected_pooled_holm/pooled_holm.json`, stage 2 in
+    `norman_f_corrected_stage2/`; runs `norman_ga_ds_addstart_w4_r0`, `_r2`, `_r3`, bundle `norman_ga`, not the clean
+    bundle): 66 scoreable rows, 59 tested, 53 unique predictions, 999 replicates, complete family. Six rows pass every
+    gate (pooled family-wise p 0.001, the floor; gains 0.0026 to 0.0047 at 2.05 to 2.69 adjusted SEs; wins 60 to 64 of
+    112; coefficient positive in every fold-seed report), and every one of the six multiplies the sign-flipped Replogle
+    2022 K562 CRISPRi response of the targets by a per-gene annotation column (promoter CpG observed/expected in four,
+    promoter GC in one, transcript length in one): one theme, from runs r0 (one row) and r3 (five). Replogle 2022 is a
+    tier-3 source, so **A.1 is not met**; the annotation factor's own share is unmeasured (no screen-only row exists).
+    Of the 38 screen-free unique rows none passes: the CpG feature of the first reading gains 0.00056 ± 0.00015 and
+    fails the perturbation null (pooled p 0.363) the first test lacked; the random projection that passed beside it
+    then has pooled p 1.0 now. The step-down over the 38 screen-free rows alone finds nothing either.
+  - **Family 8, the lead's hypothesis (never A.1; `docs/comparison/lead_h8_constraint/README.md`, checks 1 to 4):
+    not supported on either dataset.** Adamson (`docs/results/adamson_cf_lead_h8/feature_compare.json`,
+    `adamson_cf_clean_tables`): check 1 passes (proportional, parent `mean_response`, perturbation null present);
+    gain −0.0013 ± 0.0011, wins 25 of 50, below the minimum max(2 SE, 0.002) = 0.0022; gene-null p 1.000,
+    perturbation-null p 0.769; coefficient positive in every fold seed, the predicted sign, attached to no gain (the
+    95 percent interval of the gain excludes 0.002 by 3.1 SE). Norman (`docs/results/norman_lead_h8/feature_compare.json`,
+    `norman_clean_tables`): check 1 passes (parent `additive_response`); gain 0.000014 ± 0.000068, wins 58 of 112;
+    p 0.199 and 0.526; coefficient negative in every fold seed, recorded, not predicted.
+  - With block G (entries above) every pre-registered reading of this window is in and negative for a tier-1
+    feature. The biology path stays paused (`docs/ROADMAP.md`, section 5 and note of 19:33 UTC).

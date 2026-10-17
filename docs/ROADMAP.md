@@ -319,7 +319,7 @@ used: every block in this window fits the balance held today.
 
 All twelve runs passed cleanly (chain ended 07:05 UTC; $12.97 on the ledger, final ledger $60.23; #51). On Adamson the
 corrected fair test finds no feature among the 221 the agents built from the three tables, and the arm with the
-tables scored lower out of fold than the arm without (G1 0.491 ± 0.004, G0 0.526 ± 0.035; `docs/GOAL_CRITERIA.md`
+tables had the lower out-of-fold mean, inside run-to-run noise (G1 0.491 ± 0.004, G0 0.526 ± 0.035; `docs/GOAL_CRITERIA.md`
 Status). So the three per-gene tables, on their own and on clean knowledge, gave the Adamson agents nothing that
 survives the test, and may have cost them search time. Norman's reading is running. D1 to D13 stand: the block G runs
 are block H's lab rows (g1 and g0) whatever the Norman reading says, and the decision on the biology path (pause, or
@@ -346,3 +346,25 @@ negative on both datasets. The rule of section 5 applies: **the agents' biology 
 - The operator's source-only question on the family 8 plugin's parent column is answered in the plugin's README
   (note of 16:45 UTC): on Adamson the parent has no `additive_response` column, so the row reads `mean_response`,
   fixed before any score and covered by a test.
+
+## Note, 2026-10-17 19:33 UTC: the corrected block F and family 8 readings are in; PR #63 merged; block H's gaps
+
+The operator's results PR [#63](https://github.com/andresloak100/Gene-Mila/pull/63) is merged after the lead
+re-derived its numbers from the JSON (`docs/GOAL_CRITERIA.md`, Status entry of 19:33 UTC). Corrected block F: six rows
+pass every gate, all six the sign-flipped Replogle 2022 response times an annotation column, a tier-3 source, so no
+tier-1 feature; the 38 screen-free rows find nothing. Family 8, the lead's hypothesis: not supported on either
+dataset, with a gain interval that excludes the minimum effect on both. **Every pre-registered reading of this window is
+in and negative for a tier-1 feature; the pause of the biology path (note of 16:50 UTC) is final for this window**, and
+D10's ENCODE question is the only route that reopens it. Wording fixed in the records: the test applies the gene null
+to every row and the perturbation null to the rows proportional to a parent column; a lower mean inside run-to-run
+noise is reported as such, never as "lower". Block H (reader's check of `docs/mac/block_h/` and the operator's tool
+check of 17:53 UTC): `gtimeout` is inventoried but called by no script, `claude` is only the fallback client, so neither
+blocks the Codex route; what blocks is Andres (section 7, items 1 and 3): the Docker daemon (Docker Desktop started, then
+`check_tools.sh` again, then the image build) or the second account, his cap line, and the console reading (D12). Before
+the probe the operator must also create the `gene-mila-h` clone at the integration head or export `H_CLONE`, write
+`tier.txt` (`harness`, the D5 default) and `isolation.txt`; and the lead or the new agent fixes two things in the
+scripts: a failed probe cannot be rerun (the refusal files `h_probe.log`, `proxy/h_probe.jsonl`, `work/out/handback`
+`h_probe` and `block_h_stopped.txt` need a documented reset), and `run_biomni.py` cannot find `configs/default.toml` in
+Docker or account mode, so its cost pre-estimate is silently off (copy the file or pass `--miss-usd-per-mtok`).
+`docs/results/README.md` now lists PR #63's 1,200 files one by one; the next curation regroups it to one line per
+reading (the publication manifests keep the per-file list).

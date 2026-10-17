@@ -69,7 +69,7 @@ feature and the model without it disagree most, with matched negatives and expec
   the test was found unable to fail that class of feature; the test is fixed and the re-read is pending.
 - Block G (clean tier-1 knowledge, with and without the three tables, both datasets, 12 runs, $12.97 on the ledger):
   negative on both datasets. On Adamson none of 221 table-built features passes and the arm with the tables scored
-  lower out of fold (0.491 ± 0.004 against 0.526 ± 0.035); on Norman none of 174 passes and the tables made no
+  the lower out-of-fold mean, inside run-to-run noise (0.491 ± 0.004 against 0.526 ± 0.035); on Norman none of 174 passes and the tables made no
   difference (0.579 ± 0.008 against 0.578 ± 0.001). Under ROADMAP section 5 the agents' biology path is paused. The
   readings are on [#51](https://github.com/andresloak100/Gene-Mila/issues/51), in the Status of `GOAL_CRITERIA.md`, and
   in Astra's results PR [#63](https://github.com/andresloak100/Gene-Mila/pull/63), which also carries the corrected
