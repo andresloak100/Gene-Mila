@@ -329,3 +329,16 @@ The cap stays `67.26 47.264645 2026-10-17T01:52Z`; no new paid call occurred.
 Do not repeat preparation over its existing outputs, change the inputs/criteria/run pin, or bypass the failed check.
 The immediate next step is a read-only diagnosis of the public knowledge difference and a reviewed recovery
 that preserves the existing files; the chain and corrected F remain held.
+
+Read-only diagnosis (independently repeated by Astra and a second reader): both `gene_sets.json` files have
+5,773 identical keys and equal list values, but 2,293 dictionary key positions differ, all in the GO sections.
+`go_curated()` iterates the set from `_ancestors()`; separate Python processes use different hash iteration orders,
+and `build_clean_bundle.py` writes the insertion order without sorting. The other four shared knowledge files
+are byte-identical. Canonical compact sorted-JSON SHA256 is the same for both:
+`738be120526d87f75970fdddb1f45d1620e060dcd364498e9db23f9ed0e160be`.
+Raw hashes and absolute paths are in [the diagnosis receipt](results/block_g_prepare_refusal_20261017.json).
+The failed check is valid: plugins can observe order. A minimal stable GO-ordering source fix and regression
+are needed before any rebuild; do not edit the existing files or their manifests to force a pass. The proposed
+recovery preserves both unused Norman bundles and both table directories unchanged under dated archive names,
+then reruns the original preparation from a reviewed, tested operator checkout, retaining the same cap and run pin.
+No archive, source fix, retry, paid G run or corrected F re-read has been performed at this checkpoint.
