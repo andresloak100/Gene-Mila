@@ -65,7 +65,9 @@ Corrected pool: 174 tested, 16 cross-source duplicates, 158 unique; partial=fals
 null_too_coarse_need=null, found=[]/tier1=[]. No row passes the fixed complete-family criteria.
 Outputs norman_g_stage1/top/stage2/pooled_holm and unchanged norman_g_plugins/input manifest
 plus commands/logs/exits are retained. Both applicable nulls, coefficient signs and all gates remain fixed.
-Independent source/selection and post-score full-family/null/gate audits PASSED. All raw/pooled p values\nwere reconstructed from stored gains; coefficient signs and all fixed gates match. 59 proportional rows,\n56 with valid perturbation nulls; 3 full-view-only proportional rows correctly fail and remain excluded.
+Independent source/selection and post-score full-family/null/gate audits PASSED. All raw/pooled p values
+were reconstructed from stored gains; coefficient signs and all fixed gates match. 59 proportional rows,
+56 with valid perturbation nulls; 3 full-view-only proportional rows correctly fail and remain excluded.
 Raw pool retains legacy Block F/gene_annotation heading; scope here is Norman G/all three tables.
 
 **Current detached screen 69356.gm-g-norman-arm; actual Python PID 69359, nice 19.**
