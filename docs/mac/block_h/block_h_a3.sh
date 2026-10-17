@@ -2,8 +2,9 @@
 # Block H, arm A3 (docs/PLAN_H_COMPARISON.md): one autoresearch-style coding-agent session on a fresh copy of the task
 # package, 20 minutes, deepseek-v4-pro through the ledger proxy, web tools off, session cap $2.50. The client is
 # A3_CLIENT (block_h_common.sh; default codex, the Mac has codex and not claude, plan note of 2026-10-17): codex runs
-# run_codex.sh (the Codex CLI at CODEX_BIN, OpenAI chat-completions route /v1/chat/completions), claude runs
-# run_autoresearch.sh (Claude Code, DeepSeek's Anthropic-format route). Usage: block_h_a3.sh <seed 0|2|3>. No key in
+# run_codex.sh (the Codex CLI at CODEX_BIN, the wire format H_CODEX_WIRE_API: chat on the proxy's /v1/chat/completions
+# route in account mode, responses in Docker mode), claude runs run_autoresearch.sh (Claude Code, DeepSeek's
+# Anthropic-format route). Usage: block_h_a3.sh <seed 0|2|3>. No key in
 # it: DEEPSEEK_API_KEY must be in the environment.
 # H_A3_MODEL=deepseek-flash only after the probe showed that the client rejects the alias (a dated note in the plan).
 . "$(dirname "$0")/block_h_common.sh"
@@ -19,7 +20,7 @@ if [ "$A3_CLIENT" = codex ]; then
   # the runner takes the model from BASELINE_CODEX_MODEL (config.toml and -m) and the binary from CODEX_BIN; in Docker
   # the image's own codex, no sandbox inside the container (CODEX_SANDBOX=none: bwrap does not start unprivileged)
   if [ "$MODE" = docker ]; then cbin=codex; sbx=none; else cbin="$CODEX_BIN"; sbx=workspace-write; fi
-  agent_run "$name" env BASELINE_CODEX_MODEL="$model" CODEX_BIN="$cbin" CODEX_SANDBOX="$sbx" \
+  agent_run "$name" env BASELINE_CODEX_MODEL="$model" CODEX_BIN="$cbin" CODEX_SANDBOX="$sbx" CODEX_WIRE_API="$H_CODEX_WIRE_API" \
     bash "$TOOLS/run_codex.sh" "$PKG_IN" "$PROXY_URL" 20 "$S" "$OUT_IN"
 else
   # the runner takes the model from BASELINE_ANTHROPIC_MODEL and sets ANTHROPIC_MODEL and --model from it

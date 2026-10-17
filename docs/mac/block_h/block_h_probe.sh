@@ -18,18 +18,23 @@ agent_run "$name" "$TOOLS_PY" "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy
   --minutes 2 --seed 0 --out "$OUT_IN" --probe
 biomni_rc=$AGENT_RC
 proxy_down
-# 2. The A3 client, one turn ("Reply with the single word ok.") as the arm starts it:
-#    codex: run_codex.sh --probe, the private CODEX_HOME with the provider at <proxy>/v1 in the chat wire format (the
-#    proxy forwards /v1/chat/completions), the model alias, web search off, a read-only sandbox; its run.json lands in
+# 2. The A3 client, one short turn as the arm starts it:
+#    codex: run_codex.sh --probe, the prompt "Run the shell command `ls` and then reply with the single word ok." (one
+#    tool round trip: a shell call, its result, a second completion), the private CODEX_HOME with the provider at
+#    <proxy>/v1 in the wire format H_CODEX_WIRE_API (chat, the proxy's /v1/chat/completions route, in account mode;
+#    responses in Docker mode), the model alias, web search off, a read-only sandbox; its run.json lands in
 #    $O/codex_probe, beside Biomni's. It settles what the plan's note of 2026-10-17 lists as unverified: that this
-#    Codex starts on a custom provider with no login, accepts wire_api = "chat" (a 404 row on /v1/responses means it
-#    does not: Claude Code is the fallback, or the proxy gets that route first), and that the proxy prices the call.
-#    claude: one claude -p turn on DeepSeek's Anthropic-format route (the proxy forwards /anthropic/v1/messages), the
-#    model alias on a custom base URL, web tools off, as run_autoresearch.sh starts it.
+#    Codex starts on a custom provider with no login, accepts the wire format (a 404 row means it does not: Claude Code
+#    is the fallback, or the proxy gets the /v1/responses route first), that the proxy prices the call, and that the
+#    tool round trip completes (at least two status-200 rows in h_probe_codex.jsonl; a 400 after the first 200 means
+#    the route is unfit for the arm, plan note item 7).
+#    claude: one claude -p turn ("Reply with the single word ok.") on DeepSeek's Anthropic-format route (the proxy
+#    forwards /anthropic/v1/messages), the model alias on a custom base URL, web tools off, as run_autoresearch.sh
+#    starts it.
 if [ "$A3_CLIENT" = codex ]; then
   proxy_up "${name}_codex" 0.05
   if [ "$MODE" = docker ]; then cbin=codex; sbx=none; else cbin="$CODEX_BIN"; sbx=read-only; fi
-  agent_run "${name}_codex" env CODEX_BIN="$cbin" CODEX_SANDBOX="$sbx" \
+  agent_run "${name}_codex" env CODEX_BIN="$cbin" CODEX_SANDBOX="$sbx" CODEX_WIRE_API="$H_CODEX_WIRE_API" \
     bash "$TOOLS/run_codex.sh" --probe "$PKG_IN" "$PROXY_URL" 2 0 "$OUT_IN/codex_probe"
 else
   proxy_up "${name}_claude" 0.05
@@ -41,4 +46,4 @@ client_rc=$AGENT_RC
 proxy_down
 AGENT_RC=0; [ "$biomni_rc" = 0 ] && [ "$client_rc" = 0 ] || AGENT_RC="biomni=$biomni_rc,$A3_CLIENT=$client_rc"
 session_after "$name" probe deepseek-v4-pro 0.10 || exit 3
-echo "probe: biomni rc $biomni_rc, $A3_CLIENT rc $client_rc; served models, tokens and the other statuses (402 is the proxy's cap, 404 a wrong route, 502 the upstream) are in $H/$name.check.txt and $H/proxy/$name*.jsonl: record them in the plan's dated note before any fallback is disclosed"
+echo "probe: biomni rc $biomni_rc, $A3_CLIENT rc $client_rc; served models, tokens and the other statuses (402 is the proxy's cap, 404 a wrong route, 502 the upstream) are in $H/$name.check.txt and $H/proxy/$name*.jsonl: record them in the plan's dated note before any fallback is disclosed$([ "$A3_CLIENT" = codex ] && echo "; codex is cleared for A3 only with at least two status-200 rows in $H/proxy/${name}_codex.jsonl and no 400 (plan note item 7)")"

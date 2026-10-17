@@ -11,6 +11,10 @@ SHARED="/Users/Shared/genemila_h"                             # account mode: wh
 A3_CLIENT="${A3_CLIENT:-codex}"                               # the A3 coding agent: codex (run_codex.sh) or claude (run_autoresearch.sh); plan, note of 2026-10-17
 # the Codex CLI: on PATH if installed, else the one bundled with the ChatGPT desktop app (Astra, #41 comment 6228055333)
 CODEX_BIN="${CODEX_BIN:-$(command -v codex || echo /Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex)}"
+# the wire format run_codex.sh writes (CODEX_WIRE_API): chat on the proxy's /v1/chat/completions route (a bundled Codex of
+# 0.94.0 or older), or responses (needs the proxy's /v1/responses route first). Empty: chat in account mode, responses
+# in Docker mode (the image's npm Codex is a current build, responses-only); h_checks fills it in once MODE is read.
+H_CODEX_WIRE_API="${H_CODEX_WIRE_API:-}"
 unset API_KEY
 num() { case "$1" in ''|*[!0-9.]*|*.*.*) return 1 ;; esac; }
 ledger() { sqlite3 "$LEDGER" "select round(coalesce(sum(cost_usd),0),6) from spend where provider='deepseek'"; }
@@ -24,6 +28,8 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
   num "$CAP" && num "$START" && [ "$(echo "$CAP <= $START + 15" | bc)" = 1 ] \
     || no "no valid block cap in $H/block_h_cap.txt (docs/PLAN_H_COMPARISON.md, Money)"
   read -r MODE ACCOUNT 2> /dev/null < "$H/isolation.txt"
+  [ -n "$H_CODEX_WIRE_API" ] || { [ "$MODE" = docker ] && H_CODEX_WIRE_API=responses || H_CODEX_WIRE_API=chat; }
+  case "$H_CODEX_WIRE_API" in chat|responses) ;; *) no "H_CODEX_WIRE_API must be chat or responses" ;; esac
   case "$MODE" in
     docker) docker info > /dev/null 2>&1 || no "isolation.txt says docker, but the Docker daemon is not running"
             docker image inspect genemila-h > /dev/null 2>&1 || no "no image genemila-h (check_tools.sh)"
@@ -56,7 +62,7 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
   spent=$(ledger)
   num "$spent" && [ "$(echo "$spent >= $START" | bc)" = 1 ] && [ "$(echo "$spent + 2.50 <= $CAP" | bc)" = 1 ] \
     || { RC=2 no "ledger '$spent' unreadable, below the block's start $START, or plus the session's cap above the block cap $CAP"; }
-  echo "ok: checks; ledger \$$spent, block cap \$$CAP (ledger \$$START at $CAPDATE), isolation $MODE $ACCOUNT"
+  echo "ok: checks; ledger \$$spent, block cap \$$CAP (ledger \$$START at $CAPDATE), isolation $MODE $ACCOUNT, A3 client $A3_CLIENT$([ "$A3_CLIENT" = codex ] && echo " (wire format $H_CODEX_WIRE_API)")"
 }
 
 pkg_checks() {  # the package source: the tier Andres decided (tier.txt: harness or none), MANIFEST.json equal to the record

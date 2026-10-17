@@ -5,9 +5,12 @@
 #   tools/baselines/run_codex.sh [--dry-run] [--probe] <package dir> <proxy url> <minutes> <seed> <out dir>
 #
 # --probe (block_h_probe.sh, ROADMAP D6's $0.05 round): the same CODEX_HOME, provider and environment, but the prompt is
-# the one line "Reply with the single word ok.", the sandbox read-only, the limit 2 minutes; run.json carries probe=true
-# and the sha256 of that line. It shows whether this Codex starts on the custom provider, reaches the proxy, gets the
-# model served and priced, before the arm spends anything.
+# the one line "Run the shell command `ls` and then reply with the single word ok.", the sandbox read-only, the limit
+# 2 minutes; run.json carries probe=true and the sha256 of that line. It shows whether this Codex starts on the custom
+# provider, reaches the proxy, gets the model served and priced, and completes one tool round trip (a shell call, its
+# result, a second completion: at least two status-200 rows in the proxy log) before the arm spends anything. The
+# round trip is the part a one-word reply cannot show: on the chat route DeepSeek's thinking mode wants every earlier
+# turn's reasoning_content passed back when tools are present, and whether this Codex does that is unverified.
 #
 # Codex runs non-interactively (codex exec) with program.md as the prompt on stdin (exactly what the Biomni and Claude
 # Code arms get; its sha256 goes into run.json as task_sha256), cwd = the package directory, and an environment built
@@ -29,12 +32,19 @@
 # (Astra, 2026-10-17, #41 comment 6228055333; version unknown). Pass it as CODEX_BIN=<that path>.
 #
 # Wire format: $CODEX_WIRE_API, default "chat". With "chat" Codex speaks OpenAI chat completions, which the proxy's
-# existing /v1/chat/completions route serves and prices (stream_options.include_usage injected). UNVERIFIED on the Mac:
-# Codex builds from about February 2026 on removed `wire_api = "chat"` (they refuse the config with 'no longer
-# supported', github.com/openai/codex/discussions/7782) and speak the Responses API only, POST <base_url>/responses,
-# which the proxy does not serve today (a 404 row, no served model, so this script aborts the session). `codex
-# --version` on the Mac decides: an older build takes "chat"; a newer one needs a /v1/responses proxy route first and
-# CODEX_WIRE_API=responses. The Dockerfile installs a current npm build, so Docker mode needs that route.
+# existing /v1/chat/completions route serves and prices (stream_options.include_usage injected). Codex removed
+# `wire_api = "chat"` at rust-v0.95.0 (3 February 2026; such builds refuse the config with 'no longer supported',
+# github.com/openai/codex/discussions/7782) and speak the Responses API only, POST <base_url>/responses, which the
+# proxy does not serve today (a 404 row, no served model, so this script aborts the session); rust-v0.94.0 (2 February
+# 2026) is the last chat-capable release. `codex --version` on the Mac decides: 0.94.0 or older takes "chat"; a newer
+# one needs a /v1/responses proxy route first and CODEX_WIRE_API=responses. The Dockerfile installs a current npm
+# build, so Docker mode needs that route (block_h_common.sh sets the wire format to responses in Docker mode).
+#
+# Two differences from the Claude Code arm that no configuration removes, disclosed in run.json and the plan: Codex's
+# shell tool cuts a command at 10 s unless the model itself passes timeout_ms (DEFAULT_EXEC_COMMAND_TIMEOUT_MS in
+# codex-rs/core/src/exec.rs; no config key sets it), where run_autoresearch.sh gives Claude Code's Bash eval_timeout_s
+# + 30 s so one evaluation fits one call; and under macOS Seatbelt (account mode) the sandbox blocks the agent's
+# commands from the network, which program.md forbids anyway and Claude Code's Bash is only told.
 #
 # Isolation is the caller's job (Docker or a second macOS account holding only the package, ROADMAP D6): the Codex
 # sandbox (macOS Seatbelt under workspace-write: the package copy, /tmp and $TMPDIR writable, no network for the
@@ -48,16 +58,18 @@
 # That catches a Codex that ignores the provider (no line), a wire format the proxy does not serve (a 404 row) and a
 # model name the endpoint rejects (a non-200 row with no model).
 #
-# Flags (codex-rs sources and developers.openai.com/codex, read 2026-10-17, current main; none run against the Mac's
-# binary yet): `codex exec` (non-interactive; approval policy never is hard-coded there), a prompt argument of `-`
-# reads the prompt from stdin, -C/--cd <dir>, --sandbox read-only|workspace-write|danger-full-access,
-# --dangerously-bypass-approvals-and-sandbox, -m/--model, --json (JSONL events on stdout, usage in turn.completed),
-# -o/--output-last-message <file>, --skip-git-repo-check (the package copy is not a git repository; required),
-# --ephemeral (no session files). UNVERIFIED: that the Mac's bundled binary is a build that accepts these flags (an old
-# build may lack --ephemeral or --json; `codex exec --help` on the Mac settles it); that `codex exec` starts with no
-# auth.json in a fresh CODEX_HOME when the provider is custom with env_key and forced_login_method = "api" (if it
-# refuses, `codex login --with-api-key` into the scratch CODEX_HOME with the dummy token is the fix); that an old build
-# ignores the config keys it does not know (web_search as a string) rather than refusing them.
+# Flags (checked against codex-rs/exec/src/cli.rs at rust-v0.94.0, the last chat-capable release, and at current main,
+# read 2026-10-17; none run against the Mac's binary yet): `codex exec` (non-interactive; approval policy never is
+# hard-coded there), a prompt argument of `-` reads the prompt from stdin, -C/--cd <dir>, --sandbox
+# read-only|workspace-write|danger-full-access, --dangerously-bypass-approvals-and-sandbox, -m/--model, --json (JSONL
+# events on stdout, usage in turn.completed), -o/--output-last-message <file>, --skip-git-repo-check (the package copy
+# is not a git repository; required). Not used: --ephemeral, which first appears at rust-v0.99.0, a build with no chat
+# wire format; the session files land under the private CODEX_HOME instead. Config keys an old build does not know
+# (web_search as a string on main) are ignored, not refused: ConfigToml has no serde deny_unknown_fields at 0.94.0 or
+# main. UNVERIFIED: that the Mac's bundled binary accepts these flags (`codex exec --help` on the Mac settles it); that
+# `codex exec` starts with no auth.json in a fresh CODEX_HOME when the provider is custom with env_key and
+# forced_login_method = "api" (if it refuses, `codex login --with-api-key` into the scratch CODEX_HOME with the dummy
+# token is the fix).
 set -euo pipefail
 
 DRY_RUN=0; PROBE=0
@@ -70,7 +82,7 @@ if [ "${#ARGS[@]}" -ne 5 ]; then
   exit 2
 fi
 PKG="${ARGS[0]}"; PROXY="${ARGS[1]%/}"; MINUTES="${ARGS[2]}"; SEED="${ARGS[3]}"; OUT="${ARGS[4]}"
-PROBE_PROMPT="Reply with the single word ok."
+PROBE_PROMPT="Run the shell command \`ls\` and then reply with the single word ok."
 [ "$PROBE" = 1 ] && MINUTES=2
 BASELINE_CODEX_MODEL="${BASELINE_CODEX_MODEL:-deepseek-v4-pro}"   # DeepSeek's current name; unverified through Codex
 CODEX_BIN="${CODEX_BIN:-codex}"
@@ -114,13 +126,12 @@ cat > "$CODEX_HOME/config.toml" <<EOF
 # Written by tools/baselines/run_codex.sh for one block H A3 session (seed $SEED). Private to this session's CODEX_HOME.
 model = "$BASELINE_CODEX_MODEL"
 model_provider = "ledger_proxy"
-preferred_auth_method = "apikey"
 forced_login_method = "api"
 approval_policy = "never"
 sandbox_mode = "workspace-write"
-# web search off, both spellings: the current key (a string) and the deprecated toggle older builds read
+# web search off: the top-level key, a WebSearchMode string at rust-v0.94.0 and on main (the old toggle lived under
+# [tools], and its default is off)
 web_search = "disabled"
-web_search_request = false
 $CATALOG_LINE
 # no [mcp_servers.*] table: no MCP server is loaded
 
@@ -141,7 +152,7 @@ case "$CODEX_SANDBOX" in
   none) SANDBOX_FLAGS=(--dangerously-bypass-approvals-and-sandbox) ;;
   *) SANDBOX_FLAGS=(--sandbox "$CODEX_SANDBOX") ;;
 esac
-CMD=("$CODEX_BIN" exec --skip-git-repo-check --ephemeral -C "$PKG" "${SANDBOX_FLAGS[@]}" -m "$BASELINE_CODEX_MODEL"
+CMD=("$CODEX_BIN" exec --skip-git-repo-check -C "$PKG" "${SANDBOX_FLAGS[@]}" -m "$BASELINE_CODEX_MODEL"
      --json -o "$OUT/last_message.txt" -)
 # The whole environment codex gets (env -i), the dummy token included; nothing else of this shell.
 CHILD_ENV=(CODEX_HOME="$CODEX_HOME" LEDGER_PROXY_TOKEN="proxy-token-$SEED")
@@ -233,6 +244,8 @@ json.dump({"arm": "autoresearch", "client": "codex", "seed": int(seed), "model":
            "minutes": float(minutes), "probe": probe == "1", "package": pkg, "out": out, "proxy": proxy,
            "task_sha256": task_sha,
            "codex_bin": codex_bin, "wire_api": wire_api, "sandbox": sandbox, "codex_home": f"{out}/codex_home",
+           "shell_timeout": "codex default 10 s per command unless the model passes timeout_ms (no config key); "
+                            "the Claude Code arm gets eval_timeout_s + 30 s",
            "started": float(started), "ended": time.time(), "wall_s": round(time.time() - float(started), 1),
            "exit_code": int(code), "ended_by": ended_by, "error": abort or None}, open(f"{out}/run.json", "w"), indent=1)
 EOF
