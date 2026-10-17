@@ -165,7 +165,7 @@ def go_curated(gaf_path: Path, obo_path: Path, genes: set[str],
     members: dict[str, set[str]] = {}
     memo: dict = {}
     for go_id, syms in direct.items():
-        for anc in _ancestors(go_id, terms, memo):
+        for anc in sorted(_ancestors(go_id, terms, memo)):
             members.setdefault(anc, set()).update(syms)
     out = {}
     for go_id, syms in members.items():
