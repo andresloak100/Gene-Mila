@@ -4,24 +4,37 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Andres's NEW ordered handoff — Astra, 2026-10-17 03:22 UTC, claim/reporting issue #51.**
-Direct human instruction recorded[#51/comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
-Progress/results destination is NOW **#51**; all3existing G lines backfilled there, append-only receipt
-`genemila_scale_logs/block_g_posted_progress_51.txt`. Preserve older #41 posting receipt as history; no duplicate51posts.
-Last monitored:1/12passed, G1Adamsonseed0Python83910 active, screen67366.blockg/chain67368; Gunchanged/cap67.26.
-**Afterall12passed+cleanchainend+nootherlab/driver/heavyjob, EXACTNEW order:**
-1. Greadings1–4 BOTHdatasets perPLAN_G, tool1a95873or later; corrected fullstatus-okfamily/999null,no --k/--with-val1.
-2. CorrectedF stage2 EVERYstatus-okrow(66original),999reps,thenpool; preserveoldartifacts/newoutputs only.
-3. LeadH8 README's pre-run AND scoring commands BOTHdatasets; label lead'shypothesis, never agent-discoveryA.1.
-4. Post ALLreadings on51with source run dirs/armmean±sampleSD, open consolidateddraftPR with JSON/Markdown twins,
-plugins/manifests/receipts; proposedownbranch `astra/g-f-h8-readings`, exact toolpin recorded before reads.
-5. THEN export Adamson taskpackage from `data/adamson_cf_clean_tables` viaexistingexporttool; post SHA256 lines
-for MANIFEST.json/program.md on51. Keep package/data/harness out ofGit. No executing the exported challenge.
-**No paid run beyondG. Claude reads results and decides nextblock.** This overrides OLD F-before-G-readings order.
-WhileGactive doONLYsafe monitor/progress/check/processwork; no evaluation/H8pre-run/scoring/export/heavyjobs.
-Stop/report/pause on actual failures perplan, no retries/criteria/source/data/script/cap changes or unapprovedarm.
-Next: monitor G/posteachnewline51thenappendreceipt, update current run/check state; execute nothing else whilepaid.
-Older checkpoints below are history. No sealed summaries/logends/private/splits/handoff_state before prescribedreads.
+**Andres's current handoff — Astra, 2026-10-17 03:28 UTC; claim and reporting issue #51.**
+The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
+It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
+posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
+is history and must not suppress #51 posts.
+
+**G status:** 2/12 passed (Adamson G0/G1 seed0). Current `adamson_cf_g0_ds_w4_r2` started03:21UTC,
+actual Python8215, screen67366.blockg/chain67368. Last checked03:27UTC; no stopped marker. G1r0 finished rc0,
+ledger48.994792, cost1.282676; post-checks clean. New progress lines posted on #51 and appended to its receipt.
+Current run's 90-minute backstop is04:51UTC if that same run remains active. Cap67.26/original record,
+research pinbaa7dfd, source bundles and scripts stay unchanged. No evaluation has started.
+
+**After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
+1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
+   999 null replicates, no --k or --with-val1; preserve every JSON/Markdown twin, plugin hash and command receipt.
+2. Corrected F stage2 over every original status-ok row (66), 999 replicates, then pool into new output paths.
+3. Lead H8 README's pre-run and scoring commands on BOTH datasets; label the lead's hypothesis, never agent A.1.
+4. Post all results on #51 with run directories and arm mean±sampleSD; open one consolidated draft PR with files,
+   proposed own branch `astra/g-f-h8-readings`, tool commit pinned before scoring. Do not merge.
+5. Then export Adamson task package from `data/adamson_cf_clean_tables` with the existing export tool and post the
+   MANIFEST.json/program.md SHA256 lines. Check both output and sibling export-record paths absent; no raw package,
+   harness or data in Git and no manual private/split/label reads. Export-only does not start H or an agent.
+
+A source-only H8 parent-name question is recorded in [comment6229018744](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229018744):
+Adamson's parent omits additive_response, so a proportional row may name mean_response; README names additive_response.
+Claude was asked to clarify before H8. No formula, parent or acceptance rule will be changed silently; G/F proceed first.
+
+**No paid run beyond G. Claude reads the results and decides the next block.** While G runs, only safe monitoring,
+posting and state work: no evaluation/H8 pre-run/export/heavy jobs. Stop/report/pause on actual command/check failures;
+no retries, criteria/source/data/script/cap changes, summaries/log endings/seals or handoff_state before prescribed reads.
+The heartbeat is active with this new order. Older checkpoints below are history.
 
 **G milestone — Astra, 2026-10-17 03:01 UTC, claim #51: 1/12 passed; Adamson table arm seed0 active.**
 `adamson_cf_g0_ds_w4_r0` finished02:59UTC rc0, ledger47.712116, runcost.447471; .passed/check good,
