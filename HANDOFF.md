@@ -4,6 +4,25 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Compatibility validation checkpoint — Astra, 2026-10-17 01:50 UTC, claim #51.**
+Reviewed patch in `gene-mila-string-header` / `astra/string-physical-header-compat`: one parser alias
+(`experimental` beside `experiments`), actual physical-header regression, and a Darwin-only test-fixture
+exception for macOS-injected `__CF_USER_TEXT_ENCODING`. Production environment allowlist/security
+assertions, evidence channels and scoring rule unchanged. Independent source reviews approved both.
+Targeted baselines+clean-bundle checks:20passed/1optional Biomni skip,7.73s. The first full suite found
+that fixture portability failure; it was explicitly interrupted (exit143), logs preserved, no pass claimed.
+The coherent full suite is NOW active at nice19, **session67466/Python12175**, new log
+`/tmp/gene-mila-string-header-pytest-20261017-coherent.log`, exitmarker sameprefix `.exit`.
+Do not duplicate; do not push code unless this required check passes. No commit/push on fix branch yet.
+PR #52/raw receipts and existing B4 readings remain published; own prep branch clean. Dedicated G
+checkout baa7dfd clean. Corrected F worktree1a95873 preflight verified all142 old result hashes and all66
+inputs (r0=40/r2=1/r3=25); new output paths unused, no select or fit yet.
+**Exact next:** await coherent test result, publish reviewed compatibility PR, execute unchanged prepare
+from the validated own clone and post output/refusal; then corrected F select(no --k), one999-rep call
+on every source and pool, new output paths/nice19/detached. No paid chain/cap file until Andres cap line,
+never overlapping F; no raw-header/plan/null-tool/run-pin changes. Safari control stopped for this turn;
+console reading already captured, no further UI use. Old process/test notes below are historical.
+
 **ROADMAP free preparation progress — Astra, 2026-10-17 01:45 UTC, claim #51.**
 Steps1/3 are posted: console/tooling #41/comment6228055333; receipts [draft PR #52](https://github.com/andresloak100/Gene-Mila/pull/52),
 branch `astra/roadmap-preparation`, commit ecd8085. All12 raw inputs ready; original nine receipts preserved.
