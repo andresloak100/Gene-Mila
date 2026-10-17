@@ -7,13 +7,14 @@ the comparison driver, read from disk rather than from anyone's memory.
 Prints, as Markdown (or JSON with --json): the git state; every run directory with its arm, code commit
 and state (finished with a summary, in progress, killed before its summary, contaminated or interrupted)
 and its headline numbers; spend per provider from the shared ledger; whether a lab run or driver process
-is alive; and the tail of the driver's progress file plus the head of STATE.md (the state whoever runs something on
+is alive; and the tail of the driver's progress file plus the latest notes in STATE.md (the state whoever runs something on
 the machine writes there) when a log directory is given or found.
 """
 
 import argparse
 import json
 import os
+import re
 import sqlite3
 import subprocess
 import time
@@ -71,7 +72,58 @@ def ledger_of(cfg: dict, run_dir: Path) -> Path | None:
     return path.resolve() if path.is_absolute() else (REPO_ROOT / path).resolve()
 
 
-def run_state(d: Path, shared_ledger: Path | None = None) -> dict:
+def stop_evidence(logs: Path | None, run_names: set[str]) -> tuple[dict, set[str], list[str]]:
+    """Read explicit, small operational markers, never run logs or their sealed-score tails.
+
+    Return standardized reasons, runs whose evidence could not be checked, and safe warnings.
+    Marker contents and exception messages are deliberately not copied into the report.
+    """
+    evidence, incomplete, warnings = {}, set(), []
+    if logs is None:
+        return evidence, incomplete, warnings
+    try:
+        markers = sorted(p for p in logs.iterdir() if
+                         ("_stopped" in p.name and p.name.endswith(".txt")) or
+                         (p.name.endswith(".backstop.txt") and p.name[:-13] in run_names))
+    except OSError:
+        return {}, set(run_names), ["Cannot inspect stop evidence directory; run status is unverified."]
+    record = re.compile(r"^(?:\d{4}-\d{2}-\d{2}T\S+\s+)?([^:\s]+):\s*(.*)$")
+    for path in markers:
+        backstop_run = path.name[:-13] if path.name.endswith(".backstop.txt") else None
+        affected = {backstop_run} if backstop_run else run_names
+        try:
+            with path.open() as f:
+                content = f.read(65537)
+            if len(content) > 65536:
+                raise ValueError("stop marker too large")
+        except (OSError, UnicodeError, ValueError):
+            incomplete.update(affected)
+            warnings.append(f"Cannot read stop evidence {path.name}; affected run status is unverified.")
+            continue
+        matched = False
+        for line in content.splitlines():
+            match = record.match(line)
+            if not match or match[1] not in run_names or (backstop_run and match[1] != backstop_run):
+                continue
+            if backstop_run and not re.search(r"\bterminated\b", match[2], re.IGNORECASE):
+                continue
+            matched = True
+            reason = "block stop recorded"
+            if backstop_run:
+                reason = "backstop termination recorded"
+            elif re.search(r"\b(killed|interrupted)\b", match[2], re.IGNORECASE):
+                reason = "killed or interrupted"
+            item = {"reason": reason, "file": path.name}
+            if item not in evidence.setdefault(match[1], []):
+                evidence[match[1]].append(item)
+        if backstop_run and not matched:
+            incomplete.add(backstop_run)
+            warnings.append(f"No matching run identity in {path.name}; run status is unverified.")
+    return evidence, incomplete, warnings
+
+
+def run_state(d: Path, shared_ledger: Path | None = None, evidence: list[dict] | None = None,
+              evidence_incomplete: bool = False) -> dict:
     name = d.name
     cfg = json.loads((d / "config.json").read_text()) if (d / "config.json").exists() else {}
     out = {"dir": name, "arm": run_arm(cfg) if cfg else "?", "workers": cfg.get("run", {}).get("workers"),
@@ -85,6 +137,16 @@ def run_state(d: Path, shared_ledger: Path | None = None) -> dict:
     if name.endswith("_contaminated") or name.endswith("_interrupted"):
         out["state"] = "excluded (" + name.rsplit("_", 1)[1] + ")"
     summary = d / "summary.json"
+    if evidence or evidence_incomplete:
+        details = list(dict.fromkeys(e["reason"] for e in evidence or []))
+        if evidence_incomplete:
+            details.append("stop evidence unavailable")
+        details.append("summary exists" if summary.exists() else "no summary")
+        if evidence:
+            out["stop_evidence"] = evidence
+            details.append("evidence: " + ", ".join(dict.fromkeys(e["file"] for e in evidence)))
+        status = ("stopped" if evidence else "status unverified") + " (" + "; ".join(details) + ")"
+        out["state"] = out["state"] + "; " + status if "state" in out else status
     if summary.exists():
         s = json.loads(summary.read_text())
         out.setdefault("state", "finished")
@@ -159,14 +221,19 @@ def main():
     runs_dir = Path(args.runs)
     ledger = Path(args.ledger) if args.ledger else runs_dir / "spend_ledger.sqlite"
     logs = Path(args.logs) if args.logs else next((d for d in LOG_DIRS if d.exists()), None)
-    runs = sorted((run_state(d, ledger) for d in runs_dir.iterdir() if d.is_dir()), key=lambda r: r["dir"]) if runs_dir.exists() else []
+    run_dirs = sorted(d for d in runs_dir.iterdir() if d.is_dir()) if runs_dir.exists() else []
+    evidence, incomplete, evidence_warnings = stop_evidence(logs, {d.name for d in run_dirs})
+    runs = [run_state(d, ledger, evidence.get(d.name), d.name in incomplete) for d in run_dirs]
+    state_file = logs / "STATE.md" if logs and (logs / "STATE.md").exists() else None
+    state_lines = state_file.read_text().splitlines() if state_file else []
     state = {"checked_at": time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()), "repo": str(REPO_ROOT),
              "git": git_state(REPO_ROOT, fetch=args.fetch), "runs": runs, "ledger": ledger_totals(ledger), "ledger_path": str(ledger),
              "ledger_bypass": [r["dir"] for r in runs if r.get("paid") and r.get("ledger_ok") is False],
              "processes": processes(),
              "progress_tail": (logs / "progress.md").read_text().splitlines()[-15:] if logs and (logs / "progress.md").exists() else [],
-             "state_file": str(logs / "STATE.md") if logs and (logs / "STATE.md").exists() else None,
-             "state_head": (logs / "STATE.md").read_text().splitlines()[:40] if logs and (logs / "STATE.md").exists() else [],
+             "state_file": str(state_file) if state_file else None,
+             "state_head": state_lines[:40], "state_tail": state_lines[-40:],
+             "stop_evidence_warnings": evidence_warnings,
              "stop_file": bool(logs and (logs / "STOP").exists())}
     if args.json:
         print(json.dumps(state, indent=1, default=str))
@@ -190,6 +257,8 @@ def main():
                  f"{f(r.get('completed'))} | {f(r.get('best_visible'))} | {f(r.get('best_sealed'))} | {f(r.get('worker_usd'), 2)} |")
     if not runs:
         L.append("(no run directories)")
+    for warning in state["stop_evidence_warnings"]:
+        L += ["", "**WARNING:** " + warning]
     if state["ledger_bypass"]:
         L += ["", "**WARNING: paid runs not on the shared ledger** (their spend does not count toward the cumulative cap): "
               + ", ".join(f"{r['dir']} (ledger: {r.get('ledger') or 'none'})" for r in runs if r["dir"] in state["ledger_bypass"])]
@@ -204,8 +273,8 @@ def main():
         L.append("- a STOP file is present: the driver halts after its current step")
     if state["progress_tail"]:
         L += ["", "## Driver progress (tail)", ""] + state["progress_tail"]
-    if state["state_head"]:
-        L += ["", f"## State written on the machine (`{state['state_file']}`, first 40 lines)", ""] + state["state_head"]
+    if state["state_tail"]:
+        L += ["", f"## Latest appended state notes (`{state['state_file']}`, last 40 lines)", ""] + state["state_tail"]
     print("\n".join(L))
 
 
