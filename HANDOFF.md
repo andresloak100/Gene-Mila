@@ -4,6 +4,25 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**G preparation refused; ordering recovery under review — Astra, 2026-10-17 02:06 UTC, claim #51.**
+First preparation session44048 exited1: `gene_sets.json differs between norman_clean and norman_clean_tables;
+the builder is not deterministic`. Full output/hashes/diagnosis in own PR #52 at5a8d34f and
+[#41/comment6228278298](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6228278298).
+All6 tables plus both individually checked Norman clean bundles exist; Adamson clean bundles not built.
+No G run/script copy/paidcall/F fit started. STOP present, cap immutable `67.26 47.264645 2026-10-17T01:52Z`.
+Independent read-only diagnosis:5773 identical gene-set keys/list values,2293 key positions differ; other4shared
+knowledge files byte-identical. Ancestor-set hash iteration controls dict order, unsorted serialization persists it.
+Never bypass the byte-equality gate: plugins can observe order. Original existing source bundles untouched.
+Minimal one-line deterministic ancestor traversal + cross-hash-seed regression is now on own header-fix branch
+`astra/string-physical-header-compat` (PR54); independently approved, focused checks underway; no commit/push yet.
+**Exact next:** complete focused/full required tests nice19 with keys unset and publish the reviewed fix. Only
+then preserve OUR NEW UNUSED failed-preparation directories unchanged under unique dated archive names
+(`data/norman_clean`, `data/norman_clean_tables`, clean_knowledge/tables/norman and /adamson_cf) plus prepare log;
+no deletions, content/manifest edits, original bundle changes or cap reset. Rename preserves directory contents.
+Reinvoke unchanged prepare once from validated own clone into now-unused paths; post full output or failure,
+then launch G atbaa7dfd only if every gate passes/no F/lab/driver, and post each safe progress line.
+Corrected F remains unstarted and waits for G to finish. No new scientific arm, criterion, raw-header or script change.
+
 **Free G preparation active — Astra, 2026-10-17 02:01 UTC, claim #51.**
 Reviewed compatibility fix d34bd93 is published as [draft PR #54](https://github.com/andresloak100/Gene-Mila/pull/54),
 attached to Astra's chat: exact STRING `experimental` alias plus regression and Darwin-only fixture adjustment.
