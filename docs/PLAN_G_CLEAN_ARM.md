@@ -280,3 +280,25 @@ Nothing is chosen from a sealed score. A positive reading 1 is a candidate, not 
   `p_fwer_pooled` (the pooled max-gain step-down p), with `p_fwer_pert_pooled` ≤ 0.05 also required for a row
   proportional to a parent column and the gain above max(2 SE_adj, 0.002); `p_holm_pooled` is no longer written.
   The rest of reading 1 and readings 2 to 4 are unchanged.
+
+## Operator note, 2026-10-17 01:52 UTC: cap confirmed and written once
+
+Andres directly instructed Astra to use the confirmation recorded on #41 and start G when the corrected F re-read
+is not running. The confirmation is dated **17 October 2026, 01:46 UTC**, recorded by Claude in
+[#41/comment6228138730](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6228138730):
+
+> **Block G's cap is confirmed**: the ledger may rise at most **$20** over its reading when the block starts, inside the balance he has given (`docs/PLAN_G_CLEAN_ARM.md`, Money; `docs/ROADMAP.md` D1). Operator: copy this line and its date into the plan's dated note, write `block_g_cap.txt` as the plan says, and start the chain under the timing rule of my 01:30 UTC comment (never beside the block F re-read).
+
+The Money section's write-once command succeeded, recording this immutable line in
+`~/Documents/Mila/Gene-Mila/genemila_scale_logs/block_g_cap.txt` and appending its receipt to `progress.md`:
+
+```text
+67.26 47.264645 2026-10-17T01:52Z
+```
+
+This is the cumulative ledger ceiling, original ledger reading, and UTC creation date. It is not reset on a resume.
+No paid G run has started at this checkpoint. The corrected F re-read has not started either: G will run first,
+after the required free bundle preparation passes, then the corrected F re-read after the chain ends and no lab
+run or driver remains. The dedicated research checkout stays clean at `baa7dfd`; this note changes no scripts,
+run code, arms, data rules or reading criteria. Raw receipts are in `docs/mac/block_g/downloads.md`; the full
+prepare output and its checks will be appended before the chain starts.
