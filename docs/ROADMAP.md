@@ -283,3 +283,15 @@ adapter exists, since it needs the same new-target prediction path.
 - D5: the harness tier is on by default in the exported package until Andres vetoes it (section 7, item 3); a package
   exported with `--no-harness-val1` keeps the protocol's earlier rules. The sentence recording this in `AGENTS.md`
   (Scientific integrity) carries his veto line.
+
+## Note, 2026-10-17 02:00 UTC: Andres's answer to section 7, item 4
+
+"If we have solid data and good evidence we can do a collab with a lab and they will do the wet lab" (Andres, 17 October;
+recorded on #41). So A.5 is reachable through a collaboration and the biology path is not capped at methods-level by
+the lack of a bench. The order of blocks does not change. What changes: the wet-lab candidate tool of D13 is built as
+soon as the frozen adapter of D7 exists, because a collaborating lab needs the prediction package (about ten
+perturbations in no dataset where the model with the feature and the model without it disagree most, matched
+negatives, expected effect sizes, the power at the cell counts a Perturb-seq or qPCR readout gives), and "solid data"
+means A.1 on the clean bundle under the corrected test, A.2, A.3, A.4 and A.6. The bottleneck for goal (a) is now
+novelty (A.6) and replication (A.3, A.4), not A.5. The odds in section 1 do not move for this window: no candidate
+exists yet.
