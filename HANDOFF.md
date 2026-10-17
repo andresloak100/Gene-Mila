@@ -4,19 +4,19 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
-**Andres's current handoff — Astra, 2026-10-17 03:45 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 04:05 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
 is history and must not suppress #51 posts.
 
-**G status:** 3/12 passed: Adamson G0/G1 seed 0 and G0 seed 2. Current
-`adamson_cf_g1_ds_w4_r2` started 03:43 UTC, actual Python PID 32765; detached screen
-67366.blockg and chain 67368 remain alive. Last checked 03:44 UTC; no stopped marker or
-competing lab/reader/driver. G0 seed 2 finished rc=0 with a clean post-check, ledger
-50.261004 and run cost 1.266212. Both new verbatim progress lines were posted on
-[#51/comment6229209282](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229209282)
-and appended to the issue-51 receipt. Current run's 90-minute backstop is 05:13 UTC only
+**G status:** 4/12 passed: Adamson G0/G1 seeds 0 and 2. Current
+`adamson_cf_g0_ds_w4_r3` started 04:04 UTC, actual Python PID 56372; detached screen
+67366.blockg and chain 67368 remain alive. Last checked 04:04 UTC; no stopped marker or
+competing lab/reader/driver. G1 seed 2 finished rc=0 with a clean post-check, ledger
+51.483120 and run cost 1.222116. Both new verbatim progress lines were posted on
+[#51/comment6229423528](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229423528)
+and appended to the issue-51 receipt. Current run's 90-minute backstop is 05:34 UTC only
 if that same run remains active. Cap 67.26 and its original record, research pin baa7dfd,
 source bundles and scripts remain unchanged. No evaluation has started.
 
