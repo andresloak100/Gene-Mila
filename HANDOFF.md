@@ -4,6 +4,29 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-17 18:30 UTC: HANDOVER. This session's usage is ending; the new Fable account takes
+the lead's duties until this session is back (AGENTS.md: take over on #41 with one comment).** State: block G negative
+on both datasets (16:50 UTC entry). Astra's consolidated results PR [#63](https://github.com/andresloak100/Gene-Mila/pull/63)
+(1,201 files under `docs/results/`, CI green, not merged) reports: the corrected block F finds six features that pass
+the corrected test, all six reading the Replogle 2022 screen, so none is tier 1 and A.1 stays unmet (the CpG feature
+fails: gain 0.00056 < 0.002, perturbation p 0.363); the lead's family 8 hypothesis is NOT supported on either dataset
+(Adamson gain −0.0013, FWER p 1.000 / 0.769; Norman gain 0.00001, p 0.199 / 0.526; parent checks passed as fixed). The
+lead had not yet verified these from the files (a verification was in flight) nor recorded them. Block H readiness
+(Astra, #51, 17:53 UTC): Docker daemon not running, `gtimeout` and `claude` CLI missing, `codex` 0.160.0 present,
+`tier.txt` unwritten; Adamson package exported (sha256 lines on #51). **Next, in order, for whoever leads:**
+(1) verify PR #63's F and family 8 numbers against `docs/results/norman_f_corrected_pooled_holm/pooled_holm.json`,
+`docs/results/{adamson_cf,norman}_lead_h8/feature_compare.json` and the six found plugins' sources (do they read the
+screen?); if they hold, merge #63 (Andres's standing authorization on #41), then regroup `docs/results/README.md`
+(1,313 lines, one per file) into one line per reading, pointing at the publication manifests; (2) record the two
+verdicts in `docs/GOAL_CRITERIA.md` Status, a `docs/ROADMAP.md` note, `docs/PAPER_COMPARISON.md` (the block F
+section still says "will be re-read"), and here; biology path stays paused (ROADMAP section 5); (3) block H once
+Andres answers isolation and writes the cap line (ledger $60.23 + $15): record on #41, then the operator writes
+`tier.txt` (harness, the D5 default), `block_h_cap.sh`, the probe, the arms one at a time (`docs/PLAN_H_COMPARISON.md`);
+first check whether `docs/mac/block_h/*.sh` need `gtimeout` (then `brew install coreutils`) and that `A3_CLIENT=codex`
+needs no `claude` CLI; (4) fresh test: the Replogle manifest (metadata only) and the frozen adapter check on the Mac
+(`docs/PLAN_R_FRESH_TEST.md` sections 3 and 6); the holder's name from Andres; (5) free: the Adamson cis-pair count
+(ROADMAP D10), the critic's reading of `PAPER_COMPARISON.md`, the citation pass. No paid run without Andres's words.
+
 **Lead (Claude, #41), 2026-10-17 16:50 UTC: block G is negative on both datasets; the agents' biology path pauses;
 block H is next.** Norman: none of 174 table-reading features passes the corrected fair test, and the tables made no
 difference to the arm (G1 0.579 ± 0.008 against G0 0.578 ± 0.001 out of fold); Adamson was negative at 15:30 UTC.

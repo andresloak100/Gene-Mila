@@ -68,11 +68,13 @@ feature and the model without it disagree most, with matched negatives and expec
   targets' promoter CpG content" in two of three runs. It is known biology, and its first "pass" was withdrawn when
   the test was found unable to fail that class of feature; the test is fixed and the re-read is pending.
 - Block G (clean tier-1 knowledge, with and without the three tables, both datasets, 12 runs, $12.97 on the ledger):
-  on Adamson none of 221 table-built features passes, and the arm with the tables scored lower out of fold than the
-  arm without (0.491 ± 0.004 against 0.526 ± 0.035, three runs a side, descriptive). Norman's reading is running. The
-  Adamson reading is on [#51](https://github.com/andresloak100/Gene-Mila/issues/51) and in the Status of
-  `GOAL_CRITERIA.md`; the result files go to `docs/results/block_g/` when Astra's pull request lands
-  ([`results/README.md`](results/README.md) indexes every result).
+  negative on both datasets. On Adamson none of 221 table-built features passes and the arm with the tables scored
+  lower out of fold (0.491 ± 0.004 against 0.526 ± 0.035); on Norman none of 174 passes and the tables made no
+  difference (0.579 ± 0.008 against 0.578 ± 0.001). Under ROADMAP section 5 the agents' biology path is paused. The
+  readings are on [#51](https://github.com/andresloak100/Gene-Mila/issues/51), in the Status of `GOAL_CRITERIA.md`, and
+  in Astra's results PR [#63](https://github.com/andresloak100/Gene-Mila/pull/63), which also carries the corrected
+  block F re-read (six passing features, all reading the Replogle screen, so none tier 1) and the lead's family 8
+  hypothesis (not supported on either dataset); the lead verifies and records them, see `HANDOFF.md` section 1.
 - Built, tested, not yet run: the comparison (block H: Biomni and a Codex-based autoresearch loop through a ledger
   proxy with caps, the one-worker lab, a scripted control, CellForge's translated ideas;
   [`PLAN_H_COMPARISON.md`](PLAN_H_COMPARISON.md)), the fresh-test tooling, the wet-lab package tool
@@ -134,24 +136,23 @@ a powered question can be stated, an ENCODE K562 table.
 
 ## 7. What the lead is doing now, and how a new agent can help
 
-The lead's live work is in `HANDOFF.md` section 1 (its dated entries) and on #41. As of this brief: waiting for the
-Norman reading of block G, the block F re-read and the family 8 scoring (Astra, #51); then the decision on the biology
-path (pause, or the ENCODE block under ROADMAP D10); then block H once Andres has said how the foreign agents are
-isolated on the Mac (Docker or a second account; its cap is answered). Also open for Andres: the fresh-test holder.
+The lead's live work is in `HANDOFF.md` section 1 (its dated entries, newest first) and on #41. The entry of
+2026-10-17 18:30 UTC is a handover: the lead's session was running out of usage, and its numbered list there is the
+work in order. A new Fable account with access to the Mac and the DeepSeek key takes it as follows, after one line on
+#41 (who you are, which items, your branch `claude/<topic>`), and comments on #41 that it is taking over the lead's
+claim if the lead has not written for a day:
 
-Tasks a new agent can take now, after asking the lead on #41 (one line: who you are, which task, your branch):
+1. **Verify and land Astra's results PR #63**, then record the verdicts (HANDOFF entry of 18:30 UTC, items 1 and 2).
+   Needs the repository only. Merging is the lead's act under Andres's standing authorization on #41.
+2. **Block H** (items 3 of that entry; `PLAN_H_COMPARISON.md`): wait for Andres's isolation answer and cap line, record
+   them on #41, then run the free preparation and, one session at a time, the probe and the arms; Astra operated the
+   earlier blocks and may operate this one, or you may, but never both at once. Needs the Mac.
+3. **The fresh test** (item 4; `PLAN_R_FRESH_TEST.md` sections 3 and 6): the Replogle slice manifest from the file's
+   obs and var only, and the frozen adapter check; the holder's name is Andres's. Needs the Mac, no paid run.
+4. **Free side work** (item 5): the Adamson cis-pair count for ROADMAP D10, a critic's reading of
+   `PAPER_COMPARISON.md` and `PLAN_H_COMPARISON.md` posted as findings on #41, the citation pass of
+   `CANDIDATE_LITERATURE_CHECK.md`. Needs the repository and the web.
 
-1. **The ENCODE K562 table** (ROADMAP D10, deferred; `tools/build_encode_k562.py` does not exist yet): a per-gene
-   table of unperturbed-K562 chromatin and binding (promoter accessibility, histone marks, CTCF, TF ChIP-seq occupancy
-   of the perturbed TFs, loop and domain membership from Hi-C), in the shape of `tools/build_gene_annotation.py`'s
-   output, built from ENCODE's processed files, with tests; no run until a powered question is pre-registered. Needs a
-   container with web access, no data.
-2. **The citation pass** of `CANDIDATE_LITERATURE_CHECK.md` (ROADMAP section 6, step 11, listed for Astra; take it
-   only if the lead reassigns it): re-check every entry independently, including the figure-level claims still marked
-   UNVERIFIED (Konermann 2015, Chavez 2016, Gilbert 2014, Kang and Brent 2022), mark each, and post the result on
-   #41. Needs web access only.
-3. **A critic's reading** of `PAPER_COMPARISON.md` and `PLAN_H_COMPARISON.md`: what a reviewer would reject, posted
-   as findings on #41. Needs nothing but the repository.
-
-An agent with access to the Mac takes nothing there without the lead's assignment on #41, because one operator's
-chain and readings are usually running.
+An agent with access to the Mac starts no paid run without Andres's own words, never edits the main checkout
+`~/Documents/Mila/Gene-Mila/gene-mila`, and runs nothing heavy while another operator's job is live (`pgrep -fl
+run_research.py`; Astra's state is at the top of `HANDOFF.md` section 1).
