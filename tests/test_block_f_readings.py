@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -58,7 +59,7 @@ def _setup(tmp: Path):
     return plugins
 
 
-def test_select_copies_every_row_by_default_and_warns_on_k(tmp_path, capsys):
+def test_select_copies_every_row_by_default_and_refuses_k_without_partial(tmp_path, capsys):
     plugins = _setup(tmp_path)
     rec = bfr.select(tmp_path / "stage1.json", plugins, tmp_path / "top")
     assert rec["m_total"] == 7 and rec["null_reps"] == 999 and rec["k"] is None
@@ -66,7 +67,10 @@ def test_select_copies_every_row_by_default_and_warns_on_k(tmp_path, capsys):
                                                                         ("f_r3", "ga_a2")]
     assert len(list((tmp_path / "top").rglob("*.py"))) == 7
     assert "warning" not in capsys.readouterr().err
-    rec = bfr.select(tmp_path / "stage1.json", plugins, tmp_path / "top3", k=3, null_reps=1999)
+    with pytest.raises(SystemExit, match="partial"):
+        bfr.select(tmp_path / "stage1.json", plugins, tmp_path / "top3", k=3)
+    assert not (tmp_path / "top3").exists()
+    rec = bfr.select(tmp_path / "stage1.json", plugins, tmp_path / "top3", k=3, null_reps=1999, partial=True)
     assert rec["null_reps"] == 1999 and len(rec["selected"]) == 3
     assert sorted(p.relative_to(tmp_path / "top3").as_posix() for p in (tmp_path / "top3").rglob("*.py")) == [
         "r2/ga_a.py", "r2/ga_p.py", "r3/ga_a2.py"]
@@ -90,6 +94,7 @@ def test_pool_runs_the_step_down_over_the_unique_union_with_both_nulls_and_the_m
     rec = bfr.pool(tmp_path / "stage1.json", tmp_path / "stage2.json", plugins, tmp_path / "pooled")
     assert rec["stage1_rows"] == 7 and rec["tested"] == 6 and rec["duplicates"] == 2 and rec["family"] == 5
     assert rec["null_reps"] == 999 and rec["null_too_coarse_need"] is None
+    assert rec["partial"] is False and rec["untested"] == []
     by = {(r["source"], r["feature"]): r for r in rec["rows"]}
     a = by[("f_r2", "ga_a")]
     assert a["found"] and a["found_tier1"] and a["p_fwer_pooled"] <= 0.05 and a["duplicate_of"] is None
@@ -111,6 +116,14 @@ def test_pool_runs_the_step_down_over_the_unique_union_with_both_nulls_and_the_m
     assert all(r["p_fwer_pooled"] >= r["p"] - 1e-12 for r in rec["rows"] if r["p_fwer_pooled"] is not None) and fw
     md = (tmp_path / "pooled" / "pooled_holm.md").read_text()
     assert md.count("**yes**") == 3 and "max(2 SE_adj, 0.002)" in md and "additive_response" in md
+    # a stage 2 that omits one stage-1 row (--k, or a failed file) is partial: the subset step-down finds nothing
+    stage2["rows"] = [x for x in stage2["rows"] if x["feature"] != "ga_d"]
+    (tmp_path / "stage2b.json").write_text(json.dumps(stage2))
+    rec = bfr.pool(tmp_path / "stage1.json", tmp_path / "stage2b.json", plugins, tmp_path / "pooled_b")
+    assert rec["partial"] is True and rec["untested"] == ["ga_d (f_r3)"] and rec["family"] == 4
+    assert not any(r["found"] for r in rec["rows"])
+    assert rec["rows"][0]["p_fwer_pooled"] is not None  # the p values are still written, flagged as partial
+    assert "not a family-wise reading" in (tmp_path / "pooled_b" / "pooled_holm.md").read_text()
 
 
 def test_pool_refuses_a_report_without_gains_and_says_when_the_null_is_too_coarse(tmp_path):

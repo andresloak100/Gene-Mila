@@ -45,12 +45,16 @@ Why each step is the way it is:
   permutation of replicate b is a function of (null seed, b) alone, shared by every row of the call, so the joint
   null keeps the dependence between candidates; each row stores its B null gains (null.gains, null_pert.gains) and
   p_fwer is the step-down p, with the Holm p of the raw null p kept as p_holm for comparison. The verdict uses
-  p_fwer. The floor is 1/(B+1); the default B is 999 (floor 0.001), and a family of more than one row with fewer
-  than 999 replicates is reported as "null too coarse", not blamed on the feature.
+  p_fwer. The floor is 1/(B+1); the default B is 999 (floor 0.001), and a family of any size with fewer than 999
+  replicates is reported as "null too coarse", not blamed on the feature (a family of one at 19 replicates would
+  put the floor 1/20 at the cutoff, so "pass" would mean "no replicate exceeded"; docs/ROADMAP.md, section 1).
+  Proportionality is read at a relative tolerance of 1e-6 (PROP_RTOL) in the full training view and checked in
+  every fold view; a candidate proportional in the full view only gets no perturbation null and fails the verdict.
 - Before the correction, add-one rows of one source with an identical prediction hash (the OOF predictions over
-  all reports rounded to 1e-9, and the candidate's feature matrix) collapse to one: the first in order is kept and
-  lists the others under "duplicates"; the others get status "duplicate" and are not family members, so three
-  copies of one column count once.
+  all reports rounded to 1e-9) collapse to one: the first in order is kept and lists the others under
+  "duplicates"; the others get status "duplicate" and are not family members, so three copies of one column count
+  once (a column and its negation or rescaling predict alike, so they are one member too; each row keeps its own
+  coefficient sign).
 - The standardised add-one coefficient of the candidate column (columns standardised by the training mean and sd,
   as the lab's pipeline does) is saved per report (fold-seed pair) as coef_candidate_std with its mean and sign, so
   a sign can be read on the common parent.
@@ -104,7 +108,8 @@ LABEL = {"pearson_delta": "M1", "pearson_delta_nontarget": "M2", "mse": "M3", "m
          "pearson_delta_top": "M6", "direction_acc_top": "M7", "delta_scale_ratio": "M12"}
 P_MAX = 0.05
 MIN_GAIN = 0.002  # the minimum M1 gain of practical interest (docs/ROADMAP.md D3, the task package's noise rule)
-MIN_REPS_FAMILY = 999  # replicates a family of more than one row needs before the step-down p is read (floor 0.001)
+MIN_REPS_FAMILY = 999  # replicates every family needs before the step-down p is read (floor 0.001), whatever its size
+PROP_RTOL = 1e-6  # relative residual under which a candidate is a per-perturbation scalar times a parent column
 OOF_CAVEAT = "OOF only: every system has selected on these labels; not held out"
 TOP_CAVEAT = ("M4-M7 use each perturbation's top 20 genes by |true delta| (genemila.benchmark.evaluator), not "
               "CellForge's Wilcoxon DE top 20")
@@ -557,13 +562,15 @@ def parent_column_names(fixed) -> list[str]:
     return names
 
 
-def proportional_to_parent(cand: np.ndarray, parent_full: np.ndarray, rtol: float = 1e-9):
+def proportional_to_parent(cand: np.ndarray, parent_full: np.ndarray, rtol: float = PROP_RTOL):
     """Whether every column j of the candidate's full-training block cand (n, n_genes, k) is, within every
     perturbation row i, a scalar c[i, j] times one parent column q of parent_full (n, n_genes, C): the least-squares
     scalar per row, accepted when the residual norm is at most rtol times the row's norm (c[i, j] = 0 is allowed; a
-    row where q is all zero gets c[i, j] = 0, so the candidate must be zero there too). The first parent column
-    that fits every row is taken. Returns (parent column index per candidate column, c of shape (n, k)), or None
-    when some candidate column fits no parent column."""
+    row where q is all zero gets c[i, j] = 0, so the candidate must be zero there too). rtol is 1e-6 so that the
+    same product formed in float32 (relative residual about 4e-8) is still read as proportional; a residual that
+    small is no information a ridge fit can use. The first parent column that fits every row is taken. Returns
+    (parent column index per candidate column, c of shape (n, k)), or None when some candidate column fits no
+    parent column."""
     n, _, k = cand.shape
     idx, c = [], np.zeros((n, k))
     for j in range(k):
@@ -583,13 +590,12 @@ def proportional_to_parent(cand: np.ndarray, parent_full: np.ndarray, rtol: floa
     return idx, c
 
 
-def prediction_hash(preds, full: np.ndarray) -> str:
-    """sha256 of the candidate's OOF predictions over every report, concatenated and rounded to 1e-9, and of its
-    full-training feature matrix rounded the same way: rows whose hash is identical are one column."""
-    h = hashlib.sha256()
-    for arr in (np.concatenate([np.asarray(p, dtype=np.float64).ravel() for p in preds]), full.ravel()):
-        h.update((np.round(np.asarray(arr, dtype=np.float64), 9) + 0.0).tobytes())
-    return h.hexdigest()
+def prediction_hash(preds) -> str:
+    """sha256 of the candidate's OOF predictions over every report, concatenated and rounded to 1e-9: rows whose
+    hash is identical are one column (docs/ROADMAP.md D2(c)); a negated or rescaled copy predicts alike and is a
+    duplicate, with its own coefficient sign kept on its row."""
+    arr = np.concatenate([np.asarray(p, dtype=np.float64).ravel() for p in preds])
+    return hashlib.sha256((np.round(arr, 9) + 0.0).tobytes()).hexdigest()
 
 
 def max_gain_step_down(observed, gains) -> list[float]:
@@ -793,6 +799,22 @@ def pert_parts(fixed, res: dict, f: str, data: Data, parent_cols: list[int], c: 
                       for s, folds in data.folds.items()}}
 
 
+def proportional_in_folds(fixed, res: dict, f: str, data: Data, parent_cols: list[int], c: np.ndarray,
+                          rtol: float = PROP_RTOL) -> bool:
+    """Whether the candidate's block in every fold view equals c times the parent columns of that view, as
+    pert_parts rebuilds it (per row, residual norm at most rtol times the row's norm). A per-perturbation scalar
+    that depends on the view's training data fits in the full view only; the perturbation null would then score a
+    different candidate than the observed one, so such a row gets no perturbation null."""
+    built = pert_parts(fixed, res, f, data, parent_cols, c)["folds"]
+    for s, folds in res["folds"].items():
+        for fd, bd in zip(folds, built[s]):
+            x = fd["blocks"][f].reshape(len(fd["rows"]), -1)
+            d = (fd["blocks"][f] - bd["blocks"][f]).reshape(len(fd["rows"]), -1)
+            if not np.all(np.linalg.norm(d, axis=1) <= rtol * np.linalg.norm(x, axis=1)):
+                return False
+    return True
+
+
 def pert_null(fixed, res: dict, f: str, data: Data, a, parent_sc: dict, observed: float, parent_cols: list[int],
               c: np.ndarray) -> dict | None:
     """The perturbation-level null of a proportional candidate (OOF tier): replicate b permutes the per-perturbation
@@ -846,7 +868,7 @@ def evaluate_row(row: dict, parent_tiers: dict, parent_sc: dict, fixed, res, fea
         row["coef_candidate_std"] = coef[:, 0].tolist() if k == 1 else coef.tolist()
         row["coef_candidate_mean"] = float(mean[0]) if k == 1 else mean.tolist()
         row["coef_candidate_sign"] = sign[0] if k == 1 else sign
-        row["prediction_hash"] = prediction_hash(sc["oof"]["preds"], res["full"][feats[0]])
+        row["prediction_hash"] = prediction_hash(sc["oof"]["preds"])
     del sc
     return observed
 
@@ -879,10 +901,9 @@ def feature_facts(res: dict, f: str, parent_full: np.ndarray, data: Data) -> dic
 
 def null_too_coarse(family: int, reps: int) -> int | None:
     """The replicates a family needs before its step-down p can be read, when reps falls short: MIN_REPS_FAMILY
-    (999, floor 0.001) for a family of more than one row, else enough for the floor 1/(B+1) to reach P_MAX (19).
-    None when reps suffice."""
-    need = MIN_REPS_FAMILY if family > 1 else int(np.ceil(1 / P_MAX)) - 1
-    return need if reps < need else None
+    (999, floor 0.001) for a family of any size (docs/ROADMAP.md D2(b); at 19 replicates a family of one would
+    have its floor 1/20 at the cutoff). None when reps suffice. family is reported, not used."""
+    return MIN_REPS_FAMILY if reps < MIN_REPS_FAMILY else None
 
 
 def verdict(row: dict, deciding: str, family: int, a) -> None:
@@ -890,7 +911,7 @@ def verdict(row: dict, deciding: str, family: int, a) -> None:
     the family-wise step-down p (p_fwer) of the gene null <= 0.05 and, for a candidate proportional to a parent
     column, of the perturbation null too, a mean M2 gain > 0 and mse_top not significantly worse; every OOF report
     gains; and the alpha was chosen honestly (more than one fold seed). A null too coarse for the family (fewer
-    than 999 replicates for a family of more than one row) is said so, not blamed on the feature."""
+    than 999 replicates) is said so, not blamed on the feature."""
     t = row["tiers"][deciding]
     m1, m2, m4 = (t["delta"][m] for m in ("pearson_delta", "pearson_delta_nontarget", "mse_top"))
     failed = []
@@ -910,7 +931,9 @@ def verdict(row: dict, deciding: str, family: int, a) -> None:
     if row.get("proportional"):
         np_ = row["tiers"]["oof"].get("null_pert")
         if np_ is None:
-            failed.append("proportional to a parent column but no perturbation null")
+            failed.append("proportional to a parent column but no perturbation null"
+                          + (" (proportional in the full view only)" if row.get("proportional_in_folds") is False
+                             else ""))
         elif not need and not np_["p_fwer"] <= P_MAX:
             failed.append(f"perturbation null p (FWER) > {P_MAX}")
     if len(a.seeds) == 1:
@@ -943,7 +966,7 @@ def parse(argv):
     ap.add_argument("--k", type=int, default=5)
     ap.add_argument("--groups", choices=["auto", "none", "gene"], default="auto")
     ap.add_argument("--null-reps", type=int, default=MIN_REPS_FAMILY,
-                    help="null replicates B; the p floor is 1/(B+1), a family of more than one row needs >= 999")
+                    help="null replicates B; the p floor is 1/(B+1); every family needs >= 999 (floor 0.001)")
     ap.add_argument("--null-seed", type=int, default=0)
     ap.add_argument("--null-bins", type=int, default=10)
     ap.add_argument("--with-val1", action="store_true", help="also score the visible validation set (val1.npz)")
@@ -1169,6 +1192,10 @@ def score_source(name, src_dir, from_run, data, a, work, pub, pdir, p_feats, p_p
         prop[f] = proportional_to_parent(res["full"][f], parent_full)
         rows[f]["proportional"] = prop[f] is not None
         rows[f]["parent_column"] = ", ".join(pcols[q] for q in prop[f][0]) if prop[f] else None
+        if prop[f]:  # the fold views must agree, or the perturbation null would score a different candidate
+            rows[f]["proportional_in_folds"] = proportional_in_folds(fixed, res, f, data, *prop[f])
+            if not rows[f]["proportional_in_folds"]:
+                prop[f] = None
         observed[f] = evaluate_row(rows[f], parent_tiers, parent_sc, fixed, res, [f], data, a)
     # rows with one prediction hash are one column: the first in order is kept, the others are not family members
     first = {}
@@ -1178,8 +1205,8 @@ def score_source(name, src_dir, from_run, data, a, work, pub, pdir, p_feats, p_p
             rows[f]["duplicates"] = []
         else:
             rows[kept_f]["duplicates"].append(f)
-            rows[f].update(status="duplicate", reason=f"duplicate of {kept_f}: identical OOF predictions and "
-                                                     "feature matrix", meaningful=False,
+            rows[f].update(status="duplicate", reason=f"duplicate of {kept_f}: identical OOF predictions",
+                           meaningful=False,
                            failed_criteria=[f"duplicate of {kept_f}"], verdict=f"duplicate of {kept_f}")
     unique = [f for f in live if rows[f]["status"] == "ok"]
     a.null_members, a.null_timed = len(unique) + sum(1 for f in unique if prop[f]) + 1, False

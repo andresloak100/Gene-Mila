@@ -273,3 +273,10 @@ Nothing is chosen from a sealed score. A positive reading 1 is a candidate, not 
   names in the table above and commits the receipts as `docs/mac/block_g/downloads.md`.
 - Still to be filled in by the operator, below: Andres's cap line and its date; the prepare script's output (md5 and
   summary-line length per file); the cap record line and the ledger reading at the start.
+- **2026-10-17, reading 1 under the corrected tool** (`docs/ROADMAP.md` D2, the `tools/feature_compare.py` and
+  `tools/block_f_readings.py` of that fix): the `select` command above drops `--k 20` (the family-wise step-down needs
+  every stage-1 row; `select --k` is now refused without `--partial`, and `pool` marks a stage 2 that omits a stage-1
+  row `partial` and finds nothing), `reps` from `selection.json` is 999 or more, and under "Criterion" the column is
+  `p_fwer_pooled` (the pooled max-gain step-down p), with `p_fwer_pert_pooled` ≤ 0.05 also required for a row
+  proportional to a parent column and the gain above max(2 SE_adj, 0.002); `p_holm_pooled` is no longer written.
+  The rest of reading 1 and readings 2 to 4 are unchanged.

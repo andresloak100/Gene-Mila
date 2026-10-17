@@ -5,7 +5,8 @@ corrected test of docs/ROADMAP.md D2 and D3), with no judgement left to the oper
 Stage 1 scores every gene_annotation plugin of the three runs with tools/feature_compare.py and no null. `select`
 copies every add-one row with status ok (the plugin files, unchanged, into one directory per run: a feature name can
 recur across runs) and prints m_total and the stage-2 replicate count, 999 or more (--null-reps). The family-wise
-correction needs every member, so --k (a smaller rerun) is kept only with a warning. Stage 2 scores those files again
+correction needs every member, so --k (a smaller rerun) is refused unless --partial is given with it, and `pool` then
+marks the reading partial and finds nothing. Stage 2 scores those files again
 with that many null replicates: the gene null for every row, the perturbation null for every row proportional to a
 parent column, and the B null gains of each stored in the report.
 
@@ -14,12 +15,14 @@ collapse to the first (status duplicate in the report, or the same hash across s
 (feature_compare.max_gain_step_down) runs once over every unique tested row for the gene null (p_fwer_pooled) and
 once over the unique proportional rows for the perturbation null (p_fwer_pert_pooled). The permutations are shared
 within one feature_compare call but not across calls, so pooling rows from separate calls is conservative (the maximum
-over independent nulls is larger than over the shared one). A feature is found when it is not a duplicate, it was
-tested with at least 999 replicates (a family of one: 19), p_fwer_pooled <= 0.05, p_fwer_pert_pooled <= 0.05 too when
-it is proportional, its gain exceeds max(2 SE_adj, 0.002) (the minimum effect of interest, ROADMAP D3), and the
-tool's other criteria hold (M2 gain, mse_top not worse, every OOF report gaining, more than one fold seed); it
-supports a tier-1 claim only when its source does not read replogle2022_k562. The standardised coefficient's sign per
-report (coef_candidate_std) is copied into the table so the sign can be read on the common parent.
+over independent nulls is larger than over the shared one). A feature is found when every stage-1 row is in stage 2
+(a step-down over a subset of the family is not a family-wise reading: the reading is marked partial and nothing is
+found), it is not a duplicate, it was tested with at least 999 replicates, p_fwer_pooled <= 0.05,
+p_fwer_pert_pooled <= 0.05 too when it is proportional, its gain exceeds max(2 SE_adj, 0.002) (the minimum effect of
+interest, ROADMAP D3), and the tool's other criteria hold (M2 gain, mse_top not worse, every OOF report gaining, more
+than one fold seed); it supports a tier-1 claim only when its source does not read replogle2022_k562. The
+standardised coefficient's sign per report (coef_candidate_std) is copied into the table so the sign can be read on
+the common parent.
 
     python tools/block_f_readings.py select --stage1 docs/results/norman_f_stage1/feature_compare.json \
         --plugins docs/results/norman_f_plugins --out docs/results/norman_f_top
@@ -63,13 +66,17 @@ def _plugin(plugins: Path, row: dict) -> Path:
     return plugins / row["source"].split("_")[1] / f"{row['feature']}.py"
 
 
-def select(stage1: Path, plugins: Path, out: Path, k: int | None = None, null_reps: int = MIN_REPS_FAMILY) -> dict:
+def select(stage1: Path, plugins: Path, out: Path, k: int | None = None, null_reps: int = MIN_REPS_FAMILY,
+           partial: bool = False) -> dict:
     rows = _rows(json.loads(stage1.read_text()))
     ranked = sorted(rows, key=lambda x: (-_z(x), x["feature"]))
     top = ranked if k is None else ranked[:k]
     if k is not None and len(top) < len(rows):
-        print(f"warning: --k {k} copies {len(top)} of {len(rows)} rows; the family-wise correction needs every "
-              "member, so a pooled reading of this subset is partial", file=sys.stderr)
+        msg = (f"--k {k} copies {len(top)} of {len(rows)} rows; the family-wise correction needs every member, so a "
+               "pooled reading of this subset is partial and finds nothing")
+        if not partial:
+            raise SystemExit(msg + " (drop --k, or add --partial for a rerun that is not read)")
+        print("warning: " + msg, file=sys.stderr)
     if out.exists() and any(out.iterdir()):
         raise SystemExit(f"{out} exists and is not empty")
     for x in top:
@@ -111,6 +118,9 @@ def pool(stage1: Path, stage2: Path, plugins: Path, out: Path) -> dict:
             if kept != key:
                 dup_of[key] = f"{kept[1]} ({kept[0]})"
     unique = [tested[key] for key in tested if key not in dup_of]
+    # a stage-1 row absent from stage 2 (or failed there) leaves the step-down over a subset: not family-wise
+    untested = [x for x in s1 if (x["source"], x["feature"]) not in tested
+                and (x["source"], x["feature"]) not in dup_of]
     _pooled(unique, "null", "p_fwer_pooled")
     prop = [x for x in unique if x["tiers"]["oof"].get("null_pert")]
     _pooled(prop, "null_pert", "p_fwer_pert_pooled")
@@ -126,7 +136,7 @@ def pool(stage1: Path, stage2: Path, plugins: Path, out: Path) -> dict:
         reads = "replogle2022_k562" in _plugin(plugins, x).read_text()
         proportional = bool(src.get("proportional"))
         p_fwer, p_pert = src.get("p_fwer_pooled"), src.get("p_fwer_pert_pooled")
-        found = (key in tested and key not in dup_of and not need and not other and p_fwer is not None
+        found = (not untested and key in tested and key not in dup_of and not need and not other and p_fwer is not None
                  and p_fwer <= P_MAX and (not proportional or (p_pert is not None and p_pert <= P_MAX))
                  and gain > max(2 * se, MIN_GAIN))
         rows.append({"source": key[0], "feature": key[1], "tested": key in tested, "duplicate_of": dup_of.get(key),
@@ -140,7 +150,8 @@ def pool(stage1: Path, stage2: Path, plugins: Path, out: Path) -> dict:
                      "other_failed": other, "reads_replogle": reads, "found": found,
                      "found_tier1": found and not reads})
     record = {"family": len(unique), "stage1_rows": len(s1), "tested": len(tested), "duplicates": len(dup_of),
-              "null_reps": reps, "null_too_coarse_need": need, "rows": rows}
+              "null_reps": reps, "null_too_coarse_need": need, "partial": bool(untested),
+              "untested": [f"{x['feature']} ({x['source']})" for x in untested], "rows": rows}
     out.mkdir(parents=True, exist_ok=True)
     (out / "pooled_holm.json").write_text(json.dumps(record, indent=1))
     lines = ["# Block F feature-level reading: pooled max-gain step-down over every gene_annotation feature", "",
@@ -152,7 +163,10 @@ def pool(stage1: Path, stage2: Path, plugins: Path, out: Path) -> dict:
              f"p_fwer pooled <= {P_MAX} too when it is proportional to a parent column, its gain exceeds "
              f"max(2 SE_adj, {MIN_GAIN}) and the tool's other criteria hold; tier 1 only when its source does not read "
              "replogle2022_k562. An untested row is not found."
-             + (f" The null is too coarse for this family (need {need} replicates): nothing is found." if need else ""),
+             + (f" The null is too coarse for this family (need {need} replicates): nothing is found." if need else "")
+             + (f" Stage 2 omitted {len(untested)} of {len(s1)} stage-1 rows ({', '.join(record['untested'])}): the "
+                "pooled p is over a subset of the family and is not a family-wise reading; nothing is found."
+                if untested else ""),
              "",
              "| source | feature | z (stage 1) | gain ± SE_adj | min effect | null p | FWER p (pooled) | proportional "
              "to | pert null p | pert FWER p (pooled) | coef sign | duplicate of | other failed criteria | reads "
@@ -171,8 +185,9 @@ def pool(stage1: Path, stage2: Path, plugins: Path, out: Path) -> dict:
                      f"{'**yes**' if r['found'] else 'no'} | {'**yes**' if r['found_tier1'] else 'no'} |")
     (out / "pooled_holm.md").write_text("\n".join(lines) + "\n")
     found = [r["feature"] for r in rows if r["found"]]
-    print(f"family {len(unique)} unique of {len(tested)} tested ({len(dup_of)} duplicates), {reps} replicates; found "
-          f"{found}; tier 1 {[r['feature'] for r in rows if r['found_tier1']]}")
+    print(f"family {len(unique)} unique of {len(tested)} tested ({len(dup_of)} duplicates), {reps} replicates; "
+          + (f"partial ({len(untested)} stage-1 rows untested); " if untested else "")
+          + f"found {found}; tier 1 {[r['feature'] for r in rows if r['found_tier1']]}")
     return record
 
 
@@ -186,6 +201,8 @@ def main(argv=None) -> int:
     s.add_argument("--k", type=int, default=None, help="copy only the top k rows by z (default: every row; the "
                                                        "family-wise correction needs every member)")
     s.add_argument("--null-reps", type=int, default=MIN_REPS_FAMILY, help="stage-2 replicates, at least 999")
+    s.add_argument("--partial", action="store_true", help="allow --k: a subset rerun that pool will not read as "
+                                                          "a family-wise test")
     q = sub.add_parser("pool")
     q.add_argument("--stage1", required=True)
     q.add_argument("--stage2", required=True)
@@ -193,7 +210,7 @@ def main(argv=None) -> int:
     q.add_argument("--out", required=True)
     a = ap.parse_args(argv)
     if a.cmd == "select":
-        select(Path(a.stage1), Path(a.plugins), Path(a.out), a.k, a.null_reps)
+        select(Path(a.stage1), Path(a.plugins), Path(a.out), a.k, a.null_reps, a.partial)
     else:
         pool(Path(a.stage1), Path(a.stage2), Path(a.plugins), Path(a.out))
     return 0

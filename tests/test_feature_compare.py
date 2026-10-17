@@ -166,6 +166,14 @@ def test_proportional_to_parent_detects_a_per_perturbation_scalar_times_one_pare
     idx, got = fc.proportional_to_parent(cand, parent)
     assert idx == [1] and got.shape == (6, 1)
     assert got[:, 0] == pytest.approx(np.where(np.arange(6) == 2, 0.0, c))
+    # the same product formed in float32 (relative residual about 4e-8) is still proportional at rtol 1e-6, not 1e-9
+    f32 = (parent[:, :, 1].astype(np.float32) * c.astype(np.float32)[:, None]).astype(np.float64)[:, :, None]
+    f32[2] = 0.0
+    assert fc.proportional_to_parent(f32, parent)[0] == [1] and fc.PROP_RTOL == 1e-6
+    assert fc.proportional_to_parent(f32, parent, rtol=1e-9) is None
+    nz = np.linalg.norm(cand[:, :, 0], axis=1) > 0
+    rel = np.linalg.norm(f32[nz, :, 0] - cand[nz, :, 0], axis=1) / np.linalg.norm(cand[nz, :, 0], axis=1)
+    assert 1e-9 < np.max(rel) < 1e-6
     # one entry off, a different scaling per gene, or a column not in the parent: not proportional
     bad = cand.copy()
     bad[0, 3, 0] += 1e-3
@@ -219,10 +227,14 @@ def _row(res, feature, source=None):
     return next(r for r in res["rows"] if r["feature"] == feature and (source is None or r["source"] == source))
 
 
-def test_a_planted_feature_is_meaningful_with_the_smallest_null_p(main_run):
+def test_a_planted_feature_passes_every_criterion_but_the_replicate_count(main_run):
+    """39 replicates keep the run cheap; the rule is 999 for a family of any size (a family of one at 19 would put
+    the floor 1/20 at the cutoff, docs/ROADMAP.md section 1), so the only failed criterion is the replicate count."""
     res = main_run["json"]
     row = _row(res, "planted_feat")
-    assert row["status"] == "ok" and row["meaningful"], row.get("failed_criteria")
+    assert row["status"] == "ok" and not row["meaningful"]
+    assert row["failed_criteria"] == ["null too coarse for a family of 1 (need --null-reps >= 999)"]
+    assert row["verdict"] == "not: " + row["failed_criteria"][0]
     # the correction runs within each source: planted's family is itself, whatever the other sources sent; the
     # three identical copies of dup are one member
     assert res["settings"]["families"] == {"planted": {"add_one": 1, "set": 1}, "noise": {"add_one": 1, "set": 1},
@@ -234,10 +246,12 @@ def test_a_planted_feature_is_meaningful_with_the_smallest_null_p(main_run):
         assert len(row["tiers"][t]["null"]["gains"]) == 39
     # (b) an informative non-proportional candidate is found, on the gene null alone
     assert row["proportional"] is False and row["parent_column"] is None and row["tiers"]["oof"]["null_pert"] is None
-    assert row["exposure"] == "oof" and row["verdict"] == "meaningful (development, val1)"
-    assert all(d > 0 for d in row["tiers"]["oof"]["report_deltas"]) and len(row["tiers"]["oof"]["report_deltas"]) == 2
+    assert row["exposure"] == "oof"
+    assert all(d > 0 for d in row["tiers"]["oof"]["report_deltas"])
+    assert len(row["tiers"]["oof"]["report_deltas"]) == 2
     assert row["tiers"]["oof"]["delta"]["pearson_delta"]["overlap_ratio"] == pytest.approx(1.0)  # single targets
-    assert row["label_dependent"] is False and _row(res, "(set)", "planted")["meaningful"]
+    assert row["label_dependent"] is False
+    assert _row(res, "(set)", "planted")["failed_criteria"] == ["null too coarse for a family of 1 (need --null-reps >= 999)"]
     assert res["settings"]["p_floor"] == pytest.approx(1 / 40) and res["settings"]["min_gain"] == 0.002
 
 
@@ -246,13 +260,19 @@ def test_identical_candidates_collapse_to_one_family_member_and_the_coefficient_
     null; (f) the planted feature's standardised coefficient is positive and its negation's negative."""
     res, md = main_run["json"], main_run["md"]
     kept, dups = _row(res, "neg_a"), [_row(res, "neg_b"), _row(res, "neg_c")]
-    assert kept["status"] == "ok" and kept["duplicates"] == ["neg_b", "neg_c"] and kept["meaningful"]
+    assert kept["status"] == "ok" and kept["duplicates"] == ["neg_b", "neg_c"]
+    assert kept["failed_criteria"] == ["null too coarse for a family of 1 (need --null-reps >= 999)"]
     for d in dups:
         assert d["status"] == "duplicate" and d["reason"].startswith("duplicate of neg_a") and not d["meaningful"]
         assert d["prediction_hash"] == kept["prediction_hash"] and "null" not in d["tiers"]["oof"]
         assert d["verdict"] == "duplicate of neg_a"
     planted = _row(res, "planted_feat")
-    assert planted["prediction_hash"] != kept["prediction_hash"]
+    # the hash is the predictions alone: the negation predicts alike, so in one source it would be a duplicate
+    # (ROADMAP D2(c)); here they are in different sources and both are family members, each with its own sign
+    assert planted["prediction_hash"] == kept["prediction_hash"]
+    fam = res["settings"]["families"]
+    assert fam["planted"]["add_one"] == fam["dup"]["add_one"] == 1
+    assert all(d["coef_candidate_sign"] == "-" for d in dups)  # a duplicate row keeps its own sign
     assert len(planted["coef_candidate_std"]) == 2 and all(c > 0 for c in planted["coef_candidate_std"])
     assert planted["coef_candidate_sign"] == "+" and planted["coef_candidate_mean"] > 0
     assert kept["coef_candidate_sign"] == "-" and all(c < 0 for c in kept["coef_candidate_std"])
@@ -330,20 +350,30 @@ def test_a_parent_column_times_a_random_scalar_is_proportional_and_not_found(pai
     fail it (it scrambles the parent factor the model holds, so its replicates are worthless), the perturbation
     null can: the scalars are exchangeable with their permutation, so its p is not small."""
     _plugin(tmp_path / "src", "prop_feat", PROP.format(parent="additive_response"))
+    # a scalar computed from the view's own parent column: proportional in the full view, not in the fold views
+    _plugin(tmp_path / "src2", "view_feat", "        q = ctx.feature('additive_response', perts)[:, :, 0]\n"
+                                            "        return (q * q.mean(axis=1)[:, None])[:, :, None]")
     out = tmp_path / "out"
     assert fc.main(["--data", str(pair_bundle), "--out", str(out), "--source", f"s={tmp_path / 'src'}",
-                    "--fold-seeds", "101,102", "--null-reps", "39"]) == 0
+                    "--source", f"s2={tmp_path / 'src2'}", "--fold-seeds", "101,102", "--null-reps", "39"]) == 0
     res = json.loads((out / "feature_compare.json").read_text())
+    view = _row(res, "view_feat")
+    assert view["status"] == "ok" and view["proportional"] is True and view["proportional_in_folds"] is False
+    assert view["tiers"]["oof"]["null_pert"] is None and not view["meaningful"]
+    assert ("proportional to a parent column but no perturbation null (proportional in the full view only)"
+            in view["failed_criteria"])
     row = _row(res, "prop_feat")
     assert row["status"] == "ok" and row["proportional"] is True and row["parent_column"] == "additive_response"
+    assert row["proportional_in_folds"] is True
     nul, pert = row["tiers"]["oof"]["null"], row["tiers"]["oof"]["null_pert"]
     assert pert["parent_column"] == "additive_response" and pert["reps"] == 39 and len(pert["gains"]) == 39
     assert {"p", "p_holm", "p_fwer", "mean", "sd", "p95", "excess", "observed"} <= set(pert)
     assert pert["observed"] == pytest.approx(nul["observed"])
     # the gene null's replicates barely move (the parent factor stays in the model), the perturbation null's do
     assert pert["sd"] > 2 * nul["sd"]
-    assert pert["p"] > 0.05 and not row["meaningful"]
-    assert any(f.startswith("perturbation null p (FWER)") for f in row["failed_criteria"]), row["failed_criteria"]
+    assert pert["p"] > 0.05 and pert["p_fwer"] > 0.05 and not row["meaningful"]
+    # 39 replicates are too coarse for any family, so the verdict names that rather than the pert p
+    assert "null too coarse for a family of 1 (need --null-reps >= 999)" in row["failed_criteria"], row["failed_criteria"]
     assert res["settings"]["families"]["s"]["add_one"] == 1
     md = (out / "feature_compare.md").read_text()
     assert "(additive_response)" in md and "not proportional" not in md
@@ -466,9 +496,9 @@ def test_a_source_params_file_is_ignored(dataset, tmp_path):
 
 
 def test_the_verdict_names_a_null_too_coarse_for_its_family():
-    """The step-down needs 999 replicates for a family of more than one row (updated with the corrected test: the
-    old rule was 20m - 1 on a Holm p); the verdict reads p_fwer, both nulls for a proportional row, and the minimum
-    effect."""
+    """The step-down needs 999 replicates for a family of any size (updated with the corrected test: the old rule
+    was 20m - 1 on a Holm p, whose floor equalled the cutoff); the verdict reads p_fwer, both nulls for a proportional
+    row, and the minimum effect."""
     d = {"mean_diff": 1.0, "se_adj": 0.1, "wins_a": 9, "n": 10}
     row = {"exposure": "oof", "tiers": {"oof": {"delta": dict.fromkeys(("pearson_delta", "pearson_delta_nontarget",
                                                                          "mse_top"), d),
@@ -483,16 +513,20 @@ def test_the_verdict_names_a_null_too_coarse_for_its_family():
     row["tiers"]["oof"]["null"]["p_fwer"] = 0.01
     fc.verdict(row, "oof", 5, a)
     assert row["meaningful"] and row["verdict"] == "meaningful (development, OOF only, not held out)"
-    a.null_reps = 19  # a family of one needs only the floor 1/20 <= 0.05
+    a.null_reps = 998  # a family of one has no exception: at 19 replicates its floor 1/20 would equal the cutoff
+    fc.verdict(row, "oof", 1, a)
+    assert row["failed_criteria"] == ["null too coarse for a family of 1 (need --null-reps >= 999)"]
+    a.null_reps = 999
     fc.verdict(row, "oof", 1, a)
     assert row["meaningful"]
-    a.null_reps = 18
-    fc.verdict(row, "oof", 1, a)
-    assert row["failed_criteria"] == ["null too coarse for a family of 1 (need --null-reps >= 19)"]
-    a.null_reps = 999
     row["proportional"] = True
     fc.verdict(row, "oof", 1, a)
     assert row["failed_criteria"] == ["proportional to a parent column but no perturbation null"]
+    row["proportional_in_folds"] = False
+    fc.verdict(row, "oof", 1, a)
+    assert row["failed_criteria"] == ["proportional to a parent column but no perturbation null (proportional in "
+                                      "the full view only)"]
+    del row["proportional_in_folds"]
     row["tiers"]["oof"]["null_pert"] = {"p": 0.2, "p_fwer": 0.2}
     fc.verdict(row, "oof", 1, a)
     assert row["failed_criteria"] == ["perturbation null p (FWER) > 0.05"]

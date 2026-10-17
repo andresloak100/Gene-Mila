@@ -195,8 +195,9 @@ and a second `--out`. Run every search seed of every arm in one call, so all row
 families stay per source (section 6), so one call does not change any verdict.
 
 **Null replicates.** The null p is never below 1/(B+1). The family-wise p is a max-gain step-down over a
-source's add-one rows (section 6), so a family of more than one row needs B ≥ 999 (floor 0.001); 999 is the tool's
-default and the figure here. The report lists each source's family size after deduplication; a verdict "null too
+source's add-one rows (section 6), and every family, a system row or a single candidate included, needs B ≥ 999
+(floor 0.001): at 19 replicates the floor 1/20 would equal the 0.05 cutoff, and a pass would mean only that no
+replicate exceeded the observed gain (`docs/ROADMAP.md`, section 1). 999 is the tool's default and the figure here. The report lists each source's family size after deduplication; a verdict "null too
 coarse for a family of m" means rerun with the B it names, not that the feature failed. The null refits the whole
 procedure per replicate, so B drives the run time: the tool prints an estimate, measured on its first replicate,
 before it starts.
@@ -322,23 +323,30 @@ and on F once it exists; number of features; number with a development verdict.
      marked `proportional` with its `parent_column` and gets the perturbation null `null_pert`: the scalars are
      permuted across the training perturbations within deciles of the targets' mean control expression, the parent
      columns stay in place, and the candidate is rebuilt in every fold view. It must pass both nulls. A row that is
-     not proportional passes the gene null alone.
+     not proportional passes the gene null alone. Proportionality is read at a relative residual of 1e-6 per row
+     (`PROP_RTOL`), so the same product formed in float32 (residual about 4e-8) is still caught; it is read in the
+     full training view and checked in every fold view (`proportional_in_folds`): a scalar that depends on the
+     view's training data fits the full view only, the perturbation null would then score a different candidate
+     than the observed one, so such a row gets no perturbation null and fails the verdict.
    - *Family-wise p.* `p_fwer` is the max-gain step-down permutation p (Westfall and Young) over one source's
      add-one rows, from each row's stored B null gains; the permutation of replicate b is the same for every row of
      the call, so the joint null keeps the dependence between candidates. The floor is 1/(B+1); B = 999 by default
-     (floor 0.001), and a family of more than one row with fewer than 999 replicates reads "null too coarse". The
-     Holm p of the raw null p stays in the report as `p_holm`, for comparison only. A source's system row is a
-     family of one.
+     (floor 0.001), and a family of any size with fewer than 999 replicates reads "null too coarse" (a family of one
+     has no exception, see "Null replicates" in section 4). The Holm p of the raw null p stays in the report as
+     `p_holm`, for comparison only. A source's system row is a family of one.
    - *Deduplication.* Before the correction, rows of one source with an identical prediction hash (the OOF
-     predictions over every report rounded to 1e-9, and the feature matrix) collapse to the first; the others get
-     status `duplicate` and are not family members, so three copies of one column count once.
+     predictions over every report rounded to 1e-9; `docs/ROADMAP.md` D2(c)) collapse to the first; the others get
+     status `duplicate` and are not family members, so three copies of one column count once. A column and its
+     negation or rescaling predict alike and are one member; each row keeps its own coefficient sign.
    - *Coefficient sign.* The standardised add-one coefficient of the candidate is saved per report
      (`coef_candidate_std`, with its mean and sign) and shown in the table, so the sign can be read against the
      pre-registered one (`docs/GOAL_CRITERIA.md` A.2).
    - *Block F's reading.* `tools/block_f_readings.py pool` applies the same step-down once over the union of the
      three runs' unique rows (duplicates collapsed across runs by hash) and requires, in addition, the gain above
      max(2 SE_adj, 0.002); permutations are shared within one `feature_compare` call but not across calls, so
-     pooling rows from separate calls is conservative.
+     pooling rows from separate calls is conservative. Stage 2 must hold every stage-1 row: `select --k` is refused
+     without `--partial`, and a stage 2 that omits a stage-1 row is marked `partial` by `pool` (the step-down over a
+     subset is not family-wise) and finds nothing.
 2. **Pre-registration.** Before `feature_compare.py` runs, each arm's candidate list is fixed and recorded in
    the claim issue: the files and their sha256. Proposal: tier F receives each arm's system row, plus at most 3
    single features per arm, the ones with a development verdict (V-decided for package arms when V is allowed,
