@@ -36,7 +36,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 17:28 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 17:34 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -48,9 +48,9 @@ completion check; STOP is present. Final ledger 60.232225 from original 47.26464
 block spend 12.967580 ledger dollars, below the unchanged 67.26 cap. The final progress line
 was posted on [#51/comment6231063486](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6231063486)
 and appended to the issue-51 receipt. Never restart G, recopy scripts, reset the cap or redo preparation.
-Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. Both G readings, corrected F and Adamson H8 complete; lead H8 Norman active.
+Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. All G/F/H8 scientific readings complete; publication fullsuite active.
 
-**Reading phase: G readings 1–4 and corrected F COMPLETE; lead H8 Adamson COMPLETE; H8 Norman RUNNING once.**
+**Reading phase: G readings 1–4 and corrected F COMPLETE; lead H8 Adamson COMPLETE; H8 Norman COMPLETE; publication fullsuite RUNNING once.**
 Own results clone `gene-mila-g-f-h8-readings`, branch `astra/g-f-h8-readings`, remains frozen at
 `2f2e6838316915198c52abeb34cf02f2b3aacc87`; scientific reader behavior unchanged from 1a95873.
 All Adamson and Norman G stage1/select/stage2/pool, exact six-run OOF and six separate per-run sealed calls exited 0.
@@ -119,21 +119,35 @@ reportconsistency,bothnulls andM2gatesfail. meaningful=false. Independent92check
 Result JSON SHA256 ed792213009899ec4ff7bce35e6b11b5854fc2c2f2f62d566d930972062eabfe.
 OOFonly,worndevelopment,notheldout. RawJSON/MD,summarytwins/nullgains/commands/log/exit retained.
 
-**Current detached screen20182.gm-lead-h8-norman; actual Python PID20185,nice19.**
-Norman H8 launched ONCE 2026-10-17T17:26:55.231192Z with exact README999replicatecommand,
-M/data/norman_clean_tables, source LEAD_H8=docs/comparison/lead_h8_constraint,
-output C/docs/results/norman_lead_h8, credentialsunset,caffeinate,no --with-val1.
-Adjacent exclusive .command.txt/.log/.exit. No Norman verdict/export/PR yet.
-AdamsonH8result/Normanlaunch posted[#51/comment6237612172](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6237612172).
-**Exact next:** monitor EXISTING Norman H8 at five-minute cadence (nextcheck>=17:31:55Z), oneheavyjob,
-leave nulls forhours, no arbitrarytimeout/reducedreplicates/duplicate/restart/sourceupdate/branchswitch.
-Only explicit exit0 permits fixed proportional=true,parent=additive_response,perturbationnull check;
-recordNormansign(notpredicted),bothnulls/minimumeffect/allfixedgates,independentaudit.
-Afterboth: one consolidated draft PR/results#51, include one line pernewfile in docs/results/README.md,
-fullsuite afterscientificjobs,secret-scan,verify142oldhashes,attachPR,nevermerge; then Adamsonexport/twoSHA.
-No G/F/AdamsonH8 restart,oldnull/sealedreads,H/R/probe/newpaidrun/modelpromotion or next-blockdecision.
-Claude decides nextblock. Actual scientific refusal/nonzero/deadwithoutstatus: preserve/scan/report/update/PAUSE.
-Heartbeat ACTIVE, quietunchanged. Pause afterauthorizedpublication/exportcomplete oractualblockingfailure.
+**Norman H8 COMPLETE, explicit exit0 observed 2026-10-17T17:32:01.801340Z.**
+Fixedprotocolpasses:proportional=true,in-folds=true,parent=additive_response,perturbationnull999.
+Lead hypothesis NOT supported onNorman: M1 .568202515235 vsparent .568188046318,
+gain .0000144689166563,SEadj .0000682636251194,wins58/112,minimum .002.
+Gene raw/Holm/FWER .199,perturb raw/Holm/FWER .526,999finitegains each.
+Allsixcoefficientsnegative,mean-.0004211652846104793; Norman signrecorded,notpredicted.
+Gain/2SE,minimumeffect,allreports,bothnullgatesfail; meaningful=false. Independent135checkauditPASS.
+Result JSON SHA256 d61802ceda08388e42a02dc802e5b50e0f3b6d799e2910f2e09fab0772cd6a5a.
+RawJSON/MD,all8metrics,summary/audittwins/nullgains/commands/log/exit retained.
+All scientific G/F/H8 readings COMPLETE. Do not restart or rescore any.
+
+**Current detached screen22976.gm-g-f-h8-pytest; actual Python PID22979,nice19.**
+Required full repositorysuite launched ONCE 2026-10-17T17:32:29.082821Z, credentialsunset,
+caffeinate,exact projectPython -m pytest -q in frozen C2f2e683; no scientific/heavyjoboverlap.
+Exclusive docs/results/g_f_h8_publication_pytest.command.txt/.log/.exit. Allow suite tofinish;
+do notduplicate/restart/reducechecks orchangeprotected/scientificcodetoobtainresult.
+NormanH8/fullscientificcompletion/testlaunch posted[#51/comment6237719856](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6237719856).
+**Exact next:** monitor existing fullsuite at five-minute cadence (next>=17:37:29Z).
+Whileactive prepare consolidated results/JSONMD and exhaustive exact-file rows DIRECTLY in docs/results/README.md,
+preserving alreadyreferenced outputpaths. Afterexplicitexit0,verify142oldFhashesbothclonesand94plugins,
+secret-scan exactstagedallowlist,ensureonlynewresults/index,commit/pushownbranch/openONEdraftPR
+into integration/attach/postallresults51; nevermerge. NoPR/exportyet.
+Then exportONLYAdamson fromM/data/adamson_cf_clean_tables,unusedoutandsibling.export.jsonabsent,
+existingdefaults/keysunset/PYTHONHASHSEED0/nice19;noeval/probe/agent/Hjob. Preservepartialsfailure.
+Onexport0 verify siblingmetadata vsMANIFEST withoutlabels,postEXACTMANIFEST.json/program.md SHA256lines51,
+addreceiptonlytosamePR,updateHANDOFF/liveSTATEandPAUSEmonitor.
+Actual nonzero/refusal/deadwithoutstatus:preserve/scan/report/update/PAUSE,no scientificretry/workaround.
+No G/F/H8 restart,oldnull/sealedreads,H/R/probe/newpaidrun/modelpromotion ornext-blockdecision.
+Claude decidesnextblock. HeartbeatACTIVE,quietunchanged.
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
    999 null replicates, no --k or --with-val1; preserve every JSON/Markdown twin, plugin hash and command receipt.
