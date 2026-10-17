@@ -16,7 +16,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 07:27 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 10:45 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -30,30 +30,34 @@ was posted on [#51/comment6231063486](https://github.com/andresloak100/Gene-Mila
 and appended to the issue-51 receipt. Never restart G, recopy scripts, reset the cap or redo preparation.
 Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. No sealed reading yet.
 
-**Reading phase: Adamson G reading 1 STAGE 2 RUNNING once.** Own results clone
+**Reading phase: Adamson G reading 1 COMPLETE; reading 2 RUNNING once.** Own results clone
 `gene-mila-g-f-h8-readings`, branch `astra/g-f-h8-readings`, frozen tool commit
 `2f2e6838316915198c52abeb34cf02f2b3aacc87` (corrected behavior unchanged from 1a95873).
-Stage 1 and exact select both exited 0. Stage 1: 343 total rows, 276 primary plugins =
-221 eligible (r0=75/r2=76/r3=70), 32 duplicates and 23 exclusions (15 dependency errors,
-5 constant-feature smoke failures, 3 literal-cap refusals). No repair/substitution/retry.
-All 276 source/copy hashes reverified. Independent membership/hash audit PASSED: all 221
-status-ok rows selected exactly once, no omission/extra; k=null, null_reps=999. Selection SHA256
-`e5db60f73f80ffe6fb9cd8c18ef69ec0ec680d6c94c2a29452603d19ef02369d`.
+Stage 1/select/stage 2/exact pool all exited 0. All 221 eligible rows were tested with 999
+replicates; 11 cross-source duplicate predictions collapse to 210 unique candidates.
+Pool complete: partial=false, untested=[], no coarse-null flag, found=[] and found_tier1=[].
+Independent membership/hash/null/gate audit PASSED. Both applicable nulls and coefficient signs
+are preserved; one full-view-only proportional row fails fold consistency and is not found.
+Original 276 plugins, 32 stage-1 duplicates and 23 exclusions remain unchanged. No repair/retry.
+Primary output `docs/results/adamson_cf_g_pooled_holm` retains the helper's legacy Block F heading;
+the consolidated report must identify Adamson G and all three tables. Primary receipt
+[#51/comment6232951035](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6232951035).
 
-**Current detached screen 57978.gm-g-adamson-s2, actual Python PID 57981, nice 19.**
-One stage-2 call, all 221 selected rows in the three f_r0/f_r2/f_r3 sources, 999 replicates,
-OOF only, credentials unset; caffeinate prevents system sleep. No second CPU/lab job.
-Outputs `docs/results/adamson_cf_g_stage2`, log `.log`, explicit completion `.exit`, command
-receipt `.command.txt` (same prefix); manifest `adamson_cf_g_input_manifest.json`.
-Launch/counts/exclusions/run paths posted [#51/comment6231199820](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6231199820).
-**Exact next:** monitor this EXISTING stage-2 job, leave it for hours, no arbitrary timeout,
-reduced reps, duplicate, restart, source/input changes or branch pull/switch. Only explicit exit 0
-permits exact pool with original adamson_cf_g_stage1 JSON, new stage2 JSON and original copied
-adamson_cf_g_plugins into fresh adamson_cf_g_pooled_holm. Then Adamson readings 2/3/4, Norman
-1/2/3/4, corrected F stage 2, H8, one consolidated draft PR/results on #51, then Adamson export.
-No null verdict, sealed reading, F reread, H8 or export yet. Actual scientific refusal/nonzero
-or dead-without-status: preserve/report/update/pause, no retry/workaround. Exit-0 candidate
-errors are exclusions to preserve, not permission to repair. Heartbeat ACTIVE for this phase.
+**Current detached screen 42908.gm-g-adamson-arm, actual Python PID 42911, nice 19.**
+The exact six-run descriptive OOF comparison is active once, g1/g0 seeds 0/2/3, null-reps 0,
+credentials unset, caffeinate active, no --with-val1. Frozen source/input files stay fixed.
+Output `docs/results/adamson_cf_g1_vs_g0`, same-prefix `.log`, explicit `.exit` and `.command.txt`.
+Prescore `adamson_cf_g1_vs_g0_input_manifest.json` holds 1482 source database/plugin hashes
+(no raw database publication). Launch receipt
+[#51/comment6232958672](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6232958672).
+**Exact next:** monitor this EXISTING reading-2 job at five-minute cadence. Explicit exit 0 is
+required before Adamson prescribed per-run sealed reading 3, then source/count/planner audit 4.
+No arbitrary timeout, duplicate/restart, source/input change or silent source-run omission.
+Then Norman readings 1/2/3/4, corrected F stage 2, lead H8 both datasets, consolidated draft PR
+and all results on #51, then Adamson task export and exact two SHA256 lines. No sealed read,
+F reread, H8 or export has begun. Actual scientific refusal/nonzero or dead-without-status:
+preserve/secret-scan/report/update/PAUSE, no retry/workaround. Exit-0 candidate errors are
+preserved exclusions. Heartbeat ACTIVE for this phase; no new paid run or next-block decision.
 
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
