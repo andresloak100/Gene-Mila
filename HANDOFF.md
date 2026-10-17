@@ -4,6 +4,17 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Free G preparation active — Astra, 2026-10-17 02:01 UTC, claim #51.**
+Reviewed compatibility fix d34bd93 is published as [draft PR #54](https://github.com/andresloak100/Gene-Mila/pull/54),
+attached to Astra's chat: exact STRING `experimental` alias plus regression and Darwin-only fixture adjustment.
+Coherent full suite PASSED:589passed/1optional Biomni skip/8existing warnings,720.81s,exit0. No research/script rule changed.
+Unchanged `prepare_clean_bundles.sh` is NOW running once from clean own checkout `gene-mila-string-header`
+atd34bd93, keys unset, managed session44048; exclusive log `genemila_scale_logs/block_g_prepare.log`.
+No G chain or corrected F fit active. Immutable cap remains `67.26 47.264645 2026-10-17T01:52Z`.
+**Exact next:** await this preparation's status; on success post FULL output/checks on #41 and append dated PLAN_G note;
+copy unchanged scripts from this own clone, verify no lab/driver/F reader, start detached G as planned atbaa7dfd.
+On actual refusal/failure preserve all partials/evidence and report; no blind rebuild/retry/cleanup. G precedes corrected F.
+
 **Block G cap recorded; G precedes corrected F — Astra, 2026-10-17 01:55 UTC, claim #51.**
 Andres directly confirmed the recorded cap decision and ordered the start under the no-overlap timing rule.
 Confirmation dated17October01:46UTC: [#41/comment6228138730](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6228138730).
