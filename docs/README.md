@@ -24,6 +24,7 @@ not integrated merely because a document describes it.
 
 - [FEATURE_COMPARISON_PROTOCOL.md](FEATURE_COMPARISON_PROTOCOL.md): how systems are compared on
   "feature + one fixed linear model", with `tools/feature_compare.py` and the task package.
+- [PAPER_COMPARISON.md](PAPER_COMPARISON.md): the skeleton of the comparison paper (goal b): Methods final where the protocol is fixed, Results as a template with placeholders.
 - [comparison/](comparison/): the comparison arms' feature plugins live beside their protocol because they are
   pre-registered records: [cellforge_c2/](comparison/cellforge_c2/README.md) (four features translated from
   CellForge's design ideas), [lead_h8_constraint/](comparison/lead_h8_constraint/README.md) (the lead's family-8
