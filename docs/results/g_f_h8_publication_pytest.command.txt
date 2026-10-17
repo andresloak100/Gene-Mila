@@ -1,0 +1,11 @@
+UTC launch: 2026-10-17T17:32:29.082821+00:00
+Source commit: 2f2e6838316915198c52abeb34cf02f2b3aacc87
+Full required suite; credentials unset; nice19;caffeinate; all scientific jobs finished.
+set -C
+cd /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings || exit 98
+{
+/usr/bin/caffeinate -i nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m pytest -q
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/g_f_h8_publication_pytest.exit
+exit "$rc"
+} > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/g_f_h8_publication_pytest.log 2>&1

@@ -1,0 +1,1926 @@
+{
+  "dataset": "adamson_cf",
+  "generated_utc": "2026-10-17T10:59:56.091509+00:00",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "tables": [
+    "gene_annotation",
+    "gene_constraint",
+    "protein_annotation"
+  ],
+  "schemas": {
+    "gene_annotation": [
+      "gene_span_kb",
+      "n_transcripts",
+      "n_exons",
+      "transcript_length",
+      "cds_length",
+      "utr5_length",
+      "utr3_length",
+      "intron_length_kb",
+      "gc_cds",
+      "gc_utr3",
+      "gc_promoter",
+      "cpg_oe_promoter",
+      "n_upstream_atg",
+      "nearest_tss_kb",
+      "n_tss_within_100kb",
+      "aa_A",
+      "aa_C",
+      "aa_D",
+      "aa_E",
+      "aa_F",
+      "aa_G",
+      "aa_H",
+      "aa_I",
+      "aa_K",
+      "aa_L",
+      "aa_M",
+      "aa_N",
+      "aa_P",
+      "aa_Q",
+      "aa_R",
+      "aa_S",
+      "aa_T",
+      "aa_V",
+      "aa_W",
+      "aa_Y"
+    ],
+    "gene_constraint": [
+      "oe_lof",
+      "oe_lof_lower",
+      "oe_lof_upper",
+      "pLI",
+      "pNull",
+      "pRec",
+      "oe_mis",
+      "oe_mis_upper",
+      "mis_z",
+      "syn_z",
+      "lof_z",
+      "obs_lof",
+      "exp_lof",
+      "oe_lof_upper_bin"
+    ],
+    "protein_annotation": [
+      "protein_length",
+      "has_signal_peptide",
+      "signal_peptide_length",
+      "n_transmembrane",
+      "secreted",
+      "membrane",
+      "endoplasmic_reticulum",
+      "golgi",
+      "mitochondrion",
+      "nucleus",
+      "cytoplasm",
+      "lysosome",
+      "peroxisome"
+    ]
+  },
+  "limitations": [
+    "Source mentions are static direct text matches, as in the prescribed grep/check; they do not measure runtime use or resolve transitive/dynamic dependencies.",
+    "schema_column_literals are column-name strings present in source; numeric/dynamic indexing and flag/get/subscript expressions remain in key_accesses and the unchanged plugin sources. No guessed field mapping.",
+    "Total experiment counts are absent from the permitted .check receipts and are reported missing.",
+    "Every recorded planner is DeepSeek mixed=False, no exhaustion and empty external knowledge in the check receipts."
+  ],
+  "runs": [
+    {
+      "source": "g0_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/adamson_cf_g0_ds_w4_r0.check.txt",
+      "check_sha256": "9fd45789acc5ae38ff35ecf6cf90484776419d384cbb9951a0c3595ea09b18cd",
+      "check_text": "run: code baa7dfdbf1, 1231.0 s, seed 0, workers 4, data adamson_cf_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.178, planner $0.270\nselected EXP_0289 (ridge, 10 features) visible 0.5519409183495547\nfeatures reading gene_annotation: 0 []\nfeatures reading gene_constraint: 0 []\nfeatures reading protein_annotation: 0 []\nlargest planner state 12541 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 99,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_experiment": "EXP_0289",
+      "selected_total_features": 10,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [],
+      "largest_planner_state_chars": 12541,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g0_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/adamson_cf_g0_ds_w4_r2.check.txt",
+      "check_sha256": "5a07f79d018c995c6eafb0eccca2df5de76b6d4b2c2692ef049b0f3f8c9d4b77",
+      "check_text": "run: code baa7dfdbf1, 1230.7 s, seed 2, workers 4, data adamson_cf_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.529, planner $0.737\nselected EXP_0812 (ridge, 23 features) visible 0.5118753211934591\nfeatures reading gene_annotation: 0 []\nfeatures reading gene_constraint: 0 []\nfeatures reading protein_annotation: 0 []\nlargest planner state 14717 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 264,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_experiment": "EXP_0812",
+      "selected_total_features": 23,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [],
+      "largest_planner_state_chars": 14717,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g0_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/adamson_cf_g0_ds_w4_r3.check.txt",
+      "check_sha256": "79146e275cc8b2ad923d057278b22dae6b58336d1ab01690c7b8017fa786e644",
+      "check_text": "run: code baa7dfdbf1, 1231.3 s, seed 3, workers 4, data adamson_cf_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.349, planner $0.548\nselected EXP_0613 (ridge, 19 features) visible 0.5594471957573899\nfeatures reading gene_annotation: 0 []\nfeatures reading gene_constraint: 0 []\nfeatures reading protein_annotation: 0 []\nlargest planner state 14826 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 249,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 0,
+        "gene_constraint": 0,
+        "protein_annotation": 0
+      },
+      "selected_experiment": "EXP_0613",
+      "selected_total_features": 19,
+      "selected_table_source_mentions": {
+        "gene_annotation": [],
+        "gene_constraint": [],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [],
+      "largest_planner_state_chars": 14826,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g1_r0",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/adamson_cf_g1_ds_w4_r0.check.txt",
+      "check_sha256": "3a512e4dcbfbe6fce82384e72382a0012759aba246ab7601d81cea468fd15cc1",
+      "check_text": "run: code baa7dfdbf1, 1205.4 s, seed 0, workers 4, data adamson_cf_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.565, planner $0.718\nselected EXP_0777 (ridge, 23 features) visible 0.5116604156313818\nfeatures reading gene_annotation: 36 ['annotation_nonlinear_interaction_e224', 'annotation_nonlinear_interaction_e225', 'annotation_projection_elementwise_produc_e350', 'annotation_projection_similarity_v2_e197', 'annotation_projection_target_interaction_e149', 'annotation_projection_target_interaction_e173', 'annotation_projection_target_interaction_e174', 'annotation_projection_x_response_entropy_e471', 'annotation_random_projection_target_inte_e379', 'chromatin_accessibility_corr_e478', 'combined_annotation_ppi_random_projectio_e185', 'combined_annotation_ppi_random_projectio_e548', 'combined_annotation_projection_target_in_e398', 'cpg_island_promoter_interaction_e155', 'cpg_promoter_score_e81', 'cpg_target_tf_interaction_e168', 'full_annotation_projection_target_e459', 'full_annotation_projection_with_protein_e645', 'gene_annotation_random_projection_e113', 'learned_annotation_projection_interactio_e300']\nfeatures reading gene_constraint: 62 ['annotation_projection_elementwise_produc_e350', 'annotation_projection_target_interaction_e149', 'coessentiality_corr_target_gene_e268', 'coessentiality_interaction_e289', 'combined_annotation_ppi_random_projectio_e548', 'combined_annotation_projection_x_essenti_e419', 'combined_annotation_projection_x_target__e439', 'complex_membership_interaction_e479', 'constraint_flag_x_mean_response_e468', 'constraint_product_exxx_e594', 'essentiality_gene_x_ppi_neighbor_mean_de_e436', 'essentiality_pathway_interaction_e65', 'essentiality_ppi_neighbor_interaction_e384', 'essentiality_response_interaction_e329', 'essentiality_selfdelta_interaction_e234_e249', 'essentiality_target_x_mean_response_g_e361', 'essentiality_target_x_response_entropy_e433', 'essentiality_weighted_tf_motif_score_e386', 'essentiality_x_ppi_neighbor_mean_delta_e502', 'essentiality_x_response_entropy_e491']\nfeatures reading protein_annotation: 22 ['annotation_projection_elementwise_produc_e350', 'annotation_projection_similarity_v2_e197', 'annotation_projection_target_interaction_e149', 'combined_annotation_ppi_random_projectio_e548', 'combined_annotation_projection_target_in_e398', 'complex_partner_avg_response_e154', 'full_annotation_projection_with_protein_e645', 'learned_annotation_projection_interactio_e300', 'nuclear_gene_x_loeuf_target_e467', 'nuclear_gene_x_pathway_overlap_interacti_e519', 'nuclear_gene_x_target_nuclear_e506', 'nuclear_target_x_gene_loeuf_e697', 'nuclear_target_x_nuclear_gene_e493', 'protein_annotation_projection_target_int_e410', 'protein_compartment_flag_e82', 'protein_compartment_similarity_e169', 'protein_domain_overlap_target_gene_e270', 'protein_domain_similarity_e327', 'random_projection_annotation_ppi_e525_e539', 'random_projection_gene_annotation_e124']\nlargest planner state 16967 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 280,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 36,
+        "gene_constraint": 62,
+        "protein_annotation": 22
+      },
+      "selected_experiment": "EXP_0777",
+      "selected_total_features": 23,
+      "selected_table_source_mentions": {
+        "gene_annotation": [
+          "combined_annotation_projection_target_in_e398",
+          "full_annotation_projection_target_e459",
+          "full_annotation_projection_with_protein_e645"
+        ],
+        "gene_constraint": [
+          "essentiality_selfdelta_interaction_e234_e249",
+          "essentiality_response_interaction_e329",
+          "nuclear_gene_x_loeuf_target_e467",
+          "gene_loeuf_x_target_selfdelta_e569",
+          "target_loeuf_x_ppi_neighbor_response_e62_e628"
+        ],
+        "protein_annotation": [
+          "combined_annotation_projection_target_in_e398",
+          "nuclear_gene_x_loeuf_target_e467",
+          "full_annotation_projection_with_protein_e645"
+        ]
+      },
+      "selected_table_plugins": [
+        {
+          "feature": "essentiality_selfdelta_interaction_e234_e249",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_selfdelta_interaction_e234_e249.py",
+          "sha256": "05cccaa7d06741d66a65c3fe81ced3230d8669e913b2774d2f287a5b40bde6ec",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 55,
+              "expression": "self_delta[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "out[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 25,
+              "expression": "kc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 26,
+              "expression": "kc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 54,
+              "expression": "self_delta[:, :, None]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "ess[None, :]",
+              "literal_key": null
+            },
+            {
+              "line": 28,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 33,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 48,
+              "expression": "ess[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "vals[loeuf_idx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "essentiality_response_interaction_e329",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_response_interaction_e329.py",
+          "sha256": "d703dc59d10ce5afdb04afc72431ee96f4e3a7fe05f981a6e17017e4ef758841",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 33,
+              "expression": "gc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 79,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 35,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 38,
+              "expression": "gc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 74,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 79,
+              "expression": "mr[i, :]",
+              "literal_key": null
+            },
+            {
+              "line": 41,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 62,
+              "expression": "loeuf[finite_mask]",
+              "literal_key": null
+            },
+            {
+              "line": 77,
+              "expression": "loeuf[np.asarray(t_idx, dtype=int)]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "vals[loeuf_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 57,
+              "expression": "loeuf[gi]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "combined_annotation_projection_target_in_e398",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_projection_target_in_e398.py",
+          "sha256": "3d9a371a11b6fab6e1d13adb746044390f5277afb89098034f418151f875281d",
+          "tables_mentioned": [
+            "gene_annotation",
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [],
+            "protein_annotation": []
+          },
+          "key_accesses": [
+            {
+              "line": 92,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 23,
+              "expression": "params.get('projection_dim', 50)",
+              "literal_key": "projection_dim"
+            },
+            {
+              "line": 23,
+              "expression": "params.get('seed', 398)",
+              "literal_key": "seed"
+            },
+            {
+              "line": 25,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 34,
+              "expression": "ga.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 35,
+              "expression": "ga.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 55,
+              "expression": "pa.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 56,
+              "expression": "pa.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 86,
+              "expression": "params.get('projection_dim', 50)",
+              "literal_key": "projection_dim"
+            },
+            {
+              "line": 87,
+              "expression": "params.get('seed', 398)",
+              "literal_key": "seed"
+            },
+            {
+              "line": 103,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 38,
+              "expression": "gene_idx.get(sym)",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "gene_idx.get(sym)",
+              "literal_key": null
+            },
+            {
+              "line": 89,
+              "expression": "mat.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 89,
+              "expression": "mat.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 102,
+              "expression": "proj[t_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "mat[j, c]",
+              "literal_key": null
+            },
+            {
+              "line": 70,
+              "expression": "mat[j, c]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "full_annotation_projection_target_e459",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/full_annotation_projection_target_e459.py",
+          "sha256": "e63d03c471378c63cd920bdb74431e0d610e1c119b6c60645a5fd6a2b44a4ed2",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": []
+          },
+          "key_accesses": [
+            {
+              "line": 30,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 23,
+              "expression": "params.get('n_components', 20)",
+              "literal_key": "n_components"
+            },
+            {
+              "line": 24,
+              "expression": "params.get('seed', 0)",
+              "literal_key": "seed"
+            },
+            {
+              "line": 29,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 39,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 73,
+              "expression": "mat.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 83,
+              "expression": "mat[inds]",
+              "literal_key": null
+            },
+            {
+              "line": 50,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 51,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 82,
+              "expression": "inds[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 83,
+              "expression": "inds[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 93,
+              "expression": "mat.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 38,
+              "expression": "proj[tidx]",
+              "literal_key": null
+            },
+            {
+              "line": 56,
+              "expression": "genes_tbl.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 71,
+              "expression": "mat[gi, :]",
+              "literal_key": null
+            },
+            {
+              "line": 93,
+              "expression": "mat.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 62,
+              "expression": "vals[j]",
+              "literal_key": null
+            },
+            {
+              "line": 70,
+              "expression": "row[j]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "nuclear_gene_x_loeuf_target_e467",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_gene_x_loeuf_target_e467.py",
+          "sha256": "c77c72395af382d9904376a668c45d9bcf093f13c94efa14677fa57b2936059a",
+          "tables_mentioned": [
+            "gene_constraint",
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ],
+            "protein_annotation": [
+              "nucleus"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 29,
+              "expression": "prot.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 30,
+              "expression": "prot.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 56,
+              "expression": "cons.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 57,
+              "expression": "cons.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 100,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 32,
+              "expression": "cols.index('nucleus')",
+              "literal_key": "nucleus"
+            },
+            {
+              "line": 59,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 93,
+              "expression": "loeuf_filled[np.asarray(tgt_idx, dtype=int)]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "genes_map.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 64,
+              "expression": "genes_map.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 81,
+              "expression": "loeuf[valid]",
+              "literal_key": null
+            },
+            {
+              "line": 41,
+              "expression": "vals[nuc_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "vals[lof_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 74,
+              "expression": "loeuf[col_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 48,
+              "expression": "nuclear[col_idx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "gene_loeuf_x_target_selfdelta_e569",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_loeuf_x_target_selfdelta_e569.py",
+          "sha256": "9194f29fb5d447141f2ea62d849fc4908d02b9ef5dad6ef6572571baa93520f4",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 114,
+              "expression": "out[~np.isfinite(out)]",
+              "literal_key": null
+            },
+            {
+              "line": 31,
+              "expression": "gc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 112,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 33,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 36,
+              "expression": "gc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 74,
+              "expression": "sd[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 87,
+              "expression": "sd[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 89,
+              "expression": "out[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 90,
+              "expression": "out[~np.isfinite(out)]",
+              "literal_key": null
+            },
+            {
+              "line": 39,
+              "expression": "ctx.gene_index.get(gname)",
+              "literal_key": null
+            },
+            {
+              "line": 89,
+              "expression": "essentiality[None, :]",
+              "literal_key": null
+            },
+            {
+              "line": 108,
+              "expression": "d[:, tgt_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 43,
+              "expression": "vals[loeuf_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "loeuf[gi]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_loeuf_x_ppi_neighbor_response_e62_e628",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_ppi_neighbor_response_e62_e628.py",
+          "sha256": "7c4c5e7381330d6cd3dcf7babc37225ad922abfc1af38b3d4a57c9c63ad7875b",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 27,
+              "expression": "gc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 28,
+              "expression": "gc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 30,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 47,
+              "expression": "neigh[:, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 61,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 34,
+              "expression": "vals[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "neigh[i, :]",
+              "literal_key": null
+            },
+            {
+              "line": 36,
+              "expression": "loeuf_map[sym]",
+              "literal_key": null
+            },
+            {
+              "line": 55,
+              "expression": "loeuf_map[t]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "full_annotation_projection_with_protein_e645",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/full_annotation_projection_with_protein_e645.py",
+          "sha256": "7acc0264a0f53c30c9e2fc22095bc6a02de32b0637c39bb0b9cafd88583bb9a4",
+          "tables_mentioned": [
+            "gene_annotation",
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [],
+            "protein_annotation": [
+              "protein_length"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 85,
+              "expression": "mat[inds]",
+              "literal_key": null
+            },
+            {
+              "line": 91,
+              "expression": "ctx.cache['ann_mat']",
+              "literal_key": "ann_mat"
+            },
+            {
+              "line": 97,
+              "expression": "mat.shape[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 18,
+              "expression": "ctx.cache['ann_mat']",
+              "literal_key": "ann_mat"
+            },
+            {
+              "line": 23,
+              "expression": "ga.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 24,
+              "expression": "ga['genes']",
+              "literal_key": "genes"
+            },
+            {
+              "line": 50,
+              "expression": "pa.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 51,
+              "expression": "pa['genes']",
+              "literal_key": "genes"
+            },
+            {
+              "line": 85,
+              "expression": "inds[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 98,
+              "expression": "params.get('n_components', self.params['n_components'])",
+              "literal_key": "n_components"
+            },
+            {
+              "line": 99,
+              "expression": "params.get('seed', self.params['seed'])",
+              "literal_key": "seed"
+            },
+            {
+              "line": 109,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 98,
+              "expression": "self.params['n_components']",
+              "literal_key": "n_components"
+            },
+            {
+              "line": 99,
+              "expression": "self.params['seed']",
+              "literal_key": "seed"
+            },
+            {
+              "line": 30,
+              "expression": "ggenes.get(gene)",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "pgenes.get(gene)",
+              "literal_key": null
+            },
+            {
+              "line": 108,
+              "expression": "proj[tidx]",
+              "literal_key": null
+            },
+            {
+              "line": 34,
+              "expression": "row[ci]",
+              "literal_key": null
+            },
+            {
+              "line": 44,
+              "expression": "vals[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 62,
+              "expression": "row[ci]",
+              "literal_key": null
+            },
+            {
+              "line": 72,
+              "expression": "vals[gi]",
+              "literal_key": null
+            }
+          ]
+        }
+      ],
+      "largest_planner_state_chars": 16967,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g1_r2",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/adamson_cf_g1_ds_w4_r2.check.txt",
+      "check_sha256": "95c950eae21329a53652dfd563e1de9be9d8e5bbfc5c931a00c8f4032bfe7d1e",
+      "check_text": "run: code baa7dfdbf1, 1204.5 s, seed 2, workers 4, data adamson_cf_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.540, planner $0.683\nselected EXP_0730 (ridge, 22 features) visible 0.5104595594922678\nfeatures reading gene_annotation: 30 ['chromatin_state_similarity_e720', 'nearest_neighbor_response_e9', 'promoter_cpg_features_e35', 'promoter_motif_similarity_e602_e609', 'random_projection_target_annotation_e737', 'random_projection_target_annotation_e738', 'random_projection_target_annotation_e750', 'same_tad_indicator_e719', 'shared_cpg_promoter_e195', 'shared_tf_motif_similarity_e175', 'shared_tf_motifs_e629', 'target_compartment_x_gene_annotation_e333', 'target_cpg_oe_promoter_x_is_target_e246', 'target_cpg_promoter_broadcast_e257', 'target_cpg_promoter_x_gene_cpg_promoter_e723', 'target_cpg_promoter_x_gene_loeuf_e526', 'target_cpg_promoter_x_gene_tf_indicator_e321', 'target_gc_cds_x_is_target_e243', 'target_gc_content_x_is_target_e284', 'target_length_x_gene_function_e269']\nfeatures reading gene_constraint: 33 ['protein_stability_proxy_e81', 'target_constraint_x_pathway_similarity_e418', 'target_cpg_promoter_x_gene_loeuf_e526', 'target_depmap_essentiality_e703', 'target_essentiality_x_coexpression_e638', 'target_essentiality_x_gene_constraint_e500', 'target_essentiality_x_gene_loeuf_e512', 'target_essentiality_x_ppi_interaction_e417', 'target_gene_coexpression_rank_x_target_l_e412', 'target_gene_constraint_similarity_e429', 'target_gene_loeuf_product_e537', 'target_gene_loeuf_ratio_e477', 'target_gene_loeuf_similarity_e551', 'target_knockdown_magnitude_e32', 'target_loeuf_broadcast_e253', 'target_loeuf_e22', 'target_loeuf_x_coexpr_rank_e649', 'target_loeuf_x_coexpression_e264', 'target_loeuf_x_coexpression_e350', 'target_loeuf_x_coexpression_rank_e560']\nfeatures reading protein_annotation: 37 ['domain_similarity_e123', 'localization_overlap_e604_e611', 'protein_stability_proxy_e81', 'same_compartment_indicator_e268', 'stability_x_nuclear_flag_e255', 'target_compartment_flag_e252', 'target_compartment_x_gene_annotation_e333', 'target_compartment_x_gene_compartment_e2_e304', 'target_compartment_x_gene_compartment_e745', 'target_compartment_x_gene_compartment_sp_e566', 'target_compartment_x_gene_compartment_sp_e567', 'target_degradation_signal_x_gene_ubiquit_e670', 'target_er_membrane_x_gene_upr_set_e354', 'target_gene_compartment_match_e652', 'target_gene_compartment_similarity_e370', 'target_gene_same_compartment_e394', 'target_gene_same_compartment_indicator_e409', 'target_gene_shared_domain_count_e454', 'target_gene_shared_domain_count_e473', 'target_gene_shared_domain_count_e589']\nlargest planner state 16834 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 282,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 30,
+        "gene_constraint": 33,
+        "protein_annotation": 37
+      },
+      "selected_experiment": "EXP_0730",
+      "selected_total_features": 22,
+      "selected_table_source_mentions": {
+        "gene_annotation": [
+          "target_cpg_promoter_x_gene_tf_indicator_e321",
+          "target_compartment_x_gene_annotation_e333"
+        ],
+        "gene_constraint": [
+          "protein_stability_proxy_e81",
+          "target_loeuf_x_gene_loeuf_e380",
+          "target_loeuf_x_gene_control_expression_e523"
+        ],
+        "protein_annotation": [
+          "protein_stability_proxy_e81",
+          "target_has_signal_peptide_x_is_target_e247",
+          "target_protein_length_x_gene_membrane_e2_e300",
+          "target_compartment_x_gene_annotation_e333"
+        ]
+      },
+      "selected_table_plugins": [
+        {
+          "feature": "protein_stability_proxy_e81",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/protein_stability_proxy_e81.py",
+          "sha256": "b9df63d35edc3e768500ca700a4880ea4e63589d30e8f546e81d82bfd7388ef5",
+          "tables_mentioned": [
+            "gene_constraint",
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ],
+            "protein_annotation": [
+              "has_signal_peptide",
+              "n_transmembrane",
+              "protein_length"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 108,
+              "expression": "log_lo[mask_lo]",
+              "literal_key": null
+            },
+            {
+              "line": 113,
+              "expression": "self.params.get('stability_weights', 'default')",
+              "literal_key": "stability_weights"
+            },
+            {
+              "line": 125,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 26,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 38,
+              "expression": "prot.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 71,
+              "expression": "cons.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 96,
+              "expression": "z[mask]",
+              "literal_key": null
+            },
+            {
+              "line": 116,
+              "expression": "w.get('len', 0.5)",
+              "literal_key": "len"
+            },
+            {
+              "line": 117,
+              "expression": "w.get('sp', 0.5)",
+              "literal_key": "sp"
+            },
+            {
+              "line": 118,
+              "expression": "w.get('tm', 0.3)",
+              "literal_key": "tm"
+            },
+            {
+              "line": 119,
+              "expression": "w.get('lo', -0.3)",
+              "literal_key": "lo"
+            },
+            {
+              "line": 140,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "prot.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 40,
+              "expression": "cols.index('protein_length')",
+              "literal_key": "protein_length"
+            },
+            {
+              "line": 44,
+              "expression": "cols.index('has_signal_peptide')",
+              "literal_key": "has_signal_peptide"
+            },
+            {
+              "line": 48,
+              "expression": "cols.index('n_transmembrane')",
+              "literal_key": "n_transmembrane"
+            },
+            {
+              "line": 52,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 70,
+              "expression": "cons.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 73,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 134,
+              "expression": "d.shape[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 62,
+              "expression": "prot_ok[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 78,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 92,
+              "expression": "x[mask]",
+              "literal_key": null
+            },
+            {
+              "line": 93,
+              "expression": "x[mask]",
+              "literal_key": null
+            },
+            {
+              "line": 96,
+              "expression": "x[mask]",
+              "literal_key": null
+            },
+            {
+              "line": 108,
+              "expression": "loeuf[mask_lo]",
+              "literal_key": null
+            },
+            {
+              "line": 57,
+              "expression": "length[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "has_sp[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 61,
+              "expression": "n_tm[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 82,
+              "expression": "vals[i_lo]",
+              "literal_key": null
+            },
+            {
+              "line": 56,
+              "expression": "vals[i_len]",
+              "literal_key": null
+            },
+            {
+              "line": 57,
+              "expression": "vals[i_len]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "vals[i_sp]",
+              "literal_key": null
+            },
+            {
+              "line": 59,
+              "expression": "vals[i_sp]",
+              "literal_key": null
+            },
+            {
+              "line": 60,
+              "expression": "vals[i_tm]",
+              "literal_key": null
+            },
+            {
+              "line": 61,
+              "expression": "vals[i_tm]",
+              "literal_key": null
+            },
+            {
+              "line": 84,
+              "expression": "loeuf[gi]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_has_signal_peptide_x_is_target_e247",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_has_signal_peptide_x_is_target_e247.py",
+          "sha256": "bcf9c9256f4b9c68cc6d340ffd268eda1e58ed96da55961747e0b14382be5739",
+          "tables_mentioned": [
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "has_signal_peptide"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 26,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 27,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 29,
+              "expression": "columns.index('has_signal_peptide')",
+              "literal_key": "has_signal_peptide"
+            },
+            {
+              "line": 39,
+              "expression": "vals[sp_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 45,
+              "expression": "sp_map[sym]",
+              "literal_key": null
+            },
+            {
+              "line": 62,
+              "expression": "gene_index.get(tg)",
+              "literal_key": null
+            },
+            {
+              "line": 64,
+              "expression": "out[i, gi, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "sp_map[tg]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_protein_length_x_gene_membrane_e2_e300",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_gene_membrane_e2_e300.py",
+          "sha256": "95dc04d5e9dbbc85b68940342f82427ac128aef4c23b4c649ad349dc3f15fb05",
+          "tables_mentioned": [
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "protein_annotation": [
+              "membrane",
+              "n_transmembrane",
+              "protein_length"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 24,
+              "expression": "prior.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 25,
+              "expression": "prior.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 27,
+              "expression": "cols.index('protein_length')",
+              "literal_key": "protein_length"
+            },
+            {
+              "line": 31,
+              "expression": "cols.index('n_transmembrane')",
+              "literal_key": "n_transmembrane"
+            },
+            {
+              "line": 35,
+              "expression": "cols.index('membrane')",
+              "literal_key": "membrane"
+            },
+            {
+              "line": 43,
+              "expression": "genes.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 67,
+              "expression": "is_mem[j]",
+              "literal_key": null
+            },
+            {
+              "line": 78,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "vals[i_len]",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "prot_len[t]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "prot_len[j]",
+              "literal_key": null
+            },
+            {
+              "line": 55,
+              "expression": "vals[i_tm]",
+              "literal_key": null
+            },
+            {
+              "line": 62,
+              "expression": "vals[i_mem]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_cpg_promoter_x_gene_tf_indicator_e321",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_promoter_x_gene_tf_indicator_e321.py",
+          "sha256": "9dce8a8988b5b909d968d69fb4467b58cfebe4dd1a4c2d5b9f058a9925dc827b",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 23,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 24,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 48,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 61,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 26,
+              "expression": "cols.index('cpg_oe_promoter')",
+              "literal_key": "cpg_oe_promoter"
+            },
+            {
+              "line": 50,
+              "expression": "tf_indicator[j]",
+              "literal_key": null
+            },
+            {
+              "line": 57,
+              "expression": "cpg[t]",
+              "literal_key": null
+            },
+            {
+              "line": 31,
+              "expression": "vals[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 41,
+              "expression": "cpg[sym]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_compartment_x_gene_annotation_e333",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_annotation_e333.py",
+          "sha256": "dc3d720d913a73f61092e282b125a2e4a16e156acb164b6e36df0542e764e5f3",
+          "tables_mentioned": [
+            "gene_annotation",
+            "protein_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [],
+            "protein_annotation": [
+              "cytoplasm",
+              "endoplasmic_reticulum",
+              "golgi",
+              "lysosome",
+              "membrane",
+              "mitochondrion",
+              "nucleus",
+              "peroxisome",
+              "secreted"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 32,
+              "expression": "ann.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 33,
+              "expression": "ann.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 72,
+              "expression": "params.get('compartment', 'membrane')",
+              "literal_key": "compartment"
+            },
+            {
+              "line": 80,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 35,
+              "expression": "columns.index(comp)",
+              "literal_key": null
+            },
+            {
+              "line": 39,
+              "expression": "columns.index('membrane')",
+              "literal_key": "membrane"
+            },
+            {
+              "line": 43,
+              "expression": "columns.index('secreted')",
+              "literal_key": "secreted"
+            },
+            {
+              "line": 47,
+              "expression": "genes.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 50,
+              "expression": "ctx.gene_index[g]",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "memsec[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 79,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 97,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 51,
+              "expression": "row[ci]",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "flags[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 58,
+              "expression": "row[mi]",
+              "literal_key": null
+            },
+            {
+              "line": 63,
+              "expression": "row[si]",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "row[ci]",
+              "literal_key": null
+            },
+            {
+              "line": 60,
+              "expression": "row[mi]",
+              "literal_key": null
+            },
+            {
+              "line": 65,
+              "expression": "row[si]",
+              "literal_key": null
+            },
+            {
+              "line": 92,
+              "expression": "gene_flags[ti]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_loeuf_x_gene_loeuf_e380",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_loeuf_e380.py",
+          "sha256": "ce34d5fb0dcc476e866f4747d1a455a5737fb6abae168b13426ec0ee08d615e6",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 49,
+              "expression": "loeuf[np.isfinite(loeuf)]",
+              "literal_key": null
+            },
+            {
+              "line": 56,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 20,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 70,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 25,
+              "expression": "kc.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 26,
+              "expression": "kc.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 28,
+              "expression": "columns.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 33,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "vals[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "loeuf[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 67,
+              "expression": "loeuf[tgt_idx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_loeuf_x_gene_control_expression_e523",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_control_expression_e523.py",
+          "sha256": "d878bf16ae77cce6929bdbc5169c9483d982eaf94128c02d6dcbd97cc2f51d31",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 30,
+              "expression": "knowledge.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 35,
+              "expression": "knowledge.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 68,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 32,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 61,
+              "expression": "loeuf_by_gene.get(tg, default_loeuf)",
+              "literal_key": null
+            },
+            {
+              "line": 41,
+              "expression": "vals[loeuf_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 51,
+              "expression": "loeuf_by_gene[sym]",
+              "literal_key": null
+            }
+          ]
+        }
+      ],
+      "largest_planner_state_chars": 16834,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    },
+    {
+      "source": "g1_r3",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "check_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/adamson_cf_g1_ds_w4_r3.check.txt",
+      "check_sha256": "3c6c638cc58817c5f14f9db4f88b70a2bb9014d13d00b2b2e1e519b0e742e14b",
+      "check_text": "run: code baa7dfdbf1, 1230.7 s, seed 3, workers 4, data adamson_cf_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None\ncost by the run: workers $0.491, planner $0.740\nselected EXP_0796 (ridge, 22 features) visible 0.512657610147374\nfeatures reading gene_annotation: 45 ['annotation_random_projection_similarity_e704', 'bidirectional_partner_coexpression_e387', 'bidirectional_promoter_indicator_e45', 'chromatin_modifier_cpg_interaction_e87', 'cpg_oe_promoter_binary_e44', 'gene_annotation_random_projection_e717', 'gene_annotation_random_projection_e736', 'gene_annotation_random_projection_tanh_e572', 'gene_promoter_cpg_island_e642', 'prior_knowledge_random_projection_e344', 'promoter_motif_jaccard_e759', 'protein_domain_similarity_e743', 'random_projection_all_priors_e226', 'random_projection_combined_e542', 'random_projection_prior_features_e301', 'random_projection_prior_knowledge_e310', 'random_projection_prior_knowledge_e328', 'random_projection_static_features_e409', 'random_projection_static_features_e410', 'random_projection_static_features_e424']\nfeatures reading gene_constraint: 40 ['coessentiality_correlation_e725', 'coessentiality_correlation_e744', 'coessentiality_rank_correlation_e809', 'complex_member_target_loeuf_interaction_e116', 'essentiality_interaction_e561', 'essentiality_interaction_e803', 'essentiality_times_kurtosis_e629', 'gene_annotation_random_projection_e717', 'gene_essentiality_buffering_e92', 'gene_loeuf_e254', 'gene_response_variance_over_essentiality_e651', 'gene_response_variance_over_target_essen_e430', 'is_target_x_loeuf_gene_e37', 'mean_response_x_gene_loeuf_e274', 'prior_knowledge_random_projection_e344', 'random_projection_all_priors_e226', 'random_projection_combined_e542', 'random_projection_prior_features_e301', 'random_projection_prior_knowledge_e310', 'random_projection_prior_knowledge_e328']\nfeatures reading protein_annotation: 32 ['gene_annotation_random_projection_e717', 'gene_annotation_random_projection_tanh_e572', 'prior_knowledge_random_projection_e344', 'protein_compartment_similarity_e42', 'protein_domain_similarity_e743', 'random_projection_all_priors_e226', 'random_projection_combined_e542', 'random_projection_prior_features_e301', 'random_projection_prior_knowledge_e310', 'random_projection_prior_knowledge_e328', 'random_projection_static_features_e409', 'random_projection_static_features_e410', 'random_projection_static_features_e424', 'random_projection_static_features_e425', 'random_projection_static_plus_target_res_e607', 'random_projection_static_plus_target_var_e436', 'same_protein_complex_e93_e102', 'shared_compartment_similarity_e559', 'static_annotation_random_proj_e545_e554', 'static_annotation_random_projection_e518']\nlargest planner state 16605 characters (TOTAL_CHARS cut 20000 not reached)\n",
+      "experiment_count": null,
+      "experiment_count_limitation": "The prescribed .check.txt does not emit total experiments; feature-file count and largest EXP id are not experiment counts. No manual database query added.",
+      "source_plugin_files": 296,
+      "table_source_mentions_all_plugins": {
+        "gene_annotation": 45,
+        "gene_constraint": 40,
+        "protein_annotation": 32
+      },
+      "selected_experiment": "EXP_0796",
+      "selected_total_features": 22,
+      "selected_table_source_mentions": {
+        "gene_annotation": [
+          "target_promoter_cpg_island_e444"
+        ],
+        "gene_constraint": [
+          "target_essentiality_score_e284",
+          "coessentiality_correlation_e725"
+        ],
+        "protein_annotation": []
+      },
+      "selected_table_plugins": [
+        {
+          "feature": "target_essentiality_score_e284",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_essentiality_score_e284.py",
+          "sha256": "b5962594f45c2001b756e1e9681f216483c9f15400fd650b7bda2418ba09ffe1",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 30,
+              "expression": "cons.get('columns', None)",
+              "literal_key": "columns"
+            },
+            {
+              "line": 60,
+              "expression": "genes_tbl.get(sym)",
+              "literal_key": null
+            },
+            {
+              "line": 75,
+              "expression": "flags_tbl.get(sym)",
+              "literal_key": null
+            },
+            {
+              "line": 102,
+              "expression": "symbol_scores[sym]",
+              "literal_key": null
+            },
+            {
+              "line": 135,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 28,
+              "expression": "cons.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 29,
+              "expression": "cons.get('flags', {})",
+              "literal_key": "flags"
+            },
+            {
+              "line": 90,
+              "expression": "symbol_scores[sym]",
+              "literal_key": null
+            },
+            {
+              "line": 109,
+              "expression": "tgs[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 67,
+              "expression": "row[loeuf_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 69,
+              "expression": "row[pli_idx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "target_promoter_cpg_island_e444",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_cpg_island_e444.py",
+          "sha256": "3877f21bf815a782bcad658fe5c8de6f705dc97d75c98cd4619e04139d36d3d1",
+          "tables_mentioned": [
+            "gene_annotation"
+          ],
+          "schema_column_literals": {
+            "gene_annotation": [
+              "cpg_oe_promoter"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 32,
+              "expression": "cache.get(key)",
+              "literal_key": null
+            },
+            {
+              "line": 25,
+              "expression": "params.get('threshold', 0.6)",
+              "literal_key": "threshold"
+            },
+            {
+              "line": 68,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 76,
+              "expression": "gene_flag[t_idx]",
+              "literal_key": null
+            },
+            {
+              "line": 78,
+              "expression": "out[i, t_idx, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 81,
+              "expression": "out[i, t_idx, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 37,
+              "expression": "ann.get('genes')",
+              "literal_key": "genes"
+            },
+            {
+              "line": 38,
+              "expression": "ann.get('columns')",
+              "literal_key": "columns"
+            },
+            {
+              "line": 43,
+              "expression": "list(cols).index(cand)",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 67,
+              "expression": "gene_flag[gi]",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "vals[idx]",
+              "literal_key": null
+            }
+          ]
+        },
+        {
+          "feature": "coessentiality_correlation_e725",
+          "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/coessentiality_correlation_e725.py",
+          "sha256": "0247e3510ca92b2491f638b5843703b296c5e8711cc7112fe5a147ad41766562",
+          "tables_mentioned": [
+            "gene_constraint"
+          ],
+          "schema_column_literals": {
+            "gene_constraint": [
+              "oe_lof_upper",
+              "pLI"
+            ]
+          },
+          "key_accesses": [
+            {
+              "line": 80,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 24,
+              "expression": "cache[key]",
+              "literal_key": null
+            },
+            {
+              "line": 32,
+              "expression": "constraint.get('columns', [])",
+              "literal_key": "columns"
+            },
+            {
+              "line": 33,
+              "expression": "constraint.get('genes', {})",
+              "literal_key": "genes"
+            },
+            {
+              "line": 91,
+              "expression": "inv[None, :]",
+              "literal_key": null
+            },
+            {
+              "line": 108,
+              "expression": "out[i, :, 0]",
+              "literal_key": null
+            },
+            {
+              "line": 35,
+              "expression": "cols.index('oe_lof_upper')",
+              "literal_key": "oe_lof_upper"
+            },
+            {
+              "line": 39,
+              "expression": "cols.index('pLI')",
+              "literal_key": "pLI"
+            },
+            {
+              "line": 43,
+              "expression": "ctx.gene_index.get(g)",
+              "literal_key": null
+            },
+            {
+              "line": 53,
+              "expression": "loeuf[finite]",
+              "literal_key": null
+            },
+            {
+              "line": 69,
+              "expression": "ctx.gene_index.get(a)",
+              "literal_key": null
+            },
+            {
+              "line": 70,
+              "expression": "ctx.gene_index.get(b)",
+              "literal_key": null
+            },
+            {
+              "line": 77,
+              "expression": "adj[ia, ib]",
+              "literal_key": null
+            },
+            {
+              "line": 78,
+              "expression": "adj[ib, ia]",
+              "literal_key": null
+            },
+            {
+              "line": 91,
+              "expression": "inv[:, None]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "loeuf[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "pLI[idx]",
+              "literal_key": null
+            },
+            {
+              "line": 68,
+              "expression": "edge[0]",
+              "literal_key": 0
+            },
+            {
+              "line": 68,
+              "expression": "edge[1]",
+              "literal_key": 1
+            },
+            {
+              "line": 100,
+              "expression": "adj_norm[tgt, :]",
+              "literal_key": null
+            },
+            {
+              "line": 46,
+              "expression": "vals[i_loeuf]",
+              "literal_key": null
+            },
+            {
+              "line": 47,
+              "expression": "vals[i_loeuf]",
+              "literal_key": null
+            },
+            {
+              "line": 48,
+              "expression": "vals[i_pli]",
+              "literal_key": null
+            },
+            {
+              "line": 49,
+              "expression": "vals[i_pli]",
+              "literal_key": null
+            },
+            {
+              "line": 102,
+              "expression": "ess_centered[tgt]",
+              "literal_key": null
+            },
+            {
+              "line": 74,
+              "expression": "edge[2]",
+              "literal_key": 2
+            }
+          ]
+        }
+      ],
+      "largest_planner_state_chars": 16605,
+      "planner_cut": 20000,
+      "planner_cut_reached": false
+    }
+  ]
+}

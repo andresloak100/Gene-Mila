@@ -1,0 +1,80 @@
+{
+  "created_utc": "2026-10-17T15:36:08.882847+00:00",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "scope": "Norman G primary fixed development family, all three table names, OOF only",
+  "stage2_status": {
+    "ok": 174
+  },
+  "pool": {
+    "family": 158,
+    "stage1_rows": 174,
+    "tested": 174,
+    "duplicates": 16,
+    "null_reps": 999,
+    "partial": false,
+    "untested": [],
+    "null_too_coarse_need": null
+  },
+  "found": [],
+  "tier1": [],
+  "proportional_rows": 59,
+  "valid_perturbation_null_rows": 56,
+  "full_view_only_proportional_exclusions": [
+    {
+      "source": "f_r2",
+      "feature": "target_localization_diversity_times_addi_e613",
+      "failed_criteria": [
+        "M1 gain not above 2 SE_adj with wins > n/2",
+        "M1 gain not above the minimum effect 0.002",
+        "an OOF report does not gain",
+        "null p (FWER) > 0.05",
+        "proportional to a parent column but no perturbation null (proportional in the full view only)",
+        "no M2 gain"
+      ]
+    },
+    {
+      "source": "f_r2",
+      "feature": "target_weighted_cpg_promoter_e459",
+      "failed_criteria": [
+        "M1 gain not above the minimum effect 0.002",
+        "proportional to a parent column but no perturbation null (proportional in the full view only)"
+      ]
+    },
+    {
+      "source": "f_r3",
+      "feature": "additive_response_x_constraint_e170_e182",
+      "failed_criteria": [
+        "M1 gain not above 2 SE_adj with wins > n/2",
+        "M1 gain not above the minimum effect 0.002",
+        "an OOF report does not gain",
+        "proportional to a parent column but no perturbation null (proportional in the full view only)"
+      ]
+    }
+  ],
+  "independent_review": {
+    "agent": "/root/block_f_readings_checklist",
+    "result": "PASS",
+    "checks": [
+      "174/174 stage1-selected-stage2 membership",
+      "223 original/copy and 174 selected-copy hashes; source/tool pins unchanged",
+      "stage1/stage2 non-null reports identical",
+      "reconstructed raw and pooled max-gain step-down p-values from stored gains for 158 unique gene-null and 48 unique perturbation-null rows",
+      "all numerical effect, SE, wins, M2, M4, report and coefficient mean/sign flags match",
+      "recorded public-input hash pins match both output reports; original bundles not reread"
+    ]
+  },
+  "input_sha256": {
+    "norman_g_input_manifest.json": "ab190c3cfce631cdd7d90e7634b41c7e63af092c57678df3f2cd2b5778f5e61e",
+    "norman_g_top/selection.json": "207753289a71171edd801b1c4475cf073acaeb6058527f04fe9804ed7c94f4f4",
+    "norman_g_stage1/feature_compare.json": "a8c803daa9f2c13367a31c20e32d649bdc566d3d73cb8e46674edb1355557465",
+    "norman_g_stage2/feature_compare.json": "91ff95d26f18faa659e570020e75eb99b1745d241ef870c8354a62bc4bbfc766",
+    "norman_g_pooled_holm/pooled_holm.json": "a7b2470d819d0f566703c3a10ea5cb5556dcf854c034bd0b43ee80b5ea046bec"
+  },
+  "limitations": [
+    "Negative for this assessed development family; nine earlier dependency/smoke/literal exclusions and forty within-source duplicates retained",
+    "Does not establish ineffectiveness of excluded features",
+    "OOF is reused development evidence, not fresh-cohort evidence",
+    "Raw helper Markdown retains legacy Block F/gene_annotation heading; scope here is Norman G/all three tables",
+    "Three full-view-only proportional rows lack perturbation nulls, fail consistency and minimum effect, and are not accepted"
+  ]
+}

@@ -1,0 +1,1997 @@
+{
+  "created_utc": "2026-10-17T07:12:09.755444+00:00",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "python": "3.13.7 (v3.13.7:bcee1c32211, Aug 14 2025, 19:10:51) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "dataset": "adamson_cf",
+  "counts": {
+    "0": 101,
+    "2": 97,
+    "3": 78
+  },
+  "copied_total": 276,
+  "selection": "every source file matching gene_annotation|gene_constraint|protein_annotation; no score-based filter",
+  "tools_sha256": {
+    "tools/feature_compare.py": "4cf56c11b7c9ec25e402e3ea3aef5069ff2f7e2623e1c7847b066264cfc88590",
+    "tools/block_f_readings.py": "d90dd8297cfb90c6442b348241ffcdfe786610f8e1539dd32fea340b301edd8d",
+    "tools/sealed_reading.py": "08c2b009c8a66fcbc9b85790df77698348a157918d9bee2285101013b096da19"
+  },
+  "inputs": {
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/public.npz": {
+      "size": 10706115,
+      "sha256": "e8908ef34d851c1111556be7b8d97eb511bc7554513683a0cf3844248d153718"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/manifest.json": {
+      "size": 4668,
+      "sha256": "dceab43e7e54b48d466ec0c32b8eedb662e80b14d42570dcfbeae6dbc47ec411"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/gene_annotation.json": {
+      "size": 781724,
+      "sha256": "ac2e774960a14c9e0213c6ec1afd8eecc7836cb4682d236048b6404bd409c7bf"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/gene_constraint.json": {
+      "size": 233691,
+      "sha256": "1069daa45f301a62cd5da06316ce3dac8947e1df4382c78a3bd40ab1f5f8390f"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/gene_sets.json": {
+      "size": 1352249,
+      "sha256": "2221426e64ee8323044a7a9e2a415ba907210aebf121b5deb49d60a984ec1d88"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/ppi_network.json": {
+      "size": 220639,
+      "sha256": "ee4e7e3d7ed051324cede42467ef20e3f3be8e2ecd969776d8c9dcbd215c8b28"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/prior_network.json": {
+      "size": 18720,
+      "sha256": "27c0cd0f06f778a94e4a546a8d4fbaacb98f4978b76b08ad95892791e5bba513"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/protein_annotation.json": {
+      "size": 102091,
+      "sha256": "b17571ef1ce61d6bf0f1397e3948159463f510686acc700a15e383b17d462acd"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/targets.json": {
+      "size": 1790,
+      "sha256": "e0795293a743ca84d49b8a2cb74b861c30359ed890990d366f7035655fd47f3b"
+    },
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables/knowledge/transcription_factors.json": {
+      "size": 598,
+      "sha256": "6d89a663d7dc7023b68ce13006cb5b6d93501e5b738fd4f6a05cd1927b984cf8"
+    }
+  },
+  "plugins": [
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_nonlinear_interaction_e224.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_nonlinear_interaction_e224.py",
+      "md5": "cd960553df9f407844fef70438e1bd4e",
+      "sha256": "58ae0153015733312587c2f31071dd11b72164d2587e3cf0945dca94893129aa"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_nonlinear_interaction_e225.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_nonlinear_interaction_e225.py",
+      "md5": "4fd46ccebe2695726dbc457393eaf024",
+      "sha256": "67b8e6acb2afc0885990240780f1c9c3588b8d10c0d8bf97bdf0e03b0dd2ae33"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_projection_elementwise_produc_e350.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_projection_elementwise_produc_e350.py",
+      "md5": "1fd5c178fa235748f2adcb3e83423e4b",
+      "sha256": "e0a92c3e3c14c19e02ec607674134f8651e1b39b17d328e3b8a3b9c579d08a33"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_projection_similarity_v2_e197.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_projection_similarity_v2_e197.py",
+      "md5": "5f25fc9bc0867d9099d02ce9547b7c2d",
+      "sha256": "66f96bcf00f86a7e02862b80b0964223d284c3aa3f7671a7b175b63db0fcf927"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_projection_target_interaction_e149.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_projection_target_interaction_e149.py",
+      "md5": "bb428810235271f8b5bf1d186e2bc2e1",
+      "sha256": "6859a1e390db94b55a398dbd7cac3521b146b1a941fdef055552ad62108d56ba"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_projection_target_interaction_e173.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_projection_target_interaction_e173.py",
+      "md5": "cdda0b6700a37428dc7c5189fae935c4",
+      "sha256": "0f297eeee5db3de743e84b20697cba94b053b9ac8584cdc766392748067ecfeb"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_projection_target_interaction_e174.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_projection_target_interaction_e174.py",
+      "md5": "9d8b785d658be23f62c02b9b5614abe0",
+      "sha256": "1f03412755f9855dbabccef264c01a1b88054ef0f2b59ce2375d808f9e9b5a1f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_projection_x_response_entropy_e471.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_projection_x_response_entropy_e471.py",
+      "md5": "ae057eb440cc28ee764f0d01faed0228",
+      "sha256": "499b7f2c45209de6f710e8e480ee9c35090990ecd427dada4f2281954fa7b995"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/annotation_random_projection_target_inte_e379.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/annotation_random_projection_target_inte_e379.py",
+      "md5": "04437c50a7a71f4b7dd9ea8d6b713347",
+      "sha256": "ff35d85774c3300ace58922faf4b869794a3864c0708e113a80dc126a3a498d6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/chromatin_accessibility_corr_e478.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/chromatin_accessibility_corr_e478.py",
+      "md5": "bdc4730b690617b036f4b507b45a974a",
+      "sha256": "ef3f907c55ea107e49d74d5d487ecc70f0c25d6739dc7d6aae5b8faa6073620c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/coessentiality_corr_target_gene_e268.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/coessentiality_corr_target_gene_e268.py",
+      "md5": "13cedad7db42f23376fc0dfc9c082f72",
+      "sha256": "7a30bd1cca69ff631cddfcd8fa894c69de49da4454db61a8d5d724f1a08f6cda"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/coessentiality_interaction_e289.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/coessentiality_interaction_e289.py",
+      "md5": "05d137bad55dc505cdf2bc618a8ccd8f",
+      "sha256": "01d83e2334e59cd0dae6ae2aedcefde560b80b311a9d173c9f04b818937d6879"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_ppi_random_projectio_e185.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/combined_annotation_ppi_random_projectio_e185.py",
+      "md5": "c04d497d27c3fb50957cd8a1c2690d18",
+      "sha256": "b3d82bf30812f9203fd5d394270fbab1b69f13ebc54e83576d39135627780439"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_ppi_random_projectio_e548.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/combined_annotation_ppi_random_projectio_e548.py",
+      "md5": "c2238548bd68238753a3387e2bb0ed0d",
+      "sha256": "762978cde9de5ad0aea0d3baf56f6f511524bdeeaa337c764b217102e965ab1d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_projection_target_in_e398.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/combined_annotation_projection_target_in_e398.py",
+      "md5": "9333bfd577d831ba47fefd8985c869e1",
+      "sha256": "3d9a371a11b6fab6e1d13adb746044390f5277afb89098034f418151f875281d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_projection_x_essenti_e419.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/combined_annotation_projection_x_essenti_e419.py",
+      "md5": "07d3b3618f9aa17da848a3dc75417858",
+      "sha256": "04397f9ed0c246674c99d58d83a547530df7567c680c3172954d43c177fcd860"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/combined_annotation_projection_x_target__e439.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/combined_annotation_projection_x_target__e439.py",
+      "md5": "ef74b187b9131317c2944011ae20a65a",
+      "sha256": "5830e865bcbe879675b8998f677ea94d6757819817349d50dad871c069dfbab5"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/complex_membership_interaction_e479.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/complex_membership_interaction_e479.py",
+      "md5": "d72cec94146f29fad78b61560f3bc3ae",
+      "sha256": "a4ca07b12f8104749844c5f3a06ea2ed0c8ee42278f870aaf15cf35346969d7f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/complex_partner_avg_response_e154.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/complex_partner_avg_response_e154.py",
+      "md5": "e2c35b0a1667e643cca8dcdac1178144",
+      "sha256": "8dfa728acd488ce3952bfcd3b8f46adfa8a8c93dffa43f54278b2550e9d8fddf"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/constraint_flag_x_mean_response_e468.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/constraint_flag_x_mean_response_e468.py",
+      "md5": "c62d841dec5e27bf8f0fc36c47901836",
+      "sha256": "1877e39b1fa6439ca14b5fae2fe194499c9aede19e9bca979040a66c02b480f2"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/constraint_product_exxx_e594.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/constraint_product_exxx_e594.py",
+      "md5": "3432c77657e1ca2f6b39218b9090da8f",
+      "sha256": "8325329e46fe0aed7baa2f6f1abceebdd2919a23cf37f2a941530a198e7c4854"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/cpg_island_promoter_interaction_e155.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/cpg_island_promoter_interaction_e155.py",
+      "md5": "a50ffc7ba7b66ed54720adf63b7768b9",
+      "sha256": "8a3161059a9772c0474185ae9c9d4eed0b4d59204f53a63070b6578566eda216"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/cpg_promoter_score_e81.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/cpg_promoter_score_e81.py",
+      "md5": "cac28b3505c7b47d429223f2367b08f3",
+      "sha256": "4f4729c29afef27f758e20b23ceabef6b1b3e8fd8d28e456236d2ccf946f4b05"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/cpg_target_tf_interaction_e168.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/cpg_target_tf_interaction_e168.py",
+      "md5": "4e19e13d298f1aeb983943102eb54e7c",
+      "sha256": "adf5099bc4d115abd09704caf0e82759200e53c467e591bd55f87a22cbe3801a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_gene_x_ppi_neighbor_mean_de_e436.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_gene_x_ppi_neighbor_mean_de_e436.py",
+      "md5": "d5163d81105c3a119bb4cf5a0057608f",
+      "sha256": "d50a4eed6291b39f4b99c883590035c7077fd737429cf06614bba9af6492838f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_pathway_interaction_e65.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_pathway_interaction_e65.py",
+      "md5": "e33c0f611351ea51abbbefa83c8b5c30",
+      "sha256": "77e973c8b9ae247cafd0a72c92fa915ef63162d8eb84062e2dbaab1c27cb3f62"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_ppi_neighbor_interaction_e384.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_ppi_neighbor_interaction_e384.py",
+      "md5": "521c926f09e5cbce520c79c9511212ea",
+      "sha256": "3f3d287765d48dfe4c38f429b39ae938b677fed876534378c826c9b310868fe8"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_response_interaction_e329.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_response_interaction_e329.py",
+      "md5": "c924dd02d329bbfb37d8065524c28563",
+      "sha256": "d703dc59d10ce5afdb04afc72431ee96f4e3a7fe05f981a6e17017e4ef758841"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_selfdelta_interaction_e234_e249.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_selfdelta_interaction_e234_e249.py",
+      "md5": "db9c3504bc4c0246afb9b34ed7f527ad",
+      "sha256": "05cccaa7d06741d66a65c3fe81ced3230d8669e913b2774d2f287a5b40bde6ec"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_target_x_mean_response_g_e361.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_target_x_mean_response_g_e361.py",
+      "md5": "c6cd02ae5d8719421a95f56a773fc559",
+      "sha256": "7b3dab3a62d6a0b071643ae7743b035cf30f6b5ed9438d04a1be799230395652"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_target_x_response_entropy_e433.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_target_x_response_entropy_e433.py",
+      "md5": "b2a64d9e32bc3135842a663c55900235",
+      "sha256": "939f060475b5bd512170c1c0a8fd3f587d02d12525e978d3ca5db5e5c8788c18"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_weighted_tf_motif_score_e386.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_weighted_tf_motif_score_e386.py",
+      "md5": "78292dfaf2a81092400c9f277f4c64fd",
+      "sha256": "34600b4f7c83a950898cd3cb1cb53629f1ca69aa64ce43971507ef4fcb5d85ec"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_x_ppi_neighbor_mean_delta_e502.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_x_ppi_neighbor_mean_delta_e502.py",
+      "md5": "996f4e248f08593df5608aafdeab2290",
+      "sha256": "baac9ea5a0e190211ab739064358ce5f4823c54e1c1d63fb46010c088e0a402e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_x_response_entropy_e491.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_x_response_entropy_e491.py",
+      "md5": "32043c8646bde220ebf1cdef3e6379eb",
+      "sha256": "476a76d5a660f909318792371eac7c3969c93a4ce5e62c7feb7c8650b64b0d7b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/essentiality_x_response_entropy_e543.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/essentiality_x_response_entropy_e543.py",
+      "md5": "182ece3c9ecd8a896a8d3b8e75aebf31",
+      "sha256": "0e2e186e4b43c58f2582c61b0fc2c9a64844ac162cdac0c3875b20ad4e52064f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/full_annotation_projection_target_e459.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/full_annotation_projection_target_e459.py",
+      "md5": "2921c8ad41627c2609b2a62a4ad89670",
+      "sha256": "e63d03c471378c63cd920bdb74431e0d610e1c119b6c60645a5fd6a2b44a4ed2"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/full_annotation_projection_with_protein_e645.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/full_annotation_projection_with_protein_e645.py",
+      "md5": "1455f6f3af1349ba02eaa4893ba8cca0",
+      "sha256": "7acc0264a0f53c30c9e2fc22095bc6a02de32b0637c39bb0b9cafd88583bb9a4"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_annotation_random_projection_e113.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/gene_annotation_random_projection_e113.py",
+      "md5": "9f2e6270ec72dacade3c6b4d64b29a0f",
+      "sha256": "8225c2084649cd44c2894c4013d9cdb101d68477a0ebb98405c3878942b9114c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_essentiality_x_target_self_delta_e362.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/gene_essentiality_x_target_self_delta_e362.py",
+      "md5": "196bc03bb8a158505bb7780b644eb9f9",
+      "sha256": "54158f27d854083c6989640fdded401a5491a5ad5a266cd768f2da420b94e181"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_loeuf_e94.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/gene_loeuf_e94.py",
+      "md5": "4cffdec55f7f4bfd628064e7c77db3a7",
+      "sha256": "242ad132aed3d34694f94c4560162d2a2ff5c5764bd96623094dc6586de31c01"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_loeuf_x_pathway_response_e712.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/gene_loeuf_x_pathway_response_e712.py",
+      "md5": "74c8e33f2eeae0d1285ef1e75d3a4fcd",
+      "sha256": "cb8c0c4e9934bfc7153dfae151d0eddfeb2237683238fcd0721acd4086ab748a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_loeuf_x_target_selfdelta_e569.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/gene_loeuf_x_target_selfdelta_e569.py",
+      "md5": "0c4e09bc99fcac2603ab65530ad0e484",
+      "sha256": "9194f29fb5d447141f2ea62d849fc4908d02b9ef5dad6ef6572571baa93520f4"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/gene_set_overlap_x_essentiality_e505.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/gene_set_overlap_x_essentiality_e505.py",
+      "md5": "f9770eb0f60e6ab5f15a4da992f8764d",
+      "sha256": "ea81a32c6de15cfdc1e79f2a3dd74bf4d33f3b5ce95456bade51baf80388bb68"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/learned_annotation_projection_interactio_e300.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/learned_annotation_projection_interactio_e300.py",
+      "md5": "765d4fd3dbc163105cc3122552dfee2b",
+      "sha256": "061d1267352787c9d6c5a3c565d9e96853d9e2a64e5e5fd8f6d7d191b7ad3c11"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_interaction_squared_e481.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_interaction_squared_e481.py",
+      "md5": "58cdfe22e17bd947f10b6769247b123c",
+      "sha256": "f2c77ee84103cab077224fea7e8e3349887d419acb8109bb4af9ca029018f5ca"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_interaction_target_gene_e122.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_interaction_target_gene_e122.py",
+      "md5": "b8c34c324de2a6e69d4bc6017196dc7b",
+      "sha256": "a875730795c16deead6e6e8e150d63a4b08abdd9b916e2a005cb1d0ce3ca1e6b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_interaction_target_gene_e601_e578.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_interaction_target_gene_e601_e578.py",
+      "md5": "00f4ca05c24272ecedb2609a95e3a075",
+      "sha256": "bfe5c94bb4da4fdb368c54e80b8d84829c90be99a792962326d5a3a72a154492"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_product_target_gene_e217.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_product_target_gene_e217.py",
+      "md5": "0eba2c7523bcc426120dc39bab9bf2d1",
+      "sha256": "b84b967988c6285fc61fab962506f34ccc710579534d214d356775fff411e44d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_target_gene_interaction_e641.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_target_gene_interaction_e641.py",
+      "md5": "2df66cb473763004f2cb693a2087494b",
+      "sha256": "1491c64327a1eddb3a77e484b3dfdb724f2de77e44f4ec47a172d37335e812de"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_target_x_gene_entropy_exxx_e592.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_target_x_gene_entropy_exxx_e592.py",
+      "md5": "e454dfd6bb9ca8587213d1540d3bc541",
+      "sha256": "fd43c632422af41b7c5c1b13f9b62b6d5f704bdf7696c9961b653ebd181728e4"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_target_x_ppi_neighbor_mean_delta_e465.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_target_x_ppi_neighbor_mean_delta_e465.py",
+      "md5": "d0bdc51167f44f35f3fa1a5562b37d1b",
+      "sha256": "5e33da677315201978f68138817fc170e6eb38b31cb3217456b870bd1914822c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_target_x_response_entropy_e339.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_target_x_response_entropy_e339.py",
+      "md5": "f2e30f9fb4407ecc563949cc4265ba92",
+      "sha256": "37021d449c2d25a294159bd84d521e89b98118741e39c1e970d224d009bd298e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/loeuf_weighted_ppi_neighbor_mean_delta_e_e554.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/loeuf_weighted_ppi_neighbor_mean_delta_e_e554.py",
+      "md5": "648abacefbc7e4a9c39623bee74f8345",
+      "sha256": "10a21547a7dda53f7b14fcb6e5999667ee0ac4885a0a07541554876ac9df7881"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_gene_x_loeuf_target_e467.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/nuclear_gene_x_loeuf_target_e467.py",
+      "md5": "774df0cbac6201b77b99b648d59b1000",
+      "sha256": "c77c72395af382d9904376a668c45d9bcf093f13c94efa14677fa57b2936059a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_gene_x_pathway_overlap_interacti_e519.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/nuclear_gene_x_pathway_overlap_interacti_e519.py",
+      "md5": "2100a938ac8b37d3503925b55f3df9a3",
+      "sha256": "2ee655e387e6aa939ea993ffccd863f78bae3fdfda97d9c189ce58065fc83801"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_gene_x_target_nuclear_e506.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/nuclear_gene_x_target_nuclear_e506.py",
+      "md5": "17b04e1f2651ca795d945d404e038df6",
+      "sha256": "63d61c689c0dbe07237e3e8d14a40f4b48315f611ebb763ee4b5da73cfed266f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_target_x_gene_loeuf_e697.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/nuclear_target_x_gene_loeuf_e697.py",
+      "md5": "6b715b6ece99853735664e2d7c386e78",
+      "sha256": "df4db9219c2730be8d0c27769ea344ae8454c66555563fdd060e458f30516254"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/nuclear_target_x_nuclear_gene_e493.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/nuclear_target_x_nuclear_gene_e493.py",
+      "md5": "8f3e67e56e5124a1fb0652e6a8c8cf83",
+      "sha256": "15bbf567f1bc2d1316ac059fa787ae520d19b1bf2dc21e7050943bca016f598a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/pathway_overlap_weighted_by_essentiality_e516.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/pathway_overlap_weighted_by_essentiality_e516.py",
+      "md5": "009e66cf11b19a3a2edb49f790b6859e",
+      "sha256": "5d40f8e4dc163381fcbe0061f4f5b07a30d517c14fb5a86944f5c01182ab0192"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/pathway_overlap_x_target_loeuf_e407.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/pathway_overlap_x_target_loeuf_e407.py",
+      "md5": "4b58ca05502336c043332604f4f6cb26",
+      "sha256": "50e90806ee1a5e24a22dd1beddb7868117fef481b64b1b2fa951e9ebebefa74d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/pathway_overlap_x_target_loeuf_e565.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/pathway_overlap_x_target_loeuf_e565.py",
+      "md5": "3b28b5297bd5a1fd0b0a8ce45a1b041a",
+      "sha256": "fc76911943253f7470127f6cd7d9eb45c0e097af2e722613bd0ff7d9fec33740"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/ppi_neighbor_mean_delta_x_target_essenti_e415.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/ppi_neighbor_mean_delta_x_target_essenti_e415.py",
+      "md5": "494e7d71c8c1f5945fa426946e916d8a",
+      "sha256": "c58971808e831bcc2717387a0034cc4b7b11785b6263b9f3e2f3ff1feb4b2e2e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/promoter_cpg_response_e602_e579.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/promoter_cpg_response_e602_e579.py",
+      "md5": "e8056b195b605c9c85e9e575da72696d",
+      "sha256": "c5537649ae2197aa49eb176fbd8a9f147a995ad9f41e4ea8f9297308c39dcda2"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/protein_annotation_projection_target_int_e410.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/protein_annotation_projection_target_int_e410.py",
+      "md5": "c588c2a2b29d55b37d157e13d9c4403b",
+      "sha256": "0dbf2be9c6e71fd35422c8d9167d5c9f3c84c2e6adf8df1a969e71d7965b22bd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/protein_compartment_flag_e82.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/protein_compartment_flag_e82.py",
+      "md5": "6aec3d0415e290f6dfff3c1657ffcc35",
+      "sha256": "256b7cda3474bd8cbb4db0d83236daa01e1721cb23097d7988ef3193cc7aea44"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/protein_compartment_similarity_e169.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/protein_compartment_similarity_e169.py",
+      "md5": "e0dcfab04ec1c7fdfa0d940d0002cfc5",
+      "sha256": "cb376191d6ea3f21095cf915e3cc53e9d0d55c135c649fd68c58815227e46e7d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/protein_domain_overlap_target_gene_e270.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/protein_domain_overlap_target_gene_e270.py",
+      "md5": "79cb97ab60fadfc7f185c150cdd9f7f7",
+      "sha256": "b6a763001dd2f566b33463f848a9c50ce01773ecd851328a9ec900c417d7eb09"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/protein_domain_similarity_e327.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/protein_domain_similarity_e327.py",
+      "md5": "c74b92cca2f70b0b570426d31321dec5",
+      "sha256": "e00f8129695d27a33ad314862caa5721c6c6e7dfbfcdb33f3a8e017dadcc7e21"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/random_projection_annotation_ppi_diffusi_e701.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/random_projection_annotation_ppi_diffusi_e701.py",
+      "md5": "f553b75799c5568b9ec5ae2890bcc84b",
+      "sha256": "ef9ea611f3cc6fc4fb37a04d6498633ef3e115286642efc03105019b89cd0eb0"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/random_projection_annotation_ppi_e525_e539.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/random_projection_annotation_ppi_e525_e539.py",
+      "md5": "39528d1f72264fa2926d65184cb8a81b",
+      "sha256": "366e7a7dc240e107f6afad4d4b3c94fac42b73d072263a37214ce6adc316d66b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/random_projection_gene_annotation_e124.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/random_projection_gene_annotation_e124.py",
+      "md5": "ad6add2d75ac719aee5f1f51dbeae0ab",
+      "sha256": "641994b8862d75ee7a1d11d0657fa13e655dd8e27452dd1cc7105169cdbb05dd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/rbf_annotation_projection_e606_e584.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/rbf_annotation_projection_e606_e584.py",
+      "md5": "f28c19db027967857e6a9a4828c9d9fc",
+      "sha256": "9703f46c0e46d10c2f02a19e5b8fb6cd30da35aad4ab042be02ec81e57cd9d42"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/response_entropy_target_essentiality_int_e389.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/response_entropy_target_essentiality_int_e389.py",
+      "md5": "0cbdd750185817360059396be80540db",
+      "sha256": "a1f5624ac9f5c9c847771a1f4a5029561f0723b53b008f530843da5c60649655"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/secreted_membrane_x_response_entropy_e694.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/secreted_membrane_x_response_entropy_e694.py",
+      "md5": "b53e8a17dd9235fb46727a5e173914b1",
+      "sha256": "ea15cb4a6fc67e06d953435b5aa9d0ee1ff35d89ab4e2ca617780d94387d6fa4"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/selfdelta_x_cpg_promoter_exxx_e595.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/selfdelta_x_cpg_promoter_exxx_e595.py",
+      "md5": "524f27fcbd2af3b29977153273868dfd",
+      "sha256": "95a8fe66f94470bc8c51c4f92e60456c7ea8aea1158385159a8ef027978042f9"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/shared_tf_binding_score_e191.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/shared_tf_binding_score_e191.py",
+      "md5": "b32c25d3c6aab1f0d5ad79b18ca112fe",
+      "sha256": "9183acae61c58e7a18d01c059ed7a7dcd82d67b78409f230ec83a9824a5c640a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_cpg_x_response_entropy_e614_e619.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_cpg_x_response_entropy_e614_e619.py",
+      "md5": "10c9303002caf039ca453c66ebe272de",
+      "sha256": "b8bf540530d1e5636e04afb8a085d0864f3e69114ee548f1ee4aebb617944c78"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_cpg_x_response_entropy_e614_e620.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_cpg_x_response_entropy_e614_e620.py",
+      "md5": "e68a72a22a1feff93344981dfbf2cc97",
+      "sha256": "ff877242c6b71ef01fa7df04c188b8a5202c4b787bc0a5d14534050248ca5bbb"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_essentiality_combo_e50.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_essentiality_combo_e50.py",
+      "md5": "a215df4deb2f49db937627bb82fea73f",
+      "sha256": "41e29482df29c269740ef4bdb82faad4920487d45267680fdf7dd72416996a35"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_essentiality_ppi_neighbor_delta_i_e515.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_essentiality_ppi_neighbor_delta_i_e515.py",
+      "md5": "5a6b259f07465c20b1ccd1bb57e639c6",
+      "sha256": "6983e87fb67838ec05aea785d1b5c17fa1ec1e20e6fc0e3be5cd1152a010f663"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_essentiality_x_neighbor_response_e665.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_essentiality_x_neighbor_response_e665.py",
+      "md5": "3c7d2d9b624999b32b9c7556b7d15b08",
+      "sha256": "4821d36e9fb7487b2c4a947461799df51be039d2e084296a602496f570f7a7bd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_expression_variability_x_loeuf_e417.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_expression_variability_x_loeuf_e417.py",
+      "md5": "20f6b5b21dc34fd84875adefa7786576",
+      "sha256": "11230773d780890befdac1bf1288a6198854caec4e292903b921c1f56fc5fa3e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_knockdown_proxy_e14.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_knockdown_proxy_e14.py",
+      "md5": "13e69780a0cc27996090260c2ec9d650",
+      "sha256": "6564c8a7a6453ad4d57ce7aef65d24ed324e4ffcdec2aca27d5f7cc99b93e528"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_localization_interaction_e403.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_localization_interaction_e403.py",
+      "md5": "ca37f15cc44de15f04024f40c804095e",
+      "sha256": "c89adb522703ef86d277bbc6a86a7e30e2bd5daf876373822f276f98404c214f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_e24.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_e24.py",
+      "md5": "2a6237512f9c8dd3068f9383a3e531f4",
+      "sha256": "109ee0d6d1767702e593c50538a84d70d149f0996142449423c5303a233ec581"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_e35.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_e35.py",
+      "md5": "e988db264967a44c9f08e5f13e8afce7",
+      "sha256": "0ca96b792715652b756dbede1cdbdba08fefdd22068333dda149aadf46561463"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_mean_response_e404.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_x_mean_response_e404.py",
+      "md5": "30270f5efee68aa383572fbedc8fed05",
+      "sha256": "58ea71ecbf9dd0ef2de3a4288e388ed9578ebb728c1ac06135a842382fd56755"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_ppi_neighbor_mean_delta_e317.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_x_ppi_neighbor_mean_delta_e317.py",
+      "md5": "df973dbad89a1a4210bb7682bf8bb695",
+      "sha256": "a5a94f90014b5613682644daa3127e9609d5bdc50d3fcbdd5ef1ec51f2d4849d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_ppi_neighbor_response_e62_e628.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_x_ppi_neighbor_response_e62_e628.py",
+      "md5": "e9dd2cb2a92a4410af9e12f088dae05e",
+      "sha256": "7c4c5e7381330d6cd3dcf7babc37225ad922abfc1af38b3d4a57c9c63ad7875b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_ppi_neighbor_response_v2_e682.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_x_ppi_neighbor_response_v2_e682.py",
+      "md5": "a9bb0d54f79c660a8675af3244b80251",
+      "sha256": "bf59c203e43d4d5a4712f490a4599dcb40bbfc593b910a7fd8a002fc5e2c4ec7"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_response_entropy_e543_e555.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_x_response_entropy_e543_e555.py",
+      "md5": "4cb9806f157774ddfc01cc795f74d8de",
+      "sha256": "cac1b6ee5b3d994a43fcf6fc358150abaf0ec0f4997e624911fd28633c5c9996"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_loeuf_x_second_neighbor_response_e746.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_loeuf_x_second_neighbor_response_e746.py",
+      "md5": "87180e7562a5fb87351af26b9c135b0b",
+      "sha256": "f050bae963b779e49d16232c67fb82c3c1c48c5432f46bbf7b69fbf41462331c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_ppi_neighbor_essentiality_weighte_e764.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_ppi_neighbor_essentiality_weighte_e764.py",
+      "md5": "a09695dccefe95b3281ab63750f6db7b",
+      "sha256": "3bf3ac5f6e4c5e3df3b1c1659538baed31742eb33edb9716888a0e7e868947ce"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_ppi_neighbor_mean_response_loeuf__e775.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_ppi_neighbor_mean_response_loeuf__e775.py",
+      "md5": "c83bd83c4129843fab29ec39ae95423a",
+      "sha256": "fbcf52236db04c120ac12f4a4eb64b257750c90345e998abdf57df1eec6b0b53"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/target_self_delta_x_loeuf_gene_e523_e535.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/target_self_delta_x_loeuf_gene_e523_e535.py",
+      "md5": "f43b96ba8831aef8707cfa75801b989d",
+      "sha256": "97ad0a53e45b3360f698654797c1995a39855564dc02d93e26feb4c5c1c35a9f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/tf_binding_overlap_e610_e604.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/tf_binding_overlap_e610_e604.py",
+      "md5": "115b0c70666368bc7c39c833a02f2d05",
+      "sha256": "7cd5224f7a64fa3f6852bffe0c0dc6d979c77d01dce082968408dee599938542"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/tf_motif_similarity_target_gene_e269.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/tf_motif_similarity_target_gene_e269.py",
+      "md5": "552b1e5026cd3c7c50b63957c15d0f65",
+      "sha256": "05d1f813e8fb3a9521c04980699427dc49b3f1c1dbc56d83d4dc6101cae40d99"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/tf_target_motif_density_e600_e577.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/tf_target_motif_density_e600_e577.py",
+      "md5": "cbb86dc70a011af252b6a3603b540c89",
+      "sha256": "be30264a4b17652b14ba54de299fe2a5247fc82ba3938861b120271893f186ef"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/tf_target_overlap_score_e476.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/tf_target_overlap_score_e476.py",
+      "md5": "2a00ff0a0fea5e3e18850e9e70d1394f",
+      "sha256": "98cca686fa70cda609dc444f6bfe59ceb9bc34691ddc0a568c0a82a770c96f23"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/tfbs_count_promoter_e341.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/tfbs_count_promoter_e341.py",
+      "md5": "bcec9b6fab4222d5b975f1b7447e03d4",
+      "sha256": "e125c55857877cb19ad3ca4045ce1dd4bbadf5305e54fa5ec8ced04e5ebf6f4f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0/feature_store/utr3_length_response_e604_e581.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r0/utr3_length_response_e604_e581.py",
+      "md5": "b39522ffcc8c281d1f2c28484c7fd41e",
+      "sha256": "bca72a520325bbc0ed0487934c4c656552708279abb8e731f0bd3dc20e91e4ac"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/chromatin_state_similarity_e720.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/chromatin_state_similarity_e720.py",
+      "md5": "af0b3aed8d1d2b48e652f0554674709e",
+      "sha256": "7922c9a9bb3804d76d7c90976df7b3b6c7d5a1aac9184b6d1c959e40a50f82f4"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/domain_similarity_e123.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/domain_similarity_e123.py",
+      "md5": "8fc23bc06a5eef721be76ca1d2dc2726",
+      "sha256": "902b7f62613bb78c6e93a2523c1996214a6100a318e90f1c205e4107b9a6800c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/localization_overlap_e604_e611.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/localization_overlap_e604_e611.py",
+      "md5": "987e013c6d90393a1f91d1877697df6e",
+      "sha256": "c8e97a2694964d5ceeea42dd3f394d6d5395ac90f5e8c5a201527d576d670e4a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/nearest_neighbor_response_e9.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/nearest_neighbor_response_e9.py",
+      "md5": "9c43890c78a802665218cf77124afb7d",
+      "sha256": "7a305c1d4779d4b83d18e8e2d0c7ae6d5098d4ffc98ecd02d73df9aca245d1f4"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/promoter_cpg_features_e35.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/promoter_cpg_features_e35.py",
+      "md5": "5afa6ad23dce60374eca0762eb6d01bc",
+      "sha256": "72d7069c4afa8adc016cc9ec67c34807a50802e487f84990802144032a68e2ff"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/promoter_motif_similarity_e602_e609.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/promoter_motif_similarity_e602_e609.py",
+      "md5": "5e0084e211496c8d790c975f3e9e9412",
+      "sha256": "f73b45e47f492eca3ceef1a7d73ccdc90d41a509ea290fcd3c2d4d6db8c6b1b2"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/protein_stability_proxy_e81.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/protein_stability_proxy_e81.py",
+      "md5": "e308327c1db0db15d2c6cf496a1c9258",
+      "sha256": "b9df63d35edc3e768500ca700a4880ea4e63589d30e8f546e81d82bfd7388ef5"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/random_projection_target_annotation_e737.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/random_projection_target_annotation_e737.py",
+      "md5": "a48167865b13d512ab42f291b3ed89f9",
+      "sha256": "869d52f11989774c2a56b1f594ecc642ef96a9a4d01f3095370cc0a304141417"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/random_projection_target_annotation_e738.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/random_projection_target_annotation_e738.py",
+      "md5": "5249181911d34f89fd9b06ccaa2daa9e",
+      "sha256": "00a08e65b7b16b53ced0524c7cfa0a4b5a6c6bc73588a7b5f51c89fb74987571"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/random_projection_target_annotation_e750.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/random_projection_target_annotation_e750.py",
+      "md5": "ce572d96342f5b626c05f3addf6405e5",
+      "sha256": "e417301bd4e717642869a7f3d3f90225e36c0697248ebff97a1654140a561bac"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/same_compartment_indicator_e268.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/same_compartment_indicator_e268.py",
+      "md5": "fa099d0a62fe591d67d4b53119b18055",
+      "sha256": "6737adc5a2a8744b0a439ed1319a4e812fe4683c63a511959ea73950151cc9c6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/same_tad_indicator_e719.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/same_tad_indicator_e719.py",
+      "md5": "a3a04410dedabc22321fb4d71ac07086",
+      "sha256": "310e683f4674695d8ea25d930928ad313cc26339589e2c27cfd7d05f993880a0"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/shared_cpg_promoter_e195.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/shared_cpg_promoter_e195.py",
+      "md5": "acdfc15dd0416f32e464b4c0b26036e5",
+      "sha256": "39932a9fcc44443192776ad39b1992faaa95c85940067cd80a0ae2f8edf08c06"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/shared_tf_motif_similarity_e175.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/shared_tf_motif_similarity_e175.py",
+      "md5": "b08316c4e44d9c0bcdf71959a985691e",
+      "sha256": "4c6ee006a6782aceea4be4d483efae1877343a2469dbe320d2daa84612f0616f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/shared_tf_motifs_e629.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/shared_tf_motifs_e629.py",
+      "md5": "eb11b788a320e674fe17718f18c59b0b",
+      "sha256": "b24ca8600b5ebb079f4389dd5aa7c893e6888b4fce50ddb51afc63e2fe8fc549"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/stability_x_nuclear_flag_e255.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/stability_x_nuclear_flag_e255.py",
+      "md5": "0ab379a3930f99e23e64adf6ac303044",
+      "sha256": "1a3fc88fb93ecded61571ebd0d0e5515bcdc0de184812ddccf8eeb970e07e93f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_flag_e252.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_compartment_flag_e252.py",
+      "md5": "a7008f369cbe279bfb075ab8423ee873",
+      "sha256": "bbba6a3fabefbdcad66345000b7c059063cb7b62f8737cfb28841e5936e8b4ab"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_annotation_e333.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_compartment_x_gene_annotation_e333.py",
+      "md5": "8794a42558d1a78ca00f14aa46bc8f58",
+      "sha256": "dc3d720d913a73f61092e282b125a2e4a16e156acb164b6e36df0542e764e5f3"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_compartment_e2_e304.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_compartment_x_gene_compartment_e2_e304.py",
+      "md5": "13e517157d6a83cfa5da28de9bc1aa85",
+      "sha256": "8ee4811019cfd29b307944202b34db86d4b82d0294ef2dc2ff022ed050804979"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_compartment_e745.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_compartment_x_gene_compartment_e745.py",
+      "md5": "7c32d4c5285b68333a8ba316aea77aa7",
+      "sha256": "18ac02ece5d3fca87d6a4635cacc2fe0b0895b4128839b4c37e6f6d46f83a744"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_compartment_sp_e566.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_compartment_x_gene_compartment_sp_e566.py",
+      "md5": "0c42cf380d4aaa306d186b4eb0a871a6",
+      "sha256": "b33c47e21273adac05f528e82614876e6e182b9d7134f7ab70727ddd1883fde5"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_compartment_x_gene_compartment_sp_e567.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_compartment_x_gene_compartment_sp_e567.py",
+      "md5": "590316765d556f6dde436ae6387ccd8e",
+      "sha256": "385f4db1556adb537407e6aa59a65f0f59def3936dcfaa67756aff1580631f5a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_constraint_x_pathway_similarity_e418.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_constraint_x_pathway_similarity_e418.py",
+      "md5": "48f6583d6ddf803dd42b44901ea04979",
+      "sha256": "1b190a623fe426c3e0e4632396ceda3a67baddb14dc7689b1fa86f9f2150c2cd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_oe_promoter_x_is_target_e246.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_cpg_oe_promoter_x_is_target_e246.py",
+      "md5": "61abde117a4135fed78b146a7aef19cd",
+      "sha256": "0b314abc0bea1840123e27fd27c5546339c7eda85772f75721ff4135556eb935"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_promoter_broadcast_e257.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_cpg_promoter_broadcast_e257.py",
+      "md5": "c2c65cb2e065eacaecc34f6864ea6769",
+      "sha256": "6a32abb7d1cbe0f8633e50cc808304c78a367a4269785d25353c1b708615a281"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_promoter_x_gene_cpg_promoter_e723.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_cpg_promoter_x_gene_cpg_promoter_e723.py",
+      "md5": "1590b735e416f3784abc1ae587960b93",
+      "sha256": "b833f9f4bd055a515b01dcaaddbacdae0c3e5fb91c49771f42dab717fa02258c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_promoter_x_gene_loeuf_e526.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_cpg_promoter_x_gene_loeuf_e526.py",
+      "md5": "640b662c60e7f03d3b985563b55ed2d4",
+      "sha256": "db24e3472f087f25d4cbeb99e4a9516e3f8eb7b5e0379c8213e6b52247e1d866"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_cpg_promoter_x_gene_tf_indicator_e321.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_cpg_promoter_x_gene_tf_indicator_e321.py",
+      "md5": "f791dd64f21e60c5c2ac80a71446fe1a",
+      "sha256": "9dce8a8988b5b909d968d69fb4467b58cfebe4dd1a4c2d5b9f058a9925dc827b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_degradation_signal_x_gene_ubiquit_e670.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_degradation_signal_x_gene_ubiquit_e670.py",
+      "md5": "bf6fba4628302a8d4b158ff3651a722e",
+      "sha256": "606acc20c938cb949cc45eba01bc79e0e00fef13f03fddb7d4661a28c96f2ddd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_depmap_essentiality_e703.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_depmap_essentiality_e703.py",
+      "md5": "712c6941801169e41273f6389f8f6896",
+      "sha256": "0bfbd23b35998ece7ba2c02f1da7ab35f6eda34e04af8a09bc7c87cec7f41759"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_er_membrane_x_gene_upr_set_e354.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_er_membrane_x_gene_upr_set_e354.py",
+      "md5": "0f8bc6c637b9bb0cd3d8a3a034bd8e20",
+      "sha256": "57823ccf61fe2ee62596e65ac2c79d1ca47f49e62e29511dba196552fa75a3ea"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_essentiality_x_coexpression_e638.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_essentiality_x_coexpression_e638.py",
+      "md5": "8583c63fc2c49a129adf4ce8e0c64920",
+      "sha256": "ee01f20f85f8a3d313466560dff469f1e55c367dd05d52f6593d30ed2ae2eed1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_essentiality_x_gene_constraint_e500.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_essentiality_x_gene_constraint_e500.py",
+      "md5": "845d0fac6aafdf953db2adfba0778ca2",
+      "sha256": "dad1829ad72e8fa9cf3669dab66bc3ff14ab28da1f10a9c3556d1cc60c3c39f3"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_essentiality_x_gene_loeuf_e512.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_essentiality_x_gene_loeuf_e512.py",
+      "md5": "d857c39127608c2aebe2ee2d9893630a",
+      "sha256": "7b98bc407f78ee95b2dd37467bcb2350ffd99d5226afda8c4023689717a90b52"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_essentiality_x_ppi_interaction_e417.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_essentiality_x_ppi_interaction_e417.py",
+      "md5": "52ec4bd00f5bd973c421d67af35b5396",
+      "sha256": "a80e5bbf5eaf1f6b2cfdd3876f9c8f546ccd611bc5ef635127e6e058c4782231"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gc_cds_x_is_target_e243.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gc_cds_x_is_target_e243.py",
+      "md5": "acbddc848be95721077343323da24450",
+      "sha256": "557a3a5fb25305a8b6b57cb1f0056fb59edccea26c6c879f47ad6f03de710635"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gc_content_x_is_target_e284.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gc_content_x_is_target_e284.py",
+      "md5": "7991c89a38d5f1fd7cf12d0a2d6add79",
+      "sha256": "068f8199ee6e4b1b5b27aea4f41fad58a8e53c1a9dbaa7f5b6c57b5c83b740e3"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_coexpression_rank_x_target_l_e412.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_coexpression_rank_x_target_l_e412.py",
+      "md5": "ae8bbe2147eba2b78ca75ec1afc6757c",
+      "sha256": "cd17e820838ae0a6c34dd4f482f316ec86d9b76d9eef7741b800f26aff95949a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_compartment_match_e652.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_compartment_match_e652.py",
+      "md5": "da29b77c87e68e338ac2a4a971ef01c4",
+      "sha256": "6b646b8bdcb3fd68e015337a7dd966ac89df4fc580ae7cf58eb62ca432038bac"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_compartment_similarity_e370.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_compartment_similarity_e370.py",
+      "md5": "8ce65c07f3144f25c5559b287a0329a5",
+      "sha256": "46751cc7ac3471bdbb9c850567e685b962aa888e49862ce9cd428c21639b07e0"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_constraint_similarity_e429.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_constraint_similarity_e429.py",
+      "md5": "a087c500f52f6ab4d0d5537906582458",
+      "sha256": "a3b77a74d9235f847653676378f153200f99167628deda4ebb3bc143de336956"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_loeuf_product_e537.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_loeuf_product_e537.py",
+      "md5": "042d29ab0ab3d7096895c2cc242891b9",
+      "sha256": "bd3898f7b9afa62aa3547633aa8043e0cbb396af455936d019a69933b6c32a53"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_loeuf_ratio_e477.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_loeuf_ratio_e477.py",
+      "md5": "19db9ec1e89ed42d7e5106cf1ce67dc7",
+      "sha256": "46629701b88de81af990f53912acc2a752ca7966c439dace118260256c31a2cb"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_loeuf_similarity_e551.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_loeuf_similarity_e551.py",
+      "md5": "6ca3cc783a7d7e71c884035a3c20b24c",
+      "sha256": "15c5fc2bc842a421089dd339270c2966b570dcd9ba17e8cc950052014dc03eca"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_same_compartment_e394.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_same_compartment_e394.py",
+      "md5": "b1203a0ff6b1e6318b43aee25e26cae7",
+      "sha256": "bf79f1f30694f6c2b1ab862ece75ffcd1ad6b3be0501e8c817dc1ad590186f93"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_same_compartment_indicator_e409.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_same_compartment_indicator_e409.py",
+      "md5": "ce73ae328db828357467fea5f794159b",
+      "sha256": "bdb9c7090783ff2370d73a4d1585a1ad0d1212ca932084b46f2348c20b94f860"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_shared_domain_count_e454.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_shared_domain_count_e454.py",
+      "md5": "d15419e7fbfc4c986800f46f19d696dd",
+      "sha256": "29787740a78c3e8984b8ad5707ad91d66ee64cb381f9b719036977ee336b34cf"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_shared_domain_count_e473.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_shared_domain_count_e473.py",
+      "md5": "ecb359f61553f1e9e0f86ddc5124d3d8",
+      "sha256": "f1cfddfc1202a490bce9b88d780b36ce7d2687e72462ba4e7aa4f8ec00ea3962"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_shared_domain_count_e589.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_shared_domain_count_e589.py",
+      "md5": "56191c021b9ea65d8735be2a4fa13f8d",
+      "sha256": "e8d001388f49e9cdfd70cad7c9e9bf09088549eba92509baead4fad853fb65cd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_shared_domain_count_e694.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_shared_domain_count_e694.py",
+      "md5": "a6e626fd5058f6e07874be591d6d38fb",
+      "sha256": "b53659b406cfa20f96a4ca32dc604e7e6f4bf019a9fa89e35d9bdb55dc35af2c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_shared_domains_count_e510.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_shared_domains_count_e510.py",
+      "md5": "285e776140530b3b800f3e384d6c538c",
+      "sha256": "79d2f80c8b8d7442283746d49fc95c08b05c0389e0630839bea6d9a94558d012"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_gene_shared_protein_domain_e500_e483.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_gene_shared_protein_domain_e500_e483.py",
+      "md5": "524af01499e36eeb3833ee954f73842c",
+      "sha256": "574d422626a3433da22860d6e6d7754df6fee4acee58f9af1c0a10f2461ebece"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_has_signal_peptide_x_gene_membran_e525.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_has_signal_peptide_x_gene_membran_e525.py",
+      "md5": "48dcf7a0b443c2f9ccc12836ecc84f30",
+      "sha256": "18e5c9bb7b1daec350bf157a6dc287633d2e4d547f142b346c85dd5dad5ed168"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_has_signal_peptide_x_is_target_e247.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_has_signal_peptide_x_is_target_e247.py",
+      "md5": "079fb52c1c77b349b748319a2f5370b7",
+      "sha256": "bcf9c9256f4b9c68cc6d340ffd268eda1e58ed96da55961747e0b14382be5739"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_knockdown_magnitude_e32.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_knockdown_magnitude_e32.py",
+      "md5": "1f442ea48b60a322e3f1ef45e262b20f",
+      "sha256": "e58396b13813cd7e4c3c23f5d5b34d3385739078980587a7296b8fc82033fc76"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_length_x_gene_function_e269.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_length_x_gene_function_e269.py",
+      "md5": "15045478b4dd127d5c3f76b2fb9c1d3b",
+      "sha256": "7d5e2e7df7516ad6b4e09809e602c64bf223860d59702aab1e7a94f27842e283"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_length_x_gene_membrane_propensity_e420.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_length_x_gene_membrane_propensity_e420.py",
+      "md5": "12880d8f5c54956f5e84698afd0be7a8",
+      "sha256": "031afa7fd865374ce4df0a6cb8e2f36c0a204316e69f1453ca0fd3de905383cb"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_length_x_gene_membrane_raw_e538.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_length_x_gene_membrane_raw_e538.py",
+      "md5": "ee5277c91d560e34339e09d7aef2d622",
+      "sha256": "cefdb72bc7a7e907de082ced68cac39b1dd0dab7a86e7f1b3a86fffddd4aa908"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_localization_entropy_e673.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_localization_entropy_e673.py",
+      "md5": "f67ba15c2626751cf5aef1b58eb8b356",
+      "sha256": "cfec3775648ee2cc24d1cd7c5a6f1bf910d65dc0f9300aae6ff26e18308d74bd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_broadcast_e253.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_broadcast_e253.py",
+      "md5": "832a27ef08c6031ddc5c235ef85e92d1",
+      "sha256": "f57c3aedec8bc7773b2403767d67aa1545de4d57dd681312bad1f9a0105f4fde"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_e22.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_e22.py",
+      "md5": "d9bd42e8b0aae79d99148806647f6b2d",
+      "sha256": "f1cb4881d2f66351845343bd553635791187088539c50a0ae079044e8ef28dd9"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_coexpr_rank_e649.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_coexpr_rank_e649.py",
+      "md5": "8a06a98e3dcc6ac5ca3de4f7101b1743",
+      "sha256": "0298926271513a92993acbb275f43c6dee9ca8308771e1e5758ec1478dcbf2cd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_coexpression_e264.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_coexpression_e264.py",
+      "md5": "11d5f5ec8d6f41ef20c1ceb355949cfc",
+      "sha256": "b4a06ae99217581dd15b069cd14d0735fab32c9dc9e1a7eae5f20d8238999a80"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_coexpression_e350.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_coexpression_e350.py",
+      "md5": "43ce12cc1b69643c77bdd78a7b8d5c38",
+      "sha256": "b17c698b42f3af6e4efddc66bf603380a88ee827c06f6ce9684d6d834e91dbfb"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_coexpression_rank_e560.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_coexpression_rank_e560.py",
+      "md5": "64d0204c6696b55a6788afce9729f9af",
+      "sha256": "cca2035b21b936f2caaf758ed6bedcfe5ad3e56840ed1599459e0cb8782ba914"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_coexpression_rank_e561.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_coexpression_rank_e561.py",
+      "md5": "1d351cc66535bae0b58fede8ad295280",
+      "sha256": "e5202bb9e93c2303821b3d07be11b0fd02113dc94e63be50ca009bcfc6176eb9"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_connectivity_e332.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_connectivity_e332.py",
+      "md5": "ddc25dfc3c9c0f556a4966b85e4bf4a6",
+      "sha256": "f6fe9970fc115031b6b468971b655f761fa0febb4fb2c337ac4c77e94f1cb61f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_control_expression_e523.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_control_expression_e523.py",
+      "md5": "eabe9191a8467e222e8f0876de028030",
+      "sha256": "d878bf16ae77cce6929bdbc5169c9483d982eaf94128c02d6dcbd97cc2f51d31"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_control_mean_e320.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_control_mean_e320.py",
+      "md5": "ee04f45f7e4c343ac5f4799892cd9bdf",
+      "sha256": "51ba8eb46fc1c464c453edb357f7e9e2383d47b04461556dfc590ba17198311e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_cv_e397.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_cv_e397.py",
+      "md5": "6752ce493967053b5b765f6392a8caa8",
+      "sha256": "7f3414bf091d2807caff08050558f00283841cbb5b3e0ddb0ad2053e1bdbd0d8"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_loeuf_e367.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_loeuf_e367.py",
+      "md5": "cab8faf9adea35e6624e160fe1cd1b02",
+      "sha256": "50259362f51bd25fbb2954deb4c555824e13e466e0a93b38e8da76a81cdeba7c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_loeuf_e380.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_loeuf_e380.py",
+      "md5": "4333d8483d6502039d19839b6fff6e50",
+      "sha256": "ce34d5fb0dcc476e866f4747d1a455a5737fb6abae168b13426ec0ee08d615e6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_loeuf_squared_e444.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_loeuf_squared_e444.py",
+      "md5": "c81273bb5bd130515af77e4e7735c715",
+      "sha256": "466013f14b8924542b23d56f1175564b9fc77373d05846a1685f521f77f2206a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_set_similarity_e575.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_set_similarity_e575.py",
+      "md5": "b793c2d6f71cffc2fbec668a181e5843",
+      "sha256": "aa07353b4e9eec3e25f30a8a7275b24c94787c8df356d46edc22742ef1166628"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_gene_specificity_e291_e301.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_gene_specificity_e291_e301.py",
+      "md5": "1548b64083affb6c171c720f4335fb51",
+      "sha256": "1dce875224ce832c75d8cab5fe7a971760ad5e9b0f872738d044b271707c38ea"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_is_target_e240.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_is_target_e240.py",
+      "md5": "c2e4c34fdc3d49c40ea18c83816e7db9",
+      "sha256": "1c8ae9c301544d5525b429aa3a936c9a72cc81e8925109dd1a8d950172df776a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_loeuf_x_is_target_e286.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_loeuf_x_is_target_e286.py",
+      "md5": "8c6bae1d39c35b4c97a91119b1ba7b44",
+      "sha256": "e18754a63102782d42d53bc33c850117fd2f5e926ce4caebd548787795b983f6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_n_exons_x_is_target_e245.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_n_exons_x_is_target_e245.py",
+      "md5": "d74f065f084987c48cdb86854b27c703",
+      "sha256": "8e6d10503abb980776a9b4e238eba3e0e47e43a95da3301d17fdac48fd3e4d2f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_n_transcripts_x_is_target_e242.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_n_transcripts_x_is_target_e242.py",
+      "md5": "7953a88abd3138feb85463c463f077a5",
+      "sha256": "1e5bfef3360f33fb8ef36de18b92de3f7bfb751bbe5949cffa7d23ff59073f21"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_phospho_density_x_gene_signaling__e672.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_phospho_density_x_gene_signaling__e672.py",
+      "md5": "acfa9184c503c0e319f65d88fe995907",
+      "sha256": "1e59ca4f5cf22a23d911623472ffd5229a8c591e7ef4dccc35a0cfbe852eee02"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_promoter_cpg_overlap_gene_e626.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_promoter_cpg_overlap_gene_e626.py",
+      "md5": "70beb183ac9e4f443a1f958d6cdda844",
+      "sha256": "8b18ef927657f8930471245b9b11a1301dde3eb3b3c5fee589ad35b21258f911"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_promoter_cpg_strength_e110.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_promoter_cpg_strength_e110.py",
+      "md5": "159ec58b40829404e5eedd3c1ab16f48",
+      "sha256": "f3164b489c7607df0cf786a288bcc4f379f3bd3dc4163f5de8370de38c53ba06"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_promoter_cpg_strength_e71.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_promoter_cpg_strength_e71.py",
+      "md5": "ea326d8a82d8a15a4edaed71652c4187",
+      "sha256": "dcebef57c789392f26aeffd72e167161773aaa580c0c47aa4fb244412ef4250d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_promoter_cpg_strength_x_gene_set__e168.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_promoter_cpg_strength_x_gene_set__e168.py",
+      "md5": "bc17a06be8872b4695a0a26d72fe8f35",
+      "sha256": "aff169e1ecafaa36e75022e93b91fb25cc519d033f57e5f8081c541ccf5adcef"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_promoter_cpg_strength_x_mean_resp_e163.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_promoter_cpg_strength_x_mean_resp_e163.py",
+      "md5": "8ff3f5904c4e374c9818eb0bf6f8bd66",
+      "sha256": "e1a5b67c538f8512392e29ea214d3b9bb776e3c369f499ed85c66b05577e91c2"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_half_life_e671.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_half_life_e671.py",
+      "md5": "b9ca86080ea730dbf4862bdab77c05b3",
+      "sha256": "8677b527642d8e3ee9e36b3019be8c980bedd70510a5e65266d793959a89c6a6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_gene_binding_fun_e527.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_length_x_gene_binding_fun_e527.py",
+      "md5": "b87eb2cf11038c7f120f65766e7d9f3e",
+      "sha256": "c2d62c129fb55c989a3806353a60fa409dc56951d1bdda408de54d4d5a220d21"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_gene_folding_set_e353.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_length_x_gene_folding_set_e353.py",
+      "md5": "7824728e25bed05d3fe192fc22d39e0d",
+      "sha256": "51cf99571dd30e9a4be42d41bd2eddac65ea5e72c43f9511628ca9f7e4489a2d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_gene_membrane_e2_e300.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_length_x_gene_membrane_e2_e300.py",
+      "md5": "26d1567713fd12676ac324f82feb05ba",
+      "sha256": "95dc04d5e9dbbc85b68940342f82427ac128aef4c23b4c649ad349dc3f15fb05"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_is_target_e241.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_length_x_is_target_e241.py",
+      "md5": "42a1f2f4030a7030b3ca3c9803224484",
+      "sha256": "7bd4f0078fe849d3374130f03c0611b72e5c14117582c989efcd2365f7ccceaf"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_length_x_is_target_e285.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_length_x_is_target_e285.py",
+      "md5": "16b0c824fa2a4ccbb9b3464cc8221869",
+      "sha256": "afd7f3cd23d725458ef5d8267605dde7286dc8bddf341f67d9dfcbcaee6b97c1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_protein_localization_e53.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_protein_localization_e53.py",
+      "md5": "851303e4e14712c5df346bdc22b322a9",
+      "sha256": "217785f43c824f0930f0bd11533bbbae067ee7de8e3130d6b21f8a3a5b6ce91c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_span_x_gene_intron_length_e568.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_span_x_gene_intron_length_e568.py",
+      "md5": "2c526675fb6cebe5310889e5037f6c1d",
+      "sha256": "b7fa39c8f93ce6ca05e3acd01e8c8c11273c1c29cb0c35f8f04c88f26e0b606d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_stability_x_gene_proteasome_sensi_e725.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_stability_x_gene_proteasome_sensi_e725.py",
+      "md5": "927d9a085fa3677836a02aea37842262",
+      "sha256": "c11a54ff6d483cc78f03c3ab6b514b50154cea4cf483d4ff0524cc5631e9e463"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_tf_x_gene_cpg_promoter_e653.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_tf_x_gene_cpg_promoter_e653.py",
+      "md5": "d8bb0da5ab3ab632d3dd0ad55e8347e9",
+      "sha256": "192e42eaffee7774f217a1870c4d05d0a7b46dc58311f41e85043a1e19b8a65c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/target_tfbs_x_gene_tf_e539.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/target_tfbs_x_gene_tf_e539.py",
+      "md5": "aa2ace1cdebd14dd540737f024b551ca",
+      "sha256": "884158a3623288eda4f959692d58df08d73afe38691b20e364ea48b492e7c568"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2/feature_store/weighted_gene_set_similarity_e256.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r2/weighted_gene_set_similarity_e256.py",
+      "md5": "a44fdff81bc47e5fd0951a59afba19d1",
+      "sha256": "127a830eee81cca677bff0a8b74c1e7b49a2d87f817fb81897b4d81badb2bc07"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/annotation_random_projection_similarity_e704.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/annotation_random_projection_similarity_e704.py",
+      "md5": "f236d845e6bd69a40b87c8dbf3d7a58b",
+      "sha256": "8bb0c353fac1346d08df39c6bc76594a8619931f75e23f8315af2600a156f6f8"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/bidirectional_partner_coexpression_e387.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/bidirectional_partner_coexpression_e387.py",
+      "md5": "4ea59d21cb15aa66e01c1d3374accea5",
+      "sha256": "380d6733cdb407b4435f5ecbdf9adfbb2d165fbb916f167320536b2977e304d1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/bidirectional_promoter_indicator_e45.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/bidirectional_promoter_indicator_e45.py",
+      "md5": "7c65562c0f2e4400d12f86f46c21e627",
+      "sha256": "3bb4af60712ad306598d36304eef4970cf99ce9326266cf37f760a55e0bd1099"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/chromatin_modifier_cpg_interaction_e87.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/chromatin_modifier_cpg_interaction_e87.py",
+      "md5": "569e28fb0b33673214dff17788e76aa4",
+      "sha256": "00e658ca1716868cc2eb0508d4c72ed89e4f4cebb326c8cebda6a58565523412"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/coessentiality_correlation_e725.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/coessentiality_correlation_e725.py",
+      "md5": "80e783f340df5cea4199c6c021ed9c45",
+      "sha256": "0247e3510ca92b2491f638b5843703b296c5e8711cc7112fe5a147ad41766562"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/coessentiality_correlation_e744.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/coessentiality_correlation_e744.py",
+      "md5": "ab8423f61ef65079848ee08498d90be8",
+      "sha256": "7357c4a593290a48b7e95624e6dc75c6f15fbcc5b5e49406542c00164f2e740d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/coessentiality_rank_correlation_e809.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/coessentiality_rank_correlation_e809.py",
+      "md5": "e6146e67e0d73479f15116a63618fc1d",
+      "sha256": "df49fc6bcaa76e1a7ffff283a2077d4e04694580d594c5f55d5d1a3c175408d3"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/complex_member_target_loeuf_interaction_e116.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/complex_member_target_loeuf_interaction_e116.py",
+      "md5": "6b30f95b9f5f6fa60a61fe744d3f60cd",
+      "sha256": "1660ec610aeabe36d447142312b2b95458b6568c61718260f994d2515c95f11e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/cpg_oe_promoter_binary_e44.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/cpg_oe_promoter_binary_e44.py",
+      "md5": "838d62c8e6cb17be0d7b39cb9a80e87d",
+      "sha256": "285923d8b6b737ed9aefeab1ac57b8aa466f7028649fa754f5339842576f9c9e"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/essentiality_interaction_e561.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/essentiality_interaction_e561.py",
+      "md5": "b95899835b640181764f90d87c7ac81a",
+      "sha256": "5a1cbd1b0342d5c953d590d54ab85277c14235298646af748ca78b1ba7f090eb"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/essentiality_interaction_e803.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/essentiality_interaction_e803.py",
+      "md5": "6b15ad313cd245673c5a07b36104db42",
+      "sha256": "7ddf3fffda5fb125ec371cf6690b016c1e7df6206ebdf67a4daeec5830bd2f1b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/essentiality_times_kurtosis_e629.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/essentiality_times_kurtosis_e629.py",
+      "md5": "a9cdec62c0fb32a75d246ff4c48b5cd7",
+      "sha256": "741dc10d55b4f1fcd3e9446c364acac3623908c50c513109566e94b7cc7a7246"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_annotation_random_projection_e717.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_annotation_random_projection_e717.py",
+      "md5": "c9ab787aa483da6e53c09d21e585b1f4",
+      "sha256": "d29ea7121e2127f9016b4dc27b038e7156d15349ebe1dec3a907d98ea6b8bc58"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_annotation_random_projection_e736.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_annotation_random_projection_e736.py",
+      "md5": "edb819ab2edebb45583e5e1f313b863c",
+      "sha256": "c8fe70ee3e7733234588544a7ebf044336bc4027f708416d38bfb60453c16b86"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_annotation_random_projection_tanh_e572.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_annotation_random_projection_tanh_e572.py",
+      "md5": "10b4d4679f5e8b21f8c9d1b4112295b3",
+      "sha256": "624bb3ec1775187376ab0db24888a75570d5f4ecef2bc967317594f13934bf5f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_essentiality_buffering_e92.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_essentiality_buffering_e92.py",
+      "md5": "6227ad2b41260fc58b5e75329a023521",
+      "sha256": "c313b4039192c89a38811d1221c1c06dc152c2c8e8eecb807d59de70802bffef"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_loeuf_e254.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_loeuf_e254.py",
+      "md5": "4eda5e3a28e9153ff34c367cd2bfdf30",
+      "sha256": "1aab273c037f3fef766a0cb1288711acdb1bb43aed86ec6e23d63316379a0345"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_promoter_cpg_island_e642.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_promoter_cpg_island_e642.py",
+      "md5": "ceaab3b2d46e98d69ba7a6f4815173aa",
+      "sha256": "c54dbae25c2b312d887d2825f7ad63d8b5c779f6d120e881b439c47496d345c1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_response_variance_over_essentiality_e651.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_response_variance_over_essentiality_e651.py",
+      "md5": "18fcc06b8135c006861a8a94e3a5484d",
+      "sha256": "c6d3710321b77dc0fd7455feb2e86dd671a7ec46403e82f642d989e2eaec6a5a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/gene_response_variance_over_target_essen_e430.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/gene_response_variance_over_target_essen_e430.py",
+      "md5": "fdf59cafdae198cbfa3c247e1e6d14a5",
+      "sha256": "e043d37be604b3c5064ac4e067effee72904a640cb6c3878d78a803928edcd45"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/is_target_x_loeuf_gene_e37.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/is_target_x_loeuf_gene_e37.py",
+      "md5": "02e16522eadfdc274e36d91d86c3becc",
+      "sha256": "ce9f59a42aa2015810f9a79276c41564a9eb7e86a343d4afa2b84cc49ae72aa7"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/mean_response_x_gene_loeuf_e274.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/mean_response_x_gene_loeuf_e274.py",
+      "md5": "87587d481e44332aa88305eef492a770",
+      "sha256": "d77bd3793e61c0b73183429ec97f804b8e582fd543ad82403d208ada4087380d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/prior_knowledge_random_projection_e344.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/prior_knowledge_random_projection_e344.py",
+      "md5": "8d2e15101ab52d12e2d85149a1410808",
+      "sha256": "e1d83223c8f167c7856beaf91379b75e2da41703cc46db48f3914f54d477a752"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/promoter_motif_jaccard_e759.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/promoter_motif_jaccard_e759.py",
+      "md5": "0924a9b79a7e9e2aa6dea4171c31a452",
+      "sha256": "6dd227e32632894dfe449b5515292a9eaaade87f3ad94a596866dbbddc667ee6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/protein_compartment_similarity_e42.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/protein_compartment_similarity_e42.py",
+      "md5": "6e11529dc43d46f2e7b33265296a02ea",
+      "sha256": "7495f1e79dbc5696d0476f69cee5b81fcf71542c56e0a6bd07f042082b12684b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/protein_domain_similarity_e743.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/protein_domain_similarity_e743.py",
+      "md5": "05efe87acbd869256a502e6df5fd36d7",
+      "sha256": "58400851992797b7c348bab7d4b8f2fd06938a8c075939b516c7052d21d05f07"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_all_priors_e226.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_all_priors_e226.py",
+      "md5": "4ca2048e06c586dc61581c1934857f1f",
+      "sha256": "5acb05ed482cb9769efb1ae956d8c41875de6e07df534086924cab7d182d9650"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_combined_e542.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_combined_e542.py",
+      "md5": "109082bb70353f1002ba88ae14d66c6a",
+      "sha256": "55010bf37614d7c1320520d2c76994e3fdde34d8f78fb907515f87b625a0922b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_prior_features_e301.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_prior_features_e301.py",
+      "md5": "785acb53c721b074b97a922b26d84ab8",
+      "sha256": "68aba85f33c0f68279a2534584c6725691e8ab8e3b0aee2a9882351e238fe524"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_prior_knowledge_e310.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_prior_knowledge_e310.py",
+      "md5": "828894c1092574bbf1a5eb4b0ed6f391",
+      "sha256": "202366ceb59b30769eb82b84788f3ea9fd8548c9c83eeb46ca010ec737d78dbd"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_prior_knowledge_e328.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_prior_knowledge_e328.py",
+      "md5": "7a6dd88f5b6d2a4e9fc0d1b89b1c964a",
+      "sha256": "61d06d3d9bd3a58de80973c5e6a05e29fff963cd9dd241d40277d891ca6f2bbc"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_static_features_e409.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_static_features_e409.py",
+      "md5": "6dcb700d4a9283f8608d2fd9bf85dbd9",
+      "sha256": "bffb064a62494bee8b21fa1de602a0096f67e49535c06a1e4c02c5440785d9af"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_static_features_e410.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_static_features_e410.py",
+      "md5": "79eceda4b1a9865d41e1d018bd820997",
+      "sha256": "614efb8b1dd5d6d916ef40ce4ea45bd9c16bcfdc6a78babeee5497776586b3f0"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_static_features_e424.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_static_features_e424.py",
+      "md5": "93d9d248f030f9acd2d984e15446442f",
+      "sha256": "dd84871e93a8dbaa0c78cca2c932af8fcbc8f6dcc6dfe78636ed3595476339ed"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_static_features_e425.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_static_features_e425.py",
+      "md5": "088fa1d6b87cd6b21b4d145d7d82cc83",
+      "sha256": "c5d6bc26c2582222f44af908a017725df12c3c9a61d0573daa78d2985dc01257"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_static_plus_target_res_e607.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_static_plus_target_res_e607.py",
+      "md5": "1c7b828cff9e477f806437941c9df646",
+      "sha256": "9d39cbfb92bf0aa20387ba325391263ea0e0bb6eca961f7bc55293ec43e52013"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/random_projection_static_plus_target_var_e436.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/random_projection_static_plus_target_var_e436.py",
+      "md5": "f1a38897c8ea60c4dc1e637832f75416",
+      "sha256": "57437a3a2b12868c00fe00148142eb79845b2ee0ee57e1b7ead6a52876a31f6d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/same_protein_complex_e93_e102.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/same_protein_complex_e93_e102.py",
+      "md5": "93901b61c0f4f8b3030d180fcc20740c",
+      "sha256": "d88da33c1e6cf3f61aa59163b4c109a2d7f03f136b4ee7401b99de2c95167b3f"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/shared_compartment_similarity_e559.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/shared_compartment_similarity_e559.py",
+      "md5": "4e085ae146dbafcdf041c266b57f4f72",
+      "sha256": "30755413099c95021a6435c073ecda12df28913a68949553449a83e85107ca91"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/shared_tf_binding_count_promoter_e419.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/shared_tf_binding_count_promoter_e419.py",
+      "md5": "3af6fe354dce5f370d4f2105816e198c",
+      "sha256": "b1cdccc181211bf71c7149732a9c19af075acded6249cc4ff89581376984cd95"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/static_annotation_random_proj_e545_e554.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/static_annotation_random_proj_e545_e554.py",
+      "md5": "946c0b176bee263c4de490094bb6f2b6",
+      "sha256": "04d54260d20d1234675ad4c40380826bf22f18b6ae64ef05a865290be39c6bc1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/static_annotation_random_projection_e518.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/static_annotation_random_projection_e518.py",
+      "md5": "fdd6aa2b3e714b6a0bfcba552a2ff926",
+      "sha256": "bcf284162bfad6da51d17736d1648244611deea8a05db46e65280a2b033a4e31"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/static_annotation_random_projection_e530.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/static_annotation_random_projection_e530.py",
+      "md5": "8a0a6d7241c2d84619ea02ff13a3f5bc",
+      "sha256": "d0549e8a790261fbc98636e0217f53f7cd313525ca6363ab4842ca0aa53f6be7"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/static_annotation_random_projection_e588.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/static_annotation_random_projection_e588.py",
+      "md5": "9f74f358689e2fe68a4a1f8500b726c6",
+      "sha256": "8d9df7facdccd54c705f65288dfc57f4e4b9ab3472d17d4723f4679ca43f58c1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/static_feature_random_projection_e390.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/static_feature_random_projection_e390.py",
+      "md5": "42968f8c98232f2e700a6bbf62b0bdf8",
+      "sha256": "0c6e487aa069eae58ba01e156ded06eaec1b095ae22bccc39453581551d66ad7"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_annotation_random_projection_e178.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_annotation_random_projection_e178.py",
+      "md5": "fafc250ca02fc9df89ff96798895ca27",
+      "sha256": "4d8495b8ab1a27eb4a726671f69907d0b85cdee60dd721a3095d2d448f58af03"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_annotation_random_projection_e201.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_annotation_random_projection_e201.py",
+      "md5": "75f35fa6a7624839c3e4f2306b83e336",
+      "sha256": "b863aed2a9742b49f3aed4a262896619f6d8c867e3d192548797c7e49cd75da0"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_chromatin_accessibility_e211.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_chromatin_accessibility_e211.py",
+      "md5": "516e6a8cb4e556ed607634b6e24628d1",
+      "sha256": "3e5549028a80847e2ed3f210f7cb1c1c9e31cbeafa6f16d159ddfd74ec3c4ded"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_cpg_oe_promoter_e352.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_cpg_oe_promoter_e352.py",
+      "md5": "cdb408dbf10c810091e0cb858eeebd46",
+      "sha256": "fce93948cb3adfb76c969345695d8ed0a25b2703f94d1bd1bb6a7b7570b6ce7d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_essentiality_e223.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_essentiality_e223.py",
+      "md5": "7ae3ad52a715e9720c99a73dbf18c134",
+      "sha256": "0dca24f9625cb25058374823b03f4583166d36b41769694f01167524316988d3"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_essentiality_rank_e445.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_essentiality_rank_e445.py",
+      "md5": "06bdb788953f505ed57b22e8661fe583",
+      "sha256": "d83bf73d08ca2a5937f6e19ce64dc9124edd5b3fe6768e75b212dc490226ceb8"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_essentiality_score_e284.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_essentiality_score_e284.py",
+      "md5": "e0ac5a4ee68e97eafe48061cbd65b578",
+      "sha256": "b5962594f45c2001b756e1e9681f216483c9f15400fd650b7bda2418ba09ffe1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_gc_cds_e188.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_gc_cds_e188.py",
+      "md5": "841bfde8a6ae4f623ed2789d2e8a682a",
+      "sha256": "c49f5e1e811738ac4053e5db9bbb811ddc7dc216e4ef533273d11fad2906123c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_gene_constraint_correlation_e682.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_gene_constraint_correlation_e682.py",
+      "md5": "1227dcc9b2eedbe1c5accd15531103f1",
+      "sha256": "688412ba33becb92f97f7e01d47df1cf8e0b9d8f4b3f86bdfcaece448bb3389b"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_half_life_interaction_e91.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_half_life_interaction_e91.py",
+      "md5": "6686abb4494a2b009a6432af09c171f8",
+      "sha256": "2f3f099a165989ecbdc73d54830628b639b233c440b5b83bee7844c475130070"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_is_nuclear_e35.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_is_nuclear_e35.py",
+      "md5": "309a71e42852b1f74f7f49b8a0d4f203",
+      "sha256": "8b4bd1c0e26b682452bba310f8a472409380dbc3f505d0282e848794374602e1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_knockdown_proxy_e13.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_knockdown_proxy_e13.py",
+      "md5": "32283a31c3e0ddffc85bedecc7e427e6",
+      "sha256": "246e4f0a9daa3c615d99c3e9de59e90ee7a9a0addb464d8e51d04eb71dc93ac5"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_loeuf_e34.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_loeuf_e34.py",
+      "md5": "01e2062b7e2bbde0f1a277e16d678ff9",
+      "sha256": "9b13608b12e6cff8080673ba6adf0e8d435f4b28af58b0f8c060df5fe5041049"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_loeuf_rank_e190.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_loeuf_rank_e190.py",
+      "md5": "d9105c244c1f423e76a946f71f9344b4",
+      "sha256": "e3cffa05ae81b3ad4c6cc0bf5f1608f807bf5f3e8961b155a287f2dc2dc715e6"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_loeuf_x_half_life_e134.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_loeuf_x_half_life_e134.py",
+      "md5": "388bf713cb9a6bf61e699b2d77fd291a",
+      "sha256": "42a5f6651295feeff54e98395fca97662db1d95dc902eb196a90666f2b005fcc"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_lof_intolerance_e25.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_lof_intolerance_e25.py",
+      "md5": "34915d37daa5e027c2e9658ebba7cca9",
+      "sha256": "5bc3bff109f457cef46bab4c4c3abd040e925e5d6109561426934066a0c01201"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_mrna_stability_e363.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_mrna_stability_e363.py",
+      "md5": "9bdcf227628bfd640f51f555252f6992",
+      "sha256": "67aa7c68dff460b82425d3e4272d927f95e5b27b449c3f9979fac5ff85735b41"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_n_exons_e187.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_n_exons_e187.py",
+      "md5": "aef31f134c4fa50ed5b4872f0c9d3604",
+      "sha256": "ae29d7569989177196e5837d18ac65f6aba6fbd51e410a57928bae02a070d937"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_neighbor_coexpression_e386.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_neighbor_coexpression_e386.py",
+      "md5": "2eb917b087283f7997970f8d53acf972",
+      "sha256": "f13cfadd9462dd36645042718b08ce2537e3e9510377f367f52c960512621a42"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_pli_e253.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_pli_e253.py",
+      "md5": "350ad02547262643543289f02ab05a7e",
+      "sha256": "231bfd894f6527f86ca39b03a92ce35a3a41127e9db19e4c98c5805f59ea5309"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_pli_e336.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_pli_e336.py",
+      "md5": "1f1b4ef731926f32054d38c0a0d80398",
+      "sha256": "797284bbc00f9aea30178b216181fb463a0457a3d72796bef3bfe4cf8c0f1aca"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_accessibility_e365.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_promoter_accessibility_e365.py",
+      "md5": "ce3ad4ff6b80527af5bb76702a196472",
+      "sha256": "b729c14a37e380312d4b1024704ea88f4e157edd5ca483a4cf3297b0730b4c35"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_cpg_content_e317.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_promoter_cpg_content_e317.py",
+      "md5": "2bcc7394211ada63e07b085aad1987d9",
+      "sha256": "728bd6ce41363892c0f2ae0bbd82cbe23c777e17acee0791639c5da388b73677"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_cpg_density_e167.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_promoter_cpg_density_e167.py",
+      "md5": "c031858b677f526f30db7b13289be097",
+      "sha256": "f13f38d9683f315c21793d634253d44e2c0e91521256fc65048bc1260d2da1ab"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_cpg_island_e444.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_promoter_cpg_island_e444.py",
+      "md5": "97c4bd541afa36ddf5bd887bbcbdd8a7",
+      "sha256": "3877f21bf815a782bcad658fe5c8de6f705dc97d75c98cd4619e04139d36d3d1"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_promoter_cpg_island_e78.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_promoter_cpg_island_e78.py",
+      "md5": "b41ae4a4a102446637181ecb66459f97",
+      "sha256": "ff45912092005436d45b27d609f018e501409acb3d669e3d9dc9f0e3efc31ac0"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_protein_half_life_e362.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_protein_half_life_e362.py",
+      "md5": "3aafca42eacc57db144a1b978a8a4ebd",
+      "sha256": "7c02f4acc4e5e436d8287fd41b9d717cbd69cb6c4295b6725193b10020f0a94c"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_protein_length_e186.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_protein_length_e186.py",
+      "md5": "7603ccf758cb125d6ab7ffebc714d1aa",
+      "sha256": "9b075f21206e061995b7b5fdca3169f516826b0b4a077839c24c9e6120ede890"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_protein_length_e354.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_protein_length_e354.py",
+      "md5": "a760472d1dce6f1eafb563fad778b92e",
+      "sha256": "bb385aab4f8afddebede6237c4e39b331fc425303065ffa539781ca59a7fc037"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_protein_length_e619.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_protein_length_e619.py",
+      "md5": "46fb624b5e25f4c5f58ebace9134b653",
+      "sha256": "b1c482c950a1a469c0a73c1974d40c67704f41f1b62752b53768f82a9d3e2c2d"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_protein_length_normalized_e446.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_protein_length_normalized_e446.py",
+      "md5": "8be3c2ab6ad90c3936daa8a7f4f3503d",
+      "sha256": "a00f5fb2817a7703da3e4b3f7683f05471a9ba26e8b9810dd1585a1c7617659a"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/target_transcript_diversity_e640.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/target_transcript_diversity_e640.py",
+      "md5": "a30fbdd89572a491b3e6e7d1f9c16204",
+      "sha256": "36a61bb3ae6b91a3299fa7e5702d4875809f5c1a799eb4c50f5f5881aef741b3"
+    },
+    {
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3/feature_store/tf_binding_site_overlap_e742.py",
+      "copy": "docs/results/adamson_cf_g_plugins/r3/tf_binding_site_overlap_e742.py",
+      "md5": "c1576b4a8fa4329e0ad9a44eaa672981",
+      "sha256": "c409caa6d836e7fcf085ef8254ce35f9f12047fcbef7a154bac72b6dc4ba3b5b"
+    }
+  ],
+  "command_protocol": "PLAN_G corrected amendment; all status-ok rows, 999 null replicates; OOF only; no --k/--partial/--with-val1",
+  "preparation_note": "Initial metadata helper under /usr/bin/python3 lacked hashlib.file_digest after copying plugins. No scoring occurred. Existing copies preserved and verified; completed this new receipt under the project Python without re-copying or altering plugins.",
+  "no_sealed_reading_yet": true
+}

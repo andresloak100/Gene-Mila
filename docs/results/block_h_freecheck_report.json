@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-17T17:56:37.680877+00:00",
+  "operation": "Exact direct-human-authorized free tool check after export, once",
+  "command": "bash docs/mac/block_h/check_tools.sh",
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-coordination",
+  "H_CLONE": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-coordination",
+  "source_commit": "624b909179ee4f1a53c49d731a8553f873479e89",
+  "source_sha256": {
+    "check_tools.sh": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74",
+    "block_h_common.sh": "835c53f5f94335ce4ed4e455bdb20a8ba5d98f31a9f37290be935ebce09e7925"
+  },
+  "exit": 0,
+  "full_output_log": "block_h_freecheck_20261017.log",
+  "log_sha256": "df0f1ff8bb06b553c27c8022ca37e4f19ce63f5c368b310af68a6fa018bcbe89",
+  "full_output_issue51": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238099741",
+  "codex_version": "0.160.0",
+  "runner_files_present": 5,
+  "readiness_gaps": [
+    "tier.txt not written; package-readiness subcheck reports NOT STARTED",
+    "Docker daemon not running",
+    "gtimeout missing",
+    "Claude CLI missing"
+  ],
+  "shared_ledger_reported": 60.232225,
+  "provider_console_reading": null,
+  "paid_or_agent_or_arm_or_scientific_probe_started": false,
+  "setup_files_written": false,
+  "output_secret_scan": {
+    "credential_boundary_patterns": "clear",
+    "broad_substring_false_positive": "sk- inside public CLI help permission literal disk-full-read-access; no credential, output preserved"
+  },
+  "stop": "Stop here per latest direct human instruction; append receipts only, then pause monitor. No installation, tier/isolation/cap write or paid run."
+}

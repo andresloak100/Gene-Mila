@@ -1,0 +1,17 @@
+{
+  "utc_before_scoring": "2026-10-17T10:57:17.334122+00:00",
+  "tool_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "tool_sha256": "08c2b009c8a66fcbc9b85790df77698348a157918d9bee2285101013b096da19",
+  "source_hash_manifest": "docs/results/adamson_cf_g1_vs_g0_input_manifest.json",
+  "sources": [
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3"
+  ],
+  "rule": "PLAN_G reading3: six separate run-only calls, g0 r0/r2/r3 then g1 r0/r2/r3, no cross-arm choice",
+  "cohort": "Adamson sealed cohort is worn; indicative only; categories n<10 reported not interpreted",
+  "labels": "Only the prescribed tool may read labels; no manual private/split/label read"
+}

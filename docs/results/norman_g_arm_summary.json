@@ -1,0 +1,1474 @@
+{
+  "created_utc": "2026-10-17T15:48:08.269246+00:00",
+  "source_report": "docs/results/norman_g1_vs_g0/feature_compare.json",
+  "source_sha256": "b550f1e7800f03b8b9f81eb590aa26224020e88d8e49754c19309e1e21347f45",
+  "split_id": "split_a391fa9e7b4eccb7",
+  "settings": {
+    "model": "ridge",
+    "alphas": [
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0,
+      1000.0,
+      10000.0,
+      30000.0,
+      100000.0
+    ],
+    "alpha_rule": "honest_oof",
+    "fold_seeds": [
+      101,
+      102,
+      103
+    ],
+    "k": 5,
+    "groups": "gene",
+    "null": "gene permutation within control-mean bins",
+    "null_pert": "per-perturbation scalar of a candidate proportional to a parent column permuted within bins of the targets' mean control expression, parent columns in place",
+    "correction": "max-gain step-down permutation (p_fwer) within each source's add-one rows, duplicates by prediction hash collapsed first; Holm on the raw p kept as p_holm",
+    "p_floor": 1.0,
+    "min_gain": 0.002,
+    "null_reps": 0,
+    "null_seed": 0,
+    "null_bins": 10,
+    "tiers": [
+      "oof"
+    ],
+    "deciding_tier": "oof",
+    "families": {
+      "g1_r0": {
+        "add_one": 9,
+        "set": 1
+      },
+      "g1_r2": {
+        "add_one": 23,
+        "set": 1
+      },
+      "g1_r3": {
+        "add_one": 15,
+        "set": 1
+      },
+      "g0_r0": {
+        "add_one": 24,
+        "set": 1
+      },
+      "g0_r2": {
+        "add_one": 16,
+        "set": 1
+      },
+      "g0_r3": {
+        "add_one": 17,
+        "set": 1
+      }
+    },
+    "labels_read": [
+      "training labels (public.npz)"
+    ],
+    "timeout_s": 1800,
+    "ram_mb": 8192
+  },
+  "parent": {
+    "source": "builtin",
+    "exposure": "none",
+    "features": [
+      "control_mean",
+      "mean_response",
+      "is_target",
+      "additive_response"
+    ],
+    "params": {},
+    "n_columns": 4,
+    "files": {},
+    "tiers": {
+      "oof": {
+        "n": 112,
+        "metrics": {
+          "pearson_delta": 0.5681880463180106,
+          "pearson_delta_nontarget": 0.5603522017743735,
+          "mse_top": 0.19214318336220731,
+          "r2_top": 0.7015348151166858,
+          "pearson_delta_top": 0.6173509108544979,
+          "direction_acc_top": 0.8074404761904761,
+          "mse": 0.008318449101256458,
+          "delta_scale_ratio": 0.7311308503485346
+        },
+        "alphas": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ]
+      }
+    }
+  },
+  "metric_labels": {
+    "pearson_delta": "M1",
+    "pearson_delta_nontarget": "M2",
+    "mse": "M3",
+    "mse_top": "M4",
+    "r2_top": "M5",
+    "pearson_delta_top": "M6",
+    "direction_acc_top": "M7",
+    "delta_scale_ratio": "M12"
+  },
+  "caveats": [
+    "OOF only: every system has selected on these labels; not held out",
+    "M4-M7 use each perturbation's top 20 genes by |true delta| (genemila.benchmark.evaluator), not CellForge's Wilcoxon DE top 20",
+    "ridge on the tool's alpha grid with an honest OOF alpha; a parent run's own model type and alpha are not reused",
+    "the literal caps make pasting labels into a file expensive, not impossible"
+  ],
+  "per_run": [
+    {
+      "source": "g0_r0",
+      "kind": "set",
+      "feature": "(set)",
+      "features": [
+        "similarity_response_e17",
+        "pair_synergy_response_e57",
+        "similarity_response_ppi_overlap_e121",
+        "pair_target_coexpression_e163_e169",
+        "pair_target_gene_set_overlap_e181_e188",
+        "target_weighted_coexpression_e207",
+        "target_self_response_magnitude_e221",
+        "target_weighted_signed_coexpression_e244",
+        "target_ppi_centrality_e321",
+        "target_weighted_coexpression_ppi_e353",
+        "target_gene_set_specificity_e419",
+        "pair_target_coexpression_weighted_self_r_e444",
+        "shared_tf_count_e463",
+        "target_variance_coexpression_interaction_e478",
+        "target_gene_set_enrichment_e504",
+        "ppi_weighted_neighbor_coexpression_e541_e538",
+        "target_response_entropy_e537_e550",
+        "target_response_skewness_e566",
+        "pair_additive_coexpression_interaction_e590",
+        "target_coexpression_rank_e600_e614",
+        "target_coexpression_ppi_distance_weighte_e637",
+        "pair_synergy_additive_interaction_e652",
+        "target_response_rank_within_perturbation_e673",
+        "pathway_crosstalk_weighted_e675_e697"
+      ],
+      "exposure": "val1+oof",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r0",
+      "run_id": "norman_g0_ds_w4_r0",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "experiment_id": "EXP_0697",
+      "selected": [
+        "control_mean",
+        "mean_response",
+        "is_target",
+        "additive_response",
+        "similarity_response_e17",
+        "pair_synergy_response_e57",
+        "similarity_response_ppi_overlap_e121",
+        "pair_target_coexpression_e163_e169",
+        "pair_target_gene_set_overlap_e181_e188",
+        "target_weighted_coexpression_e207",
+        "target_self_response_magnitude_e221",
+        "target_weighted_signed_coexpression_e244",
+        "target_ppi_centrality_e321",
+        "target_weighted_coexpression_ppi_e353",
+        "target_gene_set_specificity_e419",
+        "pair_target_coexpression_weighted_self_r_e444",
+        "shared_tf_count_e463",
+        "target_variance_coexpression_interaction_e478",
+        "target_gene_set_enrichment_e504",
+        "ppi_weighted_neighbor_coexpression_e541_e538",
+        "target_response_entropy_e537_e550",
+        "target_response_skewness_e566",
+        "pair_additive_coexpression_interaction_e590",
+        "target_coexpression_rank_e600_e614",
+        "target_coexpression_ppi_distance_weighte_e637",
+        "pair_synergy_additive_interaction_e652",
+        "target_response_rank_within_perturbation_e673",
+        "pathway_crosstalk_weighted_e675_e697"
+      ],
+      "dropped_parent": [],
+      "retuned_parent": [],
+      "status": "ok",
+      "reason": "",
+      "model": [
+        "control_mean",
+        "mean_response",
+        "is_target",
+        "additive_response",
+        "similarity_response_e17",
+        "pair_synergy_response_e57",
+        "similarity_response_ppi_overlap_e121",
+        "pair_target_coexpression_e163_e169",
+        "pair_target_gene_set_overlap_e181_e188",
+        "target_weighted_coexpression_e207",
+        "target_self_response_magnitude_e221",
+        "target_weighted_signed_coexpression_e244",
+        "target_ppi_centrality_e321",
+        "target_weighted_coexpression_ppi_e353",
+        "target_gene_set_specificity_e419",
+        "pair_target_coexpression_weighted_self_r_e444",
+        "shared_tf_count_e463",
+        "target_variance_coexpression_interaction_e478",
+        "target_gene_set_enrichment_e504",
+        "ppi_weighted_neighbor_coexpression_e541_e538",
+        "target_response_entropy_e537_e550",
+        "target_response_skewness_e566",
+        "pair_additive_coexpression_interaction_e590",
+        "target_coexpression_rank_e600_e614",
+        "target_coexpression_ppi_distance_weighte_e637",
+        "pair_synergy_additive_interaction_e652",
+        "target_response_rank_within_perturbation_e673",
+        "pathway_crosstalk_weighted_e675_e697"
+      ],
+      "n_columns": 28,
+      "tiers": {
+        "oof": {
+          "n": 112,
+          "honest": true,
+          "metrics": {
+            "pearson_delta": 0.5778474080808331,
+            "pearson_delta_nontarget": 0.5696100073876107,
+            "mse_top": 0.18732819051536914,
+            "r2_top": 0.705856488230561,
+            "pearson_delta_top": 0.630746695123768,
+            "direction_acc_top": 0.8106398809523808,
+            "mse": 0.00829394172259672,
+            "delta_scale_ratio": 0.7486170242580582
+          },
+          "delta": {
+            "pearson_delta": {
+              "n": 112,
+              "mean_diff": 0.009659361762822461,
+              "se": 0.0060182806278090304,
+              "wins_a": 54,
+              "wins_b": 58,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.3264880086559,
+              "se_adj": 0.00798317708551478,
+              "verdict_adj": "none"
+            },
+            "pearson_delta_nontarget": {
+              "n": 112,
+              "mean_diff": 0.009257805613237188,
+              "se": 0.006278587273178174,
+              "wins_a": 53,
+              "wins_b": 59,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.3024076304224375,
+              "se_adj": 0.008177279972860458,
+              "verdict_adj": "none"
+            },
+            "mse_top": {
+              "n": 112,
+              "mean_diff": 0.004814992846838179,
+              "se": 0.0025269805133146654,
+              "wins_a": 64,
+              "wins_b": 48,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.3631244776844784,
+              "se_adj": 0.0034445889923309086,
+              "verdict_adj": "none"
+            },
+            "r2_top": {
+              "n": 112,
+              "mean_diff": 0.004321673113875303,
+              "se": 0.003812370877397429,
+              "wins_a": 64,
+              "wins_b": 48,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.292885675655514,
+              "se_adj": 0.004928959697673379,
+              "verdict_adj": "none"
+            },
+            "pearson_delta_top": {
+              "n": 112,
+              "mean_diff": 0.013395784269270046,
+              "se": 0.007342715088156566,
+              "wins_a": 60,
+              "wins_b": 52,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2458449882099083,
+              "se_adj": 0.009147884792433133,
+              "verdict_adj": "none"
+            },
+            "direction_acc_top": {
+              "n": 112,
+              "mean_diff": 0.0031994047619047622,
+              "se": 0.004711823523922447,
+              "wins_a": 25,
+              "wins_b": 40,
+              "ties": 47,
+              "verdict": "none",
+              "overlap_ratio": 1.2523645711699227,
+              "se_adj": 0.005900920846965489,
+              "verdict_adj": "none"
+            }
+          },
+          "report_deltas": [
+            0.007201372765516689,
+            0.006278712298154354,
+            0.01534900407922013,
+            0.0065485670354531456,
+            0.01534900407922013,
+            0.007229510319370247
+          ],
+          "alphas": [
+            0.01,
+            0.01,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ],
+          "null": null,
+          "null_pert": null
+        }
+      },
+      "failed_criteria": [
+        "M1 gain not above 2 SE_adj with wins > n/2",
+        "no null (--null-reps 0, or nothing beyond the parent to permute)"
+      ],
+      "meaningful": false,
+      "verdict": "not: M1 gain not above 2 SE_adj with wins > n/2; no null (--null-reps 0, or nothing beyond the parent to permute)"
+    },
+    {
+      "source": "g0_r2",
+      "kind": "set",
+      "feature": "(set)",
+      "features": [
+        "target_coexpression_e14",
+        "partial_corr_target_control_mean_e55",
+        "additive_response_x_is_target_e75",
+        "additive_response_x_target_ppi_degree_e1_e160",
+        "shared_tf_count_e190",
+        "target_pagerank_influence_e237",
+        "target_specificity_pathway_penalty_e251",
+        "target_control_mean_x_is_target_e303",
+        "pair_ppi_shortest_path_length_e337",
+        "target_gene_pathway_jaccard_e414",
+        "target_diffusion_score_e483",
+        "additive_response_squared_e535",
+        "signed_squared_additive_response_e541",
+        "additive_response_squared_x_is_target_e_e580",
+        "signed_sq_additive_x_is_target_e606_e594",
+        "signed_cubed_additive_response_e783"
+      ],
+      "exposure": "val1+oof",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r2",
+      "run_id": "norman_g0_ds_w4_r2",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "experiment_id": "EXP_0787",
+      "selected": [
+        "is_target",
+        "additive_response",
+        "target_coexpression_e14",
+        "partial_corr_target_control_mean_e55",
+        "additive_response_x_is_target_e75",
+        "additive_response_x_target_ppi_degree_e1_e160",
+        "shared_tf_count_e190",
+        "target_pagerank_influence_e237",
+        "target_specificity_pathway_penalty_e251",
+        "target_control_mean_x_is_target_e303",
+        "pair_ppi_shortest_path_length_e337",
+        "target_gene_pathway_jaccard_e414",
+        "target_diffusion_score_e483",
+        "additive_response_squared_e535",
+        "signed_squared_additive_response_e541",
+        "additive_response_squared_x_is_target_e_e580",
+        "signed_sq_additive_x_is_target_e606_e594",
+        "signed_cubed_additive_response_e783"
+      ],
+      "dropped_parent": [
+        "control_mean",
+        "mean_response"
+      ],
+      "retuned_parent": [],
+      "status": "ok",
+      "reason": "",
+      "model": [
+        "is_target",
+        "additive_response",
+        "target_coexpression_e14",
+        "partial_corr_target_control_mean_e55",
+        "additive_response_x_is_target_e75",
+        "additive_response_x_target_ppi_degree_e1_e160",
+        "shared_tf_count_e190",
+        "target_pagerank_influence_e237",
+        "target_specificity_pathway_penalty_e251",
+        "target_control_mean_x_is_target_e303",
+        "pair_ppi_shortest_path_length_e337",
+        "target_gene_pathway_jaccard_e414",
+        "target_diffusion_score_e483",
+        "additive_response_squared_e535",
+        "signed_squared_additive_response_e541",
+        "additive_response_squared_x_is_target_e_e580",
+        "signed_sq_additive_x_is_target_e606_e594",
+        "signed_cubed_additive_response_e783"
+      ],
+      "n_columns": 18,
+      "tiers": {
+        "oof": {
+          "n": 112,
+          "honest": true,
+          "metrics": {
+            "pearson_delta": 0.5768212352296574,
+            "pearson_delta_nontarget": 0.5650486761910496,
+            "mse_top": 0.2024437206612402,
+            "r2_top": 0.6929262296569866,
+            "pearson_delta_top": 0.6294510805877956,
+            "direction_acc_top": 0.7976190476190477,
+            "mse": 0.00853712346213427,
+            "delta_scale_ratio": 0.6706590137955927
+          },
+          "delta": {
+            "pearson_delta": {
+              "n": 112,
+              "mean_diff": 0.008633188911646997,
+              "se": 0.0032014560870402,
+              "wins_a": 70,
+              "wins_b": 42,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.2648461428330722,
+              "se_adj": 0.0040493493831422565,
+              "verdict_adj": "a"
+            },
+            "pearson_delta_nontarget": {
+              "n": 112,
+              "mean_diff": 0.004696474416676037,
+              "se": 0.0019602263902973394,
+              "wins_a": 68,
+              "wins_b": 44,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.32807396019371,
+              "se_adj": 0.0026033256250384083,
+              "verdict_adj": "none"
+            },
+            "mse_top": {
+              "n": 112,
+              "mean_diff": -0.010300537299032889,
+              "se": 0.001739418430285131,
+              "wins_a": 33,
+              "wins_b": 79,
+              "ties": 0,
+              "verdict": "b",
+              "overlap_ratio": 1.290308070792524,
+              "se_adj": 0.002244385639082168,
+              "verdict_adj": "b"
+            },
+            "r2_top": {
+              "n": 112,
+              "mean_diff": -0.00860858545969916,
+              "se": 0.002442833227104433,
+              "wins_a": 33,
+              "wins_b": 79,
+              "ties": 0,
+              "verdict": "b",
+              "overlap_ratio": 1.3337272254491377,
+              "se_adj": 0.0032580731822209586,
+              "verdict_adj": "b"
+            },
+            "pearson_delta_top": {
+              "n": 112,
+              "mean_diff": 0.012100169733297712,
+              "se": 0.0069281153017908565,
+              "wins_a": 53,
+              "wins_b": 59,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2527524828500873,
+              "se_adj": 0.008679213645790178,
+              "verdict_adj": "none"
+            },
+            "direction_acc_top": {
+              "n": 112,
+              "mean_diff": -0.009821428571428576,
+              "se": 0.0036906534948620553,
+              "wins_a": 27,
+              "wins_b": 60,
+              "ties": 25,
+              "verdict": "b",
+              "overlap_ratio": 1.0633302915318135,
+              "se_adj": 0.003924383656634576,
+              "verdict_adj": "b"
+            }
+          },
+          "report_deltas": [
+            0.008534447592757566,
+            0.0060603678150056295,
+            0.010100966173148929,
+            0.0072744690299398895,
+            0.010099245598830686,
+            0.009729637260199042
+          ],
+          "alphas": [
+            100000.0,
+            100000.0,
+            10.0,
+            10.0,
+            0.01,
+            0.01
+          ],
+          "null": null,
+          "null_pert": null
+        }
+      },
+      "failed_criteria": [
+        "no null (--null-reps 0, or nothing beyond the parent to permute)",
+        "mse_top significantly worse"
+      ],
+      "meaningful": false,
+      "verdict": "not: no null (--null-reps 0, or nothing beyond the parent to permute); mse_top significantly worse"
+    },
+    {
+      "source": "g0_r3",
+      "kind": "set",
+      "feature": "(set)",
+      "features": [
+        "additive_response_times_target_coexpress_e77",
+        "additive_residual_prediction_e211",
+        "pair_target_shared_genesets_e305",
+        "target_expression_percentile_times_addit_e330",
+        "random_projection_pair_target_diff_e352",
+        "pair_target_control_coexpression_e433",
+        "pair_target_loo_response_corr_e472",
+        "pair_target_shared_tf_binding_e490",
+        "pair_target_shared_tf_binding_sites_e520",
+        "ppi_neighbor_overlap_with_targets_e534",
+        "additive_response_times_geneset_overlap__e551",
+        "additive_response_times_target_self_effe_e576",
+        "target_expression_specificity_times_addi_e586",
+        "random_projection_target_covariance_e617",
+        "pair_target_variance_product_e642",
+        "additive_response_times_shared_pathway_c_e719",
+        "random_projection_pair_target_covariance_e736"
+      ],
+      "exposure": "val1+oof",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g0_ds_w4_r3",
+      "run_id": "norman_g0_ds_w4_r3",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "experiment_id": "EXP_0737",
+      "selected": [
+        "is_target",
+        "additive_response",
+        "additive_response_times_target_coexpress_e77",
+        "additive_residual_prediction_e211",
+        "pair_target_shared_genesets_e305",
+        "target_expression_percentile_times_addit_e330",
+        "random_projection_pair_target_diff_e352",
+        "pair_target_control_coexpression_e433",
+        "pair_target_loo_response_corr_e472",
+        "pair_target_shared_tf_binding_e490",
+        "pair_target_shared_tf_binding_sites_e520",
+        "ppi_neighbor_overlap_with_targets_e534",
+        "additive_response_times_geneset_overlap__e551",
+        "additive_response_times_target_self_effe_e576",
+        "target_expression_specificity_times_addi_e586",
+        "random_projection_target_covariance_e617",
+        "pair_target_variance_product_e642",
+        "additive_response_times_shared_pathway_c_e719",
+        "random_projection_pair_target_covariance_e736"
+      ],
+      "dropped_parent": [
+        "control_mean",
+        "mean_response"
+      ],
+      "retuned_parent": [],
+      "status": "ok",
+      "reason": "",
+      "model": [
+        "is_target",
+        "additive_response",
+        "additive_response_times_target_coexpress_e77",
+        "additive_residual_prediction_e211",
+        "pair_target_shared_genesets_e305",
+        "target_expression_percentile_times_addit_e330",
+        "random_projection_pair_target_diff_e352",
+        "pair_target_control_coexpression_e433",
+        "pair_target_loo_response_corr_e472",
+        "pair_target_shared_tf_binding_e490",
+        "pair_target_shared_tf_binding_sites_e520",
+        "ppi_neighbor_overlap_with_targets_e534",
+        "additive_response_times_geneset_overlap__e551",
+        "additive_response_times_target_self_effe_e576",
+        "target_expression_specificity_times_addi_e586",
+        "random_projection_target_covariance_e617",
+        "pair_target_variance_product_e642",
+        "additive_response_times_shared_pathway_c_e719",
+        "random_projection_pair_target_covariance_e736"
+      ],
+      "n_columns": 19,
+      "tiers": {
+        "oof": {
+          "n": 112,
+          "honest": true,
+          "metrics": {
+            "pearson_delta": 0.5789906230746588,
+            "pearson_delta_nontarget": 0.5645059197982877,
+            "mse_top": 0.18364413563980125,
+            "r2_top": 0.7130023802889636,
+            "pearson_delta_top": 0.6336560634935798,
+            "direction_acc_top": 0.8130952380952381,
+            "mse": 0.008151674405360604,
+            "delta_scale_ratio": 0.7486313962957731
+          },
+          "delta": {
+            "pearson_delta": {
+              "n": 112,
+              "mean_diff": 0.010802576756648224,
+              "se": 0.003670345101461955,
+              "wins_a": 79,
+              "wins_b": 33,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.0745624008782182,
+              "se_adj": 0.0039440148442785655,
+              "verdict_adj": "a"
+            },
+            "pearson_delta_nontarget": {
+              "n": 112,
+              "mean_diff": 0.00415371802391411,
+              "se": 0.0024037278247030724,
+              "wins_a": 76,
+              "wins_b": 36,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2147407108385484,
+              "se_adj": 0.0029199060464422076,
+              "verdict_adj": "none"
+            },
+            "mse_top": {
+              "n": 112,
+              "mean_diff": 0.008499047722406044,
+              "se": 0.0017434495656823456,
+              "wins_a": 80,
+              "wins_b": 32,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.1958420522009872,
+              "se_adj": 0.002084890306534496,
+              "verdict_adj": "a"
+            },
+            "r2_top": {
+              "n": 112,
+              "mean_diff": 0.011467565172277707,
+              "se": 0.0020091435062524303,
+              "wins_a": 80,
+              "wins_b": 32,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.1155700144939937,
+              "se_adj": 0.002241340250390537,
+              "verdict_adj": "a"
+            },
+            "pearson_delta_top": {
+              "n": 112,
+              "mean_diff": 0.016305152639081968,
+              "se": 0.004925139292185079,
+              "wins_a": 69,
+              "wins_b": 43,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.183273881864392,
+              "se_adj": 0.005827788688986682,
+              "verdict_adj": "a"
+            },
+            "direction_acc_top": {
+              "n": 112,
+              "mean_diff": 0.0056547619047618985,
+              "se": 0.0033991358133117545,
+              "wins_a": 27,
+              "wins_b": 29,
+              "ties": 56,
+              "verdict": "none",
+              "overlap_ratio": 1.1428747174361316,
+              "se_adj": 0.0038847863821657065,
+              "verdict_adj": "none"
+            }
+          },
+          "report_deltas": [
+            0.011605308898664402,
+            0.009218851549470553,
+            0.011670143645366338,
+            0.009218149907808781,
+            0.01158750928921315,
+            0.011515497249365958
+          ],
+          "alphas": [
+            10.0,
+            10.0,
+            100.0,
+            100.0,
+            1000.0,
+            1000.0
+          ],
+          "null": null,
+          "null_pert": null
+        }
+      },
+      "failed_criteria": [
+        "no null (--null-reps 0, or nothing beyond the parent to permute)"
+      ],
+      "meaningful": false,
+      "verdict": "not: no null (--null-reps 0, or nothing beyond the parent to permute)"
+    },
+    {
+      "source": "g1_r0",
+      "kind": "set",
+      "feature": "(set)",
+      "features": [
+        "nn_response_similarity_e15",
+        "coexpression_weighted_target_similarity_e160",
+        "lof_weighted_target_response_similarity_e201",
+        "pca_target_loading_e19",
+        "pair_synergy_score_e31",
+        "refined_pair_additivity_residual_e70",
+        "target_response_similarity_to_mean_e110",
+        "hypergeometric_overlap_target_response_e92",
+        "target_response_similarity_to_gene_own_e90"
+      ],
+      "exposure": "val1+oof",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r0",
+      "run_id": "norman_g1_ds_w4_r0",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "experiment_id": "EXP_0745",
+      "selected": [
+        "is_target",
+        "additive_response",
+        "nn_response_similarity_e15",
+        "coexpression_weighted_target_similarity_e160",
+        "lof_weighted_target_response_similarity_e201",
+        "pca_target_loading_e19",
+        "pair_synergy_score_e31",
+        "refined_pair_additivity_residual_e70",
+        "target_response_similarity_to_mean_e110",
+        "hypergeometric_overlap_target_response_e92",
+        "target_response_similarity_to_gene_own_e90"
+      ],
+      "dropped_parent": [
+        "control_mean",
+        "mean_response"
+      ],
+      "retuned_parent": [],
+      "status": "ok",
+      "reason": "",
+      "model": [
+        "is_target",
+        "additive_response",
+        "nn_response_similarity_e15",
+        "coexpression_weighted_target_similarity_e160",
+        "lof_weighted_target_response_similarity_e201",
+        "pca_target_loading_e19",
+        "pair_synergy_score_e31",
+        "refined_pair_additivity_residual_e70",
+        "target_response_similarity_to_mean_e110",
+        "hypergeometric_overlap_target_response_e92",
+        "target_response_similarity_to_gene_own_e90"
+      ],
+      "n_columns": 11,
+      "tiers": {
+        "oof": {
+          "n": 112,
+          "honest": true,
+          "metrics": {
+            "pearson_delta": 0.5874232826659368,
+            "pearson_delta_nontarget": 0.5774028625040132,
+            "mse_top": 0.19804111639734298,
+            "r2_top": 0.6994277360907113,
+            "pearson_delta_top": 0.638816734104123,
+            "direction_acc_top": 0.8139136904761904,
+            "mse": 0.008438820795923575,
+            "delta_scale_ratio": 0.6009471242221504
+          },
+          "delta": {
+            "pearson_delta": {
+              "n": 112,
+              "mean_diff": 0.019235236347926225,
+              "se": 0.00721706278444089,
+              "wins_a": 69,
+              "wins_b": 43,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.366078701676429,
+              "se_adj": 0.009859075758486284,
+              "verdict_adj": "none"
+            },
+            "pearson_delta_nontarget": {
+              "n": 112,
+              "mean_diff": 0.017050660729639757,
+              "se": 0.007400413181724569,
+              "wins_a": 78,
+              "wins_b": 34,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.3037670214065402,
+              "se_adj": 0.00964841465111474,
+              "verdict_adj": "none"
+            },
+            "mse_top": {
+              "n": 112,
+              "mean_diff": -0.005897933035135676,
+              "se": 0.0028830932276944837,
+              "wins_a": 45,
+              "wins_b": 67,
+              "ties": 0,
+              "verdict": "b",
+              "overlap_ratio": 1.1839733453731651,
+              "se_adj": 0.0034135055338161543,
+              "verdict_adj": "none"
+            },
+            "r2_top": {
+              "n": 112,
+              "mean_diff": -0.0021070790259743884,
+              "se": 0.004305993416238032,
+              "wins_a": 45,
+              "wins_b": 67,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2372324968110033,
+              "se_adj": 0.005327514985623922,
+              "verdict_adj": "none"
+            },
+            "pearson_delta_top": {
+              "n": 112,
+              "mean_diff": 0.02146582324962512,
+              "se": 0.009303641019981915,
+              "wins_a": 59,
+              "wins_b": 53,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.3132132986758482,
+              "se_adj": 0.012217665113546383,
+              "verdict_adj": "none"
+            },
+            "direction_acc_top": {
+              "n": 112,
+              "mean_diff": 0.006473214285714271,
+              "se": 0.006400317550742077,
+              "wins_a": 42,
+              "wins_b": 43,
+              "ties": 27,
+              "verdict": "none",
+              "overlap_ratio": 1.2458712868799067,
+              "se_adj": 0.007973971863383084,
+              "verdict_adj": "none"
+            }
+          },
+          "report_deltas": [
+            0.017616598005689488,
+            0.013785017208450934,
+            0.026980260971286363,
+            0.013785017208450934,
+            0.02652571808721993,
+            0.016718806606459524
+          ],
+          "alphas": [
+            30000.0,
+            30000.0,
+            30000.0,
+            30000.0,
+            10000.0,
+            10000.0
+          ],
+          "null": null,
+          "null_pert": null
+        }
+      },
+      "failed_criteria": [
+        "M1 gain not above 2 SE_adj with wins > n/2",
+        "no null (--null-reps 0, or nothing beyond the parent to permute)"
+      ],
+      "meaningful": false,
+      "verdict": "not: M1 gain not above 2 SE_adj with wins > n/2; no null (--null-reps 0, or nothing beyond the parent to permute)"
+    },
+    {
+      "source": "g1_r2",
+      "kind": "set",
+      "feature": "(set)",
+      "features": [
+        "target_similarity_response_e15",
+        "additive_response_times_is_target_e60",
+        "target_bidirectional_count_e89",
+        "target_loeuf_times_additive_response_e104",
+        "target_cpg_times_additive_response_e137",
+        "target_mean_abs_response_times_additive__e172",
+        "target_gene_set_diversity_e205",
+        "target_pair_coexpression_times_additive_e214",
+        "target_protein_length_mean_e231",
+        "target_pair_nonadditivity_e263",
+        "target_specificity_times_additive_respon_e301",
+        "target_network_centrality_times_additive_e365",
+        "target_pair_nonadditivity_ppi_weighted_e428",
+        "target_weighted_cpg_promoter_e459",
+        "target_neighbor_count_times_additive_e515",
+        "target_coexpression_mean_e14_e535",
+        "target_gene_set_coherence_times_additive_e575",
+        "target_expression_variance_mean_e585",
+        "target_expression_random_projection_e606",
+        "additive_response_squared_e628",
+        "target_expression_entropy_times_additive_e634",
+        "target_expression_entropy_raw_e657",
+        "target_covariance_random_projection_e671"
+      ],
+      "exposure": "val1+oof",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2",
+      "run_id": "norman_g1_ds_w4_r2",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "experiment_id": "EXP_0671",
+      "selected": [
+        "mean_response",
+        "is_target",
+        "additive_response",
+        "target_similarity_response_e15",
+        "additive_response_times_is_target_e60",
+        "target_bidirectional_count_e89",
+        "target_loeuf_times_additive_response_e104",
+        "target_cpg_times_additive_response_e137",
+        "target_mean_abs_response_times_additive__e172",
+        "target_gene_set_diversity_e205",
+        "target_pair_coexpression_times_additive_e214",
+        "target_protein_length_mean_e231",
+        "target_pair_nonadditivity_e263",
+        "target_specificity_times_additive_respon_e301",
+        "target_network_centrality_times_additive_e365",
+        "target_pair_nonadditivity_ppi_weighted_e428",
+        "target_weighted_cpg_promoter_e459",
+        "target_neighbor_count_times_additive_e515",
+        "target_coexpression_mean_e14_e535",
+        "target_gene_set_coherence_times_additive_e575",
+        "target_expression_variance_mean_e585",
+        "target_expression_random_projection_e606",
+        "additive_response_squared_e628",
+        "target_expression_entropy_times_additive_e634",
+        "target_expression_entropy_raw_e657",
+        "target_covariance_random_projection_e671"
+      ],
+      "dropped_parent": [
+        "control_mean"
+      ],
+      "retuned_parent": [],
+      "status": "ok",
+      "reason": "",
+      "model": [
+        "mean_response",
+        "is_target",
+        "additive_response",
+        "target_similarity_response_e15",
+        "additive_response_times_is_target_e60",
+        "target_bidirectional_count_e89",
+        "target_loeuf_times_additive_response_e104",
+        "target_cpg_times_additive_response_e137",
+        "target_mean_abs_response_times_additive__e172",
+        "target_gene_set_diversity_e205",
+        "target_pair_coexpression_times_additive_e214",
+        "target_protein_length_mean_e231",
+        "target_pair_nonadditivity_e263",
+        "target_specificity_times_additive_respon_e301",
+        "target_network_centrality_times_additive_e365",
+        "target_pair_nonadditivity_ppi_weighted_e428",
+        "target_weighted_cpg_promoter_e459",
+        "target_neighbor_count_times_additive_e515",
+        "target_coexpression_mean_e14_e535",
+        "target_gene_set_coherence_times_additive_e575",
+        "target_expression_variance_mean_e585",
+        "target_expression_random_projection_e606",
+        "additive_response_squared_e628",
+        "target_expression_entropy_times_additive_e634",
+        "target_expression_entropy_raw_e657",
+        "target_covariance_random_projection_e671"
+      ],
+      "n_columns": 26,
+      "tiers": {
+        "oof": {
+          "n": 112,
+          "honest": true,
+          "metrics": {
+            "pearson_delta": 0.5722828442987353,
+            "pearson_delta_nontarget": 0.5631682468520187,
+            "mse_top": 0.18805751234969972,
+            "r2_top": 0.7022601960753205,
+            "pearson_delta_top": 0.6234910164667021,
+            "direction_acc_top": 0.8036458333333334,
+            "mse": 0.008498140066722995,
+            "delta_scale_ratio": 0.7714167285044792
+          },
+          "delta": {
+            "pearson_delta": {
+              "n": 112,
+              "mean_diff": 0.004094797980724851,
+              "se": 0.0010887743319777628,
+              "wins_a": 75,
+              "wins_b": 37,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.1940342378007631,
+              "se_adj": 0.001300033829620103,
+              "verdict_adj": "a"
+            },
+            "pearson_delta_nontarget": {
+              "n": 112,
+              "mean_diff": 0.002816045077645198,
+              "se": 0.0009494542712111525,
+              "wins_a": 73,
+              "wins_b": 39,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.2288717974750967,
+              "se_adj": 0.0011667575768836568,
+              "verdict_adj": "a"
+            },
+            "mse_top": {
+              "n": 112,
+              "mean_diff": 0.004085671012507582,
+              "se": 0.0021498905001686008,
+              "wins_a": 69,
+              "wins_b": 43,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2989430308498866,
+              "se_adj": 0.002792585282284381,
+              "verdict_adj": "none"
+            },
+            "r2_top": {
+              "n": 112,
+              "mean_diff": 0.0007253809586348465,
+              "se": 0.0030455068107592305,
+              "wins_a": 69,
+              "wins_b": 43,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.123783894568072,
+              "se_adj": 0.0034224915047285963,
+              "verdict_adj": "none"
+            },
+            "pearson_delta_top": {
+              "n": 112,
+              "mean_diff": 0.006140105612204258,
+              "se": 0.0035752864757516755,
+              "wins_a": 66,
+              "wins_b": 46,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.084422971259809,
+              "se_adj": 0.003877122783139643,
+              "verdict_adj": "none"
+            },
+            "direction_acc_top": {
+              "n": 112,
+              "mean_diff": -0.003794642857142862,
+              "se": 0.002527661375268238,
+              "wins_a": 25,
+              "wins_b": 32,
+              "ties": 55,
+              "verdict": "none",
+              "overlap_ratio": 1.0250084314292138,
+              "se_adj": 0.002590874221447906,
+              "verdict_adj": "none"
+            }
+          },
+          "report_deltas": [
+            0.006316746150762276,
+            0.0006077496742552535,
+            0.007228692936267711,
+            0.0006077496742552535,
+            0.005314735531350645,
+            0.004493113917457436
+          ],
+          "alphas": [
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            1000.0,
+            1000.0
+          ],
+          "null": null,
+          "null_pert": null
+        }
+      },
+      "failed_criteria": [
+        "no null (--null-reps 0, or nothing beyond the parent to permute)"
+      ],
+      "meaningful": false,
+      "verdict": "not: no null (--null-reps 0, or nothing beyond the parent to permute)"
+    },
+    {
+      "source": "g1_r3",
+      "kind": "set",
+      "feature": "(set)",
+      "features": [
+        "target_constraint_interaction_e91",
+        "additive_response_x_specificity_e171_e183",
+        "pair_target_constraint_interaction_e242",
+        "target_is_tf_e314",
+        "target_expression_specificity_across_per_e344",
+        "ppi_weighted_additive_response_e387",
+        "target_gene_coexpression_e410",
+        "pair_target_constraint_aggregate_e433",
+        "additive_response_x_target_protein_lengt_e453",
+        "jaccard_pathway_overlap_with_target_e509",
+        "promoter_cpg_overlap_with_target_e519",
+        "additive_response_x_target_nuclear_e542",
+        "target_gene_set_random_projection_e578",
+        "random_projection_gene_set_diff_e601",
+        "additive_response_x_target_complex_size_e646"
+      ],
+      "exposure": "val1+oof",
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r3",
+      "run_id": "norman_g1_ds_w4_r3",
+      "split_id": "split_a391fa9e7b4eccb7",
+      "experiment_id": "EXP_0652",
+      "selected": [
+        "is_target",
+        "additive_response",
+        "target_constraint_interaction_e91",
+        "additive_response_x_specificity_e171_e183",
+        "pair_target_constraint_interaction_e242",
+        "target_is_tf_e314",
+        "target_expression_specificity_across_per_e344",
+        "ppi_weighted_additive_response_e387",
+        "target_gene_coexpression_e410",
+        "pair_target_constraint_aggregate_e433",
+        "additive_response_x_target_protein_lengt_e453",
+        "jaccard_pathway_overlap_with_target_e509",
+        "promoter_cpg_overlap_with_target_e519",
+        "additive_response_x_target_nuclear_e542",
+        "target_gene_set_random_projection_e578",
+        "random_projection_gene_set_diff_e601",
+        "additive_response_x_target_complex_size_e646"
+      ],
+      "dropped_parent": [
+        "control_mean",
+        "mean_response"
+      ],
+      "retuned_parent": [],
+      "status": "ok",
+      "reason": "",
+      "model": [
+        "is_target",
+        "additive_response",
+        "target_constraint_interaction_e91",
+        "additive_response_x_specificity_e171_e183",
+        "pair_target_constraint_interaction_e242",
+        "target_is_tf_e314",
+        "target_expression_specificity_across_per_e344",
+        "ppi_weighted_additive_response_e387",
+        "target_gene_coexpression_e410",
+        "pair_target_constraint_aggregate_e433",
+        "additive_response_x_target_protein_lengt_e453",
+        "jaccard_pathway_overlap_with_target_e509",
+        "promoter_cpg_overlap_with_target_e519",
+        "additive_response_x_target_nuclear_e542",
+        "target_gene_set_random_projection_e578",
+        "random_projection_gene_set_diff_e601",
+        "additive_response_x_target_complex_size_e646"
+      ],
+      "n_columns": 36,
+      "tiers": {
+        "oof": {
+          "n": 112,
+          "honest": true,
+          "metrics": {
+            "pearson_delta": 0.5782256144151452,
+            "pearson_delta_nontarget": 0.5650904840007221,
+            "mse_top": 0.19050386605642688,
+            "r2_top": 0.7042331216458978,
+            "pearson_delta_top": 0.6234803521572321,
+            "direction_acc_top": 0.8029761904761904,
+            "mse": 0.008544379211495454,
+            "delta_scale_ratio": 0.7527923856210594
+          },
+          "delta": {
+            "pearson_delta": {
+              "n": 112,
+              "mean_diff": 0.01003756809713474,
+              "se": 0.003652095483647062,
+              "wins_a": 66,
+              "wins_b": 46,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.1528934449530137,
+              "se_adj": 0.004210476943439204,
+              "verdict_adj": "a"
+            },
+            "pearson_delta_nontarget": {
+              "n": 112,
+              "mean_diff": 0.004738282226348722,
+              "se": 0.0016267791606674078,
+              "wins_a": 67,
+              "wins_b": 45,
+              "ties": 0,
+              "verdict": "a",
+              "overlap_ratio": 1.258708584522798,
+              "se_adj": 0.0020476408946548583,
+              "verdict_adj": "a"
+            },
+            "mse_top": {
+              "n": 112,
+              "mean_diff": 0.001639317305780407,
+              "se": 0.0014669051335568625,
+              "wins_a": 58,
+              "wins_b": 54,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.3388136284987304,
+              "se_adj": 0.001963912584520678,
+              "verdict_adj": "none"
+            },
+            "r2_top": {
+              "n": 112,
+              "mean_diff": 0.002698306529211838,
+              "se": 0.002693452196906627,
+              "wins_a": 58,
+              "wins_b": 54,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2269310721545075,
+              "se_adj": 0.0033046801917475618,
+              "verdict_adj": "none"
+            },
+            "pearson_delta_top": {
+              "n": 112,
+              "mean_diff": 0.006129441302734155,
+              "se": 0.0054064507955999385,
+              "wins_a": 58,
+              "wins_b": 54,
+              "ties": 0,
+              "verdict": "none",
+              "overlap_ratio": 1.2497800775584509,
+              "se_adj": 0.00675687449464084,
+              "verdict_adj": "none"
+            },
+            "direction_acc_top": {
+              "n": 112,
+              "mean_diff": -0.004464285714285721,
+              "se": 0.0037636622688655584,
+              "wins_a": 34,
+              "wins_b": 36,
+              "ties": 42,
+              "verdict": "none",
+              "overlap_ratio": 1.1007205209288655,
+              "se_adj": 0.0041427402931860135,
+              "verdict_adj": "none"
+            }
+          },
+          "report_deltas": [
+            0.00764570815649579,
+            0.010465274286992732,
+            0.011906272050185684,
+            0.010599423129729502,
+            0.011906272050185684,
+            0.0077024589092189455
+          ],
+          "alphas": [
+            1000.0,
+            1000.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ],
+          "null": null,
+          "null_pert": null
+        }
+      },
+      "failed_criteria": [
+        "no null (--null-reps 0, or nothing beyond the parent to permute)"
+      ],
+      "meaningful": false,
+      "verdict": "not: no null (--null-reps 0, or nothing beyond the parent to permute)"
+    }
+  ],
+  "arms": {
+    "g0": {
+      "n_runs": 3,
+      "sources": [
+        "g0_r0",
+        "g0_r2",
+        "g0_r3"
+      ],
+      "metrics": {
+        "pearson_delta": {
+          "mean": 0.5778864221283831,
+          "sample_sd": 0.0010852200133795614,
+          "per_run": [
+            0.5778474080808331,
+            0.5768212352296574,
+            0.5789906230746588
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.5663882011256494,
+          "sample_sd": 0.002803332448654835,
+          "per_run": [
+            0.5696100073876107,
+            0.5650486761910496,
+            0.5645059197982877
+          ]
+        },
+        "mse": {
+          "mean": 0.008327579863363865,
+          "sample_sd": 0.00019491379434927143,
+          "per_run": [
+            0.00829394172259672,
+            0.00853712346213427,
+            0.008151674405360604
+          ]
+        },
+        "mse_top": {
+          "mean": 0.19113868227213687,
+          "sample_sd": 0.009962227904232764,
+          "per_run": [
+            0.18732819051536914,
+            0.2024437206612402,
+            0.18364413563980125
+          ]
+        },
+        "r2_top": {
+          "mean": 0.703928366058837,
+          "sample_sd": 0.010176010877611994,
+          "per_run": [
+            0.705856488230561,
+            0.6929262296569866,
+            0.7130023802889636
+          ]
+        },
+        "pearson_delta_top": {
+          "mean": 0.6312846130683811,
+          "sample_sd": 0.0021534825506228147,
+          "per_run": [
+            0.630746695123768,
+            0.6294510805877956,
+            0.6336560634935798
+          ]
+        },
+        "direction_acc_top": {
+          "mean": 0.8071180555555555,
+          "sample_sd": 0.008317485107177799,
+          "per_run": [
+            0.8106398809523808,
+            0.7976190476190477,
+            0.8130952380952381
+          ]
+        },
+        "delta_scale_ratio": {
+          "mean": 0.722635811449808,
+          "sample_sd": 0.04501322774951048,
+          "per_run": [
+            0.7486170242580582,
+            0.6706590137955927,
+            0.7486313962957731
+          ]
+        },
+        "delta_M1": {
+          "mean": 0.009698375810372561,
+          "sample_sd": 0.001085220013379521,
+          "per_run": [
+            0.009659361762822461,
+            0.008633188911646997,
+            0.010802576756648224
+          ]
+        }
+      }
+    },
+    "g1": {
+      "n_runs": 3,
+      "sources": [
+        "g1_r0",
+        "g1_r2",
+        "g1_r3"
+      ],
+      "metrics": {
+        "pearson_delta": {
+          "mean": 0.5793105804599391,
+          "sample_sd": 0.007628307936660881,
+          "per_run": [
+            0.5874232826659368,
+            0.5722828442987353,
+            0.5782256144151452
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.5685538644522513,
+          "sample_sd": 0.007723491684725724,
+          "per_run": [
+            0.5774028625040132,
+            0.5631682468520187,
+            0.5650904840007221
+          ]
+        },
+        "mse": {
+          "mean": 0.008493780024714008,
+          "sample_sd": 5.2914102555476584e-05,
+          "per_run": [
+            0.008438820795923575,
+            0.008498140066722995,
+            0.008544379211495454
+          ]
+        },
+        "mse_top": {
+          "mean": 0.19220083160115653,
+          "sample_sd": 0.005203638773976283,
+          "per_run": [
+            0.19804111639734298,
+            0.18805751234969972,
+            0.19050386605642688
+          ]
+        },
+        "r2_top": {
+          "mean": 0.7019736846039766,
+          "sample_sd": 0.0024154708031577507,
+          "per_run": [
+            0.6994277360907113,
+            0.7022601960753205,
+            0.7042331216458978
+          ]
+        },
+        "pearson_delta_top": {
+          "mean": 0.6285960342426857,
+          "sample_sd": 0.008851387330529703,
+          "per_run": [
+            0.638816734104123,
+            0.6234910164667021,
+            0.6234803521572321
+          ]
+        },
+        "direction_acc_top": {
+          "mean": 0.8068452380952381,
+          "sample_sd": 0.006130609242593596,
+          "per_run": [
+            0.8139136904761904,
+            0.8036458333333334,
+            0.8029761904761904
+          ]
+        },
+        "delta_scale_ratio": {
+          "mean": 0.708385412782563,
+          "sample_sd": 0.0935091221408514,
+          "per_run": [
+            0.6009471242221504,
+            0.7714167285044792,
+            0.7527923856210594
+          ]
+        },
+        "delta_M1": {
+          "mean": 0.011122534141928606,
+          "sample_sd": 0.007628307936660829,
+          "per_run": [
+            0.019235236347926225,
+            0.004094797980724851,
+            0.01003756809713474
+          ]
+        }
+      }
+    }
+  },
+  "sd_definition": "sample SD over independent runs 0,2,3, ddof=1; never fold SE",
+  "interpretation": "descriptive reused-development OOF only; no significance, within-noise, fresh-test or CellForge victory claim"
+}

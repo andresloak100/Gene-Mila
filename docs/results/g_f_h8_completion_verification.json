@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-17T17:57:20.693337+00:00",
+  "result": "PASS",
+  "initial_commit": "0f18626bdb43552c01850fe7d1a4227db9202b5a",
+  "initial_manifest_sha256": "9ed2019e1cb0d74a30247933b083dea47575ccb77c0304f0eb8dd79e2f7b5c5d",
+  "initial_manifest_verification": "Every initial file unchanged; initial README verified at initial0f18626 version, final index version pinned separately.",
+  "old_F_artifact_hashes": 284,
+  "plugin_hashes_both_clones_and_original_sources": 282,
+  "frozen_tool_hashes": 6,
+  "fullsuite": "656passed,1skipped,8warnings,exit0",
+  "export_exit": 0,
+  "freecheck_exit": 0,
+  "block_H_ready": false,
+  "source_changes_after_fullsuite": false,
+  "raw_package_in_git": false,
+  "publication": "Completion additions are receipts/metadata/index only; exact staged whitelist, hashes, secret scans and index verified before push."
+}

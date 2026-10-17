@@ -1,0 +1,62 @@
+{
+  "utc": "2026-10-17T17:51:17.690659+00:00",
+  "result": "PASS",
+  "operation": "Export only; no probe, agent or evaluation",
+  "output": "/Users/andresarriaga/gm_packages/adamson_cf_clean_tables",
+  "sibling": "/Users/andresarriaga/gm_packages/adamson_cf_clean_tables.export.json",
+  "source_data": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables",
+  "source_commit": "0f18626bdb43552c01850fe7d1a4227db9202b5a",
+  "exit": 0,
+  "both_paths_absent_immediately_before_launch": true,
+  "defaults": {
+    "prefix": "ar",
+    "fold_seeds": [
+      0,
+      1,
+      2
+    ],
+    "k": 5,
+    "groups": null,
+    "groups_setting": "auto",
+    "keep_rule": "noise",
+    "model": "ridge",
+    "eval_timeout_s": 600,
+    "ram_mb": 4096,
+    "parent_features": [
+      "control_mean",
+      "mean_response",
+      "is_target"
+    ]
+  },
+  "alphas": [
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0
+  ],
+  "bundle": "adamson_cf_clean_tables",
+  "split_id": "split_450515be1a0d8d2e",
+  "visible_val1_metadata": {
+    "file": "harness/val1.npz",
+    "n_perts": 17,
+    "sha256": "7a9e986c44227600ef8f0bd0ee0afc5cfec46a27c75374a35357177d186d5fa4"
+  },
+  "file_hash_count": 27,
+  "manifest_sha256": "cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e",
+  "program_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+  "two_sha256_lines": "cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e  /Users/andresarriaga/gm_packages/adamson_cf_clean_tables/MANIFEST.json\n63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293  /Users/andresarriaga/gm_packages/adamson_cf_clean_tables/program.md\n",
+  "metadata_checks": [
+    "Sibling manifestSHA matches actual MANIFEST bytes.",
+    "Sibling package/bundle/split/commit match MANIFEST.",
+    "Program actualSHA matches MANIFEST and unchanged source template.",
+    "Public.npz metadata hash matches pinned source public hash.",
+    "Visible val1 hash metadata fields agree; no harness/label file manually read.",
+    "Stock exporter defaults and configured alpha grid unchanged."
+  ],
+  "raw_package_staged": false,
+  "manual_label_reads": false,
+  "command_receipt": "adamson_cf_task_export.command.txt",
+  "log": "adamson_cf_task_export.log",
+  "exit_receipt": "adamson_cf_task_export.exit"
+}

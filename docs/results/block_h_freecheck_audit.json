@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-17T17:57:20.410347+00:00",
+  "independent_auditor": "/root/block_f_readings_checklist",
+  "result": "PASS",
+  "source_commit": "624b909179ee4f1a53c49d731a8553f873479e89",
+  "exit": 0,
+  "inventory_only": true,
+  "paid_agent_arm_probe_started": false,
+  "block_H_ready": false,
+  "gaps": [
+    "tier.txt missing; package validation stopped before hash/tier checks",
+    "Docker daemon unavailable; alternate isolation unverified",
+    "gtimeout missing",
+    "Claude CLI missing"
+  ],
+  "codex": "present0.160.0",
+  "runners": "all5present",
+  "ledger": 60.232225,
+  "run_proxy_process_scan": "empty",
+  "secret_scan": "No actual token, assigned secret, bearer credential or private key; broadsubstring falsepositive only public disk-full-read-access CLI permission literal",
+  "stop": "Publish receipts only; BlockH remains unstarted; no further launch authorized by freecheck."
+}
