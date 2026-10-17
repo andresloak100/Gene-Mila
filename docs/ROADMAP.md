@@ -305,3 +305,12 @@ and block H (ledger + $15). Block F cost $2.82 on the ledger and $1.41 billed (t
 $14.84), so the ratio of D12 is 2.0, measured. Real money: $43.03; the window's ceiling of ledger $82.26 is about
 $17.50 real; reserve after it about $25. The floor rule stands. "If we need more we can recharge" is noted and not
 used: every block in this window fits the balance held today.
+
+## Note, 2026-10-17 02:50 UTC: scoring the lead's family 8 plugin joins Astra's list
+
+- D4's hand-written hypothesis is the plugin in `docs/comparison/lead_h8_constraint/` (README, tests), fixed before
+  any block G score. Its scoring is step 6a of section 6, after the G readings: free, at `nice -n 19`, never beside a
+  paid run, the README's pre-run command (the Reactome sets and counts the real bundle gives it, posted on #41) and
+  then its `feature_compare` command per dataset at 999 replicates; the result is posted on the same results PR and
+  reported as the lead's hypothesis, never as A.1. The dated note at the end of `docs/PREREG_G_KNOWN_BIOLOGY.md`
+  records how family 8's wording was turned into code.

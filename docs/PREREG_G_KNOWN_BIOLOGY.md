@@ -176,3 +176,19 @@ is OPEN (weak), matching `docs/CANDIDATE_LITERATURE_CHECK.md`; the first version
 the other. (5) `IARS2` is dropped from family 5 as mitochondrial, leaving nine cytosolic synthetases. (6) Family 7
 cites [Hollien2006] for the UPR and ERAD targets, which [Karamyshev2014] does not cover, and family 1 now discloses
 that block F's mixed in-run CpG coefficients were seen before the sign was fixed.
+
+## Note, 2026-10-17 (UTC): how family 8 is operationalised in the lead's plugin
+
+Written when the plugin `docs/comparison/lead_h8_constraint/h8_constraint_residual.py` was fixed, before any block G
+run started and before any score of the plugin exists (its README has the full formula). Family 8's formula shape is
+read as follows. (1) The regression is fit at the gene level: `-oe_lof_upper` of every bundle gene with a value on
+`1`, `ctx.control_mean`, CORUM membership and Reactome membership, and the per-perturbation scalar is the mean residual
+over the perturbation's targets with a value; the literal reading, a fit over the perturbations on the targets' means,
+is the same regression restricted to the target genes on a single-gene panel, with twenty times fewer points from a
+biased subset, so the gene-level fit was chosen and the two are not the same feature. (2) "CORUM core complexes" is
+membership in any complex of the clean bundle, which is built from `corum_allComplexes.txt` and has no core-complex
+table. (3) "The Reactome ribosome, proteasome and spliceosome sets" are the `REACTOME:` sets whose name contains
+`ribosom`, `proteasom` or `mrna splicing`: Reactome has no pathway named for the spliceosome, its spliceosome sets
+are "mRNA Splicing" and its major and minor pathways; the pathways each word selects in the public GMT are listed in
+the plugin's README. (4) gnomAD-flagged genes are used like any other gene with a value. (5) The sign, null, minimum
+effect and OPEN verdict above are unchanged.
