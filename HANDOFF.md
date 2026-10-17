@@ -36,7 +36,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 17:52 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 18:00 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -48,59 +48,64 @@ completion check; STOP is present. Final ledger 60.232225 from original 47.26464
 block spend 12.967580 ledger dollars, below the unchanged 67.26 cap. The final progress line
 was posted on [#51/comment6231063486](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6231063486)
 and appended to the issue-51 receipt. Never restart G, recopy scripts, reset the cap or redo preparation.
-Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. All G/F/H8 readings and tests complete; draftPR63 and Adamson export complete; final authorized freecheck next.
+Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. All authorized readings/tests/publication/export/freecheck complete; draftPR63 updated; monitor PAUSED and work STOPPED.
 
-**All scientific readings and fullsuite COMPLETE; one draft results PR63 OPEN; Adamson export COMPLETE; freecheck NEXT.**
-Scientific readers/plugin/input behavior froze at2f2e6838316915198c52abeb34cf02f2b3aacc87 (ASTsameas1a95873).
-C nowhas results-only publicationcommit0f18626bdb43552c01850fe7d1a4227db9202b5a onastra/g-f-h8-readings.
-Never rerun completed G/F/H8/test/export phases. No active scientific/test/export job.
+**Authorized G/F/H8/publication/export/freecheck sequence COMPLETE; monitor PAUSED; STOP HERE.**
+Andres's direct continuation in this chat17:44UTC was followed through the exact final free tool check,
+full output#51 and stop. No local lab/reader/test/export/freecheck/proxy process remains (verified18:00UTC).
+App confirmed monitorPAUSED at17:59:56UTC. Do not restart any completed phase, test, export or freecheck.
 
-G readings1–4 complete bothdatasets. Adamson221tested/210unique, Norman174tested/158unique,
-999reps,completefamilies,found=[]/tier1=[]both. Independent source/hash/null/gate/sign/sealed/metricauditsPASS.
-OOF M1 overindependent0/2/3: AdamsonG0 .525950139±sampleSD.035263074,G1 .490964428±.004435578;
-NormanG0 .577886422±.001085220,G1 .579310580±.007628308. All8metrics/sourcepaths in g_f_h8_readings twins.
-Wornsealedcohorts,ownselectedmodel vsownstart only,no cross-armsealedtest/selection.
-Totalexperimentcounts MISSINGfrom.check,notinferred. Staticmention/direct/transitivelimitsretained.
-CorrectedFstage2/poolcomplete(all66originaleligible,unchanged94plugins,no stage1rerun):
-59tested/53unique,999reps,6foundReplogle-assisteddevelopment,tier1=[]. OriginalCpGe428fails
-gain.000563135<.002 andpooledpertp.363. Oldpositiveclaimsreplacedbycorrectedlimitedverdict.
-All142oldFartifacts unchangedbothclones,94pluginsmatchbothclones+originalsource;frozen6toolhashesmatch.
-H8pre-runsand999scorescompleteboth;fixedpre-scoreclarification6236891780:Adamsonmean_response,
-Normanadditive_response. Bothproportional/in-folds/perturbnullchecksPASS. LeadH8NOTsupportedboth:
-Adamson gene/pertp1.000/.769,gain-.001346831818,positive6/6coefficients;Norman.199/.526,
-gain.0000144689167,negative6/6(signnotpredicted). Noformula/source/criteriachange. NeveragentA.1/discovery.
-Fullsuiteonceexit0:656passed,1skipped,8warnings,762.10s. No scientific/source/evaluator/guard/splitchanges.
+One consolidated draft [PR63](https://github.com/andresloak100/Gene-Mila/pull/63) is OPEN/attached/notmerged,
+branchastra/g-f-h8-readings, finalHEAD dbd06937c8aeea7e3d057b587a8940d34403d036, ownCclean.
+README CI checksSUCCESS; localfullsuiteonce656passed/1skipped/8warnings/762.10s/exit0.
+No executable source changed afterward. Scientificreader/sourcepin2f2e6838316915198c52abeb34cf02f2b3aacc87
+(ASTsameas1a95873). All1200added evidencefiles individuallyindexed;960unchangedpluginsnapshots,
+34exit0receipts,rawJSON/Markdown/commands/logs/input/sourcehashes/audits preserved.
+Exactstagedallowlist/blob/hash/index/secretchecksPASS. Old142Fartifacts unchangedbothclones and
+94pluginsmatchbothclones+originalsources;all6frozen toolhashes match. No oldnull/sealedvaluesparsed.
+InitialmanifestSHA9ed2019e1cb0d74a30247933b083dea47575ccb77c0304f0eb8dd79e2f7b5c5d pinsinitial0f18626.
+CompletionmanifestSHA85fc4407434bfafe1efa602f25f394866f91e509c0d2e8eddd9e3db2706375da pinsfinalindex/receipts.
+Laterreceipt-onlycommit retains earlierrawrecords; initialREADME verifiedatitsinitialcommit.
+Finalcompletionposted[#51/comment6238183140](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238183140).
 
-**DraftPR63** https://github.com/andresloak100/Gene-Mila/pull/63 intointegration, attached,NOTmerged.
-Initialcommit0f18626,1174newfiles+resultsREADME,960unchangedpluginsnapshots,32exit0receipts,
-exactindex/blob/hash/secret/preservationchecksPASS. Originalgeneratedblank-at-EOFpreserved.
-InitialpublicationmanifestSHA9ed2019e1cb0d74a30247933b083dea47575ccb77c0304f0eb8dd79e2f7b5c5d
-pinsINITIALfiles/READMEat0f18626. Completionmanifestmustpinlaterreceipt/indexversionseparately,
-neverrewriteinitialrawrecords. Consolidatedreport+JSON/sourcepaths/all8armmeansSD/auditsthere.
-PRnotice[#51/comment6238016031](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238016031).
+Greadings1–4 COMPLETEbothdatasets: Adamson221tested/210unique,Norman174/158,999reps,
+completefamilies,found=[]/tier1=[]both. OOFM1means±sampleSD overindependent0/2/3:
+AdamsonG0.525950139±.035263074,G1.490964428±.004435578;
+NormanG0.577886422±.001085220,G1.579310580±.007628308.
+CorrectedFstage2/poolall66originaleligible,59tested/53unique,999reps,6Replogle-assisteddevelopment
+candidates,tier1=[]; originalCpGe428failsgain.000563135<.002 andpooledpertp.363,oldclaims superseded.
+LeadH8pre-runs/999scoresbothcomplete,unchangedpre-scoreclarification6236891780:
+Adamsonmean_response,Normanadditive_response,bothproportional/in-folds/perturbnullchecksPASS;
+leadH8NOTsupportedboth(Adamson gene/pertp1.000/.769;Norman.199/.526).
+No criteria/formula/sourcechanges. WornOOF/sealedcohorts,ownselectedmodel vsownstart only.
+Totalexperimentsmissingfrom.check,notinferred;static/direct/transitivelimitsretained.
+NoagentA.1/discovery,NatureGeneticscandidate,fresh-test,within-noise orCellForgevictoryclaim.
 
-**Adamson export-only COMPLETE once, explicit0 at17:50:37UTC.**
-Output /Users/andresarriaga/gm_packages/adamson_cf_clean_tables; sibling.export.json wasabsent
-withdirectoryimmediatelybeforelaunch17:50:35.663545Z. Existingtool/defaults,keysunset,
-PYTHONHASHSEED0,nice19/caffeinate,noeval/probe/agent.27filehashes,stockvisibleval1metadata17.
-Siblingpackage/bundle/split450515be1a0d8d2e/commit0f18626/actualmanifestSHA matchMANIFEST.
-ProgramactualSHA matchesMANIFESTandunchangedsource. Noprivate/split/harnesslabelsmanuallyread.
-IndependentmetadataauditPASS. Rawpackage/harnessOUTOFGIT;onlyreceipts.
+**Adamson export-only COMPLETEonce17:50:35UTC,explicit0.**
+Output /Users/andresarriaga/gm_packages/adamson_cf_clean_tables; sibling.export.json,
+bothabsentincludingdanglingsymlinks immediatelybeforelaunch. Stockdefaults/keysunset/
+PYTHONHASHSEED0/nice19/caffeinate,noeval/probe/agent.27filehashes,stockvisibleval1metadata17.
+Siblingmetadata/actualMANIFEST/programhashes match;sourcecommit0f18626,split450515be1a0d8d2e.
+No private/split/harnesslabels manuallyread. IndependentmetadataauditPASS. Rawpackage/harnessOUTOFGIT.
 Exactlinesposted[#51/comment6238036345](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238036345):
 cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e  /Users/andresarriaga/gm_packages/adamson_cf_clean_tables/MANIFEST.json
 63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293  /Users/andresarriaga/gm_packages/adamson_cf_clean_tables/program.md
 
-**Latestdirecthuman17:44UTC authorizes exactfreecheckafterexport thenSTOP:** bash docs/mac/block_h/check_tools.sh
-fromowncurrentintegrationcloneQ; H_CLONE=Q pointscheckatthatcheckout. No paidrun.
-Qpulledclean17:52UTC. Readcheck_tools/block_h_common unchanged. Itreportsreadiness;doNOTwrite
-tier.txt/isolation/cap,install/buildmissingtools,runprobes/agents/arms,alterledger orstartnewblock.
-NextlaunchthatfreecheckONCE nice19/keysunset/exclusivelog+exit;preserve/postFULLsecret-scannedoutput51.
-Actualnonzero/refusal/deadwithoutstatus:preserve/scan/report/update/PAUSE,noretry/workaround.
-Thenappendexport/freecheck/publicationreceiptsONLYtosamePR63,regenerateexactREADMEindex/finalcompletion
-manifest,checkhashes/secret/stagedallowlist,docs-onlycommit/push/updatePR; no needrerunpassedfullsuite
-whileexecutablecodeunchanged. Nevermerge. UpdateHANDOFF/liveSTATEandPAUSEmonitorafteralloutputposted.
-DeepSeekconsolereadingisconditionalonwhen nextalreadyopen;notencountered(currentbrowserGitHub),doNOT
-openbillingconsolejustforthisrequest. Stopthere,no paidrun/next-blockdecision. Claudedecidesnextblock.
+**Exact authorized freecheck COMPLETEonce17:53:27UTC,exit0,thenSTOP.**
+bash docs/mac/block_h/check_tools.sh ran fromownQ atintegration624b909, H_CLONE=Q,keysunset/nice19.
+Fullunchangedoutput[#51/comment6238099741](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238099741).
+Independent auditPASS:inventoryonly,no paidrequest/agent/arm/probe. Exit0 meansinventorycompleted;
+BlockHNOTREADY/UNSTARTED: tier.txtmissing(packagepreflightstoppedbeforetier/hashchecks),Dockerdaemon
+unavailable/alternateisolationunverified,gtimeoutandClaudeCLImissing. Codex0.160.0/all5runnerspresent;
+ledger60.232225,run/proxyscanempty. No setup/tier/isolation/cap filewritten,no install/build/retry.
+No actualcredentialinoutput;broadsk-substringwaspublicCLIhelpdisk-full-read-access permissionliteral.
+Onlyexport/freecheck/notice/completionreceipts were appendedtosamePR63;rawpackageoutofGit.
+
+**Exactnext: remainSTOPPED/PAUSED; no authorized local job remains.**
+Claude decidesnextblock. No newpaidrun,H/Rarm,probe,agent,modelpromotion,setup ordecision byAstra.
+DeepSeekconsolereading remains conditionalonwhen nextalreadyopen;notencountered(currentbrowserGitHub).
+Do notopenbillingconsole orschedulework justforthatconditionalrequest. Laterdirecthumaninstructionswin.
+All historical protocol steps below are completed records, never instructions to restart.
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
    999 null replicates, no --k or --with-val1; preserve every JSON/Markdown twin, plugin hash and command receipt.
