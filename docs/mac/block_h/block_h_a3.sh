@@ -2,8 +2,9 @@
 # Block H, arm A3 (docs/PLAN_H_COMPARISON.md): one autoresearch-style coding-agent session on a fresh copy of the task
 # package, 20 minutes, deepseek-v4-pro through the ledger proxy, web tools off, session cap $2.50. The client is
 # A3_CLIENT (block_h_common.sh; default codex, the Mac has codex and not claude, plan note of 2026-10-17): codex runs
-# run_codex.sh (the Codex CLI at CODEX_BIN, the wire format H_CODEX_WIRE_API: chat on the proxy's /v1/chat/completions
-# route in account mode, responses in Docker mode), claude runs run_autoresearch.sh (Claude Code, DeepSeek's
+# run_codex.sh (the Codex CLI at CODEX_BIN, the wire format H_CODEX_WIRE_API: responses on the proxy's /v1/responses
+# route in both modes; chat, the /v1/chat/completions route, only for a build before 0.95.0), claude runs
+# run_autoresearch.sh (Claude Code, DeepSeek's
 # Anthropic-format route). Usage: block_h_a3.sh <seed 0|2|3>. No key in
 # it: DEEPSEEK_API_KEY must be in the environment.
 # H_A3_MODEL=deepseek-flash only after the probe showed that the client rejects the alias (a dated note in the plan).

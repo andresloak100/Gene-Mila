@@ -9,32 +9,39 @@
 Foreign agents (Biomni, Claude Code) run in an isolated place with a dummy token and a network route to this proxy only
 (docs/FEATURE_COMPARISON_PROTOCOL.md, fairness control 7). The proxy:
 
-- forwards POST /v1/chat/completions (OpenAI format, Biomni) and POST /anthropic/v1/messages (Anthropic format, plain
-  JSON or SSE streaming, Claude Code with ANTHROPIC_BASE_URL=http://127.0.0.1:8787/anthropic) to the upstream, with
-  the client's Authorization and x-api-key headers dropped and `Authorization: Bearer <DEEPSEEK_API_KEY>` from its own
-  environment added. Only loopback clients are accepted; any token they send is ignored. POST
-  /anthropic/v1/messages/count_tokens is forwarded unpriced (it has no usage). Everything else is 404. The client's
-  Accept-Encoding is dropped too, so the upstream answers uncompressed and the usage can be read (the proxy does not
-  decompress). Two body edits, both logged: OpenAI streams get stream_options.include_usage (DeepSeek sends a
-  stream's usage only when asked), and with --merge-consecutive-assistant adjacent assistant messages on the OpenAI
-  route are joined into one (Biomni sends its reply and the tool observation as two assistant messages; this is the
-  fallback ROADMAP section 5 names if the endpoint rejects that shape). Off by default.
+- forwards POST /v1/chat/completions (OpenAI chat completions, Biomni), POST /v1/responses (OpenAI Responses API,
+  plain JSON or SSE streaming, the Codex CLI with base_url http://127.0.0.1:8787/v1 and wire_api "responses") and
+  POST /anthropic/v1/messages (Anthropic format, plain JSON or SSE streaming, Claude Code with
+  ANTHROPIC_BASE_URL=http://127.0.0.1:8787/anthropic) to the upstream at the same path under --upstream (so
+  /v1/responses goes to https://api.deepseek.com/v1/responses), with the client's Authorization and x-api-key headers
+  dropped and `Authorization: Bearer <DEEPSEEK_API_KEY>` from its own environment added. Only loopback clients are
+  accepted; any token they send is ignored. POST /anthropic/v1/messages/count_tokens is forwarded unpriced (it has no
+  usage). Everything else is 404. The client's Accept-Encoding is dropped too, so the upstream answers uncompressed
+  and the usage can be read (the proxy does not decompress). Two body edits, both logged: OpenAI chat streams get
+  stream_options.include_usage (DeepSeek sends a stream's usage only when asked), and with
+  --merge-consecutive-assistant adjacent assistant messages on the chat route are joined into one (Biomni sends its
+  reply and the tool observation as two assistant messages; this is the fallback ROADMAP section 5 names if the
+  endpoint rejects that shape). Off by default. The Responses route gets no body edit.
 - prices every response from its usage object with the lab's table (`configs/default.toml` [pricing], peak rates, the
   ledger convention) and the lab's formula (genemila/llm.py LLMGateway.cost: cache hits at input_cache_hit, the other
   prompt tokens at input_cache_miss, output at output; Anthropic cache_creation tokens count as misses, as
   genemila/providers/anthropic_api.py counts them), by the served model when the table has it, else the requested one,
-  else the pessimistic default entry. OpenAI usage: prompt_tokens, completion_tokens, prompt_cache_hit_tokens
-  (prompt_cache_miss_tokens is checked when present); Anthropic: input_tokens, output_tokens,
+  else the pessimistic default entry. OpenAI chat usage: prompt_tokens, completion_tokens, prompt_cache_hit_tokens
+  (prompt_cache_miss_tokens is checked when present); Responses usage (top level of the response object, or of
+  data.response in the response.completed SSE event): input_tokens (cached included), output_tokens and
+  input_tokens_details.cached_tokens, priced like the chat route's hits and misses; when input_tokens_details or
+  cached_tokens is absent the call is priced with cached 0 (every prompt token at the miss rate) and the log line says
+  cached_tokens_absent (DeepSeek's field names on this route are unverified); Anthropic: input_tokens, output_tokens,
   cache_read_input_tokens, cache_creation_input_tokens; for SSE the message_start event carries the input side and
   message_delta the output side. A usage object without the required keys is not priced: the client gets 502, the
   log line names the keys seen, and the proxy refuses every later request (it can no longer bound the spend). DeepSeek
   has billed the unpriced call, so the operator adds it to the ledger by hand from the console reading. A stream
   whose client goes away (Claude Code killed at the wall clock) is still read to its end and priced; a stream the
-  upstream cuts before its usage arrives (an Anthropic stream without message_delta included) halts the proxy the
-  same way.
+  upstream cuts before its usage arrives (an Anthropic stream without message_delta, a Responses stream without
+  response.completed) halts the proxy the same way.
 - writes one row per priced call to the shared ledger with the lab's own writer (genemila.llm.SpendLedger: provider
   "deepseek", the model, input/output/cached tokens, cost_usd, this run id, role "baseline:<arm>"), so every cap the
-  lab reads counts it, and one line per request to the jsonl log: timestamp, route, model requested and served, tokens,
+  lab reads counts it, and one line per request to the jsonl log: timestamp, route (the path), model requested and served, tokens,
   cost, cumulative session cost, ledger total, status, latency. Never a request or response body (they carry data)
   and never an Authorization value.
 - refuses with HTTP 402 and a JSON body when the session has spent its cap, or when the ledger total plus what this
@@ -73,8 +80,9 @@ from genemila.providers.base import Usage  # noqa: E402
 
 PROVIDER = "deepseek"
 KEY_ENV = "DEEPSEEK_API_KEY"
-ROUTES = {"/v1/chat/completions": "openai", "/anthropic/v1/messages": "anthropic",
+ROUTES = {"/v1/chat/completions": "openai", "/v1/responses": "responses", "/anthropic/v1/messages": "anthropic",
           "/anthropic/v1/messages/count_tokens": "free"}
+OPENAI_KINDS = ("openai", "responses")  # Bearer only; the Anthropic routes also get x-api-key
 DROP_HEADERS = {"host", "connection", "content-length", "transfer-encoding", "authorization", "x-api-key",
                 "proxy-authorization", "keep-alive", "te", "upgrade", "accept-encoding"}
 MIN_RESERVATION_USD = 0.01  # per in-flight call before any call has been priced
@@ -119,6 +127,20 @@ def usage_openai(u: dict) -> Usage:
     if "prompt_cache_miss_tokens" in u and cached + int(u["prompt_cache_miss_tokens"] or 0) != prompt:
         raise UnknownUsage("prompt_cache_hit_tokens + prompt_cache_miss_tokens != prompt_tokens")
     return Usage(input_tokens=prompt, output_tokens=completion, cached_tokens=cached)
+
+
+def usage_responses(u: dict) -> tuple[Usage, dict]:
+    """The Responses API usage: input_tokens (cached included), output_tokens, input_tokens_details.cached_tokens. The
+    second value is what the log line gets beyond the tokens: cached_tokens_absent when the cached count is missing
+    and the call was priced with cached 0 (DeepSeek's field names on this route are unverified)."""
+    if not isinstance(u, dict):
+        raise UnknownUsage("usage is not an object")
+    prompt, completion = _int(u, "input_tokens"), _int(u, "output_tokens")
+    details = u.get("input_tokens_details")
+    cached = details.get("cached_tokens") if isinstance(details, dict) else None
+    if cached is None:
+        return Usage(input_tokens=prompt, output_tokens=completion, cached_tokens=0), {"cached_tokens_absent": True}
+    return Usage(input_tokens=prompt, output_tokens=completion, cached_tokens=int(cached)), {}
 
 
 def merge_consecutive_assistant(messages: list) -> tuple[list, int]:
@@ -326,7 +348,7 @@ class Handler(BaseHTTPRequestHandler):
         headers = {k: v for k, v in self.headers.items() if k.lower() not in DROP_HEADERS}
         headers["Accept-Encoding"] = "identity"  # the usage must be readable; the proxy does not decompress
         headers["Authorization"] = f"Bearer {p.key}"
-        if kind != "openai":
+        if kind not in OPENAI_KINDS:
             headers["x-api-key"] = p.key  # the Anthropic SDK's own header; same key
         headers["Content-Length"] = str(len(body))
         headers["Connection"] = "close"
@@ -343,13 +365,19 @@ class Handler(BaseHTTPRequestHandler):
                 p.log(route=path, model_requested=requested, status=resp.status, latency_s=latency, stream=False,
                       priced=False)
                 return self._relay(resp.status, ctype, data)
+            extra: dict = {}
             try:
                 doc = json.loads(data)
                 served = doc.get("model")
-                usage = usage_openai(doc.get("usage")) if kind == "openai" else usage_anthropic(doc.get("usage"))
+                if kind == "openai":
+                    usage = usage_openai(doc.get("usage"))
+                elif kind == "responses":
+                    usage, extra = usage_responses(doc.get("usage"))
+                else:
+                    usage = usage_anthropic(doc.get("usage"))
             except (ValueError, UnknownUsage, AttributeError) as exc:
                 return self._unpriced(path, requested, exc, data, latency)
-            self._settle(path, requested, served, usage, latency, stream=False, merged=merged)
+            self._settle(path, requested, served, usage, latency, stream=False, merged=merged, **extra)
             self._relay(200, ctype, data)
         finally:
             conn.close()
@@ -399,7 +427,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
         except OSError:
             client_gone = True
-        served, u_in, u_out, usage_oa, raw_keys = None, None, None, None, []
+        served, u_in, u_out, usage_oa, usage_rs, raw_keys = None, None, None, None, None, []
         event, data_lines = None, []
         while True:
             try:
@@ -438,6 +466,14 @@ class Handler(BaseHTTPRequestHandler):
                     served = doc.get("model") or served
                     if isinstance(doc.get("usage"), dict):
                         usage_oa = doc["usage"]
+                elif kind == "responses":  # response.* events carry the response object; its usage is final in
+                    r = doc.get("response")  # response.completed only
+                    if isinstance(r, dict):
+                        served = r.get("model") or served
+                        if isinstance(r.get("usage"), dict):
+                            raw_keys = sorted(set(raw_keys) | set(r["usage"]))
+                            if doc.get("type") == "response.completed":
+                                usage_rs = r["usage"]
                 else:
                     typ = doc.get("type")
                     if typ == "message_start" and isinstance(doc.get("message"), dict):
@@ -450,10 +486,18 @@ class Handler(BaseHTTPRequestHandler):
         latency = round(time.monotonic() - t0, 3)
         if u_in is None and isinstance(u_out, dict) and "input_tokens" in u_out:
             u_in = u_out  # a server that reports the whole usage in message_delta only
+        extra: dict = {}
         try:
             if kind == "anthropic" and u_out is None:
                 raise UnknownUsage("no message_delta usage (the output side)")  # message_start's count is a placeholder
-            usage = usage_openai(usage_oa) if kind == "openai" else usage_anthropic(u_in, u_out)
+            if kind == "responses" and usage_rs is None:
+                raise UnknownUsage("no response.completed event (the usage)")
+            if kind == "openai":
+                usage = usage_openai(usage_oa)
+            elif kind == "responses":
+                usage, extra = usage_responses(usage_rs)
+            else:
+                usage = usage_anthropic(u_in, u_out)
         except (UnknownUsage, AttributeError) as exc:
             keys = sorted(usage_oa) if isinstance(usage_oa, dict) else raw_keys
             self.proxy.halt(f"halted after an unpriced stream: {exc}; keys seen: {keys}")
@@ -461,7 +505,8 @@ class Handler(BaseHTTPRequestHandler):
                            latency_s=latency, unpriced=True, usage_keys=keys, error=str(exc)[:200],
                            client_gone=client_gone)
             return  # the stream has already been relayed; the next request gets the 402-style halt
-        self._settle(path, requested, served, usage, latency, stream=True, merged=merged, client_gone=client_gone)
+        self._settle(path, requested, served, usage, latency, stream=True, merged=merged, client_gone=client_gone,
+                     **extra)
 
 
 def make_server(listen: str, proxy: Proxy) -> ThreadingHTTPServer:

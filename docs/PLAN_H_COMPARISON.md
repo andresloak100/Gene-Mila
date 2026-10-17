@@ -344,3 +344,25 @@ Codex release accepts (chat ends at 0.94.0, the flag begins at 0.99.0); it is go
 the runner through `agent_run` (env -i and `docker run` pass fixed variables only), so Docker mode always wrote
 `chat`; `H_CODEX_WIRE_API` is now forwarded. The dead `web_search_request` and `preferred_auth_method` keys were
 removed, the probe exercises one tool call (item 7), and the two client differences above are disclosed.
+
+**2026-10-17 04:32 UTC: the proxy serves `/v1/responses`; `responses` is the default wire format in both modes.**
+`tools/baselines/ledger_proxy.py` forwards `POST /v1/responses` (the OpenAI Responses API, the only format a Codex
+build from 0.95.0 on speaks) to the same path under `--upstream` (`https://api.deepseek.com/v1/responses`; DeepSeek
+documents its Codex integration at `base_url` `https://api.deepseek.com/`, `/v1` being its OpenAI-compatible alias),
+with the same header handling as the chat route, plain JSON and SSE. It prices the usage of the response object (for a
+stream, `data.response.usage` of the `response.completed` event): `input_tokens` minus
+`input_tokens_details.cached_tokens` at the cache-miss rate, `cached_tokens` at the cache-hit rate, `output_tokens` at
+the output rate, the chat route's formula; the ledger row and the log line keep the other routes' schema with route
+`/v1/responses`. A stream that ends without `response.completed` is unpriced and halts the proxy like an Anthropic
+stream without `message_delta`. `run_codex.sh`'s `CODEX_WIRE_API` and `block_h_common.sh`'s `H_CODEX_WIRE_API`
+default to `responses` in both isolation modes (account mode included); `chat` stays selectable as the legacy option
+for a bundled build of 0.94.0 or older. DeepSeek's usage field names on this route are UNVERIFIED and the probe
+confirms them: a usage without `input_tokens` or `output_tokens` is not priced (502, the keys seen in the log line,
+the proxy halted), so a mismatch shows as a 502 row in `h_probe_codex.jsonl`, never as a silent zero; a usage without
+`input_tokens_details.cached_tokens` is priced with every prompt token at the miss rate and the log line says
+`cached_tokens_absent`. Should DeepSeek answer 404 on `/v1/responses` (the probe's first row), the route needs the
+root path instead: one line in the proxy, before any arm. Tests: `tests/test_ledger_proxy.py` (the route plain and
+streamed against the mock upstream, the cost from the pricing table, the events relayed unchanged, the cached-absent
+case, the unknown shape, the stream without `response.completed`, the token replaced, nothing of a body in the log)
+and `tests/test_baselines.py` (the dry run with the new default and a chat-mode run through the variable; the stub
+`codex` speaks the configured format).

@@ -1,9 +1,10 @@
 """The ledger proxy (tools/baselines/ledger_proxy.py) against a mock upstream: it replaces the client's token with the
-key from its own environment, prices OpenAI and Anthropic usage (plain and SSE) with the lab's table into a ledger
-with the lab's schema, logs the served model and never a body or a token, and refuses at the session cap, at the block
-cap and on a usage shape it does not know; it asks the upstream for an uncompressed body, prices a stream whose client
-went away, halts on a stream without its output usage, reserves for calls in flight, and merges Biomni's consecutive
-assistant messages only when asked."""
+key from its own environment, prices OpenAI chat, OpenAI Responses and Anthropic usage (plain and SSE) with the lab's
+table into a ledger with the lab's schema, logs the served model and never a body or a token, and refuses at the
+session cap, at the block cap and on a usage shape it does not know; it asks the upstream for an uncompressed body,
+prices a stream whose client went away, halts on a stream without its output usage (Anthropic without message_delta,
+Responses without response.completed), reserves for calls in flight, and merges Biomni's consecutive assistant messages
+only when asked."""
 import gzip
 import json
 import socket
@@ -28,14 +29,35 @@ SECRET_TEXT = "the quick brown reply that must never be logged"
 OA_USAGE = {"prompt_tokens": 100, "completion_tokens": 20, "prompt_cache_hit_tokens": 40, "prompt_cache_miss_tokens": 60,
             "total_tokens": 120}
 AN_USAGE = {"input_tokens": 10, "cache_read_input_tokens": 50, "cache_creation_input_tokens": 5, "output_tokens": 7}
+RS_USAGE = {"input_tokens": 100, "input_tokens_details": {"cached_tokens": 40}, "output_tokens": 20,
+            "output_tokens_details": {"reasoning_tokens": 5}, "total_tokens": 120}  # the Responses API shape
 PRICING = lp.load_pricing(ROOT / "configs" / "default.toml")
 
 
+def responses_sse(served: str, usage: dict, completed: bool = True) -> str:
+    """A Responses API stream as the upstream sends it: response.created, two response.output_text.delta events and,
+    unless completed is False, response.completed with the final response object (usage inside it)."""
+    resp = {"id": "resp_x", "object": "response", "model": served, "status": "in_progress", "output": []}
+    delta = {"type": "response.output_text.delta", "item_id": "msg_x", "output_index": 0, "content_index": 0}
+    events = [("response.created", {"type": "response.created", "sequence_number": 0, "response": resp}),
+              ("response.output_text.delta", {**delta, "sequence_number": 1, "delta": SECRET_TEXT[:10]}),
+              ("response.output_text.delta", {**delta, "sequence_number": 2, "delta": SECRET_TEXT[10:]})]
+    if completed:
+        done = {**resp, "status": "completed", "usage": usage,
+                "output": [{"type": "message", "id": "msg_x", "role": "assistant", "status": "completed",
+                            "content": [{"type": "output_text", "text": SECRET_TEXT, "annotations": []}]}]}
+        events.append(("response.completed", {"type": "response.completed", "sequence_number": 3, "response": done}))
+    return "".join(f"event: {e}\ndata: {json.dumps(d)}\n\n" for e, d in events)
+
+
 class Upstream(BaseHTTPRequestHandler):
-    """Canned DeepSeek: OpenAI chat completions and Anthropic messages, plain or SSE; records what it received."""
+    """Canned DeepSeek: OpenAI chat completions, OpenAI Responses and Anthropic messages, plain or SSE; records what it
+    received."""
     seen: list = []
     mode = "ok"  # or "nousage", "gzip" (compress when Accept-Encoding allows), "nodelta" (no message_delta),
-    # "slow" (one SSE event every 0.2 s), "biomni" (an <execute> reply, then a <solution> once an observation is seen)
+    # "slow" (one SSE event every 0.2 s), "biomni" (an <execute> reply, then a <solution> once an observation is seen),
+    # "nocached" (Responses usage without input_tokens_details), "nocompleted" (a Responses stream that ends without
+    # response.completed)
 
     def log_message(self, *a):
         pass
@@ -82,6 +104,19 @@ class Upstream(BaseHTTPRequestHandler):
                            "usage": doc["usage"] if req.get("stream_options", {}).get("include_usage") else None}]
                 body = "".join(f"data: {json.dumps(c)}\n\n" for c in chunks) + "data: [DONE]\n\n"
                 return self._send(200, "text/event-stream", body.encode())
+            return self._send(200, "application/json", json.dumps(doc).encode())
+        if self.path == "/v1/responses":
+            usage = dict(RS_USAGE)
+            if Upstream.mode == "nousage":
+                usage = {"tokens": 3}
+            if Upstream.mode == "nocached":
+                usage = {k: v for k, v in RS_USAGE.items() if k != "input_tokens_details"}
+            if req.get("stream"):
+                body = responses_sse(served, usage, completed=Upstream.mode != "nocompleted")
+                return self._send(200, "text/event-stream", body.encode())
+            doc = {"id": "resp_x", "object": "response", "model": served, "status": "completed", "usage": usage,
+                   "output": [{"type": "message", "id": "msg_x", "role": "assistant", "status": "completed",
+                               "content": [{"type": "output_text", "text": SECRET_TEXT, "annotations": []}]}]}
             return self._send(200, "application/json", json.dumps(doc).encode())
         if self.path == "/anthropic/v1/messages":
             if req.get("stream"):
@@ -220,6 +255,100 @@ def test_anthropic_route_plain_and_sse_price_the_cache_fields_like_the_lab(proxy
     lines = [ln for ln in log_lines(p) if ln.get("status") == 200]
     assert [ln["stream"] for ln in lines] == [False, True]
     assert all(ln["model_served"] == "deepseek-v4-pro" for ln in lines)
+
+
+def test_responses_route_plain_and_sse_price_like_the_chat_route(proxy_factory):
+    """The Codex CLI's wire format: POST /v1/responses forwarded to the upstream's /v1/responses with the key, no body
+    edit; input_tokens minus cached_tokens as misses, cached_tokens as hits, output_tokens as output; the usage of a
+    stream read from response.completed and the events relayed byte for byte."""
+    p, base = proxy_factory(arm="autoresearch")
+    Upstream.seen.clear()
+    Upstream.mode = "ok"
+    body = {"model": "deepseek-v4-pro", "instructions": "be brief", "input": "hi there"}
+    status, _, data = post(base, "/v1/responses", body)
+    assert status == 200 and json.loads(data)["output"][0]["content"][0]["text"] == SECRET_TEXT
+    assert Upstream.seen[-1]["path"] == "/v1/responses" and Upstream.seen[-1]["auth"] == f"Bearer {KEY}"
+    assert DUMMY not in (Upstream.seen[-1]["auth"] or "") and Upstream.seen[-1]["x-api-key"] is None
+    assert Upstream.seen[-1]["body"] == body and Upstream.seen[-1]["accept-encoding"] == "identity"
+    status, ctype, data = post(base, "/v1/responses", {**body, "stream": True})
+    assert status == 200 and "text/event-stream" in ctype
+    assert data == responses_sse("deepseek-v4-pro", RS_USAGE).encode()  # the events reach the client unchanged
+    assert Upstream.seen[-1]["body"] == {**body, "stream": True}  # no include_usage injection on this route
+    r = rows(p.ledger.path)
+    assert len(r) == 2 and {x["role"] for x in r} == {"baseline:autoresearch"}
+    assert {x["model"] for x in r} == {"deepseek-v4-pro"} and {x["run_id"] for x in r} == {"h_test_r7"}
+    for x in r:
+        assert (x["input_tokens"], x["cached_tokens"], x["output_tokens"]) == (100, 40, 20)
+        assert x["cost_usd"] == pytest.approx(expected_cost("deepseek-v4-pro", 40, 60, 20))
+    assert p.session_spent == pytest.approx(2 * expected_cost("deepseek-v4-pro", 40, 60, 20))
+    lines = [ln for ln in log_lines(p) if ln.get("status") == 200]
+    assert [ln["stream"] for ln in lines] == [False, True] and {ln["route"] for ln in lines} == {"/v1/responses"}
+    assert all(ln["model_served"] == "deepseek-v4-pro" and ln["priced_as"] == "deepseek-v4-pro" for ln in lines)
+    assert all("cached_tokens_absent" not in ln for ln in lines) and lines[1]["client_gone"] is False
+    assert set(lines[0]) == {"ts", "run_id", "route", "model_requested", "model_served", "priced_as", "status", "stream",
+                             "input_tokens", "cached_tokens", "output_tokens", "cost_usd", "latency_s",
+                             "session_cost_usd", "ledger_total_usd"}
+    raw = p.log_path.read_text()
+    for forbidden in (KEY, DUMMY, "Bearer", SECRET_TEXT, "hi there", "be brief", "instructions", "resp_x", "msg_x"):
+        assert forbidden not in raw, forbidden
+
+
+def test_responses_usage_without_cached_tokens_prices_cached_as_zero_and_says_so(proxy_factory):
+    """DeepSeek's field names on this route are unverified: a usage with input_tokens and output_tokens but no
+    input_tokens_details is priced with every prompt token at the miss rate, and the log line says so."""
+    p, base = proxy_factory()
+    Upstream.mode = "nocached"
+    try:
+        s1, _, _ = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+        s2, _, _ = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi", "stream": True})
+    finally:
+        Upstream.mode = "ok"
+    assert (s1, s2) == (200, 200) and p.halted is None
+    r = rows(p.ledger.path)
+    assert len(r) == 2
+    for x in r:
+        assert (x["input_tokens"], x["cached_tokens"], x["output_tokens"]) == (100, 0, 20)
+        assert x["cost_usd"] == pytest.approx(expected_cost("deepseek-v4-pro", 0, 100, 20))
+    lines = [ln for ln in log_lines(p) if ln.get("status") == 200]
+    assert len(lines) == 2 and all(ln["cached_tokens_absent"] is True and ln["cached_tokens"] == 0 for ln in lines)
+
+
+def test_responses_unknown_usage_shape_gives_502_and_halts(proxy_factory):
+    p, base = proxy_factory()
+    Upstream.mode = "nousage"
+    try:
+        status, _, data = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+        assert status == 502 and json.loads(data)["error"]["type"] == "unpriced_usage"
+        bad = [ln for ln in log_lines(p) if ln.get("unpriced")]
+        assert len(bad) == 1 and bad[0]["usage_keys"] == ["tokens"] and bad[0]["route"] == "/v1/responses"
+        assert "input_tokens" in bad[0]["error"] and rows(p.ledger.path) == []
+        # the same shape inside response.completed: relayed, unpriced, halted, the keys seen named
+        p2, base2 = proxy_factory()
+        status, _, data = post(base2, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi", "stream": True})
+        assert status == 200 and b"response.completed" in data and rows(p2.ledger.path) == []
+        bad = [ln for ln in log_lines(p2) if ln.get("unpriced")]
+        assert len(bad) == 1 and bad[0]["usage_keys"] == ["tokens"] and bad[0]["stream"] is True
+    finally:
+        Upstream.mode = "ok"
+    for b in (base, base2):
+        status, _, data = post(b, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+        assert status == 402 and "halted" in json.loads(data)["error"]["message"]
+    assert not json.loads(urllib.request.urlopen(base + "/healthz", timeout=10).read())["ok"]
+
+
+def test_a_responses_stream_without_response_completed_is_not_priced(proxy_factory):
+    p, base = proxy_factory()
+    Upstream.mode = "nocompleted"
+    try:
+        status, _, data = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi", "stream": True})
+    finally:
+        Upstream.mode = "ok"
+    assert status == 200 and data == responses_sse("deepseek-v4-pro", RS_USAGE, completed=False).encode()  # relayed
+    assert rows(p.ledger.path) == [] and "response.completed" in (p.halted or "")
+    bad = [ln for ln in log_lines(p) if ln.get("unpriced")]
+    assert len(bad) == 1 and bad[0]["stream"] is True and bad[0]["model_served"] == "deepseek-v4-pro"
+    status, _, data = post(base, "/v1/responses", {"model": "deepseek-v4-pro", "input": "hi"})
+    assert status == 402 and "halted" in json.loads(data)["error"]["message"]
 
 
 def test_openai_stream_gets_usage_injected_and_priced(proxy_factory):
@@ -428,6 +557,14 @@ def test_usage_parsers():
                          "prompt_cache_miss_tokens": 3})
     with pytest.raises(lp.UnknownUsage):
         lp.usage_anthropic({"input_tokens": 1}, None)
+    u, extra = lp.usage_responses(RS_USAGE)
+    assert (u.input_tokens, u.cached_tokens, u.output_tokens) == (100, 40, 20) and extra == {}
+    u, extra = lp.usage_responses({"input_tokens": 10, "output_tokens": 2})
+    assert (u.input_tokens, u.cached_tokens, u.output_tokens) == (10, 0, 2) and extra == {"cached_tokens_absent": True}
+    with pytest.raises(lp.UnknownUsage):
+        lp.usage_responses({"input_tokens": 10, "input_tokens_details": {"cached_tokens": 3}})
+    with pytest.raises(lp.UnknownUsage):
+        lp.usage_responses([1, 2])
     assert lp.price_key(PRICING, "deepseek-v4-pro", "something-new") == "deepseek-v4-pro"
     assert lp.price_key(PRICING, "unknown", None) == "default"
     assert time.time() > 0

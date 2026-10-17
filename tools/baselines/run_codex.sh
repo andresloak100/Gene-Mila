@@ -31,14 +31,15 @@
 #   /Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex
 # (Astra, 2026-10-17, #41 comment 6228055333; version unknown). Pass it as CODEX_BIN=<that path>.
 #
-# Wire format: $CODEX_WIRE_API, default "chat". With "chat" Codex speaks OpenAI chat completions, which the proxy's
-# existing /v1/chat/completions route serves and prices (stream_options.include_usage injected). Codex removed
-# `wire_api = "chat"` at rust-v0.95.0 (3 February 2026; such builds refuse the config with 'no longer supported',
-# github.com/openai/codex/discussions/7782) and speak the Responses API only, POST <base_url>/responses, which the
-# proxy does not serve today (a 404 row, no served model, so this script aborts the session); rust-v0.94.0 (2 February
-# 2026) is the last chat-capable release. `codex --version` on the Mac decides: 0.94.0 or older takes "chat"; a newer
-# one needs a /v1/responses proxy route first and CODEX_WIRE_API=responses. The Dockerfile installs a current npm
-# build, so Docker mode needs that route (block_h_common.sh sets the wire format to responses in Docker mode).
+# Wire format: $CODEX_WIRE_API, default "responses". With "responses" Codex speaks the OpenAI Responses API, POST
+# <base_url>/responses with Accept: text/event-stream, which the proxy's /v1/responses route serves and prices (the
+# usage of the response.completed event; DeepSeek documents a Codex integration at base_url https://api.deepseek.com/,
+# so it serves the route; the proxy refuses to price a usage shape it does not know, so a field mismatch shows as a 502
+# row in the proxy log, not as a silent zero). Every Codex build from rust-v0.95.0 (3 February 2026) on speaks this
+# format only: `wire_api = "chat"` was removed there (such builds refuse the config with 'no longer supported',
+# github.com/openai/codex/discussions/7782), and the ChatGPT desktop app bundles a current build. "chat" is the legacy
+# option for rust-v0.94.0 (2 February 2026) or older: OpenAI chat completions on the proxy's /v1/chat/completions
+# route (stream_options.include_usage injected). `codex --version` on the Mac says which build it is.
 #
 # Two differences from the Claude Code arm that no configuration removes, disclosed in run.json and the plan: Codex's
 # shell tool cuts a command at 10 s unless the model itself passes timeout_ms (DEFAULT_EXEC_COMMAND_TIMEOUT_MS in
@@ -55,8 +56,8 @@
 # Refusals: the proxy's /healthz must answer, and the proxy's jsonl log must be at $PROXY_LOG (default
 # <out dir>/../proxy.jsonl). After the start, the first new proxy log line must show a served model (printed here)
 # within $BASELINE_FIRST_CALL_S seconds (default 180); otherwise codex is killed and the run is recorded as an error.
-# That catches a Codex that ignores the provider (no line), a wire format the proxy does not serve (a 404 row) and a
-# model name the endpoint rejects (a non-200 row with no model).
+# That catches a Codex that ignores the provider (no line), a request to a path the proxy does not serve (a 404 row)
+# and a model name the endpoint rejects (a non-200 row with no model).
 #
 # Flags (checked against codex-rs/exec/src/cli.rs at rust-v0.94.0, the last chat-capable release, and at current main,
 # read 2026-10-17; none run against the Mac's binary yet): `codex exec` (non-interactive; approval policy never is
@@ -86,7 +87,7 @@ PROBE_PROMPT="Run the shell command \`ls\` and then reply with the single word o
 [ "$PROBE" = 1 ] && MINUTES=2
 BASELINE_CODEX_MODEL="${BASELINE_CODEX_MODEL:-deepseek-v4-pro}"   # DeepSeek's current name; unverified through Codex
 CODEX_BIN="${CODEX_BIN:-codex}"
-CODEX_WIRE_API="${CODEX_WIRE_API:-chat}"                           # chat | responses (see the header)
+CODEX_WIRE_API="${CODEX_WIRE_API:-responses}"                      # responses | chat (legacy, before 0.95.0; see the header)
 CODEX_SANDBOX="${CODEX_SANDBOX:-workspace-write}"                  # workspace-write | read-only | none (Docker)
 BASELINE_FIRST_CALL_S="${BASELINE_FIRST_CALL_S:-180}"
 PROXY_LOG="${PROXY_LOG:-$OUT/../proxy.jsonl}"

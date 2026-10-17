@@ -21,13 +21,14 @@ proxy_down
 # 2. The A3 client, one short turn as the arm starts it:
 #    codex: run_codex.sh --probe, the prompt "Run the shell command `ls` and then reply with the single word ok." (one
 #    tool round trip: a shell call, its result, a second completion), the private CODEX_HOME with the provider at
-#    <proxy>/v1 in the wire format H_CODEX_WIRE_API (chat, the proxy's /v1/chat/completions route, in account mode;
-#    responses in Docker mode), the model alias, web search off, a read-only sandbox; its run.json lands in
-#    $O/codex_probe, beside Biomni's. It settles what the plan's note of 2026-10-17 lists as unverified: that this
-#    Codex starts on a custom provider with no login, accepts the wire format (a 404 row means it does not: Claude Code
-#    is the fallback, or the proxy gets the /v1/responses route first), that the proxy prices the call, and that the
-#    tool round trip completes (at least two status-200 rows in h_probe_codex.jsonl; a 400 after the first 200 means
-#    the route is unfit for the arm, plan note item 7).
+#    <proxy>/v1 in the wire format H_CODEX_WIRE_API (responses, the proxy's /v1/responses route, in both modes; chat,
+#    the /v1/chat/completions route, only for a build before 0.95.0), the model alias, web search off, a read-only
+#    sandbox; its run.json lands in $O/codex_probe, beside Biomni's. It settles what the plan's note of 2026-10-17
+#    lists as unverified: that this Codex starts on a custom provider with no login, posts to the route the wire format
+#    names (a 404 row means it posted elsewhere: Claude Code is the fallback), that the proxy prices the call (a 502 row
+#    means DeepSeek's usage fields on the route are not the ones the proxy prices; it halts rather than count zero),
+#    and that the tool round trip completes (at least two status-200 rows in h_probe_codex.jsonl; a 400 after the
+#    first 200 means the route is unfit for the arm, plan note item 7).
 #    claude: one claude -p turn ("Reply with the single word ok.") on DeepSeek's Anthropic-format route (the proxy
 #    forwards /anthropic/v1/messages), the model alias on a custom base URL, web tools off, as run_autoresearch.sh
 #    starts it.

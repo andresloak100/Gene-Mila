@@ -8,7 +8,7 @@ echo "== $(utc) block H tool check"
 for t in docker gtimeout claude codex sqlite3 screen caffeinate; do printf '%-10s %s\n' "$t" "$(command -v "$t" || echo MISSING)"; done
 echo "python     $PY $("$PY" -c 'import platform; print(platform.python_version())' 2>&1)"
 echo "== codex (A3_CLIENT $A3_CLIENT; CODEX_BIN $CODEX_BIN): $([ -x "$CODEX_BIN" ] && "$CODEX_BIN" --version 2>&1 | head -1 || echo MISSING)"
-echo "   rust-v0.94.0 (2 February 2026) is the last build with wire_api chat; 0.95.0 and later speak the Responses API only: then the proxy needs a /v1/responses route before A3 (plan, note of 2026-10-17)"
+echo "   0.95.0 (3 February 2026) and later speak the Responses API only: the proxy's /v1/responses route, H_CODEX_WIRE_API=responses (the default); rust-v0.94.0 or older is the last build with wire_api chat (H_CODEX_WIRE_API=chat; plan, notes of 2026-10-17)"
 [ -x "$CODEX_BIN" ] && { echo "-- codex exec --help (the flags run_codex.sh uses: --skip-git-repo-check -C --sandbox -m --json -o):"; "$CODEX_BIN" exec --help 2>&1 | sed 's/^/   /'; }
 echo "== the clone with the runners: $C"
 for f in ledger_proxy.py run_biomni.py run_autoresearch.sh run_codex.sh collect_handback.py; do

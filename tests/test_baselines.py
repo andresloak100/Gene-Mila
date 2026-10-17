@@ -248,7 +248,8 @@ def test_run_autoresearch_script_parses_and_dry_runs(package, tmp_path):
 
 def test_run_codex_script_parses_and_dry_runs(package, tmp_path):
     """The Codex twin of run_autoresearch.sh: the same interface and refusals; a private CODEX_HOME under the out
-    directory whose config.toml points one provider at the proxy in the chat wire format with a dummy env key."""
+    directory whose config.toml points one provider at the proxy in the responses wire format (the default; chat for a
+    build before 0.95.0 through CODEX_WIRE_API) with a dummy env key."""
     script = BASELINES / "run_codex.sh"
     assert subprocess.run(["bash", "-n", str(script)], capture_output=True, text=True).returncode == 0
     env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
@@ -268,30 +269,30 @@ def test_run_codex_script_parses_and_dry_runs(package, tmp_path):
     assert "LEDGER_PROXY_TOKEN=proxy-token-4" in r.stdout and "OPENAI_API_KEY and DEEPSEEK_API_KEY unset" in r.stdout
     assert "not-for-codex" not in r.stdout
     assert hashlib.sha256((package / "program.md").read_bytes()).hexdigest() in r.stdout  # task_sha256
-    # the config.toml the dry run wrote (and printed): one provider at the proxy, chat wire format, a dummy env key,
-    # web search off, approval never, no MCP server, no real key anywhere
+    # the config.toml the dry run wrote (and printed): one provider at the proxy, the responses wire format, a dummy
+    # env key, web search off, approval never, no MCP server, no real key anywhere
     config = (out / "codex_home" / "config.toml").read_text()
     settings = "\n".join(l for l in config.splitlines() if not l.startswith("#"))
     assert all(line in r.stdout for line in config.splitlines())
     assert 'model = "deepseek-v4-pro"' in config and 'model_provider = "ledger_proxy"' in config
     assert "[model_providers.ledger_proxy]" in config and 'base_url = "http://127.0.0.1:8787/v1"' in config
-    assert 'wire_api = "chat"' in config and 'env_key = "LEDGER_PROXY_TOKEN"' in config
+    assert 'wire_api = "responses"' in config and 'env_key = "LEDGER_PROXY_TOKEN"' in config
     assert 'web_search = "disabled"' in config and 'approval_policy = "never"' in config
     assert "web_search_request" not in settings and "preferred_auth_method" not in settings  # keys no build reads
     assert 'sandbox_mode = "workspace-write"' in config and "network_access = false" in config
     assert "mcp_servers" not in settings and "sk-" not in config and "proxy-token" not in config
     assert "not-for-codex" not in config and "experimental_bearer_token" not in settings
     assert sorted(p.name for p in (out / "codex_home").iterdir()) == ["config.toml"]
-    # the variables: another binary, the responses wire format, no sandbox (Docker mode)
+    # the variables: another binary, the legacy chat wire format, no sandbox (Docker mode)
     r = subprocess.run(["bash", str(script), "--dry-run", str(package), "http://host.docker.internal:8787", "20", "0",
                         str(tmp_path / "o2")], capture_output=True, text=True,
-                       env={**env, "CODEX_BIN": "/Applications/x/codex", "CODEX_WIRE_API": "responses",
+                       env={**env, "CODEX_BIN": "/Applications/x/codex", "CODEX_WIRE_API": "chat",
                             "CODEX_SANDBOX": "none"})
     assert r.returncode == 0, r.stderr
     assert "/Applications/x/codex exec" in r.stdout and "--dangerously-bypass-approvals-and-sandbox" in r.stdout
     assert "--sandbox" not in r.stdout
     config2 = (tmp_path / "o2" / "codex_home" / "config.toml").read_text()
-    assert 'wire_api = "responses"' in config2 and 'base_url = "http://host.docker.internal:8787/v1"' in config2
+    assert 'wire_api = "chat"' in config2 and 'base_url = "http://host.docker.internal:8787/v1"' in config2
     # the probe: one line as the prompt, a read-only sandbox, two minutes, the same CODEX_HOME
     r = subprocess.run(["bash", str(script), "--dry-run", "--probe", str(package), "http://127.0.0.1:8787", "20", "0",
                         str(tmp_path / "o3")], capture_output=True, text=True, env=env)
@@ -300,7 +301,7 @@ def test_run_codex_script_parses_and_dry_runs(package, tmp_path):
     probe_line = "Run the shell command `ls` and then reply with the single word ok.\n"  # one tool round trip
     assert (tmp_path / "o3" / "probe_prompt.txt").read_text() == probe_line
     assert hashlib.sha256(probe_line.encode()).hexdigest() in r.stdout
-    assert 'wire_api = "chat"' in (tmp_path / "o3" / "codex_home" / "config.toml").read_text()
+    assert 'wire_api = "responses"' in (tmp_path / "o3" / "codex_home" / "config.toml").read_text()  # the same default
     # the refusals that need no codex: a wrong argument count, a key in the shell, a non-local proxy, a bad variable
     assert subprocess.run(["bash", str(script), str(package)], capture_output=True, env=env).returncode == 2
     r = subprocess.run(["bash", str(script), str(package), "http://127.0.0.1:8787", "20", "4", str(tmp_path / "o")],
@@ -316,18 +317,24 @@ def test_run_codex_script_parses_and_dry_runs(package, tmp_path):
 
 
 CODEX_STUB = '''import hashlib, json, os, re, sys, urllib.request
-# A stand-in for `codex exec`: reads the provider from $CODEX_HOME/config.toml, the prompt from stdin, makes one chat
-# completion through base_url with the env_key token, writes the last message to -o and JSONL events to stdout.
+# A stand-in for `codex exec`: reads the provider from $CODEX_HOME/config.toml, the prompt from stdin, makes one call
+# through base_url in the configured wire format (POST /responses, or /chat/completions for "chat") with the env_key
+# token, writes the last message to -o and JSONL events to stdout.
 args = sys.argv[1:]
 cfg = open(os.path.join(os.environ["CODEX_HOME"], "config.toml")).read()
 base = re.search(r'base_url = "([^"]+)"', cfg).group(1)
 env_key = re.search(r'env_key = "([^"]+)"', cfg).group(1)
+wire = re.search(r'wire_api = "([^"]+)"', cfg).group(1)
 prompt = sys.stdin.read()
-body = json.dumps({"model": args[args.index("-m") + 1], "messages": [{"role": "user", "content": prompt}]}).encode()
-req = urllib.request.Request(base + "/chat/completions", body,
+model = args[args.index("-m") + 1]
+if wire == "responses":
+    path, body = "/responses", json.dumps({"model": model, "input": prompt}).encode()
+else:
+    path, body = "/chat/completions", json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}]}).encode()
+req = urllib.request.Request(base + path, body,
                              {"Authorization": "Bearer " + os.environ[env_key], "Content-Type": "application/json"})
 doc = json.load(urllib.request.urlopen(req))
-text = doc["choices"][0]["message"]["content"]
+text = doc["output"][0]["content"][0]["text"] if wire == "responses" else doc["choices"][0]["message"]["content"]
 open(args[args.index("-o") + 1], "w").write(text)
 print(json.dumps({"type": "thread.started", "thread_id": "t"}))
 print(json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": text}}))
@@ -338,7 +345,7 @@ print(json.dumps({"type": "stub", "env": dict(os.environ), "argv": args, "cwd": 
 
 def test_run_codex_session_through_the_proxy_with_a_stub_codex(package, tmp_path, proxy):
     """The real path with a stub in place of codex: the watchdog, the env -i environment, the first-proxy-line check
-    on the chat route, the hand-back copies and run.json."""
+    on the responses route (the default wire format), the hand-back copies and run.json."""
     px, url = proxy
     Upstream.seen.clear()
     stub_py = tmp_path / "codex_stub.py"
@@ -367,12 +374,12 @@ def test_run_codex_session_through_the_proxy_with_a_stub_codex(package, tmp_path
                                             "TMPDIR", "TZ", "USER", "TERM", "SHELL"}
     assert seen["cwd"] == str(package.resolve()) and seen["argv"][:4] == ["exec", "--skip-git-repo-check", "-C", str(package.resolve())]
     assert seen["prompt_sha256"] == hashlib.sha256((package / "program.md").read_bytes()).hexdigest()
-    # the proxy replaced the dummy token with the key and priced the call on its chat route
-    assert Upstream.seen and Upstream.seen[-1]["path"] == "/v1/chat/completions"
+    # the proxy replaced the dummy token with the key and priced the call on its responses route
+    assert Upstream.seen and Upstream.seen[-1]["path"] == "/v1/responses"
     assert Upstream.seen[-1]["auth"] == f"Bearer {KEY}" and px.calls >= 1
     run = json.loads((out / "run.json").read_text())
     assert run["arm"] == "autoresearch" and run["client"] == "codex" and run["ended_by"] == "solution"
-    assert run["model_served"] == "deepseek-v4-pro" and run["wire_api"] == "chat" and not run["probe"]
+    assert run["model_served"] == "deepseek-v4-pro" and run["wire_api"] == "responses" and not run["probe"]
     assert run["task_sha256"] == hashlib.sha256((package / "program.md").read_bytes()).hexdigest()
     assert run["codex_bin"] == str(stub) and run["exit_code"] == 0 and run["shell_timeout"].startswith("codex default 10 s")
     assert (out / "last_message.txt").is_file() and (out / "MANIFEST.json").is_file() and (out / "features").is_dir()
