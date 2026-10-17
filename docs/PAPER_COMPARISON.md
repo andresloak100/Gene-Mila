@@ -28,7 +28,8 @@ its gain and paired SE; the holder's R2 report under `docs/results/`]. In an ear
 unprompted, a feature whose formula matches a published CRISPRa dependence, the additive prediction scaled by the
 targets' promoter CpG content. Its development-tier gain was 0.00056 ± 0.00015 pearson_delta (mean ± adjusted paired
 SE; `docs/results/norman_f_readings.md`), below the pre-registered minimum effect of 0.002, under a test later found
-degenerate for that feature class; the re-read is pending and the fitted signs were mixed.
+degenerate for that feature class; under the corrected test it fails the minimum effect and the perturbation
+null, and the fitted signs were mixed.
 
 ## Introduction
 
@@ -233,7 +234,7 @@ amended at 04:20 UTC on 16 October and committed at 19:45 UTC, after the paid se
 per-perturbation number (null sd 0.00001 against a gain of 0.00056;
 `docs/results/norman_f_stage2/feature_compare.json`), and because with 20·m − 1 replicates the smallest pooled Holm p
 equalled the 0.05 cutoff by construction (`docs/GOAL_CRITERIA.md`, Status). The corrected test is the one above; block
-F will be re-read under it after block G (`HANDOFF.md`, section 1). (3) The harness tier and the Codex client were
+F was re-read under it on 17 October, after block G (the block F result below). (3) The harness tier and the Codex client were
 added on 17 October, before any session (`docs/ROADMAP.md` D5; `docs/PLAN_H_COMPARISON.md`, note of 03:52 UTC). The
 known biology of every family the per-gene tables allow was written down with its sign before any block G score was
 read, in a file the pinned run code predates, written after block F's CpG feature was seen; it governs block G
@@ -297,9 +298,18 @@ table did not raise the arm's score: selected models 0.7196 ± 0.0012 sealed (`n
 against B2's 0.722, 0.720 and 0.730 (`docs/results/norman_b2_r{0,2,3}_sealed_reading.json`; arm mean 0.7239 ± 0.0054,
 `docs/results/norman_b2_arm_vs_additive.md`), and out of fold 0.5805 ± 0.0023 against 0.5825 ± 0.0081
 (`norman_f_readings.md`, reading 3). Two lessons carry into the Methods: a null must match the feature's structure (a
-random projection passed beside the CpG term), and a permutation floor at the cutoff is not a p-value. Block F's rows
-will be re-read under the corrected test after block G [`docs/results/<path the operator names>/`, pooled Holm;
-`HANDOFF.md`, section 1].
+random projection passed beside the CpG term), and a permutation floor at the cutoff is not a p-value. Block F re-read under the corrected test (17 October; `docs/results/norman_f_corrected_stage2/feature_compare.json`
+and `docs/results/norman_f_corrected_pooled_holm/pooled_holm.json`, PR #63): of the 66 scoreable rows 59 were tested and
+53 are unique predictions; six pass every gate (pooled family-wise p 0.001, the floor; gains 0.0026 to 0.0047
+pearson_delta at 2.05 to 2.69 adjusted SEs; wins 60 to 64 of 112; coefficient positive in every fold-seed report), and
+every one of the six multiplies the sign-flipped Replogle 2022 K562 CRISPRi response of the perturbation's targets by a
+per-gene annotation quantity (promoter CpG observed/expected in four, promoter GC in one, transcript length in one): one
+theme, from runs r0 (one row) and r3 (five). Replogle 2022 is a tier-3 source, so none is tier 1; the annotation
+factor's own contribution is unmeasured, since the family has no screen-only row. Of the 38 screen-free unique rows none
+passes: the CpG feature gains 0.00056 ± 0.00015, below the 0.002 minimum, and fails the perturbation null the first test
+lacked (pooled p 0.363); the random projection that passed beside it then has pooled p 1.0 now; the step-down over the
+38 screen-free rows alone changes nothing. What the six passes show is that the test is not blind: a source known to
+carry the answer passes, while the class the first test could not fail now fails.
 
 ### The second existing result: block G, the clean arm with and without the three per-gene tables
 
@@ -308,7 +318,8 @@ $12.97 on the ledger): on each dataset three seeds with the clean tier-1 knowled
 and UniProt tables (G1) and three without them (G0), the knowledge rebuilt from Reactome, GO, CORUM, CollecTRI and
 STRING with no perturbation screen (`docs/PLAN_G_CLEAN_ARM.md`). The G1 agents wrote 395 scoreable features that read
 a table, 221 on Adamson and 174 on Norman, and the pre-registered list of what the tables could encode was written
-before any score (`docs/PREREG_G_KNOWN_BIOLOGY.md`). Under the corrected fair test, both nulls, 999 replicates and the
+before any score (`docs/PREREG_G_KNOWN_BIOLOGY.md`). Under the corrected fair test (the gene null for every row, the
+perturbation null for the rows proportional to a parent column), 999 replicates and the
 family-wise correction, none passes on either dataset (Adamson 210 unique predictions, Norman 158; the operator's
 readings on #51, comments 6233130270 and 6236179594, files `adamson_cf_g_pooled_holm` and `norman_g_pooled_holm` on
 the results PR). The tables did not raise the arm: out of fold, Adamson G1 0.491 ± 0.004 against G0 0.526 ± 0.035 and

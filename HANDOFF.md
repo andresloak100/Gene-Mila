@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-17 19:33 UTC: PR #63 verified from its files and merged; the corrected block F and the
+family 8 readings are recorded; every pre-registered reading of this window is negative for a tier-1 feature.**
+Corrected F: six passing rows, all the sign-flipped Replogle response times an annotation column (tier 3), none tier 1;
+38 screen-free rows, none passes. Family 8: not supported on either dataset. Both in `docs/GOAL_CRITERIA.md` Status
+and the ROADMAP note of 19:33 UTC, with the wording fixes (gene null for every row, perturbation null for proportional
+rows; a lower mean inside noise is not "lower"). Block H: `gtimeout` and `claude` are not needed for the Codex route;
+what is needed is in the ROADMAP note (Docker Desktop or the second account, the cap line, the console reading, the
+`gene-mila-h` clone or `H_CLONE`, `tier.txt`, `isolation.txt`, and two script fixes before the probe: a reset for a
+failed probe, and `run_biomni.py`'s missing `configs/default.toml` in Docker and account mode). **Next:** the new agent
+(claim #64) or whoever leads: regroup `docs/results/README.md` to one line per reading; fix the two block H script
+gaps with tests; then items 3 to 5 of the 18:30 UTC entry. Andres: isolation, the cap line, the holder (ROADMAP section 7).
+
 **Lead (Claude, #41), 2026-10-17 18:30 UTC: HANDOVER. This session's usage is ending; the new Fable account takes
 the lead's duties until this session is back (AGENTS.md: take over on #41 with one comment).** State: block G negative
 on both datasets (16:50 UTC entry). Astra's consolidated results PR [#63](https://github.com/andresloak100/Gene-Mila/pull/63)
