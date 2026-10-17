@@ -16,7 +16,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 11:04 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 11:17 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -30,7 +30,7 @@ was posted on [#51/comment6231063486](https://github.com/andresloak100/Gene-Mila
 and appended to the issue-51 receipt. Never restart G, recopy scripts, reset the cap or redo preparation.
 Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. Adamson prescribed readings complete; Norman active.
 
-**Reading phase: Adamson G readings 1–4 COMPLETE; Norman G reading 1 STAGE 1 RUNNING once.**
+**Reading phase: Adamson G readings 1–4 COMPLETE; Norman G reading 1 STAGE 2 RUNNING once.**
 Own results clone `gene-mila-g-f-h8-readings`, branch `astra/g-f-h8-readings`, remains frozen at
 `2f2e6838316915198c52abeb34cf02f2b3aacc87`; scientific reader behavior unchanged from 1a95873.
 Adamson stage1/select/stage2/pool/one six-run OOF call/all six separate sealed calls exited 0.
@@ -46,26 +46,33 @@ All JSON/Markdown twins, source/key/column evidence, unchanged plugins, hashes a
 are retained. Complete Adamson results/limitations posted
 [#51/comment6233130270](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6233130270).
 
-**Current detached screen 51895.gm-g-norman-s1; actual Python PID 51898, nice 19.**
-Norman stage1 launched once 2026-10-17T11:03:12.911668Z, OOF/null-reps 0, credentials unset,
-caffeinate active; all three f_r0/f_r2/f_r3 plugin sources plus three f_r{s}_selected run sources,
-built-in parent/default folds, no --with-val1. Copied 223 unchanged table-mentioning plugins:
-53 r0 / 87 r2 / 83 r3; all source/copy hashes match. Prescore manifest
-`docs/results/norman_g_input_manifest.json`, SHA256
-`ab190c3cfce631cdd7d90e7634b41c7e63af092c57678df3f2cd2b5778f5e61e`, records tool/public/plugin/run-input hashes.
-Output `docs/results/norman_g_stage1`, adjacent exclusive `.log`, explicit `.exit`, `.command.txt`.
-Source runs `M/runs/norman_g1_ds_w4_r0,r2,r3` (M is the protected main checkout).
-Launch receipt [#51/comment6233142078](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6233142078).
-**Exact next:** monitor this EXISTING stage1 at five-minute cadence; no duplicate/restart/recopy,
-source/input/branch change or competing heavy job. Only explicit exit 0 permits counting status-ok
-primary add-one rows f_r0/f_r2/f_r3. If zero, record fixed primary negative without zero-row select.
-Otherwise exact select ALL without --k/--partial into fresh norman_g_top; assert full membership and
-null_reps=999, then one stage2 call over all nonempty copied sources at nice19/detached/credentials unset,
-fresh norman_g_stage2/log/exit. Then exact pool, Norman readings 2/3/4, corrected F stage2, lead H8 both,
-one consolidated draft PR/results on #51, then Adamson export/two exact SHA256 lines. Do not rerun Adamson.
-No Norman null verdict/sealed reading, corrected F, H8 or export yet. Actual scientific refusal/nonzero
-or dead-without-status: preserve/secret-scan/report/update/PAUSE; no retry/workaround/tool change.
-Exit-0 candidate errors are preserved exclusions. Heartbeat ACTIVE; no new paid run or next-block decision.
+**Current detached screen 57916.gm-g-norman-s2; actual Python PID 57919, nice 19.**
+Norman stage1 and exact full-family select exited 0. Stage1: 276 total rows = 223 primary
++ 47 descriptive selected-model add-one + 6 sets. Eligible 174 (44 r0 / 62 r2 / 68 r3),
+40 within-source duplicates (5/22/13) and 9 exclusions (6 dependency KeyErrors, 1 constant
+smoke failure, 2 literal-cap refusals). No repair/substitution/retry. Independent source and
+selection audit PASSED: all 223 original/copy hashes match; all 174 eligible members selected
+exactly once, no omitted/extra or changed bytes; k=null, m_total=174, null_reps=999.
+Selection SHA256 `207753289a71171edd801b1c4475cf073acaeb6058527f04fe9804ed7c94f4f4`.
+
+Stage2 launched ONCE 2026-10-17T11:16:14.814909Z, all three f_r0/f_r2/f_r3 copied source
+directories in norman_g_top, all 174 rows, 999 replicates, OOF only, credentials unset,
+caffeinate active; no --k/--partial/--with-val1. Frozen tool/source/inputs stay unchanged.
+Output `docs/results/norman_g_stage2`, adjacent exclusive `.log`, explicit `.exit`, `.command.txt`.
+Original copied sources `norman_g_plugins`; prescore `norman_g_input_manifest.json` holds all
+public/tool/plugin/run-input hashes. Source runs `M/runs/norman_g1_ds_w4_r0,r2,r3`.
+Launch/counts/independent audit receipt [#51/comment6233255762](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6233255762).
+**Exact next:** monitor this EXISTING stage2 at five-minute cadence; leave nulls for hours.
+No arbitrary timeout, reduced counts, duplicate/restart/recopy/source update/branch pull-switch
+or competing heavy job. Only explicit exit 0 permits exact pool: original norman_g_stage1 JSON,
+new stage2 JSON, original norman_g_plugins, fresh norman_g_pooled_holm (p_fwer_pooled and
+p_fwer_pert_pooled; cross-source duplicates may collapse). Then exact six-run Norman OOF
+reading2, six prescribed per-run sealed reading3 (fifth/worn), source/count/planner audit4,
+corrected F stage2, lead H8 both, one consolidated draft PR/results #51, then Adamson export.
+Do not rerun Adamson. No Norman null verdict/sealed reading, corrected F, H8 or export yet.
+Actual scientific refusal/nonzero or dead-without-status: preserve/secret-scan/report/update/
+PAUSE, no retry/workaround/tool change. Exit-0 candidate errors remain exclusions. Heartbeat
+ACTIVE; no new paid run or next-block decision. Claude reads all results and decides next block.
 
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
