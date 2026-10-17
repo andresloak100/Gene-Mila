@@ -24,6 +24,7 @@ not integrated merely because a document describes it.
 
 - [FEATURE_COMPARISON_PROTOCOL.md](FEATURE_COMPARISON_PROTOCOL.md): how systems are compared on
   "feature + one fixed linear model", with `tools/feature_compare.py` and the task package.
+- [PAPER_COMPARISON.md](PAPER_COMPARISON.md): the skeleton of the comparison paper (goal b): Methods final where the protocol is fixed, Results as a template with placeholders.
 - [comparison/](comparison/): the comparison arms' feature plugins live beside their protocol because they are
   pre-registered records: [cellforge_c2/](comparison/cellforge_c2/README.md) (four features translated from
   CellForge's design ideas), [lead_h8_constraint/](comparison/lead_h8_constraint/README.md) (the lead's family-8
@@ -48,6 +49,8 @@ not integrated merely because a document describes it.
   [TEST_READINESS_20261013.md](TEST_READINESS_20261013.md): the untouched-test preparation of 13 October (two DeepSeek
   text reviews of fixed metadata; no cohort approved, no model scored); records in
   [results/test_readiness_20261013/](results/test_readiness_20261013/).
+- [WETLAB_CANDIDATES.md](WETLAB_CANDIDATES.md): the wet-lab prediction package for pre-registration of ROADMAP D13
+  and GOAL_CRITERIA A.5 (`tools/wetlab_candidates.py`).
 
 ## Completed blocks (pre-registered plans and their readings; records, never edited)
 
