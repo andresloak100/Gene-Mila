@@ -244,3 +244,133 @@ def test_run_autoresearch_script_parses_and_dry_runs(package, tmp_path):
     r = subprocess.run(["bash", str(script), str(package), "https://api.deepseek.com", "20", "4", str(tmp_path / "o")],
                        capture_output=True, text=True, env=env)
     assert r.returncode == 2 and "local ledger proxy" in r.stderr
+
+
+def test_run_codex_script_parses_and_dry_runs(package, tmp_path):
+    """The Codex twin of run_autoresearch.sh: the same interface and refusals; a private CODEX_HOME under the out
+    directory whose config.toml points one provider at the proxy in the chat wire format with a dummy env key."""
+    script = BASELINES / "run_codex.sh"
+    assert subprocess.run(["bash", "-n", str(script)], capture_output=True, text=True).returncode == 0
+    env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
+    env["GH_TOKEN"] = "not-for-codex"
+    env["OPENAI_API_KEY"] = "not-for-codex-either"
+    out = tmp_path / "out"
+    r = subprocess.run(["bash", str(script), "--dry-run", str(package), "http://127.0.0.1:8787", "20", "4", str(out)],
+                       capture_output=True, text=True, env=env)
+    assert r.returncode == 0, r.stderr
+    # the command: codex exec, non-interactive, in the package, sandboxed, the model, JSONL, program.md on stdin
+    assert "codex exec --skip-git-repo-check --ephemeral -C" in r.stdout and "--sandbox workspace-write" in r.stdout
+    assert "-m deepseek-v4-pro --json -o" in r.stdout and f"- < {package.resolve()}/program.md" in r.stdout
+    assert "for 1200 s" in r.stdout
+    # the env -i allowlist: the private CODEX_HOME and the dummy token, nothing of the caller's shell beyond it
+    assert "env -i" in r.stdout and f"CODEX_HOME={out.resolve()}/codex_home" in r.stdout
+    assert "LEDGER_PROXY_TOKEN=proxy-token-4" in r.stdout and "OPENAI_API_KEY and DEEPSEEK_API_KEY unset" in r.stdout
+    assert "not-for-codex" not in r.stdout
+    assert hashlib.sha256((package / "program.md").read_bytes()).hexdigest() in r.stdout  # task_sha256
+    # the config.toml the dry run wrote (and printed): one provider at the proxy, chat wire format, a dummy env key,
+    # web search off, approval never, no MCP server, no real key anywhere
+    config = (out / "codex_home" / "config.toml").read_text()
+    assert all(line in r.stdout for line in config.splitlines())
+    assert 'model = "deepseek-v4-pro"' in config and 'model_provider = "ledger_proxy"' in config
+    assert "[model_providers.ledger_proxy]" in config and 'base_url = "http://127.0.0.1:8787/v1"' in config
+    assert 'wire_api = "chat"' in config and 'env_key = "LEDGER_PROXY_TOKEN"' in config
+    assert 'web_search = "disabled"' in config and 'approval_policy = "never"' in config
+    assert 'sandbox_mode = "workspace-write"' in config and "network_access = false" in config
+    settings = "\n".join(l for l in config.splitlines() if not l.startswith("#"))
+    assert "mcp_servers" not in settings and "sk-" not in config and "proxy-token" not in config
+    assert "not-for-codex" not in config and "experimental_bearer_token" not in settings
+    assert sorted(p.name for p in (out / "codex_home").iterdir()) == ["config.toml"]
+    # the variables: another binary, the responses wire format, no sandbox (Docker mode)
+    r = subprocess.run(["bash", str(script), "--dry-run", str(package), "http://host.docker.internal:8787", "20", "0",
+                        str(tmp_path / "o2")], capture_output=True, text=True,
+                       env={**env, "CODEX_BIN": "/Applications/x/codex", "CODEX_WIRE_API": "responses",
+                            "CODEX_SANDBOX": "none"})
+    assert r.returncode == 0, r.stderr
+    assert "/Applications/x/codex exec" in r.stdout and "--dangerously-bypass-approvals-and-sandbox" in r.stdout
+    assert "--sandbox" not in r.stdout
+    config2 = (tmp_path / "o2" / "codex_home" / "config.toml").read_text()
+    assert 'wire_api = "responses"' in config2 and 'base_url = "http://host.docker.internal:8787/v1"' in config2
+    # the probe: one line as the prompt, a read-only sandbox, two minutes, the same CODEX_HOME
+    r = subprocess.run(["bash", str(script), "--dry-run", "--probe", str(package), "http://127.0.0.1:8787", "20", "0",
+                        str(tmp_path / "o3")], capture_output=True, text=True, env=env)
+    assert r.returncode == 0, r.stderr
+    assert "--sandbox read-only" in r.stdout and "for 120 s" in r.stdout and "probe_prompt.txt" in r.stdout
+    assert (tmp_path / "o3" / "probe_prompt.txt").read_text() == "Reply with the single word ok.\n"
+    assert hashlib.sha256(b"Reply with the single word ok.\n").hexdigest() in r.stdout
+    assert 'wire_api = "chat"' in (tmp_path / "o3" / "codex_home" / "config.toml").read_text()
+    # the refusals that need no codex: a wrong argument count, a key in the shell, a non-local proxy, a bad variable
+    assert subprocess.run(["bash", str(script), str(package)], capture_output=True, env=env).returncode == 2
+    r = subprocess.run(["bash", str(script), str(package), "http://127.0.0.1:8787", "20", "4", str(tmp_path / "o")],
+                       capture_output=True, text=True, env={**env, "API_KEY": "x"})
+    assert r.returncode == 2 and "only the proxy may hold the key" in r.stderr
+    r = subprocess.run(["bash", str(script), str(package), "https://api.deepseek.com", "20", "4", str(tmp_path / "o")],
+                       capture_output=True, text=True, env=env)
+    assert r.returncode == 2 and "local ledger proxy" in r.stderr
+    r = subprocess.run(["bash", str(script), str(package), "http://127.0.0.1:8787", "20", "4", str(tmp_path / "o")],
+                       capture_output=True, text=True, env={**env, "CODEX_WIRE_API": "grpc"})
+    assert r.returncode == 2 and "CODEX_WIRE_API" in r.stderr
+    assert not (tmp_path / "o").exists()  # a refusal writes nothing
+
+
+CODEX_STUB = '''import hashlib, json, os, re, sys, urllib.request
+# A stand-in for `codex exec`: reads the provider from $CODEX_HOME/config.toml, the prompt from stdin, makes one chat
+# completion through base_url with the env_key token, writes the last message to -o and JSONL events to stdout.
+args = sys.argv[1:]
+cfg = open(os.path.join(os.environ["CODEX_HOME"], "config.toml")).read()
+base = re.search(r'base_url = "([^"]+)"', cfg).group(1)
+env_key = re.search(r'env_key = "([^"]+)"', cfg).group(1)
+prompt = sys.stdin.read()
+body = json.dumps({"model": args[args.index("-m") + 1], "messages": [{"role": "user", "content": prompt}]}).encode()
+req = urllib.request.Request(base + "/chat/completions", body,
+                             {"Authorization": "Bearer " + os.environ[env_key], "Content-Type": "application/json"})
+doc = json.load(urllib.request.urlopen(req))
+text = doc["choices"][0]["message"]["content"]
+open(args[args.index("-o") + 1], "w").write(text)
+print(json.dumps({"type": "thread.started", "thread_id": "t"}))
+print(json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": text}}))
+print(json.dumps({"type": "stub", "env": dict(os.environ), "argv": args, "cwd": os.getcwd(),
+                  "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()}))
+'''
+
+
+def test_run_codex_session_through_the_proxy_with_a_stub_codex(package, tmp_path, proxy):
+    """The real path with a stub in place of codex: the watchdog, the env -i environment, the first-proxy-line check
+    on the chat route, the hand-back copies and run.json."""
+    px, url = proxy
+    Upstream.seen.clear()
+    stub_py = tmp_path / "codex_stub.py"
+    stub_py.write_text(CODEX_STUB)
+    stub = tmp_path / "codex"
+    stub.write_text(f"#!/bin/sh\nexec python3 {stub_py} \"$@\"\n")
+    stub.chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k not in ("DEEPSEEK_API_KEY", "API_KEY")}
+    env.update(GH_TOKEN="not-for-codex", OPENAI_API_KEY="nope", CODEX_BIN=str(stub))
+    (tmp_path / "proxy.jsonl").touch()  # the block scripts create the log empty before the proxy starts
+    out = tmp_path / "o"  # PROXY_LOG defaults to <out>/../proxy.jsonl, the fixture's log
+    r = subprocess.run(["bash", str(BASELINES / "run_codex.sh"), str(package), url, "1", "3", str(out)],
+                       cwd=tmp_path, env=env, capture_output=True, text=True, timeout=120)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "served model: deepseek-v4-pro" in r.stdout and "ended_by=solution" in r.stdout
+    events = [json.loads(l) for l in (out / "transcript.txt").read_text().splitlines()]
+    seen = next(e for e in events if e["type"] == "stub")
+    child_env = seen["env"]
+    assert child_env["CODEX_HOME"] == str(out.resolve() / "codex_home")
+    assert child_env["LEDGER_PROXY_TOKEN"] == "proxy-token-3" and "GH_TOKEN" not in child_env
+    assert "OPENAI_API_KEY" not in child_env and "DEEPSEEK_API_KEY" not in child_env
+    shell_added = {"PWD", "OLDPWD", "SHLVL", "_", "LC_CTYPE"}
+    if sys.platform == "darwin":
+        shell_added.add("__CF_USER_TEXT_ENCODING")
+    assert set(child_env) - shell_added <= {"CODEX_HOME", "LEDGER_PROXY_TOKEN", "PATH", "HOME", "LANG", "LC_ALL",
+                                            "TMPDIR", "TZ", "USER", "TERM", "SHELL"}
+    assert seen["cwd"] == str(package.resolve()) and seen["argv"][:3] == ["exec", "--skip-git-repo-check", "--ephemeral"]
+    assert seen["prompt_sha256"] == hashlib.sha256((package / "program.md").read_bytes()).hexdigest()
+    # the proxy replaced the dummy token with the key and priced the call on its chat route
+    assert Upstream.seen and Upstream.seen[-1]["path"] == "/v1/chat/completions"
+    assert Upstream.seen[-1]["auth"] == f"Bearer {KEY}" and px.calls >= 1
+    run = json.loads((out / "run.json").read_text())
+    assert run["arm"] == "autoresearch" and run["client"] == "codex" and run["ended_by"] == "solution"
+    assert run["model_served"] == "deepseek-v4-pro" and run["wire_api"] == "chat" and not run["probe"]
+    assert run["task_sha256"] == hashlib.sha256((package / "program.md").read_bytes()).hexdigest()
+    assert run["codex_bin"] == str(stub) and run["exit_code"] == 0
+    assert (out / "last_message.txt").is_file() and (out / "MANIFEST.json").is_file() and (out / "features").is_dir()
+    assert KEY not in (out / "transcript.txt").read_text() and KEY not in (out / "codex_home" / "config.toml").read_text()

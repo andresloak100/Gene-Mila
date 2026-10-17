@@ -1,8 +1,9 @@
 #!/bin/bash
 # Block H, the probe (docs/PLAN_H_COMPARISON.md, step 6): two proxy sessions of $0.05 each (ROADMAP D6's cap per
-# round). One Biomni --probe round and one one-turn claude -p call, both through the ledger proxy, to check the two
-# routes ROADMAP section 8 lists as unverified. No key in it: DEEPSEEK_API_KEY must be in the environment (the
-# chain's). Every check comes before any spend.
+# round). One Biomni --probe round and one one-turn call of the A3 client (A3_CLIENT in block_h_common.sh: codex, the
+# default, through run_codex.sh --probe; or claude -p), both through the ledger proxy, to check the routes ROADMAP
+# section 8 and the plan's note of 2026-10-17 list as unverified. No key in it: DEEPSEEK_API_KEY must be in the
+# environment (the chain's). Every check comes before any spend.
 . "$(dirname "$0")/block_h_common.sh"
 name=h_probe
 [ -e "$H/$name.passed" ] && { echo "probe passed before"; exit 0; }
@@ -17,14 +18,27 @@ agent_run "$name" "$TOOLS_PY" "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy
   --minutes 2 --seed 0 --out "$OUT_IN" --probe
 biomni_rc=$AGENT_RC
 proxy_down
-# 2. Claude Code: one turn on DeepSeek's Anthropic-format route (the proxy forwards /anthropic/v1/messages), the model
-#    alias on a custom base URL, web tools off, as run_autoresearch.sh starts it
-proxy_up "${name}_claude" 0.05
-agent_run "${name}_claude" env ANTHROPIC_BASE_URL="$PROXY_URL/anthropic" ANTHROPIC_MODEL=deepseek-v4-pro \
-  claude -p "Reply with the single word ok." --model deepseek-v4-pro --disallowedTools WebFetch,WebSearch \
-  --strict-mcp-config --no-session-persistence
-claude_rc=$AGENT_RC
+# 2. The A3 client, one turn ("Reply with the single word ok.") as the arm starts it:
+#    codex: run_codex.sh --probe, the private CODEX_HOME with the provider at <proxy>/v1 in the chat wire format (the
+#    proxy forwards /v1/chat/completions), the model alias, web search off, a read-only sandbox; its run.json lands in
+#    $O/codex_probe, beside Biomni's. It settles what the plan's note of 2026-10-17 lists as unverified: that this
+#    Codex starts on a custom provider with no login, accepts wire_api = "chat" (a 404 row on /v1/responses means it
+#    does not: Claude Code is the fallback, or the proxy gets that route first), and that the proxy prices the call.
+#    claude: one claude -p turn on DeepSeek's Anthropic-format route (the proxy forwards /anthropic/v1/messages), the
+#    model alias on a custom base URL, web tools off, as run_autoresearch.sh starts it.
+if [ "$A3_CLIENT" = codex ]; then
+  proxy_up "${name}_codex" 0.05
+  if [ "$MODE" = docker ]; then cbin=codex; sbx=none; else cbin="$CODEX_BIN"; sbx=read-only; fi
+  agent_run "${name}_codex" env CODEX_BIN="$cbin" CODEX_SANDBOX="$sbx" \
+    bash "$TOOLS/run_codex.sh" --probe "$PKG_IN" "$PROXY_URL" 2 0 "$OUT_IN/codex_probe"
+else
+  proxy_up "${name}_claude" 0.05
+  agent_run "${name}_claude" env ANTHROPIC_BASE_URL="$PROXY_URL/anthropic" ANTHROPIC_MODEL=deepseek-v4-pro \
+    claude -p "Reply with the single word ok." --model deepseek-v4-pro --disallowedTools WebFetch,WebSearch \
+    --strict-mcp-config --no-session-persistence
+fi
+client_rc=$AGENT_RC
 proxy_down
-AGENT_RC=0; [ "$biomni_rc" = 0 ] && [ "$claude_rc" = 0 ] || AGENT_RC="biomni=$biomni_rc,claude=$claude_rc"
+AGENT_RC=0; [ "$biomni_rc" = 0 ] && [ "$client_rc" = 0 ] || AGENT_RC="biomni=$biomni_rc,$A3_CLIENT=$client_rc"
 session_after "$name" probe deepseek-v4-pro 0.10 || exit 3
-echo "probe: biomni rc $biomni_rc, claude rc $claude_rc; served models, tokens and the other statuses (402 is the proxy's cap, 404 a wrong route, 502 the upstream) are in $H/$name.check.txt and $H/proxy/$name*.jsonl: record them in the plan's dated note before any fallback is disclosed"
+echo "probe: biomni rc $biomni_rc, $A3_CLIENT rc $client_rc; served models, tokens and the other statuses (402 is the proxy's cap, 404 a wrong route, 502 the upstream) are in $H/$name.check.txt and $H/proxy/$name*.jsonl: record them in the plan's dated note before any fallback is disclosed"

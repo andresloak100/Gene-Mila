@@ -243,3 +243,66 @@ own state, `.claude*`, `.cache`, `.npm` and `Library`, left out); `planner.mixed
   ledger at the start.
 - The probe's result: served models, tokens, cost, the other statuses; any route that failed and the disclosed
   fallback.
+
+## 2026-10-17 03:52 UTC: A3 runs through the Codex CLI; Claude Code stays the fallback
+
+**Why.** Astra's check of the Mac (#41, comment 6228055333, 17 October): `docker` at `/usr/local/bin/docker` (daemon
+state unknown), `gtimeout` not found, `claude` (Claude Code) not found, `codex` found at
+`/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex`, the Codex CLI bundled with
+the ChatGPT desktop app, version unknown. The lead's decision: arm A3, the autoresearch-style loop, runs through the
+Codex CLI pointed at DeepSeek `deepseek-v4-pro` through the ledger proxy, in the OpenAI chat-completions wire format
+on the proxy's existing `/v1/chat/completions` route. The LLM, the 20-minute clock, the $2.50 session cap, the task
+package, `program.md` as the whole prompt, the env -i environment, the first-proxy-line check, the hand-back and the
+proxy-log reading are the same as with Claude Code; only the client program differs, and `run.json["client"]`
+records which one ran (`codex` or absent for Claude Code). The hand-back directory stays `autoresearch_r$S`, so
+reading 1 reads as written. Row A3 of the arms table is read with this note.
+
+**What changed** (this commit): `tools/baselines/run_codex.sh`, the Codex twin of `run_autoresearch.sh` (same
+interface and refusals, plus `--probe`): it writes a private `CODEX_HOME` under the session's output directory with
+one `config.toml` (provider `ledger_proxy` at `<proxy>/v1`, `wire_api = "chat"`, `env_key = "LEDGER_PROXY_TOKEN"`
+holding the dummy `proxy-token-<seed>`, `model = "deepseek-v4-pro"`, `web_search = "disabled"`, no `[mcp_servers]`
+table, `approval_policy = "never"`, `sandbox_mode = "workspace-write"` with `network_access = false`), and runs
+`codex exec --skip-git-repo-check --ephemeral -C <package> --sandbox workspace-write -m deepseek-v4-pro --json
+-o <out>/last_message.txt -` with `program.md` on stdin, under the python watchdog, the binary from `CODEX_BIN`. The
+Mac's `~/.codex` (the ChatGPT app's login and configuration) is never read or written. `block_h_common.sh` gains
+`A3_CLIENT` (`codex`, the default, or `claude`) and `CODEX_BIN` (on `PATH`, else the bundled path), requires
+`run_codex.sh` as a fifth runner, and in account mode checks the selected client's binary instead of `claude`;
+`block_h_a3.sh` selects `run_codex.sh` or `run_autoresearch.sh` by `A3_CLIENT`; `block_h_probe.sh` step 2 exercises
+the selected client once (`run_codex.sh --probe`: the one-line prompt, a read-only sandbox, run id `h_probe_codex`,
+the same $0.05 cap); `check_tools.sh` prints `codex --version`, `codex exec --help` and `docker info` (read-only);
+the `Dockerfile` installs `@openai/codex` beside Claude Code. Every earlier check stays. Tests:
+`tests/test_baselines.py` dry-runs the script and runs it once with a stub `codex` through the test proxy.
+
+**Unverified, and how the probe settles it** (nothing has run; the research of 2026-10-17 read the current Codex
+sources and OpenAI's and DeepSeek's documentation, not the Mac's binary):
+1. The bundled binary's version, and that it is the standalone Rust CLI accepting `codex exec` with these flags.
+   `check_tools.sh` prints `codex --version` and `codex exec --help`; both go on #41 before the probe.
+2. `wire_api = "chat"`. Codex builds from about February 2026 on removed it (github.com/openai/codex/discussions/7782;
+   0.80.0 reported working, 0.123.0 refusing): such a build refuses the configuration ("no longer supported") or
+   speaks the Responses API only, `POST <base_url>/responses`, which the proxy does not serve (a 404 row with no served
+   model, so the runner aborts the session as an error). Rule: if `--version` is an older build and
+   `h_probe_codex.jsonl` shows a status-200 row with `model_served` `deepseek-v4-pro`, A3 runs as configured. If the
+   build is newer, one of two disclosed paths, decided before any A3 session: the proxy gets a `/v1/responses` route
+   (forwarding to `https://api.deepseek.com/responses`, pricing the `response.completed` usage: `input_tokens`,
+   `input_tokens_details.cached_tokens`, `output_tokens`; no `[DONE]` sentinel; `response.failed` ends an errored
+   stream; its own pull request with tests) and the arm runs with `CODEX_WIRE_API=responses`; or A3 falls back to
+   Claude Code (`A3_CLIENT=claude`, Claude Code installed where the agent runs: the image has it, the account would
+   need it) and this note gets the fallback line. In both the LLM and the rest are unchanged.
+3. That `codex exec` starts with no `auth.json` in a fresh `CODEX_HOME` when the provider is custom with `env_key` and
+   `forced_login_method = "api"`. If the probe shows a login refusal, the fix is `codex login --with-api-key` into the
+   scratch `CODEX_HOME` with the dummy token (it writes `auth.json` there only), recorded here.
+4. That an older build ignores configuration keys it does not know (`web_search` as a string; the deprecated
+   `web_search_request = false` is written too).
+5. Whether DeepSeek's `output_tokens` includes the reasoning tokens (its wording implies so, as OpenAI's does): one
+   probe response against the console reading.
+6. Other HTTP requests Codex may make at start (model catalog refresh, telemetry, update checks). In Docker the
+   internal network blocks them; in account mode they would leave the Mac; one aimed at the proxy shows as a 404 row,
+   which `session_after` counts and does not fail on. The probe's proxy log and `codex_stderr.txt` are read for them.
+
+**Docker as the isolation route, pending `docker info`.** `check_tools.sh` now prints it. If the daemon runs, Docker
+mode: the image installs the current npm Codex build, which is responses-only, so Docker mode needs the `/v1/responses`
+proxy route whatever the bundled binary's version, and inside the container the runner gets `CODEX_SANDBOX=none`
+(`--dangerously-bypass-approvals-and-sandbox`; the Linux sandbox does not start unprivileged, the container is the
+isolation, as the plan's Isolation section says). If no daemon, account mode with the bundled binary under the second
+account and the macOS Seatbelt sandbox as a second layer. Either way the probe runs the selected client through the
+proxy once, at $0.05, before any arm.

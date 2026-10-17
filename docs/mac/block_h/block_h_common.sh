@@ -8,6 +8,9 @@ C="${H_CLONE:-$HOME/Documents/Mila/Gene-Mila/gene-mila-h}"   # the operator's cl
 PKG_SRC="$HOME/gm_packages/adamson_cf_clean_tables"           # the package Astra exported (plan, "The task package")
 LEDGER="$MAIN/runs/spend_ledger.sqlite"; PY="$MAIN/.venv/bin/python"; PORT=8787
 SHARED="/Users/Shared/genemila_h"                             # account mode: what the second account may read and write
+A3_CLIENT="${A3_CLIENT:-codex}"                               # the A3 coding agent: codex (run_codex.sh) or claude (run_autoresearch.sh); plan, note of 2026-10-17
+# the Codex CLI: on PATH if installed, else the one bundled with the ChatGPT desktop app (Astra, #41 comment 6228055333)
+CODEX_BIN="${CODEX_BIN:-$(command -v codex || echo /Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex)}"
 unset API_KEY
 num() { case "$1" in ''|*[!0-9.]*|*.*.*) return 1 ;; esac; }
 ledger() { sqlite3 "$LEDGER" "select round(coalesce(sum(cost_usd),0),6) from spend where provider='deepseek'"; }
@@ -30,17 +33,19 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
             # password here, in the foreground, so the ticket is fresh for the session (plan, Isolation, mode 2)
             H_ACCOUNT_VENV="${H_ACCOUNT_VENV:-/Users/$ACCOUNT/genemila_h_venv}"
             APATH="$H_ACCOUNT_VENV/bin:/usr/bin:/bin:/usr/local/bin:/opt/homebrew/bin"
-            if [ "$1" != lab ]; then
+            if [ "$1" != lab ]; then  # the A3 client: codex at $CODEX_BIN (an absolute path or a name on APATH), or claude
+              [ "$A3_CLIENT" = codex ] && a3bin="$CODEX_BIN" || a3bin=claude
               sudo -v && sudo -u "$ACCOUNT" -H env -i PATH="$APATH" HOME="/Users/$ACCOUNT" "$H_ACCOUNT_VENV/bin/python" \
-                -c "import biomni, shutil, sys; sys.exit(0 if shutil.which('claude') else 1)" > /dev/null 2>&1 \
-                || no "account $ACCOUNT: no $H_ACCOUNT_VENV/bin/python with biomni, or no claude on $APATH (check_tools.sh)"
+                -c "import biomni, shutil, sys; sys.exit(0 if shutil.which(sys.argv[1]) else 1)" "$a3bin" > /dev/null 2>&1 \
+                || no "account $ACCOUNT: no $H_ACCOUNT_VENV/bin/python with biomni, or no $a3bin on $APATH (check_tools.sh)"
             fi ;;
     none) [ "$1" = lab ] || no "isolation.txt reads none: the foreign arms wait (plan, Isolation)" ;;
     *) no "$H/isolation.txt must read 'docker', 'account <name>' or 'none' (plan, Isolation; Andres's answer first)" ;;
   esac
-  for f in ledger_proxy.py run_biomni.py run_autoresearch.sh collect_handback.py; do
+  for f in ledger_proxy.py run_biomni.py run_autoresearch.sh run_codex.sh collect_handback.py; do
     [ -e "$C/tools/baselines/$f" ] || no "$C/tools/baselines/$f is missing (H_CLONE must be at the plan's commit or later)"
   done
+  case "$A3_CLIENT" in codex|claude) ;; *) no "A3_CLIENT must be codex or claude" ;; esac
   [ -e "$L/STOP" ] && { RC=3 no "STOP file present"; }
   [ -e "$H/block_h_stopped.txt" ] && { RC=3 no "block stopped (block_h_stopped.txt); write the cause up in the plan first"; }
   pgrep -f '[r]un_research.py' > /dev/null && no "a lab run is running"
