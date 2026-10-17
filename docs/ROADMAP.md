@@ -262,3 +262,24 @@ adapter exists, since it needs the same new-target prediction path.
 - A DepMap essentiality covariate: tier 3 under the approved policy.
 - An evaluator account on the Mac as the holder: a test held by the orchestration identity is not held out.
 - A.5 and the Nature Genetics framing for this window: methods-level unless Andres answers item 4 of section 7.
+
+## Note, 2026-10-17 01:10 UTC: the D2 to D7 deliverables landed; small decisions they raised
+
+- Landed in one pull request (five deliverables, each reviewed by two readers and fixed): the corrected fair test
+  (`tools/feature_compare.py`, `tools/block_f_readings.py`; D2), the pre-registration and literature check
+  (`docs/PREREG_G_KNOWN_BIOLOGY.md`, `docs/CANDIDATE_LITERATURE_CHECK.md`; D3), the block H tooling
+  (`tools/baselines/`; D6), the block H plan, Mac scripts and the task package's harness tier
+  (`docs/PLAN_H_COMPARISON.md`, `docs/mac/block_h/`, `tools/export_task_package.py`; D5, D6), and the fresh-test tooling
+  (`tools/replogle_slice_manifest.py`, the new-target path in `tools/frozen_model.py`, `docs/PLAN_R_FRESH_TEST.md`; D7).
+- D2, cost of the block F re-read: every status-ok row at 999 replicates, not the top 20, so about 66 × 999 × 0.33 s,
+  six hours of free CPU at nice 19 on the Mac, not "about an hour" as D2 said. The replicate rule is 999 for every
+  family size; `feature_compare.json` keeps format 1 with additive keys, so saved reports still load.
+- D6, the Biomni probe: it runs first without the proxy's `--merge-consecutive-assistant` option; if the route
+  rejects Biomni's consecutive assistant messages, one rerun with the option, disclosed in the arm's report; if that
+  fails too, Biomni is reported as "could not run on DeepSeek v4-pro".
+- D7: Adamson has 88 knockdowns (`README.md`), not 90; the manifest tool records the count it reads. In two-file
+  mode the fresh-test slice (R2) excludes the replication slice's (R1) eligible targets, as `PLAN_R` section 2 says;
+  the in-distribution floor of 30 is re-checked after the exclusion.
+- D5: the harness tier is on by default in the exported package until Andres vetoes it (section 7, item 3); a package
+  exported with `--no-harness-val1` keeps the protocol's earlier rules. The sentence recording this in `AGENTS.md`
+  (Scientific integrity) carries his veto line.
