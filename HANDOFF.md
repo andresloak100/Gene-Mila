@@ -36,7 +36,7 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 15:35 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 17:28 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
@@ -48,9 +48,9 @@ completion check; STOP is present. Final ledger 60.232225 from original 47.26464
 block spend 12.967580 ledger dollars, below the unchanged 67.26 cap. The final progress line
 was posted on [#51/comment6231063486](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6231063486)
 and appended to the issue-51 receipt. Never restart G, recopy scripts, reset the cap or redo preparation.
-Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. Both G readings complete; corrected F active.
+Research pin baa7dfd, main checkout, data, scripts and ledger are unchanged. Both G readings, corrected F and Adamson H8 complete; lead H8 Norman active.
 
-**Reading phase: G readings 1–4 COMPLETE for BOTH datasets; corrected F stage2 RUNNING once.**
+**Reading phase: G readings 1–4 and corrected F COMPLETE; lead H8 Adamson COMPLETE; H8 Norman RUNNING once.**
 Own results clone `gene-mila-g-f-h8-readings`, branch `astra/g-f-h8-readings`, remains frozen at
 `2f2e6838316915198c52abeb34cf02f2b3aacc87`; scientific reader behavior unchanged from 1a95873.
 All Adamson and Norman G stage1/select/stage2/pool, exact six-run OOF and six separate per-run sealed calls exited 0.
@@ -81,32 +81,59 @@ chromosome equality in TSS windows. Adamson g1r2 GA raw2/direct1 distinction ret
 Both G full results and current F launch posted [#51/comment6236179594](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6236179594).
 No significance/within-noise/fresh-test/CellForge victory claim. Raw pool legacy Block F headings unchanged.
 
-**Current detached screen 78803.gm-f-corrected-s2; actual Python PID 78806, nice 19.**
-Corrected F stage2 launched ONCE 2026-10-17T15:54:22.998691Z: original stage1 was NOT rerun;
-all66 original status-ok rows (40/1/25) selected without --k/--partial, unchanged plugins, 999replicates,
-OOF only, original M/data/norman_ga, all3 f_r0/f_r2/f_r3 sources in norman_f_corrected_top.
-Credentials unset, caffeinate active; no --with-val1, no source/input/criterion changes.
-Output docs/results/norman_f_corrected_stage2, adjacent exclusive .command.txt/.log/.exit.
-Selection SHA256 `b691910f9aabfb97dd5b5d1acbb56c769135aa3e4f8c67325b81b43984838f81`.
-Prescore manifest SHA256 `9c5cb36ffc94c31c574e30fb985bcb731692a5ada08fddcaf0854e50371c57b7`.
-Original142 artifact and coefficient receipt hashes verified in C and gene-mila-f-corrected;
-all94 original/copied/source plugin hashes and public-input pins match. Independent precheck/selection audit PASS.
-Only difference from1a95873 is feature_compare module docstring archived-document link; exact diff and executable
-AST verified identical, all other checkedtools byte-identical. Initial metadata-only byte assertion documented,
-no scientific call failure, retry, tool/input change or old-null/sealed-result read.
-Source runs M/runs/norman_ga_ds_addstart_w4_r0,r2,r3. Old positive F claims remain withdrawn pending corrected verdict.
-**Exact next:** monitor EXISTING F stage2 at five-minute cadence; leave nulls for hours, no arbitrary timeout,
-reduced replicates, duplicate/restart, recopy, branch pull-switch/source update or competing heavy job.
-Only explicit exit0 permits exact pool using original docs/results/norman_f_stage1/feature_compare.json,
-new norman_f_corrected_stage2/feature_compare.json, original norman_f_plugins, fresh norman_f_corrected_pooled_holm.
-Preserve both nulls, coefficient signs, JSON/Markdown twins and all command/hash/exit receipts; verify142oldhashes
-again after consolidation. Do not rerun G, Fstage1, old nulls or old sealed scores.
-Then lead H8 README exact pre-run+999 scoring BOTH datasets after reading pre-score clarification on parent-name
-question #51/comment6229018744; never silently change parent/formula/acceptance. No H8 score yet.
-Then one consolidated draft PR/results #51, attach, never merge; then Adamson export/two exact SHA256 lines.
-No H/R/probe/new paid run or next-block decision. Claude decides next block.
-Actual scientific refusal/nonzero/dead-without-status: preserve/secret-scan/report/update/PAUSE; no workaround/retry.
-Heartbeat ACTIVE while F runs. Pause after authorized publication/export completes or actual blocking failure.
+**Corrected F stage2 and pool COMPLETE, explicit exits 0 by 2026-10-17 17:19 UTC.**
+Original stage1 not rerun: all66 status-ok members (40/1/25) selected without --k/--partial,
+unchanged94plugins, 999replicates, original M/data/norman_ga, all3 f_r0/f_r2/f_r3 sources.
+Stage2:59ok add-one+7within-source duplicates+3sets. Corrected pool:66stage1rows,59tested,
+13duplicates=7within+6cross-source,53unique,partial=false,untested=[],no resolution warning.
+found=6 Replogle-assisted development candidates, all non-proportional, pooled gene p=.001,
+all6ordered-seed-pair coefficients positive; tier1=[]. Not6independent runs or screen-free
+biology/agent A.1/Nature Genetics candidates. Original CpG e428 fails gain.000563135<.002
+and pooled perturbation p=.363; e666/e412 duplicate predictions. Both applicable nulls fixed.
+Independent audit PASS:2916assertions,allraw/Holm/within/pooled p-values reconstructed,
+59gene+12perturbation nulls each999finite gains,10unique pooled perturbation rows,allgates/signs.
+Original142artifacts and94plugins unchanged in BOTH clones afterpool; reverify afterconsolidation.
+Selection SHA256 b691910f9aabfb97dd5b5d1acbb56c769135aa3e4f8c67325b81b43984838f81.
+Prescore manifest SHA256 9c5cb36ffc94c31c574e30fb985bcb731692a5ada08fddcaf0854e50371c57b7.
+Source runs M/runs/norman_ga_ds_addstart_w4_r0,r2,r3. Allnew norman_f_corrected_* twins,
+commands/logs/exits/sourcehashes retained. OldpositiveFclaims replaced by this corrected limited verdict.
+
+**H8 pre-score clarification RESOLVED before scores:** lead #51/comment6236891780 and current
+integration README note16:45, read17:18UTC. Adamson fixed parent=mean_response, Norman=additive_response;
+formula/words/source/sign/two nulls/effect/allothercriteria unchanged. If Adamson notproportional
+or no perturbationnull, postrow and STOP without retrospective change. H8 is lead's pre-registered
+hypothesis, never agent discovery/A.1. Frozen C unchanged; executable AST matches1a95873.
+Both exact README pre-runs exited0 before scores. Adamson valued2018/2024,CORUM628,Reactome19sets/286genes;
+Norman valued2012/2018,CORUM639,Reactome19sets/279genes. Wordcounts7ribosom/9proteasom/3mrna splicing,
+all19names retained, nofallbackneeded. lead_h8_prescore_protocol and dataset prerun JSON/MD twins,
+commands/logs/exits preserve authority,current README,publicinputhashes/pathwaylists/counts.
+Unchanged H8plugin SHA256 d561229865326a42fd0e562f7cb294f40b77788aa0b6ce547c277935311a23ad.
+Protocol README SHA256 beb3e9ae4691c0fd693e44289523fd82e74bfff03fb0336fa4cd3bca490c8dc8.
+
+**Adamson H8 COMPLETE, explicit exit0 observed 2026-10-17T17:26:10.623219Z.**
+Fixed protocol check passes: proportional=true,in-folds=true,parent=mean_response,999replicateperturbnull.
+Lead hypothesis NOT supported: M1 .482883437945 vsparent .484230269763; gain-.001346831818,
+SEadj .001079091036,wins25/50,min_effect .002158182072. Gene raw/Holm/FWER1.000,
+perturb raw/Holm/FWER.769. Allsixcoefficientspositive,allsixreportgainsnegative; effect,
+reportconsistency,bothnulls andM2gatesfail. meaningful=false. Independent92checkauditPASS.
+Result JSON SHA256 ed792213009899ec4ff7bce35e6b11b5854fc2c2f2f62d566d930972062eabfe.
+OOFonly,worndevelopment,notheldout. RawJSON/MD,summarytwins/nullgains/commands/log/exit retained.
+
+**Current detached screen20182.gm-lead-h8-norman; actual Python PID20185,nice19.**
+Norman H8 launched ONCE 2026-10-17T17:26:55.231192Z with exact README999replicatecommand,
+M/data/norman_clean_tables, source LEAD_H8=docs/comparison/lead_h8_constraint,
+output C/docs/results/norman_lead_h8, credentialsunset,caffeinate,no --with-val1.
+Adjacent exclusive .command.txt/.log/.exit. No Norman verdict/export/PR yet.
+AdamsonH8result/Normanlaunch posted[#51/comment6237612172](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6237612172).
+**Exact next:** monitor EXISTING Norman H8 at five-minute cadence (nextcheck>=17:31:55Z), oneheavyjob,
+leave nulls forhours, no arbitrarytimeout/reducedreplicates/duplicate/restart/sourceupdate/branchswitch.
+Only explicit exit0 permits fixed proportional=true,parent=additive_response,perturbationnull check;
+recordNormansign(notpredicted),bothnulls/minimumeffect/allfixedgates,independentaudit.
+Afterboth: one consolidated draft PR/results#51, include one line pernewfile in docs/results/README.md,
+fullsuite afterscientificjobs,secret-scan,verify142oldhashes,attachPR,nevermerge; then Adamsonexport/twoSHA.
+No G/F/AdamsonH8 restart,oldnull/sealedreads,H/R/probe/newpaidrun/modelpromotion or next-blockdecision.
+Claude decides nextblock. Actual scientific refusal/nonzero/deadwithoutstatus: preserve/scan/report/update/PAUSE.
+Heartbeat ACTIVE, quietunchanged. Pause afterauthorizedpublication/exportcomplete oractualblockingfailure.
 **After all12 pass, clean chain finish and no other lab/driver/heavy job, follow this exact order:**
 1. G readings1–4 for Adamson and Norman per PLAN_G, tool1a95873 or later. Use the corrected full status-ok family,
    999 null replicates, no --k or --with-val1; preserve every JSON/Markdown twin, plugin hash and command receipt.
@@ -120,7 +147,7 @@ Heartbeat ACTIVE while F runs. Pause after authorized publication/export complet
 
 A source-only H8 parent-name question is recorded in [comment6229018744](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6229018744):
 Adamson's parent omits additive_response, so a proportional row may name mean_response; README names additive_response.
-Claude was asked to clarify before H8. No formula, parent or acceptance rule will be changed silently; G/F proceed first.
+Claude clarified before H8 scoring in comment6236891780: Adamson mean_response, Norman additive_response; formula and all other acceptance criteria unchanged.
 
 **No paid run beyond G. Claude reads the results and decides the next block.** While G runs, only safe monitoring,
 posting and state work: no evaluation/H8 pre-run/export/heavy jobs. Stop/report/pause on actual command/check failures;
