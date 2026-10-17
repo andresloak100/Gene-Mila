@@ -59,13 +59,14 @@ every arm shares one parent scoring; or alone:
 
 ```
 nice -n 19 python tools/feature_compare.py --data data/norman --out $HOME/gm_compare/norman_cf_c2 \
-  --parent builtin --source A5_C2=docs/comparison/cellforge_c2 --fold-seeds 101,102,103 --null-reps 499 --with-val1
+  --parent builtin --source A5_C2=docs/comparison/cellforge_c2 --fold-seeds 101,102,103 --null-reps 999 --with-val1
 nice -n 19 python tools/feature_compare.py --data data/adamson_cf --out $HOME/gm_compare/adamson_cf_c2 \
-  --parent builtin --source A5_C2=docs/comparison/cellforge_c2 --fold-seeds 101,102,103 --null-reps 499
+  --parent builtin --source A5_C2=docs/comparison/cellforge_c2 --fold-seeds 101,102,103 --null-reps 999
 ```
 
-The source's add-one family has four rows, so the null needs `--null-reps` >= 79 before any row can pass Holm; 499 is
-the protocol's default. A `--source` file is scored with its own class params only (the tool reads no params file next
+The source's add-one family has four rows; every family needs `--null-reps` >= 999 before its family-wise p is read
+(`docs/FEATURE_COMPARISON_PROTOCOL.md`, section 4, "Null replicates"; fewer reads "null too coarse"), and 999 is the
+tool's default. A `--source` file is scored with its own class params only (the tool reads no params file next
 to it). The report is `feature_compare.md` and `feature_compare.json` in `--out`; cite them with the run directory, as
 every number in this repository is.
 
