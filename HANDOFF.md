@@ -16,20 +16,20 @@ readings, the block F re-read and the family 8 scoring with the tool at `1a95873
 preparation (#51, lead's note of 05:20 UTC); the lead reads G against `docs/GOAL_CRITERIA.md`. Still open for Andres:
 the fresh-test holder and the isolation route (ROADMAP section 7, items 2 and 3).
 
-**Andres's current handoff — Astra, 2026-10-17 06:00 UTC; claim and reporting issue #51.**
+**Andres's current handoff — Astra, 2026-10-17 06:25 UTC; claim and reporting issue #51.**
 The direct instruction is recorded in [comment6228976763](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6228976763).
 It replaces the old #41 destination and F-first order. Existing G progress was backfilled on #51; subsequent
 posted lines are recorded in append-only `genemila_scale_logs/block_g_posted_progress_51.txt`. The old #41 receipt
 is history and must not suppress #51 posts.
 
-**G status:** 9/12 passed: all six Adamson repeats, Norman G0/G1 seed 0 and G0 seed 2.
-Current `norman_g1_ds_w4_r2` started 05:57 UTC, actual Python PID 76925; detached screen
-67366.blockg and chain 67368 remain alive. Last checked 05:59 UTC; no stopped marker or
-competing lab/reader/driver. Norman G0 seed 2 finished rc=0 with a clean post-check,
-ledger 57.036674 and run cost 1.106475. Both new verbatim progress lines were posted on
-[#51/comment6230445447](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6230445447)
-and appended to the issue-51 receipt. Current run's 90-minute backstop is 07:27 UTC only
-if that same run remains active. Next expected: Norman G1 seed 2 finish, then G0 seed 3.
+**G status:** 10/12 passed: all six Adamson repeats and Norman G0/G1 seeds 0/2.
+Current `norman_g0_ds_w4_r3` started 06:20 UTC, actual Python PID 1410; detached screen
+67366.blockg and chain 67368 remain alive. Last checked 06:24 UTC; no stopped marker or
+competing lab/reader/driver. Norman G1 seed 2 finished rc=0 with a clean post-check,
+ledger 58.149861 and run cost 1.113187. Both new verbatim progress lines were posted on
+[#51/comment6230658150](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6230658150)
+and appended to the issue-51 receipt. Current run's 90-minute backstop is 07:50 UTC only
+if that same run remains active. Next expected: Norman G0 seed 3 finish, then final G1 seed 3.
 Cap 67.26 and its original record, research pin baa7dfd, source bundles and scripts remain
 unchanged. No evaluation has started; all readings wait for the full twelve-run chain.
 
