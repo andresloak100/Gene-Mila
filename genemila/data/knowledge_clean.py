@@ -231,7 +231,7 @@ def string_physical_channels(detailed_links_path: Path, info_path: Path, genes: 
     llines = links.splitlines()
     head = llines[0].split()
     i_a, i_b = _header_index(head, "protein1"), _header_index(head, "protein2")
-    i_e, i_d = _header_index(head, "experiments"), _header_index(head, "database")
+    i_e, i_d = _header_index(head, "experiments", "experimental"), _header_index(head, "database")
     threshold = min_score / 1000.0
     edges = {}
     for line in llines[1:]:

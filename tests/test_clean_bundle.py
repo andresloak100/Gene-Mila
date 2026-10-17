@@ -181,6 +181,27 @@ def test_string_channels(tmp_path):
                                        min_score=850) == [["ATF6", "ERN1", 0.9], ["ATF6", "XBP1", 0.9]]
 
 
+@pytest.mark.parametrize("experimental_header", ["experimental", "experiments"])
+@pytest.mark.parametrize("with_transferred_prefix", [False, True])
+def test_string_physical_header_preserves_direct_channels(tmp_path, experimental_header, with_transferred_prefix):
+    src = write_sources(tmp_path / "src")
+    # The served v12 physical file has these six columns, with singular "experimental".
+    head = ["protein1", "protein2", experimental_header, "database", "textmining", "combined_score"]
+    rows = [["E0", "E1", "900", "0", "0", "900"],       # experiment alone
+            ["E0", "E4", "0", "900", "0", "900"],       # database alone
+            ["E0", "E2", "600", "500", "0", "800"],     # combined direct channels reach 0.8
+            ["E0", "E3", "0", "0", "950", "990"],       # textmining alone must not pass
+            ["E1", "E3", "600", "0", "0", "950"]]       # combined_score must not rescue 0.6
+    if with_transferred_prefix:
+        head.insert(2, "experiments_transferred")
+        for row in rows:
+            row.insert(2, "950")  # a prefix before the exact channel must not replace direct evidence
+    links = "\n".join(" ".join(row) for row in [head, *rows]) + "\n"
+    (src / "string_physical_detailed.txt.gz").write_bytes(gzip.compress(links.encode()))
+    assert kc.string_physical_channels(src / "string_physical_detailed.txt.gz", src / "string_info.txt.gz", GENES) == [
+        ["ATF6", "ERN1", 0.9], ["ATF6", "HSPA5", 0.8], ["ATF6", "XBP1", 0.9]]
+
+
 def test_build_and_provenance(tmp_path):
     src = write_sources(tmp_path / "src")
     table = {"description": "toy table", "columns": ["x"], "genes": {"ATF6": [1]}}
