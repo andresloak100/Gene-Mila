@@ -1,0 +1,402 @@
+{
+ "generated_by": "tools/arm_reading.py rule",
+ "code_commit": "d0fb6357eba6e64cd3bb64b439cabb04e07f85c6",
+ "protocol": {
+  "metric": "pearson_delta",
+  "rule": "the arm's gain G (the mean of the runs' paired differences) counts when it exceeds k\u00b7SE, SE = sqrt(S\u00b2 + sd_g\u00b2/R) with S the mean of the runs' paired standard errors (each inflated by its gene-clustering ratio when above 1) and sd_g the spread of their differences, k = max(2, t at 0.975 on Welch\u2013Satterthwaite's degrees of freedom); every run's difference has G's sign; and summed over the runs the side G favours wins on more than half the perturbation-run pairs",
+  "min_read": 10,
+  "against": "start",
+  "sealed_scorings": 0,
+  "inflation": "overlap-robust clustering ratio (plan amendment of 2026-10-11 20:30 UTC)"
+ },
+ "readings": [
+  {
+   "path": "docs/results/norman_b1_r1_sealed_reading_amended.json",
+   "sha256": "5b6d597a2ac5ceb178c922c7b9d34c3d5e7b7c5fe318105e0817beef1afac00b"
+  },
+  {
+   "path": "docs/results/norman_b1_r2_sealed_reading.json",
+   "sha256": "27b09dc420f17b255616b3e440987e7fb88cafb6bf6be26ab60c4538309cf772"
+  },
+  {
+   "path": "docs/results/norman_b1_r3_sealed_reading.json",
+   "sha256": "7524caaed635a011031ea12ea1986dfbed13b5dccaa10de5c432b4523be33196"
+  }
+ ],
+ "dataset": "norman",
+ "split_id": "split_a391fa9e7b4eccb7",
+ "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman",
+ "same_code": true,
+ "excluded": [],
+ "runs": [
+  {
+   "run": "norman_ds_from_n2_w4_r1",
+   "reference": "norman_ds_from_n2_w4_r1:EXP_0007",
+   "base_commit": "076282c71b7c54fef47674b8797fda736eff6f01",
+   "selected": "EXP_0681",
+   "selected_reference": false,
+   "start_alpha": 6e-05,
+   "source_alpha": 6e-05,
+   "n": 56,
+   "mean_diff": 0.0003798429374366953,
+   "se": 0.0010557992965342447,
+   "inflation": 1.3472721348940402,
+   "jackknife_inflation": 1.5142251062963283,
+   "wins_a": 27,
+   "wins_b": 29,
+   "verdict": "none",
+   "stored": {
+    "pearson_delta": 0.7191814719400345,
+    "cellforge_mse_de": 0.1152837532481455,
+    "cellforge_pcc_de": 0.9350171375007054,
+    "cellforge_r2_de": 0.8370949066073353
+   }
+  },
+  {
+   "run": "norman_ds_from_n2_w4_r2",
+   "reference": "norman_ds_from_n2_w4_r2:EXP_0007",
+   "base_commit": "076282c71b7c54fef47674b8797fda736eff6f01",
+   "selected": "EXP_0729",
+   "selected_reference": false,
+   "start_alpha": 6e-05,
+   "source_alpha": 6e-05,
+   "n": 56,
+   "mean_diff": 0.007094179277136933,
+   "se": 0.0032870052847401065,
+   "inflation": 1.0,
+   "jackknife_inflation": 1.3499585670785228,
+   "wins_a": 36,
+   "wins_b": 20,
+   "verdict": "a",
+   "stored": {
+    "pearson_delta": 0.7258958082797348,
+    "cellforge_mse_de": 0.10204547555936332,
+    "cellforge_pcc_de": 0.941517708387119,
+    "cellforge_r2_de": 0.8526355778223104
+   }
+  },
+  {
+   "run": "norman_ds_from_n2_w4_r3",
+   "reference": "norman_ds_from_n2_w4_r3:EXP_0007",
+   "base_commit": "076282c71b7c54fef47674b8797fda736eff6f01",
+   "selected": "EXP_0519",
+   "selected_reference": false,
+   "start_alpha": 6e-05,
+   "source_alpha": 6e-05,
+   "n": 56,
+   "mean_diff": -0.0075388350458951495,
+   "se": 0.007927184989795801,
+   "inflation": 1.5487275178810092,
+   "jackknife_inflation": 1.8402707588630225,
+   "wins_a": 25,
+   "wins_b": 31,
+   "verdict": "none",
+   "stored": {
+    "pearson_delta": 0.7112627939567027,
+    "cellforge_mse_de": 0.10577843300256028,
+    "cellforge_pcc_de": 0.9397008964124981,
+    "cellforge_r2_de": 0.8497326166527409
+   }
+  }
+ ],
+ "pooled": {
+  "R": 3,
+  "G": -2.1604277107173733e-05,
+  "S": 0.005662167930010489,
+  "sd_g": 0.007324762586191056,
+  "SE": 0.007067120675989198,
+  "nu": 13.965918794282159,
+  "k": 2.1452778219798856,
+  "g": [
+   0.0003798429374366953,
+   0.007094179277136933,
+   -0.0075388350458951495
+  ],
+  "s": [
+   0.0014224489722613177,
+   0.0032870052847401065,
+   0.012277049533030044
+  ],
+  "wins_selected": 88,
+  "wins_reference": 80,
+  "pairs": 168,
+  "verdict": "none",
+  "n": [
+   56,
+   56,
+   56
+  ]
+ },
+ "pooled_as_first_specified": {
+  "R": 3,
+  "G": -2.1604277107173733e-05,
+  "S": 0.00687473516100284,
+  "sd_g": 0.007324762586191056,
+  "SE": 0.008071309219406943,
+  "nu": 21.163706700913984,
+  "k": 2.078634785334428,
+  "g": [
+   0.0003798429374366953,
+   0.007094179277136933,
+   -0.0075388350458951495
+  ],
+  "s": [
+   0.0015987178020221554,
+   0.004437320944167286,
+   0.014588166736819081
+  ],
+  "wins_selected": 88,
+  "wins_reference": 80,
+  "pairs": 168,
+  "verdict": "none",
+  "n": [
+   56,
+   56,
+   56
+  ]
+ },
+ "by_category": {
+  "pair_seen0": {
+   "n": [
+    8,
+    8,
+    8
+   ],
+   "read": false
+  },
+  "pair_seen1": {
+   "R": 3,
+   "G": 0.0012858079014553502,
+   "S": 0.0019851620406938462,
+   "sd_g": 0.002529984629144505,
+   "SE": 0.0024646451541173718,
+   "nu": 12.841379716476679,
+   "k": 2.163084453375628,
+   "g": [
+    0.0005748372908176774,
+    0.004095211057235888,
+    -0.0008126246436875153
+   ],
+   "s": [
+    0.0006900898720092615,
+    0.0034374098150655097,
+    0.0018279864350067673
+   ],
+   "wins_selected": 38,
+   "wins_reference": 43,
+   "pairs": 81,
+   "verdict": "none",
+   "n": [
+    27,
+    27,
+    27
+   ],
+   "read": true
+  },
+  "pair_seen2": {
+   "n": [
+    5,
+    5,
+    5
+   ],
+   "read": false
+  },
+  "single": {
+   "R": 3,
+   "G": 0.0019246060367037376,
+   "S": 0.005658962924199637,
+   "sd_g": 0.00381219948422051,
+   "SE": 0.006071914828121615,
+   "nu": 16.969103661907894,
+   "k": 2.1101082411510093,
+   "g": [
+    -0.0009705258252356598,
+    0.006243848052119349,
+    0.0005004958832275236
+   ],
+   "s": [
+    0.004731922305651225,
+    0.008864085107253939,
+    0.003380881359693745
+   ],
+   "wins_selected": 23,
+   "wins_reference": 25,
+   "pairs": 48,
+   "verdict": "none",
+   "n": [
+    16,
+    16,
+    16
+   ],
+   "read": true
+  }
+ },
+ "visible": {
+  "R": 3,
+  "G": 0.003022647645661132,
+  "S": 0.0016377454070507752,
+  "sd_g": 0.0010720169302330855,
+  "SE": 0.0017507950911565956,
+  "nu": 81.90422875774432,
+  "k": 2.0,
+  "g": [
+   0.0018654725663441053,
+   0.003981931488903083,
+   0.003220538881736207
+  ],
+  "s": [
+   0.0010093997139119146,
+   0.0026943486444571713,
+   0.0012094878627832394
+  ],
+  "wins_selected": 288,
+  "wins_reference": 237,
+  "pairs": 525,
+  "verdict": "none",
+  "n": [
+   175,
+   175,
+   175
+  ]
+ },
+ "visible_by_category": {
+  "pair_seen0": {
+   "R": 3,
+   "G": 0.0037702846951080614,
+   "S": 0.0026148209944022102,
+   "sd_g": 0.0007551610716508768,
+   "SE": 0.0026509202642627456,
+   "nu": 10.523098012227894,
+   "k": 2.21321639577494,
+   "g": [
+    0.0038746163028470252,
+    0.0029683826503799334,
+    0.004467855132097224
+   ],
+   "s": [
+    0.0007844417069800663,
+    0.004921236131586429,
+    0.0021387851446401348
+   ],
+   "wins_selected": 38,
+   "wins_reference": 11,
+   "pairs": 49,
+   "verdict": "none",
+   "n": [
+    21,
+    11,
+    17
+   ]
+  },
+  "pair_seen1": {
+   "R": 3,
+   "G": 0.0027120549213550415,
+   "S": 0.0024913772147312405,
+   "sd_g": 0.0028296711767034693,
+   "SE": 0.0029792571919027276,
+   "nu": 18.8331307944841,
+   "k": 2.0942799427934538,
+   "g": [
+    -4.832665470241463e-05,
+    0.0056062665593684426,
+    0.002578224859399096
+   ],
+   "s": [
+    0.0009698612567916122,
+    0.00530804084812788,
+    0.0011962295392742295
+   ],
+   "wins_selected": 108,
+   "wins_reference": 95,
+   "pairs": 203,
+   "verdict": "none",
+   "n": [
+    63,
+    73,
+    67
+   ]
+  },
+  "pair_seen2": {
+   "R": 3,
+   "G": 0.00033416454827971766,
+   "S": 0.0031395493963551776,
+   "sd_g": 0.0034885596359368796,
+   "SE": 0.0037300741534161907,
+   "nu": 5.953263973618728,
+   "k": 2.4515758242805736,
+   "g": [
+    -0.0019128592495498919,
+    0.0043530540343977185,
+    -0.0014377011400086737
+   ],
+   "s": [
+    0.0014800358152414494,
+    0.005252035526315267,
+    0.002686576847508816
+   ],
+   "wins_selected": 7,
+   "wins_reference": 8,
+   "pairs": 15,
+   "verdict": "none",
+   "n": [
+    5,
+    5,
+    5
+   ]
+  },
+  "single": {
+   "R": 3,
+   "G": 0.0031509725264375777,
+   "S": 0.002408668762787035,
+   "sd_g": 0.0005340322458255836,
+   "SE": 0.002428322196226549,
+   "nu": 86.81771404071812,
+   "k": 2.0,
+   "g": [
+    0.0029965073516794475,
+    0.0027111985162555268,
+    0.003745211711377759
+   ],
+   "s": [
+    0.0019058504248588755,
+    0.003081289676541381,
+    0.0022388661869608487
+   ],
+   "wins_selected": 135,
+   "wins_reference": 123,
+   "pairs": 258,
+   "verdict": "none",
+   "n": [
+    86,
+    86,
+    86
+   ]
+  }
+ },
+ "selected_spread": {
+  "pearson_delta": {
+   "mean": 0.7187800247254906,
+   "sd": 0.007324762586191064,
+   "n": 3,
+   "missing": 0
+  },
+  "MSE_DE": {
+   "mean": 0.1077025539366897,
+   "sd": 0.006825663342723064,
+   "n": 3,
+   "missing": 0
+  },
+  "PCC_DE": {
+   "mean": 0.9387452474334408,
+   "sd": 0.0033539982395198254,
+   "n": 3,
+   "missing": 0
+  },
+  "R\u00b2_DE": {
+   "mean": 0.8464877003607955,
+   "sd": 0.008262882472798938,
+   "n": 3,
+   "missing": 0
+  }
+ }
+}
