@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "verified_at_utc": "2026-10-14T02:11:59.173614+00:00",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-r2-regularization/runs/b1_r2_regularization_20261013",
+  "method": "Independent NumPy/stdlib reconstruction of saved prediction arithmetic, fold metadata, scoring and provenance. No project modules imported; no fitting or independent replay of member fits.",
+  "reviewed_source_commit": "8134cd938367232a9401043e08e6c1db4da45bf4",
+  "prospective_plan_commit": "fe64e9e",
+  "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+  "artifact_sha256": {
+    "config.json": "fff289d1e9c9b0f8b5da0788a7fc8e5df95e69a8569a5c7bb77aaeb6ba5f2ebe",
+    "summary.json": "7f959bdd1edb389b7a1e3db81c73c107222a72470051d5827a530f5e5d807105",
+    "progress.jsonl": "8481fcd13c2a51c016b59221011af79293db506c298dd57bb00e969c34d60cc3",
+    "predictions.npz": "1c5f84b9563c03ccc5211b7d4a3b44796d4cfa30ab24b13974a28dac5a940f7f"
+  },
+  "source_files_verified": 12,
+  "package_files_verified": 820,
+  "runtime_source_files_verified": 6,
+  "n_conditions": 112,
+  "n_genes": 2083,
+  "fold_seeds": [
+    9,
+    10,
+    11
+  ],
+  "folds_verified": 15,
+  "member_fit_events_verified": 45,
+  "progress_event_counts": {
+    "config_written": 1,
+    "fold_started": 15,
+    "member_completed": 45,
+    "fold_completed": 15,
+    "seed_completed": 3,
+    "diagnostic_completed": 1
+  },
+  "exact_array_checks": 21,
+  "metrics_per_arm": 10,
+  "arms_verified": [
+    "candidate",
+    "fixed_ensemble",
+    "additive",
+    "member_0",
+    "member_1",
+    "regularized_member_1"
+  ],
+  "stratum_seed_blocks_verified": 45,
+  "numeric_values_verified": {
+    "metric_values": 2880,
+    "aggregate_values": 5139
+  },
+  "max_abs_difference": {
+    "metric_values": 7.771561172376096e-16,
+    "aggregate_values": 5.761450344587971e-16
+  },
+  "comparison_tolerance": {
+    "rtol": 1e-11,
+    "atol": 1e-12
+  },
+  "checks": {
+    "source_and_plan_match_published_commits": true,
+    "original_package_and_all_files_match_manifest": true,
+    "r2_variant_differs_only_in_alpha": true,
+    "original_member_seed_features_parameters_and_columns_preserved": true,
+    "both_ensembles_use_exact_shared_half_means": true,
+    "all_fold_memberships_full_hides_and_metadata_match": true,
+    "analytic_additive_arrays_match_exactly": true,
+    "all_metrics_arms_strata_and_paired_sample_sd_match": true,
+    "all_predeclared_gate_checks_match": true,
+    "all_original_result_artifacts_unchanged_during_verification": true
+  },
+  "verified_gate": {
+    "passed": false,
+    "checks": {
+      "mse_gain_each_positive": true,
+      "mse_gain_mean_above_sd": true,
+      "pearson_each_above_min": true,
+      "pearson_mean_above_min": true,
+      "mse_to_additive_within_one_percent": true,
+      "mse_top_to_additive_within_one_percent": true,
+      "mse_top_to_fixed_ensemble_within_one_percent": false
+    },
+    "failed_checks": [
+      "mse_top_to_fixed_ensemble_within_one_percent"
+    ],
+    "primary_mse_gains": [
+      0.00021387387187566352,
+      0.00020076803266543854,
+      4.744433405604216e-05
+    ],
+    "primary_mse_gain_mean": 0.00015402874619904806,
+    "primary_mse_gain_sample_sd": 9.25371192508913e-05,
+    "pearson_changes": [
+      -0.0007824478319246042,
+      -0.00024042675410795855,
+      -0.00032551892395860094
+    ],
+    "pearson_change_mean": -0.0004494645033303879,
+    "pearson_change_sample_sd": 0.00029149372580509434,
+    "error_guardrails": {
+      "mse_to_additive": {
+        "candidate_mean": 0.007579682607114162,
+        "reference_mean": 0.008273109374456637,
+        "ratio": 0.9161830533168772,
+        "passed": true
+      },
+      "mse_top_to_additive": {
+        "candidate_mean": 0.17374269456032432,
+        "reference_mean": 0.17455639066831616,
+        "ratio": 0.9953384914475117,
+        "passed": true
+      },
+      "mse_top_to_fixed_ensemble": {
+        "candidate_mean": 0.17374269456032432,
+        "reference_mean": 0.1719080407340364,
+        "ratio": 1.010672297924251,
+        "passed": false
+      }
+    }
+  },
+  "key_readings": {
+    "candidate": {
+      "pearson_delta": {
+        "mean": 0.5937017723182079,
+        "sd": 0.005731055471869532,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.007579682607114162,
+        "sd": 0.00019866509401808474,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.17374269456032432,
+        "sd": 0.0038229528537256957,
+        "n_seeds": 3
+      }
+    },
+    "fixed_ensemble": {
+      "pearson_delta": {
+        "mean": 0.5941512368215384,
+        "sd": 0.00555542856633342,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.007733711353313209,
+        "sd": 0.00020057077230036042,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.1719080407340364,
+        "sd": 0.003811830542743631,
+        "n_seeds": 3
+      }
+    },
+    "additive": {
+      "pearson_delta": {
+        "mean": 0.570125279118614,
+        "sd": 0.005630138831998786,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.008273109374456637,
+        "sd": 0.0002840838167239815,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.17455639066831616,
+        "sd": 0.0011964690745655258,
+        "n_seeds": 3
+      }
+    },
+    "member_0": {
+      "pearson_delta": {
+        "mean": 0.5942255621746778,
+        "sd": 0.004712303967354369,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.007688738353099325,
+        "sd": 0.00021696152354193704,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.1776891713038139,
+        "sd": 0.0038671304993513856,
+        "n_seeds": 3
+      }
+    },
+    "member_1": {
+      "pearson_delta": {
+        "mean": 0.5914999419976308,
+        "sd": 0.006174692844281595,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.00821848261571938,
+        "sd": 0.0004161719395497006,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.16776052384500742,
+        "sd": 0.003944160019830248,
+        "n_seeds": 3
+      }
+    },
+    "regularized_member_1": {
+      "pearson_delta": {
+        "mean": 0.5895693783461088,
+        "sd": 0.0064668419728239725,
+        "n_seeds": 3
+      },
+      "mse": {
+        "mean": 0.007641574921980601,
+        "sd": 0.00021221957438041273,
+        "n_seeds": 3
+      },
+      "mse_top": {
+        "mean": 0.1709000978560564,
+        "sd": 0.003953013292621614,
+        "n_seeds": 3
+      }
+    }
+  },
+  "limitations": [
+    "Saved-array arithmetic/provenance verified; the45model fits were not independently replayed.",
+    "Same historically selected cohort with new fold partitions; sample SD describes partition sensitivity, not independent test replication.",
+    "Original source/batch/internal-kernel assumptions are unchanged by an alpha-only modification.",
+    "A near miss is still a failed predeclared gate. No threshold adjustment, promotion, new penalty search, historical frozen-score claim or CellForge superiority follows."
+  ]
+}
