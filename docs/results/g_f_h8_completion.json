@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-17T17:56:37.682036+00:00",
+  "authorized_sequence": [
+    "All four G readings, Adamson then Norman",
+    "Corrected F stage2 and complete pool",
+    "Lead H8 pre-run and999replicate scoring on both",
+    "One consolidated draft results PR63, not merged",
+    "Adamson package export-only and exact two SHA256 lines51",
+    "Exact free blockHtoolcheck and full output51;STOP"
+  ],
+  "result": "All authorized scientific/export/freecheck operations complete; final receipt-only commit/state/pause in progress.",
+  "draft_pr": "https://github.com/andresloak100/Gene-Mila/pull/63",
+  "initial_results_commit": "0f18626bdb43552c01850fe7d1a4227db9202b5a",
+  "scientific_source_commit": "2f2e6838316915198c52abeb34cf02f2b3aacc87",
+  "test": "656passed,1skipped,8warnings,762.10s,exit0",
+  "export_receipt": "adamson_cf_task_export_receipt.json",
+  "export_hash_post": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238036345",
+  "freecheck_report": "block_h_freecheck_report.json",
+  "freecheck_output_post": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6238099741",
+  "raw_package_in_git": false,
+  "manual_private_split_harness_label_reads": false,
+  "paid_run_beyond_G": false,
+  "next_block_decision": "Claude decides; no further operation started",
+  "conditional_console_request": "Post DeepSeek console reading when next already open; not encountered during this sequence.",
+  "manifest_versioning": "Initial g_f_h8_publication_manifest pins initial0f18626 files including that version of README. g_f_h8_completion_manifest pins current completion receipts/README; earlier raw records are unchanged."
+}

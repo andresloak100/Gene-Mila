@@ -1267,6 +1267,32 @@ The tables below enumerate every new file separately, including duplicate-by-des
 
 | File | Record |
 |---|---|
+| [adamson_cf_task_export.command.txt](adamson_cf_task_export.command.txt) | Exact command receipt. |
+| [adamson_cf_task_export.exit](adamson_cf_task_export.exit) | Explicit terminal exit receipt. |
+| [adamson_cf_task_export.log](adamson_cf_task_export.log) | Captured tool output. |
+| [adamson_cf_task_export_audit.json](adamson_cf_task_export_audit.json) | Preserved reading, provenance or audit receipt. |
+| [adamson_cf_task_export_audit.md](adamson_cf_task_export_audit.md) | Preserved reading, provenance or audit receipt. |
+| [adamson_cf_task_export_issue51.json](adamson_cf_task_export_issue51.json) | Issue51 publication body or exact publication receipt. |
+| [adamson_cf_task_export_issue51.md](adamson_cf_task_export_issue51.md) | Issue51 publication body or exact publication receipt. |
+| [adamson_cf_task_export_receipt.json](adamson_cf_task_export_receipt.json) | Preserved reading, provenance or audit receipt. |
+| [adamson_cf_task_export_receipt.md](adamson_cf_task_export_receipt.md) | Preserved reading, provenance or audit receipt. |
+| [block_h_freecheck_20261017.command.txt](block_h_freecheck_20261017.command.txt) | Exact command receipt. |
+| [block_h_freecheck_20261017.exit](block_h_freecheck_20261017.exit) | Explicit terminal exit receipt. |
+| [block_h_freecheck_20261017.log](block_h_freecheck_20261017.log) | Captured tool output. |
+| [block_h_freecheck_audit.json](block_h_freecheck_audit.json) | Preserved reading, provenance or audit receipt. |
+| [block_h_freecheck_audit.md](block_h_freecheck_audit.md) | Preserved reading, provenance or audit receipt. |
+| [block_h_freecheck_issue51.json](block_h_freecheck_issue51.json) | Issue51 publication body or exact publication receipt. |
+| [block_h_freecheck_issue51.md](block_h_freecheck_issue51.md) | Issue51 publication body or exact publication receipt. |
+| [block_h_freecheck_report.json](block_h_freecheck_report.json) | Preserved reading, provenance or audit receipt. |
+| [block_h_freecheck_report.md](block_h_freecheck_report.md) | Preserved reading, provenance or audit receipt. |
+| [g_f_h8_completion.json](g_f_h8_completion.json) | Preserved reading, provenance or audit receipt. |
+| [g_f_h8_completion.md](g_f_h8_completion.md) | Preserved reading, provenance or audit receipt. |
+| [g_f_h8_completion_manifest.json](g_f_h8_completion_manifest.json) | Preservation and provenance hash manifest. |
+| [g_f_h8_completion_manifest.md](g_f_h8_completion_manifest.md) | Preservation and provenance hash manifest. |
+| [g_f_h8_completion_verification.json](g_f_h8_completion_verification.json) | Preserved reading, provenance or audit receipt. |
+| [g_f_h8_completion_verification.md](g_f_h8_completion_verification.md) | Preserved reading, provenance or audit receipt. |
+| [g_f_h8_pr_issue51.json](g_f_h8_pr_issue51.json) | Issue51 publication body or exact publication receipt. |
+| [g_f_h8_pr_issue51.md](g_f_h8_pr_issue51.md) | Issue51 publication body or exact publication receipt. |
 | [g_f_h8_preservation_audit.json](g_f_h8_preservation_audit.json) | Preserved reading, provenance or audit receipt. |
 | [g_f_h8_preservation_audit.md](g_f_h8_preservation_audit.md) | Preserved reading, provenance or audit receipt. |
 | [g_f_h8_publication_manifest.json](g_f_h8_publication_manifest.json) | Preservation and provenance hash manifest. |

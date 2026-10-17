@@ -1,0 +1,14 @@
+UTC launch: 2026-10-17T17:50:35.663545+00:00
+Export source commit: 0f18626bdb43552c01850fe7d1a4227db9202b5a
+Export only; both output and sibling absent including dangling symlinks immediately before launch.
+Stock defaults including visible val1 harness under D5; no probe/evaluation/agent. Credentials unset; PYTHONHASHSEED=0;nice19;caffeinate.
+Tool SHA256: f535ca219e81c713890bc8ce44f4e1db95cd36d28d534e5cfb0d424b3307601a
+Program source SHA256: 63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293
+set -C
+cd /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings || exit 98
+{
+/usr/bin/caffeinate -i nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/export_task_package.py --data /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables --out /Users/andresarriaga/gm_packages/adamson_cf_clean_tables
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/adamson_cf_task_export.exit
+exit "$rc"
+} > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-g-f-h8-readings/docs/results/adamson_cf_task_export.log 2>&1
