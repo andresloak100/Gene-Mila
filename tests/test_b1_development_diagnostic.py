@@ -213,6 +213,8 @@ def test_deadline_and_fit_cap_are_enforced_before_new_fit(monkeypatch):
     budget.fits = diagnostic.MAX_FITS
     with pytest.raises(RuntimeError, match="fit cap"):
         budget.fit()
-    monkeypatch.setattr(diagnostic.time, "monotonic", lambda: budget.start + diagnostic.MAX_SECONDS)
+    # one second past the deadline, not exactly on it: (start + MAX_SECONDS) - start is not always MAX_SECONDS in
+    # floating point once the monotonic clock is large, which made this test fail on some runs
+    monkeypatch.setattr(diagnostic.time, "monotonic", lambda: budget.start + diagnostic.MAX_SECONDS + 1.0)
     with pytest.raises(TimeoutError):
         budget.check()
