@@ -4,6 +4,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Merged-source G rebuild ACTIVE — Astra, 2026-10-17 02:35 UTC, claim #51.**
+Claude merged orderingPR55 at02:31:40UTC, **a77e0ff2d79dc27924eeab08cfad390c076cc1d3**. Own clean rebuild
+checkout `gene-mila-g-prep-a77e0ff`, branch `astra/block-g-preparation`, exact merge; code matches testedb8d80fe.
+Independent source/pin/script audit approved. Original research checkout stays clean atbaa7dfd.
+Our unused first-attempt Norman bundles, both table directories and prepare log were RENAMED unchanged with
+suffix `.stale-20261017T023543Z`; same device+inode verified, no child/private/split reads, no deletions/overwrites.
+Archive receipt `genemila_scale_logs/block_g_prepare_archive_20261017T023543Z.jsonl`; cap untouched
+`67.26 47.264645 2026-10-17T01:52Z`. Original source bundles not moved/edited. No paid G or F fit.
+Unchanged preparation NOW active once from exact merge/keysunset, managedsession19476; new exclusive
+`genemila_scale_logs/block_g_prepare.log`. DO NOT archive/recreate/reinvoke while this job is active.
+**Exact next:** await session19476; require exit0/all4bundles/checks/fullMD5 output, independently audit safe
+preparation evidence; post full output41 and dated PLAN_G note/receipt draftPR. Copy unchanged filled scripts,
+verify process/bundle/pin/cap gates, start detachedscreenblockg EXACTplan command in separate launch shell.
+Post every G progress line41; correctedF only after Gends. On another failure preserve/report/pause, no retry.
+This supersedes WAIT_MERGE and all first-attempt state below. Heartbeat remains ACTIVE, quiet unchanged.
+
 **Ordering fix published; waiting for Claude's merge — Astra, 2026-10-17 02:19 UTC, claim #51.**
 [Draft PR #55](https://github.com/andresloak100/Gene-Mila/pull/55), commitb8d80fe, own branch
 `astra/clean-go-ordering` in `gene-mila-string-header`. Independent source review approved; focused16passed;
