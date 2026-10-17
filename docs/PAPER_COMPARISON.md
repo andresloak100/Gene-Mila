@@ -301,6 +301,25 @@ random projection passed beside the CpG term), and a permutation floor at the cu
 will be re-read under the corrected test after block G [`docs/results/<path the operator names>/`, pooled Holm;
 `HANDOFF.md`, section 1].
 
+### The second existing result: block G, the clean arm with and without the three per-gene tables
+
+Twelve twenty-minute runs on 17 October 2026 (DeepSeek v4-pro planner, four deepseek-flash workers, code `baa7dfd`,
+$12.97 on the ledger): on each dataset three seeds with the clean tier-1 knowledge plus the genome, gnomAD constraint
+and UniProt tables (G1) and three without them (G0), the knowledge rebuilt from Reactome, GO, CORUM, CollecTRI and
+STRING with no perturbation screen (`docs/PLAN_G_CLEAN_ARM.md`). The G1 agents wrote 395 scoreable features that read
+a table, 221 on Adamson and 174 on Norman, and the pre-registered list of what the tables could encode was written
+before any score (`docs/PREREG_G_KNOWN_BIOLOGY.md`). Under the corrected fair test, both nulls, 999 replicates and the
+family-wise correction, none passes on either dataset (Adamson 210 unique predictions, Norman 158; the operator's
+readings on #51, comments 6233130270 and 6236179594, files `adamson_cf_g_pooled_holm` and `norman_g_pooled_holm` on
+the results PR). The tables did not raise the arm: out of fold, Adamson G1 0.491 ± 0.004 against G0 0.526 ± 0.035 and
+Norman G1 0.579 ± 0.008 against G0 0.578 ± 0.001 (mean ± sd over seeds 0, 2, 3; `adamson_cf_g1_vs_g0`,
+`norman_g1_vs_g0`); on the worn sealed sets, indicative only, Adamson G0 0.566 ± 0.036 and G1 0.491 ± 0.069, Norman
+G0 0.719 ± 0.001 and G1 0.720 ± 0.007 (`*_sealed_summary`). The G1 agents did read the tables (the direct-call audit,
+`*_direct_table_audit`), so the negative is not for want of use. Two readings carry into the Results: a result about
+what these agents find in this setting, with the per-gene tables adding nothing that survives a matched null; and the
+two G arms are the lab's rows of Table 1 (A1 and A1-ablation on Adamson), not re-run for block H. With block F this
+closes the agents' biology path for this window (`docs/ROADMAP.md`, note of 16:50 UTC).
+
 ## Discussion
 
 Claims this design can support. (1) Whether a fixed linear model gains from agent-built features at all, out of fold

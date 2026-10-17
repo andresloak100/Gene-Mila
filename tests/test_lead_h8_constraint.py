@@ -33,13 +33,11 @@ NO_VALUE = "G23"  # a single whose gene gets no constraint value
 MODULE = "genemila_plugin_h8_constraint_residual"  # the registry's module name for the plugin file
 
 
-@pytest.fixture(scope="module")
-def h8_bundle(tmp_path_factory):
-    """make_pair_bundle plus gene_constraint in the builder's JSON shape (LOEUF a known linear function of control
-    mean plus noise, null for G23 and ten non-target genes) and gene_sets with two CORUM sets, a Reactome ribosome set,
-    a Reactome mRNA splicing set, two Reactome sets the word rule must not match (one of them about splicing) and a GO
+def write_h8_knowledge(bundle: Path) -> Path:
+    """Add to a bundle gene_constraint in the builder's JSON shape (LOEUF a known linear function of control mean
+    plus noise, null for G23 and ten non-target genes) and gene_sets with two CORUM sets, a Reactome ribosome set, a
+    Reactome mRNA splicing set, two Reactome sets the word rule must not match (one of them about splicing) and a GO
     set that must be ignored."""
-    bundle = make_pair_bundle(tmp_path_factory.mktemp("h8") / "pair")
     z = np.load(bundle / "public.npz")
     genes = [str(g) for g in z["genes"]]
     cm = z["control_cells"].astype(np.float64).mean(axis=0)
@@ -61,6 +59,22 @@ def h8_bundle(tmp_path_factory):
         "REACTOME:mRNA Splicing - Major Pathway": genes[50:58], "REACTOME:FGFR2 alternative splicing": genes[70:76],
         "REACTOME:Signaling by WNT": genes[12:20], "GOBP:some process": genes[20:30]}))
     return bundle
+
+
+@pytest.fixture(scope="module")
+def h8_bundle(tmp_path_factory):
+    """make_pair_bundle plus the H8 knowledge tables: the Norman-shaped case, where the parent carries
+    additive_response."""
+    return write_h8_knowledge(make_pair_bundle(tmp_path_factory.mktemp("h8") / "pair"))
+
+
+@pytest.fixture(scope="module")
+def h8_single_bundle(dataset, tmp_path_factory):
+    """The synthetic single-target bundle plus the same H8 knowledge tables: the Adamson-shaped case, where the
+    parent carries no additive_response column (registry.PAIR_BUILTIN_FEATURES is built in on pair bundles only)."""
+    bundle = tmp_path_factory.mktemp("h8s") / "single"
+    shutil.copytree(dataset, bundle)
+    return write_h8_knowledge(bundle)
 
 
 def _words():
@@ -187,3 +201,22 @@ def test_feature_compare_reports_a_proportional_row_with_both_nulls(h8_bundle, t
     assert pert is not None and pert["parent_column"] == "additive_response" and pert["reps"] == 9
     assert {"p", "p_fwer", "gains"} <= set(pert) and "coef_candidate_std" in row
     assert "null too coarse for a family of 1 (need --null-reps >= 999)" in row["failed_criteria"]
+
+
+def test_on_a_singles_bundle_the_parent_column_reads_mean_response(h8_single_bundle, tmp_path):
+    """On a bundle without pairs the comparison tool's parent is the three built-in features alone, so the row cannot
+    name additive_response as its parent: additive_response on unique single targets is the leave-one-out mean of the
+    training changes, the column mean_response, and the detector names that column. The perturbation null is still
+    applied. This is the reading the README fixes for Adamson (its note of 2026-10-17)."""
+    d = fc.make_data(h8_single_bundle)
+    assert not d.pair_ids
+    out = tmp_path / "out"
+    assert fc.main(["--data", str(h8_single_bundle), "--out", str(out), "--source", f"LEAD_H8={PLUGINS}",
+                    "--fold-seeds", "101,102", "--null-reps", "9"]) == 0
+    res = json.loads((out / "feature_compare.json").read_text())
+    row = {r["feature"]: r for r in res["rows"] if r["source"] == "LEAD_H8"}[NAME]
+    assert row["status"] == "ok", row["reason"]
+    assert row["proportional"] is True and row["parent_column"] == "mean_response"
+    assert row["proportional_in_folds"] is True
+    pert = row["tiers"]["oof"]["null_pert"]
+    assert pert is not None and pert["parent_column"] == "mean_response" and pert["reps"] == 9
