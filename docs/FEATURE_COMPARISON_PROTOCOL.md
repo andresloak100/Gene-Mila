@@ -369,7 +369,8 @@ and on F once it exists; number of features; number with a development verdict.
 
 1. **Visible validation (`--with-val1`).** AGENTS.md says never read `data/*/private/`; `tools/feature_audit.py`
    already reads `private/val1.npz` this way. May `feature_compare.py` do the same? Until you say yes it scores
-   OOF only, and package arms have no unselected development number.
+   OOF only, and package arms have no unselected development number. (2026-10-17: `docs/ROADMAP.md` D5 keeps
+   `--with-val1` off and ships the tier to the package arms instead; see the note of that date at the end.)
 2. **Who pays for A3 and A4.** A3: your Claude subscription, a Codex account, or Claude Code pointed at
    DeepSeek's Anthropic-compatible endpoint (**unverified**). A4: DeepSeek through the ledger. Neither Claude Code
    nor Codex writes to our ledger.
@@ -405,3 +406,15 @@ and on F once it exists; number of features; number with a development verdict.
    which reads about twice the billed amount (AGENTS.md, "Money and usage"). State budgets in ledger dollars.
 7. Section 5, Adamson row "agents' features + Replogle, no LLM" (0.646) is EXP_0466 of
    `control_replogle3_from_opus_r0`: a no-LLM run that continued an Opus agent campaign. Name it that way.
+
+## Note of 2026-10-17: the harness tier and the V check (the lead, `docs/ROADMAP.md` D5)
+
+A task package exported with the harness tier (`tools/export_task_package.py`, the default) ships the visible
+validation labels as `harness/val1.npz`, and its `evaluate.py` decides keep or discard on the validation and the
+out-of-fold training perturbations together (17 and 50 on Adamson, section 5). For such a package arm V is a seen
+tier: its author could read the file. So for those arms the drop rule of section 6, item 2 (a V gain more than
+2·SE_adj below the OOF gain) does not apply, and section 3, item 9's "V check" is void; the candidates for the frozen
+batch are chosen on out-of-fold seeds 101 to 103 only, the literal report of every kept file is read by hand before
+it is listed, and the fresh test (ROADMAP D7) is the one tier whose labels no arm had. `literal.py`'s first paragraph
+says the same. A package exported with `--no-harness-val1` (Andres's veto, ROADMAP section 7, item 3) keeps the rule
+as written above.

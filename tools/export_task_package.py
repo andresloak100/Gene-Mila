@@ -6,6 +6,7 @@ beside the lab's own (Claim issue #41, docs/PAPER_FRAMEWORK_PROPOSAL.md).
 
     python tools/export_task_package.py --data data/norman --out ~/pkg_norman [--prefix ar] [--fold-seeds 0,1,2]
         [--k 5] [--groups auto|none|gene] [--keep-rule noise|strict] [--eval-timeout-s 600] [--ram-mb 4096]
+        [--no-harness-val1]
 
 What the package holds, and why:
 - data/: exactly the public export every lab experiment receives (genemila.data.bundle.export_public): public.npz,
@@ -14,6 +15,14 @@ What the package holds, and why:
 - harness/genemila/: byte-identical copies of the lab modules evaluate.py and `python -m genemila.pipeline smoke`
   import (found by importing them in a fresh interpreter, not by a hand-kept list), so the package scores with the
   lab's own fold, feature and evaluation code and needs no checkout of this repository.
+- harness/val1.npz (default; --no-harness-val1 leaves it out): the visible validation tier, the labels the lab's
+  own controller scores every experiment on (genemila/lab.py: Lab.__init__ loads private/val1.npz, evaluate_artifact
+  and _combine_visible select on it together with the out-of-fold scores). It is read through the lab's accessor
+  (LabelSet.load) from that one file and nothing else: never val2, never the cells, never splits.json. With it,
+  evaluate.py reports the val1 score beside the out-of-fold one and decides keep or discard on the lab's combined
+  score, so a foreign system gets the feedback the lab's agents get (docs/ROADMAP.md, D5). The file is disclosed to
+  the agent as readable (program.md); the guard keeps feature code from opening it, literal.py from pasting it, and
+  the hand-back's transcript is scanned. MANIFEST.json records its sha256 and the rule.
 - evaluate.py, literal.py, program.md: byte copies of tools/task_package/. Nothing is templated: every setting
   (prefix, fold seeds, k, groups, keep rule, alpha grid, parent features, limits) lives in MANIFEST.json, so the
   shipped files hash the same as the repository's and MANIFEST.json's sha256 list can check them.
@@ -47,7 +56,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from genemila.config import load_config  # noqa: E402
-from genemila.data.bundle import export_public  # noqa: E402
+from genemila.data.bundle import LabelSet, export_public  # noqa: E402  (LabelSet: the visible tier only)
 from genemila.features.registry import BUILTIN_FEATURES, PAIR_BUILTIN_FEATURES  # noqa: E402
 from genemila.guard import ALLOWED_IMPORT_ROOTS  # noqa: E402
 from genemila.prompts import EXAMPLE_FEATURE, bundle_has_pairs, dataset_line, feature_api_doc  # noqa: E402
@@ -56,6 +65,12 @@ TEMPLATE_DIR = REPO_ROOT / "tools" / "task_package"
 # what evaluate.py imports from the harness, and what the smoke subprocess runs (python -m genemila.pipeline)
 ENTRY_MODULES = ("genemila.pipeline", "genemila.guard", "genemila.benchmark.evaluator", "genemila.sandbox")
 LIBRARIES = ("numpy", "scipy", "scikit-learn")
+# the lab's selection (genemila/lab.py evaluate_artifact and _combine_visible): the alpha and the keep decision go
+# by the mean per-perturbation pearson_delta over the visible validation and the out-of-fold training perturbations
+HARNESS_RULE = ("combined: the alpha per fold seed and the keep decision use the mean pearson_delta over the visible "
+                "validation and the out-of-fold training perturbations together, each perturbation weighing the "
+                "same (genemila/lab.py, Lab.evaluate_artifact and Lab._combine_visible); the noise rule applies to "
+                "that combined vector")
 
 
 def sha256(path: Path) -> str:
@@ -114,17 +129,22 @@ def knowledge_lines(kdir: Path) -> list[str]:
     return parts
 
 
-def data_readme(manifest: dict, targets: dict, train: list[str], kdir: Path) -> str:
+def labels_note(tier: bool) -> str:
+    return ("the sealed labels are not in this package; the visible validation labels are under harness/val1.npz, "
+            "program.md says how they count" if tier else "the held-out labels are not in this package")
+
+
+def data_readme(manifest: dict, targets: dict, train: list[str], kdir: Path, tier: bool = False) -> str:
     lines = ["# Data", "", dataset_text(manifest, targets, train), "",
              "public.npz: genes, control_cells (control cells x genes, log-normalised), perts (every perturbation id, "
              "held-out ones included), train_perts, train_means (one mean expression profile per training "
-             "perturbation; the held-out labels are not in this package), train_ncells. manifest.json: the public "
+             f"perturbation; {labels_note(tier)}), train_ncells. manifest.json: the public "
              "manifest. Feature code reads all of this through ctx (features/README.md), never from the files.", "",
              "## Knowledge files (ctx.knowledge(name))", ""]
     return "\n".join(lines + [f"- {line}" for line in knowledge_lines(kdir)]) + "\n"
 
 
-def features_readme(pairs: bool, prefix: str, parent: list[str]) -> str:
+def features_readme(pairs: bool, prefix: str, parent: list[str], tier: bool = False) -> str:
     api = feature_api_doc(pairs)
     return (f"# Feature API\n\nAPI:\n```python\n{api}\n```\n\nEXAMPLE PLUGIN:\n```python\n{EXAMPLE_FEATURE}```\n\n"
             "## In this package\n\n"
@@ -135,7 +155,7 @@ def features_readme(pairs: bool, prefix: str, parent: list[str]) -> str:
             "plus every file here.\n"
             "- The example is the built-in `mean_response`, shown for style only: its name is taken and lacks the "
             "prefix.\n"
-            "- `ctx.perts` includes the held-out perturbation ids; their labels are not in this package. "
+            f"- `ctx.perts` includes the held-out perturbation ids; {labels_note(tier)}. "
             "`ctx.train_perts` are the perturbations with labels.\n"
             f"- Allowed imports: {', '.join(sorted(ALLOWED_IMPORT_ROOTS))} and genemila.features.api. No file, "
             "network or OS access (harness/genemila/guard.py checks this before any file runs).\n"
@@ -156,6 +176,10 @@ def main(argv=None) -> int:
     ap.add_argument("--keep-rule", choices=["noise", "strict"], default="noise")
     ap.add_argument("--eval-timeout-s", type=float, default=600)
     ap.add_argument("--ram-mb", type=float, default=4096)
+    ap.add_argument("--with-harness-val1", dest="harness_val1", action="store_true", default=True,
+                    help="ship the visible validation tier under harness/ (the default)")
+    ap.add_argument("--no-harness-val1", dest="harness_val1", action="store_false",
+                    help="no visible tier: evaluate.py decides on out-of-fold scores alone, as before")
     args = ap.parse_args(argv)
     data, out = Path(args.data), Path(args.out)
     if out.exists() and (not out.is_dir() or any(out.iterdir())):
@@ -171,6 +195,10 @@ def main(argv=None) -> int:
     if not seeds or args.k < 2 or not args.prefix.isidentifier():
         print("refusing: need integer --fold-seeds, --k >= 2 and an identifier --prefix", file=sys.stderr)
         return 2
+    if args.harness_val1 and not (data / "private" / "val1.npz").is_file():
+        print(f"refusing: {data} has no private/val1.npz (the visible validation tier); pass --no-harness-val1 for "
+              "a package without it", file=sys.stderr)
+        return 2
 
     export_public(data, out / "data")
     manifest = json.loads((out / "data" / "manifest.json").read_text())
@@ -184,10 +212,22 @@ def main(argv=None) -> int:
         shutil.copyfile(REPO_ROOT / rel, out / "harness" / rel)
     for name in ("evaluate.py", "literal.py", "program.md"):
         shutil.copyfile(TEMPLATE_DIR / name, out / name)
+    harness_val1 = None
+    if args.harness_val1:
+        perts = [str(p) for p in np.load(out / "data" / "public.npz", allow_pickle=False)["perts"]]
+        val1 = LabelSet.load(data / "private" / "val1.npz")  # the lab's accessor and file (genemila/lab.py)
+        if any(p in set(train) or p not in set(perts) for p in val1.perts) or \
+                val1.means.shape != (len(val1.perts), manifest["n_genes"]):
+            print("refusing: private/val1.npz does not match public.npz (perturbations or genes)", file=sys.stderr)
+            return 2
+        np.savez_compressed(out / "harness" / "val1.npz", perts=np.array(val1.perts), means=val1.means)
+        harness_val1 = {"file": "harness/val1.npz", "n_perts": len(val1.perts),
+                        "sha256": sha256(out / "harness" / "val1.npz"), "rule": HARNESS_RULE}
     (out / "features").mkdir()
     (out / "scratch").mkdir()
-    (out / "features" / "README.md").write_text(features_readme(pairs, args.prefix, parent))
-    (out / "data" / "README.md").write_text(data_readme(manifest, targets, train, out / "data" / "knowledge"))
+    (out / "features" / "README.md").write_text(features_readme(pairs, args.prefix, parent, bool(harness_val1)))
+    (out / "data" / "README.md").write_text(data_readme(manifest, targets, train, out / "data" / "knowledge",
+                                                       bool(harness_val1)))
     versions = {lib: importlib.metadata.version(lib) for lib in LIBRARIES}
     (out / "requirements.txt").write_text("".join(f"{lib}=={v}\n" for lib, v in versions.items()))
 
@@ -202,7 +242,7 @@ def main(argv=None) -> int:
         "format": 1, "bundle": manifest.get("name"), "split_id": manifest.get("split_id"),
         "prefix": args.prefix, "fold_seeds": seeds, "k": args.k,
         "groups": resolve_groups(args.groups, manifest, targets), "groups_setting": args.groups,
-        "keep_rule": args.keep_rule, "model": "ridge",
+        "keep_rule": args.keep_rule, "model": "ridge", "harness_val1": harness_val1,
         "alphas": [float(a) for a in load_config()["experiment"]["default_alpha_grid"]],
         "parent_features": parent, "eval_timeout_s": args.eval_timeout_s, "ram_mb": args.ram_mb,
         "lab_commit": commit, "python": platform.python_version(), "libraries": versions,
@@ -214,7 +254,9 @@ def main(argv=None) -> int:
                                   "split_id": package["split_id"], "lab_commit": commit,
                                   "manifest_sha256": sha256(out / "MANIFEST.json")}, indent=1) + "\n")
     print(f"task package for {package['bundle']} ({package['split_id']}) at {out}: parent {', '.join(parent)}; "
-          f"groups {package['groups']}; keep rule {args.keep_rule}; {len(package['sha256'])} files hashed")
+          f"groups {package['groups']}; keep rule {args.keep_rule}; visible tier "
+          f"{'harness/val1.npz, ' + str(harness_val1['n_perts']) + ' perturbations' if harness_val1 else 'none'}; "
+          f"{len(package['sha256'])} files hashed")
     return 0
 
 
