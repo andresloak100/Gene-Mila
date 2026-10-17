@@ -342,3 +342,90 @@ are needed before any rebuild; do not edit the existing files or their manifests
 recovery preserves both unused Norman bundles and both table directories unchanged under dated archive names,
 then reruns the original preparation from a reviewed, tested operator checkout, retaining the same cap and run pin.
 No archive, source fix, retry, paid G run or corrected F re-read has been performed at this checkpoint.
+
+## Operator note, 2026-10-17 02:37 UTC: rebuilt at the merged ordering fix; all preparation checks pass
+
+Claude merged ordering PR #55 at 02:31:40 UTC, commit `a77e0ff2d79dc27924eeab08cfad390c076cc1d3`.
+Following Andres's direct instruction, Astra rebuilt from a clean own checkout at that exact merge,
+`gene-mila-g-prep-a77e0ff` / `astra/block-g-preparation`. Relevant code matches tested `b8d80fe` exactly
+(590 tests passed, one optional skip; no new suite run claimed here). Independent source/pin/script review passed.
+
+The two UNUSED first-attempt Norman bundles, both table directories and first preparation log were renamed
+unchanged with suffix `.stale-20261017T023543Z`, never deleted or overwritten. Device/inode preservation is
+recorded in [archive_20261017T023543Z.jsonl](mac/block_g/archive_20261017T023543Z.jsonl); children, private labels
+and splits were not opened for archiving. Original source bundles were not renamed or edited.
+
+The unchanged preparation script then ran once with credentials unset and exited **0** (session19476).
+All six tables and four bundles passed the prescribed checks: same source split, exact knowledge files,
+manifest verification, empty added knowledge, fixed GO evidence codes, byte-identical copies outside knowledge
+and manifest, and all five shared knowledge files identical between G0/G1. Both datasets' Replogle file is absent.
+Full stdout/stderr is preserved in [prepare_20261017T023543Z.txt](mac/block_g/prepare_20261017T023543Z.txt),
+SHA256 `408c0e8b80f5693db93b33d46e2918718fb4009cad35dcd2e3d4535c4b3dba3a`. The complete final MD5/line-length record follows, before any G run starts:
+
+```text
+== norman_clean
+a371f8a284d011e81efe78792f99aca2 ./gene_sets.json
+300d37d2a2b19f7f0511b8b8c8e643a7 ./ppi_network.json
+f8e5a3dbd20c5f57a95456ca73e8ff7d ./prior_network.json
+3d2d0315668bd31b7b1949d0c2d3dc68 ./targets.json
+977acfad1aa9d63131ebb7167d6ffd59 ./transcription_factors.json
+  gene_sets.json: knowledge-summary line 118 characters
+  ppi_network.json: knowledge-summary line 57 characters
+  prior_network.json: knowledge-summary line 53 characters
+  targets.json: knowledge-summary line 49 characters
+  transcription_factors.json: knowledge-summary line 44 characters
+  whole knowledge summary: 329 characters
+== norman_clean_tables
+69fd252c113b3d72911a64842c05fe81 ./gene_annotation.json
+37734b9a50b4777037d0dfe3f2e122e8 ./gene_constraint.json
+a371f8a284d011e81efe78792f99aca2 ./gene_sets.json
+300d37d2a2b19f7f0511b8b8c8e643a7 ./ppi_network.json
+f8e5a3dbd20c5f57a95456ca73e8ff7d ./prior_network.json
+c148d7462bf44ec89d90e63e6d6b1dec ./protein_annotation.json
+3d2d0315668bd31b7b1949d0c2d3dc68 ./targets.json
+977acfad1aa9d63131ebb7167d6ffd59 ./transcription_factors.json
+  gene_annotation.json: knowledge-summary line 895 characters
+  gene_constraint.json: knowledge-summary line 650 characters
+  gene_sets.json: knowledge-summary line 118 characters
+  ppi_network.json: knowledge-summary line 57 characters
+  prior_network.json: knowledge-summary line 53 characters
+  protein_annotation.json: knowledge-summary line 846 characters
+  targets.json: knowledge-summary line 49 characters
+  transcription_factors.json: knowledge-summary line 44 characters
+  whole knowledge summary: 2726 characters
+== adamson_cf_clean
+e6d0c6a576440f10feece6a00744017f ./gene_sets.json
+185b66ad5aa3028ec4010c8e55bb4877 ./ppi_network.json
+0d112bba005a3d611fd64c238cb3208c ./prior_network.json
+336a4e84c5f79c032fc109a70be1242f ./targets.json
+66a90a708dbc8027e4a3ecd597f81d12 ./transcription_factors.json
+  gene_sets.json: knowledge-summary line 109 characters
+  ppi_network.json: knowledge-summary line 57 characters
+  prior_network.json: knowledge-summary line 55 characters
+  targets.json: knowledge-summary line 50 characters
+  transcription_factors.json: knowledge-summary line 45 characters
+  whole knowledge summary: 324 characters
+== adamson_cf_clean_tables
+3bcc3d8fd55adb656f9c77bf589de7be ./gene_annotation.json
+e4a8b96126cceca780f30c30789b85da ./gene_constraint.json
+e6d0c6a576440f10feece6a00744017f ./gene_sets.json
+185b66ad5aa3028ec4010c8e55bb4877 ./ppi_network.json
+0d112bba005a3d611fd64c238cb3208c ./prior_network.json
+7ee3dccebc91de2708b443cc4b987260 ./protein_annotation.json
+336a4e84c5f79c032fc109a70be1242f ./targets.json
+66a90a708dbc8027e4a3ecd597f81d12 ./transcription_factors.json
+  gene_annotation.json: knowledge-summary line 895 characters
+  gene_constraint.json: knowledge-summary line 650 characters
+  gene_sets.json: knowledge-summary line 109 characters
+  ppi_network.json: knowledge-summary line 57 characters
+  prior_network.json: knowledge-summary line 55 characters
+  protein_annotation.json: knowledge-summary line 846 characters
+  targets.json: knowledge-summary line 50 characters
+  transcription_factors.json: knowledge-summary line 45 characters
+  whole knowledge summary: 2721 characters
+done: four bundles under /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/; tables under /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/clean_knowledge/tables
+```
+
+The cap remains `67.26 47.264645 2026-10-17T01:52Z`; research code stays pinned clean at `baa7dfd`.
+No paid G run or corrected F re-read has started at this checkpoint. Next: unchanged scripts, final process/pin/
+cap gates, detached G chain; post every run progress line on #41. Corrected F follows only after the chain ends.
