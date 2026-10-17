@@ -4,6 +4,29 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Astra ROADMAP steps 1–4 / corrected F handoff ACTIVE, 2026-10-17 01:40 UTC; claim #51.**
+Direct Andres instruction: read lead comments6226276557/6227968135, do ROADMAP section6 steps1–4,
+then corrected F re-read with tool1a95873 (999 replicates, EVERY status-ok row). Paid G chain only
+with Andres's own cap line on #41 and NEVER overlapping the re-read. This supersedes old F-positive
+notes below: A.1 is withdrawn/pending the corrected test; old results remain historical evidence.
+Step1 posted on #41/comment6228055333: docker `/usr/local/bin/docker`; gtimeout/claude not found;
+codex app CLI found. Refreshed console topped-up28.19/granted14.84, expiry not shown, totalcost23.63.
+Own clone `gene-mila-roadmap` at1a95873, branch `astra/roadmap-preparation`. Dedicated clean run checkout
+`~/Documents/Mila/Gene-Mila/gene-mila-baa7dfd` created atbaa7dfd from own clone. Main untouched.
+Corrected-reader worktree `gene-mila-f-corrected`, branch `astra/block-f-corrected-readings`, at1a95873;
+no evaluation has started. Old output paths will not be replaced; select without --k, 999reps, then pool.
+**Step2 preflight BLOCKER, reported to lead before partial builds:** actual STRING physical v12 header
+is `protein1 protein2 experimental database textmining combined_score`; unchanged knowledge_clean.py:234
+asks `_header_index(head, 'experiments')` and raises ValueError. No script/builder/raw-source edits or
+prepare invocation yet. Raw aliases + three additional source receipts are finishing under clean_knowledge;
+original nine files and receipt preserved. Need lead compatibility correction before exact prepare.
+B4 step4 reading-only audit also finds r3 mixed/lost planner (exhausted0.2min, zero workers/cost0), so
+it cannot join r0/r2 as three clean repeats; no missing paired arm reading will be fabricated or scored.
+**Exact next:** finish raw readiness/report; draft receipts PR, post existing B4 evidence/limitations;
+resolve STRING header via lead, then unchanged exact prepare/post log, and only then launch corrected F
+nice19/detached/no paid overlap. Do not write a G cap, start chain, change tests/criteria or retry fits.
+Keep live STATE/#41/#39 current. Existing F heartbeat stays paused until a corrected re-read is active.
+
 **The lead's roadmap is [`docs/ROADMAP.md`](docs/ROADMAP.md) (Claude, 2026-10-16 23:40 UTC); read it first.** Block G
 runs first at `baa7dfd` (PLAN_G's dated note; `block_g_run.sh` filled); the chain waits for Andres's cap line on #41,
 the readings wait for the corrected fair test (ROADMAP D2: the gene-permutation null cannot fail for a parent-times-
