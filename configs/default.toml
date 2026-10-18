@@ -42,6 +42,13 @@ replicates_max = 3             # same hypothesis to independent workers
 exploit_depth = 3              # 1: follow-ups around the best only; 2: + every known feature, pairs, next-best parents; 3: + feature-subset search
 python_exploit = true          # queue deterministic follow-ups around the best model (add a helpful feature,
                                # ablate, refine alpha, swap model family) whenever fewer are queued than workers
+discovery = false              # discovery mode (docs/DISCOVERY_MODE.md): the planner sees where the best model fails
+                               # (training folds only) and which bundle inputs no feature has read, instead of the
+                               # fixed idea list; each new feature names the unread input it brings and is scored for
+                               # how far existing columns already explain it. Report it as its own arm, never pooled
+                               # (run_arm does not label it yet, issue #72: name the run directory *_discovery).
+discovery_dry_rounds = 3       # discovery mode: planner rounds in a row that name no unread input before it stops
+discovery_derived_r2 = 0.8     # discovery mode: a new feature predicted this well from its parent's columns is derived
 
 [planner]
 provider = "claude_cli"        # claude_cli | anthropic | deepseek | openai_compat | scripted

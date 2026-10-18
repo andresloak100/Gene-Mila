@@ -146,7 +146,12 @@ score on the other), never on the sealed set. While the
 planner thinks, `schedule.python_exploit` queues deterministic follow-ups around the best model
 (add a helpful feature, ablate, refine alpha, swap the model family) so workers never idle; and
 `final.ensemble` tries the average of the finalists as one more candidate for the sealed set, kept
-only when it wins on the visible perturbations. `--continue-from runs/<earlier run>` warm-starts a
+only when it wins on the visible perturbations. `schedule.discovery` (off by default; reported as its own arm,
+[DISCOVERY_MODE.md](DISCOVERY_MODE.md)) shows the planner where the best model fails, from the training
+folds only, and which bundle inputs no feature has read, instead of the fixed idea list; each new
+feature names the unread input it brings and is scored for how far the parent's columns already
+explain it (`derived_r2`), and the planner stops after `schedule.discovery_dry_rounds` rounds that
+bring no unread input. `--continue-from runs/<earlier run>` warm-starts a
 run on the same split from that run's useful features and best model, with a PRIOR CAMPAIGN
 section in the planner's state. DeepSeek's models reason before answering by default and the
 hidden reasoning counts against `worker.max_output_tokens`; the default `worker.thinking = "disabled"`
