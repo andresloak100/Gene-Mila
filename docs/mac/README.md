@@ -17,6 +17,7 @@ HANDOFF.md section 1 is current.
 | `block_f/` | F ([`docs/PLAN_F_GENOME_ANNOTATION.md`](../PLAN_F_GENOME_ANNOTATION.md)) | `prepare_norman_ga.sh`, `norman_f_chain.sh`, `norman_f_run.sh`, and `gene_annotation_norman.json.gz`, the knowledge file the block used |
 | `block_g/` | G, running ([`docs/PLAN_G_CLEAN_ARM.md`](../PLAN_G_CLEAN_ARM.md)) | `prepare_clean_bundles.sh`, `block_g_chain.sh`, `block_g_run.sh`; receipts `downloads.md`, `prepare_*.txt`, `archive_*.jsonl`. Nothing here changes while the chain runs |
 | `block_h/` | H, not yet run ([`docs/PLAN_H_COMPARISON.md`](../PLAN_H_COMPARISON.md)) | `block_h_chain.sh`, `block_h_a2.sh`, `block_h_a3.sh`, `block_h_a4.sh`, `block_h_cap.sh`, `block_h_common.sh`, `block_h_probe.sh`, `check_tools.sh`, `Dockerfile` |
+| `block_d_records/`, `block_d_readings/` | D, finished 18 October, readings running ([`docs/PLAN_D_DISCOVERY_ADAMSON.md`](../PLAN_D_DISCOVERY_ADAMSON.md); the chain's scripts are `block_d/` on PR #75) | [`block_d_records/README.md`](block_d_records/README.md): cap line, chain log, check files, each run's `config.json` and `summary.json`; `block_d_readings/`: the reading scripts and stage commands |
 
 ## Run records (`config.json`, `summary.json` and the analysis log of one run each)
 
