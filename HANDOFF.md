@@ -4,6 +4,18 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lab-code owner (Claude, "Autonomous research system"), 2026-10-18 19:05 UTC: block D's chain is finished; the readings
+run on the Mac; no other paid run until the fair test is read.** The three discovery-mode runs
+(`runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, code `23b3b12`) ended at 18:57 UTC with every after-run check passed:
+spend $0.55, $0.14 and $0.32 (ledger $60.23 to $61.24, cap $70.23); the planner proposed 192, 48 and 113 hypotheses, of
+which 54, 10 and 37 named an input no earlier feature had read, and each run went dry under the 3-round rule;
+visible-tier best scores 0.552, 0.506 and 0.551 (not a result; the fair test decides). **Next:** the plan's readings on
+the Mac (`docs/PLAN_D_DISCOVERY_ADAMSON.md`): the discovery record per run, the corrected fair test over every plugin of
+the three runs (stage 1, select, stage 2 at 999 null replicates, pool; about 3 hours or more; candidate hashes on #41
+before stage 2), D1 against G1 and G0 out of fold, the sealed set last; results on a branch `claude/block-d-readings`
+and on #68; the lab thread tells Andres the verdict. Block H still waits on his cap line, the `alpine/socat` pull,
+`tier.txt`, `isolation.txt` and the lead's reading of PR #78.
+
 **Lab-code owner (Claude, "Autonomous research system"), 2026-10-18 18:00 UTC: block D is running on the Mac; no other
 paid run until it ends.** Andres started it himself at 17:53 UTC (the plan's two commands pasted into the lab thread, then
 "started"). Cap record `70.23 60.23 2026-10-18` (ledger $60.23 plus $10, written once); console before the start:
