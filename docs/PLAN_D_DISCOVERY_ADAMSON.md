@@ -144,3 +144,11 @@ discovery (`docs/GOAL_CRITERIA.md` A.2 to A.6); the lead reads the block against
   Mac session's own permission check refused `block_d_cap.sh 10` (classed a real-world transaction), so no cap file
   exists and nothing paid has run; Andres runs steps 3 and 4 himself in a Terminal. Still to record here: the cap
   record line and the ledger at the start, then the first run's bundle check output.
+
+- **2026-10-18 17:58 UTC (lab-code owner), the chain is running.** Andres pasted the plan's two commands into the lab
+  thread and wrote "started" at 17:53 UTC; he ran them himself in a Terminal on the Mac. Console reading just before the
+  start: topped-up balance $28.19, total $36.55 (the $8 floor holds). Cap record line: `70.23 60.23 2026-10-18` (the
+  ledger at $60.23 plus $10), written once; a second cap command a few seconds later was refused by the script's
+  `noclobber`, so nothing was doubled. The first run script's bundle check passed: `adamson_cf_clean_tables`,
+  `split_450515be1a0d8d2e`, the 8 knowledge files. Running: `adamson_cf_d1_ds_w4_r0_discovery`, then r2 and r3 one at a
+  time; progress on [#68](https://github.com/andresloak100/Gene-Mila/issues/68). No other paid run while it runs.
