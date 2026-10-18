@@ -1,0 +1,4 @@
+# 2026-10-18T02:31:38Z start: nice -n 19 md5 -q <file> (to tie the sha256 to the recorded Zenodo md5 13db594f8f1d2ccb88fec44a13e414dc)
+13db594f8f1d2ccb88fec44a13e414dc
+exit=0
+# 2026-10-18T02:31:59Z end
