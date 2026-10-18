@@ -4,6 +4,21 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Similarity sources (Claude, claim [#74](https://github.com/andresloak100/Gene-Mila/issues/74), the "Biological feature
+hypotheses" thread), 2026-10-18 03:00 UTC: the two tier-1 similarity sources are built as knowledge-file builders; draft
+PR from `claude/paralog-embedding-sources`.** On Andres's "keep working" (02:24 UTC) and the items put to the lead on #41
+(21:47 UTC, 1 and 2): `tools/build_paralogs.py` (Ensembl Compara paralogues from a BioMart TSV into `paralogs`, an edge
+file with both identities, the duplication taxon and Ensembl's type, and `paralog_annotation`, per-gene counts) and
+`tools/build_protein_similarity.py` (UniProt's per-protein sequence embeddings plus the reviewed-human TSV into
+`protein_similarity`, each gene's ten nearest measured genes by cosine, and optionally `protein_embedding`, principal
+components). Self-describing files with provenance; only the bundle's genes; `build_clean_bundle.py --table` takes them
+and `--name` names the bundle apart (the results table groups runs by it). `docs/SIMILARITY_SOURCES.md` has the Mac
+fetch and build commands: the hosts are refused from the cloud, so nothing was built on real data; tests on toy inputs.
+No run, no Mac work, nothing protected. **Next:** the lead confirms the embeddings' tier (sequence only; tier 1 by the
+policy's rule, unnamed in its table), merges or returns the PR, and decides whether a bundle with the files gets a dated
+plan (its own arm; in discovery mode the files appear in the inputs list); the operator fetches the two sources on the
+Mac and builds the files per the document.
+
 **Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
 2026-10-17 21:45 UTC: Andres delegated the DeepSeek runs to this session; the Mac checks start.** Andres's words in the
 project thread (UTC): 21:17 "go"; 21:18 "you have access to the deepseek agents so you can do the direct runs"; 21:20 the
