@@ -46,8 +46,9 @@ proposes from the inputs.
 
 **INPUTS UNEXPLORED.** The bundle's inputs, enumerated rather than listed by hand: the control statistics
 (`control_cells`, `control_mean`, `control_std`, `gene_corr`), the training labels (`train_delta`), the targets, every
-knowledge file with its kind and size, and every column of a per-gene table (gene annotation, constraint, protein
-tables). For each, how many completed features read it plainly and how many only inside a feature that transforms
+knowledge file with its kind and size (a self-describing edge file such as the paralog and protein-similarity files of
+`docs/SIMILARITY_SOURCES.md`, claim #74, counts as a network, and its node neighbourhoods join the enrichment groups of
+the evidence), and every column of a per-gene table (gene annotation, constraint, protein tables). For each, how many completed features read it plainly and how many only inside a feature that transforms
 another feature (`ctx.feature`), from the plugins' sources and their declared `inputs` (`discovery.feature_reads`,
 `discovery.coverage`); an input read only inside such a transform counts as unread. The section ends with the forms a
 feature can take and the rule: a feature is new when it reads an unread input plainly and names it in `new_input`; a

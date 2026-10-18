@@ -91,13 +91,18 @@ def enabled(cfg: dict) -> bool:
 # ================================================================== the bundle's inputs
 def classify(obj) -> dict:
     """What a knowledge file is, by its shape: an external screen (perts), a per-gene table (columns + genes), gene
-    sets (name -> list), a network (edge list), a gene list, or other."""
+    sets (name -> list), a network (an edge list, bare or self-describing with an "edges" list as the similarity
+    files of tools/build_paralogs.py and tools/build_protein_similarity.py are), a gene list, or other."""
     if isinstance(obj, dict):
         if isinstance(obj.get("perts"), dict):
             return {"kind": "screen", "n": len(obj["perts"])}
         if isinstance(obj.get("columns"), list) and isinstance(obj.get("genes"), dict):
             return {"kind": "table", "columns": [str(c) for c in obj["columns"]], "genes": obj["genes"],
                     "n": len(obj["genes"])}
+        if isinstance(obj.get("edges"), list) and all(isinstance(e, (list, tuple)) and len(e) >= 2
+                                                       for e in obj["edges"]):
+            return {"kind": "network", "edges": [[str(e[0]), str(e[1])] for e in obj["edges"]],
+                    "n": len(obj["edges"])}
         if obj and all(isinstance(v, (list, tuple)) for v in obj.values()):
             return {"kind": "sets", "sets": {str(k): [str(g) for g in v] for k, v in obj.items()}, "n": len(obj)}
         return {"kind": "other", "n": len(obj)}

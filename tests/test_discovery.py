@@ -59,6 +59,10 @@ def test_classify_and_feature_reads():
     assert table["kind"] == "table" and table["columns"] == ["pLI", "length"]
     assert discovery.classify({"S1": ["G1", "G2"]})["kind"] == "sets"
     assert discovery.classify([["G1", "G2", 1]])["kind"] == "network"
+    sim = discovery.classify({"description": "paralog pairs", "columns": ["gene_a", "gene_b", "identity_a"],
+                              "edges": [["G1", "G2", 0.9], ["G2", "G3", 0.5]], "source": {}})
+    assert sim["kind"] == "network" and sim["n"] == 2 and sim["edges"] == [["G1", "G2"], ["G2", "G3"]]
+    assert discovery.classify({"description": "x", "edges": "none"})["kind"] == "other"
     assert discovery.classify(["G1", "G2"])["kind"] == "list"
     files = {"gene_annotation": table, "gene_sets": discovery.classify({"S1": ["G1"]})}
     assert discovery.input_names(files) == [*discovery.CONTROL_INPUTS, *discovery.LABEL_INPUTS,
