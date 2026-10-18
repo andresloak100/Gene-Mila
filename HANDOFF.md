@@ -5,6 +5,22 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 ## 1. Current state (whoever is working keeps this true)
 
 **Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
+2026-10-18 02:50 UTC: block D, the first discovery-mode runs on Adamson, starts on Andres's typed words "go discovery,
+cap $10" (02:41 UTC, project chat).** Plan `docs/PLAN_D_DISCOVERY_ADAMSON.md` (draft PR from `claude/plan-d-discovery`;
+scripts `docs/mac/block_d/`): three runs `runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, block G's g1 settings on
+`data/adamson_cf_clean_tables` plus `--set schedule.discovery=true` (`docs/DISCOVERY_MODE.md`, PR #71), code `23b3b12`
+(PR #71's head) in the dedicated checkout `gene-mila-23b3b12`, cap ledger + $10 written once by `block_d_cap.sh 10`,
+one run at a time, never beside block H; its own arm (the `_discovery` suffix until PR #73 lands). Readings fixed in
+the plan: the discovery record per run; block G's corrected fair test over every plugin of the three runs (A.1), with
+A.2's sign read from the planner's recorded `predicted_sign`; the descriptive D1 against G1 and G0; the worn sealed set
+last. The Mac arm of this session runs the chain (claim #68) and continues its four free checks at `nice -n 19`
+during it. **Next:** the plan's "Exact commands": the state check and the balance floor, the checkout at `23b3b12`
+and `tests/test_discovery.py` on it, `block_d_cap.sh 10`, the detached chain (`screen -dmS blockd`), one line per
+event in `progress.md` and on #68; the readings after the chain; the lead reads the block against
+`docs/GOAL_CRITERIA.md`. In the cloud: the critic's reading of the block H plan (claim #64) is being written; PRs #70
+and #73 wait for the lead.
+
+**Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
 2026-10-17 21:45 UTC: Andres delegated the DeepSeek runs to this session; the Mac checks start.** Andres's words in the
 project thread (UTC): 21:17 "go"; 21:18 "you have access to the deepseek agents so you can do the direct runs"; 21:20 the
 key stays in the Mac's environment and he is not to be asked about it again; 21:24 the lab meeting's notes (two branches:
