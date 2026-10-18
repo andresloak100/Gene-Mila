@@ -1,0 +1,157 @@
+{
+ "all_members_bit_exact_vs_export": true,
+ "all_within_1e-6_vs_export": true,
+ "conditions": 31,
+ "ensemble_bit_exact_vs_export": true,
+ "export": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013",
+ "genes": 2083,
+ "manifest_sha256": "225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45",
+ "members": [
+  "EXP_0681",
+  "EXP_0729",
+  "EXP_0519"
+ ],
+ "per_condition_max_abs_difference_vs_export": {
+  "BPGM": 0.0,
+  "CDKN1C": 0.0,
+  "CEBPB": 0.0,
+  "ETS2": 0.0,
+  "FOSB": 0.0,
+  "FOXA1": 0.0,
+  "FOXA3": 0.0,
+  "HES7": 0.0,
+  "HNF4A": 0.0,
+  "HOXA13": 0.0,
+  "IKZF3": 0.0,
+  "ISL2": 0.0,
+  "LHX1": 0.0,
+  "MAML2": 0.0,
+  "MAP2K6": 0.0,
+  "MAP4K3": 0.0,
+  "MAP7D1": 0.0,
+  "MEIS1": 0.0,
+  "POU3F2": 0.0,
+  "PTPN12": 0.0,
+  "RHOXF2": 0.0,
+  "RREB1": 0.0,
+  "RUNX1T1": 0.0,
+  "S1PR2": 0.0,
+  "SAMD1": 0.0,
+  "TBX3": 0.0,
+  "TGFBR2": 0.0,
+  "TSC22D1": 0.0,
+  "UBASH3A": 0.0,
+  "ZBTB1": 0.0,
+  "ZBTB10": 0.0
+ },
+ "receipt": {
+  "predictions_file_sha256": "f3b00d12ad534f284f418699b570bd0f72934c60373748bbf454d7bc3f102db7",
+  "predictions_sha256": "f3b00d12ad534f284f418699b570bd0f72934c60373748bbf454d7bc3f102db7",
+  "predictions_sha256_matches_file": true,
+  "query_file_sha256": "ce35250ca71330be19ad9ff10162119dc3fdf5a20d5036e5847571e65e637706",
+  "query_sha256": "ce35250ca71330be19ad9ff10162119dc3fdf5a20d5036e5847571e65e637706",
+  "query_sha256_matches_file": true
+ },
+ "rule": "members np.array_equal; ensemble and members also reported against rtol = atol = 1e-6",
+ "vs_export_saved": {
+  "EXP_0519": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  },
+  "EXP_0681": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  },
+  "EXP_0729": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  },
+  "ensemble": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  }
+ },
+ "vs_run_a": {
+  "EXP_0519": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  },
+  "EXP_0681": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  },
+  "EXP_0729": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  },
+  "ensemble": {
+   "array_equal": true,
+   "max_abs_difference": 0.0,
+   "mean_abs_difference": 0.0,
+   "shape": [
+    31,
+    2083
+   ],
+   "values_differing": 0,
+   "values_exceeding_tolerance": 0,
+   "within_rtol_atol_1e-6": true
+  }
+ },
+ "what": "EXTRA diagnostic, not part of the PLAN_R section 6 gate: the new-condition branch of predict_ensemble (anchors frozen, each new condition computed in its own feature batch) on 31 known answers"
+}

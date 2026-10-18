@@ -1,0 +1,18 @@
+{
+ "implementation": "CPython",
+ "packages": {
+  "numpy": "2.5.3",
+  "scikit-learn": "1.9.1",
+  "scipy": "1.18.1"
+ },
+ "python": "3.13.7",
+ "pythonhashseed": "0",
+ "source_sha256": {
+  "features/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "features/api.py": "6cded0b6c2105bceed8b08ad10d432cfefa496aa3824c5b31eb518df00f3b0d7",
+  "features/builtin.py": "7385a22d565958ddd870297c722452072b1b2701431367dbc95290deba732725",
+  "features/registry.py": "549e46a862fcb62d478798963b0863a61681d01bfb648e765b421cd187575ff4",
+  "frozen.py": "c076add7df09447cd59a3aeceee16dae1f38fa2fe2f757eb8e4ce0172271e64a",
+  "pipeline.py": "afb15b56bbe778d66f051f79db6d6bb47e7e1b1e4eaad080dd08bc90817ba82f"
+ }
+}

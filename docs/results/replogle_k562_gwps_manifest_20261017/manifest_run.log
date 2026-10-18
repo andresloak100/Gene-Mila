@@ -1,0 +1,22 @@
+# 2026-10-18T02:32:25Z start
+9866 targets, 1820 eligible (1331 in-distribution) -> docs/results/replogle_k562_gwps_manifest_20261017/manifest; manifest.json sha256 8a37ef580ed7753421456fad5b6a44bfcd9f84c57670d5fe0c468c32b1d61dc6
+        8.11 real         5.03 user         0.29 sys
+           205553664  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               33950  page reclaims
+                2614  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                1327  voluntary context switches
+               15078  involuntary context switches
+         37169887665  instructions retired
+         16228971933  cycles elapsed
+           156664480  peak memory footprint
+exit=0
+# 2026-10-18T02:32:33Z end
