@@ -135,3 +135,12 @@ discovery (`docs/GOAL_CRITERIA.md` A.2 to A.6); the lead reads the block against
   balance, granted balance); the ledger at the start and the cap record line.
 - `D_COMMIT` confirmed (`23b3b12`, or PR #71's merge commit), the Mac's `tests/test_discovery.py` result on it.
 - The bundle check output of the first run script (`bundle adamson_cf_clean_tables: split_id ..., knowledge ...`).
+
+- **2026-10-18 03:35 UTC (lab-code owner), before the chain.** Console reading at 02:29 UTC from the Mac
+  (PR [#77](https://github.com/andresloak100/Gene-Mila/pull/77), `docs/mac/mac_checks_20261017/balance_reading.txt`):
+  topped-up balance $28.19, granted $8.35, over the $8 floor. `D_COMMIT` is `23b3b12` (PR #71's head, not yet merged);
+  the checkout `gene-mila-23b3b12` is clean at it and its `tests/test_discovery.py` gives 7 passed on the Mac. The
+  three scripts are copied to `genemila_scale_logs/block_d/` and hash-checked against this branch. Not started: the
+  Mac session's own permission check refused `block_d_cap.sh 10` (classed a real-world transaction), so no cap file
+  exists and nothing paid has run; Andres runs steps 3 and 4 himself in a Terminal. Still to record here: the cap
+  record line and the ledger at the start, then the first run's bundle check output.
