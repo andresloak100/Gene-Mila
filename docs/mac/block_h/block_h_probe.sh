@@ -3,19 +3,23 @@
 # round). One Biomni --probe round and one one-turn call of the A3 client (A3_CLIENT in block_h_common.sh: codex, the
 # default, through run_codex.sh --probe; or claude -p), both through the ledger proxy, to check the routes ROADMAP
 # section 8 and the plan's note of 2026-10-17 list as unverified. No key in it: DEEPSEEK_API_KEY must be in the
-# environment (the chain's). Every check comes before any spend.
+# environment (the chain's). Every check comes before any spend. A probe that failed leaves its files behind
+# (h_probe*.log, proxy/h_probe*, work/out/handback h_probe*, block_h_stopped.txt), which the scripts refuse to
+# overwrite: once the cause is written up in the plan's dated note, block_h_reset_probe.sh moves them aside (never
+# deletes) and the probe may run again.
 . "$(dirname "$0")/block_h_common.sh"
 name=h_probe
 [ -e "$H/$name.passed" ] && { echo "probe passed before"; exit 0; }
 [ -e "$H/$name.log" ] && no "$H/$name.log exists; not overwriting"
 h_checks; pkg_checks
+BIOMNI_RATE=$(miss_rate deepseek-v4-pro) || exit 1
 session_dirs "$name"
 echo "- $(utc) $name started (DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
 # 1. Biomni: one execute-to-observation round against deepseek-v4-pro (consecutive assistant messages); its run.json
 #    lands in $O, where collect_handback.py reads it
 proxy_up "$name" 0.05
 agent_run "$name" "$TOOLS_PY" "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy "$PROXY_URL" --model deepseek-v4-pro \
-  --minutes 2 --seed 0 --out "$OUT_IN" --probe
+  --minutes 2 --seed 0 --out "$OUT_IN" --probe --miss-usd-per-mtok "$BIOMNI_RATE"
 biomni_rc=$AGENT_RC
 proxy_down
 # 2. The A3 client, one short turn as the arm starts it:

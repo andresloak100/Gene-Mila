@@ -382,3 +382,25 @@ changes what is priced, in the direction of counting a billed call; Andres may v
 and runner comments now tell the two 404 rows apart: the proxy's own (`"refused": "no such route"`, a route other than
 `/v1/responses`: Codex posted elsewhere, Claude Code is the fallback) and DeepSeek's (route `/v1/responses`,
 `"priced": false`: the path is not served, the proxy maps the route to `/responses` and the probe runs again).
+
+## 2026-10-17 22:00 UTC: the two script gaps of the lead's note of 19:33 UTC are closed (lab-code owner, PR from `claude/block-h-script-gaps`)
+
+1. **A failed probe can be reset.** `block_h_reset_probe.sh '<the dated note that writes the failure up>'` moves what
+   a failed probe leaves behind (`h_probe*.log`, `h_probe*.txt`, `proxy/h_probe*`, `work/`, `out/` and `handback/`
+   `h_probe*`, in account mode the `$SHARED` copies too, and `block_h_stopped.txt`) into `$H/failed/h_probe_<utc>/`,
+   never deleting, lists them in `moved.txt` there, and appends one line to `progress.md` naming the note. It refuses
+   when the probe passed, when nothing of a failed probe exists, when a proxy or an `h_agent` container is running, and
+   when `block_h_stopped.txt` holds a stop of another session (an arm's stop is written up and reset by hand, never
+   here). The chain then reruns the probe, its `.passed` marker being absent (step 5). The cause of the failure goes in
+   a dated note here first, as the stopped-block rule says; the reset records which note.
+2. **`run_biomni.py` gets its first-call rate from the Mac.** In Docker and account mode only `tools/baselines/` is
+   beside the runner (the Dockerfile copies nothing else, fairness controls 6 and 7), so its lookup of
+   `configs/default.toml` found nothing and the first-call cost pre-estimate was silently skipped. Now
+   `block_h_common.sh`'s `miss_rate <model>` reads `input_cache_miss` from the operator's clone's rate card (`$C`), the
+   probe and A4 scripts pass it as `--miss-usd-per-mtok` (a public flag now), `run.json` records `rate_source` (`flag`,
+   `config` or `none`), and a runner with no rate from either source warns on stderr instead of staying silent. A
+   missing rate stops the script before any spend (`NOT STARTED`).
+
+Tests: `tests/test_block_h_scripts.py` (the reset on a fake Mac under a temporary `HOME`, its refusals, the account
+mode copies, `miss_rate` on the real rate card and on a missing one, the runner with the flag, without any source and
+beside the checkout). Nothing else in the scripts changed; the plan's commands are unchanged.
