@@ -34,6 +34,7 @@ not integrated merely because a document describes it.
   Tests: `tests/test_cellforge_c2.py`, `tests/test_lead_h8_constraint.py`.
 - [NOVEL_FEATURE_NEEDS.md](NOVEL_FEATURE_NEEDS.md): what it takes to find a new biological feature, and what is
   missing (D1 to D6).
+- [SIMILARITY_SOURCES.md](SIMILARITY_SOURCES.md): the paralog and protein-sequence similarity knowledge files (tier-1 sources never given to the agents), how they are built on the Mac and what a run with them is.
 - [PROMPTS.md](PROMPTS.md): every prompt, starting feature, control and worker setting the agents were given, by
   date and code version. Evidence of what ran, not permission to replay a paid campaign.
 

@@ -16,8 +16,10 @@ annotations are curated or experimentally measured:
                         (string_physical_channels); the combined score, which folds in textmining and
                         co-expression, is not used
 
-plus, when given, the three per-gene tables built by tools/build_gene_annotation.py, tools/build_gene_constraint.py and
-tools/build_protein_annotation.py (gene_annotation, gene_constraint, protein_annotation), included as built.
+plus, when given, the per-gene tables built by tools/build_gene_annotation.py, tools/build_gene_constraint.py,
+tools/build_protein_annotation.py, tools/build_paralogs.py and tools/build_protein_similarity.py (gene_annotation,
+gene_constraint, protein_annotation, paralog_annotation, protein_embedding) and the two similarity edge files of the
+last two builders (paralogs, protein_similarity; sequence-derived, docs/SIMILARITY_SOURCES.md), included as built.
 
 Left out on purpose: MSigDB Hallmark (refined with expression data), Enrichr GO BP (no evidence codes, so expression-
 inferred annotations cannot be told apart), GO annotations with IEP/HEP (inferred from expression), HMP/HGI (inferred
@@ -43,7 +45,11 @@ from .knowledge import MAX_SET_SIZE, MIN_SET_SIZE, STRING_MIN_SCORE, _gmt_lines,
 GO_CURATED_EVIDENCE = frozenset({"EXP", "IDA", "IPI", "IMP", "IGI", "HDA", "TAS", "IC", "NAS"})
 GO_PREFIX = {"biological_process": "GOBP", "cellular_component": "GOCC", "molecular_function": "GOMF"}
 STRING_CHANNELS = ("experiments", "database")
-TABLE_NAMES = ("gene_annotation", "gene_constraint", "protein_annotation")
+TABLE_NAMES = ("gene_annotation", "gene_constraint", "protein_annotation", "paralog_annotation",
+               "protein_embedding")
+# self-describing edge files ({"description", "columns", "edges": [[gene_a, gene_b, ...]]}) built by
+# tools/build_paralogs.py and tools/build_protein_similarity.py; included like the tables, checked by their endpoints
+NETWORK_NAMES = ("paralogs", "protein_similarity")
 
 # file names under the sources directory (knowledge.SOURCES names are kept where the file is the same)
 SOURCE_FILES = {
@@ -255,8 +261,9 @@ def build(src: Path, genes: list[str], tables: dict[str, object] | None = None,
     """({"<name>.json": content}, provenance) for a bundle, restricted to its measured genes. A source missing from
     src is an error (a '_clean' bundle built without GO, CORUM or STRING would be an arm no plan describes) unless
     allow_missing, when it is skipped and recorded as null in the provenance. tables: {name: parsed JSON or path to
-    a built table file}, name one of TABLE_NAMES; a table's genes must all be in the bundle (the builders restrict
-    them with --genes-from), so a table built for another bundle is refused."""
+    a built table file}, name one of TABLE_NAMES or NETWORK_NAMES; a table's genes, and an edge file's endpoints,
+    must all be in the bundle (the builders restrict them with --genes-from), so a file built for another bundle is
+    refused."""
     src, g = Path(src), set(genes)
     missing = sorted(f for f in SOURCE_FILES if not (src / f).exists())
     if missing and not allow_missing:
@@ -277,14 +284,19 @@ def build(src: Path, genes: list[str], tables: dict[str, object] | None = None,
     prov_tables = {}
     for name, obj in (tables or {}).items():
         name = name.removesuffix(".json")
-        if name not in TABLE_NAMES:
-            raise ValueError(f"unknown table {name!r}; expected one of {TABLE_NAMES}")
+        if name not in TABLE_NAMES and name not in NETWORK_NAMES:
+            raise ValueError(f"unknown table {name!r}; expected one of {TABLE_NAMES + NETWORK_NAMES}")
         if isinstance(obj, (str, Path)):
             prov_tables[name] = {"file": Path(obj).name, "sha256": _sha256(obj)}
             obj = json.loads(Path(obj).read_text())
         else:
             prov_tables[name] = {"file": None, "sha256": None}
-        foreign = sorted(set(obj.get("genes", {})) - g) if isinstance(obj, dict) else []
+        if name in NETWORK_NAMES:
+            if not isinstance(obj, dict) or not isinstance(obj.get("edges"), list):
+                raise ValueError(f"{name} must be a self-describing edge file with an 'edges' list")
+            foreign = sorted({str(x) for e in obj["edges"] for x in e[:2]} - g)
+        else:
+            foreign = sorted(set(obj.get("genes", {})) - g) if isinstance(obj, dict) else []
         if foreign:
             raise ValueError(f"table {name} has {len(foreign)} genes outside the bundle (e.g. {foreign[:3]}); "
                              "it was not built for this bundle (--genes-from)")
