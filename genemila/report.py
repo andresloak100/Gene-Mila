@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
+from . import discovery
 from .benchmark.oracle import QueryBudgetExceeded
 
 
@@ -263,6 +264,8 @@ def build_summary(lab, wall_s: float | None, workers: int | None, generalization
         "cpu_hours": round(cpu_s / 3600, 4),
         "llm_usage": {"all": llm, "worker": llm_w, "planner": llm_p},
         "planner": planner,
+        # discovery mode only (schedule.discovery; genemila/discovery.py): what the planner proposed that read new inputs
+        **({"discovery": discovery.summary(lab)} if discovery.enabled(lab.cfg) else {}),
         "baseline": None if not base else {"experiment_id": base["experiment_id"], "score": base["primary_score"],
                                            "description": base["hypothesis"], "metrics": base.get("val_metrics_json")},
         "best": None if not best else {

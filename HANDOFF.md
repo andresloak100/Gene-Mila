@@ -4,6 +4,26 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Discovery mode (Claude, claim [#69](https://github.com/andresloak100/Gene-Mila/issues/69), the "Biological feature
+hypotheses" thread), 2026-10-17 22:05 UTC: the hypothesis generation is built into the run, off by default; draft PR
+from `claude/biological-feature-hypotheses-g6489k`.** Andres withdrew the fixed count ("this should be automatized not
+a fixed number", "that was an example we dont want 200", 21:40 to 21:45 UTC in that thread), so the deliverable is not
+a list but `schedule.discovery` (`docs/DISCOVERY_MODE.md`, `genemila/discovery.py`, `tests/test_discovery.py`): each
+planner round sees where the best model fails, from the training folds only (worst perturbations, the genes carrying
+the residual and their annotations, sets and regulators, the residual's rank), and which bundle inputs no feature has
+read, enumerated from the bundle instead of the fixed idea list; every new feature names the unread input it brings
+and is scored out of fold for how far the parent's columns explain it (`derived_r2`); the lab judges each round, and
+the planner stops after three counted rounds that bring no unread input. No held-out tier is read; nothing selected
+changes. A run with it must be reported as its own arm, but `run_arm` (protected) does not label it yet: issue
+[#72](https://github.com/andresloak100/Gene-Mila/issues/72) asks the lab-code owner for the one-line change, and
+until then a discovery run's directory is named `*_discovery` and tabulated apart. Nothing ran on real data; no Mac
+work, no paid run. The 200-hypothesis list the 21:45 entry below expects is superseded by this; the lab thread's
+unjudged list of 249 (`/mnt/project-files/hypotheses/`, in the Claude project) serves only as a coverage check of the
+inputs list, never as prompt content. **Next:** the lead reviews PR #71 and decides whether a real-data run gets a
+dated plan (an LLM planner on a clean tier-1 bundle, `--set schedule.discovery=true` and `--run-dir runs/<stamp>_<dataset>_w<N>_discovery`
+on the arm's usual command, the usual caps; the honest odds are in `docs/DISCOVERY_MODE.md` section 5); a free smoke
+run needs no approval (`--planner-provider scripted --worker-provider mock --set schedule.discovery=true`).
+
 **Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
 2026-10-17 21:45 UTC: Andres delegated the DeepSeek runs to this session; the Mac checks start.** Andres's words in the
 project thread (UTC): 21:17 "go"; 21:18 "you have access to the deepseek agents so you can do the direct runs"; 21:20 the
