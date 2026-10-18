@@ -50,6 +50,21 @@ explicit providers and budgets from the approved run plan.
 `summarize.py` keeps the sealed-set scores a finished run already stored and makes no new
 query; `--query-only` also scores any top candidate that has no stored sealed-set score yet.
 
+### Reproducing a result
+
+To reproduce a reported number, install the exact set the test suite runs on in CI instead of the
+loose `requirements.txt`. `requirements-lock.txt` pins every package for Python 3.13, with numpy
+2.5.3, scipy 1.18.1 and scikit-learn 1.9.1, the versions the lab's runs record (`versions` in a
+run's `config.json`); the frozen export ([`FROZEN_EXPORT.md`](FROZEN_EXPORT.md)) also checks the
+exact Python, 3.13.7.
+
+```bash
+python3.13 -m venv .venv && . .venv/bin/activate
+pip install -r requirements-lock.txt
+```
+
+The code is MIT-licensed ([`LICENSE`](../LICENSE)); cite it with [`CITATION.cff`](../CITATION.cff).
+
 ## Scaling
 
 ```bash

@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Gene-Mila: an autonomous, deadline-bounded laboratory for interpretable cell-perturbation prediction"
+abstract: >-
+  LLM research agents discover features for simple CPU models (ridge, lasso, OLS) that predict how
+  gene expression changes under a genetic perturbation the model has never seen. A Python
+  controller, never an LLM, owns the deadline, scheduling, spend caps and persistence, and stops
+  every agent at the wall-clock budget. Evaluated on CellForge's Adamson and Norman splits.
+authors:
+  - given-names: Andres
+    alias: andresloak100
+    website: "https://github.com/andresloak100"
+version: 0.1.0
+date-released: "2026-10-18"
+license: MIT
+repository-code: "https://github.com/andresloak100/Gene-Mila"
+keywords:
+  - perturbation prediction
+  - single-cell RNA-seq
+  - gene expression
+  - CRISPR screens
+  - LLM agents
+  - interpretable models
