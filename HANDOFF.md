@@ -5,6 +5,24 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 ## 1. Current state (whoever is working keeps this true)
 
 **Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
+2026-10-18 03:30 UTC: the four Mac checks are published (draft PR [#77](https://github.com/andresloak100/Gene-Mila/pull/77));
+block D is ready on the Mac and waits for Andres's own hands.** From PR #77 (`docs/mac/mac_checks_20261017/`,
+`docs/results/replogle_k562_gwps_manifest_20261017/`, `docs/results/frozen_adapter_check_20261017/`): the key
+authenticates from the Mac's environment (balance read 02:29 UTC: topped-up $28.19, granted $8.35, total $36.55,
+over the D12 floor); Docker Desktop 4.63.0 starts in 16 s and `check_tools.sh` exits 0 (image `genemila-h` not built,
+network `genemila_h` created, `tier.txt` and `isolation.txt` unwritten, the egress test void until Andres allows the
+`alpine/socat` pull), so the Docker route of `docs/PLAN_H_COMPARISON.md` is open; the Replogle K562 file (sha256
+`d3269d9c…8104`, md5 as the record) gives 1,820 eligible targets and 1,331 in-distribution against the provisional
+universe (the 2,055 public Adamson genes), no HGNC and no essential-gene file on the Mac; the frozen adapter passes the
+PLAN_R section 6 gate on the Norman export (every member bit-exact, the replay byte-identical). Block D
+(`docs/PLAN_D_DISCOVERY_ADAMSON.md`, PR #75): scripts copied and hash-checked, checkout `gene-mila-23b3b12` clean,
+`tests/test_discovery.py` 7 passed; the Mac session's own permission check refused `block_d_cap.sh 10` as a real-world
+transaction, so no cap file exists and nothing paid has run. **Next:** Andres runs the two commands of the plan's steps
+3 and 4 in a Terminal on the Mac (the cap, then the detached chain) or allows them for the Mac session; then the Mac arm
+posts each progress line on #68 and the readings follow the plan. Block H: the Docker route is open; it still waits on
+Andres's cap line, his yes to the `alpine/socat` pull, `tier.txt` and `isolation.txt`.
+
+**Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
 2026-10-18 02:50 UTC: block D, the first discovery-mode runs on Adamson, starts on Andres's typed words "go discovery,
 cap $10" (02:41 UTC, project chat).** Plan `docs/PLAN_D_DISCOVERY_ADAMSON.md` (draft PR from `claude/plan-d-discovery`;
 scripts `docs/mac/block_d/`): three runs `runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, block G's g1 settings on
