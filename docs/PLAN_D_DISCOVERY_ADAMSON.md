@@ -152,3 +152,18 @@ discovery (`docs/GOAL_CRITERIA.md` A.2 to A.6); the lead reads the block against
   `noclobber`, so nothing was doubled. The first run script's bundle check passed: `adamson_cf_clean_tables`,
   `split_450515be1a0d8d2e`, the 8 knowledge files. Running: `adamson_cf_d1_ds_w4_r0_discovery`, then r2 and r3 one at a
   time; progress on [#68](https://github.com/andresloak100/Gene-Mila/issues/68). No other paid run while it runs.
+
+- **2026-10-18 19:15 UTC (lab-code owner), the chain is finished; the exact records.** Cap: Andres's typed "go discovery,
+  cap $10" (02:41 UTC); he ran steps 3 and 4 himself from a Terminal at 17:53 UTC and wrote "started" at 17:53:12 UTC.
+  Console reading before the block (17:53:25 UTC, HTTP 200): topped-up 28.19, granted 8.35, total 36.55 (the 02:29 UTC
+  reading was the same). Cap record line: `70.23 60.232225 2026-10-18T17:53Z`. `D_COMMIT` 23b3b12 (PR #71 not merged);
+  `tests/test_discovery.py` on the Mac: 7 passed in 70.34 s. Bundle check line of the first run script:
+  `bundle adamson_cf_clean_tables: split_id split_450515be1a0d8d2e, knowledge gene_annotation.json gene_constraint.json
+  gene_sets.json ppi_network.json prior_network.json protein_annotation.json targets.json transcription_factors.json;
+  knowledge summary 2721 characters (section budget 8000)`. Outcome: the chain ended at 18:57:45 UTC, three runs, every
+  after-run check passed, no stop; ledger 60.232225 to 61.240534 (the block cost $1.008309; per run r0 0.546548,
+  r2 0.137546, r3 0.324215). Discovery record per run (r0/r2/r3): dry at rounds 25/6/14; hypotheses 192/48/113; naming
+  an unread input 54/10/37; below-threshold features naming an unread input 48/9/33; derived features 6/1/4;
+  visible-tier best 0.552/0.506/0.551 (not a result). The 270 plugin hashes are on #41 before stage 2; stage 1 of the
+  fair test runs on the Mac at nice 19 in the clone `gene-mila-d-readings` at 23b3b12; the readings PR comes from
+  `claude/block-d-readings`.
