@@ -76,6 +76,13 @@ The original 16 October files listed below are historical and remain byte-identi
 | knowledge input | `docs/mac/knowledge/gene_constraint_norman.json.gz` (gnomAD constraint, `tools/build_gene_constraint.py`) |
 | readings | All four readings are complete for both datasets. See the consolidated reading and exact-file index below; generated paths were preserved. |
 
+## Block D (18 October 2026; [`docs/PLAN_D_DISCOVERY_ADAMSON.md`](../PLAN_D_DISCOVERY_ADAMSON.md), PR #75)
+
+The first discovery-mode runs on Adamson (`runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, code `23b3b12`, its own arm).
+Read [`adamson_cf_d1_readings.md`](adamson_cf_d1_readings.md) first: it indexes every reading, its status and its files
+(`adamson_cf_d1_*`, `adamson_cf_d_*`), each with its `.command.txt`, `.log` and `.exit`. Run records:
+[`docs/mac/block_d_records/`](../mac/block_d_records/README.md).
+
 ## Lead H8 and consolidated publication (17 October 2026)
 
 Read first: [G, corrected F and lead H8 readings](g_f_h8_readings.md), with its [JSON twin](g_f_h8_readings.json). G's complete-family result is negative on both datasets; corrected F has six Replogle-assisted development candidates and no tier1 candidate; the lead's H8 hypothesis is unsupported on both datasets. H8 is the lead's pre-registered human hypothesis, never an agent discovery/A.1. Fixed pre-score interpretation, both pre-runs, both nulls, signs and failed gates are preserved.

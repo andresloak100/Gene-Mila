@@ -1,0 +1,2643 @@
+{
+ "run_id": "adamson_cf_d1_ds_w4_r0_discovery",
+ "dataset": "adamson_cf_clean_tables",
+ "split_id": "split_450515be1a0d8d2e",
+ "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+ "duration_s": 1204.1,
+ "duration_note": null,
+ "finished_at": 1792347214.41938,
+ "workers": 4,
+ "continued_from": null,
+ "selection": {
+  "rule": "pearson_delta",
+  "cv_folds": 5,
+  "n_validation": 17,
+  "n_visible": 67
+ },
+ "experiments_proposed": 1016,
+ "experiments_completed": 982,
+ "completed_by_proposer": {
+  "python:exploit": 803,
+  "deepseek:deepseek-v4-pro": 158,
+  "sweep(deepseek:deepseek-v4-pro)": 21
+ },
+ "experiments_completed_planner": 179,
+ "unique_hypotheses_planner": 209,
+ "experiments_failed": 21,
+ "experiments_rejected": 0,
+ "experiments_killed": 0,
+ "experiments_cancelled": 0,
+ "duplicate_experiments": 13,
+ "unique_hypotheses": 1012,
+ "replicated_hypotheses": 4,
+ "cpu_hours": 0.0973,
+ "llm_usage": {
+  "all": {
+   "calls": 219,
+   "input_tokens": 495489,
+   "output_tokens": 164990,
+   "cached_tokens": 253696,
+   "cost_usd": 0.546547928,
+   "failed_calls": 0
+  },
+  "worker": {
+   "calls": 194,
+   "input_tokens": 345466,
+   "output_tokens": 107633,
+   "cached_tokens": 216192,
+   "cost_usd": 0.169238952,
+   "failed_calls": 0
+  },
+  "planner": {
+   "calls": 25,
+   "input_tokens": 150023,
+   "output_tokens": 57357,
+   "cached_tokens": 37504,
+   "cost_usd": 0.377308976,
+   "failed_calls": 0
+  }
+ },
+ "planner": {
+  "configured": "deepseek:deepseek-v4-pro",
+  "fallback": [],
+  "used": [
+   "deepseek:deepseek-v4-pro"
+  ],
+  "rounds": {
+   "deepseek:deepseek-v4-pro": {
+    "rounds": 25,
+    "queued": 200
+   }
+  },
+  "switches": [],
+  "failed_rounds": 0,
+  "exhausted_at_min": null,
+  "mixed": false
+ },
+ "discovery": {
+  "enabled": true,
+  "rounds": 25,
+  "rounds_counted": 24,
+  "hypotheses": 192,
+  "hypotheses_naming_an_unread_input": 54,
+  "inputs_proposed": [
+   "control_cells",
+   "control_std",
+   "gene_annotation",
+   "gene_annotation.aa_A",
+   "gene_annotation.aa_D",
+   "gene_annotation.aa_E",
+   "gene_annotation.aa_F",
+   "gene_annotation.aa_G",
+   "gene_annotation.aa_H",
+   "gene_annotation.aa_K",
+   "gene_annotation.aa_L",
+   "gene_annotation.aa_M",
+   "gene_annotation.aa_N",
+   "gene_annotation.aa_P",
+   "gene_annotation.aa_R",
+   "gene_annotation.aa_S",
+   "gene_annotation.aa_T",
+   "gene_annotation.aa_V",
+   "gene_annotation.aa_W",
+   "gene_annotation.aa_Y",
+   "gene_annotation.cds_length",
+   "gene_annotation.gc_utr3",
+   "gene_annotation.gene_span_kb",
+   "gene_annotation.n_transcripts",
+   "gene_annotation.n_upstream_atg",
+   "gene_annotation.utr5_length",
+   "gene_constraint",
+   "gene_constraint.exp_lof",
+   "gene_constraint.lof_z",
+   "gene_constraint.mis_z",
+   "gene_constraint.obs_lof",
+   "gene_constraint.oe_lof",
+   "gene_constraint.oe_lof_lower",
+   "gene_constraint.oe_lof_upper_bin",
+   "gene_constraint.oe_mis",
+   "gene_constraint.oe_mis_upper",
+   "gene_constraint.pLI",
+   "gene_constraint.pNull",
+   "gene_constraint.syn_z",
+   "gene_corr",
+   "gene_sets",
+   "ppi_network",
+   "prior_network",
+   "protein_annotation",
+   "protein_annotation.n_transmembrane",
+   "protein_annotation.protein_length",
+   "protein_annotation.signal_peptide_length",
+   "transcription_factors"
+  ],
+  "dry_rule": "3 consecutive counted rounds (asked for new features, proposed at least one) without an unread input",
+  "dry_at_round": 25,
+  "features_scored_for_derivability": 141,
+  "derived_r2_threshold": 0.8,
+  "derived_features": [
+   {
+    "feature": "has_signal_peptide_e70",
+    "r2": 1.0,
+    "novel_inputs": []
+   },
+   {
+    "feature": "obs_lof_e114",
+    "r2": 1.0,
+    "novel_inputs": []
+   },
+   {
+    "feature": "signal_peptide_length_e193_e194",
+    "r2": 0.932,
+    "novel_inputs": []
+   },
+   {
+    "feature": "signal_peptide_length_e183_e185",
+    "r2": 0.932,
+    "novel_inputs": [
+     "protein_annotation.signal_peptide_length"
+    ]
+   },
+   {
+    "feature": "target_globin_corr_gene_corr_e273",
+    "r2": 0.876,
+    "novel_inputs": []
+   },
+   {
+    "feature": "train_delta_transfer_similarity_e267",
+    "r2": 0.87,
+    "novel_inputs": []
+   }
+  ],
+  "new_input_features": [
+   {
+    "feature": "coexpr_with_target_e28",
+    "r2": 0.466,
+    "novel_inputs": [
+     "control_cells",
+     "gene_corr"
+    ]
+   },
+   {
+    "feature": "is_prior_neighbor_of_target_e29",
+    "r2": -0.004,
+    "novel_inputs": []
+   },
+   {
+    "feature": "protein_length_log_e31",
+    "r2": 0.002,
+    "novel_inputs": [
+     "protein_annotation.protein_length"
+    ]
+   },
+   {
+    "feature": "target_n_transcripts_e39",
+    "r2": -0.028,
+    "novel_inputs": [
+     "gene_annotation.n_transcripts"
+    ]
+   },
+   {
+    "feature": "aa_cysteine_fraction_e119",
+    "r2": 0.017,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_n_upstream_atg_interaction_e85",
+    "r2": -0.014,
+    "novel_inputs": [
+     "gene_annotation.n_upstream_atg"
+    ]
+   },
+   {
+    "feature": "control_std_x_target_loeuf_e147",
+    "r2": 0.18,
+    "novel_inputs": []
+   },
+   {
+    "feature": "control_coexpr_with_target_e73",
+    "r2": 0.222,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_residual_gene_set_overlap_e182",
+    "r2": 0.005,
+    "novel_inputs": []
+   },
+   {
+    "feature": "cpg_oe_promoter_e61",
+    "r2": 0.02,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_globin_coexpression_interaction_e255",
+    "r2": 0.654,
+    "novel_inputs": []
+   },
+   {
+    "feature": "train_delta_transfer_similarity_weighted_e293",
+    "r2": 0.448,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_cpg_promoter_x_gene_intron_length_e232",
+    "r2": 0.084,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_proline_fraction_rank_e248",
+    "r2": 0.043,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_is_gata1_nfe2_neighbor_e217",
+    "r2": 0.086,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_span_kb_e40",
+    "r2": 0.016,
+    "novel_inputs": [
+     "gene_annotation.gene_span_kb"
+    ]
+   },
+   {
+    "feature": "n_transcripts_e41",
+    "r2": 0.018,
+    "novel_inputs": []
+   },
+   {
+    "feature": "protein_length_e42",
+    "r2": 0.008,
+    "novel_inputs": []
+   },
+   {
+    "feature": "n_transmembrane_e43",
+    "r2": 0.009,
+    "novel_inputs": [
+     "protein_annotation.n_transmembrane"
+    ]
+   },
+   {
+    "feature": "loeuf_e44",
+    "r2": 0.014,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gc_x_control_mean_e15",
+    "r2": 0.788,
+    "novel_inputs": [
+     "gene_annotation"
+    ]
+   },
+   {
+    "feature": "n_upstream_atg_e85_e87",
+    "r2": 0.001,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gc_utr3_e86_e88",
+    "r2": 0.015,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_l_e87_e89",
+    "r2": 0.039,
+    "novel_inputs": []
+   },
+   {
+    "feature": "oe_lof_e88_e90",
+    "r2": 0.186,
+    "novel_inputs": [
+     "gene_constraint.oe_lof"
+    ]
+   },
+   {
+    "feature": "mis_z_e89_e91",
+    "r2": 0.135,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_is_tf_e66",
+    "r2": 0.002,
+    "novel_inputs": [
+     "transcription_factors"
+    ]
+   },
+   {
+    "feature": "target_pli_e67",
+    "r2": -0.022,
+    "novel_inputs": [
+     "gene_constraint.pLI"
+    ]
+   },
+   {
+    "feature": "cds_length_e68",
+    "r2": 0.006,
+    "novel_inputs": [
+     "gene_annotation.cds_length"
+    ]
+   },
+   {
+    "feature": "utr3_length_e69",
+    "r2": 0.003,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_target_pli_interaction_e79",
+    "r2": -0.004,
+    "novel_inputs": []
+   },
+   {
+    "feature": "cds_length_log_e80",
+    "r2": 0.01,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gc_utr3_e81",
+    "r2": 0.007,
+    "novel_inputs": [
+     "gene_annotation.gc_utr3"
+    ]
+   },
+   {
+    "feature": "aa_leucine_fraction_e82",
+    "r2": 0.023,
+    "novel_inputs": [
+     "gene_annotation.aa_L"
+    ]
+   },
+   {
+    "feature": "target_mis_z_interaction_e83",
+    "r2": 0.068,
+    "novel_inputs": [
+     "gene_constraint.mis_z"
+    ]
+   },
+   {
+    "feature": "utr5_length_e94_e99",
+    "r2": 0.006,
+    "novel_inputs": [
+     "gene_annotation.utr5_length"
+    ]
+   },
+   {
+    "feature": "cpg_oe_promoter_e95_e100",
+    "r2": 0.049,
+    "novel_inputs": []
+   },
+   {
+    "feature": "oe_mis_e96_e101",
+    "r2": 0.126,
+    "novel_inputs": [
+     "gene_constraint.oe_mis"
+    ]
+   },
+   {
+    "feature": "syn_z_e97_e102",
+    "r2": 0.026,
+    "novel_inputs": [
+     "gene_constraint.syn_z"
+    ]
+   },
+   {
+    "feature": "obs_lof_e98_e103",
+    "r2": 0.098,
+    "novel_inputs": [
+     "gene_constraint.obs_lof"
+    ]
+   },
+   {
+    "feature": "target_gene_constraint_interaction_e54",
+    "r2": 0.004,
+    "novel_inputs": []
+   },
+   {
+    "feature": "transcript_length_log_e55",
+    "r2": 0.015,
+    "novel_inputs": []
+   },
+   {
+    "feature": "utr3_length_e56",
+    "r2": 0.006,
+    "novel_inputs": []
+   },
+   {
+    "feature": "n_exons_e57",
+    "r2": 0.011,
+    "novel_inputs": []
+   },
+   {
+    "feature": "protein_length_log_e58",
+    "r2": 0.002,
+    "novel_inputs": []
+   },
+   {
+    "feature": "has_signal_peptide_e59",
+    "r2": 0.057,
+    "novel_inputs": []
+   },
+   {
+    "feature": "co2_transport_membership_e112",
+    "r2": 0.221,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gata1_nfe2_network_proximity_e113",
+    "r2": 0.025,
+    "novel_inputs": []
+   },
+   {
+    "feature": "syn_z_e115",
+    "r2": 0.033,
+    "novel_inputs": []
+   },
+   {
+    "feature": "utr5_length_e116",
+    "r2": 0.018,
+    "novel_inputs": []
+   },
+   {
+    "feature": "nearest_tss_kb_e117",
+    "r2": 0.007,
+    "novel_inputs": []
+   },
+   {
+    "feature": "n_tss_within_100kb_e118",
+    "r2": 0.062,
+    "novel_inputs": []
+   },
+   {
+    "feature": "control_std_e20",
+    "r2": 0.331,
+    "novel_inputs": [
+     "control_cells"
+    ]
+   },
+   {
+    "feature": "gata1_nfe2_network_proximity_e21",
+    "r2": 0.021,
+    "novel_inputs": [
+     "prior_network"
+    ]
+   },
+   {
+    "feature": "co2_transport_membership_e22",
+    "r2": 0.261,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_shared_compartment_e23",
+    "r2": 0.008,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_loeuf_e24",
+    "r2": -0.017,
+    "novel_inputs": []
+   },
+   {
+    "feature": "intron_length_kb_e25",
+    "r2": 0.045,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_globin_train_delta_similarity_e274",
+    "r2": -0.102,
+    "novel_inputs": []
+   },
+   {
+    "feature": "cpg_oe_promoter_globin_interaction_e275",
+    "r2": 0.072,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_cpg_oe_promoter_x_globin_gene_e276",
+    "r2": 0.437,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_tf_x_gene_histone_e277",
+    "r2": 0.029,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_control_corr_e286",
+    "r2": 0.353,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_protein_length_x_gene_length_e287",
+    "r2": 0.037,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_nucleus_x_gene_nucleus_e288",
+    "r2": 0.095,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_control_std_x_gene_control_std_e291",
+    "r2": -0.008,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_control_corr_e261",
+    "r2": 0.451,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_tf_gene_corr_e262",
+    "r2": 0.451,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_a_interaction_e263",
+    "r2": 0.032,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_v_interaction_e264",
+    "r2": 0.016,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_y_interaction_e265",
+    "r2": -0.017,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_control_dist_sim_e266",
+    "r2": -0.02,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_ppi_shortest_path_e268",
+    "r2": 0.081,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_w_interaction_e249",
+    "r2": 0.027,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_n_interaction_e250",
+    "r2": -0.043,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_m_interaction_e251",
+    "r2": 0.011,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_aa_v_interaction_e252",
+    "r2": 0.037,
+    "novel_inputs": [
+     "gene_annotation.aa_V"
+    ]
+   },
+   {
+    "feature": "target_gene_aa_a_interaction_e253",
+    "r2": 0.032,
+    "novel_inputs": [
+     "gene_annotation.aa_A"
+    ]
+   },
+   {
+    "feature": "target_gene_aa_y_interaction_e254",
+    "r2": -0.017,
+    "novel_inputs": [
+     "gene_annotation.aa_Y"
+    ]
+   },
+   {
+    "feature": "gene_methionine_fraction_e241",
+    "r2": 0.06,
+    "novel_inputs": [
+     "gene_annotation.aa_M"
+    ]
+   },
+   {
+    "feature": "target_globin_sets_similarity_e242",
+    "r2": 0.073,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_tryptophan_fraction_e243",
+    "r2": 0.067,
+    "novel_inputs": [
+     "gene_annotation.aa_W"
+    ]
+   },
+   {
+    "feature": "target_loeuf_x_gene_globin_corr_e244",
+    "r2": 0.308,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_asparagine_fraction_e245",
+    "r2": 0.062,
+    "novel_inputs": [
+     "gene_annotation.aa_N"
+    ]
+   },
+   {
+    "feature": "aa_q_fraction_e192_e193",
+    "r2": 0.051,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_corr_with_globin_e194_e195",
+    "r2": 0.308,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gata1_nfe2_neighbor_e195_e196",
+    "r2": 0.077,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_i_fraction_e196_e197",
+    "r2": 0.063,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_aa_r_fraction_e233",
+    "r2": -0.089,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_aa_k_fraction_e234",
+    "r2": -0.137,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_aa_p_fraction_e235",
+    "r2": -0.152,
+    "novel_inputs": [
+     "gene_annotation.aa_P"
+    ]
+   },
+   {
+    "feature": "target_aa_s_fraction_e236",
+    "r2": -0.19,
+    "novel_inputs": [
+     "gene_annotation.aa_S"
+    ]
+   },
+   {
+    "feature": "target_aa_t_fraction_e237",
+    "r2": -0.079,
+    "novel_inputs": [
+     "gene_annotation.aa_T"
+    ]
+   },
+   {
+    "feature": "target_g_gene_set_jaccard_e239",
+    "r2": -0.165,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_corr_with_residual_set_e182_e184",
+    "r2": 0.296,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_aspartic_fraction_e184_e186",
+    "r2": 0.09,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_glutamic_fraction_e185_e187",
+    "r2": 0.08,
+    "novel_inputs": [
+     "gene_annotation.aa_E"
+    ]
+   },
+   {
+    "feature": "target_residual_set_overlap_e186_e188",
+    "r2": -0.07,
+    "novel_inputs": []
+   },
+   {
+    "feature": "ppi_distance_to_residual_genes_e187_e189",
+    "r2": 0.055,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_corr_with_globin_e210",
+    "r2": 0.39,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gata1_nfe2_x_gene_globin_corr_e211",
+    "r2": 0.088,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_in_co2_transport_e212",
+    "r2": 0.221,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_is_histone_e213",
+    "r2": 0.029,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_residual_set_overlap_e214",
+    "r2": 0.011,
+    "novel_inputs": []
+   },
+   {
+    "feature": "globin_histone_corr_similarity_e152",
+    "r2": 0.311,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_set_count_x_control_std_e153",
+    "r2": -0.064,
+    "novel_inputs": []
+   },
+   {
+    "feature": "ppi_distance_to_residual_genes_e154",
+    "r2": 0.062,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_cysteine_x_target_loeuf_e155",
+    "r2": 0.06,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_pli_x_control_mean_e156",
+    "r2": 0.294,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_gene_shared_prior_neighbors_e222",
+    "r2": -0.014,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_corr_with_globin_set_e224",
+    "r2": 0.308,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_corr_with_globin_set_e225",
+    "r2": 0.308,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_aa_k_fraction_e228",
+    "r2": -0.133,
+    "novel_inputs": [
+     "gene_annotation.aa_K"
+    ]
+   },
+   {
+    "feature": "gene_aa_r_fraction_e229",
+    "r2": 0.07,
+    "novel_inputs": [
+     "gene_annotation.aa_R"
+    ]
+   },
+   {
+    "feature": "target_lof_z_x_control_std_e175",
+    "r2": 0.05,
+    "novel_inputs": []
+   },
+   {
+    "feature": "target_exp_lof_x_intron_length_e176",
+    "r2": 0.048,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_d_fraction_e177",
+    "r2": 0.076,
+    "novel_inputs": [
+     "gene_annotation.aa_D"
+    ]
+   },
+   {
+    "feature": "aa_g_fraction_e178",
+    "r2": 0.084,
+    "novel_inputs": [
+     "gene_annotation.aa_G"
+    ]
+   },
+   {
+    "feature": "aa_f_fraction_e179",
+    "r2": 0.057,
+    "novel_inputs": [
+     "gene_annotation.aa_F"
+    ]
+   },
+   {
+    "feature": "target_pnull_x_control_mean_e180",
+    "r2": 0.01,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_corr_with_residual_genes_e141",
+    "r2": 0.411,
+    "novel_inputs": []
+   },
+   {
+    "feature": "gene_set_overlap_with_target_e143",
+    "r2": -0.041,
+    "novel_inputs": []
+   },
+   {
+    "feature": "aa_histidine_fraction_e144",
+    "r2": 0.012,
+    "novel_inputs": [
+     "gene_annotation.aa_H"
+    ]
+   },
+   {
+    "feature": "gene_constraint_oe_lof_upper_bin_e145",
+    "r2": 0.259,
+    "novel_inputs": [
+     "gene_constraint.oe_lof_upper_bin"
+    ]
+   },
+   {
+    "feature": "gene_exp_lof_x_target_pli_e165",
+    "r2": 0.558,
+    "novel_inputs": [
+     "gene_constraint.exp_lof"
+    ]
+   },
+   {
+    "feature": "gene_oe_lof_lower_x_target_loeuf_e166",
+    "r2": 0.427,
+    "novel_inputs": [
+     "gene_constraint.oe_lof_lower"
+    ]
+   },
+   {
+    "feature": "gene_pnull_x_target_pli_e167",
+    "r2": 0.077,
+    "novel_inputs": [
+     "gene_constraint.pNull"
+    ]
+   },
+   {
+    "feature": "gene_oe_mis_upper_x_target_oe_mis_e168",
+    "r2": 0.198,
+    "novel_inputs": [
+     "gene_constraint.oe_mis_upper"
+    ]
+   },
+   {
+    "feature": "gene_lof_z_x_target_pli_e169",
+    "r2": 0.015,
+    "novel_inputs": [
+     "gene_constraint.lof_z"
+    ]
+   },
+   {
+    "feature": "control_std_e8",
+    "r2": 0.331,
+    "novel_inputs": [
+     "control_cells",
+     "control_std"
+    ]
+   },
+   {
+    "feature": "target_constraint_e9",
+    "r2": -0.017,
+    "novel_inputs": [
+     "gene_constraint"
+    ]
+   },
+   {
+    "feature": "gene_intron_length_e10",
+    "r2": 0.046,
+    "novel_inputs": [
+     "gene_annotation"
+    ]
+   },
+   {
+    "feature": "target_er_flag_e11",
+    "r2": -0.006,
+    "novel_inputs": [
+     "protein_annotation"
+    ]
+   },
+   {
+    "feature": "globin_set_membership_e12",
+    "r2": 0.261,
+    "novel_inputs": [
+     "gene_sets"
+    ]
+   },
+   {
+    "feature": "ppi_degree_e13",
+    "r2": 0.056,
+    "novel_inputs": [
+     "ppi_network"
+    ]
+   }
+  ],
+  "evidence_files": [
+   "discovery_EXP_0003.json",
+   "discovery_EXP_0017.json",
+   "discovery_EXP_0033.json",
+   "discovery_EXP_0053.json",
+   "discovery_EXP_0065.json",
+   "discovery_EXP_0074.json",
+   "discovery_EXP_0079.json",
+   "discovery_EXP_0089.json",
+   "discovery_EXP_0108.json",
+   "discovery_EXP_0132.json",
+   "discovery_EXP_0174.json",
+   "discovery_EXP_0204.json",
+   "discovery_EXP_0218.json",
+   "discovery_EXP_0239.json",
+   "discovery_EXP_0242.json",
+   "discovery_EXP_0259.json",
+   "discovery_EXP_0267.json"
+  ]
+ },
+ "baseline": {
+  "experiment_id": "EXP_0003",
+  "score": 0.5010002317798699,
+  "description": "OLS on baseline features (control mean, mean response, target indicator).",
+  "metrics": {
+   "rmse": 0.0758774050371239,
+   "mae": 0.049228097636096084,
+   "mse": 0.005757380595167756,
+   "pearson_delta": 0.5560025759775362,
+   "pearson_delta_top": 0.6668892765043213,
+   "direction_acc_top": 0.8323529411764705,
+   "mse_top": 0.13864246014405368,
+   "r2_top": 0.8039599021098659,
+   "pearson_expr": 0.9869740097262661,
+   "primary": 0.5010002317798699,
+   "selection_rule": "pearson_delta",
+   "pearson_delta_cv": 0.48229943475266324,
+   "n_visible": 67,
+   "cv_folds": 5,
+   "cellforge_mse": 0.005757380595167756,
+   "cellforge_pcc": 0.9869740097262664,
+   "cellforge_r2": 0.9726971014420547,
+   "cellforge_mse_de": 0.12685748894186963,
+   "cellforge_pcc_de": 0.9442497033011582,
+   "cellforge_r2_de": 0.8208865795592267,
+   "cellforge_mse_deset": 0.04345378617186623,
+   "cellforge_pcc_deset": 0.9406462919087664,
+   "cellforge_r2_deset": 0.8463663349787499,
+   "cellforge_n_perts_deset": 16,
+   "vcworld_de_accuracy": 0.8068985258336911,
+   "vcworld_de_precision": 0.4469320066334992,
+   "vcworld_de_recall": 0.08144454517981263,
+   "vcworld_de_f1": 0.13778118609406956,
+   "vcworld_de_auroc": 0.658648661236135,
+   "vcworld_de_auprc": 0.314131640253149,
+   "vcworld_dir_accuracy": 0.8895436687821094,
+   "vcworld_dir_precision": 0.8544,
+   "vcworld_dir_recall": 0.7776699029126214,
+   "vcworld_dir_f1": 0.8142312579415502,
+   "vcworld_dir_auroc": 0.9340939008336989,
+   "vcworld_dir_auprc": 0.8726728336770272,
+   "vcworld_n_de_pairs": 6618,
+   "alpha_scores": [
+    {
+     "alpha": 0.0,
+     "pearson_delta": 0.5560025759775362,
+     "primary": 0.5010002317798699
+    }
+   ]
+  }
+ },
+ "best": {
+  "experiment_id": "EXP_0974",
+  "score": 0.5523563555308683,
+  "model": "ridge",
+  "alpha": 3.3e-05,
+  "features": [
+   "mean_response",
+   "is_target",
+   "target_gata1_nfe2_x_gene_globin_corr_e211",
+   "target_g_gene_set_jaccard_e239",
+   "target_globin_sets_similarity_e242",
+   "train_delta_transfer_similarity_e267",
+   "train_delta_transfer_similarity_weighted_e293",
+   "target_globin_coexpression_interaction_e255",
+   "target_pli_e67",
+   "gene_methionine_fraction_e241",
+   "protein_length_log_e31",
+   "aa_cysteine_fraction_e119",
+   "cpg_oe_promoter_globin_interaction_e275",
+   "protein_length_e42",
+   "gata1_nfe2_network_proximity_e21",
+   "target_tf_x_gene_histone_e277",
+   "has_signal_peptide_e70",
+   "gene_proline_fraction_rank_e248",
+   "gata1_nfe2_network_proximity_e113",
+   "target_aa_k_fraction_e234",
+   "target_er_flag_e11",
+   "target_gene_constraint_interaction_e54",
+   "has_signal_peptide_e59"
+  ],
+  "metrics": {
+   "rmse": 0.07227610239653194,
+   "mae": 0.04726578418086572,
+   "mse": 0.0052238349776339696,
+   "pearson_delta": 0.5904853359326786,
+   "pearson_delta_top": 0.6737532747508073,
+   "direction_acc_top": 0.8470588235294116,
+   "mse_top": 0.11264445624661787,
+   "r2_top": 0.839729271091576,
+   "pearson_expr": 0.9881850256259302,
+   "primary": 0.5523563555308683,
+   "selection_rule": "pearson_delta",
+   "pearson_delta_cv": 0.5393925021942527,
+   "n_visible": 67,
+   "cv_folds": 5,
+   "cellforge_mse": 0.005223834977633969,
+   "cellforge_pcc": 0.9881850256259302,
+   "cellforge_r2": 0.975280309408135,
+   "cellforge_mse_de": 0.10208185652050186,
+   "cellforge_pcc_de": 0.9517952468919972,
+   "cellforge_r2_de": 0.855905946740162,
+   "cellforge_mse_deset": 0.03868523530655864,
+   "cellforge_pcc_deset": 0.9492142551071773,
+   "cellforge_r2_deset": 0.8688633676395945,
+   "cellforge_n_perts_deset": 16,
+   "vcworld_de_accuracy": 0.8016602261342494,
+   "vcworld_de_precision": 0.46248492159227983,
+   "vcworld_de_recall": 0.2896645512239347,
+   "vcworld_de_f1": 0.3562203846511195,
+   "vcworld_de_auroc": 0.7023425791624552,
+   "vcworld_de_auprc": 0.37976909561349714,
+   "vcworld_dir_accuracy": 0.8951344817165306,
+   "vcworld_dir_precision": 0.8966318234610917,
+   "vcworld_dir_recall": 0.7495145631067961,
+   "vcworld_dir_f1": 0.8164992067689053,
+   "vcworld_dir_auroc": 0.945140838470288,
+   "vcworld_dir_auprc": 0.9017023812644318,
+   "vcworld_n_de_pairs": 6618,
+   "alpha_scores": [
+    {
+     "alpha": 4e-06,
+     "pearson_delta": 0.5904853357275831,
+     "primary": 0.5523563554746068
+    },
+    {
+     "alpha": 7e-06,
+     "pearson_delta": 0.5904853359390755,
+     "primary": 0.5523563555272016
+    },
+    {
+     "alpha": 1.1e-05,
+     "pearson_delta": 0.590485335914828,
+     "primary": 0.5523563555302745
+    },
+    {
+     "alpha": 1.9e-05,
+     "pearson_delta": 0.5904853359226578,
+     "primary": 0.5523563555294017
+    },
+    {
+     "alpha": 3.3e-05,
+     "pearson_delta": 0.5904853359326786,
+     "primary": 0.5523563555308683
+    }
+   ]
+  },
+  "coefficients": {
+   "mean_response": -0.01307,
+   "is_target": -0.00703,
+   "target_gata1_nfe2_x_gene_globin_corr_e211": -0.00427,
+   "target_g_gene_set_jaccard_e239": 0.00068,
+   "target_globin_sets_similarity_e242": 0.00145,
+   "train_delta_transfer_similarity_e267": 0.06165,
+   "train_delta_transfer_similarity_weighted_e293": -0.00098,
+   "target_globin_coexpression_interaction_e255": -0.00095,
+   "target_pli_e67": -0.00408,
+   "gene_methionine_fraction_e241": 0.00033,
+   "protein_length_log_e31": -0.00041,
+   "aa_cysteine_fraction_e119": -9e-05,
+   "cpg_oe_promoter_globin_interaction_e275": -0.00112,
+   "protein_length_e42": 7e-05,
+   "gata1_nfe2_network_proximity_e21": 0.00318,
+   "target_tf_x_gene_histone_e277": 0.00014,
+   "has_signal_peptide_e70": 8e-05,
+   "gene_proline_fraction_rank_e248": -2e-05,
+   "gata1_nfe2_network_proximity_e113": -0.00298,
+   "target_aa_k_fraction_e234": -0.00419,
+   "target_er_flag_e11": 0.0067,
+   "target_gene_constraint_interaction_e54": 0.00149,
+   "has_signal_peptide_e59": 8e-05
+  }
+ },
+ "improvement_over_baseline": 0.051356123750998406,
+ "ensemble": null,
+ "lineage": [
+  {
+   "experiment_id": "EXP_0003",
+   "added": "baseline",
+   "score": 0.5010002317798699,
+   "hypothesis": "OLS on baseline features (control mean, mean response, target indicator)."
+  },
+  {
+   "experiment_id": "EXP_0008",
+   "added": "control_std_e8",
+   "score": 0.5010179206324111,
+   "hypothesis": "Genes with higher control expression variance have larger or more variable perturbation responses, and including control_std will improve prediction of delta."
+  },
+  {
+   "experiment_id": "EXP_0017",
+   "added": "config",
+   "score": 0.5013874144173106,
+   "hypothesis": "Drop control_mean from the best model (EXP_0008) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0033",
+   "added": "config",
+   "score": 0.5015477763534505,
+   "hypothesis": "Removing control_std from the best model does not reduce performance, indicating it is redundant."
+  },
+  {
+   "experiment_id": "EXP_0059",
+   "added": "has_signal_peptide_e59",
+   "score": 0.5019844255153794,
+   "hypothesis": "Secreted or membrane proteins (with signal peptide) show attenuated expression changes due to ER-associated degradation or buffering."
+  },
+  {
+   "experiment_id": "EXP_0065",
+   "added": "config",
+   "score": 0.5020115108370902,
+   "hypothesis": "Add target_gene_shared_compartment_e23 to the best model (EXP_0059) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0079",
+   "added": "gene_target_pli_interaction_e79",
+   "score": 0.5022964885369213,
+   "hypothesis": "Genes with high pLI (loss-of-function intolerant) show larger expression changes when the perturbed target is also loss-of-function intolerant, due to compensatory or buffering mechanisms."
+  },
+  {
+   "experiment_id": "EXP_0089",
+   "added": "aa_l_e87_e89",
+   "score": 0.5022972910417806,
+   "hypothesis": "Genes with high leucine fraction in their protein sequence show attenuated expression changes after perturbation."
+  },
+  {
+   "experiment_id": "EXP_0103",
+   "added": "obs_lof_e98_e103",
+   "score": 0.5023318647123048,
+   "hypothesis": "Genes with more observed loss-of-function variants (obs_lof) show larger expression changes because they tolerate LoF and may be less buffered against expression perturbations."
+  },
+  {
+   "experiment_id": "EXP_0108",
+   "added": "config",
+   "score": 0.5023451802630616,
+   "hypothesis": "Refine the ridge penalty around alpha=100 for the best model (EXP_0103)."
+  },
+  {
+   "experiment_id": "EXP_0120",
+   "added": "config",
+   "score": 0.5023840690663606,
+   "hypothesis": "Refine the ridge penalty around alpha=300 for the best model (EXP_0108)."
+  },
+  {
+   "experiment_id": "EXP_0124",
+   "added": "config",
+   "score": 0.502491676085444,
+   "hypothesis": "Refine the ridge penalty around alpha=900 for the best model (EXP_0120)."
+  },
+  {
+   "experiment_id": "EXP_0128",
+   "added": "config",
+   "score": 0.5027439807417328,
+   "hypothesis": "Refine the ridge penalty around alpha=2700 for the best model (EXP_0124)."
+  },
+  {
+   "experiment_id": "EXP_0132",
+   "added": "config",
+   "score": 0.5030766464400536,
+   "hypothesis": "Refine the ridge penalty around alpha=8100 for the best model (EXP_0128)."
+  },
+  {
+   "experiment_id": "EXP_0174",
+   "added": "config",
+   "score": 0.5030841000750754,
+   "hypothesis": "Add aa_leucine_fraction_e82 to the best model (EXP_0132) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0211",
+   "added": "target_gata1_nfe2_x_gene_globin_corr_e211",
+   "score": 0.5041313642683617,
+   "hypothesis": "The effect of a perturbation on a gene is larger when the target is a GATA1 or NFE2 neighbor and the gene co-expresses with globin genes."
+  },
+  {
+   "experiment_id": "EXP_0218",
+   "added": "config",
+   "score": 0.5041313881201935,
+   "hypothesis": "Refine the ridge penalty around alpha=0.01 for the best model (EXP_0211)."
+  },
+  {
+   "experiment_id": "EXP_0239",
+   "added": "target_g_gene_set_jaccard_e239",
+   "score": 0.5043571806045146,
+   "hypothesis": "Perturbations targeting genes that share many gene sets with the response gene g produce larger expression changes in g, because shared gene set membership indicates functional relatedness."
+  },
+  {
+   "experiment_id": "EXP_0242",
+   "added": "target_globin_sets_similarity_e242",
+   "score": 0.5044117299910781,
+   "hypothesis": "Perturbations targeting genes that share many gene sets with globin genes (HBZ, HBA1, etc.) produce larger expression changes in globin and globin-related genes."
+  },
+  {
+   "experiment_id": "EXP_0267",
+   "added": "train_delta_transfer_similarity_e267",
+   "score": 0.550957838304132,
+   "hypothesis": "Perturbations targeting genes with similar training response profiles to the target produce similar effects on gene g."
+  },
+  {
+   "experiment_id": "EXP_0281",
+   "added": "config",
+   "score": 0.5509578765104534,
+   "hypothesis": "Refine the ridge penalty around alpha=0.01 for the best model (EXP_0267)."
+  },
+  {
+   "experiment_id": "EXP_0293",
+   "added": "train_delta_transfer_similarity_weighted_e293",
+   "score": 0.5513778807704068,
+   "hypothesis": "Using protein length of the target to weight the transfer similarity feature improves prediction for perturbations of long proteins."
+  },
+  {
+   "experiment_id": "EXP_0296",
+   "added": "config",
+   "score": 0.5515732302517102,
+   "hypothesis": "Drop target_gene_shared_compartment_e23 from the best model (EXP_0293) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0300",
+   "added": "config",
+   "score": 0.5516091154605486,
+   "hypothesis": "Drop gene_target_pli_interaction_e79 from the best model (EXP_0296) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0305",
+   "added": "config",
+   "score": 0.5516255410683273,
+   "hypothesis": "Drop obs_lof_e98_e103 from the best model (EXP_0300) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0306",
+   "added": "config",
+   "score": 0.5516255916605441,
+   "hypothesis": "Refine the ridge penalty around alpha=0.01 for the best model (EXP_0305)."
+  },
+  {
+   "experiment_id": "EXP_0310",
+   "added": "config",
+   "score": 0.5516256085106139,
+   "hypothesis": "Refine the ridge penalty around alpha=0.0033 for the best model (EXP_0306)."
+  },
+  {
+   "experiment_id": "EXP_0314",
+   "added": "config",
+   "score": 0.551625613942455,
+   "hypothesis": "Refine the ridge penalty around alpha=0.001089 for the best model (EXP_0310)."
+  },
+  {
+   "experiment_id": "EXP_0318",
+   "added": "config",
+   "score": 0.5516256157752852,
+   "hypothesis": "Refine the ridge penalty around alpha=0.000359 for the best model (EXP_0314)."
+  },
+  {
+   "experiment_id": "EXP_0322",
+   "added": "config",
+   "score": 0.551625616439872,
+   "hypothesis": "Refine the ridge penalty around alpha=0.000118 for the best model (EXP_0318)."
+  },
+  {
+   "experiment_id": "EXP_0326",
+   "added": "config",
+   "score": 0.5516256166696114,
+   "hypothesis": "Refine the ridge penalty around alpha=3.9e-05 for the best model (EXP_0322)."
+  },
+  {
+   "experiment_id": "EXP_0330",
+   "added": "config",
+   "score": 0.5516256166761825,
+   "hypothesis": "Refine the ridge penalty around alpha=1.3e-05 for the best model (EXP_0326)."
+  },
+  {
+   "experiment_id": "EXP_0334",
+   "added": "config",
+   "score": 0.5516256167044232,
+   "hypothesis": "Refine the ridge penalty around alpha=4e-06 for the best model (EXP_0330)."
+  },
+  {
+   "experiment_id": "EXP_0352",
+   "added": "config",
+   "score": 0.5517157468562482,
+   "hypothesis": "Add target_globin_coexpression_interaction_e255 to the best model (EXP_0334) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0369",
+   "added": "config",
+   "score": 0.5517846093955543,
+   "hypothesis": "Add target_pli_e67 to the best model (EXP_0352) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0370",
+   "added": "config",
+   "score": 0.551784609399917,
+   "hypothesis": "Refine the ridge penalty around alpha=1e-06 for the best model (EXP_0369)."
+  },
+  {
+   "experiment_id": "EXP_0394",
+   "added": "config",
+   "score": 0.5518350219350909,
+   "hypothesis": "Add gene_methionine_fraction_e241 to the best model (EXP_0370) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0420",
+   "added": "config",
+   "score": 0.5518384280580226,
+   "hypothesis": "Add target_tf_x_gene_histone_e277 to the best model (EXP_0394) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0445",
+   "added": "config",
+   "score": 0.5518922522684621,
+   "hypothesis": "Add protein_length_log_e31 to the best model (EXP_0420) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0449",
+   "added": "config",
+   "score": 0.5518938207482688,
+   "hypothesis": "Drop aa_leucine_fraction_e82 from the best model (EXP_0445) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0451",
+   "added": "config",
+   "score": 0.5521176578390729,
+   "hypothesis": "Drop aa_l_e87_e89 from the best model (EXP_0449) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0464",
+   "added": "config",
+   "score": 0.552120134055725,
+   "hypothesis": "Drop target_tf_x_gene_histone_e277 from the best model (EXP_0451) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0466",
+   "added": "config",
+   "score": 0.5521201340706997,
+   "hypothesis": "Refine the ridge penalty around alpha=2e-06 for the best model (EXP_0464)."
+  },
+  {
+   "experiment_id": "EXP_0470",
+   "added": "config",
+   "score": 0.5521201340810477,
+   "hypothesis": "Refine the ridge penalty around alpha=6e-06 for the best model (EXP_0466)."
+  },
+  {
+   "experiment_id": "EXP_0501",
+   "added": "config",
+   "score": 0.5521340031789272,
+   "hypothesis": "Add aa_cysteine_fraction_e119 to the best model (EXP_0470) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0529",
+   "added": "config",
+   "score": 0.5521426688409029,
+   "hypothesis": "Add cpg_oe_promoter_globin_interaction_e275 to the best model (EXP_0501) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0530",
+   "added": "config",
+   "score": 0.552142668849201,
+   "hypothesis": "Refine the ridge penalty around alpha=4e-06 for the best model (EXP_0529)."
+  },
+  {
+   "experiment_id": "EXP_0564",
+   "added": "config",
+   "score": 0.5521637462588996,
+   "hypothesis": "Add protein_length_e42 to the best model (EXP_0530) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0593",
+   "added": "config",
+   "score": 0.5521677934305304,
+   "hypothesis": "Add gata1_nfe2_network_proximity_e21 to the best model (EXP_0564) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0618",
+   "added": "config",
+   "score": 0.5521683964929023,
+   "hypothesis": "Add target_tf_x_gene_histone_e277 to the best model (EXP_0593) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0622",
+   "added": "config",
+   "score": 0.5521683964941102,
+   "hypothesis": "Refine the ridge penalty around alpha=2e-06 for the best model (EXP_0618)."
+  },
+  {
+   "experiment_id": "EXP_0660",
+   "added": "config",
+   "score": 0.5521683964941106,
+   "hypothesis": "Add has_signal_peptide_e70 to the best model (EXP_0622) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0704",
+   "added": "config",
+   "score": 0.552199857421685,
+   "hypothesis": "Add gene_proline_fraction_rank_e248 to the best model (EXP_0660) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0747",
+   "added": "config",
+   "score": 0.5522011674547714,
+   "hypothesis": "Add gata1_nfe2_network_proximity_e113 to the best model (EXP_0704) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0809",
+   "added": "config",
+   "score": 0.5522030666307594,
+   "hypothesis": "Add target_aa_k_fraction_e234 to the best model (EXP_0747) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0810",
+   "added": "config",
+   "score": 0.5522030666392963,
+   "hypothesis": "Refine the ridge penalty around alpha=6e-06 for the best model (EXP_0809)."
+  },
+  {
+   "experiment_id": "EXP_0815",
+   "added": "config",
+   "score": 0.5522030666393256,
+   "hypothesis": "Drop has_signal_peptide_e59 from the best model (EXP_0810) to test whether it still earns its place."
+  },
+  {
+   "experiment_id": "EXP_0852",
+   "added": "config",
+   "score": 0.5522071790048819,
+   "hypothesis": "Add target_er_flag_e11 to the best model (EXP_0815) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0941",
+   "added": "config",
+   "score": 0.5523563555256904,
+   "hypothesis": "Add target_gene_constraint_interaction_e54 to the best model (EXP_0852) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0942",
+   "added": "config",
+   "score": 0.5523563555302744,
+   "hypothesis": "Refine the ridge penalty around alpha=1.8e-05 for the best model (EXP_0941)."
+  },
+  {
+   "experiment_id": "EXP_0971",
+   "added": "config",
+   "score": 0.5523563555302745,
+   "hypothesis": "Add has_signal_peptide_e59 to the best model (EXP_0942) although it did not help where it was first tried."
+  },
+  {
+   "experiment_id": "EXP_0974",
+   "added": "config",
+   "score": 0.5523563555308683,
+   "hypothesis": "Refine the ridge penalty around alpha=1.1e-05 for the best model (EXP_0971)."
+  }
+ ],
+ "most_useful_features": [
+  {
+   "feature": "train_delta_transfer_similarity_e267",
+   "experiment_id": "EXP_0267",
+   "delta": 0.04654610831305395,
+   "description": "Cosine-similarity weighted average of training deltas for gene g, where weights are cosine similarities between the target gene of p and the target genes of training perturbations in gene-set space."
+  },
+  {
+   "feature": "target_gata1_nfe2_x_gene_globin_corr_e211",
+   "experiment_id": "EXP_0211",
+   "delta": 0.001047264193286268,
+   "description": "Product of an indicator that the target of perturbation p is a neighbor of GATA1 or NFE2 in prior_network and the gene's correlation with globin genes."
+  },
+  {
+   "feature": "has_signal_peptide_e59",
+   "experiment_id": "EXP_0059",
+   "delta": 0.0004366491619288704,
+   "description": "Indicator that gene g's protein has a signal peptide (protein_annotation)."
+  },
+  {
+   "feature": "train_delta_transfer_similarity_weighted_e293",
+   "experiment_id": "EXP_0293",
+   "delta": 0.000420004259953477,
+   "description": "Cosine-similarity weighted average of training deltas, scaled by the target protein's length from protein_annotation."
+  },
+  {
+   "feature": "gene_target_pli_interaction_e79",
+   "experiment_id": "EXP_0079",
+   "delta": 0.00028497769983115706,
+   "description": "Interaction between gene g's LoF constraint (pLI) and the target gene t's pLI: product of the two, with median imputation of missing values."
+  },
+  {
+   "feature": "target_g_gene_set_jaccard_e239",
+   "experiment_id": "EXP_0239",
+   "delta": 0.00022579248432108567,
+   "description": "Jaccard similarity between gene set memberships of perturbation target and response gene g."
+  },
+  {
+   "feature": "target_globin_coexpression_interaction_e255",
+   "experiment_id": "EXP_0255",
+   "delta": 0.00010122485896735256,
+   "description": "For each (p,g), if gene g is a globin gene (HBZ, HBG2, HBA1, HBG1), the control-cell correlation between the perturbation target gene and g; else 0."
+  },
+  {
+   "feature": "aa_leucine_fraction_e82",
+   "experiment_id": "EXP_0082",
+   "delta": 6.840296780419308e-05,
+   "description": "Fraction of leucine (aa_L) in the protein sequence of gene g."
+  },
+  {
+   "feature": "target_gene_shared_compartment_e23",
+   "experiment_id": "EXP_0023",
+   "delta": 6.315356051145304e-05,
+   "description": "Binary indicator: 1 if the target of perturbation p and gene g share at least one subcellular localization flag from protein_annotation, else 0."
+  },
+  {
+   "feature": "target_globin_sets_similarity_e242",
+   "experiment_id": "EXP_0242",
+   "delta": 5.4549386563462754e-05,
+   "description": "Jaccard similarity between the target gene's gene-set memberships and the union of globin-gene gene sets, broadcast to all genes."
+  }
+ ],
+ "features_not_helping": [
+  {
+   "feature": "gene_intron_length_e10",
+   "delta": -3.683365643292191e-05
+  },
+  {
+   "feature": "globin_set_membership_e12",
+   "delta": -7.062409050373475e-05
+  },
+  {
+   "feature": "target_gc_x_control_mean_e15",
+   "delta": -9.703836392960241e-05
+  },
+  {
+   "feature": "co2_transport_membership_e22",
+   "delta": -7.062409050373475e-05
+  },
+  {
+   "feature": "intron_length_kb_e25",
+   "delta": -3.5603597194899805e-05
+  },
+  {
+   "feature": "coexpr_with_target_e28",
+   "delta": -0.003659263811180924
+  },
+  {
+   "feature": "is_prior_neighbor_of_target_e29",
+   "delta": -5.7270321962232806e-05
+  },
+  {
+   "feature": "target_n_transcripts_e39",
+   "delta": -1.1568429411079606e-06
+  },
+  {
+   "feature": "gene_span_kb_e40",
+   "delta": -5.2185633185541924e-05
+  },
+  {
+   "feature": "n_transcripts_e41",
+   "delta": -9.407425459395657e-05
+  },
+  {
+   "feature": "loeuf_e44",
+   "delta": -0.0001234249351640404
+  },
+  {
+   "feature": "target_gene_constraint_interaction_e54",
+   "delta": -0.0003457102371030585
+  },
+  {
+   "feature": "transcript_length_log_e55",
+   "delta": -0.00015486094711136822
+  },
+  {
+   "feature": "utr3_length_e56",
+   "delta": -6.778027543663523e-05
+  },
+  {
+   "feature": "n_exons_e57",
+   "delta": -0.00010267345421666185
+  },
+  {
+   "feature": "protein_length_log_e58",
+   "delta": -4.058445317811632e-06
+  },
+  {
+   "feature": "cds_length_e68",
+   "delta": -2.5026246422421572e-05
+  },
+  {
+   "feature": "utr3_length_e69",
+   "delta": -5.160194384135064e-05
+  },
+  {
+   "feature": "control_coexpr_with_target_e73",
+   "delta": -0.006469098746026303
+  },
+  {
+   "feature": "cds_length_log_e80",
+   "delta": -5.971416420857967e-05
+  },
+  {
+   "feature": "gc_utr3_e81",
+   "delta": -8.445860195860355e-05
+  },
+  {
+   "feature": "target_mis_z_interaction_e83",
+   "delta": -0.00013149203992235403
+  },
+  {
+   "feature": "target_n_upstream_atg_interaction_e85",
+   "delta": -0.0005102476493932251
+  },
+  {
+   "feature": "n_upstream_atg_e85_e87",
+   "delta": -5.351594419944483e-06
+  },
+  {
+   "feature": "gc_utr3_e86_e88",
+   "delta": -1.9163202300886972e-05
+  },
+  {
+   "feature": "oe_lof_e88_e90",
+   "delta": -0.00045006314227347133
+  },
+  {
+   "feature": "mis_z_e89_e91",
+   "delta": -0.0003836444992296739
+  },
+  {
+   "feature": "utr5_length_e94_e99",
+   "delta": -1.247463141529348e-05
+  },
+  {
+   "feature": "cpg_oe_promoter_e95_e100",
+   "delta": -3.8303616215373815e-05
+  },
+  {
+   "feature": "oe_mis_e96_e101",
+   "delta": -0.00024169485614145003
+  },
+  {
+   "feature": "syn_z_e97_e102",
+   "delta": -2.416111271197341e-05
+  },
+  {
+   "feature": "co2_transport_membership_e112",
+   "delta": -0.0001130608099911834
+  },
+  {
+   "feature": "gata1_nfe2_network_proximity_e113",
+   "delta": -8.498785337707204e-06
+  },
+  {
+   "feature": "syn_z_e115",
+   "delta": -2.2676312058211856e-05
+  },
+  {
+   "feature": "utr5_length_e116",
+   "delta": -1.4176964743373155e-05
+  },
+  {
+   "feature": "nearest_tss_kb_e117",
+   "delta": -1.5498787162560035e-05
+  },
+  {
+   "feature": "n_tss_within_100kb_e118",
+   "delta": -7.791186824124274e-05
+  },
+  {
+   "feature": "gene_corr_with_residual_genes_e141",
+   "delta": -0.00419998717996789
+  },
+  {
+   "feature": "gene_set_overlap_with_target_e143",
+   "delta": -0.0006514136588989805
+  },
+  {
+   "feature": "aa_histidine_fraction_e144",
+   "delta": -0.0007767201180817196
+  },
+  {
+   "feature": "gene_constraint_oe_lof_upper_bin_e145",
+   "delta": -0.0013011031269529738
+  },
+  {
+   "feature": "control_std_x_target_loeuf_e147",
+   "delta": -0.0011792608029285168
+  },
+  {
+   "feature": "globin_histone_corr_similarity_e152",
+   "delta": -0.001035976711048603
+  },
+  {
+   "feature": "target_set_count_x_control_std_e153",
+   "delta": -0.000832538675800909
+  },
+  {
+   "feature": "ppi_distance_to_residual_genes_e154",
+   "delta": -0.0007653283794910593
+  },
+  {
+   "feature": "aa_cysteine_x_target_loeuf_e155",
+   "delta": -0.0017098576923472164
+  },
+  {
+   "feature": "target_pli_x_control_mean_e156",
+   "delta": -0.0016423207100009218
+  },
+  {
+   "feature": "gene_exp_lof_x_target_pli_e165",
+   "delta": -0.0007710069021362731
+  },
+  {
+   "feature": "gene_oe_lof_lower_x_target_loeuf_e166",
+   "delta": -0.0006040946690973881
+  },
+  {
+   "feature": "gene_pnull_x_target_pli_e167",
+   "delta": -0.001199404343183219
+  },
+  {
+   "feature": "gene_oe_mis_upper_x_target_oe_mis_e168",
+   "delta": -0.0008089414088497948
+  },
+  {
+   "feature": "gene_lof_z_x_target_pli_e169",
+   "delta": -0.0008860114176192369
+  },
+  {
+   "feature": "target_lof_z_x_control_std_e175",
+   "delta": -0.0012879245383657922
+  },
+  {
+   "feature": "target_exp_lof_x_intron_length_e176",
+   "delta": -0.000808409336918392
+  },
+  {
+   "feature": "aa_d_fraction_e177",
+   "delta": -0.0007908534583498383
+  },
+  {
+   "feature": "aa_g_fraction_e178",
+   "delta": -0.0007854223037186969
+  },
+  {
+   "feature": "aa_f_fraction_e179",
+   "delta": -0.000705569518484439
+  },
+  {
+   "feature": "target_pnull_x_control_mean_e180",
+   "delta": -0.00318126850130962
+  },
+  {
+   "feature": "target_residual_gene_set_overlap_e182",
+   "delta": -0.0007330964487368696
+  },
+  {
+   "feature": "gene_corr_with_residual_set_e182_e184",
+   "delta": -0.0010717307293713896
+  },
+  {
+   "feature": "signal_peptide_length_e183_e185",
+   "delta": -0.0007404785882878517
+  },
+  {
+   "feature": "aa_aspartic_fraction_e184_e186",
+   "delta": -0.0007859050082831276
+  },
+  {
+   "feature": "aa_glutamic_fraction_e185_e187",
+   "delta": -0.0007192213539580772
+  },
+  {
+   "feature": "target_residual_set_overlap_e186_e188",
+   "delta": -0.0007430959409256976
+  },
+  {
+   "feature": "ppi_distance_to_residual_genes_e187_e189",
+   "delta": -0.0007475414489921395
+  },
+  {
+   "feature": "aa_q_fraction_e192_e193",
+   "delta": -0.0007556442826103238
+  },
+  {
+   "feature": "signal_peptide_length_e193_e194",
+   "delta": -0.0007404785882878517
+  },
+  {
+   "feature": "gene_corr_with_globin_e194_e195",
+   "delta": -0.0009004084686823344
+  },
+  {
+   "feature": "target_gata1_nfe2_neighbor_e195_e196",
+   "delta": -0.0007753314858922611
+  },
+  {
+   "feature": "aa_i_fraction_e196_e197",
+   "delta": -0.0007286728669843034
+  },
+  {
+   "feature": "gene_corr_with_globin_e210",
+   "delta": -0.00346976129549198
+  },
+  {
+   "feature": "gene_in_co2_transport_e212",
+   "delta": -0.0008507001468454067
+  },
+  {
+   "feature": "gene_is_histone_e213",
+   "delta": -0.0007148248304231775
+  },
+  {
+   "feature": "target_residual_set_overlap_e214",
+   "delta": -0.000725355430148733
+  },
+  {
+   "feature": "target_is_gata1_nfe2_neighbor_e217",
+   "delta": -0.0007799033084237017
+  },
+  {
+   "feature": "target_gene_shared_prior_neighbors_e222",
+   "delta": -0.0008575311904470695
+  },
+  {
+   "feature": "gene_corr_with_globin_set_e224",
+   "delta": -0.0009249988318789093
+  },
+  {
+   "feature": "gene_corr_with_globin_set_e225",
+   "delta": -0.0009249988318789093
+  },
+  {
+   "feature": "target_aa_k_fraction_e228",
+   "delta": -0.000815930862919978
+  },
+  {
+   "feature": "gene_aa_r_fraction_e229",
+   "delta": -0.0007938699373103431
+  },
+  {
+   "feature": "target_cpg_promoter_x_gene_intron_length_e232",
+   "delta": -0.0009191654396198956
+  },
+  {
+   "feature": "target_aa_r_fraction_e233",
+   "delta": -1.787642234163389e-05
+  },
+  {
+   "feature": "target_aa_k_fraction_e234",
+   "delta": -5.333976227417381e-05
+  },
+  {
+   "feature": "target_aa_p_fraction_e235",
+   "delta": -0.00013233489035258117
+  },
+  {
+   "feature": "target_aa_t_fraction_e237",
+   "delta": -8.613456031403288e-05
+  },
+  {
+   "feature": "gene_tryptophan_fraction_e243",
+   "delta": -7.429181031726184e-05
+  },
+  {
+   "feature": "target_loeuf_x_gene_globin_corr_e244",
+   "delta": -0.00012908822650381513
+  },
+  {
+   "feature": "gene_asparagine_fraction_e245",
+   "delta": -0.00012485556732499958
+  },
+  {
+   "feature": "gene_proline_fraction_rank_e248",
+   "delta": -1.2706483303315252e-05
+  },
+  {
+   "feature": "target_gene_aa_w_interaction_e249",
+   "delta": -1.63837544466805e-05
+  },
+  {
+   "feature": "target_gene_aa_n_interaction_e250",
+   "delta": -2.9317768987513482e-05
+  },
+  {
+   "feature": "target_gene_aa_m_interaction_e251",
+   "delta": -0.00029480150561012053
+  },
+  {
+   "feature": "target_gene_aa_v_interaction_e252",
+   "delta": -0.0008159602106120323
+  },
+  {
+   "feature": "target_gene_aa_a_interaction_e253",
+   "delta": -1.7120718173724292e-05
+  },
+  {
+   "feature": "target_gene_aa_y_interaction_e254",
+   "delta": -6.002140261485156e-05
+  },
+  {
+   "feature": "target_gene_control_corr_e261",
+   "delta": -0.003468771567144313
+  },
+  {
+   "feature": "target_tf_gene_corr_e262",
+   "delta": -0.003468771567144313
+  },
+  {
+   "feature": "target_gene_aa_a_interaction_e263",
+   "delta": -1.7120718173724292e-05
+  },
+  {
+   "feature": "target_gene_aa_v_interaction_e264",
+   "delta": -0.0008105975948268229
+  },
+  {
+   "feature": "target_gene_aa_y_interaction_e265",
+   "delta": -6.002140261485156e-05
+  },
+  {
+   "feature": "target_gene_control_dist_sim_e266",
+   "delta": -0.00016740602682108197
+  },
+  {
+   "feature": "target_gene_ppi_shortest_path_e268",
+   "delta": -0.0003678330150292952
+  },
+  {
+   "feature": "target_globin_corr_gene_corr_e273",
+   "delta": -0.00019282758958993895
+  },
+  {
+   "feature": "target_globin_train_delta_similarity_e274",
+   "delta": -0.0006251582284654278
+  },
+  {
+   "feature": "target_cpg_oe_promoter_x_globin_gene_e276",
+   "delta": -9.635961271481364e-05
+  },
+  {
+   "feature": "target_gene_control_corr_e286",
+   "delta": -0.004602856624377094
+  },
+  {
+   "feature": "target_protein_length_x_gene_length_e287",
+   "delta": -3.182345493257799e-05
+  },
+  {
+   "feature": "target_control_std_x_gene_control_std_e291",
+   "delta": -0.0003805982053388668
+  }
+ ],
+ "failed_features": [
+  {
+   "experiment_id": "EXP_0014",
+   "feature": "prior_network_similarity_e14",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0026",
+   "feature": "target_ppi_degree_e26",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AMIGO3 depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0027",
+   "feature": "tf_target_network_similarity_e27",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0030",
+   "feature": "target_is_tf_e30",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0045",
+   "feature": "target_is_tf_e45",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: LEAKAGE label leakage: features for training perturbation AMIGO3 depend on its own label (use ctx.train_delta(exclude=p))"
+  },
+  {
+   "experiment_id": "EXP_0060",
+   "feature": "target_tf_response_neighbor_e60",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0071",
+   "feature": "target_gata1_nfe2_neighbor_e71",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0078",
+   "feature": "tf_target_interaction_e78",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0106",
+   "feature": "co2_target_gata1_interaction_e99_e106",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0107",
+   "feature": "co2_target_gata1_interaction_e99_e107",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0140",
+   "feature": "gata1_nfe2_target_similarity_e140",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0142",
+   "feature": "target_gene_ppi_shared_partners_e142",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0172",
+   "feature": "target_mito_set_similarity_e172",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0223",
+   "feature": "target_gene_shared_prior_neighbors_e223",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0226",
+   "feature": "target_gene_shared_residual_sets_count_e226",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0227",
+   "feature": "target_gene_shared_residual_sets_count_e227",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0230",
+   "feature": "target_gene_shared_domain_sets_e230",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0238",
+   "feature": "target_g_shared_prior_neighbors_e238",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0280",
+   "feature": "target_mitochondrial_set_x_globin_gene_e280",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0289",
+   "feature": "target_residual_gene_network_proximity_e289",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  },
+  {
+   "experiment_id": "EXP_0290",
+   "feature": "target_er_stress_set_similarity_e290",
+   "stage": "test",
+   "reason": "feature failed after 2 attempts: feature is constant across all rows (no information)"
+  }
+ ],
+ "surprising_results": [],
+ "generalization_query_only": [
+  {
+   "experiment_id": "EXP_0974",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.5523563555308683,
+   "query_only_score": 0.567930938475785,
+   "gap": -0.01557458294491676,
+   "query_only_pearson_delta": 0.567930938475785,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.005223834977633969,
+     "cellforge_pcc": 0.9881850256259302,
+     "cellforge_r2": 0.975280309408135,
+     "cellforge_mse_de": 0.10208185652050186,
+     "cellforge_pcc_de": 0.9517952468919972,
+     "cellforge_r2_de": 0.855905946740162,
+     "cellforge_mse_deset": 0.03868523530655864,
+     "cellforge_pcc_deset": 0.9492142551071773,
+     "cellforge_r2_deset": 0.8688633676395945,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8016602261342494,
+     "vcworld_de_precision": 0.46248492159227983,
+     "vcworld_de_recall": 0.2896645512239347,
+     "vcworld_de_f1": 0.3562203846511195,
+     "vcworld_de_auroc": 0.7023425791624552,
+     "vcworld_de_auprc": 0.37976909561349714,
+     "vcworld_dir_accuracy": 0.8951344817165306,
+     "vcworld_dir_precision": 0.8966318234610917,
+     "vcworld_dir_recall": 0.7495145631067961,
+     "vcworld_dir_f1": 0.8164992067689053,
+     "vcworld_dir_auroc": 0.945140838470288,
+     "vcworld_dir_auprc": 0.9017023812644318,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.00602717947310947,
+     "cellforge_pcc": 0.9865738798346184,
+     "cellforge_r2": 0.971222805807662,
+     "cellforge_mse_de": 0.12153864840295474,
+     "cellforge_pcc_de": 0.9436476007835491,
+     "cellforge_r2_de": 0.7863593721477811,
+     "cellforge_mse_deset": 0.08256766884792788,
+     "cellforge_pcc_deset": 0.9152228808591564,
+     "cellforge_r2_deset": 0.7613854782128967,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8323021666087359,
+     "vcworld_de_precision": 0.5859689476710753,
+     "vcworld_de_recall": 0.2601148691767709,
+     "vcworld_de_f1": 0.36029346769203574,
+     "vcworld_de_auroc": 0.7347129318525275,
+     "vcworld_de_auprc": 0.42667370100739044,
+     "vcworld_dir_accuracy": 0.9310784939374601,
+     "vcworld_dir_precision": 0.8461538461538461,
+     "vcworld_dir_recall": 0.8461538461538461,
+     "vcworld_dir_f1": 0.8461538461538461,
+     "vcworld_dir_auroc": 0.9620119208277103,
+     "vcworld_dir_auprc": 0.8920971899274474,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.40483229904155377,
+     "overlap_at_50": 0.2951124567474048,
+     "overlap_at_100": 0.30766147635524804,
+     "overlap_at_200": 0.3344885708294013,
+     "overlap_at_500": 0.37875767625836676,
+     "precision_at_N": 0.2749095676767962,
+     "precision_at_50": 0.2670588235294118,
+     "precision_at_100": 0.2723529411764706,
+     "precision_at_200": 0.29264705882352937,
+     "precision_at_500": 0.3175294117647059,
+     "de_spearman_sig": 0.5931372549019608,
+     "de_direction_match": 0.8723071846649283,
+     "de_spearman_lfc_sig": 0.6565639214818051,
+     "de_sig_genes_recall": 0.6788513165849235,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1141.5294117647059,
+     "pr_auc": 0.3389307835855457,
+     "roc_auc": 0.6418073738731197,
+     "pearson_delta": 0.5303775676909614,
+     "mse": 0.006500661249875146,
+     "mae": 0.055759959799401904,
+     "mse_delta": 0.006500661249875146,
+     "mae_delta": 0.055759959799401904,
+     "discrimination_score_l1": 0.6643598615916955,
+     "discrimination_score_l2": 0.6678200692041523,
+     "discrimination_score_cosine": 0.6089965397923874,
+     "pearson_edistance": 0.16532647407142437,
+     "clustering_agreement": 0.5591276597004973
+    },
+    "val2": {
+     "overlap_at_N": 0.31004036973226434,
+     "overlap_at_50": 0.22731767976007605,
+     "overlap_at_100": 0.23017482261721897,
+     "overlap_at_200": 0.24943167687407322,
+     "overlap_at_500": 0.28674016548690967,
+     "precision_at_N": 0.2407545455599724,
+     "precision_at_50": 0.21619047619047618,
+     "precision_at_100": 0.2058259847148736,
+     "precision_at_200": 0.218206937095826,
+     "precision_at_500": 0.2425878894767784,
+     "de_spearman_sig": 0.6316779533483826,
+     "de_direction_match": 0.9330920283626393,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.6584266911836688,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 958.8095238095239,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5099024836506162,
+     "mse": 0.007067036349326372,
+     "mae": 0.05824247854096549,
+     "mse_delta": 0.007067036349326372,
+     "mae_delta": 0.05824247854096549,
+     "discrimination_score_l1": 0.5986394557823129,
+     "discrimination_score_l2": 0.634920634920635,
+     "discrimination_score_cosine": 0.5986394557823129,
+     "pearson_edistance": 0.5463033665449811,
+     "clustering_agreement": 0.12097199363212188
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0942",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.5523563555302744,
+   "query_only_score": 0.5679309385216482,
+   "gap": -0.01557458299137382,
+   "query_only_pearson_delta": 0.5679309385216482,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.005223834977900198,
+     "cellforge_pcc": 0.9881850256257844,
+     "cellforge_r2": 0.9752803094069948,
+     "cellforge_mse_de": 0.10208185648178596,
+     "cellforge_pcc_de": 0.9517952469056119,
+     "cellforge_r2_de": 0.8559059468032926,
+     "cellforge_mse_deset": 0.038685235303742,
+     "cellforge_pcc_deset": 0.949214255115253,
+     "cellforge_r2_deset": 0.868863367628865,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8016602261342494,
+     "vcworld_de_precision": 0.46248492159227983,
+     "vcworld_de_recall": 0.2896645512239347,
+     "vcworld_de_f1": 0.3562203846511195,
+     "vcworld_de_auroc": 0.7023425844985803,
+     "vcworld_de_auprc": 0.379769098552704,
+     "vcworld_dir_accuracy": 0.8951344817165306,
+     "vcworld_dir_precision": 0.8966318234610917,
+     "vcworld_dir_recall": 0.7495145631067961,
+     "vcworld_dir_f1": 0.8164992067689053,
+     "vcworld_dir_auroc": 0.945140838470288,
+     "vcworld_dir_auprc": 0.9017023812644318,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.006027179472512934,
+     "cellforge_pcc": 0.9865738798357682,
+     "cellforge_r2": 0.9712228058106144,
+     "cellforge_mse_de": 0.1215386483924428,
+     "cellforge_pcc_de": 0.9436476007909831,
+     "cellforge_r2_de": 0.7863593721623714,
+     "cellforge_mse_deset": 0.08256766884638897,
+     "cellforge_pcc_deset": 0.9152228808648057,
+     "cellforge_r2_deset": 0.7613854782239697,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8323021666087359,
+     "vcworld_de_precision": 0.5859689476710753,
+     "vcworld_de_recall": 0.2601148691767709,
+     "vcworld_de_f1": 0.36029346769203574,
+     "vcworld_de_auroc": 0.7347129318525275,
+     "vcworld_de_auprc": 0.42667370100739044,
+     "vcworld_dir_accuracy": 0.9310784939374601,
+     "vcworld_dir_precision": 0.8461538461538461,
+     "vcworld_dir_recall": 0.8461538461538461,
+     "vcworld_dir_f1": 0.8461538461538461,
+     "vcworld_dir_auroc": 0.9620119208277103,
+     "vcworld_dir_auprc": 0.8920971899274474,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.40483229904155377,
+     "overlap_at_50": 0.2951124567474048,
+     "overlap_at_100": 0.30766147635524804,
+     "overlap_at_200": 0.3344885708294013,
+     "overlap_at_500": 0.37875767625836676,
+     "precision_at_N": 0.2749095676767962,
+     "precision_at_50": 0.2670588235294118,
+     "precision_at_100": 0.2723529411764706,
+     "precision_at_200": 0.29264705882352937,
+     "precision_at_500": 0.3175294117647059,
+     "de_spearman_sig": 0.5931372549019608,
+     "de_direction_match": 0.8723071846649283,
+     "de_spearman_lfc_sig": 0.6565639214818051,
+     "de_sig_genes_recall": 0.6788513165849235,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1141.5294117647059,
+     "pr_auc": 0.3389307835855457,
+     "roc_auc": 0.6418073738731197,
+     "pearson_delta": 0.5303775676909614,
+     "mse": 0.006500661249875146,
+     "mae": 0.05575996001853662,
+     "mse_delta": 0.006500661249875146,
+     "mae_delta": 0.05575996001853662,
+     "discrimination_score_l1": 0.6643598615916955,
+     "discrimination_score_l2": 0.6678200692041523,
+     "discrimination_score_cosine": 0.6089965397923874,
+     "pearson_edistance": 0.16532647407142437,
+     "clustering_agreement": 0.5591276597004973
+    },
+    "val2": {
+     "overlap_at_N": 0.31004036973226434,
+     "overlap_at_50": 0.22731767976007605,
+     "overlap_at_100": 0.23017482261721897,
+     "overlap_at_200": 0.24943167687407322,
+     "overlap_at_500": 0.28674016548690967,
+     "precision_at_N": 0.2407545455599724,
+     "precision_at_50": 0.21619047619047618,
+     "precision_at_100": 0.2058259847148736,
+     "precision_at_200": 0.218206937095826,
+     "precision_at_500": 0.2425878894767784,
+     "de_spearman_sig": 0.6316779533483826,
+     "de_direction_match": 0.9330920283626393,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.6584266911836688,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 958.8095238095239,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5099024836506162,
+     "mse": 0.007067036349326372,
+     "mae": 0.05824247871836027,
+     "mse_delta": 0.007067036349326372,
+     "mae_delta": 0.05824247871836027,
+     "discrimination_score_l1": 0.5986394557823129,
+     "discrimination_score_l2": 0.634920634920635,
+     "discrimination_score_cosine": 0.5986394557823129,
+     "pearson_edistance": 0.5463033665449811,
+     "clustering_agreement": 0.12097199363212188
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0993",
+   "kind": "config",
+   "members": null,
+   "visible_score": 0.5523563555302744,
+   "query_only_score": 0.5679309385216482,
+   "gap": -0.01557458299137382,
+   "query_only_pearson_delta": 0.5679309385216482,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.005223834977900198,
+     "cellforge_pcc": 0.9881850256257844,
+     "cellforge_r2": 0.9752803094069948,
+     "cellforge_mse_de": 0.10208185648178596,
+     "cellforge_pcc_de": 0.9517952469056119,
+     "cellforge_r2_de": 0.8559059468032926,
+     "cellforge_mse_deset": 0.038685235303742,
+     "cellforge_pcc_deset": 0.949214255115253,
+     "cellforge_r2_deset": 0.868863367628865,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8016602261342494,
+     "vcworld_de_precision": 0.46248492159227983,
+     "vcworld_de_recall": 0.2896645512239347,
+     "vcworld_de_f1": 0.3562203846511195,
+     "vcworld_de_auroc": 0.7023425844985803,
+     "vcworld_de_auprc": 0.379769098552704,
+     "vcworld_dir_accuracy": 0.8951344817165306,
+     "vcworld_dir_precision": 0.8966318234610917,
+     "vcworld_dir_recall": 0.7495145631067961,
+     "vcworld_dir_f1": 0.8164992067689053,
+     "vcworld_dir_auroc": 0.945140838470288,
+     "vcworld_dir_auprc": 0.9017023812644318,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.006027179472512934,
+     "cellforge_pcc": 0.9865738798357682,
+     "cellforge_r2": 0.9712228058106144,
+     "cellforge_mse_de": 0.1215386483924428,
+     "cellforge_pcc_de": 0.9436476007909831,
+     "cellforge_r2_de": 0.7863593721623714,
+     "cellforge_mse_deset": 0.08256766884638897,
+     "cellforge_pcc_deset": 0.9152228808648057,
+     "cellforge_r2_deset": 0.7613854782239697,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8323021666087359,
+     "vcworld_de_precision": 0.5859689476710753,
+     "vcworld_de_recall": 0.2601148691767709,
+     "vcworld_de_f1": 0.36029346769203574,
+     "vcworld_de_auroc": 0.7347129318525275,
+     "vcworld_de_auprc": 0.42667370100739044,
+     "vcworld_dir_accuracy": 0.9310784939374601,
+     "vcworld_dir_precision": 0.8461538461538461,
+     "vcworld_dir_recall": 0.8461538461538461,
+     "vcworld_dir_f1": 0.8461538461538461,
+     "vcworld_dir_auroc": 0.9620119208277103,
+     "vcworld_dir_auprc": 0.8920971899274474,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.40483229904155377,
+     "overlap_at_50": 0.2951124567474048,
+     "overlap_at_100": 0.30766147635524804,
+     "overlap_at_200": 0.3344885708294013,
+     "overlap_at_500": 0.37875767625836676,
+     "precision_at_N": 0.2749095676767962,
+     "precision_at_50": 0.2670588235294118,
+     "precision_at_100": 0.2723529411764706,
+     "precision_at_200": 0.29264705882352937,
+     "precision_at_500": 0.3175294117647059,
+     "de_spearman_sig": 0.5931372549019608,
+     "de_direction_match": 0.8723071846649283,
+     "de_spearman_lfc_sig": 0.6565639214818051,
+     "de_sig_genes_recall": 0.6788513165849235,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1141.5294117647059,
+     "pr_auc": 0.3389307835855457,
+     "roc_auc": 0.6418073738731197,
+     "pearson_delta": 0.5303775676909614,
+     "mse": 0.006500661249875146,
+     "mae": 0.05575996001853662,
+     "mse_delta": 0.006500661249875146,
+     "mae_delta": 0.05575996001853662,
+     "discrimination_score_l1": 0.6643598615916955,
+     "discrimination_score_l2": 0.6678200692041523,
+     "discrimination_score_cosine": 0.6089965397923874,
+     "pearson_edistance": 0.16532647407142437,
+     "clustering_agreement": 0.5591276597004973
+    },
+    "val2": {
+     "overlap_at_N": 0.31004036973226434,
+     "overlap_at_50": 0.22731767976007605,
+     "overlap_at_100": 0.23017482261721897,
+     "overlap_at_200": 0.24943167687407322,
+     "overlap_at_500": 0.28674016548690967,
+     "precision_at_N": 0.2407545455599724,
+     "precision_at_50": 0.21619047619047618,
+     "precision_at_100": 0.2058259847148736,
+     "precision_at_200": 0.218206937095826,
+     "precision_at_500": 0.2425878894767784,
+     "de_spearman_sig": 0.6316779533483826,
+     "de_direction_match": 0.9330920283626393,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.6584266911836688,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 958.8095238095239,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.5099024836506162,
+     "mse": 0.007067036349326372,
+     "mae": 0.05824247871836027,
+     "mse_delta": 0.007067036349326372,
+     "mae_delta": 0.05824247871836027,
+     "discrimination_score_l1": 0.5986394557823129,
+     "discrimination_score_l2": 0.634920634920635,
+     "discrimination_score_cosine": 0.5986394557823129,
+     "pearson_edistance": 0.5463033665449811,
+     "clustering_agreement": 0.12097199363212188
+    }
+   }
+  },
+  {
+   "experiment_id": "EXP_0003",
+   "kind": "baseline",
+   "members": null,
+   "visible_score": 0.5010002317798699,
+   "query_only_score": 0.519597358465441,
+   "gap": -0.01859712668557112,
+   "query_only_pearson_delta": 0.519597358465441,
+   "comparable": {
+    "val1": {
+     "cellforge_mse": 0.005757380595167756,
+     "cellforge_pcc": 0.9869740097262664,
+     "cellforge_r2": 0.9726971014420547,
+     "cellforge_mse_de": 0.12685748894186963,
+     "cellforge_pcc_de": 0.9442497033011582,
+     "cellforge_r2_de": 0.8208865795592267,
+     "cellforge_mse_deset": 0.04345378617186623,
+     "cellforge_pcc_deset": 0.9406462919087664,
+     "cellforge_r2_deset": 0.8463663349787499,
+     "cellforge_n_perts_deset": 16,
+     "vcworld_de_accuracy": 0.8068985258336911,
+     "vcworld_de_precision": 0.4469320066334992,
+     "vcworld_de_recall": 0.08144454517981263,
+     "vcworld_de_f1": 0.13778118609406956,
+     "vcworld_de_auroc": 0.658648661236135,
+     "vcworld_de_auprc": 0.314131640253149,
+     "vcworld_dir_accuracy": 0.8895436687821094,
+     "vcworld_dir_precision": 0.8544,
+     "vcworld_dir_recall": 0.7776699029126214,
+     "vcworld_dir_f1": 0.8142312579415502,
+     "vcworld_dir_auroc": 0.9340939008336989,
+     "vcworld_dir_auprc": 0.8726728336770272,
+     "vcworld_n_de_pairs": 6618
+    },
+    "val2": {
+     "cellforge_mse": 0.007039087039889803,
+     "cellforge_pcc": 0.9846084168233286,
+     "cellforge_r2": 0.966319990734692,
+     "cellforge_mse_de": 0.15355345347474497,
+     "cellforge_pcc_de": 0.9318245289901906,
+     "cellforge_r2_de": 0.73408650246828,
+     "cellforge_mse_deset": 0.09157736929506922,
+     "cellforge_pcc_deset": 0.9020659486249205,
+     "cellforge_r2_deset": 0.7240086015640083,
+     "cellforge_n_perts_deset": 19,
+     "vcworld_de_accuracy": 0.8080176109373189,
+     "vcworld_de_precision": 0.3487903225806452,
+     "vcworld_de_recall": 0.0662412252712189,
+     "vcworld_de_f1": 0.1113375522900354,
+     "vcworld_de_auroc": 0.6658846314234483,
+     "vcworld_de_auprc": 0.2838275024664566,
+     "vcworld_dir_accuracy": 0.9285258455647735,
+     "vcworld_dir_precision": 0.8241996744438416,
+     "vcworld_dir_recall": 0.8655270655270655,
+     "vcworld_dir_f1": 0.8443579766536965,
+     "vcworld_dir_auroc": 0.9566613716449243,
+     "vcworld_dir_auprc": 0.873957495509999,
+     "vcworld_n_de_pairs": 7835
+    }
+   },
+   "cell_eval": {
+    "val1": {
+     "overlap_at_N": 0.36109682738210974,
+     "overlap_at_50": 0.24953863898500578,
+     "overlap_at_100": 0.2728719723183391,
+     "overlap_at_200": 0.29379888853937297,
+     "overlap_at_500": 0.34200720847065613,
+     "precision_at_N": 0.2637395147052707,
+     "precision_at_50": 0.21999999999999997,
+     "precision_at_100": 0.24,
+     "precision_at_200": 0.25764705882352934,
+     "precision_at_500": 0.2964705882352941,
+     "de_spearman_sig": 0.17588161767036206,
+     "de_direction_match": 0.8629040200712746,
+     "de_spearman_lfc_sig": 0.6429270704687955,
+     "de_sig_genes_recall": 0.576576931654179,
+     "de_nsig_counts_real": 465.29411764705884,
+     "de_nsig_counts_pred": 1028.3529411764705,
+     "pr_auc": 0.30613064063805817,
+     "roc_auc": 0.5972167243711713,
+     "pearson_delta": 0.503741575514569,
+     "mse": 0.00706737139262259,
+     "mae": 0.05761213885510669,
+     "mse_delta": 0.00706737139262259,
+     "mae_delta": 0.05761213885510669,
+     "discrimination_score_l1": 0.5363321799307958,
+     "discrimination_score_l2": 0.5674740484429065,
+     "discrimination_score_cosine": 0.5363321799307958,
+     "pearson_edistance": 0.2533221795006345,
+     "clustering_agreement": 0.08435085948823813
+    },
+    "val2": {
+     "overlap_at_N": 0.2804865698847075,
+     "overlap_at_50": 0.16728403189232682,
+     "overlap_at_100": 0.1972840318923268,
+     "overlap_at_200": 0.21894348355177845,
+     "overlap_at_500": 0.26675067816875575,
+     "precision_at_N": 0.237961952615235,
+     "precision_at_50": 0.15714285714285714,
+     "precision_at_100": 0.18047619047619048,
+     "precision_at_200": 0.19714285714285718,
+     "precision_at_500": 0.23545957918050942,
+     "de_spearman_sig": 0.18176295474413393,
+     "de_direction_match": 0.9030165358665794,
+     "de_spearman_lfc_sig": null,
+     "de_sig_genes_recall": 0.5705216170220488,
+     "de_nsig_counts_real": 421.7142857142857,
+     "de_nsig_counts_pred": 928.8095238095239,
+     "pr_auc": null,
+     "roc_auc": null,
+     "pearson_delta": 0.4773705716998804,
+     "mse": 0.00807690240132312,
+     "mae": 0.0614645935240246,
+     "mse_delta": 0.008076902490020507,
+     "mae_delta": 0.0614645935240246,
+     "discrimination_score_l1": 0.526077097505669,
+     "discrimination_score_l2": 0.5578231292517007,
+     "discrimination_score_cosine": 0.5374149659863946,
+     "pearson_edistance": 0.03729419988509463,
+     "clustering_agreement": 3.18386525485845e-15
+    }
+   }
+  }
+ ],
+ "compute_efficiency": {
+  "experiments_per_hour": 2935.95,
+  "planner_experiments_per_hour": 535.17,
+  "mean_cpu_s_per_experiment": 0.36,
+  "gain_per_cpu_hour": 0.5276211992918467,
+  "gain_per_usd": 0.0939645383688993,
+  "cost_per_completed_experiment_usd": 0.0005565661181262729
+ },
+ "reproduction_command": "python reproduce.py --run /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery --experiment EXP_0974"
+}
