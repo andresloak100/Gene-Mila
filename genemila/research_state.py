@@ -97,6 +97,7 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         dv = (rows[0].get("diagnostics_json") or {}).get("derivability")  # discovery mode only (genemila/discovery.py)
         if dv and dv.get("r2") is not None:
             item["derived_r2"] = round(dv["r2"], 2)
+            item["derived"] = bool(dv["r2"] >= float(discovery.setting(lab.cfg, "discovery_derived_r2")))
         (helpful if d is not None and d > HELP_THRESHOLD else unhelpful).append(item)
     helpful.sort(key=lambda x: -x["delta"])
 
@@ -180,6 +181,12 @@ TOTAL_CHARS = 20000
 # plus the curated files it exceeds 2,500 characters, which would hide the later files from the planner (the workers
 # get the summary uncut, genemila/worker.py _task). Every other section keeps SECTION_CHARS.
 KNOWLEDGE_SECTION_CHARS = 8000
+# Discovery mode (genemila/discovery.py) adds its two sections in place of the idea list, about 3,000 characters more
+# than it on the bundles with three per-gene tables, whose states already ran to 17,000; the evidence section keeps
+# its own budget and the whole state a larger one, so neither pushes IN FLIGHT or the FEATURE REGISTRY out. A state
+# without the evidence key (every run without the mode) keeps SECTION_CHARS and TOTAL_CHARS exactly.
+EVIDENCE_SECTION_CHARS = 3500
+DISCOVERY_TOTAL_CHARS = 24000
 
 
 def render_state(state: dict) -> str:
@@ -195,8 +202,9 @@ def render_state(state: dict) -> str:
             body = json.dumps(value, separators=(',', ':'))
         else:
             body = str(value)
-        limit = KNOWLEDGE_SECTION_CHARS if key == "knowledge_available" else SECTION_CHARS
+        limit = (KNOWLEDGE_SECTION_CHARS if key == "knowledge_available"
+                 else EVIDENCE_SECTION_CHARS if key == discovery.STATE_EVIDENCE else SECTION_CHARS)
         if len(body) > limit:
             body = body[:limit].rsplit("\n", 1)[0] + "\n- … (truncated)"
         out.append(f"## {title}\n{body}")
-    return "\n".join(out)[:TOTAL_CHARS]
+    return "\n".join(out)[:DISCOVERY_TOTAL_CHARS if discovery.STATE_EVIDENCE in state else TOTAL_CHARS]

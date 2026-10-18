@@ -71,12 +71,24 @@ def test_classify_and_feature_reads():
     assert not r["derived"]
     r = discovery.feature_reads('base = ctx.feature("coexpr", perts)\nreturn base ** 2\n', files)
     assert r["inputs"] == set() and r["derived"]
+    # a file opened through a variable still counts when its name is a literal anywhere, or when every file is opened
+    assert discovery.feature_reads('name = "gene_sets"\nsets = ctx.knowledge(name)\n', files)["inputs"] == {"gene_sets"}
+    assert discovery.feature_reads('for b in ctx.available_knowledge():\n    t = ctx.knowledge(b)\n', files)["inputs"] \
+        == {"gene_annotation", "gene_sets"}
+    unread = {"gene_annotation.pLI", "gene_annotation.length", "gene_sets", "protein_annotation.membrane"}
     assert discovery.judge_plan(
         [{"action": "new_feature", "new_feature": {"name": "pli_g", "new_input": "gene_annotation.pLI"}},
+         {"action": "new_feature", "new_feature": {"name": "len_g", "new_input": "length"}},  # a bare column resolves
          {"action": "new_feature", "new_feature": {"name": "sets", "description": "gene_sets membership of g"}},
          {"action": "combine", "hypothesis": "add gene_sets"},
-         {"action": "new_feature", "new_feature": {"name": "x", "description": "a product of existing features"}}],
-        {"gene_annotation.pLI", "gene_sets"}) == [["gene_annotation.pLI"], ["gene_sets"], [], []]
+         {"action": "new_feature", "new_feature": {"name": "x", "description": "a product of existing features"}},
+         # a column's bare name in prose is a word, not a read: membrane proteins, nuclear genes
+         {"action": "new_feature", "hypothesis": "membrane receptor knockdowns move genes of length above the median",
+          "new_feature": {"name": "memb", "description": "membrane-bound targets times coexpr"}},
+         # composing another feature is derived whatever it names
+         {"action": "new_feature", "new_feature": {"name": "pli_x", "new_input": "gene_annotation.pLI",
+                                                   "implementation_hint": "ctx.feature('coexpr') * pLI"}}],
+        unread) == [["gene_annotation.pLI"], ["gene_annotation.length"], ["gene_sets"], [], [], [], []]
 
 
 # ------------------------------------------------------------------------------------------------ the planner's view
@@ -103,6 +115,8 @@ def test_state_prompt_and_derivability_in_the_synthetic_lab(lab_factory):
     msg = prompts.planner_user(text, 8, MIX)
     assert prompts.DISCOVERY_PLANNER_NOTE in msg and '"new_input":' in msg and '"predicted_sign":' in msg
     assert "## INPUTS UNEXPLORED" in text and discovery.EVIDENCE_HEADING in text
+    assert "at or above 0.8 the feature is flagged derived" in text
+    assert "derived_r2" not in json.dumps(plain) and "residual" not in json.dumps(plain)  # the default state: no new key
 
     # one completed model: the evidence appears, from its training folds, and the feature is scored for derivability
     lab._val1 = val1
@@ -120,7 +134,9 @@ def test_state_prompt_and_derivability_in_the_synthetic_lab(lab_factory):
     inputs = "\n".join(state[discovery.STATE_INPUTS])
     assert "gene_sets (sets, " in inputs and "read by 1 plain" in inputs.split("gene_sets (sets, ")[1].split("\n")[0]
     item = next(i for i in state["features_that_help"] + state["features_that_do_not_help"] if i["feature"] == rec["new_feature"])
-    assert item["derived_r2"] == round(dv["r2"], 2)
+    assert item["derived_r2"] == round(dv["r2"], 2) and item["derived"] == (dv["r2"] >= 0.8)
+    assert "(truncated)" not in "\n".join(state[discovery.STATE_EVIDENCE] + state[discovery.STATE_INPUTS])
+    assert ev[1].startswith("residual structure: ") and ev[-1].startswith("worst: ")
     files = sorted((lab.run_dir / "planner").glob("discovery_EXP_*.json"))
     assert len(files) == 1
     saved = json.loads(files[0].read_text())
@@ -129,8 +145,46 @@ def test_state_prompt_and_derivability_in_the_synthetic_lab(lab_factory):
     assert set(saved["genes"]["correlations"]) == {"control_mean", "control_std"}  # the synthetic bundle has no table
     assert discovery.unread_inputs(lab) >= {"control_cells", "prior_network", "transcription_factors"}
     assert "gene_sets" not in discovery.unread_inputs(lab)
-    assert len(render_state(state)) <= 20000
+    assert len(render_state(state)) <= 24000
     lab._val1 = val1
+    # the worker is told the input, mechanism and sign only when the hypothesis carries them
+    task = {"new_feature": {"name": "f", "description": "d", "implementation_hint": "h", "params": {}},
+            "data_summary": lab.data_summary(), "knowledge_summary": "", "experiment_id": "EXP_0001",
+            "hypothesis": "h", "rationale": "r", "existing_features": "none"}
+    plain_msg = prompts.worker_implement(task)
+    assert "must read" not in plain_msg and "Mechanism" not in plain_msg
+    task["new_feature"].update(new_input="gene_sets", mechanism="module co-regulation", predicted_sign="positive")
+    msg = prompts.worker_implement(task)
+    assert "must read" in msg and "gene_sets" in msg and "Mechanism it encodes: module co-regulation" in msg
+    assert "Predicted sign of its coefficient: positive" in msg
+    assert "gene_sets" in prompts.worker_diagnose(task, "code", "err")
+
+
+def test_full_evidence_renders_inside_its_budget():
+    """A full evidence block with long real-bundle names stays under the evidence section's own budget, so the
+    structure reading is never the line a cut removes (it is rendered first, the worst perturbations last)."""
+    from genemila.research_state import EVIDENCE_SECTION_CHARS
+    group = "REACTOME:Nonsense Mediated Decay (NMD) independent of the Exon Junction Complex (EJC)"
+    enriched = [{"group": f"{group} {i}", "hit": 12, "size": 180, "p": 3e-4} for i in range(4)]
+    worst = [{"pert": f"ZBTB10+ZNF318_{i}", "oof_pearson_delta": 0.1234, "n_targets_measured": 2, "target_change": -0.81,
+              "n_gene_sets": 137, "n_partners": 112, "nearest_by_sets": "CEBPB+CEBPE", "nearest_jaccard": 0.42,
+              "coexpr_max": 0.77, "coexpr_with": "KLF1+MAP2K6"} for i in range(discovery.TOP_PERTS)]
+    ev = {"available": True, "experiment_id": "EXP_0123", "cv_folds": 5, "n_train": 112, "oof_pearson_delta": 0.6012,
+          "worst": worst,
+          "genes": {"top_n": 250, "share": 0.43, "correlations": {f"gene_annotation.n_tss_within_100kb_{i}": 0.21 - i / 10
+                                                                  for i in range(6)},
+                    "enriched": enriched, "under_predicted": [f"GENE{i}" for i in range(8)],
+                    "over_predicted": [f"GENE{i}" for i in range(8, 16)]},
+          "structure": {"share": 0.31, "null_share": 0.12, "low_rank": True, "top_pert_share": 0.7,
+                        "genes": [f"LONGGENENAME{i}" for i in range(8)], "perts": [f"ZBTB10+ZNF318_{i}" for i in range(5)],
+                        "enriched": enriched[:3]}}
+    lines = discovery.render_evidence(ev)
+    body = "\n".join(f"- {l}" for l in lines)
+    assert len(body) <= EVIDENCE_SECTION_CHARS, len(body)
+    assert lines[1].startswith("residual structure: component 1 holds 31%") and lines[-1].startswith("worst: ")
+    assert all(len(name) <= discovery.GROUP_CHARS for name in re.findall(r"REACTOME:[^(]*", body))
+    text = render_state({discovery.STATE_EVIDENCE: lines})
+    assert "(truncated)" not in text
 
 
 def test_derivability_scores_a_product_as_derived_and_noise_as_new():
@@ -144,6 +198,11 @@ def test_derivability_scores_a_product_as_derived_and_noise_as_new():
     assert noise["r2"] < 0.2
     assert discovery.derivability(X, [4], [0, 1], n_perts, n_genes)["r2"] == 1.0  # a constant is the intercept
     assert discovery.derivability(X, [], [0, 1], n_perts, n_genes)["r2"] is None
+    both = discovery.derivability(X, [2, 3], [0, 1], n_perts, n_genes, seed=1)  # every new column in one solve
+    assert both["per_column"] == [product["r2"], noise["r2"]] and both["r2"] == np.mean(both["per_column"])
+    wide = discovery.derivability(np.concatenate([X, rng.normal(size=(n_perts * n_genes, 200))], axis=1), [2],
+                                  [0, 1, *range(5, 205)], n_perts, n_genes, seed=1)
+    assert wide["n_basis"] == 1 + 2 * 202 and "products" not in wide["basis"]  # a wide parent: no pairwise products
 
 
 # ------------------------------------------------------------------------------------------------- judgement and dry
@@ -202,19 +261,37 @@ def test_judgement_dry_rule_and_summary(lab_factory):
         (1, 2, 1, ["transcription_factors"]), (2, 1, 0, []), (3, 1, 0, [])]
     s = discovery.summary(lab)
     assert s["rounds"] == 3 and s["hypotheses"] == 4 and s["hypotheses_naming_an_unread_input"] == 1
-    assert s["inputs_proposed"] == ["transcription_factors"] and s["dry_at_round"] == 3
-    assert s["dry_rule"] == "2 consecutive rounds without an unread input"
+    assert s["inputs_proposed"] == ["transcription_factors"] and s["dry_at_round"] == 3 and s["rounds_counted"] == 3
+    assert s["dry_rule"].startswith("2 consecutive counted rounds")
     assert s["features_scored_for_derivability"] == 0  # nothing ran
+    assert all(r["counted"] for r in rounds)
 
-    # an unread input resets the count: a fresh planner on a fresh lab sees round 4's prior_network as new
+    # an unread input resets the count, and a round not asked for new features (the EXPLOIT focus of a concurrent
+    # round) or proposing none (combine actions only) is recorded but not counted
     lab2 = lab_factory(schedule__discovery=True, schedule__discovery_dry_rounds=2)
     lab2.record_analytic_baselines()
-    prov2 = _FixedPlanner([plans[1], plans[3], plans[1], plans[1]])
+    combine = {"synthesis": "s", "hypotheses": [
+        {"title": "c", "hypothesis": "adding both helpful features improves the model", "category": "exploit",
+         "rationale": "A biologically motivated test fixture rationale.", "action": "combine",
+         "add_features": ["control_mean"]}]}
+    prov2 = _FixedPlanner([plans[1], plans[3], plans[1], plans[1], combine, plans[1]])
     planner2 = Planner(lab2, prov2, [])
     assert planner2.refill(1) and planner2.novel_dry == 1
     assert planner2.refill(1) and planner2.novel_dry == 0
-    assert planner2.refill(1) and planner2.novel_dry == 1 and not planner2.dry()
+    assert planner2.refill(1, focus="EXPLOIT: improve the current best model") and planner2.novel_dry == 0
+    assert planner2.refill(1, focus="RISKY: bolder hypotheses") and planner2.novel_dry == 1 and not planner2.dry()
+    planner2.refill(1)  # the combine-only plan: queued or not, it is not counted
+    assert planner2.novel_dry == 1 and not planner2.dry()
     assert planner2.refill(1) and planner2.novel_dry == 2 and planner2.dry()
+    rows2 = json.loads((lab2.run_dir / "planner" / "discovery_rounds.json").read_text())
+    assert [r["counted"] for r in rows2] == [True, True, False, True, False, True]
+    assert discovery.summary(lab2)["dry_at_round"] == 6 and discovery.summary(lab2)["rounds_counted"] == 4
+    assert discovery.dry_round(rows2, 2) == 6 and discovery.dry_round(rows2[:5], 2) is None
+    # a torn ledger costs no planner call and no summary
+    (lab2.run_dir / "planner" / "discovery_rounds.json").write_text("{not json")
+    assert discovery.summary(lab2)["rounds"] == 0
+    assert discovery.record_round(lab2, 7, [["prior_network"]], 1)["round"] == 7
+    assert len(json.loads((lab2.run_dir / "planner" / "discovery_rounds.json").read_text())) == 1
 
 
 # ------------------------------------------------------------------------------------------------------- end to end
@@ -228,7 +305,10 @@ def test_controller_run_in_discovery_mode(lab_factory):
     assert d["enabled"] and d["rounds"] >= 1 and d["rounds"] == len(json.loads(
         (lab.run_dir / "planner" / "discovery_rounds.json").read_text()))
     assert d["features_scored_for_derivability"] >= 1
-    assert all(0 <= r["r2"] <= 1 or r["r2"] < 0 for r in d["derived_features"] + d["new_input_features"])
+    assert all(-1 <= r["r2"] <= 1 for r in d["derived_features"] + d["new_input_features"])
+    assert all(r["r2"] >= d["derived_r2_threshold"] for r in d["derived_features"])
+    assert all(r["r2"] < d["derived_r2_threshold"] for r in d["new_input_features"])
+    assert len(d["derived_features"]) + len(d["new_input_features"]) == d["features_scored_for_derivability"]
     states = sorted((lab.run_dir / "planner").glob("state_*.txt"))
     assert states and all(discovery.EVIDENCE_HEADING in s.read_text() and "## INPUTS UNEXPLORED" in s.read_text()
                           and "UNEXPLORED IDEA AREAS" not in s.read_text() for s in states)

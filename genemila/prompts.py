@@ -232,9 +232,25 @@ def worker_implement(task: dict) -> str:
         f"Other features in this model (do not duplicate them): {task['existing_features']}\n\n"
         f"Implement feature `{nf['name']}`: {nf.get('description', '')}\n"
         f"Implementation hint: {nf.get('implementation_hint', '')}\n"
-        f"Suggested params: {json.dumps(nf.get('params', {}))}\n"
+        + discovery_feature_lines(nf)
+        + f"Suggested params: {json.dumps(nf.get('params', {}))}\n"
         f"Write the file genemila/features/plugins/{nf['name']}.py."
     )
+
+
+def discovery_feature_lines(nf: dict) -> str:
+    """The lines a discovery-mode hypothesis adds to the worker's task (prompts.DISCOVERY_FEATURE_FIELDS): the input
+    the feature must read, its mechanism and predicted sign. Empty for every other task, so those prompts are
+    unchanged."""
+    lines = []
+    if nf.get("new_input"):
+        lines.append(f"Input this feature must read (an unread bundle input; a table column is table.column, read with "
+                     f"ctx.knowledge(\"table\")): {nf['new_input']}")
+    if nf.get("mechanism"):
+        lines.append(f"Mechanism it encodes: {nf['mechanism']}")
+    if nf.get("predicted_sign"):
+        lines.append(f"Predicted sign of its coefficient: {nf['predicted_sign']}")
+    return "".join(l + "\n" for l in lines)
 
 
 def worker_diagnose(task: dict, code: str, error: str) -> str:
@@ -243,7 +259,8 @@ def worker_diagnose(task: dict, code: str, error: str) -> str:
     return (
         f"API:\n{api}\n\n"
         f"Hypothesis being tested: {task['hypothesis']}\n"
-        f"YOUR CODE for feature `{nf['name']}`:\n```python\n{code}```\n\n"
+        + discovery_feature_lines(nf)
+        + f"YOUR CODE for feature `{nf['name']}`:\n```python\n{code}```\n\n"
         f"It failed validation with this ERROR:\n{error[-1500:]}\n\n"
         "Return the complete corrected file in one python code block."
     )

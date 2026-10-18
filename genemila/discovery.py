@@ -17,21 +17,26 @@ planner gets three things it did not have:
      file and every column of its per-gene tables) and which of them no completed feature has read, so "unexplored"
      is measured rather than matched by keyword; the planner names the input each feature brings.
   3. a measured "derived" flag: the pipeline fits each new feature's columns from its parent's columns (linear terms,
-     squares, pairwise products) out of fold by perturbation, and a feature with R² at or above
-     schedule.discovery_derived_r2 is shown to the planner as derived: the lab meeting's "stale", a product, log or
-     interaction of what the model already has.
+     squares, pairwise products) out of fold by perturbation; the feature lists of the state show the R² as
+     derived_r2 and, at or above schedule.discovery_derived_r2, flag the feature as derived: the lab meeting's
+     "stale", a product, log or interaction of what the model already has.
 
-The planner is dry (Planner.dry) once schedule.discovery_dry_rounds consecutive parsed rounds propose no unread input,
-so the number of hypotheses a run generates is decided by the data and the inputs, never by a count.
-tools/residual_mining.py (docs/NOVEL_FEATURE_NEEDS.md, M1) asks the same questions of a finished run offline; this is
-the live version. Hypothesis generation only: nothing here is evidence, and a feature it leads to is tested like any
-other, by the fair test (tools/feature_compare.py) on a tier the generator never read.
+The planner is dry (Planner.dry) once schedule.discovery_dry_rounds consecutive counted rounds (rounds asked for new
+features that proposed at least one) name no unread input, so the number of hypotheses a run generates is decided by
+the data and the inputs, never by a count. tools/residual_mining.py (docs/NOVEL_FEATURE_NEEDS.md, M1) asks the same
+questions of a finished run offline; this is the live version. Hypothesis generation only: nothing here is evidence,
+and a feature it leads to is tested like any other, by the fair test (tools/feature_compare.py) on a tier the
+generator never read. A run in discovery mode must be reported as its own arm; genemila/benchmark/table.py's run_arm
+does not label it yet (issue #72), so until that lands its run directory carries the suffix _discovery and its rows
+are tabulated apart by hand.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
+import tempfile
 import threading
 import time
 from collections import defaultdict
@@ -55,8 +60,10 @@ BUILTIN_READS = {"control_mean": {"control_mean"}, "mean_response": {"train_delt
                  "additive_response": {"train_delta", "target_genes"}}
 FORMS = ("gene-side g(g): the response gene's own property; perturbation-side a(p): the targets' property, which alone "
          "cannot raise pearson_delta; interaction a(p)*b(g); transfer: a similarity-weighted copy of training responses")
-RULE = ("a feature is new when it reads an input listed as unread, plainly; a product, ratio, log, rank or projection "
-        "of existing columns is derived (measured after each experiment as derived_r2 in the feature lists)")
+RULE = ("a feature is new when it reads an input listed as unread, plainly, and names it in new_input; a product, "
+        "ratio, log, rank or projection of existing columns is derived (measured after each experiment as "
+        "derived_r2 in the feature lists: at or above {thr:g} the feature is flagged derived)")
+GROUP_CHARS = 40     # a gene set or regulator name is cut to this in the evidence lines
 
 TOP_PERTS = 6        # worst perturbations shown
 TOP_GENES = 8        # genes named per list
@@ -131,15 +138,20 @@ _LITERAL = re.compile(r"[\"']([A-Za-z0-9_]{2,})[\"']")
 
 
 def feature_reads(source: str, files: dict) -> dict:
-    """What a plugin reads, from its source: the context inputs it names, the knowledge files it opens and, for a
-    per-gene table, the columns it names as string literals (a plugin that projects a whole table names none, so the
-    table counts as read and its columns do not); derived when it composes another feature through ctx.feature."""
+    """What a plugin reads, from its source: the context inputs it names, the knowledge files it opens (by a literal
+    in ctx.knowledge, by a literal anywhere in the file, or all of them when it iterates ctx.available_knowledge) and,
+    for a per-gene table, the columns it names as string literals (a plugin that projects a whole table names none,
+    so the table counts as read and its columns do not); derived when it composes another feature through
+    ctx.feature."""
     attrs = set(_CTX_ATTR.findall(source))
     inputs = {a for a in attrs if a in CONTROL_INPUTS or a in LABEL_INPUTS}
     if attrs & {"target_genes", "target_indices"}:
         inputs.add("target_genes")
     literals = set(_LITERAL.findall(source))
-    for k in set(_KNOW.findall(source)) & set(files):
+    opened = (set(_KNOW.findall(source)) | literals) & set(files)
+    if "available_knowledge(" in source:
+        opened = set(files)
+    for k in opened:
         inputs.add(k)
         if files[k]["kind"] == "table":
             inputs |= {f"{k}.{c}" for c in files[k]["columns"] if c in literals}
@@ -149,7 +161,7 @@ def feature_reads(source: str, files: dict) -> dict:
 def coverage(lab, files: dict) -> dict[str, dict]:
     """Per input: the completed features that read it, split into plain readers and derived ones (those that compose
     another feature). Only features in the run's store count, which are the ones an experiment completed with; a
-    built-in reads what its code reads."""
+    built-in reads what its code reads, and a plugin's declared `inputs` count with what its source shows."""
     cov = {n: {"plain": [], "derived": []} for n in input_names(files)}
     for meta in lab.db.features():
         name = meta["name"]
@@ -161,6 +173,8 @@ def coverage(lab, files: dict) -> dict[str, dict]:
                 continue
             r = feature_reads(path.read_text(), files)
             reads, derived = r["inputs"], r["derived"]
+            declared = meta.get("inputs_json") or []
+            reads = reads | {"target_genes" if d == "targets" else str(d) for d in declared if isinstance(d, str)}
         for inp in reads:
             if inp in cov:
                 cov[inp]["derived" if derived else "plain"].append(name)
@@ -171,16 +185,19 @@ def _names(items: list[str], cap: int = LIST_CAP) -> str:
     return ", ".join(items[:cap]) + (f" and {len(items) - cap} more" if len(items) > cap else "")
 
 
-def render_inputs(files: dict, cov: dict) -> list[str]:
-    """The INPUTS UNEXPLORED section: what the bundle offers and whether a completed feature has read it."""
+def render_inputs(files: dict, cov: dict, thr: float = DEFAULTS["discovery_derived_r2"]) -> list[str]:
+    """The INPUTS UNEXPLORED section: what the bundle offers and whether a completed feature has read it. An input
+    read only inside a feature that transforms another feature (ctx.feature) counts as unread, here and for the
+    judge (unread_inputs)."""
     def tag(name):
         c = cov[name]
         if c["plain"]:
             return f"{name} (read by {len(c['plain'])})"
-        return f"{name} (derived only)" if c["derived"] else f"{name} (unread)"
+        return f"{name} (unread; derived features only)" if c["derived"] else f"{name} (unread)"
 
-    lines = ["Inputs the bundle offers and whether a completed feature reads them plainly; derived = only inside a "
-             "feature that transforms another feature (ctx.feature). Name the unread input a new feature brings."]
+    lines = ["Inputs the bundle offers and whether a completed feature reads them plainly; an input read only inside "
+             "a feature that transforms another feature (ctx.feature) counts as unread. Name in new_input the unread "
+             "input a new feature brings."]
     lines.append("control statistics: " + ", ".join(tag(n) for n in CONTROL_INPUTS)
                  + "; training labels: " + ", ".join(tag(n) for n in LABEL_INPUTS)
                  + "; targets: " + ", ".join(tag(n) for n in TARGET_INPUTS))
@@ -193,10 +210,10 @@ def render_inputs(files: dict, cov: dict) -> list[str]:
             if unread:
                 line += f"; columns unread: {_names(unread)}"
             if derived:
-                line += f"; columns read only in derived features: {_names(derived)}"
+                line += f"; columns unread (derived features only): {_names(derived)}"
         lines.append(line)
     lines.append(f"forms: {FORMS}")
-    lines.append(f"rule: {RULE}")
+    lines.append("rule: " + RULE.format(thr=thr))
     return lines
 
 
@@ -277,8 +294,20 @@ def enrichment(top: set[str], universe: set[str], groups: dict[str, set[str]], k
     return out[:k]
 
 
+def target_coexpression(ctx, train: list[str]) -> dict[str, float]:
+    """|Pearson r| across control cells between every pair of distinct measured training targets, keyed by sorted
+    gene pair; a small corrcoef over the target columns only, never the full gene-by-gene matrix."""
+    idx = sorted({i for q in train for i in ctx.target_indices(q)})
+    if len(idx) < 2:
+        return {}
+    with np.errstate(invalid="ignore", divide="ignore"):
+        C = np.nan_to_num(np.corrcoef(ctx.control_cells[:, idx].T))
+    return {(idx[a], idx[b]): float(abs(C[a, b])) for a in range(len(idx)) for b in range(a + 1, len(idx))}
+
+
 def perturbation_row(p: str, score: float, ctx, files: dict, train: list[str], true_delta: np.ndarray, i: int,
-                     set_members: dict[str, set[str]], neighbours: dict[str, set[str]]) -> dict:
+                     set_members: dict[str, set[str]], neighbours: dict[str, set[str]],
+                     coexpr: dict | None = None) -> dict:
     """One badly predicted training perturbation: its OOF score, how far its targets moved, and what the knowledge
     files hold about its targets (the agents' similarity features copy responses along exactly these)."""
     tg, ti = ctx.target_genes(p), ctx.target_indices(p)
@@ -298,12 +327,16 @@ def perturbation_row(p: str, score: float, ctx, files: dict, train: list[str], t
             nearest, best = q, j
     coex, coex_with = 0.0, None
     if ti:
-        others = [(q, ctx.target_indices(q)) for q in train if q != p]
-        for q, qi in others:
-            if qi:
-                v = float(np.abs(ctx.gene_corr[np.ix_(ti, qi)]).max())
-                if v > coex:
-                    coex, coex_with = v, q
+        coexpr = target_coexpression(ctx, train) if coexpr is None else coexpr
+        for q in train:
+            if q == p:
+                continue
+            for a in ti:
+                for b in ctx.target_indices(q):
+                    if a != b:  # a shared target gene (a pair and its single) is identity, not co-expression
+                        v = coexpr.get((min(a, b), max(a, b)), 0.0)
+                        if v > coex:
+                            coex, coex_with = v, q
     return {"pert": p, "oof_pearson_delta": float(score), "n_targets_measured": len(ti), "target_change": change,
             "n_gene_sets": len(sets), "n_partners": len(partners), "nearest_by_sets": nearest,
             "nearest_jaccard": best, "coexpr_max": coex, "coexpr_with": coex_with}
@@ -332,7 +365,8 @@ def residual_evidence(lab, rec: dict, ctx, files: dict) -> dict:
                 neighbours[a].add(b)
                 neighbours[b].add(a)
     order = np.argsort(r, kind="stable")
-    worst = [perturbation_row(train[i], r[i], ctx, files, train, Y, i, set_members, neighbours)
+    coexpr = target_coexpression(ctx, train)
+    worst = [perturbation_row(train[i], r[i], ctx, files, train, Y, i, set_members, neighbours, coexpr)
              for i in order[:TOP_PERTS]]
 
     msr = (E ** 2).mean(axis=0)
@@ -376,32 +410,23 @@ def residual_evidence(lab, rec: dict, ctx, files: dict) -> dict:
     }
 
 
+def _group(name: str) -> str:
+    return name if len(name) <= GROUP_CHARS else name[:GROUP_CHARS - 1] + "…"
+
+
 def _enriched(rows: list[dict]) -> str:
-    return "; ".join(f"{e['group']} ({e['hit']}/{e['size']}, p {e['p']:.0e})" for e in rows) or "none"
+    return "; ".join(f"{_group(e['group'])} ({e['hit']}/{e['size']}, p {e['p']:.0e})" for e in rows) or "none"
 
 
 def render_evidence(ev: dict) -> list[str]:
-    """The RESIDUAL EVIDENCE section, a few lines inside the planner state's section budget."""
+    """The RESIDUAL EVIDENCE section: the structure reading and the gene properties first, the worst perturbations
+    last, so a cut at the section budget (research_state.EVIDENCE_SECTION_CHARS) drops the least telling lines."""
     if not ev.get("available"):
         return [f"not available: {ev.get('reason', 'no completed model yet')}; propose from the inputs"]
     g, st = ev["genes"], ev["structure"]
     lines = [f"From the {ev['n_train']} training perturbations out of fold only ({ev['experiment_id']}, "
              f"{ev['cv_folds']} folds, mean OOF pearson_delta {ev['oof_pearson_delta']:.3f}); no held-out label read. "
-             "pearson_delta ignores a per-perturbation scale: a scalar times an existing column cannot raise it; a "
-             "feature must change the pattern across genes."]
-    for w in ev["worst"]:
-        change = "" if w["target_change"] is None else f"; targets moved {w['target_change']:+.2f} of control"
-        near = f"{w['nearest_by_sets']} ({w['nearest_jaccard']:.2f})" if w["nearest_by_sets"] else "none"
-        coex = f"{w['coexpr_max']:.2f}" + (f" with {w['coexpr_with']}" if w["coexpr_with"] else "")
-        lines.append(f"worst: {w['pert']} r {w['oof_pearson_delta']:.2f}{change}; targets in {w['n_gene_sets']} sets, "
-                     f"{w['n_partners']} partners; nearest by sets {near}; co-expr max |r| {coex}")
-    corr = sorted(((k, v) for k, v in g["correlations"].items() if v is not None), key=lambda kv: -abs(kv[1]))[:4]
-    lines.append(f"genes carrying the residual (top {g['top_n']} by squared OOF residual hold {g['share']:.0%} of it): "
-                 f"their residual follows " + (", ".join(f"{k} (rho {v:+.2f})" for k, v in corr) or "no listed property")
-                 + f"; enriched in {_enriched(g['enriched'])}")
-    if g["under_predicted"] or g["over_predicted"]:
-        lines.append(f"consistently under-predicted (true change above the prediction): {', '.join(g['under_predicted']) or 'none'}; "
-                     f"over-predicted: {', '.join(g['over_predicted']) or 'none'}")
+             "pearson_delta ignores a per-perturbation scale: a feature must change the pattern across genes."]
     if st["low_rank"]:
         lines.append(f"residual structure: component 1 holds {st['share']:.0%} of the residual variance (permuted "
                      f"{st['null_share']:.0%}), a shared pattern the features lack"
@@ -410,8 +435,25 @@ def render_evidence(ev: dict) -> list[str]:
                      f"enriched in {_enriched(st['enriched'])}")
     else:
         lines.append(f"residual structure: diffuse (component 1 holds {st['share']:.0%} of the variance, permuted "
-                     f"{st['null_share']:.0%}): no shared program is missing; look at the worst perturbations and "
-                     "the gene properties above")
+                     f"{st['null_share']:.0%}): no shared program is missing; look at the gene properties and the "
+                     "worst perturbations")
+    corr = sorted(((k, v) for k, v in g["correlations"].items() if v is not None), key=lambda kv: -abs(kv[1]))[:4]
+    lines.append(f"genes carrying the residual (top {g['top_n']} by squared OOF residual hold {g['share']:.0%} of it): "
+                 f"their residual follows " + (", ".join(f"{k} (rho {v:+.2f})" for k, v in corr) or "no listed property")
+                 + f"; enriched in {_enriched(g['enriched'])}")
+    if g["under_predicted"] or g["over_predicted"]:
+        lines.append(f"consistently under-predicted (true change above the prediction): {', '.join(g['under_predicted']) or 'none'}; "
+                     f"over-predicted: {', '.join(g['over_predicted']) or 'none'}")
+    for w in ev["worst"]:
+        parts = [f"worst: {w['pert']} r {w['oof_pearson_delta']:.2f}"]
+        if w["target_change"] is not None:
+            parts.append(f"targets moved {w['target_change']:+.2f} of control")
+        parts.append(f"targets in {w['n_gene_sets']} sets, {w['n_partners']} partners")
+        if w["nearest_by_sets"]:
+            parts.append(f"nearest by sets {w['nearest_by_sets']} ({w['nearest_jaccard']:.2f})")
+        if w["coexpr_with"]:
+            parts.append(f"co-expr max |r| {w['coexpr_max']:.2f} with {w['coexpr_with']}")
+        lines.append("; ".join(parts))
     return lines
 
 
@@ -437,10 +479,12 @@ def state_sections(lab) -> dict:
             out = lab.run_dir / "planner"
             out.mkdir(exist_ok=True)
             (out / f"discovery_{rec['experiment_id']}.json").write_text(json.dumps(ev, indent=1, default=float))
-    return {STATE_EVIDENCE: render_evidence(ev), STATE_INPUTS: render_inputs(files, cov)}
+    thr = float(setting(lab.cfg, "discovery_derived_r2"))
+    return {STATE_EVIDENCE: render_evidence(ev), STATE_INPUTS: render_inputs(files, cov, thr)}
 
 
 def unread_inputs(lab) -> set[str]:
+    """The inputs no completed feature reads plainly (one read only inside a ctx.feature transform is unread)."""
     from .features.api import FeatureContext
     files = knowledge_files(FeatureContext.shared(lab.public_dir))
     return {n for n, c in coverage(lab, files).items() if not c["plain"]}
@@ -451,45 +495,76 @@ def _mentions(name: str, text: str) -> bool:
 
 
 def judge_plan(hypotheses: list, unread: set[str]) -> list[list[str]]:
-    """Per hypothesis, the unread inputs it names (its new_input field, or an input's name in its feature text), so
-    the lab, not the planner, decides what is new; only a new-feature hypothesis can name one."""
+    """Per hypothesis, the unread inputs it names, so the lab, not the planner, decides what is new: its new_input
+    field (an input's full name, or a table column's bare name, which resolves to every unread column of that name),
+    or an input's full name in its feature text. A bare column name in prose never counts (a protein table's columns
+    are words such as membrane and nucleus), a hypothesis whose feature composes another through ctx.feature is
+    derived, and only a new-feature hypothesis can name an input."""
     out = []
     for h in hypotheses:
         if not isinstance(h, dict) or h.get("action", "new_feature") != "new_feature":
             out.append([])
             continue
         nf = h.get("new_feature") if isinstance(h.get("new_feature"), dict) else {}
-        text = " ".join(str(nf.get(k, "")) for k in ("new_input", "name", "description", "implementation_hint"))
+        code = " ".join(str(nf.get(k, "")) for k in ("description", "implementation_hint"))
+        if "ctx.feature(" in code:
+            out.append([])
+            continue
+        text = " ".join(str(nf.get(k, "")) for k in ("name", "description", "implementation_hint"))
         text = (text + " " + str(h.get("hypothesis", ""))).lower()
-        found = {n for n in unread if _mentions(n, text) or ("." in n and _mentions(n.split(".", 1)[1], text))}
+        found = {n for n in unread if _mentions(n, text)}
+        named = str(nf.get("new_input", "")).strip().lower()
+        if named:
+            found |= {n for n in unread if n.lower() == named or ("." in n and n.split(".", 1)[1].lower() == named)}
         out.append(sorted(found))
     return out
 
 
-def record_round(lab, rnd: int, novel: list[list[str]], n: int) -> dict:
-    """Append one round to planner/discovery_rounds.json (the summary reads it) and return its entry."""
-    entry = {"round": rnd, "hypotheses": n, "novel": sum(1 for v in novel if v),
+def _read_rounds(path: Path) -> list[dict]:
+    try:
+        rows = json.loads(path.read_text()) if path.exists() else []
+    except (OSError, ValueError):  # a torn file (the controller died mid-write) costs no planner call and no summary
+        rows = []
+    return rows if isinstance(rows, list) else []
+
+
+def record_round(lab, rnd: int, novel: list[list[str]], n: int, counted: bool = True) -> dict:
+    """Append one round to planner/discovery_rounds.json (the summary reads it) and return its entry. `counted` says
+    whether the round counts toward the dry rule: a round asked for new features that proposed at least one."""
+    entry = {"round": rnd, "hypotheses": n, "novel": sum(1 for v in novel if v), "counted": bool(counted),
              "inputs": sorted({x for v in novel for x in v}), "ts": time.time()}
     path = lab.run_dir / "planner" / "discovery_rounds.json"
     with _LOCK:
-        rows = json.loads(path.read_text()) if path.exists() else []
-        rows.append(entry)
         path.parent.mkdir(exist_ok=True)
-        path.write_text(json.dumps(rows, indent=1))
+        rows = _read_rounds(path)
+        rows.append(entry)
+        fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp.json")
+        with os.fdopen(fd, "w") as fh:
+            fh.write(json.dumps(rows, indent=1))
+        os.replace(tmp, path)
     return entry
+
+
+def dry_round(rows: list[dict], limit: int) -> int | None:
+    """The round at which the dry rule fired: `limit` counted rounds in a row without an unread input (a round that
+    names one resets the count, counted or not)."""
+    run = 0
+    for e in rows:
+        if e["novel"]:
+            run = 0
+        elif e.get("counted", True):
+            run += 1
+        if run >= limit:
+            return e["round"]
+    return None
 
 
 def summary(lab) -> dict:
     """summary.json["discovery"]: how the generation went, from the round ledger and the experiments."""
-    path = lab.run_dir / "planner" / "discovery_rounds.json"
-    rows = json.loads(path.read_text()) if path.exists() else []
+    rows = _read_rounds(lab.run_dir / "planner" / "discovery_rounds.json")
     limit = int(setting(lab.cfg, "discovery_dry_rounds"))
     thr = float(setting(lab.cfg, "discovery_derived_r2"))
-    dry_at, run = None, 0
-    for e in rows:
-        run = 0 if e["novel"] else run + 1
-        if run >= limit and dry_at is None:
-            dry_at = e["round"]
+    dry_at = dry_round(rows, limit)
     derived, plain, scored = [], [], 0
     for e in lab.db.query("SELECT new_feature, diagnostics_json, proposed_feature_json FROM experiments WHERE "
                           "status='completed' AND new_feature IS NOT NULL"):
@@ -498,10 +573,12 @@ def summary(lab) -> dict:
             scored += 1
             (derived if d["r2"] >= thr else plain).append({"feature": e["new_feature"], "r2": round(d["r2"], 3),
                                                             "novel_inputs": (e.get("proposed_feature_json") or {}).get("novel_inputs", [])})
-    return {"enabled": True, "rounds": len(rows), "hypotheses": sum(e["hypotheses"] for e in rows),
+    return {"enabled": True, "rounds": len(rows), "rounds_counted": sum(1 for e in rows if e.get("counted", True)),
+            "hypotheses": sum(e["hypotheses"] for e in rows),
             "hypotheses_naming_an_unread_input": sum(e["novel"] for e in rows),
             "inputs_proposed": sorted({x for e in rows for x in e["inputs"]}),
-            "dry_rule": f"{limit} consecutive rounds without an unread input", "dry_at_round": dry_at,
+            "dry_rule": f"{limit} consecutive counted rounds (asked for new features, proposed at least one) without "
+                        "an unread input", "dry_at_round": dry_at,
             "features_scored_for_derivability": scored, "derived_r2_threshold": thr,
             "derived_features": sorted(derived, key=lambda r: -r["r2"]), "new_input_features": plain,
             "evidence_files": sorted(p.name for p in (lab.run_dir / "planner").glob("discovery_EXP_*.json"))}
@@ -509,11 +586,14 @@ def summary(lab) -> dict:
 
 # ================================================================== derivability (runs inside the experiment process)
 def derivability(X: np.ndarray, new_idx: list[int], old_idx: list[int], n_perts: int, n_genes: int, seed: int = 0,
-                 folds: int = 5, max_rows: int = 20000, max_products: int = 10, alpha: float = 1e-3) -> dict:
+                 folds: int = 5, max_rows: int = 20000, max_products: int = 10, alpha: float = 1e-3,
+                 max_parent: int = 150) -> dict:
     """How well a new feature's columns are predicted from the parent's columns, out of fold by perturbation: ridge on
-    the parent columns, their squares and the pairwise products of the first max_products of them, on a seeded sample
-    of (perturbation, gene) rows of the standardised design matrix (rows ordered perturbation-major, as
-    pipeline._concat lays them out). R² near 1 means the feature is a transform of what the model already has."""
+    the parent columns, their squares and the pairwise products of the first max_products of them (no products once
+    the parent has more than max_parent columns), on a seeded sample of (perturbation, gene) rows of the standardised
+    design matrix (rows ordered perturbation-major, as pipeline._concat lays them out). R² near 1 means the feature is
+    a transform of what the model already has. One Gram matrix per fold serves every new column, so the cost does not
+    grow with the feature's dimension."""
     if not new_idx:
         return {"r2": None, "per_column": [], "n_rows": 0, "n_basis": 0}
     rng = np.random.default_rng(seed)
@@ -523,28 +603,29 @@ def derivability(X: np.ndarray, new_idx: list[int], old_idx: list[int], n_perts:
     fold = fold_of_pert[rows // n_genes]
     old = X[rows][:, old_idx].astype(np.float64)
     parts = [np.ones((len(rows), 1)), old, old ** 2]
-    k = min(max_products, old.shape[1])
+    k = min(max_products, old.shape[1]) if old.shape[1] <= max_parent else 0  # a wide parent: linear and squares only
     parts += [old[:, [i]] * old[:, [j]] for i in range(k) for j in range(i + 1, k)]
     B = np.concatenate(parts, axis=1)
     mu, sd = B[:, 1:].mean(axis=0), B[:, 1:].std(axis=0)
     sd[sd == 0] = 1.0
     B[:, 1:] = (B[:, 1:] - mu) / sd
+    Y = X[rows][:, new_idx].astype(np.float64)
+    pred = np.zeros_like(Y)
+    for f in np.unique(fold):  # one Gram matrix and one solve per fold, for every new column at once
+        tr, te = fold != f, fold == f
+        if tr.sum() == 0 or te.sum() == 0:
+            continue
+        A = B[tr].T @ B[tr] + alpha * tr.sum() * np.eye(B.shape[1])
+        pred[te] = B[te] @ np.linalg.solve(A, B[tr].T @ Y[tr])
     per = []
-    for j in new_idx:
-        y = X[rows, j].astype(np.float64)
+    for j in range(Y.shape[1]):
+        y = Y[:, j]
         if np.ptp(y) == 0:
             per.append(1.0)  # a constant column is the intercept
             continue
-        pred = np.empty_like(y)
-        for f in np.unique(fold):
-            tr, te = fold != f, fold == f
-            if tr.sum() == 0 or te.sum() == 0:
-                continue
-            A = B[tr].T @ B[tr] + alpha * tr.sum() * np.eye(B.shape[1])
-            w = np.linalg.solve(A, B[tr].T @ y[tr])
-            pred[te] = B[te] @ w
-        ss_res, ss_tot = float(((y - pred) ** 2).sum()), float(((y - y.mean()) ** 2).sum())
+        ss_res, ss_tot = float(((y - pred[:, j]) ** 2).sum()), float(((y - y.mean()) ** 2).sum())
         per.append(max(-1.0, 1.0 - ss_res / ss_tot) if ss_tot > 0 else 1.0)
     return {"r2": float(np.mean(per)), "per_column": [float(v) for v in per], "n_rows": int(len(rows)),
-            "n_basis": int(B.shape[1]), "basis": f"parent columns, their squares and the pairwise products of the "
-                                                 f"first {k}; ridge out of fold by perturbation"}
+            "n_basis": int(B.shape[1]),
+            "basis": "parent columns, their squares" + (f" and the pairwise products of the first {k}" if k else "")
+                     + "; ridge out of fold by perturbation"}
