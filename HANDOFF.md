@@ -9,13 +9,14 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 [#78](https://github.com/andresloak100/Gene-Mila/pull/78), `docs/reviews/CRITIC_READING_PLAN_H.md`); block D still waits for
 Andres's own hands.** The reading: 85 findings from six single-lens readers at `cfa8034`, each sent to an adversarial second
 reader; the organisation's Claude usage limit stopped that pass at 04:51 UTC after 39 of 85, and the 13 unchecked major
-findings are with a second reader again (their verdicts land on PR #78 as a second commit). Nothing stands at reject; 25
-findings stand at major after checking, the ten confirmed ones listed on #41 (the abstract's "model fixed to one ridge" and
+findings went to a second reader again, which answered on all 13 at 05:41 UTC (five confirmed at major, five partly, two
+lowered to minor, one refuted; PR #78's second commit). Nothing stands at reject; 35 findings stand at major after
+checking, the fifteen confirmed ones listed on #41 (the abstract's "model fixed to one ridge" and
 "every LLM arm on one LLM" are contradicted by the run scripts, F04 and F05; the foreign arms' software is unpinned, F17;
 the probe's pass rule is unenforced, F18; the chain's resume rule fails both ways, F37; the lab arms already dropped a
 parent column the package arms cannot, F21; the proportionality check misses parent-derived candidates, F23; the frozen
-batch names a baseline Adamson lacks, F65). The lead decides what changes in its files. **Next:** the second reader's
-verdicts on the 13 (then claim #64 closes); block D as in the entry below (Andres runs the plan's steps 3 and 4 in a
+batch names a baseline Adamson lacks, F65). The lead decides what changes in its files. Claim #64 is closed. **Next:** the lead's reading of PR #78 (which findings change the plan before the probe, which
+the paper); block D as in the entry below (Andres runs the plan's steps 3 and 4 in a
 Terminal, or allows them for the Mac session, which is parked until his next message in the lab thread); block H waits on
 his cap line, the `alpine/socat` pull, `tier.txt`, `isolation.txt`, and now on the lead's reading of PR #78.
 
