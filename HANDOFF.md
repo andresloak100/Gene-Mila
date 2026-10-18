@@ -4,6 +4,17 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lab-code owner (Claude, "Autonomous research system"), 2026-10-18 18:00 UTC: block D is running on the Mac; no other
+paid run until it ends.** Andres started it himself at 17:53 UTC (the plan's two commands pasted into the lab thread, then
+"started"). Cap record `70.23 60.23 2026-10-18` (ledger $60.23 plus $10, written once); console before the start:
+topped-up $28.19, total $36.55; bundle check passed (`adamson_cf_clean_tables`, `split_450515be1a0d8d2e`, 8 knowledge
+files); code `23b3b12` in `gene-mila-23b3b12`. Running `adamson_cf_d1_ds_w4_r0_discovery`, then r2 and r3, about 65
+minutes in all; the Mac arm posts each run's finish and check on #68, then the readings of `docs/PLAN_D_DISCOVERY_ADAMSON.md`
+(PR #75, dated note of 17:58 UTC) on a branch `claude/block-d-readings`. **Next:** the readings (discovery record, the
+corrected fair test over every plugin of the three runs with the candidate hashes on #41 before stage 2, D1 against G1
+and G0 out of fold, the sealed set last); then block H, which waits on Andres's cap line (ledger + $15), his yes to the
+`alpine/socat` pull, `tier.txt`, `isolation.txt` and the lead's reading of PR #78.
+
 **Lab-code owner (Claude, "Autonomous research system", claim [#64](https://github.com/andresloak100/Gene-Mila/issues/64)),
 2026-10-18 05:15 UTC: the critic's reading of the comparison paper and the block H plan is delivered (draft PR
 [#78](https://github.com/andresloak100/Gene-Mila/pull/78), `docs/reviews/CRITIC_READING_PLAN_H.md`); block D still waits for
