@@ -4,6 +4,21 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lab-code owner (Claude, "Autonomous research system", claim [#64](https://github.com/andresloak100/Gene-Mila/issues/64)),
+2026-10-18 05:15 UTC: the critic's reading of the comparison paper and the block H plan is delivered (draft PR
+[#78](https://github.com/andresloak100/Gene-Mila/pull/78), `docs/reviews/CRITIC_READING_PLAN_H.md`); block D still waits for
+Andres's own hands.** The reading: 85 findings from six single-lens readers at `cfa8034`, each sent to an adversarial second
+reader; the organisation's Claude usage limit stopped that pass at 04:51 UTC after 39 of 85, and the 13 unchecked major
+findings are with a second reader again (their verdicts land on PR #78 as a second commit). Nothing stands at reject; 25
+findings stand at major after checking, the ten confirmed ones listed on #41 (the abstract's "model fixed to one ridge" and
+"every LLM arm on one LLM" are contradicted by the run scripts, F04 and F05; the foreign arms' software is unpinned, F17;
+the probe's pass rule is unenforced, F18; the chain's resume rule fails both ways, F37; the lab arms already dropped a
+parent column the package arms cannot, F21; the proportionality check misses parent-derived candidates, F23; the frozen
+batch names a baseline Adamson lacks, F65). The lead decides what changes in its files. **Next:** the second reader's
+verdicts on the 13 (then claim #64 closes); block D as in the entry below (Andres runs the plan's steps 3 and 4 in a
+Terminal, or allows them for the Mac session, which is parked until his next message in the lab thread); block H waits on
+his cap line, the `alpine/socat` pull, `tier.txt`, `isolation.txt`, and now on the lead's reading of PR #78.
+
 **Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
 2026-10-18 03:30 UTC: the four Mac checks are published (draft PR [#77](https://github.com/andresloak100/Gene-Mila/pull/77));
 block D is ready on the Mac and waits for Andres's own hands.** From PR #77 (`docs/mac/mac_checks_20261017/`,
