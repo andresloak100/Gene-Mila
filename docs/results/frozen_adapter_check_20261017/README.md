@@ -90,8 +90,20 @@ against run A's 3. The answers are known (the saved anchor rows), so any differe
 [`adapter_compare_newbranch.py`](../../mac/mac_checks_20261017/adapter_compare_newbranch.py) compares it with the
 export's saved predictions and with run A, and writes `comparison_newbranch.json` and `comparison_newbranch.md` here.
 
-**Status at this commit: running.** Run D started at 02:42:16 UTC (python pid 7513) and had not finished at
-03:15 UTC. A duplicate launch at 02:55:14 UTC was stopped before it wrote any output, but it overwrote the header of
-[`adapter_newbranch.log`](adapter_newbranch.log)
-([`adapter_newbranch_processes.txt`](../../mac/mac_checks_20261017/adapter_newbranch_processes.txt)). The result
-follows in a later commit on this branch. The gate's verdict above does not depend on it.
+**Result: bit-exact.** Run D exited 0 at 03:14:02 UTC after 1,906 s (started 02:42:16 UTC; log
+[`adapter_newbranch.log`](adapter_newbranch.log)). On all 31 conditions, every member (EXP_0681, EXP_0729, EXP_0519)
+and the ensemble equal the export's saved anchor rows and run A's arrays bit for bit: max abs diff 0, 0 values
+differing ([`comparison_newbranch.md`](comparison_newbranch.md), [`comparison_newbranch.json`](comparison_newbranch.json),
+log [`adapter_compare_newbranch.log`](adapter_compare_newbranch.log)). So on these known answers, computing a condition in
+its own feature batch beside the frozen anchors gives exactly what the original evaluation batch gave. That is evidence
+for the branch a Replogle target takes, on the B1 Norman export only. It is not the prospective acceptance the 13 October
+report asks for, which needs conditions the export has never seen.
+
+| | query_sha256 | predictions_sha256 |
+|---|---|---|
+| D, new-condition branch | `ce35250ca71330be19ad9ff10162119dc3fdf5a20d5036e5847571e65e637706` (equals `inputs/newbranch_queries.json`) | `f3b00d12ad534f284f418699b570bd0f72934c60373748bbf454d7bc3f102db7` (equals its `predictions.npz`, not committed) |
+
+A duplicate launch at 02:55:14 UTC was stopped before it wrote any output, but it overwrote the log's header, which
+therefore shows 02:55:14 UTC. The exit line and its 1,906 s belong to the 02:42:16 UTC run, whose output is
+`predict_newbranch_out` ([`adapter_newbranch_processes.txt`](../../mac/mac_checks_20261017/adapter_newbranch_processes.txt)).
+The gate's verdict above does not depend on this diagnostic.

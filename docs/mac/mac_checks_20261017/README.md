@@ -8,7 +8,7 @@ head). The main checkout and its data were read-only. The `STOP` file was untouc
 build, no probe, no download other than the git clones from GitHub (this clone and `gene-mila-h`), and no paid call
 beyond the balance read. Times are UTC, 18 October 02:29 to about 03:30 (the evening of 17 October on the Mac). The
 checks were run by the session that started at 02:27 UTC; the session that took over at 02:48 UTC checked every number
-against its file, finished the extra diagnostic of step 4 and published them. The commands that are not in a committed
+against its file, compared the extra diagnostic of step 4 once its run had ended, and published them. The commands that are not in a committed
 script are in [`commands_as_run.txt`](commands_as_run.txt), copied from the first session's record. The interpreter was the main checkout's venv, read-only: Python 3.13.7,
 NumPy 2.5.3, SciPy 1.18.1, scikit-learn 1.9.1, which are the frozen export's pins. Every command ran with
 `PYTHONPATH=<clone> PYTHONHASHSEED=0`.
@@ -76,7 +76,7 @@ driver's reading). A full replay reproduced the export's
 `query_sha256` and `predictions_sha256`. The commands are [`adapter_check.sh`](adapter_check.sh) (the gate's three
 runs), [`adapter_newbranch.sh`](adapter_newbranch.sh) with [`adapter_newbranch_queries.py`](adapter_newbranch_queries.py)
 and [`adapter_compare_newbranch.py`](adapter_compare_newbranch.py) (the extra new-condition-branch diagnostic, outside
-the gate; [`adapter_newbranch_processes.txt`](adapter_newbranch_processes.txt) records a duplicate launch and why its
+the gate: bit-exact on all 31 renamed anchors; [`adapter_newbranch_processes.txt`](adapter_newbranch_processes.txt) records a duplicate launch and why its
 log header shows 02:55:14 UTC), [`adapter_build_queries.py`](adapter_build_queries.py) and
 [`adapter_compare.py`](adapter_compare.py). The runtime-receipt command is in [`commands_as_run.txt`](commands_as_run.txt).
 

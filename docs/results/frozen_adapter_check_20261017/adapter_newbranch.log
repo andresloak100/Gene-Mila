@@ -1,2 +1,4 @@
 # clone /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-macchecks at cfa8034; 2026-10-18T02:55:14Z
 nice -n 19 env PYTHONPATH=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-macchecks PYTHONHASHSEED=0 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/frozen_model.py predict --package /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013/package --manifest-sha256 225adc3079251f3cd17f16999b3bc92ab18ae20e9fcde9ee0617b8f350869b45 --queries docs/results/frozen_adapter_check_20261017/inputs/newbranch_queries.json --out docs/results/frozen_adapter_check_20261017/predict_newbranch_out 
+predicted 31 conditions; receipt docs/results/frozen_adapter_check_20261017/predict_newbranch_out/receipt.json
+## D exit=0 end 2026-10-18T03:14:02Z (1906 s)
