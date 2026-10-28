@@ -1,0 +1,4 @@
+# 2026-10-18T02:30:34Z start: nice -n 19 shasum -a 256 /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/replogle2022/ReplogleWeissman2022_K562_gwps.h5ad
+d3269d9c863d96555eba768b42ab330cc1b57493cd33b4ac8fe7fbab8278f104  /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/replogle2022/ReplogleWeissman2022_K562_gwps.h5ad
+exit=0
+# 2026-10-18T02:31:15Z end

@@ -1307,6 +1307,16 @@ The tables below enumerate every new file separately, including duplicate-by-des
 | [g_f_h8_report_audit.json](g_f_h8_report_audit.json) | Preserved reading, provenance or audit receipt. |
 | [g_f_h8_report_audit.md](g_f_h8_report_audit.md) | Preserved reading, provenance or audit receipt. |
 
+## Fresh-test preparation (17 October 2026; [`docs/PLAN_R_FRESH_TEST.md`](../PLAN_R_FRESH_TEST.md))
+
+Free checks on Andres's Mac, claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68); commands and logs in
+[`docs/mac/mac_checks_20261017/`](../mac/mac_checks_20261017/README.md).
+
+| File | What it is | Produced by |
+|---|---|---|
+| `replogle_k562_gwps_manifest_20261017/` | the Replogle 2022 K562 genome-wide eligibility manifest (obs and var only, no draw) against a **provisional** gene universe (the Adamson clean bundle's 2,055 public genes; no Adamson frozen export exists yet): 1,820 eligible targets, 1,331 in-distribution; read `README.md` first | `tools/replogle_slice_manifest.py` |
+| `frozen_adapter_check_20261017/` | the PLAN_R section 6 gate on the B1 Norman frozen export: `predict-targets` (31 single-gene anchors), `predict` (88 pairs) and a full 119-anchor replay, every member bit-exact; plus an extra diagnostic outside the gate: the new-condition branch, bit-exact on the 31 single-gene anchors renamed as new conditions; read `README.md` first | `tools/frozen_model.py` |
+
 ## Archived from here
 
 `feature_audit.{md,json}`, `feature_audit_feature_box.json`, `feature_audit_v2.{md,json}`, `feature_audit_v2_feature_box.json`

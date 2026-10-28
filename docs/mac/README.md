@@ -18,6 +18,12 @@ HANDOFF.md section 1 is current.
 | `block_g/` | G, running ([`docs/PLAN_G_CLEAN_ARM.md`](../PLAN_G_CLEAN_ARM.md)) | `prepare_clean_bundles.sh`, `block_g_chain.sh`, `block_g_run.sh`; receipts `downloads.md`, `prepare_*.txt`, `archive_*.jsonl`. Nothing here changes while the chain runs |
 | `block_h/` | H, not yet run ([`docs/PLAN_H_COMPARISON.md`](../PLAN_H_COMPARISON.md)) | `block_h_chain.sh`, `block_h_a2.sh`, `block_h_a3.sh`, `block_h_a4.sh`, `block_h_cap.sh`, `block_h_common.sh`, `block_h_probe.sh`, `check_tools.sh`, `Dockerfile` |
 
+## Checks (free, no run)
+
+| Directory | What | Files |
+|---|---|---|
+| `mac_checks_20261017/` | claim #68, 17 October: the DeepSeek balance read, Docker Desktop started and `block_h/check_tools.sh` rerun (egress test void: `alpine/socat` not pulled), the hashes of the Replogle genome-wide file, the frozen adapter check's scripts; results in `docs/results/replogle_k562_gwps_manifest_20261017/` and `docs/results/frozen_adapter_check_20261017/` | `README.md` first |
+
 ## Run records (`config.json`, `summary.json` and the analysis log of one run each)
 
 Adamson controls with the external Replogle screen: `control_replogle_w4_r0/`, `control_replogle_from_opus_r0/`,
