@@ -34,6 +34,8 @@ not integrated merely because a document describes it.
   Tests: `tests/test_cellforge_c2.py`, `tests/test_lead_h8_constraint.py`.
 - [PLAN_C_CELLFORGE.md](PLAN_C_CELLFORGE.md): CellForge trained on our training perturbations and scored once by our
   evaluator (GOAL_CRITERIA B.5): export on the Mac, run on a Mila GPU, score on the Mac. Not run.
+- [FRESH_TEST_HOLDER.md](FRESH_TEST_HOLDER.md): the fresh-test holder's one page: get the cohort, check the deposit,
+  score with `tools/fresh_test_score.py`, post R1 then R2.
 - [PREPRINT_DRAFT.md](PREPRINT_DRAFT.md): the preprint drafted for the end of October: what the agents found, the
   fair-test pitfall, the negative on clean knowledge, matched baselines; two results pending.
 - [PLAN_DL_BASELINES.md](PLAN_DL_BASELINES.md): GEARS (then CPA and scGPT) trained on the same export and scored by

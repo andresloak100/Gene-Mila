@@ -20,7 +20,8 @@ gnomAD constraint, UniProt), agents wrote 395 table-reading features, none of wh
 matched permutation nulls; a pre-registered human hypothesis failed too. We show that a standard gene-permutation
 null cannot reject a feature that rescales an existing prediction, and give the corrected test. Under matched
 conditions, CellForge's public release produced a templated plan unfit for the task, and GEARS scored
-[PENDING: GEARS mean ± sd]. Twenty minutes of agent search costs about $0.50 to $1 and most of the gain arrives in the
+[PENDING: GEARS mean ± sd]. On a clean bundle the corrected test passes the agents' response-transfer features at about 27 times the minimum
+effect, and nothing new. Twenty minutes of agent search costs about $0.50 to $1 and most of the gain arrives in the
 first ten minutes. The bottleneck is information about which perturbations behave alike, not search.
 
 ## 1. Introduction
@@ -108,7 +109,13 @@ interval excludes the minimum effect; `docs/results/adamson_cf_lead_h8`).
 
 **3.5 Showing the planner its errors.** A discovery mode shows the planner where its model fails and which inputs no
 feature has read. In three Adamson runs it proposed 353 hypotheses, 101 on inputs never read before, for $1.01
-(`docs/results/adamson_cf_d1_discovery_record.md`). [PENDING: block D fair-test verdict, PR #81.]
+(`docs/results/adamson_cf_d1_discovery_record.md`). Every one of its 270 plugins went through the corrected test
+(234 tested, 211 unique predictions, 999 replicates, complete family; `docs/results/adamson_cf_d_pooled_holm`, PR #81).
+Two pass every gate on the clean bundle, with no screen read: gene-set similarity transfer (gain 0.056 ± 0.013) and
+training-response similarity transfer (0.054 ± 0.012), both at the p floor of 0.001, about 27 times the minimum
+effect. Both are response transfer, the agents' main idea since the first runs and a known principle; none of the
+features built on the newly surfaced inputs passes. The test has power for real signal, and the agents' gain is real,
+but known.
 
 **3.6 Matched baselines.** CellForge's pinned public release, given our export and a DeepSeek model, completed task
 analysis and method design but produced a plan built for drug-dose experiments (count-based filtering of normalised
