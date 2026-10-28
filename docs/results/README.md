@@ -152,3 +152,7 @@ Free checks on Andres's Mac, claim [#68](https://github.com/andresloak100/Gene-M
 
 `feature_audit.{md,json}`, `feature_audit_feature_box.json`, `feature_audit_v2.{md,json}`, `feature_audit_v2_feature_box.json`
 (audit versions 1 and 2, superseded by v3): [`docs/archive/results/`](../archive/README.md).
+
+- `null_degeneracy_sim/` (28 October 2026): 200 null features (a parent column times a random per-perturbation scalar) scored
+  against both nulls; false-positive rate 0.285 for the gene null, 0.09 for the perturbation null. Tool:
+  `tools/null_degeneracy_sim.py`; note: `docs/NOTE_DEGENERATE_NULL.md`.
