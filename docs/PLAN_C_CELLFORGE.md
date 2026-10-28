@@ -61,3 +61,16 @@ an LLM for its agents, and its Codex code-generation backend; the Mila cluster h
   `--codegen-backend` is the documented swap and the change is recorded here before the run.
 - A run that reads any other copy of Adamson (its downloader fetches the full screen) is void: the node gets only
   the export folder, and CellForge's dataset downloader is not run there.
+
+## Note, 2026-10-28: the run may happen on the Mac, by Astra
+
+Andres's word: Astra, which operates his Mac, runs this plan. The Mac has no NVIDIA GPU, so CellForge's generated
+model trains on Apple's GPU (PyTorch `mps`) or the CPU. That changes the wall clock, not the comparison: the input is
+the same export, the scoring the same tool. Rules for this route: Astra works in its own clone at the integration
+head (`7fdbb8e` or later), never in the main checkout; CellForge goes in its own virtual environment and its own
+folder outside the repository; it gets only the export folder, never the bundle, `private/` or the raw h5ad files;
+its dataset downloader is not run; `DEEPSEEK_API_KEY` comes from the Mac's environment as for every lab run
+(`DEEPSEEK_API_KEY="$API_KEY"` in that process only); no lab run or other heavy job runs beside it. Astra approves
+CellForge's two checkpoints (plan, then training script) only after posting each on #51, and reports a failed or
+non-training script as it is. If training on `mps` or CPU would exceed 12 hours, Astra stops and reports, and the run
+moves to a Mila GPU as section "What runs where" says.
