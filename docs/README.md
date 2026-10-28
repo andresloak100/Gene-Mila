@@ -36,6 +36,8 @@ not integrated merely because a document describes it.
   evaluator (GOAL_CRITERIA B.5): export on the Mac, run on a Mila GPU, score on the Mac. Not run.
 - [FRESH_TEST_HOLDER.md](FRESH_TEST_HOLDER.md): the fresh-test holder's one page: get the cohort, check the deposit,
   score with `tools/fresh_test_score.py`, post R1 then R2.
+- [NOTE_DEGENERATE_NULL.md](NOTE_DEGENERATE_NULL.md): methods note draft: a gene-permutation null cannot reject a
+  parent column times a per-perturbation number (simulation: 28% false positives against 9% for the perturbation null).
 - [PREPRINT_DRAFT.md](PREPRINT_DRAFT.md): the preprint drafted for the end of October: what the agents found, the
   fair-test pitfall, the negative on clean knowledge, matched baselines; two results pending.
 - [PLAN_DL_BASELINES.md](PLAN_DL_BASELINES.md): GEARS (then CPA and scGPT) trained on the same export and scored by

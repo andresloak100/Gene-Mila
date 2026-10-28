@@ -148,6 +148,10 @@ Free checks on Andres's Mac, claim [#68](https://github.com/andresloak100/Gene-M
 | `replogle_k562_gwps_manifest_20261017/` | the Replogle 2022 K562 genome-wide eligibility manifest (obs and var only, no draw) against a **provisional** gene universe (the Adamson clean bundle's 2,055 public genes; no Adamson frozen export exists yet): 1,820 eligible targets, 1,331 in-distribution; read `README.md` first | `tools/replogle_slice_manifest.py` |
 | `frozen_adapter_check_20261017/` | the PLAN_R section 6 gate on the B1 Norman frozen export: `predict-targets` (31 single-gene anchors), `predict` (88 pairs) and a full 119-anchor replay, every member bit-exact; plus an extra diagnostic outside the gate: the new-condition branch, bit-exact on the 31 single-gene anchors renamed as new conditions; read `README.md` first | `tools/frozen_model.py` |
 
+- `null_degeneracy_sim/` (28 October 2026): 200 null features (a parent column times a random per-perturbation scalar) scored
+  against both nulls; false-positive rate 0.285 for the gene null, 0.09 for the perturbation null. Tool:
+  `tools/null_degeneracy_sim.py`; note: `docs/NOTE_DEGENERATE_NULL.md`.
+
 ## Archived from here
 
 `feature_audit.{md,json}`, `feature_audit_feature_box.json`, `feature_audit_v2.{md,json}`, `feature_audit_v2_feature_box.json`
