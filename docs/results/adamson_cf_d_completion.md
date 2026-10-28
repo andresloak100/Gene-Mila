@@ -48,3 +48,5 @@ Descriptive selected M1 over runs 0/2/3: 0.559527050 ± sample SD 0.025082438. T
 ## Preservation and scope
 
 All 524 original D artifacts match both clones after the readings, and all 270 source plugins still match the original run feature stores. Main checkout HEAD is unchanged. Shared ledger 61.401668232 before and after; no API call or paid run. Raw JSON/Markdown twins, unchanged plugins, command/log/exit/runtime receipts and audit records are retained. The pooled raw tool heading still says Block F/gene_annotation; its actual D scope is the all-plugin family described above. No protected code, data, run, criterion or model was changed to obtain a result. No replication, fresh test, wet-lab or literature-novelty result is claimed; the lead decides any next step.
+
+Publication validation: 681 passed, 1 skipped, 8 warnings in 774.56s (0:12:54). Reader dependency source audit passed; full-suite tested merge tree is pinned in publication_verification. No scientific call was repeated.

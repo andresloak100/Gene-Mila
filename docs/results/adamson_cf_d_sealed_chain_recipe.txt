@@ -1,0 +1,16 @@
+from pathlib import Path
+import json,subprocess,sys,os
+from datetime import datetime,timezone
+c=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish");o=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_d_finish_ops");r=c/'docs/results'
+for phase in ['adamson_cf_d_pool','adamson_cf_d1_vs_g','adamson_cf_d1_arm_summary','adamson_cf_d1_descriptive']:
+ assert (r/(phase+'.exit')).read_text()=='0\n'
+assert json.loads((r/'adamson_cf_d_primary_audit.json').read_text())['all_pass']
+assert json.loads((r/'adamson_cf_d_reading3_5_audit.json').read_text())['all_pass']
+pre={'start_utc':datetime.now(timezone.utc).isoformat(),'order':[0,2,3],'policy':'Three separate single-run sealed_reading calls last; no --versus, cross-arm comparison, model selection or retries.','calls':[json.loads((o/('sealed'+str(s)+'.json')).read_text()) for s in [0,2,3]]}
+with (r/'adamson_cf_d_sealed_chain.json').open('x') as f:json.dump(pre,f,indent=2);f.write('\n')
+rc=0
+for seed in [0,2,3]:
+ rc=subprocess.run(["/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",str(o/'phase_driver.py'),str(o/('sealed'+str(seed)+'.json'))],cwd=c).returncode
+ if rc:break
+with (r/'adamson_cf_d_sealed_chain.exit').open('x') as f:f.write(str(rc)+'\n')
+raise SystemExit(rc)

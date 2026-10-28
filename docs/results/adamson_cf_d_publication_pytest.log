@@ -1,0 +1,27 @@
+......................................................s................. [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 31%]
+........................................................................ [ 42%]
+........................................................................ [ 52%]
+........................................................................ [ 63%]
+........................................................................ [ 73%]
+........................................................................ [ 84%]
+........................................................................ [ 95%]
+..................................                                       [100%]
+=============================== warnings summary ===============================
+tests/test_real_data_celleval.py::test_celleval_ranks_truth_above_baseline
+tests/test_real_data_celleval.py::test_celleval_ranks_truth_above_baseline
+tests/test_real_data_celleval.py::test_final_report_includes_celleval
+tests/test_real_data_celleval.py::test_final_report_includes_celleval
+  /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/lib/python3.13/site-packages/cell_eval/_evaluator.py:119: DeprecationWarning: the string cache has been replaced by pl.Categories
+    pl.enable_string_cache()
+
+tests/test_real_data_celleval.py::test_celleval_ranks_truth_above_baseline
+tests/test_real_data_celleval.py::test_celleval_ranks_truth_above_baseline
+tests/test_real_data_celleval.py::test_final_report_includes_celleval
+tests/test_real_data_celleval.py::test_final_report_includes_celleval
+  /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/lib/python3.13/site-packages/cell_eval/_types/_de.py:32: DeprecationWarning: the string cache has been replaced by pl.Categories
+    with pl.StringCache():
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+681 passed, 1 skipped, 8 warnings in 774.56s (0:12:54)
