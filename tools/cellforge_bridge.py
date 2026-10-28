@@ -182,7 +182,7 @@ def _load_pred(path: Path, genes: list[str]) -> tuple[np.ndarray, list[str]]:
     return means, perts
 
 
-def score(bundle: Path, pred_path: Path, versus: Path | None = None) -> dict:
+def score(bundle: Path, pred_path: Path, versus: Path | None = None, name: str = "cellforge") -> dict:
     from genemila.benchmark.oracle import QueryOracle
     pub = _public(bundle)
     means, perts = _load_pred(pred_path, pub["genes"])
@@ -194,7 +194,7 @@ def score(bundle: Path, pred_path: Path, versus: Path | None = None) -> dict:
         raise SystemExit(f"predictions lack {len(lacking)} held-out perturbations, e.g. {lacking[:5]}")
     pred = means[[idx[p] for p in sealed]]
     rep = {"bundle": str(bundle), "predictions": str(pred_path), "predictions_sha256": _sha(Path(pred_path)),
-           "cellforge": oracle.query("cellforge", pred, sealed, pub["control_mean"])}
+           "model": name, "cellforge": oracle.query(name, pred, sealed, pub["control_mean"])}
     if versus is not None:
         from genemila.lab import open_run
         lab = open_run(Path(versus))
@@ -202,7 +202,7 @@ def score(bundle: Path, pred_path: Path, versus: Path | None = None) -> dict:
         o2 = QueryOracle(Path(bundle), max_queries=2, selection=lab.selection)
         pb, ob = lab._predict(rec, o2.perts)
         rep["versus"] = {"run": str(versus), "experiment_id": rec["experiment_id"],
-                         "paired": o2.query_paired("cellforge", pred, sealed, rec["experiment_id"], pb, ob,
+                         "paired": o2.query_paired(name, pred, sealed, rec["experiment_id"], pb, ob,
                                                    pub["control_mean"], metric="pearson_delta")}
     return rep
 
@@ -211,13 +211,14 @@ def render(rep: dict) -> str:
     m = rep["cellforge"]["metrics"]
     keys = ["pearson_delta", "mse", "pearson_delta_top", "r2_top", "cellforge_mse_de", "cellforge_pcc_de",
             "cellforge_r2_de"]
-    lines = ["# CellForge on Gene-Mila's split, scored once on the sealed set", "",
+    who = rep.get("model", "cellforge")
+    lines = [f"# {who} on Gene-Mila's split, scored once on the sealed set", "",
              f"Bundle `{rep['bundle']}`; predictions `{rep['predictions']}` (sha256 `{rep['predictions_sha256']}`).", "",
-             "| metric | CellForge |", "|---|---:|"]
+             f"| metric | {who} |", "|---|---:|"]
     lines += [f"| {k} | {m[k]:.4f} |" for k in keys if isinstance(m.get(k), (int, float))]
     if "versus" in rep:
         p = rep["versus"]["paired"]["paired"]
-        lines += ["", f"Paired against `{rep['versus']['run']}` {rep['versus']['experiment_id']} (CellForge minus the lab's "
+        lines += ["", f"Paired against `{rep['versus']['run']}` {rep['versus']['experiment_id']} ({who} minus the lab's "
                   f"model, pearson_delta per sealed perturbation): {json.dumps(p.get('pooled', p))[:600]}"]
     return "\n".join(lines) + "\n"
 
@@ -234,12 +235,13 @@ def main(argv=None) -> int:
     s.add_argument("--bundle", required=True)
     s.add_argument("--pred", required=True)
     s.add_argument("--versus", default=None)
+    s.add_argument("--name", default="cellforge", help="the model's name in the report (gears, cpa, ...)")
     s.add_argument("--out", required=True, help="markdown report; a JSON twin is written beside it")
     a = ap.parse_args(argv)
     if a.cmd == "export":
         print(json.dumps(export(Path(a.bundle), [Path(p) for p in a.h5ad], Path(a.out), a.condition_key), indent=1))
         return 0
-    rep = score(Path(a.bundle), Path(a.pred), Path(a.versus) if a.versus else None)
+    rep = score(Path(a.bundle), Path(a.pred), Path(a.versus) if a.versus else None, a.name)
     out = Path(a.out)
     out.write_text(render(rep))
     out.with_suffix(".json").write_text(json.dumps(rep, indent=1, default=float))
