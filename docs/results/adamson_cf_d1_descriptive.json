@@ -1,0 +1,247 @@
+{
+ "aggregate_mean_sd_ddof1": {
+  "all_cost_usd": {
+   "mean": 0.33610290266666665,
+   "sd": 0.2047601244543943,
+   "values": [
+    0.546547928,
+    0.137545632,
+    0.324215148
+   ]
+  },
+  "cpu_hours": {
+   "mean": 0.06363333333333333,
+   "sd": 0.029353761825928432,
+   "values": [
+    0.0973,
+    0.0434,
+    0.0502
+   ]
+  },
+  "duplicate_experiments": {
+   "mean": 7.666666666666667,
+   "sd": 4.725815626252609,
+   "values": [
+    13,
+    4,
+    6
+   ]
+  },
+  "duration_s": {
+   "mean": 1211.5333333333333,
+   "sd": 6.887912117132029,
+   "values": [
+    1204.1,
+    1217.7,
+    1212.8
+   ]
+  },
+  "experiments_cancelled": {
+   "mean": 0.3333333333333333,
+   "sd": 0.5773502691896257,
+   "values": [
+    0,
+    1,
+    0
+   ]
+  },
+  "experiments_completed": {
+   "mean": 713.6666666666666,
+   "sd": 241.7112602534961,
+   "values": [
+    982,
+    513,
+    646
+   ]
+  },
+  "experiments_completed_planner": {
+   "mean": 108.33333333333333,
+   "sd": 68.15668223537098,
+   "values": [
+    179,
+    43,
+    103
+   ]
+  },
+  "experiments_failed": {
+   "mean": 10.666666666666666,
+   "sd": 10.016652800877813,
+   "values": [
+    21,
+    1,
+    10
+   ]
+  },
+  "experiments_killed": {
+   "mean": 0,
+   "sd": 0.0,
+   "values": [
+    0,
+    0,
+    0
+   ]
+  },
+  "experiments_proposed": {
+   "mean": 733,
+   "sd": 255.58364579917864,
+   "values": [
+    1016,
+    519,
+    664
+   ]
+  },
+  "experiments_rejected": {
+   "mean": 0.6666666666666666,
+   "sd": 1.1547005383792515,
+   "values": [
+    0,
+    0,
+    2
+   ]
+  },
+  "failed_calls": {
+   "mean": 0,
+   "sd": 0.0,
+   "values": [
+    0,
+    0,
+    0
+   ]
+  },
+  "largest_planner_state_chars": {
+   "mean": 17422.666666666668,
+   "sd": 1314.8632375016548,
+   "values": [
+    18558,
+    15982,
+    17728
+   ]
+  },
+  "planner_calls": {
+   "mean": 15,
+   "sd": 9.539392014169456,
+   "values": [
+    25,
+    6,
+    14
+   ]
+  },
+  "planner_cost_usd": {
+   "mean": 0.23069029866666668,
+   "sd": 0.14324032107672977,
+   "values": [
+    0.377308976,
+    0.091086072,
+    0.22367584799999998
+   ]
+  },
+  "planner_rounds": {
+   "mean": 15,
+   "sd": 9.539392014169456,
+   "values": [
+    25,
+    6,
+    14
+   ]
+  },
+  "worker_calls": {
+   "mean": 120,
+   "sd": 74.0,
+   "values": [
+    194,
+    46,
+    120
+   ]
+  },
+  "worker_cost_usd": {
+   "mean": 0.105412604,
+   "sd": 0.06153459672314208,
+   "values": [
+    0.169238952,
+    0.04645956,
+    0.1005393
+   ]
+  }
+ },
+ "reading": "block D reading 5 (descriptive)",
+ "runs": [
+  {
+   "all_cost_usd": 0.546547928,
+   "controller_log_discovery_dry_lines": 0,
+   "cpu_hours": 0.0973,
+   "dry_at_round": 25,
+   "dry_fired": true,
+   "duplicate_experiments": 13,
+   "duration_s": 1204.1,
+   "experiments_cancelled": 0,
+   "experiments_completed": 982,
+   "experiments_completed_planner": 179,
+   "experiments_failed": 21,
+   "experiments_killed": 0,
+   "experiments_proposed": 1016,
+   "experiments_rejected": 0,
+   "failed_calls": 0,
+   "largest_planner_state_chars": 18558,
+   "planner_calls": 25,
+   "planner_cost_usd": 0.377308976,
+   "planner_mixed": false,
+   "planner_rounds": 25,
+   "run": "adamson_cf_d1_ds_w4_r0_discovery",
+   "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery",
+   "worker_calls": 194,
+   "worker_cost_usd": 0.169238952
+  },
+  {
+   "all_cost_usd": 0.137545632,
+   "controller_log_discovery_dry_lines": 0,
+   "cpu_hours": 0.0434,
+   "dry_at_round": 6,
+   "dry_fired": true,
+   "duplicate_experiments": 4,
+   "duration_s": 1217.7,
+   "experiments_cancelled": 1,
+   "experiments_completed": 513,
+   "experiments_completed_planner": 43,
+   "experiments_failed": 1,
+   "experiments_killed": 0,
+   "experiments_proposed": 519,
+   "experiments_rejected": 0,
+   "failed_calls": 0,
+   "largest_planner_state_chars": 15982,
+   "planner_calls": 6,
+   "planner_cost_usd": 0.091086072,
+   "planner_mixed": false,
+   "planner_rounds": 6,
+   "run": "adamson_cf_d1_ds_w4_r2_discovery",
+   "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r2_discovery",
+   "worker_calls": 46,
+   "worker_cost_usd": 0.04645956
+  },
+  {
+   "all_cost_usd": 0.324215148,
+   "controller_log_discovery_dry_lines": 0,
+   "cpu_hours": 0.0502,
+   "dry_at_round": 14,
+   "dry_fired": true,
+   "duplicate_experiments": 6,
+   "duration_s": 1212.8,
+   "experiments_cancelled": 0,
+   "experiments_completed": 646,
+   "experiments_completed_planner": 103,
+   "experiments_failed": 10,
+   "experiments_killed": 0,
+   "experiments_proposed": 664,
+   "experiments_rejected": 2,
+   "failed_calls": 0,
+   "largest_planner_state_chars": 17728,
+   "planner_calls": 14,
+   "planner_cost_usd": 0.22367584799999998,
+   "planner_mixed": false,
+   "planner_rounds": 14,
+   "run": "adamson_cf_d1_ds_w4_r3_discovery",
+   "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery",
+   "worker_calls": 120,
+   "worker_cost_usd": 0.1005393
+  }
+ ]
+}

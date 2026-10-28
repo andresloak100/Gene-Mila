@@ -7,6 +7,9 @@ head, `D_COMMIT`; it contains block G's tool commit `2f2e683`). Each output has 
 `.log` and `.exit` beside it. The runs' own records (cap line, chain log, check files, `config.json`, `summary.json`)
 are in [`docs/mac/block_d_records/`](../mac/block_d_records/README.md).
 
+
+Completed by Astra on Andres's direct instruction: [final review](adamson_cf_d_completion.md) / [JSON](adamson_cf_d_completion.json). The primary development fair test has two response-transfer passes; the unread-input secondary subset has none. No new biological discovery is claimed. All remaining calls exited0 and the ledger is unchanged. The original narrative below records the18October preparation; the completion review supersedes its running status.
+
 ## The block
 
 Three runs `gene-mila/runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, block G's g1 settings on
@@ -15,15 +18,15 @@ Andres from his Terminal at 17:53 UTC, ended 18:57:45 UTC, all three passed ever
 $60.232225 → $61.240534: **$1.008309** of the $10 cap (r0 $0.546548, r2 $0.137546, r3 $0.324215). Its own arm: never
 pooled with G1 (different code and planner view).
 
-## Status
+## Status (completed 28 October 2026)
 
 | Reading | What | Status | Files |
 |---|---|---|---|
 | 1 | the discovery record per run (descriptive) | **done** | [`adamson_cf_d1_discovery_record.md`](adamson_cf_d1_discovery_record.md) / `.json` |
-| 2 | the fair test (A.1) over every plugin of the three runs | stage 1 and select done; **stage 2 (999 replicates) running**; then pool | `adamson_cf_d_plugins/` (+ `.sha256`, posted on #41 before the tool ran), `adamson_cf_d_stage1/`, `adamson_cf_d_top/`, `adamson_cf_d_stage2/`, `adamson_cf_d_pooled_holm/` |
-| 3 | arm against arm, development tier (descriptive) | after reading 2 | `adamson_cf_d1_vs_g/` |
-| 5 | experiments, planner state, cost, the dry rule (descriptive) | after reading 3 | `adamson_cf_d1_descriptive.md` |
-| 4 | per run, sealed, last (worn, indicative only) | last | `adamson_cf_d1_r{0,2,3}_sealed_reading.md` |
+| 2 | the fair test (A.1) over every plugin of the three runs | **done**: all234 tested,211unique,2pooled passes; see completion review | `adamson_cf_d_plugins/` (+ `.sha256`, posted on #41 before the tool ran), `adamson_cf_d_stage1/`, `adamson_cf_d_top/`, `adamson_cf_d_stage2/`, `adamson_cf_d_pooled_holm/` |
+| 3 | arm against arm, development tier (descriptive) | **done**, nine sets ok | `adamson_cf_d1_vs_g/` |
+| 5 | experiments, planner state, cost, the dry rule (descriptive) | **done** | `adamson_cf_d1_descriptive.md` |
+| 4 | per run, sealed, last (worn, indicative only) | **done last**, three separate calls | `adamson_cf_d1_r{0,2,3}_sealed_reading.md` |
 
 ## Reading 1 (descriptive; no test)
 
@@ -39,7 +42,7 @@ pooled with G1 (different code and planner view).
 | derived (derived_r2 ≥ 0.8) | 6 | 1 | 4 | 3.7 ± 2.5 |
 | selected model (visible, not a held-out score) | ridge, 23 features, 0.5524 | ridge, 9, 0.5056 | ridge, 11, 0.5507 | |
 
-## Reading 2 (the fair test), so far
+## Reading 2: original preparation (completed result in final review)
 
 Family: **every plugin of the three runs**, 270 files (r0 141, r2 40, r3 89), copied unchanged; their sha256
 ([`adamson_cf_d_plugins.sha256`](adamson_cf_d_plugins.sha256)) were posted on
