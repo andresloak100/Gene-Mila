@@ -18,10 +18,13 @@ then SIGKILL after 20 s. stdout and stderr go to <out>/transcript.txt; <out>/run
 the child refused to start, error otherwise); results.tsv, features/ and runs/kept/features/ are copied into <out>/.
 
 Before the first call the child prints the system prompt length and an estimate of the first main call's cost at the
-lab's deepseek rate for the model (characters / 4 tokens, an estimate, times input_cache_miss from configs/default.toml
-next to this script when it is found), and refuses (ended_by refused, nothing sent) when that estimate reaches the
-proxy's session cap (read from /healthz): a probe whose cap is below its first call would end in a 402 by construction.
-Biomni's retriever call goes out before the main call, so the estimate is a lower bound.
+lab's deepseek rate for the model (characters / 4 tokens, an estimate, times input_cache_miss: the rate given as
+--miss-usd-per-mtok, else read from configs/default.toml next to this script when the checkout is there), and refuses
+(ended_by refused, nothing sent) when that estimate reaches the proxy's session cap (read from /healthz): a probe whose
+cap is below its first call would end in a 402 by construction. Biomni's retriever call goes out before the main call,
+so the estimate is a lower bound. In Docker and account mode only tools/baselines/ is beside the runner, never
+configs/, so the Mac scripts pass --miss-usd-per-mtok from the operator's clone (block_h_common.sh, miss_rate); without
+either source the parent warns on stderr, run.json records rate_source "none", and the pre-estimate is skipped.
 
 Biomni executes the agent's code with exec() inside its own process (biomni/tool/support_tools.py), with the user's
 rights and whatever network the process has. So the package must be the only writable place the child can reach
@@ -159,7 +162,14 @@ def parent(args) -> int:
     env = {k: os.environ[k] for k in ENV_ALLOWLIST if k in os.environ}
     env.update(OPENAI_BASE_URL=args.proxy.rstrip("/") + "/v1", OPENAI_API_KEY=f"proxy-token-{args.seed}",
                PYTHONUNBUFFERED="1")
-    rate = miss_rate(args.model)
+    if args.miss_usd_per_mtok is not None:
+        rate, rate_source = float(args.miss_usd_per_mtok), "flag"
+    else:
+        rate = miss_rate(args.model)
+        rate_source = "config" if rate is not None else "none"
+    if rate is None:
+        print(f"warning: no input_cache_miss rate for {args.model}: configs/default.toml is not beside this runner "
+              "and no --miss-usd-per-mtok was given, so the first-call cost pre-estimate is skipped", file=sys.stderr)
     cmd = [args.python, str(Path(__file__).resolve()), "--child", "--model", args.model, "--final", str(final),
            "--timeout-s", str(timeout_s), "--session-cap-usd", str(cap)]
     if rate is not None:
@@ -169,7 +179,8 @@ def parent(args) -> int:
     run = {"arm": "biomni", "seed": int(args.seed), "model": args.model, "minutes": minutes, "probe": bool(args.probe),
            "package": str(pkg), "out": str(out), "proxy": args.proxy, "python": args.python,
            "task_sha256": hashlib.sha256(task_text.encode()).hexdigest(), "execute_timeout_s": timeout_s,
-           "session_cap_usd": cap, "first_call_miss_usd_per_mtok": rate, "started": time.time()}
+           "session_cap_usd": cap, "first_call_miss_usd_per_mtok": rate, "rate_source": rate_source,
+           "started": time.time()}
     t0 = time.monotonic()
     with (out / "transcript.txt").open("wb") as log:
         proc = subprocess.Popen(cmd, cwd=pkg, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
@@ -222,7 +233,9 @@ def main(argv=None) -> int:
     ap.add_argument("--final", help=argparse.SUPPRESS)
     ap.add_argument("--timeout-s", type=float, default=630, help=argparse.SUPPRESS)
     ap.add_argument("--session-cap-usd", type=float, default=None, help=argparse.SUPPRESS)
-    ap.add_argument("--miss-usd-per-mtok", type=float, default=None, help=argparse.SUPPRESS)
+    ap.add_argument("--miss-usd-per-mtok", type=float, default=None,
+                    help="the model's input_cache_miss rate in USD per million tokens for the first-call pre-estimate; "
+                         "default: configs/default.toml next to this runner, when the checkout is there")
     args = ap.parse_args(argv)
     if args.child:
         return child(args)

@@ -10,6 +10,7 @@ import itertools
 import json
 import time
 
+from . import discovery
 from .benchmark import METRIC_TEXT, PRIMARY_METRIC, SELECTION_RULES
 from .db import ACTIVE
 from .lab import Lab
@@ -93,6 +94,10 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         item = {"feature": name, "experiment": rows[0]["experiment_id"], "delta": d,
                 "score": rows[0]["primary_score"],
                 "description": _short(features.get(name, {}).get("description", ""), 80)}
+        dv = (rows[0].get("diagnostics_json") or {}).get("derivability")  # discovery mode only (genemila/discovery.py)
+        if dv and dv.get("r2") is not None:
+            item["derived_r2"] = round(dv["r2"], 2)
+            item["derived"] = bool(dv["r2"] >= float(discovery.setting(lab.cfg, "discovery_derived_r2")))
         (helpful if d is not None and d > HELP_THRESHOLD else unhelpful).append(item)
     helpful.sort(key=lambda x: -x["delta"])
 
@@ -155,7 +160,8 @@ def build_state(lab: Lab, max_recent: int = 10) -> dict:
         "helpful_features_missing_from_best": untested_helpful_in_best[:8],
         "possible_interactions_untested": interactions[:8],
         "failed_directions": failed_lines,
-        "unexplored_idea_areas": unexplored,
+        # discovery mode replaces the fixed idea list by what the data and the bundle say (genemila/discovery.py)
+        **(discovery.state_sections(lab) if discovery.enabled(lab.cfg) else {"unexplored_idea_areas": unexplored}),
         "in_flight": [_short(e["hypothesis"], 70) for e in sorted(inflight, key=lambda e: -(e.get("created_at") or 0))][:60],
         "recent_experiments": recent,
         "compute": {"completed": len(done), "failed": len(failed), "mean_cpu_s": round(sum(cpu) / len(cpu), 2) if cpu else None,
@@ -175,6 +181,12 @@ TOTAL_CHARS = 20000
 # plus the curated files it exceeds 2,500 characters, which would hide the later files from the planner (the workers
 # get the summary uncut, genemila/worker.py _task). Every other section keeps SECTION_CHARS.
 KNOWLEDGE_SECTION_CHARS = 8000
+# Discovery mode (genemila/discovery.py) adds its two sections in place of the idea list, about 3,000 characters more
+# than it on the bundles with three per-gene tables, whose states already ran to 17,000; the evidence section keeps
+# its own budget and the whole state a larger one, so neither pushes IN FLIGHT or the FEATURE REGISTRY out. A state
+# without the evidence key (every run without the mode) keeps SECTION_CHARS and TOTAL_CHARS exactly.
+EVIDENCE_SECTION_CHARS = 3500
+DISCOVERY_TOTAL_CHARS = 24000
 
 
 def render_state(state: dict) -> str:
@@ -190,8 +202,9 @@ def render_state(state: dict) -> str:
             body = json.dumps(value, separators=(',', ':'))
         else:
             body = str(value)
-        limit = KNOWLEDGE_SECTION_CHARS if key == "knowledge_available" else SECTION_CHARS
+        limit = (KNOWLEDGE_SECTION_CHARS if key == "knowledge_available"
+                 else EVIDENCE_SECTION_CHARS if key == discovery.STATE_EVIDENCE else SECTION_CHARS)
         if len(body) > limit:
             body = body[:limit].rsplit("\n", 1)[0] + "\n- … (truncated)"
         out.append(f"## {title}\n{body}")
-    return "\n".join(out)[:TOTAL_CHARS]
+    return "\n".join(out)[:DISCOVERY_TOTAL_CHARS if discovery.STATE_EVIDENCE in state else TOTAL_CHARS]

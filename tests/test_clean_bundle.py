@@ -327,6 +327,41 @@ def test_bundle_round_trip(tmp_path, dataset, with_table):
         bcb.main(argv)
 
 
+def test_bundle_with_similarity_files_and_its_own_name(tmp_path, dataset):
+    """The paralog and protein-similarity edge files go in like the tables, are checked by their endpoints, round-trip
+    through export_public, and the bundle takes the --name the operator gives it (the results table groups by it)."""
+    import numpy as np
+    genes = [str(g) for g in np.load(dataset / "public.npz", allow_pickle=False)["genes"]]
+    src = write_sources(tmp_path / "src", genes_for_bundle=genes[:8])
+    edges = {"description": "toy paralog pairs", "columns": ["gene_a", "gene_b", "identity_a", "identity_b", "lca", "t"],
+             "edges": [[genes[0], genes[1], 0.9, 0.8, "Homo sapiens", "within_species_paralog"]], "source": {"x": 1}}
+    sim = {"description": "toy similarity", "columns": ["gene_a", "gene_b", "cosine"],
+           "edges": [[genes[2], genes[3], 0.7]], "source": {}}
+    table = {"description": "toy paralog table", "columns": ["n_paralogs"], "genes": {g: [0] for g in genes}}
+    for name, obj in (("paralogs", edges), ("protein_similarity", sim), ("paralog_annotation", table)):
+        (tmp_path / f"{name}.json").write_text(json.dumps(obj))
+    out = tmp_path / "clean_sim"
+    argv = ["--bundle", str(dataset), "--sources", str(src), "--out", str(out), "--name", "synthetic_clean_similarity",
+            "--table", str(tmp_path / "paralogs.json"), "--table", str(tmp_path / "protein_similarity.json"),
+            "--table", f"paralog_annotation={tmp_path / 'paralog_annotation.json'}"]
+    assert bcb.main(argv) == 0
+    assert verify_bundle(out) == [] and added_knowledge(out) == []
+    m = json.loads((out / "manifest.json").read_text())
+    assert m["name"] == "synthetic_clean_similarity"
+    assert m["clean_knowledge"]["tables"] == ["paralog_annotation", "paralogs", "protein_similarity"]
+    assert m["clean_knowledge"]["provenance"]["tables"]["paralogs"]["sha256"]
+    ctx = FeatureContext(export_public(out, tmp_path / "pub_sim"))
+    assert ctx.knowledge("paralogs") == edges and ctx.knowledge("protein_similarity") == sim
+    assert bcb._genes_covered(edges) == 2 and bcb._entries(edges) == 1
+    # an edge file whose endpoint is not a measured gene is refused before anything is written
+    foreign = {**sim, "edges": [[genes[2], "NOTMEASURED", 0.7]]}
+    (tmp_path / "protein_similarity.json").write_text(json.dumps(foreign))
+    with pytest.raises(ValueError, match="outside the bundle"):
+        bcb.main(["--bundle", str(dataset), "--sources", str(src), "--out", str(tmp_path / "clean_bad"),
+                  "--table", str(tmp_path / "protein_similarity.json")])
+    assert not (tmp_path / "clean_bad").exists()
+
+
 def test_cli_aliases_and_warning(tmp_path, dataset, capsys):
     """The names docs/mac/block_g uses (--from/--raw/--knowledge PATH) work, and an oversized summary warns."""
     import numpy as np

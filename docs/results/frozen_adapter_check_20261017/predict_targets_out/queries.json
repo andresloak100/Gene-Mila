@@ -1,0 +1,191 @@
+{
+  "queries": [
+    {
+      "condition_id": "BPGM",
+      "target_genes": [
+        "BPGM"
+      ]
+    },
+    {
+      "condition_id": "CDKN1C",
+      "target_genes": [
+        "CDKN1C"
+      ]
+    },
+    {
+      "condition_id": "CEBPB",
+      "target_genes": [
+        "CEBPB"
+      ]
+    },
+    {
+      "condition_id": "ETS2",
+      "target_genes": [
+        "ETS2"
+      ]
+    },
+    {
+      "condition_id": "FOSB",
+      "target_genes": [
+        "FOSB"
+      ]
+    },
+    {
+      "condition_id": "FOXA1",
+      "target_genes": [
+        "FOXA1"
+      ]
+    },
+    {
+      "condition_id": "FOXA3",
+      "target_genes": [
+        "FOXA3"
+      ]
+    },
+    {
+      "condition_id": "HES7",
+      "target_genes": [
+        "HES7"
+      ]
+    },
+    {
+      "condition_id": "HNF4A",
+      "target_genes": [
+        "HNF4A"
+      ]
+    },
+    {
+      "condition_id": "HOXA13",
+      "target_genes": [
+        "HOXA13"
+      ]
+    },
+    {
+      "condition_id": "IKZF3",
+      "target_genes": [
+        "IKZF3"
+      ]
+    },
+    {
+      "condition_id": "ISL2",
+      "target_genes": [
+        "ISL2"
+      ]
+    },
+    {
+      "condition_id": "LHX1",
+      "target_genes": [
+        "LHX1"
+      ]
+    },
+    {
+      "condition_id": "MAML2",
+      "target_genes": [
+        "MAML2"
+      ]
+    },
+    {
+      "condition_id": "MAP2K6",
+      "target_genes": [
+        "MAP2K6"
+      ]
+    },
+    {
+      "condition_id": "MAP4K3",
+      "target_genes": [
+        "MAP4K3"
+      ]
+    },
+    {
+      "condition_id": "MAP7D1",
+      "target_genes": [
+        "MAP7D1"
+      ]
+    },
+    {
+      "condition_id": "MEIS1",
+      "target_genes": [
+        "MEIS1"
+      ]
+    },
+    {
+      "condition_id": "POU3F2",
+      "target_genes": [
+        "POU3F2"
+      ]
+    },
+    {
+      "condition_id": "PTPN12",
+      "target_genes": [
+        "PTPN12"
+      ]
+    },
+    {
+      "condition_id": "RHOXF2",
+      "target_genes": [
+        "RHOXF2"
+      ]
+    },
+    {
+      "condition_id": "RREB1",
+      "target_genes": [
+        "RREB1"
+      ]
+    },
+    {
+      "condition_id": "RUNX1T1",
+      "target_genes": [
+        "RUNX1T1"
+      ]
+    },
+    {
+      "condition_id": "S1PR2",
+      "target_genes": [
+        "S1PR2"
+      ]
+    },
+    {
+      "condition_id": "SAMD1",
+      "target_genes": [
+        "SAMD1"
+      ]
+    },
+    {
+      "condition_id": "TBX3",
+      "target_genes": [
+        "TBX3"
+      ]
+    },
+    {
+      "condition_id": "TGFBR2",
+      "target_genes": [
+        "TGFBR2"
+      ]
+    },
+    {
+      "condition_id": "TSC22D1",
+      "target_genes": [
+        "TSC22D1"
+      ]
+    },
+    {
+      "condition_id": "UBASH3A",
+      "target_genes": [
+        "UBASH3A"
+      ]
+    },
+    {
+      "condition_id": "ZBTB1",
+      "target_genes": [
+        "ZBTB1"
+      ]
+    },
+    {
+      "condition_id": "ZBTB10",
+      "target_genes": [
+        "ZBTB10"
+      ]
+    }
+  ],
+  "schema_version": 1
+}

@@ -19,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
+from . import discovery
 from .benchmark import PRIMARY_HIGHER_IS_BETTER
 from .guard import CodeViolation, check_diff, check_plugin_source
 from .isolation import sha256_text
@@ -111,7 +112,8 @@ class Worker:
             score = ev["metrics"]["primary"]
             delta = None if pscore is None else (score - pscore) * (1 if PRIMARY_HIGHER_IS_BETTER else -1)
             self._set(eid, status="completed", val_metrics_json={**ev["metrics"], "alpha_scores": ev["alpha_scores"]},
-                      diagnostics_json={**ev["diagnostics"], "coefficients": self._coefs(result, ev["best_alpha"])},
+                      diagnostics_json={**ev["diagnostics"], "coefficients": self._coefs(result, ev["best_alpha"]),
+                                        **({"derivability": result["derivability"]} if "derivability" in result else {})},
                       primary_score=score, parent_score=pscore, delta_from_parent=delta,
                       best_alpha=ev["best_alpha"], timing_json=result["timing"],
                       model_size_bytes=result["model_size_bytes"], cpu_s=proc.cpu_s, peak_rss_mb=proc.peak_rss_mb)
@@ -265,7 +267,10 @@ class Worker:
         return proc.killed_reason or f"smoke test exited {proc.returncode}: {proc.stderr_tail[-800:]}"
 
     def _run_experiment(self, spec: ExperimentSpec, wt: Path, art: Path):
-        (art / "run_spec.json").write_text(json.dumps(spec.run_spec(), indent=1))
+        run_spec = spec.run_spec()
+        if spec.kind == "new_feature" and discovery.enabled(self.lab.cfg):  # score the new feature's derivability
+            run_spec["derivability"] = [spec.proposed_feature["name"]]
+        (art / "run_spec.json").write_text(json.dumps(run_spec, indent=1))
         while not self.cpu_slots.acquire(timeout=0.5):
             if self.lab.kill_event.is_set():
                 raise ExperimentFailure("killed", "deadline reached while waiting for a CPU slot")

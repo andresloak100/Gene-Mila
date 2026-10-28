@@ -19,6 +19,12 @@ HANDOFF.md section 1 is current.
 | `block_h/` | H, not yet run ([`docs/PLAN_H_COMPARISON.md`](../PLAN_H_COMPARISON.md)) | `block_h_chain.sh`, `block_h_a2.sh`, `block_h_a3.sh`, `block_h_a4.sh`, `block_h_cap.sh`, `block_h_common.sh`, `block_h_probe.sh`, `check_tools.sh`, `Dockerfile` |
 | `block_d_records/`, `block_d_readings/` | D, finished 18 October, readings running ([`docs/PLAN_D_DISCOVERY_ADAMSON.md`](../PLAN_D_DISCOVERY_ADAMSON.md); the chain's scripts are `block_d/` on PR #75) | [`block_d_records/README.md`](block_d_records/README.md): cap line, chain log, check files, each run's `config.json` and `summary.json`; `block_d_readings/`: the reading scripts and stage commands |
 
+## Checks (free, no run)
+
+| Directory | What | Files |
+|---|---|---|
+| `mac_checks_20261017/` | claim #68, 17 October: the DeepSeek balance read, Docker Desktop started and `block_h/check_tools.sh` rerun (egress test void: `alpine/socat` not pulled), the hashes of the Replogle genome-wide file, the frozen adapter check's scripts; results in `docs/results/replogle_k562_gwps_manifest_20261017/` and `docs/results/frozen_adapter_check_20261017/` | `README.md` first |
+
 ## Run records (`config.json`, `summary.json` and the analysis log of one run each)
 
 Adamson controls with the external Replogle screen: `control_replogle_w4_r0/`, `control_replogle_from_opus_r0/`,

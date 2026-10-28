@@ -1,0 +1,22 @@
+{
+  "gene_mila_head": "c384e66c807624697d6bab5952e3b71cfb24389c",
+  "cellforge_head": "6585ff93e452a8a0f2ad6ed8144ab6d998a3b400",
+  "install_exit": 0,
+  "torch_version": "2.14.1",
+  "mps_built": true,
+  "mps_available": true,
+  "pip_check": "No broken requirements found.",
+  "ledger_before": 61.240534032,
+  "absolute_cap": 66.240534032,
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "max_tokens_default": 4096,
+  "paid_calls_so_far": 0,
+  "research_workspace": "/Users/andresarriaga/cellforge_c_workspace",
+  "input": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "upstream_context_bound_tokens": 1048576,
+  "proxy_reservation": "entire documented context plus requested output at maximum unchanged lab pricing rates",
+  "proxy_source_sha256": "84f4d02aa2d064e6ac92954fd9e9e1ed1044e8815194c95e8cecc51ff13c8cfb",
+  "source_discrepancy": "Requested three-file input; original bundle manifest names only10X010; additional1770controls+10trainingcells disclosed before paid calls",
+  "current_phase": "FREE_PREFLIGHT_FULL_SUITE_RUNNING"
+}

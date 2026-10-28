@@ -1,0 +1,10 @@
+# 2026-10-18 03:06:54Z: run D (adapter_newbranch.sh) process record, written by the 02:48 UTC Mac session (lab-code owner, claim #68)
+# The 02:27 UTC session launched run D at 02:42:16Z (bash 7508 -> python 7513) and was stopped at 02:46Z, but run D kept running.
+# At 02:55:14Z the 02:48 session relaunched the script (bash 17157 -> python 17162), unaware the first was alive (its guard only looked for the output directory, which predict_ensemble creates at the end).
+# The relaunch's '>' truncated adapter_newbranch.log and wrote its own 710-byte header (start 02:55:14Z) over the first run's identical-length header (start 02:42:16Z).
+# The duplicate was stopped at about 03:07Z (harness task stop) before writing any output; no .frozen-predict-* temp directory was left.
+# The run whose output lands in predict_newbranch_out is therefore the 02:42:16Z one; its '## D exit=' line follows the 02:55:14Z header in the log.
+# ps now:
+  PID  PPID STARTED                      ELAPSED COMMAND
+ 7508  7492 Sat Oct 17 22:42:16 2026       24:38 bash docs/mac/mac_checks_20261017/adapter_newbranch.sh
+ 7513  7508 Sat Oct 17 22:42:16 2026       24:38 /Library/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python tools/frozen_model.py predict --package /Users/andresarri

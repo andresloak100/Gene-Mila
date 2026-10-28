@@ -32,8 +32,13 @@ not integrated merely because a document describes it.
   CellForge's design ideas), [lead_h8_constraint/](comparison/lead_h8_constraint/README.md) (the lead's family-8
   hypothesis), [cellforge_notes.md](comparison/cellforge_notes.md) (what CellForge's public code specifies).
   Tests: `tests/test_cellforge_c2.py`, `tests/test_lead_h8_constraint.py`.
+- [PLAN_C_CELLFORGE.md](PLAN_C_CELLFORGE.md): CellForge trained on our training perturbations and scored once by our
+  evaluator (GOAL_CRITERIA B.5): export on the Mac, run on a Mila GPU, score on the Mac. Not run.
 - [NOVEL_FEATURE_NEEDS.md](NOVEL_FEATURE_NEEDS.md): what it takes to find a new biological feature, and what is
   missing (D1 to D6).
+- [DISCOVERY_MODE.md](DISCOVERY_MODE.md): `schedule.discovery`, the run's own hypothesis generation from its residuals
+  and the bundle's unread inputs, with a measured "derived" flag and a stop rule (claim #69; off by default).
+- [SIMILARITY_SOURCES.md](SIMILARITY_SOURCES.md): the paralog and protein-sequence similarity knowledge files (tier-1 sources never given to the agents), how they are built on the Mac and what a run with them is.
 - [PROMPTS.md](PROMPTS.md): every prompt, starting feature, control and worker setting the agents were given, by
   date and code version. Evidence of what ran, not permission to replay a paid campaign.
 

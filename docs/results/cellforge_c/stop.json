@@ -1,0 +1,14 @@
+{
+  "observed_utc": "2026-10-28T02:48:19.328317+00:00",
+  "status": "STOPPED_INVALID_EXPORT",
+  "export_exit": 0,
+  "export_path": "/Users/andresarriaga/cellforge_adamson_export",
+  "export_json_sha256": "dedcb225c03ccf4ca2cdec0a224b496f880f79d9439f75d5fc2d45a6d63d3081",
+  "input_file_sha256_actual": "9836fae1662d16f65d52c2c324278e6d9bfc7f39e9942731dbef326dc98a3b18",
+  "ledger_before": 61.240534032,
+  "ledger_after": 61.240534032,
+  "cap": 66.240534032,
+  "paid_calls": 0,
+  "trained": false,
+  "scored": false
+}
