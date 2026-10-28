@@ -35,7 +35,9 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from genemila.data.real import CONTROL_LABELS, _looks_like_counts, _normalise_log1p, canonical_key  # noqa: E402
+from genemila.data.real import (  # noqa: E402
+    CONTROL_LABELS, _looks_like_counts, _normalise_log1p, parse_label, perturbation_key,
+)
 
 TASK = """# Task for CellForge (Gene-Mila matched comparison)
 
@@ -75,23 +77,53 @@ def export(bundle: Path, h5ads: list[Path], out: Path, condition_key: str | None
     import pandas as pd
     import scipy.sparse as sp
     pub = _public(bundle)
+    manifest_path = Path(bundle) / "manifest.json"
+    manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
     out = Path(out)
     if out.exists() and any(out.iterdir()):
         raise SystemExit(f"{out} exists and is not empty; refusing to overwrite")
     out.mkdir(parents=True, exist_ok=True)
     adata = _read([Path(p) for p in h5ads])
-    key = condition_key or next((k for k in ("perturbation", "condition", "target_gene", "gene") if k in adata.obs),
-                                None)
+    if condition_key and manifest.get("condition_key") not in (None, condition_key):
+        raise SystemExit("--condition-key conflicts with the bundle's recorded ingest")
+    key = condition_key or manifest.get("condition_key") or next(
+        (k for k in ("perturbation", "condition", "target_gene", "gene", "guide_ids") if k in adata.obs), None)
     if key is None:
         raise SystemExit(f"no perturbation column in obs: {list(adata.obs.columns)}")
-    genes_file = (adata.var["gene_name"].astype(str).tolist() if "gene_name" in adata.var
+    if key not in adata.obs:
+        raise SystemExit(f"recorded perturbation column {key!r} is absent")
+    symbol_key = manifest.get("gene_name_key", "gene_name")
+    if manifest.get("gene_name_key") and symbol_key not in adata.var:
+        raise SystemExit(f"recorded gene-name column {symbol_key!r} is absent")
+    genes_file = (adata.var[symbol_key].astype(str).tolist() if symbol_key in adata.var
                   else adata.var_names.astype(str).tolist())
     gene_set = set(genes_file)
     labels = adata.obs[key].astype(object).fillna("unassigned").to_numpy(dtype=str)
     train = set(pub["train"])
-    mapped = np.array(["control" if l.lower() in CONTROL_LABELS else (canonical_key(l, gene_set) or "")
-                       for l in labels], dtype=object)
+    controls = manifest.get("control_value")
+    if isinstance(controls, str):
+        controls = [controls]
+    if controls is None:
+        controls = [l for l in set(labels) if l.lower() in CONTROL_LABELS]
+    controls = set(controls)
+    strict = bool(manifest.get("strict_labels", False))
+    collapse = bool(manifest.get("collapse_by_target", True))
+    mapping = {}
+    for label in set(labels):
+        if label in controls:
+            mapping[label] = "control"
+            continue
+        targets, unknown = parse_label(label, gene_set)
+        mapping[label] = ((perturbation_key(targets) if collapse else label)
+                          if targets and not (strict and unknown) else "")
+    mapped = np.array([mapping[l] for l in labels], dtype=object)
     keep = np.flatnonzero((mapped == "control") | np.isin(mapped, list(train)))
+    found = set(mapped[keep]) - {"control"}
+    missing_train = sorted(train - found)
+    if not len(keep) or not np.any(mapped[keep] == "control") or missing_train:
+        raise SystemExit(f"invalid export: {len(keep)} retained cells, "
+                         f"{int((mapped[keep] == 'control').sum())} controls, "
+                         f"{len(found)}/{len(train)} training perturbations; missing {missing_train}")
     X = adata.X
     if _looks_like_counts(X):  # normalise on all genes first, as the bundle's ingest did
         X = _normalise_log1p(X)
@@ -109,11 +141,16 @@ def export(bundle: Path, h5ads: list[Path], out: Path, condition_key: str | None
     heldout = sorted(set(pub["perts"]) - train)
     (out / "heldout_perturbations.json").write_text(json.dumps(heldout, indent=1))
     (out / "TASK.md").write_text(TASK)
-    manifest = json.loads((Path(bundle) / "manifest.json").read_text()) if (Path(bundle) / "manifest.json").exists() else {}
     receipt = {"bundle": str(bundle), "split_id": manifest.get("split_id"), "n_genes": len(pub["genes"]),
                "n_cells": int(len(keep)), "n_control_cells": int((obs["perturbation"] == "control").sum()),
                "train_perturbations_found": len(found), "train_perturbations_in_bundle": len(train),
                "train_missing_in_file": sorted(train - set(found)), "n_heldout": len(heldout),
+               "label_mapping": {"condition_key": key, "gene_name_key": symbol_key if symbol_key in adata.var else None,
+                                 "control_value": sorted(controls), "strict_labels": strict,
+                                 "collapse_by_target": collapse},
+               "bundle_source": manifest.get("source", []),
+               "source_names_match_bundle": (sorted(Path(p).name for p in h5ads) ==
+                                               sorted(Path(p).name for p in manifest.get("source", []))),
                "source_files": {Path(p).name: _sha(Path(p)) for p in h5ads},
                "cellforge_input_sha256": _sha(out / "cellforge_input.h5ad")}
     (out / "export.json").write_text(json.dumps(receipt, indent=1))
