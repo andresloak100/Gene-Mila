@@ -74,3 +74,31 @@ its dataset downloader is not run; `DEEPSEEK_API_KEY` comes from the Mac's envir
 CellForge's two checkpoints (plan, then training script) only after posting each on #51, and reports a failed or
 non-training script as it is. If training on `mps` or CPU would exceed 12 hours, Astra stops and reports, and the run
 moves to a Mila GPU as section "What runs where" says.
+
+## Note, 2026-10-28: C2, the matched rerun with checkpoint edits (fixed before any C2 call)
+
+The first attempt stopped at checkpoint 1 because the generated research plan did not fit the input (#51,
+comment 6460046722). CellForge's own README says each stage "writes a human-readable artifact you can inspect, edit,
+or approve before the next stage runs" (pinned commit `6585ff9`, README line 116), so a human edit at the checkpoint is
+CellForge used as designed, not a modified CellForge. C2 reruns it with these edits and no others, applied by the
+operator to the plan file at checkpoint 1, the diff posted on #51 before approval:
+
+1. **Data processing, matched to the input:** delete cell and gene quality-control filtering, the second
+   normalisation and log1p, the regression on `total_counts` and `pct_counts_mt`, and Harmony batch correction. Replace
+   them with one sentence: "The input is already normalised (counts per 10,000, log1p) on a fixed panel of 2,055 genes;
+   use it as given."
+2. **Task matched to CRISPRi:** delete every drug-class, dose, dose-curriculum and dose-loss element, and every
+   pathway prior the input does not supply.
+3. **Hardware:** replace the multi-GPU requirement with the machine used (Apple `mps` or CPU on the Mac, or one GPU on
+   Mila).
+4. **Unchanged:** the architecture, its dimensions, the losses other than those removed in 2, the optimiser, the
+   schedule and every training setting. No component is added.
+5. **Output:** the training script must write `predictions.npz` as `TASK.md` asks; a script that does not is a failed
+   run, not repaired by hand.
+
+At checkpoint 2 (the training script) the operator approves only if the script reads `cellforge_input.h5ad` alone and
+writes the required output; otherwise the run stops and is reported. The result is reported as "CellForge (pinned
+release, checkpoint plan edited to the input as its README allows)", beside the first attempt's "could not produce a
+model for this task", never in place of it. Scoring: `tools/cellforge_bridge.py score --name cellforge_c2`, once.
+Money: a paid run, started only on Andres's words with its cap on #41; the first attempt's planning cost $0.16 on the
+ledger, training costs nothing.
