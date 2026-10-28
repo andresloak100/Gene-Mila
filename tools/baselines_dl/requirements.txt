@@ -1,0 +1,13 @@
+# Pinned environment for tools/baselines_dl/run_gears.py (docs/PLAN_DL_BASELINES.md), tested on CPU, Python 3.13,
+# 28 October 2026. Install in its own virtual environment, never the lab's:
+#   python -m venv ~/gm_dlenv && ~/gm_dlenv/bin/pip install torch==2.15.0 && ~/gm_dlenv/bin/pip install -r this file
+# On a Mac, torch from PyPI includes the Apple GPU (mps) backend; on Linux CPU-only:
+#   --index-url https://download.pytorch.org/whl/cpu
+cell-gears==0.1.2
+torch-geometric==2.8.1
+pandas==2.3.3        # GEARS 0.1.2 indexes Series by position, removed in pandas 3
+anndata==0.13.4
+scanpy==1.12.4
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1

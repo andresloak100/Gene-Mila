@@ -59,3 +59,6 @@ are pre-registered records (`tests/test_cellforge_c2.py`, `tests/test_lead_h8_co
 - `cellforge_bridge.py`: CellForge on this lab's split (docs/PLAN_C_CELLFORGE.md): `export` writes its input from a bundle
   (control and training cells only), `score` scores its predictions once through the oracle, optionally paired
   against a run's selected model. Tests: `tests/test_cellforge_bridge.py`.
+- `baselines_dl/run_gears.py`: GEARS trained on the same export and written as predictions for `cellforge_bridge.py
+  score --name gears` (docs/PLAN_DL_BASELINES.md); its own pinned environment in `baselines_dl/requirements.txt`.
+  Test: `tests/test_run_gears.py`.

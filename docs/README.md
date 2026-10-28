@@ -34,6 +34,8 @@ not integrated merely because a document describes it.
   Tests: `tests/test_cellforge_c2.py`, `tests/test_lead_h8_constraint.py`.
 - [PLAN_C_CELLFORGE.md](PLAN_C_CELLFORGE.md): CellForge trained on our training perturbations and scored once by our
   evaluator (GOAL_CRITERIA B.5): export on the Mac, run on a Mila GPU, score on the Mac. Not run.
+- [PLAN_DL_BASELINES.md](PLAN_DL_BASELINES.md): GEARS (then CPA and scGPT) trained on the same export and scored by
+  the same tool: the non-agentic deep-learning baselines. Not run.
 - [NOVEL_FEATURE_NEEDS.md](NOVEL_FEATURE_NEEDS.md): what it takes to find a new biological feature, and what is
   missing (D1 to D6).
 - [DISCOVERY_MODE.md](DISCOVERY_MODE.md): `schedule.discovery`, the run's own hypothesis generation from its residuals
