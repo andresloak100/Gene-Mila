@@ -36,6 +36,7 @@ not integrated merely because a document describes it.
   missing (D1 to D6).
 - [DISCOVERY_MODE.md](DISCOVERY_MODE.md): `schedule.discovery`, the run's own hypothesis generation from its residuals
   and the bundle's unread inputs, with a measured "derived" flag and a stop rule (claim #69; off by default).
+- [SIMILARITY_SOURCES.md](SIMILARITY_SOURCES.md): the paralog and protein-sequence similarity knowledge files (tier-1 sources never given to the agents), how they are built on the Mac and what a run with them is.
 - [PROMPTS.md](PROMPTS.md): every prompt, starting feature, control and worker setting the agents were given, by
   date and code version. Evidence of what ran, not permission to replay a paid campaign.
 

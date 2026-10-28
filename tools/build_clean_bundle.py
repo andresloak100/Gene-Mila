@@ -6,9 +6,16 @@ clean sources (genemila/data/knowledge_clean.py) and, optionally, the three per-
     python tools/build_clean_bundle.py --bundle data/norman --sources data/knowledge_clean_src \\
         --out data/norman_clean_tables --table gene_annotation=gene_annotation_norman.json \\
         --table gene_constraint=gene_constraint_norman.json --table protein_annotation=protein_annotation_norman.json
+    python tools/build_clean_bundle.py --bundle data/norman --sources data/knowledge_clean_src \
+        --out data/norman_clean_tables_similarity --name norman_clean_tables_similarity --table ... \
+        --table paralogs=paralogs_norman.json --table paralog_annotation=paralog_annotation_norman.json \
+        --table protein_similarity=protein_similarity_norman.json
 
 (--from, --raw and --knowledge PATH are aliases of --bundle, --sources and --table, the names docs/mac/block_g uses;
-a --table without NAME= takes the file's stem.) Every file in knowledge_clean.SOURCE_FILES must be present under
+a --table without NAME= takes the file's stem. --table also takes the similarity edge files of
+tools/build_paralogs.py and tools/build_protein_similarity.py, knowledge_clean.NETWORK_NAMES, checked by their
+endpoints. --name sets the manifest name; the results table groups runs by it, so a bundle whose knowledge differs
+from block G's two bundles must not reuse their names.) Every file in knowledge_clean.SOURCE_FILES must be present under
 --sources, or the tool refuses (--allow-missing skips absent ones, for local experiments). A table whose genes are not
 all in the bundle is refused. The output directory must not exist. public.npz, private/* (copied as bytes, never read), splits.json and
 knowledge/targets.json are copied byte for byte; the other knowledge files are replaced. manifest.json is the input's
@@ -60,9 +67,18 @@ def knowledge_summary_lines(public_dir: Path) -> list[str]:
     return parts
 
 
+def _entries(content) -> int:
+    """How many entries a knowledge file holds: edges for a self-describing edge file, else its length."""
+    if isinstance(content, dict) and isinstance(content.get("edges"), list):
+        return len(content["edges"])
+    return len(content)
+
+
 def _genes_covered(content) -> int:
     if isinstance(content, dict) and "genes" in content and isinstance(content["genes"], dict):
         return len(content["genes"])  # a per-gene table
+    if isinstance(content, dict) and isinstance(content.get("edges"), list):
+        return len({x for e in content["edges"] for x in e[:2]})  # a self-describing edge file
     if isinstance(content, dict):
         return len({g for members in content.values() for g in members})
     if content and isinstance(content[0], list):
@@ -77,7 +93,7 @@ def planner_knowledge_limit() -> int:
 
 
 def build_clean_bundle(bundle: Path, sources: Path, out: Path, tables: dict[str, Path] | None = None,
-                       allow_missing: bool = False) -> Path:
+                       allow_missing: bool = False, name: str | None = None) -> Path:
     bundle, sources, out = Path(bundle), Path(sources), Path(out)
     if out.exists():
         raise FileExistsError(f"{out} exists; a clean bundle is written to a new directory, never over one")
@@ -103,7 +119,8 @@ def build_clean_bundle(bundle: Path, sources: Path, out: Path, tables: dict[str,
     hashed = {rel for rel in manifest["file_sha256"] if not rel.startswith("knowledge/")} | set(COPIED)
     hashed |= {f"knowledge/{f}" for f in files}
     new = dict(manifest)
-    new["name"] = f"{manifest['name']}_clean_tables" if tables else f"{manifest['name']}_clean"
+    # the results table groups runs by this name, so a bundle with other knowledge files is named apart (--name)
+    new["name"] = name or (f"{manifest['name']}_clean_tables" if tables else f"{manifest['name']}_clean")
     new["knowledge_files"] = sorted(p.name for p in (out / "knowledge").iterdir())
     new["file_sha256"] = {rel: sha256_file(out / rel) for rel in sorted(hashed)}
     if isinstance(new.get("knowledge"), dict):  # the real ingest's summary of the knowledge it wrote
@@ -132,7 +149,7 @@ def build_clean_bundle(bundle: Path, sources: Path, out: Path, tables: dict[str,
     print(f"{new['name']}: {out} (split {new['split_id']}, {len(genes)} genes); "
           f"dropped {', '.join(new['clean_knowledge']['excluded_files']) or 'nothing'}")
     for fname, content in files.items():
-        print(f"  {fname}: {len(content)} entries, {_genes_covered(content)} genes covered")
+        print(f"  {fname}: {_entries(content)} entries, {_genes_covered(content)} genes covered")
     missing = [f for f, h in provenance["sources"].items() if h is None]
     if missing:
         print(f"  sources missing from {sources}: {', '.join(missing)}")
@@ -155,8 +172,12 @@ def main(argv=None) -> int:
                     help="directory with the clean sources (knowledge_clean.SOURCE_FILES)")
     ap.add_argument("--out", required=True, help="new bundle directory; must not exist")
     ap.add_argument("--table", "--knowledge", action="append", default=[], metavar="[NAME=]PATH",
-                    help="a built table to include: gene_annotation, gene_constraint or protein_annotation "
-                         "(NAME defaults to the file's stem)")
+                    help="a built knowledge file to include: a per-gene table "
+                         f"({', '.join(knowledge_clean.TABLE_NAMES)}) or a similarity edge file "
+                         f"({', '.join(knowledge_clean.NETWORK_NAMES)}); NAME defaults to the file's stem")
+    ap.add_argument("--name", help="the output bundle's manifest name (default: <input>_clean or "
+                                   "<input>_clean_tables); a bundle with other knowledge files than block G's "
+                                   "needs its own, since the results table groups runs by it")
     ap.add_argument("--no-tables", action="store_true", help="state explicitly that no table goes in")
     ap.add_argument("--allow-missing", action="store_true",
                     help="skip clean sources that are absent instead of refusing (local experiments only)")
@@ -170,7 +191,7 @@ def main(argv=None) -> int:
             name, path = Path(item).name.removesuffix(".json"), item
         tables[name] = Path(path)
     build_clean_bundle(Path(args.bundle), Path(args.sources), Path(args.out), tables or None,
-                       allow_missing=args.allow_missing)
+                       allow_missing=args.allow_missing, name=args.name)
     return 0
 
 

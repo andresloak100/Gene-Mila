@@ -15,6 +15,7 @@ CI checks only the README (`readme_check.py`); run `python -m pytest -q` (about 
 | `sealed_reading.py` | the pre-specified sealed readings of `docs/NORMAN_PLAN.md` section 5 |
 | `build_clean_bundle.py` | a tier-1-only copy of a bundle with its knowledge rebuilt from clean sources (block G) |
 | `build_gene_annotation.py`, `build_gene_constraint.py`, `build_protein_annotation.py` | knowledge files from the genome sequence and GENCODE, gnomAD constraint, UniProt protein features |
+| `build_paralogs.py`, `build_protein_similarity.py` | the two tier-1 similarity sources: Ensembl Compara paralog pairs and counts, and nearest sequence neighbours from UniProt's per-protein embeddings (`docs/SIMILARITY_SOURCES.md`; inputs fetched on the Mac) |
 | `build_external_screen.py` | a knowledge file from an external Perturb-seq screen (the audited exception) |
 | `knowledge_coverage.py` | how much prior knowledge each target has in a bundle, and what a symbol loses |
 | `residual_mining.py` | training-only residual mining: hypothesis generation, never evidence (ROADMAP M1) |
