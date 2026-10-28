@@ -89,8 +89,10 @@ operator to the plan file at checkpoint 1, the diff posted on #51 before approva
    use it as given."
 2. **Task matched to CRISPRi:** delete every drug-class, dose, dose-curriculum and dose-loss element, and every
    pathway prior the input does not supply.
-3. **Hardware:** replace the multi-GPU requirement with the machine used (Apple `mps` or CPU on the Mac, or one GPU on
-   Mila).
+3. **Hardware:** replace the multi-GPU requirement with the Mac's CPU (`device=cpu`), the hardware every lab run used
+   (Andres, 28 October: run it on the CPU to compare it with ours). The receipt records wall time and CPU-hours beside
+   the lab's 20-minute, 0.1 to 0.3 CPU-hour runs; no time cap is imposed on training, and the paper reports score and
+   compute side by side.
 4. **Unchanged:** the architecture, its dimensions, the losses other than those removed in 2, the optimiser, the
    schedule and every training setting. No component is added.
 5. **Output:** the training script must write `predictions.npz` as `TASK.md` asks; a script that does not is a failed
