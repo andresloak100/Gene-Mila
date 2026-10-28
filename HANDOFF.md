@@ -4,6 +4,17 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-28: eight waiting pull requests landed in one tested merge; CellForge's matched run is
+prepared.** Merged: discovery mode (#71), block D's plan (#75), the Mac checks (#77), the critic's reading (#78), the
+results index regrouped (#67), the block H script gaps (#70), the paralog and protein-similarity builders (#76) and
+packaging (#80). Not merged: #73 (changes the protected results table; needs Andres's agreement on the PR), #81 (block
+D readings, work in progress: the fair test's verdict is still on the Mac) and #25. New: `tools/cellforge_bridge.py`
+and `docs/PLAN_C_CELLFORGE.md` (GOAL_CRITERIA B.5): export CellForge's input on the Mac (training cells only), run
+CellForge on a Mila GPU, score its predictions once on the Mac. A DeepSeek key was pasted into the project chat on
+28 October; it was not used and must be revoked. **Next:** the Mac operator pushes block D's fair-test result to #81;
+Andres revokes the pasted key, creates a new one in the Mila node's environment only, and gives the word and cap for
+plan C; the lead reads block D against GOAL_CRITERIA.
+
 **Lab-code owner (Claude, "Autonomous research system"), 2026-10-18 19:05 UTC: block D's chain is finished; the readings
 run on the Mac; no other paid run until the fair test is read.** The three discovery-mode runs
 (`runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, code `23b3b12`) ended at 18:57 UTC with every after-run check passed:
