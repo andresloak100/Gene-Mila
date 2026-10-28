@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-28T03:39:24.124804+00:00",
+  "http_status": 200,
+  "is_available": true,
+  "balance_infos": [
+    {
+      "currency": "USD",
+      "total_balance": "35.89",
+      "granted_balance": "7.69",
+      "topped_up_balance": "28.19"
+    }
+  ]
+}

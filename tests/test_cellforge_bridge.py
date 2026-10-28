@@ -85,3 +85,46 @@ def test_score_perfect_prediction_in_both_formats(screen, tmp_path):
     with pytest.raises(SystemExit):
         cb.score(bundle, tmp_path / "short.npz")
     assert "pearson_delta" in cb.render(rep)
+
+
+def test_export_reuses_recorded_loose_ingest_and_nonstandard_controls(screen, tmp_path):
+    h5, bundle, means, splits = screen
+    a = ad.read_h5ad(h5)
+    a.obs["guide_ids"] = ["63(mod)_pBA580" if p == "control" else p + "_pBA123"
+                          for p in a.obs.pop("perturbation").astype(str)]
+    a.var["symbol"] = a.var_names
+    a.var_names = [f"ENSG{i}" for i in range(a.n_vars)]
+    a.write_h5ad(h5)
+    manifest_path = bundle / "manifest.json"
+    meta = json.loads(manifest_path.read_text())
+    meta.update(condition_key="guide_ids", control_value=["63(mod)_pBA580"], gene_name_key="symbol",
+                strict_labels=False, collapse_by_target=True, source=[str(h5)])
+    manifest_path.write_text(json.dumps(meta))
+    rec = cb.export(bundle, [h5], tmp_path / "loose")
+    exported = ad.read_h5ad(tmp_path / "loose" / "cellforge_input.h5ad")
+    assert rec["n_control_cells"] == 300
+    assert rec["train_perturbations_found"] == len(splits["train"])
+    assert rec["source_names_match_bundle"] is True
+    assert set(exported.obs["perturbation"]) == {"control", *splits["train"]}
+    p = splits["train"][0]
+    x = exported.X.toarray() if hasattr(exported.X, "toarray") else exported.X
+    assert np.allclose(x[exported.obs["perturbation"].to_numpy() == p].mean(0), means[p], atol=1e-5)
+    meta["strict_labels"] = True
+    manifest_path.write_text(json.dumps(meta))
+    with pytest.raises(SystemExit, match="invalid export"):
+        cb.export(bundle, [h5], tmp_path / "strict")
+    assert not (tmp_path / "strict" / "cellforge_input.h5ad").exists()
+
+
+@pytest.mark.parametrize("remove", ["control", "training", "all"])
+def test_export_refuses_incomplete_input(screen, tmp_path, remove):
+    h5, bundle, means, splits = screen
+    a = ad.read_h5ad(h5)
+    label = a.obs["perturbation"].astype(str)
+    keep = label != ("control" if remove == "control" else splits["train"][0] + "_sg1")
+    if remove == "all":
+        keep[:] = False
+    a[keep].copy().write_h5ad(h5)
+    with pytest.raises(SystemExit, match="invalid export"):
+        cb.export(bundle, [h5], tmp_path / "invalid")
+    assert not (tmp_path / "invalid" / "export.json").exists()

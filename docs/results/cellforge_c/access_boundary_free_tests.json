@@ -1,0 +1,21 @@
+{
+  "checks": {
+    "public_bundle_denied": true,
+    "raw_h5ad_denied": true,
+    "other_export_denied": true,
+    "project_clone_denied": true,
+    "only_export_allowed": true,
+    "runtime_source_allowed": true
+  },
+  "exit_codes": {
+    "public_bundle_denied": 1,
+    "raw_h5ad_denied": 1,
+    "other_export_denied": 1,
+    "project_clone_denied": 1,
+    "only_export_allowed": 0,
+    "runtime_source_allowed": 0
+  },
+  "all_pass": true,
+  "no_private_files_opened": true,
+  "initial_profile_error": "v1 invalid seatbelt network host syntax; no operation reached. Corrected localhost literal in v2."
+}

@@ -1,0 +1,20 @@
+{
+  "calls": 59,
+  "ledger_before_usd": "61.240534032",
+  "ledger_after_usd": "61.401668232",
+  "session_cost_usd": "0.161134200",
+  "decimal_sum_stored_costs": {
+    "session": "0.1611341999999999990",
+    "total": "61.4016682319999989594495"
+  },
+  "rounding": "nine decimal places for dollar display; SQLite stores binary floats",
+  "cap_usd": "66.240534032",
+  "models": [
+    "deepseek-flash"
+  ],
+  "roles": [
+    "baseline:cellforge"
+  ],
+  "source": "shared ledger read-only rows",
+  "audit_note": "Initial literal Decimal equality assertion rejected binary-float representation; no ledger edit or API call. Display sums checked to 1e-9."
+}

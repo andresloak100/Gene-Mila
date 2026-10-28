@@ -1,0 +1,38 @@
+[
+  {
+    "source": "/Users/andresarriaga/cellforge_c_workspace/data/plans/cellforge_input/research_plan_20261027_232337.json",
+    "file": "research_plan_20261027_232337.json",
+    "sha256": "afcd311fb27d8612420c64b3cb000ce3984a536b0b856df75441d65174a13d21",
+    "bytes": 35537
+  },
+  {
+    "source": "/Users/andresarriaga/cellforge_c_workspace/data/plans/cellforge_input/research_plan_20261027_232337_consensus.png",
+    "file": "research_plan_20261027_232337_consensus.png",
+    "sha256": "e0ff8c0292f63a5b60c3562ad86902ccbac81a36438b382be4274d734958abc3",
+    "bytes": 94688
+  },
+  {
+    "source": "/Users/andresarriaga/cellforge_c_workspace/data/plans/cellforge_input/research_plan_20261027_232337.md",
+    "file": "research_plan_20261027_232337.md",
+    "sha256": "d71fa70eb0054158de1c8613fd130587fb4ee25a92c09f97328048296831e09f",
+    "bytes": 11075
+  },
+  {
+    "source": "/Users/andresarriaga/cellforge_c_workspace/data/plans/cellforge_input/research_plan_20261027_232337.mmd",
+    "file": "research_plan_20261027_232337.mmd",
+    "sha256": "8e8dd2ba1d0a5a28b025de2c9783d0c0a7c26c0d65c9b22bed58c300fa587864",
+    "bytes": 5483
+  },
+  {
+    "source": "/Users/andresarriaga/cellforge_c_workspace/data/plans/cellforge_input/retrieval/retrieval_trace.jsonl",
+    "file": "retrieval_trace.jsonl",
+    "sha256": "97db2905734c9de87c947ccd2ce7ebee2fd6854c3721d06d7354507283a7db7f",
+    "bytes": 65420
+  },
+  {
+    "source": "/Users/andresarriaga/cellforge_c_workspace/data/analyses/cellforge_input/task_analysis_20261027_232055.json",
+    "file": "task_analysis_20261027_232055.json",
+    "sha256": "482c7e91fcf7793c4be7c1ee00be61880da50ed81010186aa8f875f96e5a247a",
+    "bytes": 90555
+  }
+]

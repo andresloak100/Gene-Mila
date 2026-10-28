@@ -1,0 +1,29 @@
+{
+  "utc": "2026-10-28T03:41:20.209085+00:00",
+  "all_pass": true,
+  "checks": {
+    "architecture_equals_pinned_literal": true,
+    "preprocess_equals_pinned_literal": true,
+    "biological_validation_equals_unconditional_literal": true,
+    "optimization_equals_unconditional_literal": true,
+    "implementation_equals_pinned_default": true,
+    "final_proposal_reconstructs_initial": true,
+    "upstream_pin": true,
+    "upstream_tracked_pristine": true,
+    "task_analysis_exit0": true,
+    "method_design_exit0": true,
+    "analysis_pipeline_exit0": true,
+    "pytest_exit0": true,
+    "proxy_final_not_halted": true,
+    "corrected_export_metadata_audit": true,
+    "generated_artifacts_exact": true,
+    "ledger_59_calls": true
+  },
+  "source_pin": "6585ff93e452a8a0f2ad6ed8144ab6d998a3b400",
+  "source_hashes": {
+    "cellforge/Method_Design/graph_discussion.py": "5a3dff37e50d760645deb3a1914bf913ae70d15115d65368e4ddc102718b8ff0",
+    "cellforge/Method_Design/refinement.py": "b2b1014980d940c4c94bdc0e3f81a2deea9c06604ee0fc0c9233968c022d3f9d",
+    "cellforge/Method_Design/main.py": "53ec0449db281af9809b26eb49dea3b148b594010868853e11c9e29071112179"
+  },
+  "interpretation": "Successful paid phases emitted an input-incompatible plan built from pinned literal templates. This is not an API failure, training failure, runtime estimate or matched score."
+}

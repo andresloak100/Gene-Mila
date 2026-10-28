@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-28T03:17:13.926856+00:00",
+  "screen": "gm-c-cellforge-plan",
+  "driver_pid": 38660,
+  "meter_pid": 38662,
+  "first_phase_pid": 38663,
+  "full_suite": {
+    "exit": 0,
+    "passed": 681,
+    "skipped": 1,
+    "warnings": 8,
+    "seconds": 788.87
+  },
+  "state": "TASK_ANALYSIS_RUNNING",
+  "last_proxy_record": {
+    "ledger_total_usd": 61.265443,
+    "max_output_tokens": 4096,
+    "request_sha256": "cf1458236fe13e74054709677228044f7b173a50131c859005299b85579b7dda",
+    "reserved_usd": "3.207168",
+    "route": "dispatch",
+    "run_id": "cellforge_adamson_c_seed0",
+    "session_cost_usd": 0.024909,
+    "status": 0,
+    "ts": 1793157430.104335
+  }
+}
