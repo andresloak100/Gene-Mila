@@ -269,6 +269,13 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
         cv_time = time.process_time() - t
     with open(out_dir / "models.pkl", "wb") as fh:
         pickle.dump({"models": models, "columns": columns, "x_mean": mu, "x_std": sd}, fh)
+    derived = None
+    names = spec.get("derivability") or []  # discovery mode: the new feature(s) to fit from the parent's columns
+    if names:
+        from .discovery import derivability
+        new_idx = [i for i, c in enumerate(columns) if c in names or c.split("[", 1)[0] in names]
+        derived = derivability(X_tr, new_idx, [i for i in range(len(columns)) if i not in new_idx], len(train),
+                               ctx.n_genes, seed)
     result = {
         "status": "ok",
         "columns": columns,
@@ -284,6 +291,7 @@ def run(spec: dict, public_dir: Path, plugin_dir: Path, out_dir: Path, cache_dir
         "cv_folds": cv_folds,
         **({"cv_groups": cv_groups} if cv_folds > 1 and cv_groups else {}),
         "label_dependent_features": sorted(n for n, d in label_dep.items() if d),
+        **({"derivability": derived} if derived is not None else {}),
         "model_size_bytes": int((out_dir / "models.pkl").stat().st_size),
         "feature_cache": {"hits": sorted(set(cache_log.get("hits", []))),
                           "misses": sorted(set(cache_log.get("misses", [])))},

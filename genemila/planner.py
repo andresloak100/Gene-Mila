@@ -14,6 +14,7 @@ import re
 import threading
 import time
 
+from . import discovery
 from .lab import Lab
 from .llm import BudgetExceeded
 from .providers.base import AgentProvider, ProviderError
@@ -58,6 +59,8 @@ class Planner:
         self.parse_failures = 0  # consecutive rounds whose response held no usable plan
         self.switches: list[dict] = []
         self.exhausted = False
+        self.novel_dry = 0            # discovery mode: consecutive parsed rounds that named no unread input
+        self.discovery_dry = False    # discovery mode: the generation ran dry (Planner.dry); logged once
         self._lock = threading.Lock()  # several planner rounds may run concurrently
         if hasattr(provider, "available") and not provider.available():
             self._switch(provider, "not usable here")
@@ -74,8 +77,9 @@ class Planner:
 
     def dry(self) -> bool:
         """The planner will produce nothing more: every provider in the chain failed, or a deterministic
-        planner returned nothing three rounds in a row. A working LLM planner is never considered dry."""
-        if self.exhausted:
+        planner returned nothing three rounds in a row, or, in discovery mode, schedule.discovery_dry_rounds counted
+        rounds in a row named no unread input (Planner._judge). Otherwise a working LLM planner is never dry."""
+        if self.exhausted or self.discovery_dry:
             return True
         llm_usable = self.provider.name not in ("scripted",) and not self.lab.gateway.is_halted("planner",
                                                                                               self.provider.name)
@@ -125,6 +129,11 @@ class Planner:
     # ------------------------------------------------------------------ round
     def refill(self, n: int, focus: str | None = None) -> list[str]:
         """Ask for ~n hypotheses and queue the resulting experiments. Returns queued ids."""
+        if self.discovery_dry:  # discovery mode ran dry (Planner._judge): no further round, the exploit engine finishes
+            with self._lock:
+                self.last_failed, self.last_queued = True, 0
+                self.last_call = time.time()
+            return []
         state = build_state(self.lab)
         text = render_state(state)
         if focus:
@@ -165,7 +174,10 @@ class Planner:
                     return []
                 provider = nxt
         (self.lab.run_dir / "planner" / f"plan_{rnd:03d}.json").write_text(json.dumps(plan, indent=1))
-        specs = self.to_specs(plan.get("hypotheses", []), proposer=f"{provider.name}:{provider.model}", rnd=rnd)
+        hypotheses = plan.get("hypotheses", [])
+        if discovery.enabled(self.cfg):
+            self._judge(hypotheses if isinstance(hypotheses, list) else [], rnd, focus)
+        specs = self.to_specs(hypotheses, proposer=f"{provider.name}:{provider.model}", rnd=rnd)
         queued = []
         for spec in specs:
             eid, status = self.lab.queue(spec)
@@ -181,6 +193,37 @@ class Planner:
             self.last_failed = failed
             self.empty_rounds = 0 if queued else self.empty_rounds + 1
         return queued
+
+    def _judge(self, hypotheses: list, rnd: int, focus: str | None = None) -> None:
+        """Discovery mode (genemila/discovery.py): the lab, not the planner, decides which hypotheses name an input no
+        completed feature has read; the verdict rides into each experiment record as proposed_feature["novel_inputs"]
+        and the round goes into planner/discovery_rounds.json. A round counts toward the dry rule only when it was
+        asked for new features (not the EXPLOIT focus of a concurrent round) and proposed at least one; after
+        schedule.discovery_dry_rounds counted rounds in a row without an unread input the planner is dry
+        (Planner.dry) and the exploit engine finishes the run. A round that names one resets the count."""
+        novel = discovery.judge_plan(hypotheses, discovery.unread_inputs(self.lab))
+        proposed = 0
+        for h, inputs in zip(hypotheses, novel):
+            if isinstance(h, dict) and isinstance(h.get("new_feature"), dict):
+                h["new_feature"]["novel_inputs"] = inputs
+                if h.get("action", "new_feature") == "new_feature":
+                    proposed += 1
+        counted = proposed > 0 and not (focus or "").startswith("EXPLOIT")
+        entry = discovery.record_round(self.lab, rnd, novel, len(hypotheses), counted)
+        limit = int(discovery.setting(self.cfg, "discovery_dry_rounds"))
+        with self._lock:
+            if entry["novel"]:
+                self.novel_dry = 0
+            elif counted:
+                self.novel_dry += 1
+            dry = self.novel_dry >= limit and not self.discovery_dry
+            self.discovery_dry = self.discovery_dry or dry
+        self.lab.db.event("discovery_round", f"round {rnd}: {entry['novel']} of {entry['hypotheses']} hypotheses name "
+                          "an unread input" + (f" ({', '.join(entry['inputs'])})" if entry["inputs"] else "")
+                          + ("" if counted else "; not counted toward the dry rule"))
+        if dry:
+            self.lab.db.event("discovery_dry", f"no unread input proposed in {limit} consecutive counted rounds: the "
+                              "planner is dry and the exploit engine finishes the run", level="warning")
 
     # ------------------------------------------------------- hypotheses -> specs
     def _priorities(self) -> dict:
@@ -248,7 +291,10 @@ class Planner:
                     kind="new_feature", feature_set=base_set + [name], hypothesis_group=group,
                     proposed_feature={"name": name, "description": str(nf.get("description", "")),
                                       "implementation_hint": str(nf.get("implementation_hint", "")),
-                                      "params": nf.get("params", {})}, **common))
+                                      "params": nf.get("params", {}),
+                                      # discovery mode only (prompts.DISCOVERY_FEATURE_FIELDS, Planner._judge)
+                                      **({k: nf[k] for k in ("new_input", "mechanism", "predicted_sign", "novel_inputs")
+                                          if k in nf} if discovery.enabled(self.cfg) else {})}, **common))
         elif action in ("combine", "ablate"):
             add = [f for f in (h.get("add_features") or []) if f in known and f not in base_set]
             remove = set(h.get("remove_features") or [])

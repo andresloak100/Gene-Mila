@@ -34,6 +34,8 @@ not integrated merely because a document describes it.
   Tests: `tests/test_cellforge_c2.py`, `tests/test_lead_h8_constraint.py`.
 - [NOVEL_FEATURE_NEEDS.md](NOVEL_FEATURE_NEEDS.md): what it takes to find a new biological feature, and what is
   missing (D1 to D6).
+- [DISCOVERY_MODE.md](DISCOVERY_MODE.md): `schedule.discovery`, the run's own hypothesis generation from its residuals
+  and the bundle's unread inputs, with a measured "derived" flag and a stop rule (claim #69; off by default).
 - [PROMPTS.md](PROMPTS.md): every prompt, starting feature, control and worker setting the agents were given, by
   date and code version. Evidence of what ran, not permission to replay a paid campaign.
 
