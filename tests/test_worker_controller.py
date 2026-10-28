@@ -289,7 +289,8 @@ def test_python_exploit_fills_the_queue_without_llm(lab_factory):
     assert any(g.startswith("exploit_alpha_") for g in groups) or any(g.startswith("exploit_model_") for g in groups)
     assert summary["experiments_completed"] >= 4
     # a run that stopped early did so only once no exploit follow-up was left
-    if lab.db.query("SELECT 1 FROM events WHERE kind='exhausted'"):
+    exhausted = bool(lab.db.query("SELECT 1 FROM events WHERE kind='exhausted'"))
+    if exhausted:
         assert exploit.propose(lab, 50) == []
     # once everything around the best has been tried, propose() is empty rather than looping
     best = lab.best()
@@ -310,7 +311,9 @@ def test_python_exploit_fills_the_queue_without_llm(lab_factory):
             seen.add(ch)
             _, status = lab.queue(spec)
             assert status == "queued", status
-    assert exploit.propose(lab, 7) == [] and seen  # how many depends on the features the run discovered
+    # how many depends on the features the run discovered; a machine fast enough to use up every tier within the
+    # run's 60 s (it then stops as exhausted) leaves none for this loop
+    assert exploit.propose(lab, 7) == [] and (seen or exhausted)
     groups = {r["hypothesis_group"] for r in lab.db.query("SELECT hypothesis_group FROM experiments WHERE proposer='python:exploit'")}
     assert any(g.startswith("exploit_wide_") or g.startswith("exploit_subset_") for g in groups)
 

@@ -17,7 +17,7 @@ import time
 import traceback
 from pathlib import Path
 
-from . import exploit
+from . import discovery, exploit
 from .db import ACTIVE
 from .lab import Lab
 from .planner import Planner
@@ -172,6 +172,10 @@ class Controller:
         if self.planner.backing_off(float(self.cfg["schedule"]["planner_min_interval_s"])):
             return
         focus = PLANNER_FOCI[alive % len(PLANNER_FOCI)]
+        if focus and discovery.enabled(self.cfg):  # the state has no idea list in discovery mode (genemila/discovery.py)
+            focus = focus.replace("from biological idea areas not tried yet (see UNEXPLORED IDEA AREAS)",
+                                  "that read inputs no feature has used (see INPUTS UNEXPLORED) and explain the "
+                                  "RESIDUAL EVIDENCE")
 
         def run():
             try:

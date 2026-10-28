@@ -1,0 +1,31 @@
+# Mac checks of 17 Oct 2026 (claim #68): the commands of steps 2 and 4 that are not in a committed script, exactly as
+# the 02:27 UTC session ran them (copied from its session record on 2026-10-18 at about 03:10Z by the 02:48 UTC session),
+# each with the output that the README cites. $SP is that session's scratchpad,
+# /private/tmp/claude-501/-Users-andresarriaga-Documents-Mila/04cbd95d-279f-4ce0-8c6b-684f17dbd970/scratchpad.
+
+## step 2, 2026-10-18T02:30:07Z: disk, docker info before, the Docker Desktop version
+cd ~/Documents/Mila/Gene-Mila/gene-mila-macchecks && D=docs/mac/mac_checks_20261017 && mkdir -p $D docs/results/replogle_k562_gwps_manifest_20261017 docs/results/frozen_adapter_check_20261017 && { echo "# $(date -u +%Y-%m-%dT%H:%M:%SZ) df -h ~"; df -h ~; } > $D/df_before.txt 2>&1; { echo "# $(date -u +%Y-%m-%dT%H:%M:%SZ) docker info (before open -a Docker)"; docker info; echo "exit=$?"; } > $D/docker_info_before.txt 2>&1; cat $D/df_before.txt; cat $D/docker_info_before.txt | head -40; ls -d /Applications/Docker.app && defaults read /Applications/Docker.app/Contents/Info.plist CFBundleShortVersionString
+# printed (last two lines): /Applications/Docker.app
+#                           4.63.0
+
+## step 2, 2026-10-18T02:30:18Z: open -a Docker, then docker info every 15 s, at most 16 polls (4 minutes), then docker info after
+cd ~/Documents/Mila/Gene-Mila/gene-mila-macchecks && D=docs/mac/mac_checks_20261017 && { echo "# $(date -u +%Y-%m-%dT%H:%M:%SZ) open -a Docker"; open -a Docker; echo "open exit=$?"; for i in $(seq 1 16); do sleep 15; if docker info >/dev/null 2>&1; then echo "$(date -u +%H:%M:%SZ) poll $i: daemon up"; break; else echo "$(date -u +%H:%M:%SZ) poll $i: daemon not up"; fi; done; echo "# $(date -u +%Y-%m-%dT%H:%M:%SZ) docker info (after)"; docker info; echo "exit=$?"; } > $D/docker_start_poll.txt 2>&1; tail -5 $D/docker_start_poll.txt
+# (df_after.txt was written the same way after the tool check)
+
+## step 2, 2026-10-18T02:31:20Z: the tool check, with the --pull=never shim first on PATH (the shim is docker_pull_never_shim.sh, byte-identical to $SP/dockershim/docker)
+cd ~/Documents/Mila/Gene-Mila/gene-mila-macchecks && D=docs/mac/mac_checks_20261017 && cp $SP/dockershim/docker $D/docker_pull_never_shim.sh && PATH=$SP/dockershim:$PATH SHIM_LOG=$PWD/$D/docker_shim_refusals.txt nice -n 19 bash docs/mac/block_h/check_tools.sh > $D/check_tools.txt 2>&1; echo "check_tools exit=$?"; grep -v '^   ' $D/check_tools.txt | head -80; echo ---; cat $D/docker_shim_refusals.txt 2>/dev/null
+# printed: check_tools exit=0
+
+## step 4, 2026-10-18T02:34:48Z: the clone's runtime receipt, compared with the package manifest's runtime block
+cd ~/Documents/Mila/Gene-Mila/gene-mila-macchecks && PY=~/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python; E=/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013; A=docs/results/frozen_adapter_check_20261017; PYTHONHASHSEED=0 PYTHONPATH=$PWD $PY -c 'from genemila.frozen import runtime_receipt; import json; print(json.dumps(runtime_receipt(), indent=1, sort_keys=True))' > $A/runtime_receipt_clone.json; cat $A/runtime_receipt_clone.json; python3 -I -c '
+import json,sys
+a=json.load(open(sys.argv[1])); m=json.load(open(sys.argv[2]))["runtime"]
+print("runtime receipt equals package manifest runtime:", a==m)
+for k in sorted(set(a)|set(m)):
+  if a.get(k)!=m.get(k): print("DIFF", k, a.get(k), m.get(k))
+' $A/runtime_receipt_clone.json $E/package/manifest.json; git log --oneline -1 -- genemila/frozen.py genemila/pipeline.py genemila/features/
+
+## step 4, extra diagnostic, 2026-10-18T02:42:15Z: the renamed queries (adapter_newbranch_queries.py holds the inline code), then run D
+python3 -I docs/mac/mac_checks_20261017/adapter_newbranch_queries.py docs/results/frozen_adapter_check_20261017/inputs/single_targets.txt docs/results/frozen_adapter_check_20261017/inputs/newbranch_queries.json   # equivalent of the inline run
+bash docs/mac/mac_checks_20261017/adapter_newbranch.sh > docs/results/frozen_adapter_check_20261017/adapter_newbranch.log 2>&1
+# a duplicate launch at 02:55:14Z overwrote this log's header; see adapter_newbranch_processes.txt

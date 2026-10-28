@@ -4,6 +4,17 @@ Read [`AGENTS.md`](AGENTS.md) first; its rules apply to everything here.
 
 ## 1. Current state (whoever is working keeps this true)
 
+**Lead (Claude, #41), 2026-10-28: eight waiting pull requests landed in one tested merge; CellForge's matched run is
+prepared.** Merged: discovery mode (#71), block D's plan (#75), the Mac checks (#77), the critic's reading (#78), the
+results index regrouped (#67), the block H script gaps (#70), the paralog and protein-similarity builders (#76) and
+packaging (#80). Not merged: #73 (changes the protected results table; needs Andres's agreement on the PR), #81 (block
+D readings, work in progress: the fair test's verdict is still on the Mac) and #25. New: `tools/cellforge_bridge.py`
+and `docs/PLAN_C_CELLFORGE.md` (GOAL_CRITERIA B.5): export CellForge's input on the Mac (training cells only), run
+CellForge on a Mila GPU, score its predictions once on the Mac. A DeepSeek key was pasted into the project chat on
+28 October; it was not used and must be revoked. **Next:** the Mac operator pushes block D's fair-test result to #81;
+Andres revokes the pasted key, creates a new one in the Mila node's environment only, and gives the word and cap for
+plan C; the lead reads block D against GOAL_CRITERIA.
+
 **Lab-code owner (Claude, "Autonomous research system"), 2026-10-18 19:05 UTC: block D's chain is finished; the readings
 run on the Mac; no other paid run until the fair test is read.** The three discovery-mode runs
 (`runs/adamson_cf_d1_ds_w4_r{0,2,3}_discovery`, code `23b3b12`) ended at 18:57 UTC with every after-run check passed:
@@ -76,6 +87,41 @@ and `tests/test_discovery.py` on it, `block_d_cap.sh 10`, the detached chain (`s
 event in `progress.md` and on #68; the readings after the chain; the lead reads the block against
 `docs/GOAL_CRITERIA.md`. In the cloud: the critic's reading of the block H plan (claim #64) is being written; PRs #70
 and #73 wait for the lead.
+
+**Discovery mode (Claude, claim [#69](https://github.com/andresloak100/Gene-Mila/issues/69), the "Biological feature
+hypotheses" thread), 2026-10-17 22:05 UTC: the hypothesis generation is built into the run, off by default; draft PR
+from `claude/biological-feature-hypotheses-g6489k`.** Andres withdrew the fixed count ("this should be automatized not
+a fixed number", "that was an example we dont want 200", 21:40 to 21:45 UTC in that thread), so the deliverable is not
+a list but `schedule.discovery` (`docs/DISCOVERY_MODE.md`, `genemila/discovery.py`, `tests/test_discovery.py`): each
+planner round sees where the best model fails, from the training folds only (worst perturbations, the genes carrying
+the residual and their annotations, sets and regulators, the residual's rank), and which bundle inputs no feature has
+read, enumerated from the bundle instead of the fixed idea list; every new feature names the unread input it brings
+and is scored out of fold for how far the parent's columns explain it (`derived_r2`); the lab judges each round, and
+the planner stops after three counted rounds that bring no unread input. No held-out tier is read; nothing selected
+changes. A run with it must be reported as its own arm, but `run_arm` (protected) does not label it yet: issue
+[#72](https://github.com/andresloak100/Gene-Mila/issues/72) asks the lab-code owner for the one-line change, and
+until then a discovery run's directory is named `*_discovery` and tabulated apart. Nothing ran on real data; no Mac
+work, no paid run. The 200-hypothesis list the 21:45 entry below expects is superseded by this; the lab thread's
+unjudged list of 249 (`/mnt/project-files/hypotheses/`, in the Claude project) serves only as a coverage check of the
+inputs list, never as prompt content. **Next:** the lead reviews PR #71 and decides whether a real-data run gets a
+dated plan (an LLM planner on a clean tier-1 bundle, `--set schedule.discovery=true` and `--run-dir runs/<stamp>_<dataset>_w<N>_discovery`
+on the arm's usual command, the usual caps; the honest odds are in `docs/DISCOVERY_MODE.md` section 5); a free smoke
+run needs no approval (`--planner-provider scripted --worker-provider mock --set schedule.discovery=true`).
+
+**Similarity sources (Claude, claim [#74](https://github.com/andresloak100/Gene-Mila/issues/74), the "Biological feature
+hypotheses" thread), 2026-10-18 03:00 UTC: the two tier-1 similarity sources are built as knowledge-file builders; draft
+PR from `claude/paralog-embedding-sources`.** On Andres's "keep working" (02:24 UTC) and the items put to the lead on #41
+(21:47 UTC, 1 and 2): `tools/build_paralogs.py` (Ensembl Compara paralogues from a BioMart TSV into `paralogs`, an edge
+file with both identities, the duplication taxon and Ensembl's type, and `paralog_annotation`, per-gene counts) and
+`tools/build_protein_similarity.py` (UniProt's per-protein sequence embeddings plus the reviewed-human TSV into
+`protein_similarity`, each gene's ten nearest measured genes by cosine, and optionally `protein_embedding`, principal
+components). Self-describing files with provenance; only the bundle's genes; `build_clean_bundle.py --table` takes them
+and `--name` names the bundle apart (the results table groups runs by it). `docs/SIMILARITY_SOURCES.md` has the Mac
+fetch and build commands: the hosts are refused from the cloud, so nothing was built on real data; tests on toy inputs.
+No run, no Mac work, nothing protected. **Next:** the lead confirms the embeddings' tier (sequence only; tier 1 by the
+policy's rule, unnamed in its table), merges or returns the PR, and decides whether a bundle with the files gets a dated
+plan (its own arm; in discovery mode the files appear in the inputs list); the operator fetches the two sources on the
+Mac and builds the files per the document.
 
 **Lab-code owner (Claude, "Autonomous research system", claim [#68](https://github.com/andresloak100/Gene-Mila/issues/68)),
 2026-10-17 21:45 UTC: Andres delegated the DeepSeek runs to this session; the Mac checks start.** Andres's words in the

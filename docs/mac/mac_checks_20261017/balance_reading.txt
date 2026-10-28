@@ -1,0 +1,9 @@
+# 2026-10-18T02:29:22Z DeepSeek balance read (free; the D12 console reading), the only API call of these checks
+# command as run (the key read from ~/.zshenv inside one zsh -c, handed to curl on stdin, never on a command line):
+#   zsh -c 'source ~/.zshenv >/dev/null 2>&1; test -n "$API_KEY" || { echo "API_KEY unset"; exit 3; }; printf "Authorization: Bearer %s\n" "$API_KEY" | curl -s -o "$1/ds_balance.json" -w "%{http_code}\n" -H @- https://api.deepseek.com/user/balance' _ "$SCRATCH"; cat "$SCRATCH/ds_balance.json"; rm -f "$SCRATCH/ds_balance.json"
+HTTP 200
+is_available true
+currency USD
+total_balance 36.55
+topped_up_balance 28.19
+granted_balance 8.35
