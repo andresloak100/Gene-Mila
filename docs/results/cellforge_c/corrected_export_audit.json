@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "shape": true,
+    "columns": true,
+    "train_only": true,
+    "controls": true,
+    "gene_order": true,
+    "heldout_count": true,
+    "heldout_absent": true,
+    "k562_only": true
+  },
+  "all_pass": true,
+  "receipt_sha256": "c85d04d964f75b426927855361f7cc7f0fa23532a946b34ecab5fd46688b795c",
+  "bridge_sha256_as_executed": "1c1baac7b1ac2e1a7463615a462417e7ca0b7b84cce06064ab96fa5a21217c78"
+}

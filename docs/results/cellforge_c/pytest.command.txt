@@ -1,0 +1,2 @@
+Credentials unset; PYTHONHASHSEED=0; nice19; full repository suite
+/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m pytest -q

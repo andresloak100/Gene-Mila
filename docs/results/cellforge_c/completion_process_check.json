@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-28T03:41:20.257697+00:00",
+  "pgrep_pattern": "strict_proxy|analysis_pipeline|cellforge.*main|run_research.py|feature_compare.py",
+  "returncode": 1,
+  "stdout": "",
+  "no_matching_jobs": true
+}

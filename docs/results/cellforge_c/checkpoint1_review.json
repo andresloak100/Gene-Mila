@@ -1,0 +1,52 @@
+{
+  "status": "REJECTED_AT_RESEARCH_PLAN_CHECKPOINT",
+  "utc": "2026-10-28T03:41:20.209085+00:00",
+  "checkpoint_post": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6460046722",
+  "research_plan": "research_plan_20261027_232337.json",
+  "research_plan_sha256": "afcd311fb27d8612420c64b3cb000ce3984a536b0b856df75441d65174a13d21",
+  "cellforge_pin": "6585ff93e452a8a0f2ad6ed8144ab6d998a3b400",
+  "lab_source_commit": "c384e66c807624697d6bab5952e3b71cfb24389c",
+  "approval": false,
+  "phases": {
+    "task_analysis_exit": 0,
+    "method_design_exit": 0,
+    "code_generation_started": false,
+    "training_started": false,
+    "training_runtime_estimate_hours": null,
+    "predictions_written": false,
+    "score_calls": 0
+  },
+  "reasons": [
+    "Count-based QC, gene filtering and repeat log normalization conflict with the already-normalized fixed-gene export.",
+    "Regression and Harmony need metadata absent from the supplied export.",
+    "Drug/dose/pathway operations and multi-GPU layout do not fit supplied CRISPRi data and Mac-only authorization.",
+    "The successful normal source route reconstructs a fixed initial proposal; emitted architecture and processing sections match literal templates."
+  ],
+  "ledger": {
+    "calls": 59,
+    "ledger_before_usd": "61.240534032",
+    "ledger_after_usd": "61.401668232",
+    "session_cost_usd": "0.161134200",
+    "decimal_sum_stored_costs": {
+      "session": "0.1611341999999999990",
+      "total": "61.4016682319999989594495"
+    },
+    "rounding": "nine decimal places for dollar display; SQLite stores binary floats",
+    "cap_usd": "66.240534032",
+    "models": [
+      "deepseek-flash"
+    ],
+    "roles": [
+      "baseline:cellforge"
+    ],
+    "source": "shared ledger read-only rows",
+    "audit_note": "Initial literal Decimal equality assertion rejected binary-float representation; no ledger edit or API call. Display sums checked to 1e-9."
+  },
+  "limitations": [
+    "Input supplied all three requested files, adding 1770 controls and 10 training cells beyond the original bundle source.",
+    "Online literature and uncached embedding downloads unavailable under loopback-only egress.",
+    "Single seed0 analysis/design attempt; no trained model or matched comparison.",
+    "GOAL_CRITERIA B.5 remains unmet; this is no biological or benchmark negative."
+  ],
+  "exact_next": "Stopped. No additional paid call, plan rewrite, code generation, training or scoring follows this rejected checkpoint. Lead/Andres decides whether to revise the protocol."
+}

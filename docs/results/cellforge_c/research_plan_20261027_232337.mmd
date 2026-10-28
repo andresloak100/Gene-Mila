@@ -1,0 +1,206 @@
+# Research Framework Architecture
+
+## System Overview
+This diagram shows the complete research framework based on expert discussions and method refinement.
+
+```mermaid
+graph TD
+
+    %% Data Input
+    subgraph DataInput ["Data Input"]
+        RawData["Raw Single-cell Data<br/>• Expression Matrix<br/>• Cell Metadata<br/>• Perturbation Info"]
+        Metadata["Metadata<br/>• Cell Types<br/>• Batch Info<br/>• Conditions"]
+    end
+
+    %% Data Processing Pipeline
+    subgraph DataProcessing ["🔧 Data Processing"]
+        quality_control["quality_control<br/>"]
+        normalization["log1p<br/>"]
+        batch_correction["harmony<br/>theta=2, max_iterations=20"]
+    end
+
+    %% Model Architecture
+    subgraph ModelArch ["🧠 Model Architecture"]
+        encoder["transformer"]
+        perturbation_encoder["mlp"]
+        cross_attention["cross_attention"]
+        decoder["mlp"]
+    end
+
+    %% Training Strategy
+    subgraph Training ["🎯 Training Strategy"]
+        optimizer["adamw<br/>"]
+        scheduler["cosine_annealing<br/>"]
+        training["training<br/>"]
+    end
+
+    %% Evaluation Metrics
+    subgraph Evaluation ["📈 Evaluation"]
+        loss_functions["Loss_Functions"]
+    end
+
+    %% Output
+    subgraph Output ["📋 Output"]
+        Predictions["Predictions<br/>• Expression Changes<br/>• State Transitions<br/>• Pathway Activities"]
+        Insights["Biological Insights<br/>• Mechanism of Action<br/>• Drug Targets<br/>• Biomarkers"]
+    end
+
+    %% Data Flow
+    RawData --> DataProcessing
+    Metadata --> DataProcessing
+    quality_control --> normalization
+    normalization --> batch_correction
+    batch_correction --> ModelArch
+    ModelArch --> Training
+    Training --> Evaluation
+    Evaluation --> Output
+
+    %% Styling
+    classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef processingStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef modelStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef trainingStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef evaluationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef outputStyle fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    classDef subgraphStyle fill:#fafafa,stroke:#666,stroke-width:1px
+
+    class RawData,Metadata inputStyle
+    class quality_control processingStyle
+    class normalization processingStyle
+    class batch_correction processingStyle
+    class encoder modelStyle
+    class perturbation_encoder modelStyle
+    class cross_attention modelStyle
+    class decoder modelStyle
+    class optimizer trainingStyle
+    class scheduler trainingStyle
+    class training trainingStyle
+    class loss_functions evaluationStyle
+    class Predictions,Insights outputStyle
+    class DataInput,DataProcessing,ModelArch,Training,Evaluation,Output subgraphStyle
+```
+
+## Architecture Details
+
+
+## Detailed Component Architecture
+
+```mermaid
+graph LR
+
+    %% Encoder Details
+    subgraph EncoderDetails ["🔍 Encoder Details"]
+    end
+
+    %% Decoder Details
+    subgraph DecoderDetails ["🎯 Decoder Details"]
+    end
+
+    %% Training Details
+    subgraph TrainingDetails ["⚙️ Training Details"]
+        optimizer["adamw"]
+        scheduler["cosine_annealing"]
+        training["training"]
+    end
+
+    %% Evaluation Details
+    subgraph EvaluationDetails ["📊 Evaluation Details"]
+        loss_functions["Loss_Functions"]
+    end
+
+    %% Component Connections
+    optimizer --> scheduler
+    scheduler --> training
+    EncoderDetails --> DecoderDetails
+    DecoderDetails --> TrainingDetails
+    TrainingDetails --> EvaluationDetails
+
+    %% Styling
+    classDef encoderStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef decoderStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef trainingStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef evaluationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class optimizer trainingStyle
+    class scheduler trainingStyle
+    class training trainingStyle
+    class loss_functions evaluationStyle
+```
+
+## Implementation Specifications
+
+### Model Architecture Specifications
+
+#### Encoder
+- **type**: transformer
+- **layers**: 4
+- **heads**: 8
+- **dimension**: 512
+- **activation**: gelu
+
+#### Perturbation Encoder
+- **type**: mlp
+- **layers**: 3
+- **dimensions**: [256, 128, 64]
+- **activation**: swish
+
+#### Cross Attention
+- **heads**: 8
+- **dimension**: 512
+- **dropout**: 0.1
+
+#### Decoder
+- **type**: mlp
+- **layers**: 3
+- **dimensions**: [256, 512, 1024]
+- **activation**: swish
+
+### Data Processing Pipeline
+
+#### Quality Control
+- **cell_filtering**:
+  - min_genes: 200
+  - max_genes: 6000
+  - min_counts: 1000
+  - max_counts: 50000
+  - max_mito_percent: 20
+- **gene_filtering**:
+  - min_cells: 3
+  - min_counts: 10
+
+#### Normalization
+- **method**: log1p
+- **target_sum**: 10000
+- **regression_vars**: ['total_counts', 'pct_counts_mt']
+
+#### Batch Correction
+- **method**: harmony
+- **parameters**:
+  - theta: 2
+  - max_iterations: 20
+
+### Training Configuration
+
+#### Optimizer
+- **type**: adamw
+- **learning_rate**: 0.0003
+- **weight_decay**: 0.01
+
+#### Scheduler
+- **type**: cosine_annealing
+- **T_0**: 10
+- **eta_min**: 1e-06
+
+#### Training
+- **batch_size**: 64
+- **gradient_clip**: 1.0
+- **early_stopping**:
+  - patience: 15
+  - min_delta: 0.0001
+
+### Evaluation Metrics
+
+#### Loss Functions
+- **reconstruction**: mse
+- **perturbation**: bce
+- **biological**: pathway_consistency

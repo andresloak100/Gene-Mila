@@ -1,0 +1,50 @@
+{
+  "scope": "Raw obs/var metadata and public bundle only; no expression/private/split reads",
+  "manifest_source": [
+    "data/raw/AdamsonWeissman2016_GSM2406681_10X010.h5ad"
+  ],
+  "controls": [
+    "63(mod)_pBA580",
+    "Gal4-4(mod)_pBA582",
+    "62(mod)_pBA581"
+  ],
+  "manifest_strict_labels": false,
+  "files": [
+    {
+      "file": "AdamsonWeissman2016_GSM2406681_10X010.h5ad",
+      "n_obs": 65337,
+      "n_vars": 32738,
+      "generic_control_cells": 0,
+      "manifest_control_cells": 7295,
+      "bridge_strict_training_cells": 0,
+      "bridge_strict_train_found": 0,
+      "ingest_legacy_training_cells": 31815,
+      "ingest_legacy_train_found": 50,
+      "legacy_training_cells_with_unknown_suffix": 31815
+    },
+    {
+      "file": "AdamsonWeissman2016_GSM2406677_10X005.h5ad",
+      "n_obs": 15006,
+      "n_vars": 32738,
+      "generic_control_cells": 0,
+      "manifest_control_cells": 1,
+      "bridge_strict_training_cells": 0,
+      "bridge_strict_train_found": 0,
+      "ingest_legacy_training_cells": 10,
+      "ingest_legacy_train_found": 3,
+      "legacy_training_cells_with_unknown_suffix": 10
+    },
+    {
+      "file": "AdamsonWeissman2016_GSM2406675_10X001.h5ad",
+      "n_obs": 5768,
+      "n_vars": 35635,
+      "generic_control_cells": 0,
+      "manifest_control_cells": 1769,
+      "bridge_strict_training_cells": 0,
+      "bridge_strict_train_found": 0,
+      "ingest_legacy_training_cells": 0,
+      "ingest_legacy_train_found": 0,
+      "legacy_training_cells_with_unknown_suffix": 0
+    }
+  ]
+}

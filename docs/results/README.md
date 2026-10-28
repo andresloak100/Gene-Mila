@@ -6,6 +6,14 @@ never deleted; a new check gets a new file. Every number in the README traces to
 
 The block-directory convention applies to future readings. The G, corrected F and H8 records below retain the exact generated paths pinned in their pre-score commands and hash manifests; their already referenced files were not moved or overwritten. They are indexed one row per reading; the per-file list, with hashes, is the publication's manifest (below).
 
+## Plan C: CellForge matched Adamson attempt (28 October 2026)
+
+Read [the checkpoint review](cellforge_c/checkpoint1_review.md) ([JSON](cellforge_c/checkpoint1_review.json)). Task analysis and method design completed; the research plan was rejected before code generation because it requires inputs and processing incompatible with the supplied export. No training or score exists; B.5 remains unmet. DeepSeek ledger cost $0.161134200.
+
+| Files | What they are |
+|---|---|
+| [cellforge_c/](cellforge_c/README.md) | Complete generated plan, task analysis, export receipts, source/input audit, commands, logs, meter/cap/ledger and tests; every file is individually indexed and hashed in the directory manifest. Raw exports and packages remain outside Git. |
+
 ## Adamson (4 to 11 October 2026; CellForge's split of `data/adamson_cf`)
 
 Read first: [summary_for_collaborators.md](summary_for_collaborators.md).

@@ -1,0 +1,983 @@
+Plan C checkpoint 1 — research plan posted BEFORE approval; **REJECTED, paid path stopped**.
+
+Both pinned CellForge phases completed successfully (task analysis 0, method design 0); this is a checkpoint rejection, not an API or training failure. The complete, unchanged plan is below. SHA256: `afcd311fb27d8612420c64b3cb000ce3984a536b0b856df75441d65174a13d21`.
+
+The export is already normalized/log1p, fixed to 2,055 genes, and has only perturbation/cell_type metadata. The plan instead prescribes count-based cell/gene filtering, a second normalization/log1p, regression on total_counts/pct_counts_mt and Harmony without batch metadata. It also requires chemical classes, dose curriculum/loss, pathway priors and GPU0/1/2, none supplied for this CRISPRi task. MPS/CPU substitution alone does not resolve these scientific input conflicts.
+
+At the requested pin, the successful normal route reconstructs the initial template in [graph_discussion.py:775](https://github.com/gersteinlab/CellForge/blob/6585ff9/cellforge/Method_Design/graph_discussion.py#L775); the emitted architecture matches [its literal helper](https://github.com/gersteinlab/CellForge/blob/6585ff9/cellforge/Method_Design/graph_discussion.py#L897). The preprocessing and drug/dose/multi-GPU sections match the unconditional [refinement templates](https://github.com/gersteinlab/CellForge/blob/6585ff9/cellforge/Method_Design/refinement.py#L135). This does not establish an LLM-derived architecture or biological result. I am not rewriting the method or rerunning the paid phases.
+
+No approval, code generation, script execution, training, predictions or scoring has occurred. No 12-hour training estimate is claimed. B.5 remains unmet because there is no matched score. Preserving the plan, traces, export/adapter audit, commands and receipts for one draft PR.
+
+59 DeepSeek calls: ledger **$61.240534032 → $61.401668232**, increase **$0.161134200** under the unchanged $66.240534032 ceiling ($5 increment). No other paid run. The process had only the corrected export and TASK; its network was limited to the local metered API, so online literature and uncached embeddings were unavailable. Pinned CellForge source is unchanged. The three-file export's additional 1,770 controls and 10 training cells beyond the bundle's one-file source were disclosed before paid calls.
+
+Complete generated plan (unaltered):
+```json
+{
+  "timestamp": "2026-10-27 23:23:37",
+  "model_architecture": {
+    "encoder": {
+      "type": "transformer",
+      "layers": 4,
+      "heads": 8,
+      "dimension": 512,
+      "activation": "gelu"
+    },
+    "perturbation_encoder": {
+      "type": "mlp",
+      "layers": 3,
+      "dimensions": [
+        256,
+        128,
+        64
+      ],
+      "activation": "swish"
+    },
+    "cross_attention": {
+      "heads": 8,
+      "dimension": 512,
+      "dropout": 0.1
+    },
+    "decoder": {
+      "type": "mlp",
+      "layers": 3,
+      "dimensions": [
+        256,
+        512,
+        1024
+      ],
+      "activation": "swish"
+    }
+  },
+  "data_processing": {
+    "quality_control": {
+      "cell_filtering": {
+        "min_genes": 200,
+        "max_genes": 6000,
+        "min_counts": 1000,
+        "max_counts": 50000,
+        "max_mito_percent": 20
+      },
+      "gene_filtering": {
+        "min_cells": 3,
+        "min_counts": 10
+      }
+    },
+    "normalization": {
+      "method": "log1p",
+      "target_sum": 10000,
+      "regression_vars": [
+        "total_counts",
+        "pct_counts_mt"
+      ]
+    },
+    "batch_correction": {
+      "method": "harmony",
+      "parameters": {
+        "theta": 2,
+        "max_iterations": 20
+      }
+    }
+  },
+  "training_strategy": {
+    "optimizer": {
+      "type": "adamw",
+      "learning_rate": 0.0003,
+      "weight_decay": 0.01
+    },
+    "scheduler": {
+      "type": "cosine_annealing",
+      "T_0": 10,
+      "eta_min": 1e-06
+    },
+    "training": {
+      "batch_size": 64,
+      "gradient_clip": 1.0,
+      "early_stopping": {
+        "patience": 15,
+        "min_delta": 0.0001
+      }
+    }
+  },
+  "evaluation_metrics": {
+    "loss_functions": {
+      "reconstruction": "mse",
+      "perturbation": "bce",
+      "biological": "pathway_consistency"
+    }
+  },
+  "implementation_details": {
+    "framework": "PyTorch",
+    "hardware_requirements": {
+      "gpu": "NVIDIA GPU with 8GB+ VRAM",
+      "ram": "32GB+ system RAM",
+      "storage": "100GB+ SSD"
+    },
+    "dependencies": [
+      "torch>=1.12.0",
+      "scanpy>=1.9.0",
+      "numpy>=1.21.0",
+      "scikit-learn>=1.0.0"
+    ],
+    "code_structure": {
+      "data_loader": "Custom DataLoader for single-cell data",
+      "model": "Modular architecture with configurable components",
+      "training": "Training loop with early stopping and checkpointing",
+      "evaluation": "Comprehensive evaluation pipeline"
+    }
+  },
+  "biological_validation": {
+    "key_theoretical_foundations": {
+      "baseline_regulatory_info": {
+        "assumption": "Baseline contains sufficient regulatory info",
+        "validation": "Ablation study (masking key TFs)",
+        "biological_basis": "Central dogma of molecular biology"
+      },
+      "dose_response_continuity": {
+        "assumption": "Dose-response continuity",
+        "validation": "Dose interpolation experiments",
+        "biological_basis": "Ligand-receptor binding kinetics"
+      },
+      "pathway_modularity": {
+        "assumption": "Pathway modularity",
+        "validation": "Pathway enrichment analysis",
+        "biological_basis": "Known biological pathway organization"
+      },
+      "latent_space_smoothness": {
+        "assumption": "Latent space smoothness",
+        "validation": "UMAP visualization",
+        "biological_basis": "Waddington epigenetic landscape concept"
+      }
+    },
+    "adaptive_mechanisms": {
+      "dose_specific_attention": {
+        "description": "Higher attention weights to stress pathways at toxic doses",
+        "implementation": "Focus on growth signaling at therapeutic doses"
+      },
+      "cell_type_gating": {
+        "description": "Cell-type specific pathway modulation",
+        "implementation": "Suppress irrelevant pathways based on cell type"
+      },
+      "chemical_class_priors": {
+        "description": "Initialize embeddings based on chemical class",
+        "implementation": "Set initial weights based on known mechanisms"
+      }
+    }
+  },
+  "computational_optimization": {
+    "training_techniques": {
+      "progressive_dose_sampling": {
+        "description": "Gradually increase dose range during training",
+        "implementation": {
+          "epoch_0_10": "uniform(0, 1μM)",
+          "epoch_10_20": "log_normal(1μM-10μM)",
+          "epoch_20+": "full_range(0-100μM)"
+        }
+      }
+    },
+    "regularization_methods": {
+      "pathway_sparsity": {
+        "type": "l1",
+        "lambda": 0.01,
+        "target": "pathway_weights"
+      },
+      "dose_consistency": {
+        "type": "custom",
+        "formula": "L_consist = E[||f(x,d1) - f(f(x,d1),d2-d1)||^2]"
+      }
+    },
+    "parallelization": {
+      "gene_cluster_parallelism": {
+        "chr1": {
+          "gpu": "GPU0",
+          "genes": [
+            "EGFR",
+            "MYC"
+          ]
+        },
+        "chr17": {
+          "gpu": "GPU1",
+          "genes": [
+            "TP53",
+            "BRCA1"
+          ]
+        },
+        "others": {
+          "gpu": "GPU2",
+          "genes": "Housekeeping"
+        }
+      }
+    }
+  },
+  "model_assumptions": {
+    "data_assumptions": {
+      "sparse_imbalanced": {
+        "challenge": "Sparse and imbalanced datasets",
+        "solution": "Advanced sampling and weighting techniques"
+      },
+      "batch_effects": {
+        "challenge": "Batch effects between experiments",
+        "solution": "Harmony integration and batch correction"
+      },
+      "technical_noise": {
+        "challenge": "Missing values and technical noise",
+        "solution": "Robust preprocessing and imputation"
+      }
+    },
+    "computational_assumptions": {
+      "dimensionality": {
+        "challenge": "High-dimensional data",
+        "solution": "Efficient dimensionality reduction"
+      },
+      "transfer_learning": {
+        "challenge": "Limited training data",
+        "solution": "Pre-trained models and transfer learning"
+      },
+      "efficiency": {
+        "challenge": "Computational efficiency",
+        "solution": "Optimized implementations"
+      }
+    }
+  },
+  "extensions": {
+    "drug_discovery": {
+      "virtual_screening": {
+        "description": "Virtual screening of novel compounds",
+        "implementation": "Predict expression profiles for new compounds"
+      },
+      "drug_repurposing": {
+        "description": "Repurposing existing drugs",
+        "implementation": "Identify new indications based on expression patterns"
+      },
+      "side_effects": {
+        "description": "Predicting side effects",
+        "implementation": "Analyze off-target expression changes"
+      }
+    },
+    "precision_medicine": {
+      "patient_specific": {
+        "description": "Patient-specific drug response prediction",
+        "implementation": "Use baseline expression for personalized predictions"
+      },
+      "drug_combinations": {
+        "description": "Optimize drug combinations",
+        "implementation": "Predict synergistic effects"
+      },
+      "biomarkers": {
+        "description": "Biomarker discovery",
+        "implementation": "Identify sensitivity markers"
+      }
+    },
+    "model_extensions": {
+      "multi_modal": {
+        "description": "Multi-modal inputs",
+        "implementation": "Integrate proteomics and metabolomics"
+      },
+      "time_series": {
+        "description": "Time-series predictions",
+        "implementation": "Model temporal drug effects"
+      },
+      "mechanistic": {
+        "description": "Integration with mechanistic models",
+        "implementation": "Combine with pathway models"
+      }
+    }
+  },
+  "mermaid_diagrams": {
+    "system_overview": {
+      "title": "Research Framework Architecture",
+      "description": "Complete research framework for biological perturbation analysis using single-cell data",
+      "mermaid_code": "graph TD\n    %% Data Input Layer\n    subgraph InputLayer [\"📊 Data Input Layer\"]\n        RawData[\"Raw Single-cell Data<br/>• Gene expression matrices<br/>• Cell metadata<br/>• Perturbation information\"]\n        Metadata[\"Metadata<br/>• Cell types<br/>• Batch information<br/>• Experimental conditions\"]\n    end\n\n    %% Data Processing Layer\n    subgraph ProcessingLayer [\"🔧 Data Processing Layer\"]\n        QC[\"Quality Control<br/>• Cell filtering<br/>• Gene filtering<br/>• Doublet detection\"]\n        Norm[\"Normalization<br/>• Count normalization<br/>• Log transformation<br/>• Batch correction\"]\n        Feature[\"Feature Selection<br/>• Highly variable genes<br/>• Dimensionality reduction<br/>• Feature engineering\"]\n    end\n\n    %% Model Architecture Layer\n    subgraph ModelLayer [\"🧠 Model Architecture Layer\"]\n        Encoder[\"Encoder<br/>• Transformer/GNN<br/>• Gene embedding<br/>• Cell type embedding\"]\n        Decoder[\"Decoder<br/>• Conditional generation<br/>• Perturbation prediction<br/>• Response modeling\"]\n        Constraints[\"Biological Constraints<br/>• Pathway information<br/>• Network structure<br/>• Cell type specificity\"]\n    end\n\n    %% Training Layer\n    subgraph TrainingLayer [\"🎯 Training Layer\"]\n        Optimizer[\"Optimizer<br/>• Adam/AdamW<br/>• Learning rate scheduling<br/>• Gradient clipping\"]\n        Loss[\"Loss Functions<br/>• Reconstruction loss<br/>• Biological constraints<br/>• Regularization\"]\n        Validation[\"Validation<br/>• Cross-validation<br/>• Early stopping<br/>• Model checkpointing\"]\n    end\n\n    %% Evaluation Layer\n    subgraph EvaluationLayer [\"📈 Evaluation Layer\"]\n        TechMetrics[\"Technical Metrics<br/>• MSE, R²<br/>• Pearson correlation<br/>• AUROC\"]\n        BioMetrics[\"Biological Metrics<br/>• Pathway enrichment<br/>• Network consistency<br/>• Cell type specificity\"]\n        Validation[\"Biological Validation<br/>• Experimental validation<br/>• Literature comparison<br/>• Expert assessment\"]\n    end\n\n    %% Output Layer\n    subgraph OutputLayer [\"📋 Output Layer\"]\n        Predictions[\"Predictions<br/>• Gene expression changes<br/>• Cell state transitions<br/>• Pathway activities\"]\n        Insights[\"Biological Insights<br/>• Mechanism of action<br/>• Drug targets<br/>• Biomarkers\"]\n        Applications[\"Applications<br/>• Drug discovery<br/>• Precision medicine<br/>• Biomarker discovery\"]\n    end\n\n    %% Data Flow Connections\n    RawData --> QC\n    Metadata --> QC\n    QC --> Norm\n    Norm --> Feature\n    Feature --> Encoder\n    Encoder --> Decoder\n    Constraints --> Decoder\n    Decoder --> Optimizer\n    Optimizer --> Loss\n    Loss --> Validation\n    Validation --> TechMetrics\n    TechMetrics --> BioMetrics\n    BioMetrics --> Validation\n    Validation --> Predictions\n    Predictions --> Insights\n    Insights --> Applications\n\n    %% Styling\n    classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px\n    classDef processingStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px\n    classDef modelStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px\n    classDef trainingStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px\n    classDef evaluationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px\n    classDef outputStyle fill:#e0f2f1,stroke:#004d40,stroke-width:2px\n    classDef subgraphStyle fill:#fafafa,stroke:#666,stroke-width:1px\n\n    class RawData,Metadata inputStyle\n    class QC,Norm,Feature processingStyle\n    class Encoder,Decoder,Constraints modelStyle\n    class Optimizer,Loss,Validation trainingStyle\n    class TechMetrics,BioMetrics,Validation evaluationStyle\n    class Predictions,Insights,Applications outputStyle\n    class InputLayer,ProcessingLayer,ModelLayer,TrainingLayer,EvaluationLayer,OutputLayer subgraphStyle",
+      "modules": {
+        "data_input_layer": {
+          "name": "Data Input Layer",
+          "description": "Handles raw single-cell data and metadata",
+          "components": {
+            "raw_data": {
+              "name": "Raw Single-cell Data",
+              "description": "Gene expression matrices, cell metadata, and perturbation information",
+              "format": [
+                "h5ad",
+                "loom",
+                "mtx"
+              ],
+              "required_fields": [
+                "counts",
+                "var_names",
+                "obs_names"
+              ]
+            },
+            "metadata": {
+              "name": "Metadata",
+              "description": "Cell types, batch information, and experimental conditions",
+              "fields": [
+                "cell_type",
+                "batch",
+                "condition",
+                "perturbation"
+              ]
+            }
+          }
+        },
+        "data_processing_layer": {
+          "name": "Data Processing Layer",
+          "description": "Quality control, normalization, and feature selection",
+          "components": {
+            "quality_control": {
+              "name": "Quality Control",
+              "description": "Cell filtering, gene filtering, and doublet detection",
+              "methods": [
+                "scanpy.pp.filter_cells",
+                "scanpy.pp.filter_genes",
+                "scanpy.pp.scrublet"
+              ]
+            },
+            "normalization": {
+              "name": "Normalization",
+              "description": "Count normalization, log transformation, and batch correction",
+              "methods": [
+                "scanpy.pp.normalize_total",
+                "scanpy.pp.log1p",
+                "scanpy.pp.regress_out"
+              ]
+            },
+            "feature_selection": {
+              "name": "Feature Selection",
+              "description": "Highly variable genes, dimensionality reduction, and feature engineering",
+              "methods": [
+                "scanpy.pp.highly_variable_genes",
+                "scanpy.pp.pca",
+                "scanpy.pp.scale"
+              ]
+            }
+          }
+        },
+        "model_architecture_layer": {
+          "name": "Model Architecture Layer",
+          "description": "Neural network architecture for perturbation prediction",
+          "components": {
+            "encoder": {
+              "name": "Encoder",
+              "description": "Transformer/GNN for gene and cell type embedding",
+              "types": [
+                "Transformer",
+                "Graph Neural Network",
+                "Autoencoder"
+              ],
+              "features": [
+                "gene_embedding",
+                "cell_embedding",
+                "attention_mechanism"
+              ]
+            },
+            "decoder": {
+              "name": "Decoder",
+              "description": "Conditional generation for perturbation prediction and response modeling",
+              "types": [
+                "Conditional Generation",
+                "Trajectory Prediction",
+                "Response Prediction"
+              ],
+              "outputs": [
+                "expression_profiles",
+                "cell_states",
+                "pathway_activities"
+              ]
+            },
+            "constraints": {
+              "name": "Biological Constraints",
+              "description": "Integration of pathway information, network structure, and cell type specificity",
+              "types": [
+                "gene_regulatory_networks",
+                "pathway_interactions",
+                "cell_type_specificity"
+              ]
+            }
+          }
+        },
+        "training_layer": {
+          "name": "Training Layer",
+          "description": "Model training and optimization",
+          "components": {
+            "optimizer": {
+              "name": "Optimizer",
+              "description": "Adam/AdamW with learning rate scheduling and gradient clipping",
+              "types": [
+                "Adam",
+                "AdamW",
+                "SGD"
+              ],
+              "schedulers": [
+                "CosineAnnealingLR",
+                "ReduceLROnPlateau",
+                "OneCycleLR"
+              ]
+            },
+            "loss_functions": {
+              "name": "Loss Functions",
+              "description": "Reconstruction loss, biological constraints, and regularization",
+              "types": [
+                "MSE",
+                "MAE",
+                "Biological Loss",
+                "Regularization"
+              ]
+            },
+            "validation": {
+              "name": "Validation",
+              "description": "Cross-validation, early stopping, and model checkpointing",
+              "methods": [
+                "cross_validation",
+                "early_stopping",
+                "model_checkpointing"
+              ]
+            }
+          }
+        },
+        "evaluation_layer": {
+          "name": "Evaluation Layer",
+          "description": "Model evaluation and validation",
+          "components": {
+            "technical_metrics": {
+              "name": "Technical Metrics",
+              "description": "MSE, R², Pearson correlation, and AUROC",
+              "metrics": [
+                "MSE",
+                "R2",
+                "Pearson",
+                "AUROC",
+                "Accuracy"
+              ]
+            },
+            "biological_metrics": {
+              "name": "Biological Metrics",
+              "description": "Pathway enrichment, network consistency, and cell type specificity",
+              "metrics": [
+                "pathway_enrichment",
+                "network_consistency",
+                "cell_type_specificity"
+              ]
+            },
+            "biological_validation": {
+              "name": "Biological Validation",
+              "description": "Experimental validation, literature comparison, and expert assessment",
+              "methods": [
+                "experimental_validation",
+                "literature_comparison",
+                "expert_assessment"
+              ]
+            }
+          }
+        },
+        "output_layer": {
+          "name": "Output Layer",
+          "description": "Predictions and biological insights",
+          "components": {
+            "predictions": {
+              "name": "Predictions",
+              "description": "Gene expression changes, cell state transitions, and pathway activities",
+              "types": [
+                "expression_changes",
+                "state_transitions",
+                "pathway_activities"
+              ]
+            },
+            "insights": {
+              "name": "Biological Insights",
+              "description": "Mechanism of action, drug targets, and biomarkers",
+              "types": [
+                "mechanism_of_action",
+                "drug_targets",
+                "biomarkers"
+              ]
+            },
+            "applications": {
+              "name": "Applications",
+              "description": "Drug discovery, precision medicine, and biomarker discovery",
+              "types": [
+                "drug_discovery",
+                "precision_medicine",
+                "biomarker_discovery"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "detailed_architecture": {
+      "title": "Detailed Component Architecture",
+      "description": "Detailed view of encoder, decoder, training, and evaluation components",
+      "mermaid_code": "graph LR\n    %% Detailed Architecture Components\n    subgraph EncoderDetails [\"🔍 Encoder Details\"]\n        GeneEmbed[\"Gene Embedding<br/>• Positional encoding<br/>• Gene ontology<br/>• Pathway information\"]\n        CellEmbed[\"Cell Embedding<br/>• Cell type markers<br/>• State information<br/>• Batch effects\"]\n        Attention[\"Multi-head Attention<br/>• Gene-gene interactions<br/>• Cell-cell relationships<br/>• Perturbation effects\"]\n    end\n\n    subgraph DecoderDetails [\"🎯 Decoder Details\"]\n        Condition[\"Conditional Input<br/>• Perturbation type<br/>• Dose information<br/>• Time point\"]\n        Generation[\"Response Generation<br/>• Expression prediction<br/>• State transition<br/>• Pathway activation\"]\n        Output[\"Output Processing<br/>• Denormalization<br/>• Quality control<br/>• Biological validation\"]\n    end\n\n    subgraph TrainingDetails [\"⚙️ Training Details\"]\n        DataLoader[\"Data Loading<br/>• Batch sampling<br/>• Augmentation<br/>• Balancing\"]\n        Optimizer[\"Optimization<br/>• Adam optimizer<br/>• Learning rate decay<br/>• Weight decay\"]\n        Monitoring[\"Monitoring<br/>• Loss tracking<br/>• Gradient norms<br/>• Validation metrics\"]\n    end\n\n    subgraph EvaluationDetails [\"📊 Evaluation Details\"]\n        TechEval[\"Technical Evaluation<br/>• Reconstruction error<br/>• Prediction accuracy<br/>• Generalization\"]\n        BioEval[\"Biological Evaluation<br/>• Pathway enrichment<br/>• Network analysis<br/>• Literature validation\"]\n        Robustness[\"Robustness Tests<br/>• Cross-validation<br/>• Ablation studies<br/>• Sensitivity analysis\"]\n    end\n\n    %% Connections\n    GeneEmbed --> Attention\n    CellEmbed --> Attention\n    Attention --> Condition\n    Condition --> Generation\n    Generation --> Output\n    Output --> DataLoader\n    DataLoader --> Optimizer\n    Optimizer --> Monitoring\n    Monitoring --> TechEval\n    TechEval --> BioEval\n    BioEval --> Robustness\n\n    %% Styling\n    classDef encoderStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px\n    classDef decoderStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px\n    classDef trainingStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px\n    classDef evaluationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px\n\n    class GeneEmbed,CellEmbed,Attention encoderStyle\n    class Condition,Generation,Output decoderStyle\n    class DataLoader,Optimizer,Monitoring trainingStyle\n    class TechEval,BioEval,Robustness evaluationStyle",
+      "components": {
+        "encoder_details": {
+          "name": "Encoder Details",
+          "components": {
+            "gene_embedding": {
+              "name": "Gene Embedding",
+              "description": "Positional encoding, gene ontology, pathway information",
+              "features": [
+                "positional_encoding",
+                "gene_ontology",
+                "pathway_information"
+              ]
+            },
+            "cell_embedding": {
+              "name": "Cell Embedding",
+              "description": "Cell type markers, state information, batch effects",
+              "features": [
+                "cell_type_markers",
+                "state_information",
+                "batch_effects"
+              ]
+            },
+            "attention": {
+              "name": "Multi-head Attention",
+              "description": "Gene-gene interactions, cell-cell relationships, perturbation effects",
+              "features": [
+                "gene_interactions",
+                "cell_relationships",
+                "perturbation_effects"
+              ]
+            }
+          }
+        },
+        "decoder_details": {
+          "name": "Decoder Details",
+          "components": {
+            "condition": {
+              "name": "Conditional Input",
+              "description": "Perturbation type, dose information, time point",
+              "features": [
+                "perturbation_type",
+                "dose_information",
+                "time_point"
+              ]
+            },
+            "generation": {
+              "name": "Response Generation",
+              "description": "Expression prediction, state transition, pathway activation",
+              "features": [
+                "expression_prediction",
+                "state_transition",
+                "pathway_activation"
+              ]
+            },
+            "output": {
+              "name": "Output Processing",
+              "description": "Denormalization, quality control, biological validation",
+              "features": [
+                "denormalization",
+                "quality_control",
+                "biological_validation"
+              ]
+            }
+          }
+        },
+        "training_details": {
+          "name": "Training Details",
+          "components": {
+            "data_loader": {
+              "name": "Data Loading",
+              "description": "Batch sampling, augmentation, balancing",
+              "features": [
+                "batch_sampling",
+                "augmentation",
+                "balancing"
+              ]
+            },
+            "optimizer": {
+              "name": "Optimization",
+              "description": "Adam optimizer, learning rate decay, weight decay",
+              "features": [
+                "adam_optimizer",
+                "lr_decay",
+                "weight_decay"
+              ]
+            },
+            "monitoring": {
+              "name": "Monitoring",
+              "description": "Loss tracking, gradient norms, validation metrics",
+              "features": [
+                "loss_tracking",
+                "gradient_norms",
+                "validation_metrics"
+              ]
+            }
+          }
+        },
+        "evaluation_details": {
+          "name": "Evaluation Details",
+          "components": {
+            "tech_eval": {
+              "name": "Technical Evaluation",
+              "description": "Reconstruction error, prediction accuracy, generalization",
+              "features": [
+                "reconstruction_error",
+                "prediction_accuracy",
+                "generalization"
+              ]
+            },
+            "bio_eval": {
+              "name": "Biological Evaluation",
+              "description": "Pathway enrichment, network analysis, literature validation",
+              "features": [
+                "pathway_enrichment",
+                "network_analysis",
+                "literature_validation"
+              ]
+            },
+            "robustness": {
+              "name": "Robustness Tests",
+              "description": "Cross-validation, ablation studies, sensitivity analysis",
+              "features": [
+                "cross_validation",
+                "ablation_studies",
+                "sensitivity_analysis"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "framework_overview": {
+    "title": "Biological Perturbation Analysis Framework",
+    "description": "A comprehensive framework for analyzing biological perturbations using single-cell data",
+    "key_features": [
+      "Multi-expert knowledge integration",
+      "RAG-enhanced knowledge retrieval",
+      "Biological constraint incorporation",
+      "Comprehensive evaluation metrics",
+      "Scalable architecture design"
+    ],
+    "supported_tasks": [
+      "gene_knockout",
+      "drug_perturbation",
+      "cytokine_stimulation"
+    ],
+    "output_formats": [
+      "markdown",
+      "json",
+      "mermaid",
+      "png"
+    ],
+    "expert_domains": [
+      "Data Engineering",
+      "Single Cell Biology",
+      "Deep Learning",
+      "Molecular Biology",
+      "Bioinformatics",
+      "Statistics",
+      "Drug Discovery",
+      "Gene Regulation",
+      "Experimental Design",
+      "Validation",
+      "Baseline Assessment",
+      "Training",
+      "Drug Response",
+      "Pathway Analysis",
+      "Cell Communication",
+      "Omics Integration"
+    ]
+  },
+  "task_wise_plan": [
+    {
+      "task_id": "T01",
+      "objective": "Predict gene expression responses after perturbation",
+      "scope": {
+        "task_type": "gene_knockout",
+        "dataset": {
+          "name": "cellforge_input",
+          "type": "scRNA-seq",
+          "description": "Normalized from Task Analysis report (cellforge_input)"
+        },
+        "perturbation": {
+          "type": "gene_knockout",
+          "targets": [
+            "CRISPRi_targets"
+          ],
+          "description": "Extracted from Task Analysis context"
+        },
+        "cell_types": [
+          "K562"
+        ]
+      },
+      "implementation_contract": {
+        "inputs": [
+          "baseline_expression",
+          "perturbation_identity",
+          "cell_context_features"
+        ],
+        "outputs": [
+          "predicted_expression_profile",
+          "task_level_metrics"
+        ],
+        "evaluation_metrics": [
+          "MSE",
+          "PCC",
+          "R2",
+          "Pearson correlation"
+        ],
+        "success_criteria": [
+          "Metrics reported for this task",
+          "Task output reproducible from config/seed"
+        ]
+      },
+      "design_refs": {
+        "model_architecture": {
+          "encoder": {
+            "type": "transformer",
+            "layers": 4,
+            "heads": 8,
+            "dimension": 512,
+            "activation": "gelu"
+          },
+          "perturbation_encoder": {
+            "type": "mlp",
+            "layers": 3,
+            "dimensions": [
+              256,
+              128,
+              64
+            ],
+            "activation": "swish"
+          },
+          "cross_attention": {
+            "heads": 8,
+            "dimension": 512,
+            "dropout": 0.1
+          },
+          "decoder": {
+            "type": "mlp",
+            "layers": 3,
+            "dimensions": [
+              256,
+              512,
+              1024
+            ],
+            "activation": "swish"
+          }
+        },
+        "data_processing": {
+          "quality_control": {
+            "cell_filtering": {
+              "min_genes": 200,
+              "max_genes": 6000,
+              "min_counts": 1000,
+              "max_counts": 50000,
+              "max_mito_percent": 20
+            },
+            "gene_filtering": {
+              "min_cells": 3,
+              "min_counts": 10
+            }
+          },
+          "normalization": {
+            "method": "log1p",
+            "target_sum": 10000,
+            "regression_vars": [
+              "total_counts",
+              "pct_counts_mt"
+            ]
+          },
+          "batch_correction": {
+            "method": "harmony",
+            "parameters": {
+              "theta": 2,
+              "max_iterations": 20
+            }
+          }
+        },
+        "training_strategy": {
+          "optimizer": {
+            "type": "adamw",
+            "learning_rate": 0.0003,
+            "weight_decay": 0.01
+          },
+          "scheduler": {
+            "type": "cosine_annealing",
+            "T_0": 10,
+            "eta_min": 1e-06
+          },
+          "training": {
+            "batch_size": 64,
+            "gradient_clip": 1.0,
+            "early_stopping": {
+              "patience": 15,
+              "min_delta": 0.0001
+            }
+          }
+        },
+        "implementation_details": {
+          "framework": "PyTorch",
+          "hardware_requirements": {
+            "gpu": "NVIDIA GPU with 8GB+ VRAM",
+            "ram": "32GB+ system RAM",
+            "storage": "100GB+ SSD"
+          },
+          "dependencies": [
+            "torch>=1.12.0",
+            "scanpy>=1.9.0",
+            "numpy>=1.21.0",
+            "scikit-learn>=1.0.0"
+          ],
+          "code_structure": {
+            "data_loader": "Custom DataLoader for single-cell data",
+            "model": "Modular architecture with configurable components",
+            "training": "Training loop with early stopping and checkpointing",
+            "evaluation": "Comprehensive evaluation pipeline"
+          }
+        }
+      }
+    },
+    {
+      "task_id": "T02",
+      "objective": "Generalize to unseen perturbations and unseen cell contexts",
+      "scope": {
+        "task_type": "gene_knockout",
+        "dataset": {
+          "name": "cellforge_input",
+          "type": "scRNA-seq",
+          "description": "Normalized from Task Analysis report (cellforge_input)"
+        },
+        "perturbation": {
+          "type": "gene_knockout",
+          "targets": [
+            "CRISPRi_targets"
+          ],
+          "description": "Extracted from Task Analysis context"
+        },
+        "cell_types": [
+          "K562"
+        ]
+      },
+      "implementation_contract": {
+        "inputs": [
+          "baseline_expression",
+          "perturbation_identity",
+          "cell_context_features"
+        ],
+        "outputs": [
+          "predicted_expression_profile",
+          "task_level_metrics"
+        ],
+        "evaluation_metrics": [
+          "MSE",
+          "PCC",
+          "R2",
+          "Pearson correlation"
+        ],
+        "success_criteria": [
+          "Metrics reported for this task",
+          "Task output reproducible from config/seed"
+        ]
+      },
+      "design_refs": {
+        "model_architecture": {
+          "encoder": {
+            "type": "transformer",
+            "layers": 4,
+            "heads": 8,
+            "dimension": 512,
+            "activation": "gelu"
+          },
+          "perturbation_encoder": {
+            "type": "mlp",
+            "layers": 3,
+            "dimensions": [
+              256,
+              128,
+              64
+            ],
+            "activation": "swish"
+          },
+          "cross_attention": {
+            "heads": 8,
+            "dimension": 512,
+            "dropout": 0.1
+          },
+          "decoder": {
+            "type": "mlp",
+            "layers": 3,
+            "dimensions": [
+              256,
+              512,
+              1024
+            ],
+            "activation": "swish"
+          }
+        },
+        "data_processing": {
+          "quality_control": {
+            "cell_filtering": {
+              "min_genes": 200,
+              "max_genes": 6000,
+              "min_counts": 1000,
+              "max_counts": 50000,
+              "max_mito_percent": 20
+            },
+            "gene_filtering": {
+              "min_cells": 3,
+              "min_counts": 10
+            }
+          },
+          "normalization": {
+            "method": "log1p",
+            "target_sum": 10000,
+            "regression_vars": [
+              "total_counts",
+              "pct_counts_mt"
+            ]
+          },
+          "batch_correction": {
+            "method": "harmony",
+            "parameters": {
+              "theta": 2,
+              "max_iterations": 20
+            }
+          }
+        },
+        "training_strategy": {
+          "optimizer": {
+            "type": "adamw",
+            "learning_rate": 0.0003,
+            "weight_decay": 0.01
+          },
+          "scheduler": {
+            "type": "cosine_annealing",
+            "T_0": 10,
+            "eta_min": 1e-06
+          },
+          "training": {
+            "batch_size": 64,
+            "gradient_clip": 1.0,
+            "early_stopping": {
+              "patience": 15,
+              "min_delta": 0.0001
+            }
+          }
+        },
+        "implementation_details": {
+          "framework": "PyTorch",
+          "hardware_requirements": {
+            "gpu": "NVIDIA GPU with 8GB+ VRAM",
+            "ram": "32GB+ system RAM",
+            "storage": "100GB+ SSD"
+          },
+          "dependencies": [
+            "torch>=1.12.0",
+            "scanpy>=1.9.0",
+            "numpy>=1.21.0",
+            "scikit-learn>=1.0.0"
+          ],
+          "code_structure": {
+            "data_loader": "Custom DataLoader for single-cell data",
+            "model": "Modular architecture with configurable components",
+            "training": "Training loop with early stopping and checkpointing",
+            "evaluation": "Comprehensive evaluation pipeline"
+          }
+        }
+      }
+    }
+  ]
+}
+```
