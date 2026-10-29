@@ -1,0 +1,55 @@
+{
+  "utc": "2026-10-28T20:36:58.622781+00:00",
+  "seed": 0,
+  "checks": {
+    "keys": true,
+    "heldout_order": true,
+    "gene_order": true,
+    "shape": true,
+    "finite": true,
+    "unique_perts": true,
+    "unique_genes": true,
+    "receipt_seed": true,
+    "receipt_epochs": true,
+    "receipt_device": true,
+    "receipt_hidden": true,
+    "receipt_batch": true,
+    "receipt_val_frac": true,
+    "receipt_version": true,
+    "receipt_input": true,
+    "receipt_predictions": true,
+    "fallback_in_heldout": true
+  },
+  "all_pass": true,
+  "predictions_bytes": 749984,
+  "predictions_sha256": "780b0239464f7ea84e2a43d97f774eaad58e99ef49cfec3e0f4cd956ca62f3ee",
+  "receipt_sha256": "6cc455ec405cf98fc125df57b317011073a8b2a241a41739758879a0764d0855",
+  "heldout_fallback_count": 1,
+  "receipt": {
+    "model": "GEARS",
+    "gears_version": "0.1.2",
+    "torch": "2.15.0",
+    "device": "cpu",
+    "seed": 0,
+    "epochs": 20,
+    "hidden_size": 64,
+    "batch_size": 32,
+    "val_frac": 0.1,
+    "train_conditions": 41,
+    "val_conditions": 5,
+    "train_conditions_outside_graph": [
+      "AMIGO3+ctrl",
+      "KCTD16+ctrl",
+      "SLMO2+ctrl",
+      "SRPR+ctrl"
+    ],
+    "heldout": 38,
+    "heldout_fallback": [
+      "TIMM23"
+    ],
+    "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+    "predictions_sha256": "780b0239464f7ea84e2a43d97f774eaad58e99ef49cfec3e0f4cd956ca62f3ee",
+    "seconds": 5021.1,
+    "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+  }
+}

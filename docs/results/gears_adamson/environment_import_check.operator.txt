@@ -1,0 +1,18 @@
+import importlib, importlib.metadata as m, json, sys, hashlib, pathlib, os, datetime
+mods=['numpy','scipy','pandas','anndata','scanpy','torch','torch_geometric','gears']
+r={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'python':sys.version,'imports':{}}
+for n in mods:
+ x=importlib.import_module(n)
+ r['imports'][n]={'version':getattr(x,'__version__',None),'file':str(getattr(x,'__file__',None))}
+import torch
+r['torch_mps_built']=torch.backends.mps.is_built()
+r['torch_mps_available']=torch.backends.mps.is_available()
+r['torch_threads']=torch.get_num_threads()
+report=json.loads(pathlib.Path('docs/results/gears_adamson/pip_install_report.json').read_text())
+r['cell_gears_distribution']=[{'name':i['metadata']['name'],'version':i['metadata']['version'],'download':i['download_info']} for i in report['install'] if i['metadata']['name'].lower().replace('_','-')=='cell-gears']
+for i in r['cell_gears_distribution']:
+ assert i['version']=='0.1.2'
+ assert i['download']['archive_info']['hashes']['sha256']=='4db11fd69ce4825cf9a3e4a533c7e864ad0de3d60260bc9e88fc5d6a3c7b095a'
+out=pathlib.Path('docs/results/gears_adamson/environment_import_check.json')
+with out.open('x') as f: json.dump(r,f,indent=2)
+print(json.dumps(r,indent=2))

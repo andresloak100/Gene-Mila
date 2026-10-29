@@ -1,0 +1,27 @@
+{
+  "model": "GEARS",
+  "gears_version": "0.1.2",
+  "torch": "2.15.0",
+  "device": "cpu",
+  "seed": 3,
+  "epochs": 20,
+  "hidden_size": 64,
+  "batch_size": 32,
+  "val_frac": 0.1,
+  "train_conditions": 41,
+  "val_conditions": 5,
+  "train_conditions_outside_graph": [
+    "AMIGO3+ctrl",
+    "KCTD16+ctrl",
+    "SLMO2+ctrl",
+    "SRPR+ctrl"
+  ],
+  "heldout": 38,
+  "heldout_fallback": [
+    "TIMM23"
+  ],
+  "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "predictions_sha256": "aea8a91e73cef518abaa61f493c3b6361971c5599f23dde8ab4ca48d663a648f",
+  "seconds": 4983.2,
+  "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+}

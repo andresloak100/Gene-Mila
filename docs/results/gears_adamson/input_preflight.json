@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-28T19:11:34.100650+00:00",
+  "status": "PASS",
+  "input": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "shape": [
+    40890,
+    2055
+  ],
+  "control_cells": 9065,
+  "training_cells": 31825,
+  "training_perturbations": 50,
+  "heldout_identities": 38,
+  "heldout_cell_overlap": [],
+  "unique_genes": true,
+  "input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "export_receipt_sha256": "c85d04d964f75b426927855361f7cc7f0fa23532a946b34ecab5fd46688b795c",
+  "heldout_identity_list_sha256": "99aaee3b9f29a1a8f3079ddc492ac271b5fac73925ee67a05658348e4fc1b33a",
+  "fresh_work_output_and_score_paths_absent": [
+    "/Users/andresarriaga/gears_work_s0",
+    "/Users/andresarriaga/gears_adamson_s0",
+    "docs/results/gears_adamson_s0.md",
+    "docs/results/gears_adamson_s0.json",
+    "/Users/andresarriaga/gears_work_s2",
+    "/Users/andresarriaga/gears_adamson_s2",
+    "docs/results/gears_adamson_s2.md",
+    "docs/results/gears_adamson_s2.json",
+    "/Users/andresarriaga/gears_work_s3",
+    "/Users/andresarriaga/gears_adamson_s3",
+    "docs/results/gears_adamson_s3.md",
+    "docs/results/gears_adamson_s3.json"
+  ],
+  "cohort_limitation": "Three requested source files contribute 1770 controls and 10 training cells beyond original bundle single-source ingest; explicitly disclosed and approved for reuse. Identical cell cohort is not claimed."
+}

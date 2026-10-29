@@ -1,0 +1,5 @@
+Credentials unset; PYTHONHASHSEED=0; outer caffeinate/nice19; commands sequential, stop on nonzero.
+/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m venv /Users/andresarriaga/gm_dlenv
+/Users/andresarriaga/gm_dlenv/bin/python -m pip --isolated install --index-url https://pypi.org/simple --report /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines/docs/results/gears_adamson/pip_install_report.json -r tools/baselines_dl/requirements.txt
+/Users/andresarriaga/gm_dlenv/bin/python -m pip check
+/Users/andresarriaga/gm_dlenv/bin/python -m pip freeze

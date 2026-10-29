@@ -1,0 +1,2 @@
+Credentials unset; PYTHONHASHSEED=0; outer nice19.
+/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python -m pytest -q tests/test_run_gears.py tests/test_cellforge_bridge.py

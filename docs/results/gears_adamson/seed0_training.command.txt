@@ -1,0 +1,2 @@
+Credentials unset; PYTHONHASHSEED=0, PYTHONUNBUFFERED=1; detached outer caffeinate/nice19.
+/Users/andresarriaga/gm_dlenv/bin/python tools/baselines_dl/run_gears.py --export /Users/andresarriaga/cellforge_adamson_export_corrected_20261028 --work /Users/andresarriaga/gears_work_s0 --out /Users/andresarriaga/gears_adamson_s0 --seed 0 --epochs 20 --device cpu

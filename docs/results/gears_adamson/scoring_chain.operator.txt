@@ -1,0 +1,41 @@
+from pathlib import Path
+import os,json,subprocess,datetime,time,resource,hashlib,traceback
+G=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines");R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines/docs/results/gears_adamson");PY="/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python"
+def now(): return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def put(p,v): p.write_text(json.dumps(v,indent=2)+'\n')
+os.nice(19)
+for k in ['API_KEY','DEEPSEEK_API_KEY','OPENAI_API_KEY','ANTHROPIC_API_KEY']: os.environ.pop(k,None)
+os.environ['PYTHONHASHSEED']='0'
+assert (R/'training_chain.exit').read_text().strip()=='0'
+live={'start_utc':now(),'driver_pid':os.getpid(),'status':'STARTING','completed_seeds':[],'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=G,text=True).strip(),'credential_policy':'API keys unset; free oracle scoring','training_completion_issue51':6486798529}
+put(R/'scoring_chain.live.json',live)
+rc=1
+try:
+ for s in [0,2,3]:
+  out=G/f'docs/results/gears_adamson_s{s}.md'
+  for p in [out,out.with_suffix('.json'),R/f'seed{s}_score.command.txt',R/f'seed{s}_score.log',R/f'seed{s}_score.exit',R/f'seed{s}_score.runtime.json']:
+   assert not p.exists() and not p.is_symlink(),str(p)
+  cmd=[PY,'tools/cellforge_bridge.py','score','--bundle','/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf','--pred',f'/Users/andresarriaga/gears_adamson_s{s}/predictions.npz','--name',f'gears_s{s}','--versus','/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0','--out',f'docs/results/gears_adamson_s{s}.md']
+  import shlex
+  (R/f'seed{s}_score.command.txt').open('x').write(shlex.join(cmd)+'\n')
+  run={'start_utc':now(),'seed':s,'command':cmd,'cwd':str(G),'source_commit':live['source_commit'],'nice':os.getpriority(os.PRIO_PROCESS,0),'credential_policy':live['credential_policy']}
+  live.update(status='SCORING',active_seed=s);put(R/'scoring_chain.live.json',live)
+  t=time.monotonic();u=resource.getrusage(resource.RUSAGE_CHILDREN)
+  with (R/f'seed{s}_score.log').open('x') as log:
+   child=subprocess.Popen(cmd,cwd=G,env=os.environ.copy(),stdout=log,stderr=subprocess.STDOUT)
+   run['child_pid']=child.pid;put(R/f'seed{s}_score.runtime.json',run)
+   code=child.wait()
+  v=resource.getrusage(resource.RUSAGE_CHILDREN)
+  run.update(end_utc=now(),exit=code,wall_seconds=time.monotonic()-t,cpu_seconds=(v.ru_utime+v.ru_stime)-(u.ru_utime+u.ru_stime))
+  put(R/f'seed{s}_score.runtime.json',run)
+  (R/f'seed{s}_score.exit').open('x').write(str(code)+'\n')
+  if code: raise RuntimeError(f'seed{s} score exit {code}; STOP no retry')
+  assert out.is_file() and out.with_suffix('.json').is_file()
+  live['completed_seeds'].append(s);put(R/'scoring_chain.live.json',live)
+ rc=0;live.update(status='SCORING_COMPLETE',active_seed=None)
+except Exception as e:
+ live.update(status='STOPPED',error=str(e));(R/'scoring_chain.failure.txt').open('x').write(traceback.format_exc())
+finally:
+ live.update(exit=rc,end_utc=now());put(R/'scoring_chain.live.json',live);put(R/'scoring_chain.final.json',live)
+ (R/'scoring_chain.exit').open('x').write(str(rc)+'\n')
+raise SystemExit(rc)

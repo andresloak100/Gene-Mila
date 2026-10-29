@@ -1,0 +1,11 @@
+{
+  "comment_id": 6478207379,
+  "url": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6478207379",
+  "source_commit_at_training": "d5e842fed53d883ed615ec766ccd07b35bfa397c",
+  "scientific_source_unchanged_from": "53ad745aeaee88c568aecc6d52054896773cd320",
+  "intervening_changed_paths": [
+    "HANDOFF.md",
+    "docs/PREPRINT_DRAFT.md",
+    "docs/README.md"
+  ]
+}

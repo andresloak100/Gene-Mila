@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-28T19:14:33.300131+00:00",
+  "source_commit": "d5e842fed53d883ed615ec766ccd07b35bfa397c",
+  "authority": {
+    "user_request": "D publication first, then GEARS seeds0/2/3 free atnice19, one score command each; corrected existing export explicitly approved. Later direct user authorizes H only after GEARS.",
+    "h_order": "GEARS complete, then H Docker/harness checks+build, free C0, console, once-only cap ledger+15, detached chain with environment key only and A3_CLIENT=codex; stop/report on any stop, no workaround."
+  },
+  "static_review": {
+    "reviewer": "Independent source-only subagent; no Mac actions or scientific jobs",
+    "fatal_blockers_found": [],
+    "claims": [
+      "Active runner does not call torch.load/load_pretrained; default weights_only changes do not affect this path.",
+      "PyG2.8.1 retains deprecated DataLoader used by GEARS; installed imports passed.",
+      "Runner contains existing pandas-mask CSR and AnnData nullable-string compatibility handling.",
+      "Internal validation/test uses training-derived conditions; no bundle-held-out cells.",
+      "Default graph resources are not screen datasets.",
+      "Best epoch uses training-derived validation top20 DE MSE; supported target predictions average300 sampled controls.",
+      "Unsupported heldout targets use declared mean-response fallback; report fallback counts."
+    ],
+    "limitation": "Static source review is not runtime proof. Local import and job exits are authoritative."
+  },
+  "input_checks": "input_preflight.json",
+  "environment_checks": "environment_import_check.json",
+  "focused_tests": "7passed; focused_tests.exit0",
+  "scoring_policy": "All training before sealed score commands; exactly one named bridge invocation per seed, existing protected evaluator; no outcome tuning."
+}

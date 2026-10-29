@@ -1,0 +1,52 @@
+from pathlib import Path
+import json,statistics,datetime,hashlib,math
+g=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines");r=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines/docs/results/gears_adamson")
+rows={s:json.loads((g/f'docs/results/gears_adamson_s{s}.json').read_text()) for s in [0,2,3]}
+metrics={}
+keys=list(rows[0]['cellforge']['metrics'])
+for k in keys:
+ vals=[rows[s]['cellforge']['metrics'][k] for s in [0,2,3]]
+ if all(isinstance(v,(int,float)) and not isinstance(v,bool) for v in vals):
+  assert all(math.isfinite(v) for v in vals)
+  metrics[k]={'seeds':dict(zip(['0','2','3'],vals)),'mean':statistics.mean(vals),'sample_sd':statistics.stdev(vals),'n_seeds':3,'ddof':1}
+paired={}
+for s,rep in rows.items():
+ assert (r/f'seed{s}_score.exit').read_text().strip()=='0'
+ v=json.loads((r/f'seed{s}_prediction_validation.json').read_text())
+ assert rep['predictions_sha256']==v['predictions_sha256']
+ pair=rep['versus']['paired']
+ assert pair['a']['metrics']=={k:v for k,v in rep['cellforge']['metrics'].items() if k in pair['a']['metrics']}
+ p=pair['paired']; expected='a' if p['mean_diff']>2*p['se'] and p['wins_a']>p['n']/2 else 'b' if -p['mean_diff']>2*p['se'] and p['wins_b']>p['n']/2 else 'none'
+ assert p['verdict']==expected
+ paired[str(s)]={**p,'a':'GEARS seed '+str(s),'b':'newcode_opus_w4_r0:EXP_0441','rule_recomputed_matches':True,'lab_gain':-p['mean_diff'],'twice_paired_se':2*p['se']}
+assert len(set(rows[s]['versus']['experiment_id'] for s in rows))==1
+assert all(rows[s]['versus']['paired']['b']==rows[0]['versus']['paired']['b'] for s in [2,3])
+rep={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'model':'GEARS 0.1.2','status':'complete','training_source_commit':'d5e842fed53d883ed615ec766ccd07b35bfa397c','scoring_source_commit':'37d991d94b414ca8f8475b066bad5ec4451acc9f','seeds':[0,2,3],'prediction_contract_shape':[38,2055],'sealed_paired_n':21,'metrics':metrics,'paired':paired,'comparator':rows[0]['versus']['paired']['b'],'source_reports':{str(s):{'path':f'docs/results/gears_adamson_s{s}.json','sha256':hashlib.sha256((g/f'docs/results/gears_adamson_s{s}.json').read_bytes()).hexdigest()} for s in rows},'training_runner_wall_seconds':{str(s):json.loads((r/f'seed{s}_runner_receipt.json').read_text())['seconds'] for s in rows},'caveats':['Worn sealed cohort: descriptive only; no tuning or selection from these scores.','38 prediction identities cover val1 and val2 without exposing membership; bridge oracle evaluated21 sealed perturbations.','Corrected export adds1770controls and10training cells relative to original bundle source cohort.','All seeds have41train5validation4outsidegraph; fallbackTIMM23 for1of38prediction identities, with no claim about its sealed membership.','Seed2 slow wall-clock interval cause not established.','One bridge invocation per seed, each internally3oracle scorings; seed count remains3.']}
+(r/'aggregate.json').open('x').write(json.dumps(rep,indent=2)+'\n')
+lines=['# GEARS on matched Adamson targets: three fixed CPU seeds','',
+'All three training runs and exactly one prescribed bridge invocation per seed completed with exit 0. GEARS sealed pearson_delta is **'+format(metrics['pearson_delta']['mean'],'.9f')+' ± '+format(metrics['pearson_delta']['sample_sd'],'.9f')+'** (mean ± sample SD, seeds 0/2/3). The selected four-worker Opus-planned comparator, `newcode_opus_w4_r0:EXP_0441`, scores **0.598665038** in these same paired queries and meets the predeclared paired reading rule against every GEARS seed. This is a descriptive comparison on the worn sealed cohort, not a fresh-test result or a basis for model selection.','',
+'Predictions cover all 38 held-out identities × 2,055 genes; the bridge scores the 21 sealed perturbations. Its other held-out identities belong to the visible validation tier. No held-out cells were supplied to GEARS. The operator did not inspect sealed labels or their membership.','',
+'## Metrics','',
+'The table uses unrounded JSON values for arithmetic, with sample SD (ddof=1) across the three seeds. Counts and the duplicated primary/CellForge metrics are retained for completeness. No internal repeated oracle query is counted as a replicate.','',
+'| Metric | Seed 0 | Seed 2 | Seed 3 | Mean | Sample SD |','|---|---:|---:|---:|---:|---:|']
+for k,m in metrics.items():
+ lines.append('| '+k+' | '+' | '.join(format(m['seeds'][str(s)],'.12g') for s in [0,2,3])+' | '+format(m['mean'],'.12g')+' | '+format(m['sample_sd'],'.12g')+' |')
+lines+=['','## Paired reading against the prescribed lab run','','Differences below are GEARS minus lab pearson_delta, paired over n=21 sealed perturbations. The rule requires gain above twice its paired SE and wins on more than half the perturbations (at least11of21). The lab satisfies both conditions for each seed. No cross-seed pooled p-value or additional query was computed.','',
+'| GEARS seed | GEARS − lab | Paired SE | GEARS wins | Lab wins | Ties | Rule verdict |','|---|---:|---:|---:|---:|---:|---|']
+for s,p in paired.items(): lines.append(f"| {s} | {p['mean_diff']:.12g} | {p['se']:.12g} | {p['wins_a']}/{p['n']} | {p['wins_b']}/{p['n']} | {p['ties']} | Lab |")
+lines+=['','The plan’s contextual historical rows are start≈0.520, no-LLM control≈0.554 and four-worker agents≈0.602±0.002 (as quoted in [PLAN_DL_BASELINES](../../PLAN_DL_BASELINES.md)); those arms were not rescored here. The exact prescribed single-run comparator in this result is0.598665038, not that historical three-run mean.','',
+'## Input, fixed settings and limitations','',
+'Andres approved reuse of the corrected export `~/cellforge_adamson_export_corrected_20261028`:40,890cells,9,065controls,31,825trainingcells,all50trainingperturbations,2,055genes. It contains control/training cells only, already counts per10,000 and log1p. Input SHA-256 `ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a`; export receipt SHA-256 `c85d04d964f75b426927855361f7cc7f0fa23532a946b34ecab5fd46688b795c`. The preserved original empty export was not used or rebuilt.','',
+'The requested three-source export adds1,770controls and10trainingcells relative to the bundle’s original single-source ingest. The evaluation targets, genes and evaluator match; the training cell cohort is not identical to the lab bundle. This caveat prevents interpreting the comparison as a strictly identical-input training experiment.','',
+'All seeds use20CPUepochs,hidden64,batch32,val_frac0.1,with fresh work/output folders and no parameter/device/source changes. GEARS uses41trainingconditions and5validationconditions;4exported conditions are excluded because they lie outside its graph:AMIGO3,KCTD16,SLMO2,SRPR. The runner’s mean-training-response fallback is used for TIMM23 (1/38prediction identities). It remains in the unchanged prediction artifact; we do not assert its sealed membership. The runner selects its epoch using GEARS validation conditions drawn from training perturbations, not held-out labels.','',
+'Training used source `d5e842fed53d883ed615ec766ccd07b35bfa397c`. After training finished, the own clone fast-forwarded to integration `37d991d94b414ca8f8475b066bad5ec4451acc9f` for scoring/publication. Exact diff and hashes confirm GEARS runner/requirements, bridge and genemila/ unchanged. Main checkout, evaluator, split, guard and input files were not modified.','',
+'## Runtime and reproducibility','','| Seed | Runner wall seconds | Prediction SHA-256 |','|---|---:|---|']
+for s in [0,2,3]: lines.append(f"| {s} | {rep['training_runner_wall_seconds'][str(s)]} | `{rows[s]['predictions_sha256']}` |")
+lines+=['','Runner times are wall time, not aggregate CPU-hours. Seed2 includes the previously disclosed slow-progress interval; its cause is not established. The chain started2026-10-28T19:13:05.900862UTC and ended2026-10-29T03:02:56.758416UTC, with no retry, restart or timeout. Scoring ran sequentially03:09:04–03:09:09UTC, keys unset, nice19, after all training.','',
+'Environment installation/pip-check/imports passed;7focused tests passed before training. Actual versions include cell-gears0.1.2,torch2.15.0,torch-geometric2.8.1,pandas2.3.3,anndata0.13.4,scanpy1.12.4,numpy2.5.4,scipy1.18.1,scikit-learn1.9.1. Exact requirements, pip report/freeze, wheel provenance and commands are retained. All17prediction checks pass for each seed. All four downloaded graph artifacts have identical hashes in all three work folders:','',
+'| Graph artifact | Bytes | SHA-256 |','|---|---:|---|']
+for f in json.loads((r/'seed3_graph_artifacts.json').read_text())['files']: lines.append(f"| `{f['relative_path']}` | {f['bytes']} | `{f['sha256']}` |")
+lines+=['','These are the actual downloaded sizes (including a354,733,543-byte unpacked CSV), rather than the plan’s approximate10MB. No screen dataset downloader was invoked.','',
+'Full precision is preserved in [aggregate.json](aggregate.json) and the untouched tool outputs [seed0](../gears_adamson_s0.json), [seed2](../gears_adamson_s2.json), [seed3](../gears_adamson_s3.json). Every command, log, explicit exit, runtime, validation and hash receipt is individually indexed below in this directory’s [README](README.md). Raw predictions, work folders, packages and input remain outside Git. No paid call.','']
+(r/'aggregate.md').open('x').write('\n'.join(lines))
+print(json.dumps({'pearson_delta':metrics['pearson_delta'],'paired':paired,'numeric_metrics':len(metrics)},indent=2))
