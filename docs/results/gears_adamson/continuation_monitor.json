@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-28T19:18:33.520919+00:00",
+  "automation_id": "finish-gears-then-run-authorized-block-h",
+  "status": "ACTIVE",
+  "cadence_minutes": 5,
+  "scope": "Existing GEARS training, one-score-per-seed publication, then explicitly authorized H; no simultaneous jobs; pause on completion or blocking stop."
+}

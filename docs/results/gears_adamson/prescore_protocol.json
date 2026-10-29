@@ -1,0 +1,66 @@
+{
+  "utc": "2026-10-28T19:04:47.448079+00:00",
+  "authorization": "Andres: D publication first, then free GEARS seeds0/2/3 atnice19, same plan and one score command per seed; no paid run.",
+  "input_path_correction_authorization": "User explicitly chose verified corrected existing export after zero-cell original was disclosed. No rebuild, rename or symlink.",
+  "clone": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines",
+  "source_commit": "53ad745aeaee88c568aecc6d52054896773cd320",
+  "input_dir": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "export_receipt_sha256": "c85d04d964f75b426927855361f7cc7f0fa23532a946b34ecab5fd46688b795c",
+  "export_receipt": {
+    "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf",
+    "split_id": "split_450515be1a0d8d2e",
+    "n_genes": 2055,
+    "n_cells": 40890,
+    "n_control_cells": 9065,
+    "train_perturbations_found": 50,
+    "train_perturbations_in_bundle": 50,
+    "train_missing_in_file": [],
+    "n_heldout": 38,
+    "label_mapping": {
+      "condition_key": "perturbation",
+      "gene_name_key": null,
+      "control_value": [
+        "62(mod)_pBA581",
+        "63(mod)_pBA580",
+        "Gal4-4(mod)_pBA582"
+      ],
+      "strict_labels": false,
+      "collapse_by_target": true
+    },
+    "bundle_source": [
+      "data/raw/AdamsonWeissman2016_GSM2406681_10X010.h5ad"
+    ],
+    "source_names_match_bundle": false,
+    "source_files": {
+      "AdamsonWeissman2016_GSM2406675_10X001.h5ad": "119e3c1cf7dede4e13f887b86f9bcd797a9dc29213ee57d36aa80012d93f1c1c",
+      "AdamsonWeissman2016_GSM2406677_10X005.h5ad": "6c6eca0f53f8887b86597e2a4ff512ff2b2d3d9c78ee7deec9a6e7d6ae859d01",
+      "AdamsonWeissman2016_GSM2406681_10X010.h5ad": "e70fcd49808cab8d724de8d5a332940911206e1c8ef44cc7b568d048ed795c85"
+    },
+    "cellforge_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a"
+  },
+  "venv": "/Users/andresarriaga/gm_dlenv",
+  "python_for_venv": "3.13.7 (v3.13.7:bcee1c32211, Aug 14 2025, 19:10:51) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "requirements_sha256": "6076ceb4c424118bff508fdc0b50c3ffeb37c678807d55634e807d4e21f2a907",
+  "runner_sha256": "9c943605f34d3deec47e994af8d5166536d0aa401143572f71d0de509733956c",
+  "bridge_sha256": "e9d9212267ad298c805cfa0aed195c00c1b0bb3bc19f7d35914f994c0140b149",
+  "environment_policy": "Install exact requirement lines in new separate venv. Torch is a transitive unpinned dependency in those lines; preserve actual installed version and pip report rather than claim the commented example version. No lab environment change.",
+  "training_order": [
+    0,
+    2,
+    3
+  ],
+  "training": {
+    "epochs": 20,
+    "device": "cpu",
+    "hidden": 64,
+    "batch": 32,
+    "val_frac": 0.1
+  },
+  "scoring_policy": "All three training runs first, then one prescribed named bridge invocation per seed. Both MD/JSON absent before scoring. No choices from sealed scores.",
+  "D_completion": {
+    "pr": 81,
+    "head": "590438a4ab250419f9cb9b24e461232553205269",
+    "verdict_post": "https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6477986138"
+  }
+}

@@ -1,0 +1,75 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import os,sys,subprocess,json,shlex,hashlib,traceback
+G=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines"); R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines/docs/results/gears_adamson"); V=Path('/Users/andresarriaga/gm_dlenv/bin/python')
+E=Path('/Users/andresarriaga/cellforge_adamson_export_corrected_20261028')
+OPS=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gears_ops")
+ENV=os.environ.copy()
+for key in ['API_KEY','DEEPSEEK_API_KEY','OPENAI_API_KEY','ANTHROPIC_API_KEY']:ENV.pop(key,None)
+ENV.update(PYTHONHASHSEED='0',PYTHONUNBUFFERED='1')
+utc=lambda:datetime.now(timezone.utc).isoformat()
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def exclusive(p,v):
+ with Path(p).open('x') as f:
+  f.write(json.dumps(v,indent=2)+'\n' if not isinstance(v,str) else v)
+def current(v):
+ (R/'training_chain.live.json').write_text(json.dumps(v,indent=2)+'\n')
+with (OPS/'training_chain.started').open('x') as f:f.write(utc()+'\n')
+state={'start_utc':utc(),'driver_pid':os.getpid(),'status':'preflight','completed_seeds':[],'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=G,text=True).strip(),'prerun_issue51_comment':6478207379,'settings':{'seeds':[0,2,3],'epochs':20,'device':'cpu','hidden':64,'batch':32,'val_frac':0.1},'credential_policy':'API keys unset; no paid run'}
+current(state)
+rc=0
+try:
+ assert state['source_commit']=='d5e842ffb49790c10a75a8379b764b8bbf607abc' if False else state['source_commit'].startswith('d5e842f')
+ assert (R/'focused_tests.exit').read_text().strip()=='0'
+ assert json.loads((R/'input_preflight.json').read_text())['status']=='PASS'
+ assert sha(E/'cellforge_input.h5ad')=='ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a'
+ for rel,expected in [('tools/baselines_dl/run_gears.py','9c943605f34d3deec47e994af8d5166536d0aa401143572f71d0de509733956c'),('tools/cellforge_bridge.py','e9d9212267ad298c805cfa0aed195c00c1b0bb3bc19f7d35914f994c0140b149'),('tools/baselines_dl/requirements.txt','6076ceb4c424118bff508fdc0b50c3ffeb37c678807d55634e807d4e21f2a907')]:
+  assert sha(G/rel)==expected,rel
+ for seed in [0,2,3]:
+  work=Path(f'/Users/andresarriaga/gears_work_s{seed}'); out=Path(f'/Users/andresarriaga/gears_adamson_s{seed}')
+  assert not os.path.lexists(work) and not os.path.lexists(out),'Nonfresh path'
+  stem=R/f'seed{seed}_training'
+  command=[str(V),'tools/baselines_dl/run_gears.py','--export',str(E),'--work',str(work),'--out',str(out),'--seed',str(seed),'--epochs','20','--device','cpu']
+  exclusive(str(stem)+'.command.txt','Credentials unset; PYTHONHASHSEED=0, PYTHONUNBUFFERED=1; detached outer caffeinate/nice19.\n'+shlex.join(command)+'\n')
+  rt={'start_utc':utc(),'seed':seed,'driver_pid':os.getpid(),'source_commit':state['source_commit'],'command':command,'work':str(work),'out':str(out)}
+  with Path(str(stem)+'.log').open('x') as log:
+   child=subprocess.Popen(command,cwd=G,env=ENV,stdout=log,stderr=subprocess.STDOUT)
+   rt['child_pid']=child.pid
+   state.update(status='running',active_seed=seed,child_pid=child.pid)
+   current(state)
+   Path(str(stem)+'.runtime.json').write_text(json.dumps(rt,indent=2)+'\n')
+   rc=child.wait()
+  rt.update(end_utc=utc(),exit=rc)
+  Path(str(stem)+'.runtime.json').write_text(json.dumps(rt,indent=2)+'\n')
+  exclusive(str(stem)+'.exit',str(rc)+'\n')
+  if rc:
+   state.update(status='STOPPED',failed_seed=seed,exit=rc,reason='Runner returned nonzero; partial work and outputs preserved. No retry.')
+   current(state);break
+  import numpy as np
+  import anndata as ad
+  rr=json.loads((out/'receipt.json').read_text())
+  held=json.loads((E/'heldout_perturbations.json').read_text())
+  a=ad.read_h5ad(E/'cellforge_input.h5ad',backed='r'); genes=list(a.var_names.astype(str));a.file.close()
+  with np.load(out/'predictions.npz',allow_pickle=False) as z:
+   checks={'keys':set(z.files)=={'perts','means','genes'},'heldout_order':z['perts'].tolist()==held,'gene_order':z['genes'].tolist()==genes,'shape':z['means'].shape==(38,2055),'finite':bool(np.isfinite(z['means']).all()),'unique_perts':len(set(z['perts'].tolist()))==38,'unique_genes':len(set(z['genes'].tolist()))==2055}
+  checks.update(receipt_seed=rr['seed']==seed,receipt_epochs=rr['epochs']==20,receipt_device=rr['device']=='cpu',receipt_hidden=rr['hidden_size']==64,receipt_batch=rr['batch_size']==32,receipt_val_frac=rr['val_frac']==.1,receipt_version=rr['gears_version']=='0.1.2',receipt_input=rr['export_input_sha256']==sha(E/'cellforge_input.h5ad'),receipt_predictions=rr['predictions_sha256']==sha(out/'predictions.npz'),fallback_in_heldout=set(rr['heldout_fallback']).issubset(held))
+  audit={'utc':utc(),'seed':seed,'checks':checks,'all_pass':all(checks.values()),'predictions_bytes':(out/'predictions.npz').stat().st_size,'predictions_sha256':sha(out/'predictions.npz'),'receipt_sha256':sha(out/'receipt.json'),'heldout_fallback_count':len(rr['heldout_fallback']),'receipt':rr}
+  exclusive(R/f'seed{seed}_prediction_validation.json',audit)
+  exclusive(R/f'seed{seed}_runner_receipt.json',rr)
+  graph=[]
+  for f in sorted(work.rglob('*')):
+   if f.is_file() and f.name in {'gene2go_all.pkl','essential_all_data_pert_genes.pkl','go_essential_all.tar.gz','go_essential_all.csv'}:
+    graph.append({'relative_path':str(f.relative_to(work)),'bytes':f.stat().st_size,'sha256':sha(f)})
+  exclusive(R/f'seed{seed}_graph_artifacts.json',{'utc':utc(),'work':str(work),'files':graph})
+  if not audit['all_pass']:raise RuntimeError('Prediction validation failed; preserved without scoring')
+  state['completed_seeds'].append(seed);state.update(status='between_seeds',active_seed=None,child_pid=None);current(state)
+ else:state.update(status='TRAINING_COMPLETE',active_seed=None,child_pid=None,exit=0)
+except BaseException as exc:
+ rc=rc or 1
+ state.update(status='STOPPED',exit=rc,reason=type(exc).__name__+': '+str(exc),traceback=traceback.format_exc())
+finally:
+ state['end_utc']=utc()
+ current(state)
+ exclusive(R/'training_chain.final.json',state)
+ exclusive(R/'training_chain.exit',str(rc)+'\n')
+raise SystemExit(rc)

@@ -6,6 +6,17 @@ never deleted; a new check gets a new file. Every number in the README traces to
 
 The block-directory convention applies to future readings. The G, corrected F and H8 records below retain the exact generated paths pinned in their pre-score commands and hash manifests; their already referenced files were not moved or overwritten. They are indexed one row per reading; the per-file list, with hashes, is the publication's manifest (below).
 
+## GEARS: fixed CPU seeds on Adamson (28–29 October 2026)
+
+Read [the three-seed report](gears_adamson/aggregate.md) ([full-precision JSON](gears_adamson/aggregate.json)). All training and the once-per-seed prescribed bridge calls exited 0. Sealed pearson_delta is 0.407282874 ± sample SD 0.011648347. The prescribed lab comparator (newcode_opus_w4_r0:EXP_0441, 0.598665038) meets the paired rule against every GEARS seed. The sealed cohort is worn and descriptive; the corrected export's additional training cells and controls are disclosed.
+
+| Files | What they are |
+|---|---|
+| [gears_adamson_s0.md](gears_adamson_s0.md), [JSON](gears_adamson_s0.json) | Unchanged score tool report for seed 0 |
+| [gears_adamson_s2.md](gears_adamson_s2.md), [JSON](gears_adamson_s2.json) | Unchanged score tool report for seed 2 |
+| [gears_adamson_s3.md](gears_adamson_s3.md), [JSON](gears_adamson_s3.json) | Unchanged score tool report for seed 3 |
+| [gears_adamson/](gears_adamson/README.md) | Every environment, training, graph, prediction validation, scoring, command, exit, runtime, issue and publication receipt, individually indexed and hashed; raw inputs/predictions/work remain outside Git |
+
 ## Plan C: CellForge matched Adamson attempt (28 October 2026)
 
 Read [the checkpoint review](cellforge_c/checkpoint1_review.md) ([JSON](cellforge_c/checkpoint1_review.json)). Task analysis and method design completed; the research plan was rejected before code generation because it requires inputs and processing incompatible with the supplied export. No training or score exists; B.5 remains unmet. DeepSeek ledger cost $0.161134200.

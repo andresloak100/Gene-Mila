@@ -1,0 +1,27 @@
+{
+  "start_utc": "2026-10-28T19:13:06.025237+00:00",
+  "seed": 0,
+  "driver_pid": 18964,
+  "source_commit": "d5e842fed53d883ed615ec766ccd07b35bfa397c",
+  "command": [
+    "/Users/andresarriaga/gm_dlenv/bin/python",
+    "tools/baselines_dl/run_gears.py",
+    "--export",
+    "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+    "--work",
+    "/Users/andresarriaga/gears_work_s0",
+    "--out",
+    "/Users/andresarriaga/gears_adamson_s0",
+    "--seed",
+    "0",
+    "--epochs",
+    "20",
+    "--device",
+    "cpu"
+  ],
+  "work": "/Users/andresarriaga/gears_work_s0",
+  "out": "/Users/andresarriaga/gears_adamson_s0",
+  "child_pid": 18967,
+  "end_utc": "2026-10-28T20:36:57.717219+00:00",
+  "exit": 0
+}

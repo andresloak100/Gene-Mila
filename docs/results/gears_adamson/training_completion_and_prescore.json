@@ -1,0 +1,174 @@
+{
+  "utc": "2026-10-29T03:08:43.918915+00:00",
+  "training_source_commit": "d5e842fed53d883ed615ec766ccd07b35bfa397c",
+  "scoring_source_commit": "37d991d94b414ca8f8475b066bad5ec4451acc9f",
+  "scientific_source_diff_exit": 0,
+  "source_hashes": {
+    "tools/baselines_dl/run_gears.py": "9c943605f34d3deec47e994af8d5166536d0aa401143572f71d0de509733956c",
+    "tools/baselines_dl/requirements.txt": "6076ceb4c424118bff508fdc0b50c3ffeb37c678807d55634e807d4e21f2a907",
+    "tools/cellforge_bridge.py": "e9d9212267ad298c805cfa0aed195c00c1b0bb3bc19f7d35914f994c0140b149"
+  },
+  "seeds": {
+    "0": {
+      "prediction_sha256": "780b0239464f7ea84e2a43d97f774eaad58e99ef49cfec3e0f4cd956ca62f3ee",
+      "validation_all_pass": true,
+      "receipt": {
+        "model": "GEARS",
+        "gears_version": "0.1.2",
+        "torch": "2.15.0",
+        "device": "cpu",
+        "seed": 0,
+        "epochs": 20,
+        "hidden_size": 64,
+        "batch_size": 32,
+        "val_frac": 0.1,
+        "train_conditions": 41,
+        "val_conditions": 5,
+        "train_conditions_outside_graph": [
+          "AMIGO3+ctrl",
+          "KCTD16+ctrl",
+          "SLMO2+ctrl",
+          "SRPR+ctrl"
+        ],
+        "heldout": 38,
+        "heldout_fallback": [
+          "TIMM23"
+        ],
+        "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+        "predictions_sha256": "780b0239464f7ea84e2a43d97f774eaad58e99ef49cfec3e0f4cd956ca62f3ee",
+        "seconds": 5021.1,
+        "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+      },
+      "graphs": [
+        {
+          "relative_path": "gears_data/essential_all_data_pert_genes.pkl",
+          "bytes": 558811,
+          "sha256": "46c3dfe354d8ad5c0da22c69f3d0ca451987b1a61ed9d984279b22b9565ff8d7"
+        },
+        {
+          "relative_path": "gears_data/gene2go_all.pkl",
+          "bytes": 9462558,
+          "sha256": "f145c5e84a53048d87942a417d870a4f2d8db50200b96e492b358c13aba8c771"
+        },
+        {
+          "relative_path": "gears_data/go_essential_all/go_essential_all.csv",
+          "bytes": 354733543,
+          "sha256": "99622d9215462e7bbea99a5f6c0b1e86febfef9f57226269418053484fcb3f9f"
+        },
+        {
+          "relative_path": "gears_data/go_essential_all.tar.gz",
+          "bytes": 60654049,
+          "sha256": "98a14a60e8b76f76fd172570d023a6036775f151604ec01340b3fec7d36693da"
+        }
+      ]
+    },
+    "2": {
+      "prediction_sha256": "e0bae73fbfff0cfb6420879d7b65bdfe298c130d0635312540976c16db884632",
+      "validation_all_pass": true,
+      "receipt": {
+        "model": "GEARS",
+        "gears_version": "0.1.2",
+        "torch": "2.15.0",
+        "device": "cpu",
+        "seed": 2,
+        "epochs": 20,
+        "hidden_size": 64,
+        "batch_size": 32,
+        "val_frac": 0.1,
+        "train_conditions": 41,
+        "val_conditions": 5,
+        "train_conditions_outside_graph": [
+          "AMIGO3+ctrl",
+          "KCTD16+ctrl",
+          "SLMO2+ctrl",
+          "SRPR+ctrl"
+        ],
+        "heldout": 38,
+        "heldout_fallback": [
+          "TIMM23"
+        ],
+        "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+        "predictions_sha256": "e0bae73fbfff0cfb6420879d7b65bdfe298c130d0635312540976c16db884632",
+        "seconds": 18158.9,
+        "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+      },
+      "graphs": [
+        {
+          "relative_path": "gears_data/essential_all_data_pert_genes.pkl",
+          "bytes": 558811,
+          "sha256": "46c3dfe354d8ad5c0da22c69f3d0ca451987b1a61ed9d984279b22b9565ff8d7"
+        },
+        {
+          "relative_path": "gears_data/gene2go_all.pkl",
+          "bytes": 9462558,
+          "sha256": "f145c5e84a53048d87942a417d870a4f2d8db50200b96e492b358c13aba8c771"
+        },
+        {
+          "relative_path": "gears_data/go_essential_all/go_essential_all.csv",
+          "bytes": 354733543,
+          "sha256": "99622d9215462e7bbea99a5f6c0b1e86febfef9f57226269418053484fcb3f9f"
+        },
+        {
+          "relative_path": "gears_data/go_essential_all.tar.gz",
+          "bytes": 60654049,
+          "sha256": "98a14a60e8b76f76fd172570d023a6036775f151604ec01340b3fec7d36693da"
+        }
+      ]
+    },
+    "3": {
+      "prediction_sha256": "aea8a91e73cef518abaa61f493c3b6361971c5599f23dde8ab4ca48d663a648f",
+      "validation_all_pass": true,
+      "receipt": {
+        "model": "GEARS",
+        "gears_version": "0.1.2",
+        "torch": "2.15.0",
+        "device": "cpu",
+        "seed": 3,
+        "epochs": 20,
+        "hidden_size": 64,
+        "batch_size": 32,
+        "val_frac": 0.1,
+        "train_conditions": 41,
+        "val_conditions": 5,
+        "train_conditions_outside_graph": [
+          "AMIGO3+ctrl",
+          "KCTD16+ctrl",
+          "SLMO2+ctrl",
+          "SRPR+ctrl"
+        ],
+        "heldout": 38,
+        "heldout_fallback": [
+          "TIMM23"
+        ],
+        "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+        "predictions_sha256": "aea8a91e73cef518abaa61f493c3b6361971c5599f23dde8ab4ca48d663a648f",
+        "seconds": 4983.2,
+        "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+      },
+      "graphs": [
+        {
+          "relative_path": "gears_data/essential_all_data_pert_genes.pkl",
+          "bytes": 558811,
+          "sha256": "46c3dfe354d8ad5c0da22c69f3d0ca451987b1a61ed9d984279b22b9565ff8d7"
+        },
+        {
+          "relative_path": "gears_data/gene2go_all.pkl",
+          "bytes": 9462558,
+          "sha256": "f145c5e84a53048d87942a417d870a4f2d8db50200b96e492b358c13aba8c771"
+        },
+        {
+          "relative_path": "gears_data/go_essential_all/go_essential_all.csv",
+          "bytes": 354733543,
+          "sha256": "99622d9215462e7bbea99a5f6c0b1e86febfef9f57226269418053484fcb3f9f"
+        },
+        {
+          "relative_path": "gears_data/go_essential_all.tar.gz",
+          "bytes": 60654049,
+          "sha256": "98a14a60e8b76f76fd172570d023a6036775f151604ec01340b3fec7d36693da"
+        }
+      ]
+    }
+  },
+  "all_training_and_validation_complete": true,
+  "no_existing_score_outputs": true
+}

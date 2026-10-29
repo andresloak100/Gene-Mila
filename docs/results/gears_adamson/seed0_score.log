@@ -1,0 +1,16 @@
+# gears_s0 on Gene-Mila's split, scored once on the sealed set
+
+Bundle `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf`; predictions `/Users/andresarriaga/gears_adamson_s0/predictions.npz` (sha256 `780b0239464f7ea84e2a43d97f774eaad58e99ef49cfec3e0f4cd956ca62f3ee`).
+
+| metric | gears_s0 |
+|---|---:|
+| pearson_delta | 0.3976 |
+| mse | 0.0086 |
+| pearson_delta_top | 0.5103 |
+| r2_top | 0.7747 |
+| cellforge_mse_de | 0.1372 |
+| cellforge_pcc_de | 0.9269 |
+| cellforge_r2_de | 0.7442 |
+
+Paired against `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0` EXP_0441 (gears_s0 minus the lab's model, pearson_delta per sealed perturbation): {"n": 21, "mean_diff": -0.2010199096055358, "se": 0.040661401648259925, "wins_a": 1, "wins_b": 20, "ties": 0, "verdict": "b"}
+

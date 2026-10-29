@@ -1,0 +1,56 @@
+{
+  "utc": "2026-10-28T19:09:53.488018+00:00",
+  "python": "3.13.7 (v3.13.7:bcee1c32211, Aug 14 2025, 19:10:51) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "imports": {
+    "numpy": {
+      "version": "2.5.4",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/numpy/__init__.py"
+    },
+    "scipy": {
+      "version": "1.18.1",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/scipy/__init__.py"
+    },
+    "pandas": {
+      "version": "2.3.3",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/pandas/__init__.py"
+    },
+    "anndata": {
+      "version": "0.13.4",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/anndata/__init__.py"
+    },
+    "scanpy": {
+      "version": "1.12.4",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/scanpy/__init__.py"
+    },
+    "torch": {
+      "version": "2.15.0",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/torch/__init__.py"
+    },
+    "torch_geometric": {
+      "version": "2.8.1",
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/torch_geometric/__init__.py"
+    },
+    "gears": {
+      "version": null,
+      "file": "/Users/andresarriaga/gm_dlenv/lib/python3.13/site-packages/gears/__init__.py"
+    }
+  },
+  "torch_mps_built": true,
+  "torch_mps_available": true,
+  "torch_threads": 4,
+  "cell_gears_distribution": [
+    {
+      "name": "cell-gears",
+      "version": "0.1.2",
+      "download": {
+        "url": "https://files.pythonhosted.org/packages/ac/55/7732f2dfc51c9685da00c6b824c2f8ad734a6ec4fcf54db6890c8bfc1ff1/cell_gears-0.1.2-py3-none-any.whl",
+        "archive_info": {
+          "hash": "sha256=4db11fd69ce4825cf9a3e4a533c7e864ad0de3d60260bc9e88fc5d6a3c7b095a",
+          "hashes": {
+            "sha256": "4db11fd69ce4825cf9a3e4a533c7e864ad0de3d60260bc9e88fc5d6a3c7b095a"
+          }
+        }
+      }
+    }
+  ]
+}

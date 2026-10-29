@@ -1,0 +1,28 @@
+{
+  "start_utc": "2026-10-29T03:09:07.367785+00:00",
+  "seed": 2,
+  "command": [
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+    "tools/cellforge_bridge.py",
+    "score",
+    "--bundle",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf",
+    "--pred",
+    "/Users/andresarriaga/gears_adamson_s2/predictions.npz",
+    "--name",
+    "gears_s2",
+    "--versus",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0",
+    "--out",
+    "docs/results/gears_adamson_s2.md"
+  ],
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-gears-baselines",
+  "source_commit": "37d991d94b414ca8f8475b066bad5ec4451acc9f",
+  "nice": 19,
+  "credential_policy": "API keys unset; free oracle scoring",
+  "child_pid": 74242,
+  "end_utc": "2026-10-29T03:09:08.559779+00:00",
+  "exit": 0,
+  "wall_seconds": 1.191913875285536,
+  "cpu_seconds": 1.1771380000000002
+}

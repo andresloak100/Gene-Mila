@@ -1,0 +1,37 @@
+from pathlib import Path
+import json,hashlib,datetime,os
+import anndata as ad
+e=Path('/Users/andresarriaga/cellforge_adamson_export_corrected_20261028')
+r=json.loads((e/'export.json').read_text())
+a=ad.read_h5ad(e/'cellforge_input.h5ad',backed='r')
+held=json.loads((e/'heldout_perturbations.json').read_text())
+keys=a.obs['perturbation'].astype(str)
+actual=set(keys)-{'control'}
+assert a.shape==(40890,2055)
+assert int((keys=='control').sum())==9065
+assert len(actual)==50 and len(held)==38 and len(set(held))==38
+assert not actual.intersection(held)
+assert 'control' not in held
+assert a.var_names.is_unique
+sh=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
+assert sh(e/'cellforge_input.h5ad')=='ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a'
+assert sh(e/'export.json')=='c85d04d964f75b426927855361f7cc7f0fa23532a946b34ecab5fd46688b795c'
+paths=[]
+for seed in [0,2,3]:
+ for n in [f'gears_work_s{seed}',f'gears_adamson_s{seed}']:
+  z=Path('/Users/andresarriaga')/n
+  assert not os.path.lexists(z),str(z)
+  paths.append(str(z))
+ for ext in ['md','json']:
+  z=Path(f'docs/results/gears_adamson_s{seed}.{ext}')
+  assert not os.path.lexists(z),str(z)
+  paths.append(str(z))
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'PASS','input':str(e),'shape':list(a.shape),
+'control_cells':int((keys=='control').sum()),'training_cells':int((keys!='control').sum()),'training_perturbations':len(actual),
+'heldout_identities':len(held),'heldout_cell_overlap':sorted(actual.intersection(held)),'unique_genes':bool(a.var_names.is_unique),
+'input_sha256':sh(e/'cellforge_input.h5ad'),'export_receipt_sha256':sh(e/'export.json'),
+'heldout_identity_list_sha256':sh(e/'heldout_perturbations.json'),'fresh_work_output_and_score_paths_absent':paths,
+'cohort_limitation':'Three requested source files contribute 1770 controls and 10 training cells beyond original bundle single-source ingest; explicitly disclosed and approved for reuse. Identical cell cohort is not claimed.'}
+a.file.close()
+with Path('docs/results/gears_adamson/input_preflight.json').open('x') as f:json.dump(result,f,indent=2)
+print(json.dumps(result,indent=2))

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-28T21:05:50.860863+00:00",
+  "issue51_comment": 6480651790,
+  "new_order": [
+    "GEARS",
+    "CellForge C2",
+    "Block H"
+  ],
+  "new_integration_head": "0c16383",
+  "C2_plan_sha256": "3da6bca69353716d6e361dc6cbdea7576295f0b52bd62796cc6f39cbbae09caa",
+  "existing_GEARS_source_unchanged": true,
+  "cap_condition": "Read explicit #41 C2 numeric authority before calls; no fresh allowance inferred. Original PlanC ceiling historical66.240534032,notraised."
+}

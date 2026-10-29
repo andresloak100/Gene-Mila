@@ -1,0 +1,16 @@
+{
+  "start_utc": "2026-10-29T03:09:04.840301+00:00",
+  "driver_pid": 74232,
+  "status": "SCORING_COMPLETE",
+  "completed_seeds": [
+    0,
+    2,
+    3
+  ],
+  "source_commit": "37d991d94b414ca8f8475b066bad5ec4451acc9f",
+  "credential_policy": "API keys unset; free oracle scoring",
+  "training_completion_issue51": 6486798529,
+  "active_seed": null,
+  "exit": 0,
+  "end_utc": "2026-10-29T03:09:09.726901+00:00"
+}

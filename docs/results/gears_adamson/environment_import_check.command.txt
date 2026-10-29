@@ -1,0 +1,2 @@
+Credentials unset; PYTHONHASHSEED=0; nice19.
+/Users/andresarriaga/gm_dlenv/bin/python -c <operator source in environment_import_check.operator.txt>
