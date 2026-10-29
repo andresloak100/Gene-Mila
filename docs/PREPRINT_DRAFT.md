@@ -1,8 +1,7 @@
 # Can LLM agents find the biology a simple model is missing? A pre-registered, cost-capped autonomous lab for predicting unseen genetic perturbations
 
 Draft for a preprint (bioRxiv or arXiv, q-bio.GN / cs.AI), started 2026-10-28 by the lead (claim #41). Authors:
-[Andres Arriaga, collaborators: to be decided by Andres]. Every number names the file it comes from; `[PENDING: ...]`
-marks the two results due this week (block D's verdict, the GEARS runs). Longer methods: `docs/PAPER_COMPARISON.md`.
+[Andres Arriaga, collaborators: to be decided by Andres]. Every number names the file it comes from. Longer methods: `docs/PAPER_COMPARISON.md`.
 
 ## Abstract
 
@@ -20,7 +19,7 @@ gnomAD constraint, UniProt), agents wrote 395 table-reading features, none of wh
 matched permutation nulls; a pre-registered human hypothesis failed too. We show that a standard gene-permutation
 null cannot reject a feature that rescales an existing prediction, and give the corrected test. Under matched
 conditions, CellForge's public release produced a templated plan unfit for the task, and GEARS scored
-[PENDING: GEARS mean ± sd]. On a clean bundle the corrected test passes the agents' response-transfer features at about 27 times the minimum
+0.407 ± 0.012, losing to the agent arm on 19 or 20 of 21 held-out perturbations in every seed. On a clean bundle the corrected test passes the agents' response-transfer features at about 27 times the minimum
 effect, and nothing new. Twenty minutes of agent search costs about $0.50 to $1 and most of the gain arrives in the
 first ten minutes. The bottleneck is information about which perturbations behave alike, not search.
 
@@ -121,8 +120,12 @@ but known.
 analysis and method design but produced a plan built for drug-dose experiments (count-based filtering of normalised
 data, batch correction without batches, dose curricula, three GPUs), traced to fixed templates in its code; it was
 rejected at its first human checkpoint and nothing was trained ($0.16; `docs/results/cellforge_c/`, PR #84).
-GEARS trained on the same export scored [PENDING: GEARS sealed pearson_delta mean ± sd over seeds 0, 2, 3, and paired
-against the Opus-planned agent run; `docs/results/gears_adamson_s*.md`]. (Table 1.)
+GEARS (Roohani et al., 2024) trained on the same export, on the same CPU, for its default 20 epochs, scored 0.407 ±
+0.012 (seeds 0, 2, 3: 0.398, 0.404, 0.420), below the no-LLM lab (0.554) and the agent arm (0.599 for the paired
+comparator run), which beat it on 20, 19 and 20 of the 21 sealed perturbations (mean differences −0.20, −0.19 and
+−0.18, paired SE 0.04; `docs/results/gears_adamson_s*.md`, `docs/results/gears_adamson/aggregate.md`). GEARS also
+scores below the starting linear model (0.520), as Ahlmann-Eltze, Huber and Anders (2025) report for deep models in
+general. On CellForge's DE-gene metrics GEARS reached PCC_DE 0.93 and R²_DE 0.75. (Table 1.)
 
 **3.7 Cost and time.** A 20-minute run costs $0.45 to $1.65 on the lab's ledger, about half that billed; all 43 paid
 runs cost about $31 billed. A median 86% of a run's final gain arrives by minute 10; two 2-hour continuations added
