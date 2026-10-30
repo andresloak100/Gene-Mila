@@ -64,3 +64,22 @@ reuse a work folder.
 
 CPA (`cpa-tools`) and scGPT fine-tuning, each with its own runner on the same export and the same scoring, as dated
 sections here. scGPT needs a pretrained checkpoint and is better run on a Mila GPU.
+
+## Note, 2026-10-30: the Ahlmann-Eltze linear baseline, before CPA
+
+Andres's "do it" (project chat, 30 October) on the lead's proposal to add the field's standard simple baseline. The
+linear model of Ahlmann-Eltze, Huber and Anders (2025), which no deep model in that paper beat, runs on the same
+export and is scored the same way: `tools/baselines_dl/run_linear_ae.py` (gene embedding = top 10 principal
+components of the training responses, perturbation embedding = the target genes' rows, ridge lambda 0.1, the paper's
+defaults; test `tests/test_run_linear_ae.py`). It is deterministic, so one run, no seeds. Free, CPU, seconds, on the
+Mac by Astra in its own clone, never beside a paid run:
+
+```
+python tools/baselines_dl/run_linear_ae.py --export ~/cellforge_adamson_export --out ~/linear_ae_adamson
+python tools/cellforge_bridge.py score --bundle <MAIN>/data/adamson_cf --pred ~/linear_ae_adamson/predictions.npz \
+  --name linear_ae --versus <MAIN>/runs/newcode_opus_w4_r0 --out docs/results/linear_ae_adamson.md
+```
+
+Held-out perturbations whose target gene is not among the export's 2,055 genes get the mean training response
+(listed in `receipt.json`); the report says how many. Reported beside GEARS in the preprint's Table 1, once, with no
+setting tuned on the sealed set.

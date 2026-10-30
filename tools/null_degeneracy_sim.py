@@ -61,14 +61,14 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return (max(0.0, centre - half), min(1.0, centre + half))
 
 
-def run(reps: int, null_reps: int, out: Path, data: Path | None = None) -> dict:
+def run(reps: int, null_reps: int, out: Path, data: Path | None = None, n_perts: int = 30, n_genes: int = 120) -> dict:
     import feature_compare as fc
     from genemila.data.synthetic import generate
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="nulldeg-"))
     try:
-        bundle = Path(data) if data else generate(work / "bundle", n_genes=120, n_perts=30, n_control=600,
+        bundle = Path(data) if data else generate(work / "bundle", n_genes=n_genes, n_perts=n_perts, n_control=600,
                                                    cells_per_pert=40, seed=1)
         rows = []
         for s in range(reps):
@@ -93,7 +93,7 @@ def run(reps: int, null_reps: int, out: Path, data: Path | None = None) -> dict:
                    "false_positive_gene_null": k_gene / max(1, len(ok)), "ci_gene_null": wilson(k_gene, len(ok)),
                    "false_positive_pert_null": k_pert / max(1, len(pert)), "ci_pert_null": wilson(k_pert, len(pert)),
                    "positive_gain_share": sum(1 for r in ok if (r["gain"] or 0) > 0) / max(1, len(ok)),
-                   "bundle": "synthetic generate(n_genes=120, n_perts=30, seed=1)" if not data else str(data),
+                   "bundle": f"synthetic generate(n_genes={n_genes}, n_perts={n_perts}, seed=1)" if not data else str(data),
                    "rows": rows}
         (out / "summary.json").write_text(json.dumps(summary, indent=1))
         (out / "summary.md").write_text(
@@ -113,9 +113,11 @@ def main(argv=None) -> int:
     ap.add_argument("--reps", type=int, default=40)
     ap.add_argument("--null-reps", type=int, default=199)
     ap.add_argument("--data", default=None, help="a bundle (default: a synthetic one built here)")
+    ap.add_argument("--n-perts", type=int, default=30, help="perturbations in the synthetic screen")
+    ap.add_argument("--n-genes", type=int, default=120, help="genes in the synthetic screen (above --n-perts)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    s = run(a.reps, a.null_reps, Path(a.out), Path(a.data) if a.data else None)
+    s = run(a.reps, a.null_reps, Path(a.out), Path(a.data) if a.data else None, a.n_perts, a.n_genes)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}, indent=1))
     return 0
 
