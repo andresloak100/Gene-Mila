@@ -62,6 +62,9 @@ are pre-registered records (`tests/test_cellforge_c2.py`, `tests/test_lead_h8_co
 - `baselines_dl/run_gears.py`: GEARS trained on the same export and written as predictions for `cellforge_bridge.py
   score --name gears` (docs/PLAN_DL_BASELINES.md); its own pinned environment in `baselines_dl/requirements.txt`.
   Test: `tests/test_run_gears.py`.
+- `baselines_dl/run_linear_ae.py`: the simple linear baseline of Ahlmann-Eltze, Huber and Anders (2025) on the same
+  export, written as predictions for `cellforge_bridge.py score` (`docs/PLAN_DL_BASELINES.md`, note of 30 October).
+  Test: `tests/test_run_linear_ae.py`.
 - `fresh_test_score.py`: the fresh-test holder's scoring (docs/PLAN_R_FRESH_TEST.md section 7): cohort means from
   its own cells, every deposited model scored once per subset, paired comparisons with one Holm over R1 and R2.
   Test: `tests/test_fresh_test_score.py`.
