@@ -1,0 +1,97 @@
+{
+ "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf",
+ "predictions": "/Users/andresarriaga/linear_ae_adamson/predictions.npz",
+ "predictions_sha256": "52118b47e9455dcfde4757d8043837cb96bcc2c6901149091fdf4e93a0e9b9ee",
+ "model": "linear_ae",
+ "cellforge": {
+  "experiment_id": "linear_ae",
+  "metrics": {
+   "rmse": 0.08426801896887254,
+   "mae": 0.05461245870766842,
+   "mse": 0.007101099020938262,
+   "pearson_delta": 0.4854421770368539,
+   "pearson_delta_top": 0.5483655427038636,
+   "direction_acc_top": 0.8595238095238096,
+   "mse_top": 0.17314365199117412,
+   "r2_top": 0.7229833376423581,
+   "pearson_expr": 0.984361282374852,
+   "primary": 0.4854421770368539,
+   "selection_rule": "pearson_delta",
+   "cellforge_mse": 0.007101099020938263,
+   "cellforge_pcc": 0.984361282374852,
+   "cellforge_r2": 0.9660807084468617,
+   "cellforge_mse_de": 0.163185712636234,
+   "cellforge_pcc_de": 0.9198648450405051,
+   "cellforge_r2_de": 0.7106430445746919,
+   "cellforge_mse_deset": 0.1341178073224749,
+   "cellforge_pcc_deset": 0.872564043669907,
+   "cellforge_r2_deset": 0.6189523154711839,
+   "cellforge_n_perts_deset": 19,
+   "vcworld_de_accuracy": 0.8103811841038119,
+   "vcworld_de_precision": 0.40975103734439833,
+   "vcworld_de_recall": 0.10082961072112316,
+   "vcworld_de_f1": 0.16183550138277167,
+   "vcworld_de_auroc": 0.6742551101751079,
+   "vcworld_de_auprc": 0.3073393417677138,
+   "vcworld_dir_accuracy": 0.9118059987236758,
+   "vcworld_dir_precision": 0.7835820895522388,
+   "vcworld_dir_recall": 0.8376068376068376,
+   "vcworld_dir_f1": 0.8096942990911595,
+   "vcworld_dir_auroc": 0.9430111336032388,
+   "vcworld_dir_auprc": 0.8427925674272055,
+   "vcworld_n_de_pairs": 7835
+  }
+ },
+ "versus": {
+  "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0",
+  "experiment_id": "EXP_0441",
+  "paired": {
+   "experiments": [
+    "linear_ae",
+    "EXP_0441"
+   ],
+   "metric": "pearson_delta",
+   "a": {
+    "experiment_id": "linear_ae",
+    "metrics": {
+     "rmse": 0.08426801896887254,
+     "mae": 0.05461245870766842,
+     "mse": 0.007101099020938262,
+     "pearson_delta": 0.4854421770368539,
+     "pearson_delta_top": 0.5483655427038636,
+     "direction_acc_top": 0.8595238095238096,
+     "mse_top": 0.17314365199117412,
+     "r2_top": 0.7229833376423581,
+     "pearson_expr": 0.984361282374852,
+     "primary": 0.4854421770368539,
+     "selection_rule": "pearson_delta"
+    }
+   },
+   "b": {
+    "experiment_id": "EXP_0441",
+    "metrics": {
+     "rmse": 0.07941805961997553,
+     "mae": 0.05133823741220218,
+     "mse": 0.006307228193801987,
+     "pearson_delta": 0.598665038410173,
+     "pearson_delta_top": 0.7447539694476231,
+     "direction_acc_top": 0.9190476190476189,
+     "mse_top": 0.1251129661213442,
+     "r2_top": 0.817816421004432,
+     "pearson_expr": 0.9863005621191437,
+     "primary": 0.598665038410173,
+     "selection_rule": "pearson_delta"
+    }
+   },
+   "paired": {
+    "n": 21,
+    "mean_diff": -0.1132228613733192,
+    "se": 0.0430444692533904,
+    "wins_a": 9,
+    "wins_b": 12,
+    "ties": 0,
+    "verdict": "b"
+   }
+  }
+ }
+}

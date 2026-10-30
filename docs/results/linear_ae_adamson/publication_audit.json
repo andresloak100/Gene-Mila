@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-30T17:56:18.813357+00:00",
+  "all_pass": true,
+  "checks": {
+    "allowlisted_results_index_receipts_only": true,
+    "no_deletes_raw_private_packages_keys_or_symlinks": true,
+    "all_json_parsed": true,
+    "every_file_indexed": true,
+    "manifest_hashes": true,
+    "raw_staged_bytes_match_disk": true,
+    "token_boundary_secret_scan": true,
+    "authored_documentation_whitespace": true,
+    "raw_score_json_md_preserved": true,
+    "scientific_source_unchanged": true,
+    "prediction_validation_15": true,
+    "run_score_chain_exit0": true,
+    "focused_tests_8_passed": true
+  },
+  "files_before_audit": 43,
+  "raw_receipt_whitespace_preserved": true,
+  "manifest_exclusions": [
+    "docs/results/linear_ae_adamson/artifact_manifest.json",
+    "docs/results/linear_ae_adamson/publication_audit.json"
+  ],
+  "no_extra_run_or_score": true
+}

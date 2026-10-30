@@ -1,0 +1,22 @@
+{
+  "start_utc": "2026-10-30T17:50:18.182424+00:00",
+  "command": [
+    "/Users/andresarriaga/gm_dlenv/bin/python",
+    "tools/baselines_dl/run_linear_ae.py",
+    "--export",
+    "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+    "--out",
+    "/Users/andresarriaga/linear_ae_adamson"
+  ],
+  "head": "c123104074fe8b7870e90909ba669ff5b9cfbf6c",
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-linear-ae",
+  "nice": 19,
+  "export_path": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "credentials": "unset",
+  "child_pid": 87873,
+  "end_utc": "2026-10-30T17:50:21.660304+00:00",
+  "exit": 0,
+  "wall_seconds": 3.4778922093100846,
+  "cpu_seconds": 2.080944
+}

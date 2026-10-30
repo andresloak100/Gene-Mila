@@ -1,0 +1,36 @@
+{
+  "start_utc": "2026-10-30T17:50:18.181568+00:00",
+  "pid": 87870,
+  "status": "RUN_AND_SCORE_COMPLETE",
+  "head": "c123104074fe8b7870e90909ba669ff5b9cfbf6c",
+  "source_hashes": {
+    "tools/baselines_dl/run_linear_ae.py": "5551c13d356e8f1b5efbcd516c79da8d63a318c0ce190e6868a1a4e9f75fa8a1",
+    "tools/cellforge_bridge.py": "e9d9212267ad298c805cfa0aed195c00c1b0bb3bc19f7d35914f994c0140b149"
+  },
+  "export_path": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "settings": {
+    "k": 10,
+    "lam": 0.1,
+    "runs": 1,
+    "device": "cpu"
+  },
+  "input_authority_issue51": 6529618658,
+  "runner_receipt": {
+    "model": "linear baseline (Ahlmann-Eltze, Huber and Anders 2025)",
+    "train_used": 50,
+    "train_without_embedding": [],
+    "heldout_fallback": [],
+    "k": 10,
+    "lam": 0.1,
+    "train_perturbations": 50,
+    "heldout": 38,
+    "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+    "predictions_sha256": "52118b47e9455dcfde4757d8043837cb96bcc2c6901149091fdf4e93a0e9b9ee",
+    "seconds": 1.4,
+    "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+  },
+  "score_wall_seconds": 2.1319533749483526,
+  "exit": 0,
+  "end_utc": "2026-10-30T17:50:25.377736+00:00"
+}
