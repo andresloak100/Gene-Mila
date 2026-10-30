@@ -70,8 +70,12 @@ def run(reps: int, null_reps: int, out: Path, data: Path | None = None, n_perts:
     try:
         bundle = Path(data) if data else generate(work / "bundle", n_genes=n_genes, n_perts=n_perts, n_control=600,
                                                    cells_per_pert=40, seed=1)
-        rows = []
+        done_path = out / "rows.jsonl"  # one line per finished replicate, so a restarted run resumes
+        rows = [json.loads(l) for l in done_path.read_text().splitlines() if l.strip()] if done_path.exists() else []
+        done = {r["seed"] for r in rows}
         for s in range(reps):
+            if s in done:
+                continue
             src = work / f"src{s}"
             src.mkdir()
             (src / f"random_scale_s{s}.py").write_text(PLUGIN.format(seed=s))
@@ -85,6 +89,9 @@ def run(reps: int, null_reps: int, out: Path, data: Path | None = None, n_perts:
                          "gain": oof["delta"]["pearson_delta"]["mean_diff"] if oof.get("delta") else None,
                          "p_gene": (oof.get("null") or {}).get("p"),
                          "p_pert": (oof.get("null_pert") or {}).get("p")})
+            with done_path.open("a") as fh:
+                fh.write(json.dumps(rows[-1]) + "\n")
+        rows = sorted((r for r in rows if r["seed"] < reps), key=lambda r: r["seed"])
         ok = [r for r in rows if r["status"] == "ok" and r["p_gene"] is not None]
         k_gene = sum(1 for r in ok if r["p_gene"] <= 0.05)
         pert = [r for r in ok if r["p_pert"] is not None]
