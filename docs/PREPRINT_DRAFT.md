@@ -163,9 +163,30 @@ GEARS. Nature Biotechnology 42, 927.
 Tang X. et al. (2025) CellForge: agentic design of virtual cell models. arXiv 2508.02276.
 [Konermann 2015, Chavez 2016, Deaton and Bird 2011 for the CpG dependence; citation pass pending.]
 
-## Figures and table (to build from the deck and `docs/results/`)
+## Table 1. Every arm on the Adamson sealed set (21 perturbations, `split_450515be1a0d8d2e`)
+
+Mean ± sd over runs or seeds. DE columns: each perturbation's top-20 DE genes by |log fold change|, CellForge's
+definition. Sources: `docs/results/summary_for_collaborators.md` (lab arms and refit baselines),
+`docs/results/gears_adamson/aggregate.md` (GEARS, `cellforge_*_de` rows), `docs/results/cellforge_c/` (CellForge).
+The sealed set has been read many times, so the table is descriptive.
+
+| Arm | runs | pearson_delta ↑ | MSE_DE ↓ | PCC_DE ↑ | R²_DE ↑ | compute and cost per run |
+|---|---:|---:|---:|---:|---:|---|
+| Linear regression, refit (mean training response) | 1 | – | 0.160 | 0.920 | 0.714 | CPU, seconds |
+| Gene-Mila starting model (OLS, 3 built-in features) | 1 | 0.520 | 0.154 | 0.932 | 0.734 | CPU, seconds |
+| No-LLM control (scripted hypotheses) | 6 | 0.554 | 0.145 | 0.943 | 0.756 | CPU, 20 min, $0 |
+| No-LLM control + hand-written transfer feature | 1 | 0.593 | 0.142 | 0.943 | 0.755 | CPU, 3 min, $0 |
+| Agents, 4 workers, Opus planner | 2 | 0.602 ± 0.002 | 0.117 ± 0.002 | 0.955 ± 0.001 | 0.803 ± 0.003 | CPU, 20 min, under $1 billed |
+| Agents, 4 workers, DeepSeek planner (new selection code) | 2 | 0.570 ± 0.044 | 0.133 ± 0.022 | 0.946 ± 0.010 | 0.776 ± 0.038 | CPU, 20 min, under $1 billed |
+| GEARS 0.1.2, same export, default 20 epochs | 3 seeds | 0.407 ± 0.012 | 0.133 ± 0.004 | 0.928 ± 0.001 | 0.751 ± 0.007 | CPU, $0 |
+| CellForge 6585ff9, same export | 1 | no model (plan rejected at checkpoint 1) | – | – | – | $0.16 planning |
+
+GEARS ranks last on pearson_delta but level with or slightly ahead of the no-LLM control on the DE columns (MSE_DE
+0.133 against 0.145): it predicts the size of the strongest changes about as well as the linear lab, and the pattern
+across all genes worse. The agent arms lead every column. Other agent arms (1, 8
+and 16 workers) are in §3.1.
+
+## Figures (to build from the deck and `docs/results/`)
 
 1. The system (inputs, one run, what is kept). 2. The agentic loop. 3. Adamson arms, sealed. 4. Norman arms, sealed.
 5. The degenerate null: gene-null distribution vs perturbation-null distribution for the CpG feature.
-Table 1: every arm on the Adamson sealed set (start, no-LLM, agents, hand-written transfer, GEARS, CellForge),
-pearson_delta, MSE, CellForge DE metrics, cost.
