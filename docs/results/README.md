@@ -21,6 +21,10 @@ Read [the three-seed report](gears_adamson/aggregate.md) ([full-precision JSON](
 | [gears_adamson_s3.md](gears_adamson_s3.md), [JSON](gears_adamson_s3.json) | Unchanged score tool report for seed 3 |
 | [gears_adamson/](gears_adamson/README.md) | Every environment, training, graph, prediction validation, scoring, command, exit, runtime, issue and publication receipt, individually indexed and hashed; raw inputs/predictions/work remain outside Git |
 
+## C2: CellForge checkpoint-edited matched attempt (30–31 October 2026)
+
+Read [checkpoint 2's review](cellforge_c2/checkpoint2_review.md) ([JSON](cellforge_c2/checkpoint2_review.json)) and [every receipt](cellforge_c2/README.md). Planning and the first code-generation turn completed, but the script added an unapproved coexpression descriptor and character-hash fallback before the perturbation encoder. Checkpoint 2 was rejected under the fixed no-added-component rule. The exact script was posted before review and remains unexecuted; no training, predictions or score exists. C2 planning cost $0.160981140 on the shared DeepSeek ledger. This is reported as “CellForge (pinned release, checkpoint plan edited to the input as its README allows)”, beside the original attempt below. The chain stopped; no Block H action followed.
+
 ## Plan C: CellForge matched Adamson attempt (28 October 2026)
 
 Read [the checkpoint review](cellforge_c/checkpoint1_review.md) ([JSON](cellforge_c/checkpoint1_review.json)). Task analysis and method design completed; the research plan was rejected before code generation because it requires inputs and processing incompatible with the supplied export. No training or score exists; B.5 remains unmet. DeepSeek ledger cost $0.161134200.

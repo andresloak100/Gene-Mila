@@ -1,0 +1,38 @@
+{
+  "utc": "2026-10-30T16:18:05.425224+00:00",
+  "checks": {
+    "public_bundle_denied": {
+      "passed": true,
+      "exit": 0,
+      "stderr": ""
+    },
+    "raw_h5ad_denied": {
+      "passed": true,
+      "exit": 0,
+      "stderr": ""
+    },
+    "original_export_denied": {
+      "passed": true,
+      "exit": 0,
+      "stderr": ""
+    },
+    "project_clone_denied": {
+      "passed": true,
+      "exit": 0,
+      "stderr": ""
+    },
+    "corrected_export_allowed": {
+      "passed": true,
+      "exit": 0,
+      "stderr": ""
+    },
+    "runtime_source_allowed": {
+      "passed": true,
+      "exit": 0,
+      "stderr": ""
+    }
+  },
+  "all_pass": true,
+  "private_files_opened": false,
+  "model_calls": 0
+}

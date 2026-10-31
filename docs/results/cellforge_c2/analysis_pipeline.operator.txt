@@ -1,0 +1,71 @@
+"""One C2 analysis/design chain; stops before checkpoint 1. No autorepair/codegen."""
+from pathlib import Path
+import os,json,subprocess,datetime,time,urllib.request,resource,signal,shlex,sqlite3,hashlib
+ROOT=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2");R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/docs/results/cellforge_c2");OPS=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops");W=Path("/Users/andresarriaga/cellforge_c2_workspace")
+PY='/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python';FPY='/Users/andresarriaga/cellforge_c_venv/bin/python'
+EXPORT=Path('/Users/andresarriaga/cellforge_adamson_export_corrected_20261028')
+LEDGER='/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/spend_ledger.sqlite';PORT=8793
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def readledger():
+ with sqlite3.connect('file:'+LEDGER+'?mode=ro',uri=True) as con:
+  return con.execute("SELECT COALESCE(SUM(cost_usd),0),COUNT(*) FROM spend WHERE provider='deepseek'").fetchone()
+def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def health():
+ with urllib.request.urlopen('http://127.0.0.1:'+str(PORT)+'/healthz',timeout=3) as r:return json.load(r)
+def write(name,doc): (R/name).open('x').write(json.dumps(doc,indent=2)+'\n')
+assert (R/'cap.json').is_file()
+cap=json.loads((R/'cap.json').read_text())
+assert cap['cumulative_ceiling']=='66.240534032'
+assert readledger()[0]==cap['ledger_before']
+assert all((R/'preflight_resumed_20261030'/n).read_text().strip()=='0' for n in ['strict_meter_free.exit','network_boundary_free.exit','existing_environment_imports.exit'])
+assert json.loads((R/'delivery_boundary_free_20261030/report.json').read_text())['all_pass']
+assert not (W/'data/plans').exists() and not (R/'analysis_pipeline.exit').exists()
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd='/Users/andresarriaga/CellForge-6585ff9').decode().strip()=='6585ff93e452a8a0f2ad6ed8144ab6d998a3b400'
+assert not subprocess.check_output(['git','status','--porcelain'],cwd='/Users/andresarriaga/CellForge-6585ff9').strip()
+assert sha(OPS/'strict_proxy.py')=='84f4d02aa2d064e6ac92954fd9e9e1ed1044e8815194c95e8cecc51ff13c8cfb'
+assert sha(EXPORT/'cellforge_input.h5ad')=='ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a'
+base={k:v for k,v in os.environ.items() if k in ['PATH','HOME','USER','LOGNAME','LANG','LC_ALL','TMPDIR','TERM','SHELL']}
+key=os.environ.pop('DEEPSEEK_API_KEY',None);os.environ.pop('API_KEY',None)
+assert key,'Existing Mac environment key missing'
+proxyenv={**base,'DEEPSEEK_API_KEY':key,'PYTHONHASHSEED':'0'};del key
+proxycmd=[PY,str(OPS/'strict_proxy.py'),'--clone',str(ROOT),'--ledger',LEDGER,'--pricing',str(ROOT/'configs/default.toml'),'--log',str(R/'proxy.jsonl'),'--run-id','cellforge_adamson_c2_seed0','--cap',cap['cumulative_ceiling'],'--port',str(PORT)]
+(R/'proxy.command.txt').open('x').write('DEEPSEEK_API_KEY="$API_KEY" [process environment only] '+shlex.join(proxycmd)+'\n')
+clientenv={**base,'PATH':'/Users/andresarriaga/cellforge_c_venv/bin:'+base.get('PATH','/usr/bin:/bin'),'CELLFORGE_WORKSPACE_DIR':str(W),'DEEPSEEK_API_KEY':'cellforge-local-no-credential','DEEPSEEK_BASE_URL':'http://127.0.0.1:'+str(PORT),'MODEL_NAME':'deepseek-flash','PYTHONHASHSEED':'0','PYTHONDONTWRITEBYTECODE':'1','MPLCONFIGDIR':str(W/'cache/mpl'),'XDG_CACHE_HOME':str(W/'cache'),'HF_HOME':str(W/'cache/hf'),'HF_HUB_OFFLINE':'1','TRANSFORMERS_OFFLINE':'1','QDRANT_ENABLED':'false','LLM_REQUEST_TIMEOUT':'600','TOKENIZERS_PARALLELISM':'false','PYTORCH_ENABLE_MPS_FALLBACK':'0'}
+rc=1;final={};started=now();t=time.monotonic()
+write('analysis_pipeline.started.json',{'utc':started,'pid':os.getpid(),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),'stop':'after method_design before checkpoint1','ledger_before':readledger()[0]})
+proxylog=(R/'proxy.process.log').open('x')
+proxy=subprocess.Popen(proxycmd,cwd=OPS,env=proxyenv,stdout=proxylog,stderr=subprocess.STDOUT);del proxyenv
+try:
+ for i in range(100):
+  if proxy.poll() is not None:raise RuntimeError('meter did not start')
+  try:
+   h=health();assert h['ok'] and h['calls']==0;break
+  except OSError:time.sleep(.1)
+ else:raise RuntimeError('meter unavailable')
+ write('proxy_start_health.json',h)
+ for phase in ['task_analysis','method_design']:
+  cmd=['/usr/bin/sandbox-exec','-f',str(OPS/'cellforge_analysis.sb'),'/usr/bin/nice','-n','19',FPY,'/Users/andresarriaga/CellForge-6585ff9/main.py','--workspace',str(W),'--phase',phase,'--dataset-path',str(EXPORT/'cellforge_input.h5ad'),'--task-file',str(EXPORT/'TASK.md'),'--split-seed','0']
+  (R/(phase+'.command.txt')).open('x').write('Only local dummy credential in client; actual key in meter only.\n'+shlex.join(cmd)+'\n')
+  st=now();tm=time.monotonic();cpu0=resource.getrusage(resource.RUSAGE_CHILDREN)
+  write('analysis_pipeline.live_'+phase+'.json',{'utc':st,'phase':phase,'driver_pid':os.getpid(),'proxy_pid':proxy.pid})
+  with (R/(phase+'.log')).open('x') as log:
+   proc=subprocess.Popen(cmd,cwd=W,env=clientenv,stdout=log,stderr=subprocess.STDOUT)
+   rc=proc.wait()
+  cpu1=resource.getrusage(resource.RUSAGE_CHILDREN)
+  (R/(phase+'.exit')).open('x').write(str(rc)+'\n')
+  write(phase+'.runtime.json',{'start_utc':st,'end_utc':now(),'wall_seconds':time.monotonic()-tm,'cpu_seconds':cpu1.ru_utime+cpu1.ru_stime-cpu0.ru_utime-cpu0.ru_stime,'exit':rc,'child_pid':proc.pid})
+  final=health()
+  if rc or not final['ok']:rc=rc or 1;break
+except Exception as exc:
+ final={'operator_error_type':type(exc).__name__};rc=1
+finally:
+ try:live=health()
+ except Exception:live={}
+ write('analysis_pipeline_final.json',{'utc':now(),'exit':rc,'health':final,'final_health':live,'ledger_after':readledger()[0],'ledger_rows_after':readledger()[1],'wall_seconds':time.monotonic()-t,'paid_phases_only':['task_analysis','method_design'],'code_generation_started':False})
+ (R/'analysis_pipeline.exit').open('x').write(str(rc)+'\n')
+ proxy.terminate()
+ try:proxy.wait(timeout=10)
+ except subprocess.TimeoutExpired:proxy.kill();proxy.wait()
+ proxylog.close()
+raise SystemExit(rc)
+

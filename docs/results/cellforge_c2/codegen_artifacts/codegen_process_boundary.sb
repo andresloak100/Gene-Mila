@@ -1,0 +1,6 @@
+(version 1)
+(allow default)
+(deny process-exec)
+(allow process-exec (literal "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"))
+(deny file-read* file-write* (subpath "/Users/andresarriaga/Documents/Mila/Gene-Mila") (subpath "/Users/andresarriaga/cellforge_adamson_export") (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028") (subpath "/Users/andresarriaga/CellForge-6585ff9"))
+(deny file-read* file-write* (subpath "/Users/andresarriaga/.codex/.chatgpt-projects") (subpath "/Users/andresarriaga/.codex/worktrees"))

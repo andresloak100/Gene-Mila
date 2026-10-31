@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-30T17:31:00.676202+00:00",
+  "checks": {
+    "git_raw_bytes_preserve_CRLF_UTF8": true,
+    "detects_standalone_key_shape": true,
+    "does_not_match_inside_ordinary_word": true,
+    "detects_github_token_shape": true,
+    "current_HANDOFF_no_credential_shape": true
+  },
+  "all_pass": true,
+  "remote_model_calls": 0,
+  "failure_record_preserved": true,
+  "fix_issue51": 6529127281
+}

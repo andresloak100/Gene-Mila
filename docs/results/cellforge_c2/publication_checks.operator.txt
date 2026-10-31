@@ -1,0 +1,9 @@
+from pathlib import Path
+import re,subprocess
+SECRET_PATTERN=re.compile(rb'(?<![A-Za-z0-9_])(?:sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})|-----BEGIN [A-Z ]*PRIVATE KEY-----')
+def secret_hits(data):
+ return [{'line':data.count(b'\n',0,m.start())+1,'length':m.end()-m.start()} for m in SECRET_PATTERN.finditer(data)]
+def git_bytes(root,spec):
+ return subprocess.check_output(['git','show',spec],cwd=root)
+def staged_matches_disk(root,rel):
+ return git_bytes(root,':'+rel)==(Path(root)/rel).read_bytes()

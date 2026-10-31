@@ -1,0 +1,37 @@
+{
+  "utc": "2026-10-30T17:32:04.223001+00:00",
+  "capture_received": true,
+  "custom_fake_model": "c2-free-probe",
+  "request_path": "/v1/responses",
+  "dummy_auth_matches": true,
+  "offered_tools": [
+    "request_user_input",
+    "view_image"
+  ],
+  "unexpected_tools": [],
+  "disabled_features": [
+    "apps",
+    "browser_use",
+    "browser_use_external",
+    "browser_use_full_cdp_access",
+    "code_mode",
+    "code_mode_host",
+    "computer_use",
+    "goals",
+    "hooks",
+    "image_generation",
+    "multi_agent",
+    "plugins",
+    "shell_snapshot",
+    "shell_tool",
+    "skill_search",
+    "sleep_tool",
+    "unbounded_connection_retries",
+    "workspace_dependencies"
+  ],
+  "intentional_termination_after_capture": true,
+  "probe_process_exit": -15,
+  "remote_model_calls": 0,
+  "no_deliverable_script_executed": true,
+  "all_pass": true
+}

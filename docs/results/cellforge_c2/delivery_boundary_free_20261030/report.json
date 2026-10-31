@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-30T18:00:33.575406+00:00",
+  "checks": {
+    "backend_completed": true,
+    "one_local_request": true,
+    "dummy_auth": true,
+    "only_nonexecution_tools": true,
+    "output_schema_offered": true,
+    "exact_source_materialized": true,
+    "generated_script_not_executed": true,
+    "other_child_exec_denied": true,
+    "no_paid_remote_call": true
+  },
+  "all_pass": true,
+  "offered_tools": [
+    "request_user_input",
+    "view_image"
+  ],
+  "blocked_child_returncode": 71,
+  "wrapper_sha256": "f1c590dbb13ff494128e9631a17c121e3c04caa9dcf375abe9ee1d44806774e6",
+  "fake_fixture_only": true,
+  "actual_model_generation": false
+}

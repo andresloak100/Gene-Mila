@@ -1,0 +1,6 @@
+{
+  "driver_pid": 91193,
+  "caffeinate_pid": 91272,
+  "credentials": "unset",
+  "mode": "wait for existing driver only"
+}

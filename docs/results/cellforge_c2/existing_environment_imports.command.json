@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops/cellforge_analysis.sb",
+    "/Users/andresarriaga/cellforge_c_venv/bin/python",
+    "-c",
+    "import torch,anndata,numpy,scanpy;from cellforge.Task_Analysis import run_task_analysis;from cellforge.Method_Design import run_method_design;import json;print(json.dumps({'torch':torch.__version__,'anndata':anndata.__version__,'numpy':numpy.__version__,'scanpy':scanpy.__version__,'device':'cpu','imports':'pass'}))"
+  ],
+  "credentials": "unset",
+  "nice": 19
+}

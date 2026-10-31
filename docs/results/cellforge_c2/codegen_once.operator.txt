@@ -1,0 +1,53 @@
+"""One backend.run only, after posted checkpoint1 approval; no verifier or artifact execution."""
+from pathlib import Path
+import os,json,hashlib,subprocess,time,datetime,ast,resource
+ROOT=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2");R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/docs/results/cellforge_c2");OPS=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops");W=Path("/Users/andresarriaga/cellforge_c2_workspace")
+EXPORT=Path('/Users/andresarriaga/cellforge_adamson_export_corrected_20261028')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+assert (R/'analysis_pipeline.exit').read_text().strip()=='0'
+approval=json.loads((R/'checkpoint1_approval.json').read_text())
+assert approval['approved'] and approval['diff_posted_before_approval']
+plan_path=Path(approval['approved_plan_path'])
+assert sha(plan_path)==approval['approved_plan_sha256']
+assert sha(OPS/'codex_delivery_boundary.py')=='f1c590dbb13ff494128e9631a17c121e3c04caa9dcf375abe9ee1d44806774e6'
+assert not (R/'codegen.started.json').exists() and not (W/'codegen').exists()
+work=W/'codegen';work.mkdir()
+keys=json.loads((EXPORT/'heldout_perturbations.json').read_text())
+contract={'entrypoint':'result.py','required_artifacts':['result.py'],'task':(EXPORT/'TASK.md').read_text(),'required_cli':{'training_data':'--adata-path','predictions_output':'--predictions-out'},'allowed_training_read':'Only the supplied cellforge_input.h5ad file, via --adata-path. No other training data or file reads. The metadata below are supplied in this contract so result.py must embed the held-out keys, rather than reading a metadata file at runtime.','heldout_perturbations':keys,'output':'Write predictions.npz at --predictions-out with perts exactly the held-out keys in the supplied order, means finite float array 38 by 2055, and genes equal to AnnData var_names in input order. Do not read heldout_perturbations.json or TASK.md at runtime.','constraints':{'device':'cpu','network_downloads':False,'shell_or_subprocess':False,'test_or_ood_data_access':False,'cluster_submission':False,'plan_scientific_settings':'Preserve the approved research plan exactly; no component or scientific setting added/changed.','preapproval_execution':'No execution, import, help or smoke-test of generated code. Controller AST parse only.'}}
+(work/'acceptance_contract.json').open('x').write(json.dumps(contract,indent=2,ensure_ascii=False)+'\n')
+plan=json.loads(plan_path.read_text())
+(work/'research_plan.json').open('x').write(json.dumps(plan,indent=2,ensure_ascii=False)+'\n')
+input_hashes={n:sha(work/n) for n in ['acceptance_contract.json','research_plan.json']}
+env={k:v for k,v in os.environ.items() if k in ['PATH','HOME','USER','LOGNAME','LANG','LC_ALL','TMPDIR','SHELL']}
+env.update(PYTHONPATH='/Users/andresarriaga/CellForge-6585ff9',PYTHONDONTWRITEBYTECODE='1',CELLFORGE_WORKSPACE_DIR=str(W),CODEX_CLI_BIN=str(OPS/'codex_delivery_boundary.py'),CODEX_AUTH_MODE='local',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',XDG_CACHE_HOME=str(W/'cache'))
+code="""from pathlib import Path
+import json
+from cellforge.Code_Generation.registry import create_backend
+from cellforge.Code_Generation.contracts import AgentRunRequest
+w=Path(WORKSPACE)
+plan=json.loads((w/'research_plan.json').read_text())
+result=create_backend('codex').run(AgentRunRequest(research_plan=plan,workspace=w,attempt=1))
+doc={'status':result.status,'error':result.error,'attempt':result.attempt,'changed_files':result.changed_files,'usage':result.usage,'script_executed':False,'verification_invoked':False}
+(w/'backend_result.json').write_text(json.dumps(doc,indent=2)+'\\n')
+print(json.dumps(doc))
+raise SystemExit(0 if result.status=='completed' else 1)
+""".replace('WORKSPACE',repr(str(work)))
+cmd=['/usr/bin/nice','-n','19','/Users/andresarriaga/cellforge_c_venv/bin/python','-c',code]
+start=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic();cpu0=resource.getrusage(resource.RUSAGE_CHILDREN)
+(R/'codegen.started.json').open('x').write(json.dumps({'utc':start,'pid':os.getpid(),'approval':approval,'backend':'codex','boundary':'delivery adapter strict JSON; execution tools disabled; AST only; no auto verifier/repair','input_hashes':input_hashes},indent=2)+'\n')
+(R/'codegen.command.json').open('x').write(json.dumps({'argv':cmd,'credentials':'DeepSeek/OpenAI env keys unset; existing Codex local login','no_generated_script_execution':True},indent=2)+'\n')
+with (R/'codegen.log').open('x') as log:
+ proc=subprocess.Popen(cmd,cwd=work,env=env,stdout=log,stderr=subprocess.STDOUT)
+ rc=proc.wait()
+cpu1=resource.getrusage(resource.RUSAGE_CHILDREN)
+(R/'codegen.exit').open('x').write(str(rc)+'\n')
+runtime={'start_utc':start,'end_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'wall_seconds':time.monotonic()-t,'cpu_seconds':cpu1.ru_utime+cpu1.ru_stime-cpu0.ru_utime-cpu0.ru_stime,'exit':rc,'child_pid':proc.pid}
+(R/'codegen.runtime.json').open('x').write(json.dumps(runtime,indent=2)+'\n')
+assert rc==0,'code generation failed; STOP, no retry'
+assert all(sha(work/n)==h for n,h in input_hashes.items()),'codegen changed approved inputs'
+source=(work/'result.py').read_bytes()
+ast.parse(source,filename='result.py')
+(R/'result.raw.py').open('xb').write(source)
+(R/'codegen_delivery.json').open('x').write(json.dumps({'artifact_sha256':hashlib.sha256(source).hexdigest(),'input_hashes':input_hashes,'delivery':json.loads((work/'controller_delivery_receipt.json').read_text()),'script_executed':False,'verifier_invoked':False,'repairs':0},indent=2)+'\n')
+print('Code generation delivered artifact; STOP before checkpoint2 approval/execution',flush=True)
+

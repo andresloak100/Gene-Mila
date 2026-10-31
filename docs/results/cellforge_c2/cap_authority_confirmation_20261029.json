@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-29T13:57:41Z",
+  "user_exact_reply": "Keep the existing $66.240534032 ceiling",
+  "cumulative_ceiling_decimal": "66.240534032",
+  "ledger_decimal": "61.401668232",
+  "remaining_headroom_decimal": "4.838865800",
+  "original_attempt_cost_decimal": "0.161134200",
+  "issue41_comment": 6498680009,
+  "cap_file_created": false,
+  "execution_resumed": false,
+  "paid_calls": 0,
+  "status": "NUMERIC_AUTHORITY_CONFIRMED_EXECUTION_STILL_STOPPED"
+}
