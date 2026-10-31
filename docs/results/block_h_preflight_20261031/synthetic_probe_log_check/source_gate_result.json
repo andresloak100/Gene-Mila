@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-31T23:42:30.781342+00:00",
+  "source_commit": "20ac06bdd65729def50d78657ae5257be93dd666",
+  "source_file": "docs/mac/block_h/block_h_common.sh",
+  "source_sha256": "5522ec8e4013d89e280f3ace7e338b0676b14fa349b85dc7926afe83ee0e100b",
+  "checker_copied_verbatim": true,
+  "synthetic_only_no_model_network_data_or_paid_call": true,
+  "results": [
+    {
+      "fixture": "one_codex_200",
+      "checker_exit": 0,
+      "stdout": "calls 1, agent minutes 0.0, tokens in 1 cache 0 out 1, proxy cost $0.0000, served ['deepseek-v4-pro'], other statuses none\n",
+      "required_gate_should_reject": true
+    },
+    {
+      "fixture": "one_codex_200_then_400",
+      "checker_exit": 0,
+      "stdout": "calls 1, agent minutes 0.0, tokens in 1 cache 0 out 1, proxy cost $0.0000, served ['deepseek-v4-pro'], other statuses {'400': 1}\n",
+      "required_gate_should_reject": true
+    },
+    {
+      "fixture": "biomni_200_codex_zero_200",
+      "checker_exit": 0,
+      "stdout": "calls 1, agent minutes 0.0, tokens in 1 cache 0 out 1, proxy cost $0.0000, served ['deepseek-v4-pro'], other statuses {'400': 1}\n",
+      "required_gate_should_reject": true
+    }
+  ],
+  "finding": "Existing probe checker accepts fewer than two Codex200 responses and accepts400; detachedchain advances on probeexit0. Required gate is not enforced.",
+  "no_scripts_modified": true,
+  "new_gate_added": false,
+  "live_H_probe_started": false,
+  "paid_calls": 0
+}

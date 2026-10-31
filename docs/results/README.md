@@ -1,5 +1,10 @@
 # Results index
 
+## Block H preflight (31 October 2026)
+
+Read [the source-level protocol report](block_h_preflight_20261031/report.md) and [complete receipt index](block_h_preflight_20261031/README.md). Andres approved cumulative ceiling $76.562649372, using the existing DeepSeek balance only; the $15 allowance and console floor fit. Before any paid call, the unchanged probe log checker accepted synthetic records with fewer than two Codex successes or a 400, contrary to the plan. No live route failure is inferred. No script repair, new gate, H job or cap file followed; H is stopped pending the controller/plan resolution. CellForge C2 is closed and is not retried.
+
+
 Every file here is a record produced by a run or a tool on Andres's Mac and committed as it was on disk: never edited,
 never deleted; a new check gets a new file. Every number in the README traces to one of these files
 (`tools/readme_check.py`). A `.md` and `.json` pair is one result (the `.md` is the reading, the `.json` the numbers).

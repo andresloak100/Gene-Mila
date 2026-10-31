@@ -1,0 +1,44 @@
+{
+  "utc": "2026-10-31T22:54:25.618315+00:00",
+  "integration_head": "fd97ee3270a5051e82d70ee5e487246a76059999",
+  "lead_C2_closure_id": 6550203502,
+  "ledger_sql_sum_cost_usd": 61.562649371999996,
+  "ledger_rows": 23865,
+  "ledger_display_9dp": "61.562649372",
+  "cumulative_ceiling": "66.240534032",
+  "remaining_9dp": "4.677884660",
+  "H_prescribed_block_allowance": "15.00",
+  "H_expected_cost_range": [
+    "8",
+    "13"
+  ],
+  "H_proxy_session_cap": "2.50",
+  "H_A2_worker_cap": "1.0",
+  "H_A2_planner_cap": "1.5",
+  "H_probe_per_route_cap": "0.05",
+  "full_15_allowance_ceiling_9dp": "76.562649372",
+  "increase_above_current_ceiling_9dp": "10.322115340",
+  "cap_helper_would_write_2dp": "76.56",
+  "budget_fits": false,
+  "paid_calls": 0,
+  "H_jobs_started": 0,
+  "cap_file_written": false,
+  "script_modified": false,
+  "status": "STOP awaiting explicit budget or revised-plan decision",
+  "sources": [
+    {
+      "path": "docs/PLAN_H_COMPARISON.md",
+      "sha256": "693b5ef574620ad599ffea92b25cb671dee070e01a9ee9a43dde5ea26380990b"
+    },
+    {
+      "path": "docs/mac/block_h/block_h_cap.sh",
+      "sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "path": "docs/mac/block_h/block_h_common.sh",
+      "sha256": "5522ec8e4013d89e280f3ace7e338b0676b14fa349b85dc7926afe83ee0e100b"
+    }
+  ],
+  "question": "Keep current ceiling and await revised H plan, or authorize cumulative ceiling76.562649372 for prescribed15 allowance?",
+  "note": "9dp figures are display rounding only; ledger is read-only and unchanged. Session caps are not summed as simultaneous reservations."
+}

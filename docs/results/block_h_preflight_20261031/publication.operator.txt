@@ -1,0 +1,64 @@
+from pathlib import Path
+import datetime, hashlib, importlib.util, json, re, shutil, subprocess
+P=Path('/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5'); C=P/'gene-mila-block-h'; O=P/'block_h_ops'; R=C/'docs/results/block_h_preflight_20261031'; PREFIX='docs/results/block_h_preflight_20261031/'
+def git(*a):return subprocess.check_output(['git',*a],cwd=C)
+def need(ok,msg):
+    if not ok:raise RuntimeError(msg)
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def fresh(p,data):
+    with p.open('x') as f:f.write(data)
+def jnew(p,obj):fresh(p,json.dumps(obj,indent=2)+'\n')
+need(not git('status','--porcelain').strip(),'clone not clean'); R.mkdir()
+spec=importlib.util.spec_from_file_location('pub',P/'cellforge_c2_ops/publication_checks_20261030.py'); pub=importlib.util.module_from_spec(spec);spec.loader.exec_module(pub)
+selected=['budget_authorization_20261031.json','budget_gate_20261031_2255.json','budget_gate_issue51_20261031.json','budget_gate_issue51_20261031.md','console_balance_user_screenshot_20261031.json','lead_c2_closure_20261031.json','protocol_stop_issue51_20261031.json','protocol_stop_issue51_20261031.md']
+for name in selected:shutil.copyfile(O/name,R/name)
+fixture=O/'probe_gate_source_check_20261031'; target=R/'synthetic_probe_log_check'; target.mkdir()
+for p in sorted(fixture.iterdir()):
+    name=p.name if p.suffix!='.py' else p.name+'.operator.txt';shutil.copyfile(p,target/name)
+shutil.copyfile(Path(__file__),R/'publication.operator.txt')
+report='''# Block H preflight: approved budget, unresolved probe gate
+
+H's current detached chain does not enforce the probe acceptance condition fixed in its plan. No paid probe or H run was launched. The evidence here is an unchanged checker fragment evaluated on synthetic logs, not a runtime failure of Codex or DeepSeek.
+
+Andres explicitly authorized the new cumulative ceiling **$76.562649372**, recorded on [#41/comment6550695646](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6550695646) and [#51/comment6550695786](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6550695786). He then specified use of the existing DeepSeek balance only: no top-up or additional purchase. The shared ledger remains $61.562649372, so H's prescribed $15 allowance fits. The unchanged cap helper would round its once-only cap down to $76.56, within the authorized maximum; it has not been executed. Earlier budget-stop receipts remain as history and are superseded by this authorization.
+
+The screenshot supplied by Andres on 31 October at 19:40:50 Toronto shows topped-up $28.19, granted $7.61 and billed $30.86. The topped-up amount exceeds the plan's $8 floor. Those are account balances, separate from the authorized headroom in the lab's spend ledger. Only metadata and a screenshot hash are committed; the screenshot remains outside Git.
+
+Current source: integration `20ac06bdd65729def50d78657ae5257be93dd666`, own branch `astra/block-h-comparison`. PLAN_H_COMPARISON.md:329 requires at least two status-200 rows in the Codex probe log and no 400. block_h_probe.sh:56 calls session_after on h_probe; block_h_common.sh:208–234 pools h_probe*.jsonl, counts other statuses, but rejects only zero pooled successes or an unexpected served model. It does not enforce the Codex-specific condition. If its other checks pass, line 240 writes h_probe.passed. block_h_chain.sh:15–16 proceeds to full arms when the probe exits 0.
+
+The exact log-checker fragment was copied without editing and evaluated on three synthetic fixtures: one expected-model 200; one expected-model 200 followed by 400; and a pooled record representing a Biomni 200 with no Codex 200. Each checker invocation exited 0. These are counterexamples to the log gate only; client exit codes, handback and other session checks were not executed. No live provider route failure or agent performance is inferred. Read the [source-check receipt](synthetic_probe_log_check/source_gate_result.json), individual fixtures/logs/exits and [full STOP report](protocol_stop_issue51_20261031.md).
+
+The standing instruction forbids silently patching scripts, adding a gate or using a workaround. No script was edited and no new gate was inserted. The current controller/plan mismatch needs resolution by the lead/code owner before the paid chain can launch as written. No cap file, H proxy/probe/arm, C0, Docker setup/build or new package export was created. Docker daemon version 29.2.1 was observed through a read-only query. C2 is closed under [the lead's decision](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6550203502), and its merged receipts are preserved. The H heartbeat remains paused at this source-level protocol stop. [Report on #51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6550718051).
+'''
+fresh(R/'report.md',report)
+names=sorted({p.relative_to(R).as_posix() for p in R.rglob('*') if p.is_file()}|{'README.md','manifest.json','publication_audit.json'})
+index=['# Block H preflight: complete receipt index','','Read [the report](report.md) first. All probe logs below are synthetic fixtures, not paid API activity. Budget is approved; the current controller does not enforce the prescribed Codex probe gate. No runtime script patch or paid call followed.','','| File | Record |','|---|---|']
+for name in names:index.append(f'| [{name}]({name}) | Preserved report, authorization, source-level synthetic check, provenance or publication receipt |')
+fresh(R/'README.md','\n'.join(index)+'\n')
+idx=C/'docs/results/README.md';old=idx.read_text();h='''## Block H preflight (31 October 2026)
+
+Read [the source-level protocol report](block_h_preflight_20261031/report.md) and [complete receipt index](block_h_preflight_20261031/README.md). Andres approved cumulative ceiling $76.562649372, using the existing DeepSeek balance only; the $15 allowance and console floor fit. Before any paid call, the unchanged probe log checker accepted synthetic records with fewer than two Codex successes or a 400, contrary to the plan. No live route failure is inferred. No script repair, new gate, H job or cap file followed; H is stopped pending the controller/plan resolution. CellForge C2 is closed and is not retried.
+
+''';need(old.startswith('# Results index\n'),'index heading');idx.write_text(old.replace('# Results index\n','# Results index\n\n'+h,1))
+files=[idx]+[p for p in sorted(R.rglob('*')) if p.is_file()]
+mf={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_commit':git('rev-parse','HEAD').decode().strip(),'exclusions':[PREFIX+'manifest.json',PREFIX+'publication_audit.json'],'files':[{'path':p.relative_to(C).as_posix(),'bytes':p.stat().st_size,'sha256':sha(p)} for p in files]};jnew(R/'manifest.json',mf)
+for item in mf['files']:
+    p=C/item['path'];need(p.stat().st_size==item['bytes'] and sha(p)==item['sha256'],'manifest')
+for p in files+[R/'manifest.json']:
+    rel=p.relative_to(C).as_posix();need(not p.is_symlink(),'symlink');need(not pub.secret_hits(p.read_bytes()),'credential pattern '+rel)
+    need(not re.search(r'(^|/)(?:data|runs|private|harness|packages)(?:/|$)|\.(?:h5ad|npz|sqlite|pt|whl|png)$',rel),'raw path')
+    if p.suffix=='.json':json.loads(p.read_bytes())
+    if p.suffix=='.jsonl':
+        for line in p.read_bytes().splitlines():
+            if line.strip():json.loads(line)
+need(all(']('+name+')' in (R/'README.md').read_text() for name in names),'complete index')
+source=json.loads((target/'source_gate_result.json').read_text());need(source['no_scripts_modified'] and source['paid_calls']==0 and all(x['checker_exit']==0 for x in source['results']),'source diagnostic')
+st=git('status','--porcelain','-uall').decode().splitlines();need(all((s[3:]=='docs/results/README.md' or s[3:].startswith(PREFIX)) and 'D' not in s[:2] for s in st),'scope');expected={s[3:] for s in st}
+subprocess.run(['git','add','--','docs/results/README.md',PREFIX],cwd=C,check=True)
+need(set(git('diff','--cached','--name-only').decode().splitlines())==expected,'stage scope')
+need(all(pub.staged_matches_disk(C,rel) for rel in expected),'raw staged bytes')
+subprocess.run(['git','diff','--cached','--check','--','docs/results/README.md',PREFIX+'README.md',PREFIX+'report.md'],cwd=C,check=True)
+audit={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'all_pass':True,'checks':{'results_index_receipts_only':True,'no_deletes_raw_images_data_keys_packages_or_symlinks':True,'JSON_JSONL_parse':True,'every_file_indexed':True,'manifest_hashes':True,'raw_staged_blob_bytes':True,'token_boundary_secret_scan':True,'authored_whitespace':True,'H_scripts_unchanged':True,'synthetic_only_no_paid_calls':True},'files_before_audit':len(files)+1}
+jnew(R/'publication_audit.json',audit);subprocess.run(['git','add','--',PREFIX+'publication_audit.json'],cwd=C,check=True);expected.add(PREFIX+'publication_audit.json')
+need(set(git('diff','--cached','--name-only').decode().splitlines())==expected,'final scope');need(all(pub.staged_matches_disk(C,s) and not pub.secret_hits(git('show',':'+s)) for s in expected),'final blob bytes/scan');need(not git('ls-files','--others','--exclude-standard').strip(),'unexpected untracked')
+print(json.dumps({'all_pass':True,'files':len(expected),'no_paid_call':True,'no_source_patch':True}))
