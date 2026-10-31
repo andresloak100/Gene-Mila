@@ -1,0 +1,5 @@
+{
+  "user_exact_reply": "Yes: use ~/cellforge_adamson_export_corrected_20261028, the verified 40,890-cell export GEARS used. Using the same input as GEARS is exactly what makes the comparison fair. Leave the empty export untouched, and record the export path and its sha256 in the receipt and in docs/results/linear_ae_adamson.md. The --versus run stays newcode_opus_w4_r0.",
+  "export_path": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a"
+}

@@ -1,0 +1,65 @@
+from pathlib import Path
+import os,json,subprocess,datetime,time,resource,hashlib,traceback,shlex,shutil
+G=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-linear-ae");R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-linear-ae/docs/results/linear_ae_adamson")
+EXP=Path('/Users/andresarriaga/cellforge_adamson_export_corrected_20261028');OUT=Path('/Users/andresarriaga/linear_ae_adamson')
+PY="/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python";HEAD=subprocess.check_output(['git','rev-parse','HEAD'],cwd=G,text=True).strip()
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(p,obj):p.write_text(json.dumps(obj,indent=2)+'\n')
+os.nice(19)
+for key in ['API_KEY','DEEPSEEK_API_KEY','OPENAI_API_KEY','ANTHROPIC_API_KEY']:os.environ.pop(key,None)
+os.environ['PYTHONHASHSEED']='0'
+source={'tools/baselines_dl/run_linear_ae.py':sha(G/'tools/baselines_dl/run_linear_ae.py'),'tools/cellforge_bridge.py':sha(G/'tools/cellforge_bridge.py')}
+INPUT_SHA='ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a'
+assert sha(EXP/'cellforge_input.h5ad')==INPUT_SHA
+assert not OUT.exists() and not OUT.is_symlink()
+assert (R/'focused_tests_corrected.exit').read_text().strip()=='0'
+for p in [G/'docs/results/linear_ae_adamson.md',G/'docs/results/linear_ae_adamson.json',R/'run.exit',R/'score.exit',R/'chain.exit']:
+ assert not(p.exists()or p.is_symlink()),str(p)
+old_empty=Path('/Users/andresarriaga/cellforge_adamson_export/cellforge_input.h5ad');empty_sha=sha(old_empty)
+live={'start_utc':now(),'pid':os.getpid(),'status':'RUNNING_BASELINE','head':HEAD,'source_hashes':source,'export_path':str(EXP),'export_input_sha256':INPUT_SHA,'settings':{'k':10,'lam':0.1,'runs':1,'device':'cpu'},'input_authority_issue51':6529618658}
+save(R/'chain.live.json',live)
+rc=1
+def run(name,cmd):
+ for suf in ['command.txt','log','exit','runtime.json']:
+  assert not(R/(name+'.'+suf)).exists()
+ (R/(name+'.command.txt')).open('x').write(shlex.join(cmd)+'\n')
+ t=time.monotonic();u=resource.getrusage(resource.RUSAGE_CHILDREN)
+ rep={'start_utc':now(),'command':cmd,'head':HEAD,'cwd':str(G),'nice':os.getpriority(os.PRIO_PROCESS,0),'export_path':str(EXP),'export_input_sha256':INPUT_SHA,'credentials':'unset'}
+ with (R/(name+'.log')).open('x') as f:
+  child=subprocess.Popen(cmd,cwd=G,env=os.environ.copy(),stdout=f,stderr=subprocess.STDOUT)
+  rep['child_pid']=child.pid;save(R/(name+'.runtime.json'),rep)
+  code=child.wait()
+ v=resource.getrusage(resource.RUSAGE_CHILDREN)
+ rep.update(end_utc=now(),exit=code,wall_seconds=time.monotonic()-t,cpu_seconds=v.ru_utime+v.ru_stime-u.ru_utime-u.ru_stime)
+ save(R/(name+'.runtime.json'),rep)
+ (R/(name+'.exit')).open('x').write(str(code)+'\n')
+ if code:raise RuntimeError(name+' exit '+str(code)+'; STOP no retry')
+ return rep
+try:
+ runrep=run('run',['/Users/andresarriaga/gm_dlenv/bin/python','tools/baselines_dl/run_linear_ae.py','--export',str(EXP),'--out',str(OUT)])
+ import numpy as np,anndata as ad
+ raw=json.loads((OUT/'receipt.json').read_text())
+ shutil.copyfile(OUT/'receipt.json',R/'runner_receipt.raw.json')
+ with np.load(OUT/'predictions.npz',allow_pickle=False) as z:
+  perts=z['perts'].astype(str).tolist();genes=z['genes'].astype(str).tolist();means=z['means']
+  a=ad.read_h5ad(EXP/'cellforge_input.h5ad',backed='r');expected_genes=a.var_names.astype(str).tolist();a.file.close()
+  expected_perts=json.loads((EXP/'heldout_perturbations.json').read_text())
+  checks={'keys':set(z.files)=={'perts','means','genes'},'shape':means.shape==(38,2055),'finite':bool(np.isfinite(means).all()),'exact_pert_order':perts==expected_perts,'exact_gene_order':genes==expected_genes,'unique_perts':len(set(perts))==38,'unique_genes':len(set(genes))==2055,'k':raw['k']==10,'lam':raw['lam']==0.1,'train_perturbations':raw['train_perturbations']==50,'heldout':raw['heldout']==38,'input_sha':raw['export_input_sha256']==INPUT_SHA,'prediction_sha':raw['predictions_sha256']==sha(OUT/'predictions.npz'),'input_unchanged':sha(EXP/'cellforge_input.h5ad')==INPUT_SHA,'empty_export_unchanged':sha(old_empty)==empty_sha}
+ validation={'utc':now(),'checks':checks,'all_pass':all(checks.values()),'prediction_sha256':sha(OUT/'predictions.npz'),'prediction_bytes':(OUT/'predictions.npz').stat().st_size,'runner_receipt':raw}
+ save(R/'prediction_validation.json',validation)
+ assert validation['all_pass'],'prediction validation failed; STOP'
+ save(R/'receipt.json',{'export_path':str(EXP),'export_input_path':str(EXP/'cellforge_input.h5ad'),'export_input_sha256':INPUT_SHA,'predictions_path':str(OUT/'predictions.npz'),'source_commit':HEAD,'source_hashes':source,'run':runrep,'runner_receipt':raw,'original_empty_export_unchanged':True})
+ for ext in ['md','json']:
+  p=G/('docs/results/linear_ae_adamson.'+ext);assert not(p.exists()or p.is_symlink()),str(p)
+ live['status']='SCORING_ONCE';save(R/'chain.live.json',live)
+ score=run('score',[PY,'tools/cellforge_bridge.py','score','--bundle','/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf','--pred',str(OUT/'predictions.npz'),'--name','linear_ae','--versus','/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0','--out','docs/results/linear_ae_adamson.md'])
+ shutil.copyfile(G/'docs/results/linear_ae_adamson.md',R/'score.raw.md')
+ shutil.copyfile(G/'docs/results/linear_ae_adamson.json',R/'score.raw.json')
+ rc=0;live.update(status='RUN_AND_SCORE_COMPLETE',runner_receipt=raw,score_wall_seconds=score['wall_seconds'])
+except Exception as e:
+ live.update(status='STOPPED',error_type=type(e).__name__,error=str(e));(R/'chain.failure.log').open('x').write(traceback.format_exc())
+finally:
+ live.update(exit=rc,end_utc=now());save(R/'chain.live.json',live);save(R/'chain.final.json',live)
+ (R/'chain.exit').open('x').write(str(rc)+'\n')
+raise SystemExit(rc)

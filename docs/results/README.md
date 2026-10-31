@@ -6,6 +6,10 @@ never deleted; a new check gets a new file. Every number in the README traces to
 
 The block-directory convention applies to future readings. The G, corrected F and H8 records below retain the exact generated paths pinned in their pre-score commands and hash manifests; their already referenced files were not moved or overwritten. They are indexed one row per reading; the per-file list, with hashes, is the publication's manifest (below).
 
+## Linear AE: fixed Adamson baseline (30 October 2026)
+
+Read [the report](linear_ae_adamson.md) ([full-precision JSON](linear_ae_adamson.json)) and [the complete receipt index](linear_ae_adamson/README.md). One deterministic CPU run at the prescribed defaults and one bridge call exited 0. Pearson delta is 0.485442177; the prescribed lab comparator (newcode_opus_w4_r0:EXP_0441, 0.598665038) meets the paired rule on 21 conditions. All 50 training targets were used, with no fallback predictions. The report records the approved corrected GEARS export's path and SHA-256, its cohort caveat, and the worn sealed interpretation. Raw predictions and input remain outside Git; there is no seed SD or parameter selection.
+
 ## GEARS: fixed CPU seeds on Adamson (28–29 October 2026)
 
 Read [the three-seed report](gears_adamson/aggregate.md) ([full-precision JSON](gears_adamson/aggregate.json)). All training and the once-per-seed prescribed bridge calls exited 0. Sealed pearson_delta is 0.407282874 ± sample SD 0.011648347. The prescribed lab comparator (newcode_opus_w4_r0:EXP_0441, 0.598665038) meets the paired rule against every GEARS seed. The sealed cohort is worn and descriptive; the corrected export's additional training cells and controls are disclosed.
@@ -16,6 +20,10 @@ Read [the three-seed report](gears_adamson/aggregate.md) ([full-precision JSON](
 | [gears_adamson_s2.md](gears_adamson_s2.md), [JSON](gears_adamson_s2.json) | Unchanged score tool report for seed 2 |
 | [gears_adamson_s3.md](gears_adamson_s3.md), [JSON](gears_adamson_s3.json) | Unchanged score tool report for seed 3 |
 | [gears_adamson/](gears_adamson/README.md) | Every environment, training, graph, prediction validation, scoring, command, exit, runtime, issue and publication receipt, individually indexed and hashed; raw inputs/predictions/work remain outside Git |
+
+## C2: CellForge checkpoint-edited matched attempt (30–31 October 2026)
+
+Read [the CPU failure report](cellforge_c2/training_failure.md) ([full-precision JSON](cellforge_c2/training_failure.json)) and [every receipt](cellforge_c2/README.md). The lead reversed the earlier checkpoint-2 rejection; Andres adopted that decision, and the identical script was approved and executed once. It exited 1 before training when pandas rejected filling a categorical cell-type column with a new `unknown` category. Wall time was 4.261185541 seconds; aggregate CPU time 0.0013975094444444445 hours. No predictions or score exists. The original rejection, reversal, approval and traceback are preserved; no repair or retry followed. C2 planning cost $0.160981140 on the shared ledger. Label: “CellForge (pinned release, checkpoint plan edited to the input as its README allows)”, beside the original attempt below. Block H remains unstarted.
 
 ## Plan C: CellForge matched Adamson attempt (28 October 2026)
 

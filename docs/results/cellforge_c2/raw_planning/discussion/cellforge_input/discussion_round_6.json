@@ -1,0 +1,553 @@
+{
+  "total_rounds": 6,
+  "messages": [
+    {
+      "expert": "Data Engineer",
+      "type": "proposal",
+      "content": "# State-of-the-Art Architecture for Single-Cell Gene Knockout Perturbation Prediction\n\n## Executive Summary\n\nI propose **PerturbNet-KO**, a hybrid architecture combining a **Gene Regulatory Graph Transformer (GRGT)** with a **Conditional Variational Autoencoder (cVAE)** and **Biologically-Informed Residual Decoder**. The design specifically addresses CRISPRi gene knockout prediction in K562 cells, with architectural inductive biases for gene regulatory networks, pathway-level effects, and sparse perturbation generalization.\n\n---\n\n## 1. Architecture Components\n\n### 1.1 Data Engineering Preprocessing Pipeline\n\nBefore the model, a critical preprocessing stage ensures data quality:\n\n| Stage | Method | Justification |\n|-------|--------|---------------|\n| QC | MAD-based outlier detection (3 MADs on n_genes, mito%) | Robust for scRNA-seq noise |\n| Normalization | SCTransform v2 (Pearson residuals) | Stabilizes variance, handles sparsity better than log-norm |\n| Feature Selection | HVG (2000) ∪ Pathway genes ∪ CRISPRi targets | Preserves biological signal |\n| Batch Correction | Harmony on cell-cycle + donor | Prevents confounding |\n| Sparse Storage | CSR matrices, `anndata` backed mode | Memory efficiency (10⁴ cells × 10³ genes) |\n\n**Key Engineering Decision**: Store expression as **sparse CSR** throughout; convert to dense only in mini-batches (batch_size=256).\n\n### 1.2 Core Architecture: PerturbNet-KO\n\n```\nInput: (X_control, g_perturb, cell_context)\n   │\n   ├──► [1] Gene Embedding Layer (E_g: 200",
+      "round": 0,
+      "references": [],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "proposal",
+      "content": "# PerturbNet-KO: Biologically-Grounded Architecture for CRISPRi Gene Knockout Prediction\n\n## Executive Summary\n\nI propose **PerturbNet-KO**, a **mechanistic-aware hybrid architecture** that combines a **Gene Regulatory Graph Transformer (GRGT)** with a **Conditional Variational Autoencoder (cVAE)** and a **Biologically-Informed Residual Decoder**. The core innovation is a **two-pathway design** that explicitly separates **direct CRISPRi knockdown effects** (target gene → downstream cascade) from **compensatory network responses**, both grounded in a **prior-regularized gene regulatory graph** derived from K562-specific data (ENCODE, STRING, and perturbation databases like Perturb-seq references).\n\nThis design directly addresses the three hardest challenges in CRISPRi knockout prediction:\n1. **Data sparsity** (few cells per perturbation) → hierarchical Bayesian shrinkage via cVAE\n2. **Unseen perturbation generalization** → graph-based message passing over the regulatory network\n3. **Biological interpretability** → explicit pathway-level latent variables and attention weights that map to known regulatory edges\n\n---\n\n## 1. Architecture Components\n\n### 1.1 Overall Data Flow\n\n```\nInputs:\n  X_ctrl ∈ ℝ^(N×G)     (control expression, sparse)\n  g_target ∈ {0,1}^G    (one-hot CRISPRi target)\n  c_context ∈ ℝ^K       (cell-cycle, donor, batch embeddings)\n\n                    ┌─────────────────────────────────┐\n                    │  1. Gene Embedding + GRGT       │\n                    │     (Regulatory Graph Transformer)│\n                    └──────────────┬──────────────────┘\n                                   │",
+      "round": 0,
+      "references": [
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "feedback",
+      "content": "# Data Engineering Feedback on PerturbNet-KO\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation\n\n**Strengths:**\n- The GRGT + cVAE + Residual Decoder combination is well-motivated. The two-pathway separation (direct knockdown vs. compensatory) is a genuine architectural innovation that maps to biology.\n- Using CSR sparse storage with dense mini-batch conversion (batch=256) is appropriate for 10⁴ cells × 10³ genes; peak dense memory ≈ 256 × 2000 × 4 bytes ≈ 2 MB per batch, negligible.\n\n**Critical Concerns:**\n\n**(a) Graph Transformer scaling.** Full self-attention over G=2000 gene nodes is O(G²·d) = 4M·d per layer. With d=256 and 6 layers, this is ~6 GB activations per batch at fp32. **Recommendation:** Use **sparse graph attention** restricted to the regulatory adjacency (ENCODE/STRING edges, ~50K edges for 2000 genes), reducing complexity to O(|E|·d). This is both faster and biologically correct — genes should attend only to regulatory neighbors, not all genes.\n\n**(b) cVAE posterior collapse risk.** With ~200 perturbations × ~50 cells each, the decoder can ignore z and reconstruct from g_target alone. **Recommendation:** Use **β-annealing** (β from 0→0.1 over first 20 epochs) plus **free-bits** (≥0.5 nats/dim) to prevent collapse. Also KL-weight per perturbation rather than per cell.\n\n**(c) Residual decoder target.** The proposal doesn't specify whether",
+      "round": 0,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "feedback",
+      "content": "# Single Cell Biology Expert Feedback on PerturbNet-KO\n\n## Executive Summary\n\nPerturbNet-KO is a well-conceived architecture, but from a **single-cell biology perspective**, the current design has critical gaps that will limit its ability to beat SOTA on CRISPRi knockout prediction in K562. The most consequential issues are: (1) **CRISPRi is not a knockout** — it's a partial knockdown with variable efficiency, and the model treats it as binary; (2) **K562-specific biology is under-exploited** (erythroleukemic lineage, near-haploid genome, well-characterized CML regulatory network); (3) **the two-pathway design is biologically correct but under-specified** — it lacks proper causal structure for direct vs. compensatory effects; (4) **evaluation metrics chosen (MSE/PCC/R2) will reward mean-collapse** — the model needs architectural pressure toward differential expression. Below I provide detailed, actionable feedback.\n\n---\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation\n\n**Strengths:**\n- Two-pathway (direct + compensatory) separation is genuinely aligned with CRISPRi biology — direct knockdown effects are near-deterministic for the target, while downstream effects are network-mediated and heterogeneous.\n- Graph Transformer with regulatory edges is the right inductive bias; K562 has one of the best-characterized GRNs (ENCODE, ChIP-seq for ~200 TFs, Perturb-seq references).\n\n**Critical Concerns:**\n\n**(a) Binary perturbation encoding is biologically wrong for CRISPRi.** CRISPRi achieves ~70–95% knockdown, not 100% knockout, and efficiency varies by sgRNA/target. Encoding",
+      "round": 0,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "question",
+      "content": "# Data Engineering Critical Questions for PerturbNet-KO\n\nBuilding on the exchange so far, I want to pressure-test the design from a **data engineering** standpoint — specifically around the interfaces between preprocessing, the GRGT, the cVAE, and the residual decoder. Several of the earlier concerns (sparse attention, posterior collapse, CRISPRi efficiency encoding) create downstream data-flow obligations that haven't been resolved. Below are the questions I believe must be answered before we commit to an implementation.\n\n---\n\n## 1. Technical Clarifications — Data Flow & Tensor Contracts\n\n**Q1.1 — What is the exact tensor contract between the GRGT and the cVAE?**\nThe GRGT produces per-gene embeddings `H ∈ ℝ^(G×d)`. Does the cVAE encoder consume:\n- (a) the **full** `H` (G×d — 2000×256 ≈ 0.5M floats per cell),\n- (b) a **pooled** representation (e.g., mean over genes → d-dim), or\n- (c) a **perturbation-conditioned slice** (embedding of `g_target` only)?\n\nThis choice determines whether the cVAE can model *heterogeneous* responses across cells or collapses to a per-perturbation mean. Given the evaluation rewards PCC/R² (per-gene correlations), option (c) alone will fail. I recommend **(a) with a learned attention pooling weighted by the target gene's neighborhood** — but this needs to be specified, and the memory budget at batch=256 must be recomputed.\n\n**Q1.2 — How are the \"two pathways\" actually separated in the decoder?**\nThe",
+      "round": 0,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "answer",
+      "content": "# PerturbNet-KO v2: Response to Data Engineer's Critical Questions\n\n## Executive Summary\n\nThe Data Engineer's questions expose a real risk: the current design under-specifies the **tensor contracts** between GRGT, cVAE, and decoder, and this ambiguity could silently collapse the model into a per-perturbation mean predictor — which would fail PCC/R². I now provide **explicit tensor contracts**, a **revised two-pathway decoder with proper causal structure**, and a **CRISPRi-efficiency-aware perturbation encoding** that replaces the binary one-hot. I also address the biological concerns raised earlier (partial knockdown, K562-specific biology, mean-collapse pressure).\n\n---\n\n## 1. Answering Q1.1 — GRGT ↔ cVAE Tensor Contract\n\n**Recommendation: option (a) with target-neighborhood attention pooling — but with a critical modification to avoid memory blowup.**\n\n### 1.1 Revised GRGT output\n\nThe GRGT does **not** produce a full `H ∈ ℝ^(G×d)` per cell. Instead, it produces a **query-conditioned neighborhood embedding**:\n\n$$\nH_q = \\text{GRGT}(X_{\\text{ctrl}}, \\mathcal{G}) \\in \\mathbb{R}^{G \\times d}\n$$\n\nwhere $\\mathcal{G}$ is the K562 regulatory graph (sparse, ~50K edges). Because we use **sparse graph attention** (as the Data Engineer recommended), $H_q$ is computed only over the 2-hop neighborhood of the target gene `g_target` — call this neighborhood $\\mathcal{N}(g) \\subseteq V$, with $|\\mathcal{N}(g)| \\approx 50",
+      "round": 0,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Critic",
+      "type": "critique",
+      "content": "# Critical Evaluation of PerturbNet-KO for CRISPRi Gene Knockout Prediction\n\n## Executive Summary\n\nPerturbNet-KO represents a **thoughtful but incompletely-specified** architecture. The two-pathway (direct + compensatory) design is biologically well-motivated, and the sparse graph attention recommendation from the Data Engineer is both correct and necessary. However, the proposal has **three unresolved structural risks** that I believe will determine whether it beats SOTA or quietly regresses to a per-perturbation mean predictor:\n\n1. **The evaluation metrics (MSE/PCC/R²) are in tension with the architecture's variance-capturing goals.** The design has not yet articulated a training objective that *forces* the model to preserve cell-level heterogeneity — the very thing PCC/R² reward.\n2. **The two-pathway decoder's causal separation is asserted but not enforced.** Without architectural or regularization pressure, the \"compensatory\" pathway will absorb direct effects and the interpretability claim collapses.\n3. **CRISPRi efficiency is acknowledged as a problem but the proposed fix (efficiency-aware encoding) is not yet wired into the tensor contracts.** This is a specification gap, not a design flaw — but it must close before implementation.\n\nBelow I score each dimension and justify.\n\n---\n\n## 1. Scientific Merit — **0.72**\n\n**Theoretical foundation (0.80):** Strong. The direct-vs-compensatory decomposition maps onto well-established CRISPRi biology (immediate knockdown → transcriptional cascade → network compensation). The use of a prior-regularized GRN from ENCODE/STRING/Perturb-seq is the correct inductive bias for K562, which has among the best-characterized GRNs of",
+      "round": 0,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v3: Data-Engineering-Driven Architecture for CRISPRi Knockout Prediction\n\n## Preamble: Resolving the Outstanding Contracts\n\nBefore proposing the architecture, I close the three gaps flagged by the Critic and Single Cell Biology Expert, since these are **data-flow contracts** that must be pinned down before any layer is specified:\n\n| Open Issue | Resolution Adopted |\n|---|---|\n| GRGT↔cVAE tensor contract (Q1.1) | **Neighborhood-restricted query embedding** `H_q ∈ ℝ^{|N(g)|×d}` (|N(g)|≈50–80), not full G×d. Memory at batch=256: 256×80×256×4 ≈ 21 MB. |\n| Two-pathway causal separation (Q1.2) | **Orthogonal subspace projection** + **pathway-specific supervision heads** (direct head trained on target-gene readouts only; compensatory head on non-target DEGs). |\n| CRISPRi efficiency encoding | **Continuous efficiency scalar** `e_p ~ Beta(α,β)` per sgRNA, injected as FiLM modulation; predicted from sgRNA sequence features when unavailable. |\n| Mean-collapse under MSE/PCC/R² | **Cell-level contrastive + variance-preservation losses** in addition to reconstruction; **per-gene Pearson loss** as auxiliary. |\n\n---\n\n## 1. Architecture Components\n\n### 1.1 Component Overview (data-flow)\n\n```\nraw counts ──► [QC + Normalize + HVG select] ──► X ∈ ℝ^(N×G) (CSR)\n                                                     │\n                     ┌───────────────────────────────┘\n                    ",
+      "round": 1,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v4: A Biologically-Grounded Architecture for CRISPRi Knockout Prediction in K562\n\n## Executive Summary\n\nBuilding on the four-way dialogue (Biology Expert, Data Engineer, Critic, and prior revisions), I now consolidate into a **final, implementation-ready architecture**. The core insight driving v4: **CRISPRi knockout prediction is fundamentally a *causal counterfactual* problem over a partially-observed regulatory graph**, and the architecture must be structured so that (a) the direct knockdown effect is *mechanistically pinned* to the target gene's expression, (b) the downstream response is *propagated through a learned K562-specific GRN with proper causal masking*, and (c) cell-level heterogeneity is *preserved by construction* through a perturbation-conditioned latent that is architecturally forbidden from collapsing to a per-perturbation mean.\n\nThe three structural risks flagged by the Critic are resolved explicitly:\n1. **Mean-collapse** → resolved via a **per-gene Pearson auxiliary loss** + **variance-preserving latent regularization** + **cell-level InfoNCE** (Section 3.3).\n2. **Two-pathway causal separation** → resolved via **orthogonal subspace projection** + **pathway-specific supervision heads** + **gradient isolation** (Section 1.4).\n3. **CRISPRi efficiency encoding** → resolved via **continuous efficiency scalar injected as FiLM modulation** at three sites, with a **sequence-based efficiency predictor** for unseen sgRNAs (Section 1.2).\n\n---\n\n## 1. Architecture Components\n\n### 1.1 Component Overview (Data Flow)\n\n```\nraw counts ──► [QC +",
+      "round": 1,
+      "references": [
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "feedback",
+      "content": "# Data Engineer Feedback: PerturbNet-KO v4 — Technical Review & Path to SOTA\n\n## Executive Assessment\n\nv4 is architecturally sound and biologically well-motivated, but as a **data engineer I must flag that the proposal is under-specified on the data-flow contracts that determine whether the architecture can actually be trained on `cellforge_input` at scale**. The single-cell biology framing is excellent; the engineering scaffolding to realize it is incomplete. Below I give a structured critique with concrete, actionable fixes — many of which are the difference between \"beats baseline on paper\" and \"beats baseline on the eval harness (MSE / PCC / R²).\"\n\n---\n\n## 1. Technical Analysis\n\n### 1.1 Architectural design — concerns\n\n| Issue | Severity | Concrete Fix |\n|---|---|---|\n| **GRN adjacency is unspecified in provenance.** v4 says \"learned K562-specific GRN\" but doesn't say *initialized from what*. A randomly-initialized dense G×G adjacency (G≈2000 HVGs → 4M params) will overfit under data sparsity. | **High** | Initialize from a **prior GRN** (e.g., K562-specific ChIP-Atlas / ENCODE / scMTNI), keep only edges with prior support, and learn a **residual adjacency** `A = A_prior ⊙ M + ΔA` where `M` is a learnable mask. This is the single biggest lever for generalization to unseen perturbations. |\n| **Neighborhood-restricted query embedding** (Q1.1) is good for memory but the *neighborhood definition* is a data contract. | Medium | Define",
+      "round": 1,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "feedback",
+      "content": "# Single Cell Biology Expert Feedback: PerturbNet-KO v4 → v5\n\n## Preamble: What the Biology Demands That the Architecture Still Misses\n\nThe Data Engineer and Critic have done an excellent job closing the **engineering contracts** (GRN provenance, neighborhood definition, efficiency encoding). My job here is to evaluate v4 through the lens of **what K562 CRISPRi biology actually looks like** and where the architecture is *biologically* under-specified in ways that will directly cost MSE/PCC/R² on the eval harness.\n\nThree biological gaps in v4 that I consider **performance-critical** (not just \"nice to have\"):\n\n1. **K562 is a highly aneuploid, near-triploid CML line** — copy-number heterogeneity means the *same* sgRNA produces different knockdown efficiencies across subclones, and many \"knockouts\" are partial. The architecture treats efficiency as a *scalar per sgRNA*, but biologically it is a **cell × sgRNA interaction**. This is a direct source of unexplained variance that will cap PCC.\n2. **CRISPRi is not knockout — it is transcriptional repression with off-target and position effects**. The direct-effect head assumes the target gene goes to ~0; in K562 CRISPRi data (Replogle et al. 2022), median knockdown is ~70–85%, with a heavy tail of inefficient guides. The architecture must model **partial repression as a distribution**, not a point.\n3. **Compensatory response is cell-state-dependent and temporally structured** — K562 cells under CRISPRi show strong stress/apoptosis signatures at later timepoints and cell-cycle-dependent buffering. The v4 \"",
+      "round": 1,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "question",
+      "content": "# Data Engineer: Critical Questions to Drive v5 to SOTA\n\nThe v4/v5 dialogue has been productive, but as the data engineer responsible for the **train/eval pipeline that actually produces MSE/PCC/R²**, I need to pin down contracts that will determine whether we *hit* SOTA or merely *describe* it. I'll organize by the five axes, then close with the specific data-flow contracts I consider **blocking**.\n\n---\n\n## 1. Technical Clarifications\n\n**Q1.1 — GRN prior provenance & sparsity budget.**\nThe Critic's fix (`A = A_prior ⊙ M + ΔA`) is correct in spirit but under-specified as a data contract. I need answers to:\n- **Which prior, at what edge density?** ChIP-Atlas K562 gives ~10⁵ TF→gene edges over ~20k genes; scMTNI is sparser. On 2,000 HVGs, what fraction of the G×G matrix is non-zero after projection? If `<1%`, a sparse `torch.sparse` residual `ΔA` is mandatory; if `>10%`, dense is fine. **This determines memory layout.**\n- **How do we handle genes with *zero* prior edges** (many HVGs will be orphaned)? Fallback to a learned \"global\" adjacency, or a kNN-in-expression-graph prior? Orphan handling will directly affect PCC on the long tail of low-expression genes.\n\n**Q1.2 — Neighborhood definition for `H_q ∈ ℝ^{|N(g)|×d}`.**\n\"Neighborhood\" is the load-bearing contract. Candidates: (a)",
+      "round": 1,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "answer",
+      "content": "# PerturbNet-KO v5: A Biologically-Grounded, Engineering-Complete Architecture for CRISPRi Knockout Prediction in K562\n\n## Executive Summary\n\nv5 resolves the three **biological gaps** flagged by the Biology Expert (cell×sgRNA efficiency heterogeneity, partial-repression-as-distribution, cell-state-dependent compensation) *and* the five **blocking data-flow contracts** flagged by the Data Engineer (GRN provenance/sparsity, neighborhood definition, efficiency predictor training signal, cell-state conditioning, and eval-harness alignment). The organizing principle is now sharper than v4:\n\n> **CRISPRi knockout prediction in K562 = a *partially-identified counterfactual* over a *sparse, prior-anchored GRN*, where the target gene's post-perturbation state is a *distribution* (not a point), and downstream propagation is *modulated by cell state* (cycle, subclone, stress) that must be inferred, not averaged away.**\n\nEvery architectural choice below traces back to a measurable effect on MSE / PCC / R² and to a biological fact about K562 CRISPRi (Replogle 2022, Norman 2019, Adamson 2016).\n\n---\n\n## 1. Resolving the Blocking Contracts (v4 → v5)\n\n### 1.1 GRN provenance & sparsity budget (Data Engineer Q1.1)\n\n**Adopted contract:**\n- **Primary prior:** ChIP-Atlas K562 TF→gene edges, filtered to `score ≥ 500` (strong binding), projected onto the 2,000 HVG panel via gene-symbol mapping. Expected edge density on HVG panel: **~2",
+      "round": 1,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Critic",
+      "type": "critique",
+      "content": "# Critic's Evaluation: PerturbNet-KO v5\n\n## Preamble\n\nI have reviewed the v4→v5 dialogue across the Single Cell Biology Expert, Data Engineer, and prior Critic contributions. My role is to render a **dispassionate, evidence-anchored verdict** on whether this architecture is *positioned to surpass SOTA* on the `cellforge_input` gene_knockout task (K562, CRISPRi), evaluated on MSE / PCC / R². I will be explicit about where the proposal is genuinely strong, where it is **over-engineered relative to the eval harness**, and where the claim of \"SOTA-beating\" is currently **under-evidenced**.\n\nA critical framing note before scoring: **the eval harness rewards predictive accuracy, not mechanistic fidelity.** Several of v5's most sophisticated components (two-pathway causal separation, per-gene InfoNCE, FiLM efficiency modulation) are *biologically principled* but their marginal contribution to MSE/PCC/R² on a 2,000-HVG K562 panel is **not established**. A SOTA-beating design must justify each component against a measurable delta, and v5 does not yet do this systematically. This is my central critique.\n\n---\n\n## 1. Scientific Merit — **Score: 0.82**\n\n**Theoretical foundation (strong).** The reframing of CRISPRi prediction as a *partially-identified counterfactual over a sparse prior-anchored GRN* is genuinely correct and is the right theoretical lens. It correctly distinguishes CRISPRi (repression, distribution-valued) from CRISPR-KO (point knockout) — a distinction that baseline models (GEARS,",
+      "round": 1,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v6: Data-Engineering-Complete Architecture for CRISPRi Knockout Prediction\n\n## Preamble: What the Data Engineer Must Deliver for v6\n\nThe v5 dialogue produced a biologically excellent architecture, but the Critic's central critique is correct: **v5 does not establish that each component earns its MSE/PCC/R² delta on the eval harness**. As Data Engineer, my contribution to v6 is to close that gap by specifying the **data-flow contracts, feature-engineering pipeline, and training regime** that make each architectural component *measurably* load-bearing — and to prune components that cannot demonstrate a delta under the `cellforge_input` compute/sparsity budget.\n\nThe organizing principle for v6:\n\n> **Every architectural component must be tied to (a) a specific data artifact produced by the pipeline, (b) a specific failure mode of baselines on K562 CRISPRi, and (c) an ablation that can falsify its contribution within the eval budget.**\n\nI will not re-litigate biology (settled in v5) or the theoretical framing (settled by the Critic). I will specify the **engineering contracts** that make v5 trainable and SOTA-beating.\n\n---\n\n## 1. Architecture Components\n\n### 1.0 Data Pipeline Contract (upstream of every component)\n\nBefore any component, the pipeline must produce a **frozen, versioned artifact bundle** that every downstream component consumes. This is the single most important engineering decision — it prevents train/eval leakage and makes ablations reproducible.\n\n| Artifact | Format | Specification | Consumer |\n|---|---|---|---|\n| `X_base` | CSR sparse, `float32` | log1p-C",
+      "round": 2,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v6: A Biologically-Grounded, Engineering-Complete Architecture for CRISPRi Knockout Prediction in K562\n\n## Executive Summary\n\nBuilding on the v5 consensus, this proposal resolves the Critic's central demand — **every component must earn its MSE/PCC/R² delta** — by specifying the *biological* mechanisms that make each component load-bearing and the *falsification test* that proves it. The organizing principle:\n\n> **CRISPRi in K562 is a *partially-identified, cell-state-modulated counterfactual* over a *sparse prior-anchored GRN*, where the target's post-perturbation state is a *distribution over partial-repression levels*, and downstream propagation is *gated by cell state* (cycle, subclone, stress) that must be inferred per-cell, not averaged away.**\n\nEvery architectural choice below is paired with (a) the K562 CRISPRi biology it exploits, (b) the baseline failure mode it corrects, and (c) the ablation that falsifies it.\n\n---\n\n## 1. Architecture Components\n\n### 1.1 Input Layer: Multi-View Cell Representation\n\n**Purpose:** Separate biological signal from technical noise before any perturbation logic.\n\n**Components:**\n\n| View | Dimension | Construction | Biology Addressed |\n|---|---|---|---|\n| `X_expr` | 2,000 HVG | log1p-CP10K, batch-corrected (scVI or Harmony) | Expression baseline |\n| `X_cycle` | 4 | Regev cycle score + 3 phase indicators | **K562 is highly proliferative; cell-cycle state modulates CRISPRi efficiency and buffering** |\n",
+      "round": 2,
+      "references": [
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "feedback",
+      "content": "# Data Engineer's Critique & v6.1 Engineering Specification\n\n## Executive Assessment\n\nThe v6 proposals are architecturally sound but **under-specified on the data-engineering side in three ways that will silently cap performance below SOTA**:\n\n1. **The \"frozen artifact bundle\" is described but not *quantified*** — no variance-explained targets, no per-artifact ablation budget, no leakage audit protocol. Without this, the Critic's demand (\"every component earns its delta\") cannot be *enforced*, only *asserted*.\n2. **The data pipeline does not address the K562 CRISPRi-specific sparsity regime** — multi-guide averaging, low-MOI cells, and non-targeting controls are the *actual* signal-to-noise boundary, not generic QC.\n3. **The training regime is missing the counterfactual data contract** — how negatives, matched controls, and held-out perturbations are constructed determines whether PCC/R² generalize or memorize.\n\nBelow I give a **specific, falsifiable, engineering-level** critique of both proposals, followed by the **v6.1 data-flow contract** that closes the gaps.\n\n---\n\n## 1. Technical Analysis\n\n### 1.1 What Both Proposals Get Right\n- Separation of `X_expr` / `X_cycle` / prior-GRN views is correct and matches the K562 biology (highly proliferative, cycle-dependent CRISPRi efficiency — Replogle 2022 confirms this).\n- Frozen artifact bundle as anti-leakage primitive is the right instinct.\n- Ablation-per-component discipline is exactly what the Critic demanded.\n\n### 1.2 Critical Gaps\n\n**Gap A — No variance-decomposition target",
+      "round": 2,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "feedback",
+      "content": "# Single Cell Biology Expert's Critique & v6.2 Biological Specification\n\n## Executive Assessment\n\nThe v6/v6.1 proposals are engineering-rigorous but **biologically under-specified in ways that will cap PCC/R² below SOTA on K562 CRISPRi**. The Critic's demand (\"every component earns its delta\") has been answered *mechanically* (ablation budget, artifact contracts) but not *mechanistically* (why should each component generalize to unseen perturbations?). Three biological gaps dominate:\n\n1. **The proposals treat CRISPRi knockdown as a scalar (partial repression), but K562 CRISPRi data (Replogle 2022, Nadig 2024) shows the response is dominated by *transcriptional buffering* and *compensation* that is target-class-specific** — the model must be able to represent \"no change\" as a *learned* outcome, not a failure mode.\n2. **Cell-state modulation is acknowledged but not operationalized as a *conditional* mechanism** — cycle scores are inputs, but the architecture does not make downstream propagation *depend* on cell state. This is the single largest PCC gap vs. SOTA (GEARS, scGPT-perturb, CPA).\n3. **The GRN prior is treated as a static adjacency, but the biology requires *edge-level sign and confidence* and *pathway-level aggregation*** — without this, the model cannot distinguish direct CRISPRi effects from compensatory indirect effects, which is exactly what R² rewards on held-out perturbations.\n\nBelow I give specific, falsifiable biological critiques and the v6.2 specification that closes them.\n\n---\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation",
+      "round": 2,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "question",
+      "content": "# Data Engineer's Critical Questions & v6.3 Engineering Interrogation\n\n## Executive Framing\n\nThe v6/v6.1/v6.2 proposals now cover biology, engineering, and mechanism. My job as Data Engineer is to **stress-test whether the specified data contracts actually deliver the deltas they promise** on `cellforge_input`. I will not re-argue settled points. I will ask the questions that, if unanswered, will cause v6 to underperform GEARS/CPA/scGPT-perturb on the eval harness — and I will propose the concrete engineering resolutions inline so the discussion converges.\n\n---\n\n## 1. Technical Clarifications (Data-Flow & Contracts)\n\n### Q1.1 — Where exactly is the train/val/test split boundary, and is it perturbation-disjoint *and* guide-disjoint?\n\nThe proposals say \"held-out perturbations\" but never specify the split unit. On `cellforge_input` (Replogle-derived K562 CRISPRi), the split unit matters enormously:\n\n- **Perturbation-disjoint** (target gene held out): tests generalization to unseen targets — this is what PCC/R² on \"unseen perturbations\" means.\n- **Guide-disjoint** (some guides of a *seen* target held out): tests guide-averaging robustness — a *different* generalization axis.\n- **Cell-state-disjoint**: not meaningful here (K562 is one line), but **batch-disjoint** (Replogle batch 1 vs. 2) is.\n\n**Engineering resolution I propose:** a **three-way frozen split manifest** (`split_v1.parquet`) with columns `(cell_id, target_gene, guide_id, batch_id",
+      "round": 2,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "answer",
+      "content": "# PerturbNet-KO v7: A Biologically-Resolved, Falsifiable Architecture for CRISPRi Knockout Prediction in K562\n\n## Preamble: What v7 Resolves\n\nThe v6→v6.3 dialogue converged on *engineering discipline* (frozen artifacts, ablation budgets, split manifests) but the Data Engineer's Q1.1–Q1.3 remain unanswered, and the Critic's core demand — **every component earns its delta** — has been answered *mechanically* but not *mechanistically*. As the Single Cell Biology Expert, my contribution to v7 is to close the **biological-mechanism → measurable-delta** loop for the three components that actually drive PCC/R² on K562 CRISPRi, and to **explicitly retire** components that cannot be biologically justified under the `cellforge_input` sparsity budget.\n\nThe organizing biological principle, refined from v6.2:\n\n> **CRISPRi knockdown in K562 is a *partial, cell-state-conditional repression* whose downstream signature is dominated by *transcriptional buffering* (target-class-specific), *compensatory pathway activation*, and *cell-cycle-gated propagation*. A model that cannot represent \"the cell compensates and expression does not change\" will systematically over-predict effect size and lose PCC on held-out targets — this is the single largest gap vs. GEARS/CPA on Replogle 2022.**\n\nEvery component below is paired with: **(a)** the K562 biology, **(b)** the baseline failure mode it corrects, **(c)** the ablation that falsifies it, and **(d)** the data contract from v6.1 it consumes.\n\n---\n\n##",
+      "round": 2,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Critic",
+      "type": "critique",
+      "content": "# Critic's Comprehensive Evaluation: PerturbNet-KO v7 Proposal Series\n\n## Executive Summary\n\nThe v6→v7 dialogue has produced an architecture that is **substantially more rigorous than the current SOTA baselines** (GEARS, CPA, scGPT-perturb) on the dimensions of *falsifiability* and *biological grounding*. However, as Critic, I must be blunt: **the proposals have drifted toward meta-rigor (ablation budgets, split manifests, artifact contracts) while the actual predictive mechanism remains under-specified at the level that determines MSE/PCC/R².** The dialogue has become long on *how we will know if it works* and shorter on *the specific computational mechanism that will make it work*.\n\nI will evaluate the converged v7 as the object of critique, noting where v6.1/v6.2/v6.3 contributions strengthen or weaken it.\n\n---\n\n## 1. Scientific Merit — **Score: 0.72**\n\n**Theoretical foundation (0.80):** The organizing principle — \"CRISPRi is a partial, cell-state-conditional repression with buffering-dominated downstream signature\" — is *correct* and *well-cited* (Replogle 2022, Nadig 2024). This is genuinely better theorized than GEARS (which assumes additive graph propagation without buffering) or CPA (which assumes linear latent additivity). The explicit representation of \"no change as a learned outcome\" is a real theoretical advance.\n\n**Methodological rigor (0.75):** The falsification-test-per-component discipline is exemplary and exceeds typical ML-biology papers. However, the rigor is *asymmetric*: the",
+      "round": 2,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v8: A Data-Engineering-First Architecture for K562 CRISPRi Knockout Prediction\n\n## Preamble: What v8 Resolves\n\nThe v6→v7 dialogue produced biological mechanism (v7), falsifiability discipline (v6.1), and split/artifact contracts (v6.3), but the Critic's final assessment is the correct one: **the predictive mechanism is under-specified at the level that determines MSE/PCC/R², and the data-engineering layer — where signal-to-noise is actually determined — is still described as policy rather than as *materialized tensors*.**\n\nAs Data Engineer, my v8 contribution is to make the **data pipeline the first-class architectural component**. On `cellforge_input` (Replogle-derived K562 CRISPRi), the ceiling on PCC/R² is set by three data-engineering decisions that precede any model:\n\n1. **How the per-cell → per-perturbation target is constructed** (guide averaging, MOI weighting, control matching).\n2. **How the conditioning signal is encoded as a *learned, batch-invariant* embedding** rather than a raw vector that leaks batch.\n3. **How the model consumes the GRN prior as a *sparse, signed, confidence-weighted operator*** that is cheap at K562 scale (~10k genes, ~100–300k cells).\n\nv8 fuses v7's biology with a **concrete, implementable data-flow and tensor contract** and specifies the mechanism at the layer level. Every component below is paired with: **(a)** the data-engineering rationale, **(b)** the SOTA failure mode it corrects, **(c)**",
+      "round": 3,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v9: A Biologically-Resolved, Data-Materialized Architecture for CRISPRi Knockout Prediction in K562\n\n## Preamble: What v9 Resolves\n\nThe v6→v8 dialogue converged on three layers: **biological mechanism** (v7), **falsifiability discipline** (v6.1), and **data-engineering contracts** (v8). The Critic's final verdict is the correct one: the *predictive mechanism* remains under-specified at the level that determines MSE/PCC/R². As the Single Cell Biology Expert, my v9 contribution is to **specify the computational mechanism at the layer level** — the actual tensor operations that encode the biology — while **consuming v8's data contracts** as the input specification and **honoring v7's falsifiability discipline** as the validation harness.\n\nThe organizing principle (unchanged, refined):\n\n> **CRISPRi knockdown in K562 is a *partial, cell-state-conditional repression* whose downstream signature is dominated by *transcriptional buffering* (target-class-specific), *compensatory pathway activation*, and *cell-cycle-gated propagation*. The model must be able to *learn \"no change\" as an outcome*, must *gate propagation on cell state*, and must *distinguish direct from compensatory indirect effects via signed, confidence-weighted GRN edges*.**\n\nv9 makes this concrete as **five coupled modules**, each with a specified tensor operation, a specified data contract from v8, and a specified falsification test from v7. I explicitly **retire** the following components from earlier proposals because they cannot be biologically justified under the `cellforge_input`",
+      "round": 3,
+      "references": [
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "feedback",
+      "content": "# Data Engineer's Review of PerturbNet-KO v8/v9: From Contracts to Competitive Performance\n\n## Executive Summary\n\nv8 and v9 have each done serious work — v8 materialized the data contracts, v9 specified the biological mechanism. But from a **data-engineering standpoint**, both proposals still under-specify the three things that actually determine whether we *beat* SOTA (MSE/PCC/R²) rather than *match* it:\n\n1. **The target tensor itself is under-specified.** Neither proposal fully commits to how `cellforge_input` becomes a `(perturbation × gene)` target matrix with a variance/confidence mask. This is where PCC is won or lost.\n2. **The conditioning embedding is described biologically but not statistically.** \"Batch-invariant learned embedding\" is a goal, not an operation. Without an explicit adversarial or residualization step, batch leaks into the perturbation embedding and R² collapses on held-out perturbations.\n3. **The GRN prior is invoked as signed/confidence-weighted but never materialized at K562 scale.** A dense 10k×10k signed operator is 800 MB in fp64 and ~400 MB fp32 per forward pass — computationally infeasible as described. This must be a sparse, chunked, block-structured operator or the proposal is unimplementable.\n\nBelow I give a **component-by-component technical review**, then a **concrete revised architecture (v10)** with the tensor contracts v8 promised but did not fully deliver.\n\n---\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation\n\n**Strengths (v8):**\n- The three-layer decomposition (target construction → conditioning embedding → GR",
+      "round": 3,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "feedback",
+      "content": "# Single Cell Biology Expert's Review of PerturbNet-KO v8/v9/v10 Dialogue\n\n## Executive Summary\n\nThe v6→v10 dialogue has produced genuine progress at three layers — biological mechanism (v7), falsifiability (v6.1), data contracts (v8), and now the Data Engineer's v10 push toward materialized tensors. My role as Single Cell Biology Expert is to evaluate whether the **specified computational mechanism actually captures the biology of CRISPRi knockdown in K562** at the level that determines MSE/PCC/R², and to identify where the architecture is *biologically mis-specified* in ways that will cap performance regardless of engineering quality.\n\nMy central verdict: **v10's data-engineering discipline is necessary but not sufficient.** The architecture still under-specifies four *biological* mechanisms that dominate the residual variance in Replogle-derived K562 CRISPRi data:\n\n1. **The target-class-dependent buffering regime** (essential vs. non-essential genes have qualitatively different response distributions — a single regression head cannot fit both).\n2. **The cell-state gating of propagation** (K562 is a leukemia line with a strong cell-cycle and erythroid-differentiation axis; perturbation effects are gated on this latent state).\n3. **The direct-vs-compensatory decomposition** (PCC is dominated by the *direct* effect; R² is dominated by *compensatory* off-target network response — these require separate heads).\n4. **The \"no-change\" mass** (most knockdowns produce near-zero expression change; MSE is dominated by correctly predicting null, not by predicting large effects).\n\nI provide a **biologically-resolved v11 specification",
+      "round": 3,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "question",
+      "content": "# Data Engineer's Critical Questions: From v10/v11 Specification to SOTA-Surpassing Execution\n\n## Framing\n\nv8 materialized contracts, v9 specified mechanism, v10 pushed tensors, v11 added biological resolution. The dialogue has converged on *what to build*. My questions now target the **gap between specification and executable performance** — the places where, in my experience shipping perturbation models, the design looks complete on paper but loses 15–30% of achievable PCC/R² in implementation. I organize these as **blocking questions** (must resolve before coding) and **sharpening questions** (resolve during iteration).\n\n---\n\n## 1. The Target Tensor: Where PCC Is Actually Won or Lost\n\nThe proposals agree on `(perturbation × gene)` targets with confidence masks but never commit to the **estimator** that produces them. This is not a detail — it is the dominant variance source on Replogle-derived K562.\n\n**Q1.1 — Guide-averaging vs. guide-pooling.** Replogle CRISPRi has 2–4 guides per target with *systematically different* on-target efficiencies. Do we (a) average per-cell expression across guides, (b) treat each guide as a separate perturbation and learn a guide-effect latent, or (c) fit a hierarchical model where guide efficiency is a learned scalar per guide? Option (a) collapses real heterogeneity and biases toward the most-efficient guide; (c) is the biologically correct choice but requires the model to *condition on guide identity at train time and marginalize at test time*. Which does v11 commit to, and how does the test-time marginalization affect R² on held-out perturbations",
+      "round": 3,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "answer",
+      "content": "# Single Cell Biology Expert's Response: The Biological Estimator Specification for PerturbNet-KO v12\n\n## Framing: Answering the Data Engineer's Blocking Questions\n\nThe Data Engineer's Q1.1–Q1.x are the right questions. They are not implementation details — they are **biological decisions that determine the target tensor**, and the target tensor determines the achievable PCC ceiling. I answer them here with explicit biological justification, then specify the **v12 additions** that close the remaining biological gaps from v11.\n\n---\n\n## 1. Blocking Answers: The Target Tensor Estimator\n\n### Q1.1 — Guide-averaging vs. pooling vs. hierarchical: **Hierarchical, with test-time marginalization**\n\n**Biological justification.** Replogle CRISPRi guides against the same target have systematically different on-target efficiencies (typically 40–90% knockdown) because they hit different protospacer positions with different chromatin accessibility and different off-target profiles. This is *not* noise — it is a **measured biological quantity** (guide efficiency correlates with position, GC content, and local chromatin state).\n\n**The three options are not equivalent:**\n\n| Option | What it does | Biological failure mode |\n|---|---|---|\n| (a) Guide averaging | Collapses to per-target mean | **Biases toward the most-efficient guide.** If guide 1 gives 85% KD and guide 2 gives 40% KD, averaging gives a response that *no real guide produces*. PCC against held-out guides will be systematically low because the test guide is a *sample* from a distribution the model never saw. |\n| (b) Guide as separate perturbation | Learns guide-effect latent | **Cannot generalize to unseen targets",
+      "round": 3,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Critic",
+      "type": "critique",
+      "content": "# Critic's Comprehensive Evaluation: PerturbNet-KO v6→v12 Dialogue\n\n## Framing: What This Dialogue Has Actually Produced\n\nBefore scoring, I must name what I observe: a **six-round dialogue that has produced an increasingly elaborate specification without a single empirical result**. v6 established falsifiability discipline, v7–v9 specified mechanism, v10–v12 added data contracts and biological resolution. Each round is internally coherent. But the dialogue has a structural pathology that my evaluation must surface: **the specification is growing faster than the evidence base**, and several rounds are resolving questions by *assertion* rather than by *reference to measurable outcomes*. This is the classic failure mode of research-design-by-committee, and it caps my scores below.\n\nI evaluate what is *on the table*, not what any single contributor intended.\n\n---\n\n## 1. Scientific Merit — **0.62**\n\n**Theoretical foundation (0.75).** Strong. The organizing principle — that CRISPRi knockdown in K562 is a *partial, cell-state-conditional repression* dominated by transcriptional buffering, compensatory activation, and cell-cycle-gated propagation — is biologically defensible and consistent with the Replogle/Adamson literature. The four mechanisms identified in v11 (target-class-dependent buffering, cell-state gating, direct-vs-compensatory decomposition, \"no-change\" mass) are genuinely the dominant variance sources and are correctly prioritized. This is not hand-waving.\n\n**Methodological rigor (0.55).** This is where the dialogue weakens. The v6.1 falsifiability discipline is invoked but **never actually instantiated as a concrete validation harness** — no specified ablation table,",
+      "round": 3,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v13: A Data-Engineer's Executable Architecture for SOTA-Surpassing CRISPRi Perturbation Prediction\n\n## Framing: What This Proposal Commits To\n\nThe v6→v12 dialogue has produced a specification that is biologically rich but **operationally under-committed**. As Data Engineer, my job here is to convert the accumulated biology into **executable tensor contracts, sparse operators, and a training harness that can be measured against SOTA on Replogle K562**. I commit to concrete choices — not because they are the only defensible ones, but because *a specified-but-untested design cannot beat SOTA, and an under-specified one cannot even be evaluated*. Where I disagree with prior rounds, I say so.\n\nI accept the Single Cell Biology Expert's v12 answers to Q1.1 (hierarchical guide model with test-time marginalization) as **binding** — this is the correct biological estimator and it determines the target tensor. I accept the Critic's core objection (specification-without-evidence) as the **governing constraint on this proposal**: every component below is specified so that it can be *ablated and measured*, and I define the ablation table in §6.\n\n---\n\n## 1. Architecture Components\n\n### 1.1 Component Overview\n\nPerturbNet-KO v13 is a **five-stage, conditional generative regressor**:\n\n```\n[Raw scRNA-seq] → (A) Target Tensor Builder → (B) Sparse GRN Operator\n                                              ↓\n                     (C) Cell-State Encoder ← (D) Perturbation Encoder\n                                              ↓\n                     (E) Gated",
+      "round": 4,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v14: A Biologically-Grounded Architecture for CRISPRi Perturbation Prediction in K562\n\n## Preamble: What I Commit To, and What I Refuse to Assert\n\nThe v6→v13 dialogue has converged on a rich specification. The Critic's structural objection is correct and I take it as governing: **the specification has grown faster than the evidence**. My contribution in v14 is therefore not to add another layer of mechanism, but to **convert the accumulated biology into a falsifiable architecture with explicit estimator choices, ablation targets, and biological constraints that are testable on Replogle K562 CRISPRi data**. Where I disagree with prior rounds, I say so explicitly. Where I am uncertain, I flag it as an ablation, not an assertion.\n\nI accept as **binding** from v12: (i) hierarchical guide model with test-time marginalization, (ii) the four dominant biological mechanisms (target-class buffering, cell-state gating, direct-vs-compensatory decomposition, no-change mass), and from v13: (iii) the five-stage conditional generative regressor framing and (iv) the ablation-table-first discipline.\n\nI **reject** two things from earlier rounds:\n- The assumption that a single regression head can serve both PCC (direct effect) and R² (compensatory response). These have *qualitatively different* optimal targets and I specify separate heads.\n- The implicit treatment of K562 as a homogeneous cell line. K562 has a strong erythroid-differentiation and cell-cycle axis (GATA1/KLF1/TAL1 erythroid program; heme biosynthesis; G1/S/G2M cycling). Perturbation",
+      "round": 4,
+      "references": [
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "feedback",
+      "content": "# Data Engineer Feedback on PerturbNet-KO v13/v14\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation\n\n**Strengths:**\n- The five-stage conditional generative regressor framing (v13) is a sound operational skeleton. Separating a **target tensor builder** from the **GRN operator** is correct — the target tensor is a data-engineering artifact (hierarchical guide marginalization) and should not be entangled with model weights.\n- v14's decision to split **PCC head (direct effect)** from **R² head (compensatory response)** is the single most important structural correction in the dialogue. MSE, PCC, and R² are not simultaneously optimized by one head; they weight the residual differently (PCC is scale-invariant and mean-invariant; R² penalizes variance misestimation; MSE penalizes absolute magnitude). A shared trunk + two heads is the right factorization.\n\n**Weaknesses / Blockers:**\n\n1. **Missing explicit tensor contract for the target.** Neither v13 nor v14 specifies the **shape and sparsity** of the prediction target. This is not cosmetic — it determines the loss, the batching strategy, and whether the model can be trained on Replogle K562 at all. I require:\n   - `Y ∈ R^{N_cells × G_genes}` post-QC, with `G ≈ 2,000–8,000` HVGs (not full 33k transcriptome — see §1.4).\n   - A **mask tensor** `M ∈ {0,1}^{N_cells × G}` marking genes that are (a) detected above noise floor, (b",
+      "round": 4,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "feedback",
+      "content": "# Single Cell Biology Expert — Feedback on PerturbNet-KO v13/v14\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation\n\n**What is right and should be preserved:**\n\n- The **five-stage skeleton** (target builder → GRN operator → state encoder → perturbation encoder → gated decoder) is biologically defensible. It mirrors the causal chain: *guide → target knockdown → GRN propagation → cell-state-conditioned transcriptional response*. This is the correct factorization for CRISPRi in K562.\n- The **PCC-head / R²-head split** (v14) is the single most important structural correction and I endorse it strongly. However, the current framing is **biologically under-specified**. In K562 CRISPRi:\n  - **PCC is dominated by the direct module** — the ~50–300 genes most tightly co-regulated with the target TF (e.g., GATA1 knockdown → globin genes, heme biosynthesis). These have high signal-to-noise and are what PCC rewards.\n  - **R² is dominated by the compensatory/global module** — the erythroid-differentiation axis and cell-cycle program shifts. R² penalizes variance misestimation across the *whole* gene vector, so it is disproportionately sensitive to the many low-effect genes that shift coherently.\n  \n  **This means the two heads must not share the same decoder bottleneck.** A shared trunk is fine, but the PCC head must be allowed a *low-rank, target-specific* projection (rank ≈ 8–16) while the R² head needs a *dense, target-agnostic* projection. I recommend:\n  ```\n  h = trunk(x, p)                   ",
+      "round": 4,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "question",
+      "content": "# Data Engineer — Critical Questions on PerturbNet-KO v13/v14\n\nI'll organize these as **blocking questions** (must be answered before I can commit to an implementation contract) and **non-blocking questions** (matter for SOTA margin, not for correctness). Each is framed so that the answer is a *concrete choice with a measurable consequence*, not a discussion.\n\n---\n\n## 1. Technical Clarifications (Blocking)\n\n### Q1.1 — Target tensor contract: what is `Y`, exactly?\nNeither v13 nor v14 commits to the shape of the supervised target. I need, in writing:\n\n- **Gene axis**: HVG count and selection procedure. Replogle K562 has ~33k genes; a `N_cells × 33k` dense target is ~10⁸ floats at 10k cells. Are we at 2k HVGs, 5k, or 8k? **Which HVG selector** (scanpy `highly_variable_genes` with `flavor='seurat_v3'` on raw counts? Pearson residuals? deviance?), and is the HVG set computed on **control cells only** (to avoid perturbation-induced variance leaking into feature selection — a real leakage risk)?\n- **Cell axis**: after QC, how many cells per guide? Replogle K562 has ~100–1000 cells per guide for most targets, but the tail is thin. What is the **minimum cells-per-guide threshold** for a guide to enter training vs. eval-only vs. dropped?\n- **Value semantics**: is `Y` (a) log1p-normalized expression, (b) Pearson residuals",
+      "round": 4,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "answer",
+      "content": "# Single Cell Biology Expert — Response to Data Engineer's Blocking Questions (v14 → v15)\n\n## Preamble\n\nThe Data Engineer's blocking questions are the right questions. I will answer each with a **concrete, biologically-justified choice** and state the measurable consequence. Where the biology genuinely does not constrain the choice, I say so and hand it to the Data Engineer as an engineering decision with a stated default. I also add one blocking question of my own that neither v13 nor v14 has addressed and that I believe is *the* dominant failure mode on Replogle K562 CRISPRi.\n\n---\n\n## 1. Answers to Blocking Questions\n\n### Q1.1 — Target tensor contract\n\n**(a) Gene axis: 5,000 HVGs, control-only, Seurat-v3 flavor on raw counts.**\n\n- **Count = 5,000, not 2k, not 8k.** Rationale: Replogle K562 CRISPRi direct effects are concentrated in erythroid/heme/ribosome programs (~200–400 genes with |LFC| > 0.5), but the *compensatory* module that R² rewards is diffuse and lives in the 3k–6k HVG band. At 2k we truncate the compensatory module and R² is systematically under-estimated; at 8k we add noise-dominated genes that inflate MSE variance without adding signal (my estimate: >60% of genes in the 5k–8k band have control-cell detection < 5% in K562, which is dropout-dominated). **5k is the knee.** This is a biologically-motivated choice, not a hyperparameter — the",
+      "round": 4,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Critic",
+      "type": "critique",
+      "content": "# Critic's Comprehensive Evaluation of PerturbNet-KO v13/v14/v15\n\n## Framing the Evaluation\n\nBefore scoring, I want to name the meta-problem the dialogue has surfaced, because it governs every score below. The Data Engineer's blocking questions and the Biology Expert's v15 response have together revealed that **the proposal is currently a specification with an unresolved contract**. That is not a fatal flaw — it is the correct state of a design at this stage — but it means my scores must separate *the architecture as conceived* from *the architecture as it could be executed*. I score the former for scientific merit and the latter for feasibility, and I flag explicitly where the gap between them is load-bearing.\n\nI also want to state my own governing objection, which extends the Data Engineer's: **the proposal has not yet specified a falsification protocol**. The Biology Expert's v14 preamble commits to \"a falsifiable architecture with explicit ablation targets,\" but no ablation table has actually been produced across v13–v15. The ablation-table-first discipline was declared binding in v13 and has not been honored. This is the single most important gap and it caps several scores below.\n\n---\n\n## 1. Scientific Merit — **0.72**\n\n**Theoretical foundation (0.80).** The five-stage factorization (target builder → GRN operator → state encoder → perturbation encoder → gated decoder) is genuinely well-motivated. It mirrors the causal chain guide → knockdown → GRN propagation → state-conditioned response, and this is the right level of abstraction for CRISPRi. The v14 split of PCC-head (direct, low-rank, target-specific) from R²-head (compensatory, dense, target-",
+      "round": 4,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v16: Data Engineering Proposal\n\n## Preamble: Resolving the Contract Before the Architecture\n\nThe Critic's governing objection is correct: v13–v15 are a specification without a contract, and the ablation table declared binding in v13 was never produced. I will not repeat that failure. This proposal is organized around **a data contract that is resolved first**, and every architectural component below is justified by a specific clause of that contract and a specific ablation row it is designed to win. Where the Biology Expert's v15 answers hand me an engineering decision, I state the default I am committing to and its measurable consequence.\n\nI am also resolving the Critic's falsification-protocol gap: §6 is a complete ablation table with pre-registered success criteria. If a component does not clear its row, it is removed. That is the binding discipline this proposal is submitted under.\n\n---\n\n## 0. The Data Contract (Resolved)\n\nThis is the contract v13–v15 never wrote. Every downstream component depends on it.\n\n### 0.1 Target tensor `Y`\n\n| Property | Committed value | Justification |\n|---|---|---|\n| Gene axis | **5,000 HVGs** | Biology Expert v15 §Q1.1(a): 5k is the knee where the diffuse compensatory module (3k–6k band) is retained without importing dropout-dominated noise. |\n| HVG selector | `scanpy.pp.highly_variable_genes(flavor='seurat_v3', n_top_genes=5000)` on **raw counts, control cells only** | Control-only selection prevents perturbation-induced variance leaking into feature selection (Data Engineer Q1.",
+      "round": 5,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "proposal",
+      "content": "# PerturbNet-KO v17: A Biologically-Grounded Architecture for CRISPRi Gene Knockout Response Prediction in K562\n\n## Preamble: What Changed from v16\n\nThe Critic's governing objection — *no falsification protocol has been honored* — and the Data Engineer's contract-first discipline are both correct and binding. This proposal does **not** introduce new architectural components for their own sake. Every component below is either (a) retained from v13–v16 because it clears its pre-registered ablation row, or (b) newly introduced because a *specific biological failure mode* of CRISPRi in K562 is not addressable by the existing components. I name the failure mode, the mechanism, and the ablation row it must win.\n\nThe one genuinely new architectural contribution is the **Erythroid-State Manifold Anchor (§1.3)**, which addresses the dominant confound in Replogle K562 CRISPRi that v13–v16 do not handle: **K562 is a mixed-population erythroleukemia line whose CRISPRi response is dominated by differentiation-state drift, not by the guide's direct target effect.** Without modeling this, the R² head learns to predict differentiation drift and the PCC head learns to predict direct effects, but the two are not disentangled — and generalization to unseen perturbations fails because differentiation drift is *shared* across guides and gets memorized as a per-guide offset rather than a state-conditioned response.\n\nI also commit to the **complete ablation table (§6)** with pre-registered success criteria. This is the discipline the Critic demanded and it is now binding.\n\n---\n\n## 1. Architecture Components\n\n### 1.0 Overview\n\n```\n                   ",
+      "round": 5,
+      "references": [
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Critic",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "feedback",
+      "content": "# Data Engineer Feedback on v16 and v17\n\n## 1. Technical Analysis\n\n### 1.1 What v16 Got Right (and Must Be Preserved)\n\nThe **contract-first discipline** in v16 §0 is the single most valuable contribution across the entire v13–v17 thread. Specifically:\n\n- **Control-only HVG selection on raw counts** is correct and non-negotiable. Selecting HVGs on perturbed cells leaks the perturbation signal into feature selection and inflates apparent R² on held-out guides. This must be locked in.\n- **5,000 HVGs** is defensible for Replogle K562 (~8,000–11,000 genes after QC). I'd push back only slightly: the diffuse compensatory module the Biology Expert cites lives in the 3k–6k band, but so does a large fraction of dropout-dominated low-expression genes in K562. **Recommendation: use `seurat_v3` with `n_top_genes=5000` but additionally require `min_cells=20` expression in controls, and report the ablation of 3k vs 5k vs 8k as a row in §6.** The knee is dataset-dependent; pre-registering three values costs nothing.\n\n### 1.2 Where v16 Is Under-Specified (Blocking)\n\nThe contract is resolved for `Y` but **not for `X` (the perturbation representation) or the split protocol**. These are the two places where SOTA baselines (GEARS, scGPT-perturb, CPA) actually win or lose, and neither v16 nor v17 specifies them:\n\n- **Perturbation encoding**: Is the CRISPRi target represented",
+      "round": 5,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "feedback",
+      "content": "# Single Cell Biology Expert — Feedback on v16/v17 and Architectural Recommendations for PerturbNet-KO v18\n\n## Executive Summary\n\nv17's **Erythroid-State Manifold Anchor** is the first biologically correct move in this thread. K562 CRISPRi response is genuinely dominated by erythroid differentiation drift, and no baseline (GEARS, scGPT-perturb, CPA) models this. However, v17 introduces it as a *component* rather than as a *latent structure that reorganizes the entire prediction problem*, and it does not specify the biology that makes the anchor identifiable. Below I give: (1) a technical analysis of what will break, (2) a biological relevance audit with specific mechanistic gaps, (3) an implementation feasibility read, (4) concrete architectural enhancements, and (5) a comparative analysis against SOTA.\n\nThe single most important biological point I must make up front: **CRISPRi in K562 is not a knockout model, it is a knockdown model with a stereotyped partial-effect distribution, and the erythroid drift is not a confound to be regressed out — it is a biological coordinate that determines the effect size of the guide.** Any architecture that treats state as a nuisance variable will underperform on unseen perturbations. The state must be a *conditioning variable in the effect-size head*, not a residual correction.\n\n---\n\n## 1. Technical Analysis\n\n### 1.1 Architectural Design Evaluation\n\n**What will work:**\n\n- **Control-only HVG selection on raw counts** (v16 §0.1) — correct, non-negotiable, and I endorse the Data Engineer's `min_cells=20` addition and the 3k",
+      "round": 5,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Data Engineer",
+      "type": "question",
+      "content": "# Data Engineer — Critical Questions for v18 Convergence\n\nThe Biology Expert's v18 feedback correctly reframes the erythroid state as a *conditioning variable* rather than a residual, and the Critic's falsification demand is now binding. But before I can commit to an implementation, I need concrete answers to questions that determine whether v18 is *trainable* and *reproducible*. I am organizing these as blocking (must be answered before code) versus advisory (can be resolved during implementation).\n\n---\n\n## 1. Blocking Questions — Data Contract Gaps That v16/v17 Still Do Not Close\n\n### 1.1 The Perturbation Representation `X` Is Still Undefined\n\nv16 §0 resolves `Y` (5,000 HVGs, control-only `seurat_v3`, `min_cells=20`). **It does not resolve `X`.** This is the single largest remaining gap. I need a committed answer to:\n\n- **Is the CRISPRi target encoded as (a) a one-hot over 5,000 HVGs, (b) a learned embedding indexed by gene ID over the full ~11k gene axis, or (c) a gene-ontology / pathway projection?** These have radically different generalization properties:\n  - (a) **Cannot generalize to unseen perturbations by construction** — a one-hot for a guide not in the training set is all-zeros. If the objective includes \"generalize to unseen perturbations,\" (a) is disqualified outright.\n  - (b) Generalizes via gene embeddings *only if* the embedding is pretrained on a gene-gene co-expression or STRING/Reactome graph. Otherwise unseen guides get random embeddings",
+      "round": 5,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Single Cell Biology Expert",
+      "type": "answer",
+      "content": "# Single Cell Biology Expert — v18 Architecture: The Erythroid-State-Conditioned Effect-Size Model\n\n## Preamble: What v18 Must Do That v17 Did Not\n\nThe Data Engineer is right that `X` is undefined, and I owe a committed answer. But before I answer it, I must correct a framing error in my own v18 feedback that the Data Engineer's questions expose: **I treated \"state conditioning\" as a soft suggestion. It is not. It is the identifiability condition for the entire model.** If the erythroid state is not a *measured, per-cell covariate* that enters the effect-size head multiplicatively, then the model will learn a per-guide mean offset, and generalization to unseen guides will fail — not because of architecture, but because the *target function is unidentifiable* without state.\n\nSo v18 commits to:\n\n1. **A resolved `X`** (Data Engineer §1.1) — gene-embedding-based, pretrained on co-expression, with a specific fallback for unseen guides.\n2. **A measured erythroid state coordinate** per cell, not a learned nuisance latent.\n3. **A multiplicative effect-size head** `Δ(state, target) = f(target) · g(state)` — the single most important architectural commitment, because it is the only parameterization under which the model can generalize to unseen guides *and* unseen states.\n4. **A complete ablation table** with pre-registered success criteria for every component.\n\nI will not introduce a component without naming the biological failure mode it addresses and the ablation row it must win.\n\n---\n\n## 1. Resolving `X`: The Perturbation Representation (",
+      "round": 5,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ],
+      "confidence_score": 0.0
+    },
+    {
+      "expert": "Critic",
+      "type": "critique",
+      "content": "# Critic's Evaluation: PerturbNet-KO v17/v18 Proposals\n\n## Framing: What the Critic Must Enforce Here\n\nMy job is not to reward architectural novelty. It is to ask one question repeatedly: **does this proposal contain a falsifiable claim that, if it fails, would force the authors to abandon the design?** v13–v17 have been through multiple rounds where components were added faster than they were justified. The Biology Expert's v18 pivot — \"state conditioning is the identifiability condition, not a soft suggestion\" — is the first statement in this thread that is both *architecturally consequential* and *empirically falsifiable*. That earns real credit. But the proposal still has unresolved contract gaps that the Data Engineer correctly identifies as blocking, and the ablation table that v17 \"committed to\" is referenced but not yet shown. I evaluate what is on the table, not what is promised.\n\n---\n\n## 1. Scientific Merit — Score: **0.68**\n\n**Theoretical foundation (0.75):** The reframing from \"state as residual\" to \"state as multiplicative conditioning variable\" is a genuine theoretical improvement. The claim `Δ(state, target) = f(target) · g(state)` is the correct parameterization *if* the underlying biology satisfies separability — i.e., if the effect of knocking down gene *g* in state *s* factorizes into a target-specific magnitude and a state-specific gain. This is plausible for CRISPRi partial knockdowns in a single cell line but is **not established** and is exactly the kind of assumption that should be pre-registered as an ablation, not asserted. The proposal does not",
+      "round": 5,
+      "references": [
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert",
+        "Data Engineer",
+        "Single Cell Biology Expert"
+      ],
+      "confidence_score": 0.0
+    }
+  ]
+}

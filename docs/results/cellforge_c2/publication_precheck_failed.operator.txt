@@ -1,0 +1,76 @@
+from pathlib import Path
+import json,hashlib,subprocess,re,datetime,importlib.util
+root=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2");rec=root/'docs/results/cellforge_c2';prefix='docs/results/cellforge_c2/'
+audit=prefix+'publication_audit_20261031.json';manifest=prefix+'artifact_manifest.json'
+spec=importlib.util.spec_from_file_location('pub',"/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops/publication_checks_20261030.py");pub=importlib.util.module_from_spec(spec);spec.loader.exec_module(pub)
+def git(*a):return subprocess.check_output(['git',*a],cwd=root)
+def require(ok,msg):
+ if not ok:raise RuntimeError(msg)
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+require(not git('diff','--cached','--name-only').strip(),'unexpected staging')
+names=sorted({p.relative_to(rec).as_posix() for p in rec.rglob('*') if p.is_file()}|{'README.md','artifact_manifest.json','publication_audit_20261031.json'})
+head=['# CellForge C2: checkpoint outcome and complete artifact index','','Read [the checkpoint-2 review](checkpoint2_review.md) ([JSON](checkpoint2_review.json)) first. The exact [generated script](result.raw.py) was posted before review and remains unexecuted. No training, predictions or score exists.','','Label: **CellForge (pinned release, checkpoint plan edited to the input as its README allows)**. The original C1 attempt is preserved separately in [cellforge_c](../cellforge_c/README.md). This directory retains every failed operator check and the authorized single corrections, successful planning, raw/edited plans and exact diff, approvals, first codegen and rejected script. No failed record was repaired or overwritten.','','The input is the approved corrected GEARS export at /Users/andresarriaga/cellforge_adamson_export_corrected_20261028, input SHA-256 ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a. Its cohort caveat remains: 1,770 extra controls and 10 training cells relative to the original bundle ingest. Raw inputs, work, environments, credentials and packages remain outside Git.','','Every publication file is listed below. artifact_manifest.json pins all artifacts plus the results index, except itself and the final publication audit (explicit circular-hash exclusions). Original log/issue whitespace and binary bytes are unchanged.','','| File | Record |','|---|---|']
+for name in names:
+ desc='Preserved command, output, provenance, runtime, check or coordination receipt'
+ if name.startswith('raw_planning/'):desc='Unchanged fresh C2 task analysis, discussion, retrieval or generated plan artifact'
+ elif name.startswith('codegen_artifacts/'):desc='Unchanged native first-codegen artifact, prompt, contract, boundary or log'
+ elif name=='README.md':desc='This complete per-file index'
+ elif name=='artifact_manifest.json':desc='Every artifact size and SHA-256; self and final audit excluded explicitly'
+ elif name=='publication_audit_20261031.json':desc='All final publication checks before push'
+ elif name.startswith('checkpoint2_review.'):desc='Static checkpoint rejection; no execution or repair'
+ elif name=='result.raw.py':desc='Exact generated script, unexecuted; SHA e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09'
+ elif name.startswith('operator_approval_receipt_failure_'):desc='Preserved original operator serialization failure, not a CellForge model failure'
+ elif name=='checkpoint1_approval.json':desc='Receipt created after direct resumption, binding prior posted plan approval'
+ elif name=='cap.json':desc='Original once-only absolute ceiling, retained without reset'
+ head.append(f'| [{name}]({name}) | {desc} |')
+(rec/'README.md').open('x').write('\n'.join(head)+'\n')
+files=[root/'docs/results/README.md']+[p for p in sorted(rec.rglob('*')) if p.is_file() and p.relative_to(root).as_posix() not in {manifest,audit}]
+mf={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'excluded':[manifest,audit],'files':[{'path':p.relative_to(root).as_posix(),'bytes':p.stat().st_size,'sha256':sha(p)} for p in files]}
+(rec/'artifact_manifest.json').open('x').write(json.dumps(mf,indent=2)+'\n')
+stage=[p.relative_to(root).as_posix() for p in files]+[manifest]
+allowed=lambda s:s=='docs/results/README.md' or s.startswith(prefix)
+statuses=git('status','--porcelain','-uall').decode().splitlines()
+require(all(allowed(s[3:]) for s in statuses),'publication scope')
+require(all('D' not in s[:2] for s in statuses),'deletions')
+for rel in stage:
+ p=root/rel;data=p.read_bytes()
+ require(not p.is_symlink(),'symlink')
+ require(not pub.secret_hits(data),'credential pattern in '+rel)
+ require(not re.search(r'(^|/)(?:data|runs|private|harness|packages)(?:/|$)|\.(?:h5ad|npz|sqlite|pt|whl)$',rel),'raw or protected path')
+ if rel.endswith('.json'):json.loads(data)
+ if rel.endswith('.jsonl'):
+  for line in data.splitlines():
+   if line.strip():json.loads(line)
+for file in mf['files']:
+ p=root/file['path'];require(sha(p)==file['sha256'] and p.stat().st_size==file['bytes'],'manifest')
+require(all(f']({name})' in (rec/'README.md').read_text() for name in names),'index coverage')
+require(sha(rec/'result.raw.py')=='e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09','script hash')
+require((rec/'result.raw.py').read_bytes()==(rec/'codegen_artifacts/result.py').read_bytes(),'script raw copy')
+require(sha(rec/'checkpoint1_candidate.json')=='228e4d5130b982da561fc0eb431342dff94eb362df48d9a46b910fdc4a9d8c4e','candidate hash')
+raw=json.loads((rec/'raw_planning/plans/cellforge_input/research_plan_20261030_141205.json').read_text());edited=json.loads((rec/'checkpoint1_candidate.json').read_text())
+for pref in [[],['task_wise_plan',0,'design_refs'],['task_wise_plan',1,'design_refs']]:
+ a,b=raw,edited
+ for k in pref:a,b=a[k],b[k]
+ require(a['model_architecture']==b['model_architecture'] and a['training_strategy']==b['training_strategy'],'protected plan settings')
+require(all((rec/n).read_text().strip()=='0' for n in ['task_analysis.exit','method_design.exit','analysis_pipeline.exit','codegen.exit']),'successful phase exits')
+review=json.loads((rec/'checkpoint2_review.json').read_text())
+require(review['decision']=='reject' and review['script_executions']==0 and review['training_runs']==0 and review['score_calls']==0,'rejection classification')
+require(not (rec/'checkpoint2_approval.json').exists(),'unexpected checkpoint approval')
+require((rec/'operator_approval_receipt_failure_20261030.exit').read_text().strip()=='1','original operator failure not preserved')
+for rel in ['docs/results/README.md',prefix+'README.md',prefix+'checkpoint2_review.md']:
+ require(all(l.rstrip()==l for l in (root/rel).read_text().splitlines()),'authored whitespace')
+subprocess.run(['git','add','--',*stage],cwd=root,check=True)
+require(set(git('diff','--cached','--name-only').decode().splitlines())==set(stage),'staged scope')
+require(all(pub.staged_matches_disk(root,s) for s in stage),'raw staged bytes')
+subprocess.run(['git','diff','--cached','--check','--','docs/results/README.md',prefix+'README.md',prefix+'checkpoint2_review.md'],cwd=root,check=True)
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'all_pass':True,'files_before_audit':len(stage),'checks':{'allowlisted_results_index_receipts_only':True,'no_deletes_raw_private_packages_keys_or_symlinks':True,'all_JSON_and_JSONL_parse':True,'every_file_indexed':True,'manifest_hashes':True,'raw_staged_blob_bytes_match_disk':True,'token_boundary_secret_scan':True,'authored_whitespace':True,'raw_script_and_plan_hashes_unchanged':True,'six_protected_plan_subtrees_unchanged':True,'prior_failures_preserved':True,'checkpoint2_rejection_no_training_or_score':True},'manifest_exclusions':[manifest,audit],'raw_logs_whitespace_preserved':True,'generated_source_is_unexecuted_evidence':True}
+(rec/'publication_audit_20261031.json').open('x').write(json.dumps(report,indent=2)+'\n')
+subprocess.run(['git','add','--',audit],cwd=root,check=True)
+final=stage+[audit]
+require(set(git('diff','--cached','--name-only').decode().splitlines())==set(final),'final scope')
+for rel in final:
+ require(pub.staged_matches_disk(root,rel),'final bytes')
+ require(not pub.secret_hits(git('show',':'+rel)),'final staged credential pattern')
+require(not git('ls-files','--others','--exclude-standard').strip(),'unexpected untracked files')
+print(json.dumps({'all_pass':True,'staged_files':len(final),'manifest_files':len(mf['files']),'no_model_or_script_execution':True}))
+

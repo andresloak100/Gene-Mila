@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-31T22:17:44.908896+00:00",
+  "command": [
+    "/usr/bin/screen",
+    "-dmS",
+    "gm-c2-cellforge-training",
+    "/usr/bin/caffeinate",
+    "-i",
+    "/usr/bin/nice",
+    "-n",
+    "19",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+    "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops/train_once.py"
+  ],
+  "environment": "keysunset",
+  "training_time_cap": null,
+  "attempt": 1
+}

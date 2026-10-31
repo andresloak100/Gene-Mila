@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-30T17:52:10.451069+00:00",
+  "metrics_source": "docs/results/linear_ae_adamson.json",
+  "metric_values_unchanged": true,
+  "paired": {
+    "n": 21,
+    "mean_diff": -0.1132228613733192,
+    "se": 0.0430444692533904,
+    "wins_a": 9,
+    "wins_b": 12,
+    "ties": 0,
+    "verdict": "b"
+  },
+  "twice_paired_se": 0.0860889385067808,
+  "lab_gain": 0.1132228613733192,
+  "rule_verified": true,
+  "independent_source_only_review": "lab meets rule: gain>2SE and12/21wins;38predictionrows,21pairedconditions;50trainused0fallback;single deterministic noSD",
+  "export_path": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "raw_tool_md_preserved": true,
+  "report_operator_appendix": true,
+  "ledger": 61.401668232
+}

@@ -1,0 +1,37 @@
+{
+  "utc": "2026-10-30T17:50:23.243832+00:00",
+  "checks": {
+    "keys": true,
+    "shape": true,
+    "finite": true,
+    "exact_pert_order": true,
+    "exact_gene_order": true,
+    "unique_perts": true,
+    "unique_genes": true,
+    "k": true,
+    "lam": true,
+    "train_perturbations": true,
+    "heldout": true,
+    "input_sha": true,
+    "prediction_sha": true,
+    "input_unchanged": true,
+    "empty_export_unchanged": true
+  },
+  "all_pass": true,
+  "prediction_sha256": "52118b47e9455dcfde4757d8043837cb96bcc2c6901149091fdf4e93a0e9b9ee",
+  "prediction_bytes": 749984,
+  "runner_receipt": {
+    "model": "linear baseline (Ahlmann-Eltze, Huber and Anders 2025)",
+    "train_used": 50,
+    "train_without_embedding": [],
+    "heldout_fallback": [],
+    "k": 10,
+    "lam": 0.1,
+    "train_perturbations": 50,
+    "heldout": 38,
+    "export_input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+    "predictions_sha256": "52118b47e9455dcfde4757d8043837cb96bcc2c6901149091fdf4e93a0e9b9ee",
+    "seconds": 1.4,
+    "machine": "macOS-26.5.1-arm64-arm-64bit-Mach-O"
+  }
+}

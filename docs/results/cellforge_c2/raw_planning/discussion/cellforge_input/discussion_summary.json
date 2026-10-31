@@ -1,0 +1,76 @@
+{
+  "total_rounds": 6,
+  "experts": [
+    "Critic",
+    "Single Cell Biology Expert",
+    "Data Engineer"
+  ],
+  "message_types": [
+    "answer",
+    "feedback",
+    "critique",
+    "question",
+    "proposal"
+  ],
+  "rounds_summary": [
+    {
+      "round": 0,
+      "messages": 7,
+      "experts_involved": [
+        "Critic",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ]
+    },
+    {
+      "round": 1,
+      "messages": 7,
+      "experts_involved": [
+        "Critic",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ]
+    },
+    {
+      "round": 2,
+      "messages": 7,
+      "experts_involved": [
+        "Critic",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ]
+    },
+    {
+      "round": 3,
+      "messages": 7,
+      "experts_involved": [
+        "Critic",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ]
+    },
+    {
+      "round": 4,
+      "messages": 7,
+      "experts_involved": [
+        "Critic",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ]
+    },
+    {
+      "round": 5,
+      "messages": 7,
+      "experts_involved": [
+        "Critic",
+        "Single Cell Biology Expert",
+        "Data Engineer"
+      ]
+    },
+    {
+      "round": 6,
+      "messages": 0,
+      "experts_involved": []
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+/usr/bin/nice -n 19 /Users/andresarriaga/gm_dlenv/bin/python -m pytest -q tests/test_run_linear_ae.py tests/test_cellforge_bridge.py

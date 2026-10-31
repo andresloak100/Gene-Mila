@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-31T17:33:15.257245+00:00",
+  "cli_exit": 0,
+  "final_message_sha256": "48f4394d0b82ad0dd16bfda33e534eba8c558286483af99416b52c964b2d899f",
+  "artifact_sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09",
+  "source_bytes": 24797,
+  "delivery": "strict JSON source decoded verbatim and written exclusively",
+  "syntax_check": "ast.parse only; no compile/import/exec",
+  "script_executed": false,
+  "repair_attempts": 0,
+  "disabled_features": [
+    "apps",
+    "browser_use",
+    "browser_use_external",
+    "browser_use_full_cdp_access",
+    "code_mode",
+    "code_mode_host",
+    "computer_use",
+    "goals",
+    "hooks",
+    "image_generation",
+    "multi_agent",
+    "plugins",
+    "shell_snapshot",
+    "shell_tool",
+    "skill_search",
+    "sleep_tool",
+    "unbounded_connection_retries",
+    "workspace_dependencies"
+  ],
+  "process_exec": "Codex Mach-O binary only; other child executables denied",
+  "free_local_fake": false
+}

@@ -1,0 +1,38 @@
+from pathlib import Path
+import ast,json,re,socket,hashlib
+import anndata,numpy as np,torch
+SCRIPT=Path("/Users/andresarriaga/cellforge_c2_workspace/codegen/result.py")
+tree=ast.parse(SCRIPT.read_text())
+values={}
+for node in tree.body:
+ if isinstance(node,ast.Assign):
+  for name in node.targets:
+   if isinstance(name,ast.Name) and name.id in ['HELDOUT','CONTROL_NAMES']:values[name.id]=ast.literal_eval(node.value)
+CONTROL_NAMES=values['CONTROL_NAMES'];heldout=values['HELDOUT']
+def canonical(label):
+ text=str(label).strip()
+ if text.lower() in CONTROL_NAMES:return 'control'
+ pieces=[p.strip() for p in re.split(r'[+;,]',text) if p.strip()]
+ active=[p for p in pieces if p.lower() not in CONTROL_NAMES]
+ return '+'.join(active) if active else 'control'
+def targets(label):return [] if label=='control' else label.split('+')
+a=anndata.read_h5ad("/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/cellforge_input.h5ad",backed='r')
+keys=['perturbation','gene','target_gene','gene_target','condition','target','guide_target']
+key=next(k for k in keys if k in a.obs)
+labels=[canonical(x) for x in a.obs[key]]
+genes=set(a.var_names.astype(str));train_targets=sorted({g for p in labels for g in targets(p)})
+missing_train=sorted(set(train_targets)-genes);missing_heldout=sorted({g for p in heldout for g in targets(p)}-genes)
+assert len(train_targets)==50 and len(heldout)==38 and a.shape==(40890,2055)
+denied={}
+for name,path in [('main_public_readme',"/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/README.md"),('other_export_file','/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/TASK.md'),('empty_export','/Users/andresarriaga/cellforge_adamson_export/cellforge_input.h5ad')]:
+ try:Path(path).read_bytes();denied[name]=False
+ except PermissionError:denied[name]=True
+probe=Path("/Users/andresarriaga/cellforge_c2_adamson")/'.operator_profile_probe';probe.write_text('probe');probe.unlink()
+try:
+ s=socket.socket();s.connect(('127.0.0.1',9));denied['network']=False;s.close()
+except PermissionError:denied['network']=True
+except OSError:denied['network']=False
+assert all(denied.values()),denied
+doc={'shape':list(a.shape),'controls':labels.count('control'),'training_target_count':len(train_targets),'perturbation_column':key,'train_targets_missing_from_panel':missing_train,'heldout_targets_missing_from_panel':missing_heldout,'hash_fallback_count':0 if not missing_train and not missing_heldout else None,'count_method':'0 derived from exhaustive target coverage and source control flow; no runtime counter. Every parsed target obtains a correlations entry even with zero variance. Final script unmeasured_heldout_targets will be recorded separately.','profile_checks':denied,'output_write_probe':True,'torch_version':torch.__version__,'script_imported_or_executed':False}
+a.file.close();print(json.dumps(doc))
+

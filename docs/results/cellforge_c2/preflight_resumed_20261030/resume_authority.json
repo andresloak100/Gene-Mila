@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-30T16:11:50.724765+00:00",
+  "direct_user": "Go: resume C2, then block H, under the $66.240534032 ceiling. Fix import check; rerun free preflight and continue only when it passes. Any failure stop/report; never push before all checks pass.",
+  "lead_issue51_comment": 6525043944,
+  "numeric_cap_issue41_comment": 6498680009,
+  "original_failed_runner_sha256": "ef0202acb991943ec5249bdc3d9c834d590d9783573e5476a74a342492505482",
+  "updated_runner_sha256": "2b0f7713c61b33ccf0e3872ad5696d4b311e69cf1183732c213210aace0272bb",
+  "preserved_previous_failure": true,
+  "method_design_probe": "Uses actual exported generate_research_plan rather than nonexistent run_method_design package export; external source unchanged.",
+  "new_receipts": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/docs/results/cellforge_c2/preflight_resumed_20261030",
+  "c2_head": "d6b98ec4f1f5babfdc58323e0590ee7e2d87f74d"
+}
