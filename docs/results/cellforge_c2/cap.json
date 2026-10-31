@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-30T18:02:56.715881+00:00",
+  "run_id": "cellforge_adamson_c2_seed0",
+  "cumulative_ceiling": "66.240534032",
+  "ledger_before": 61.401668232,
+  "ledger_rows_before": 23806,
+  "headroom": "4.838865800",
+  "authority_url": "https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6498680009",
+  "authority_exact": "Keep the existing $66.240534032 ceiling",
+  "covers": "C2 and then H under same absolute ceiling; no reset",
+  "original_C1_cost_remains_charged": "0.161134200",
+  "once_only": true
+}

@@ -1,0 +1,874 @@
+{
+  "utc": "2026-10-31T17:42:44.999580+00:00",
+  "excluded": [
+    "docs/results/cellforge_c2/artifact_manifest.json",
+    "docs/results/cellforge_c2/publication_audit_20261031.json"
+  ],
+  "files": [
+    {
+      "path": "docs/results/README.md",
+      "bytes": 25143,
+      "sha256": "c04444dbd4a83e9fe88e11737f7c596a54f86860b11a327619011d7034d7a8a4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/FREE_PREPARATION_STOP.json",
+      "bytes": 74,
+      "sha256": "b81c0e1a4b1eb0bf59ec116f496292d5b62a4a2b60f3a4b94d00e42396f3b7f8"
+    },
+    {
+      "path": "docs/results/cellforge_c2/README.md",
+      "bytes": 30091,
+      "sha256": "7319566b1f453628bd1d0074aa39985e03bfa50282fcbfffda83528fefd7201b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/STOP_codegen_boundary_20261030.json",
+      "bytes": 1903,
+      "sha256": "78842e3b8bf50e32e32f3825d07b9427c1f5a06603c4b3d1e0aeb374bc942cef"
+    },
+    {
+      "path": "docs/results/cellforge_c2/access_and_codegen_free_20261030.operator.txt",
+      "bytes": 7030,
+      "sha256": "457a3b6faeb29633abdb8105db9ddbe34fb70af9a819ddb559e0f691e0d6b55f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/access_boundary_resumed_20261030.json",
+      "bytes": 712,
+      "sha256": "f30a067e6b0a507396ee90e050c551c30287622025e8fd803266e6203b5da431"
+    },
+    {
+      "path": "docs/results/cellforge_c2/analysis_pipeline.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/analysis_pipeline.live_method_design.json",
+      "bytes": 121,
+      "sha256": "fb5a69e378b0cb77ea04e11c3e4285405c4d1dc90ced7b01e490a508d69105c3"
+    },
+    {
+      "path": "docs/results/cellforge_c2/analysis_pipeline.live_task_analysis.json",
+      "bytes": 121,
+      "sha256": "68eaa0f83f35a7895138c893d7d7a708283aa6c808d04268a61e122eda30ff6c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/analysis_pipeline.operator.txt",
+      "bytes": 6298,
+      "sha256": "0cbd50368534cd4b73ffb1c9f6c580b6696382a8375344f1544712cae1b7e7fe"
+    },
+    {
+      "path": "docs/results/cellforge_c2/analysis_pipeline.started.json",
+      "bytes": 203,
+      "sha256": "6ebff3301690dc5257616d8d6ce4d6d4fc1886e55eed89c3980c3bb1234c81ed"
+    },
+    {
+      "path": "docs/results/cellforge_c2/analysis_pipeline_final.json",
+      "bytes": 935,
+      "sha256": "1d23d5a2d1934b949c33d55370b84b58c80b1f9f2f2155e41263a57f7d391749"
+    },
+    {
+      "path": "docs/results/cellforge_c2/artifact_manifest_before_eof_fix.json",
+      "bytes": 33346,
+      "sha256": "028f4a932d4be05e6e21e05236b287d4c3f931a7fe30a1cd46ccab76997fb151"
+    },
+    {
+      "path": "docs/results/cellforge_c2/caffeinate.json",
+      "bytes": 122,
+      "sha256": "f83002e294562915945971f33425ccbc59f9e674d4b6735e8071ba2b3e502637"
+    },
+    {
+      "path": "docs/results/cellforge_c2/cap.json",
+      "bytes": 527,
+      "sha256": "e04bc3b6196c8babba96a135f8fcde77dd701d505059bb2a9d71c903ffa54504"
+    },
+    {
+      "path": "docs/results/cellforge_c2/cap_authority_confirmation_20261029.json",
+      "bytes": 469,
+      "sha256": "80d8e60436cbc74aae573432d65a21d82327f18452da67817b1d10165436cecf"
+    },
+    {
+      "path": "docs/results/cellforge_c2/cap_authority_issue41_20261029.json",
+      "bytes": 162,
+      "sha256": "099afe229c8ebe072e48de4ae930de23386cfde660ac6fd20c2f5537fe34d785"
+    },
+    {
+      "path": "docs/results/cellforge_c2/cap_authority_issue41_20261029.md",
+      "bytes": 779,
+      "sha256": "8c67286ce38d92628725d6028b253e432bdc7a5a2ff9f089532bc7430e7033c5"
+    },
+    {
+      "path": "docs/results/cellforge_c2/cellforge_analysis.sb",
+      "bytes": 822,
+      "sha256": "3ff22a3b689ad41aabfd3e73a7a23135db78628db415a63b4750ab14fa113b20"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_approval.json",
+      "bytes": 747,
+      "sha256": "1662f3868cdd2a45ca59c05b826579a9bffa6c45d4101cb146f75ef2670a2a5c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_approval_issue51.json",
+      "bytes": 162,
+      "sha256": "407b0ca7a5e646458b4432f6125c0fd8a09e4dfe87a2c08a84de1b1bc248ef15"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_approval_issue51.md",
+      "bytes": 1387,
+      "sha256": "870a14e42e0df363c174751938f17dbcd0d42253ea1ba4cc2bb00d58253067d5"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_candidate.diff",
+      "bytes": 24060,
+      "sha256": "f3c6f368a2cd6ead7e7a3937063e8bd7dfbc7d7971405c38deb4342e341e916a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_candidate.json",
+      "bytes": 31108,
+      "sha256": "228e4d5130b982da561fc0eb431342dff94eb362df48d9a46b910fdc4a9d8c4e"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_candidate.md",
+      "bytes": 31460,
+      "sha256": "213dcb1c6c53e023cde984a96c06bef19b87eb75bf33e13e77c1c70ab56c0a02"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_diff_issue51.json",
+      "bytes": 162,
+      "sha256": "c7730d14934652b9e9903afd443d1dddeeecd9d5f411ef1e394bb7e6abc5350b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_diff_issue51.md",
+      "bytes": 27279,
+      "sha256": "6bd596351e6926f834ace5a0e6e61b6803e9314588f05e8171aa3933966cea26"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_edit_operations.json",
+      "bytes": 30645,
+      "sha256": "cfbbb58084086a084191fe967be60bd4426d92b123beeb42f5f5a2f8bc81af01"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint1_exact.diff",
+      "bytes": 24343,
+      "sha256": "edb43f8b49a8a4d54d76e777afaba43491617c65842be3b48d9516a2ba3a525f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint2_rejection_issue51.json",
+      "bytes": 163,
+      "sha256": "f1618ee1df8976d9b56651f055e70016a0e06607c200b920e3df9fdc00a2d004"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint2_rejection_issue51.md",
+      "bytes": 1804,
+      "sha256": "fc4e8b39f3c11ea8a3d1e0e41d10be6f5e3dd0ecb6f741820a40a1f56eb00242"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint2_review.json",
+      "bytes": 2425,
+      "sha256": "75f3f64391a5382d84d594e6b8027de43bd274c783f132827024e36fc054944c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint2_review.md",
+      "bytes": 3162,
+      "sha256": "d894574987f6bc5c1457e2a9573e8a371ed20b1b979925423718d3ba37da3d6a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint2_review_before_eof_fix.md.txt",
+      "bytes": 3163,
+      "sha256": "884f57bf143b91b4b86028d4c607d3f26be2a1b1116eea18bfd701f7f57e3254"
+    },
+    {
+      "path": "docs/results/cellforge_c2/checkpoint2_stop_containment.json",
+      "bytes": 3187,
+      "sha256": "21b12e828dc5b39d051cb80ba392f1ff7e0d4d06e02a37fc4e290fb7f89229b1"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen.command.json",
+      "bytes": 973,
+      "sha256": "fb603553709b40ae3f7c8a4e41b6c19c6063f69c607d680b277c0131977373fb"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen.log",
+      "bytes": 512,
+      "sha256": "de817d5134b88f71845326b2e5bb4df187ea9755210d317d99de5f745f572ee4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen.runtime.json",
+      "bytes": 203,
+      "sha256": "27db3f8240ff88987814b997460c07292095e62585266167959feabb8f667321"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen.started.json",
+      "bytes": 1203,
+      "sha256": "ebae8f307518f9179d48cb63d0aa86c088ec07cbbe64a9a540cf740736147194"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/AGENTS.md",
+      "bytes": 250,
+      "sha256": "1600953c4289b1ddb164f64e524f8f7b4786992c7fcb6142bd8f41d2ca18537f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/acceptance_contract.json",
+      "bytes": 2490,
+      "sha256": "2de6713911c01fba4a40cca063da392bba7e473c92558f946b1c9f0aac9bcb6a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/backend_result.json",
+      "bytes": 588,
+      "sha256": "e4aa476bfb8aeadb5115dea8173342710dd7ec42e34edbb5591b2159a2a96697"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/codegen_process_boundary.sb",
+      "bytes": 582,
+      "sha256": "87f02b25b2d9a731597cdfa75adb33839230a5fa66f58ceec8c57bd0d77f33f4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/controller_cli_command.json",
+      "bytes": 1936,
+      "sha256": "0574303dd9395626460a48d521adf0f845e070f74a4f702b5865b3504f2d03e4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/controller_delivery_override.txt",
+      "bytes": 3007,
+      "sha256": "694ab9c1aa7243d38a7a6ba81dbd8defca71b6dd6943067aa14ec94c46404b6b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/controller_delivery_receipt.json",
+      "bytes": 978,
+      "sha256": "27fb2de82c54ef8a5bd7f4f5b3823e9f2709d154e21ee8fb3c62ea27d7f1f589"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/controller_effective_prompt.txt",
+      "bytes": 36007,
+      "sha256": "bcc7d5fe8b410080c483ead69c69beef240dddd210e222546ac333042e32c331"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/controller_input_prompt.txt",
+      "bytes": 32999,
+      "sha256": "6c3d80222525921ae490094a1819e3c34a7f021bad2dc5630acc4f00edc55578"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/delivery_schema.json",
+      "bytes": 158,
+      "sha256": "64885925a4a8025235c74d40b920eaac5bb2bd21d5bb1ebe5f0dd992be1e538e"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/logs/agent_events.jsonl",
+      "bytes": 6382,
+      "sha256": "15e22c70c2d92dbeebdeaa8a8d1009853af9e80815f251596b285bd665ab1728"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/logs/codex_attempt_01.txt",
+      "bytes": 25310,
+      "sha256": "48f4394d0b82ad0dd16bfda33e534eba8c558286483af99416b52c964b2d899f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/logs/codex_events_raw_attempt_01.jsonl",
+      "bytes": 26428,
+      "sha256": "2ff63a86fcb4254c264333d69ce2d9fd394e89507b43610fc071fcedbf285a35"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/logs/codex_stderr_attempt_01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/research_plan.json",
+      "bytes": 31108,
+      "sha256": "228e4d5130b982da561fc0eb431342dff94eb362df48d9a46b910fdc4a9d8c4e"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_artifacts/result.py",
+      "bytes": 24797,
+      "sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_boundary_stop_issue51_20261030.json",
+      "bytes": 162,
+      "sha256": "d3487ae6370cf7be97c1f7033d23ca82f84c6da12a6b2e277a69dad21f194b82"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_boundary_stop_issue51_20261030.md",
+      "bytes": 2110,
+      "sha256": "a6dc50cd4ac49be21e367bdd744b2e7f970d784b0eaa7c6c32d3cf9fd49807d2"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_delivery.json",
+      "bytes": 1440,
+      "sha256": "39117cfb3a27fe6a425b7ef924fb4d3952751485889053ec2767f26472ebd9b1"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_effective_tools_free_20261030.json",
+      "bytes": 882,
+      "sha256": "53df029484993c062231886b5494c3a7a3d6115bad81aeb41dbffd0e5cca1f85"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_launch_20261031.json",
+      "bytes": 547,
+      "sha256": "af7a7f913d2a917c60e14950157d1b89befad5246682889f703fa90c2f28fa26"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_once.operator.txt",
+      "bytes": 5813,
+      "sha256": "190523a7046eb1c47a288f659faf21e56d59a29ce577770b92b5b733afdff077"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_script_issue51.json",
+      "bytes": 163,
+      "sha256": "544bca5a027846e8388952a0cb5f9f1a0aae6d4edeaf47350762ac5bca5be8a3"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_script_issue51.md",
+      "bytes": 25682,
+      "sha256": "845478d860918b2f4da620ccce91032a854e8e3f5c121d07977b452be3434276"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/authorized_fix.diff",
+      "bytes": 5467,
+      "sha256": "20332cd805562fb834e68dca8c3bb96caab2a8a35515bc7d26a8721a73ba8487"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/codegen_effective_tools_free_20261030.json",
+      "bytes": 853,
+      "sha256": "2e478569658f6333805590491ad221564d51c9bac4ec10961ff4cb3fc0e4dc55"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/codegen_tool_probe.command.json",
+      "bytes": 1891,
+      "sha256": "d6f0f1001951a695c5b087f4b4b34ddd9b8c545367af797e55d17edfca4ed75c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/codegen_tool_probe.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/codegen_tool_probe.stdout.log",
+      "bytes": 303,
+      "sha256": "f10ddf73d62f13a1227248cd65702f000b94f0d323689413a4e8e5ee6acf1dd0"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/fix_authority.json",
+      "bytes": 188,
+      "sha256": "908db6c7d1fc4df010bf76cc2ea3ceb39d97fb95641aa41e1cd3903a3e7fd6f0"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_check_corrected_20261030/operator.txt",
+      "bytes": 5378,
+      "sha256": "4795053519dc7bb205e39f05d9df318beebc524437f5f9f6eeeb90b3e14d72be"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_probe.command.json",
+      "bytes": 1852,
+      "sha256": "7493a00cdafd9b0440c968cb5bc3eb33524105066d9fd3a85f43616bc660b815"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_probe.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codegen_tool_probe.stdout.log",
+      "bytes": 303,
+      "sha256": "f886d6a0ea9874a22bbf97a385d86faaf2a2240f782bd8f9574b712f5195a271"
+    },
+    {
+      "path": "docs/results/cellforge_c2/codex_delivery_boundary.operator.txt",
+      "bytes": 5283,
+      "sha256": "f1c590dbb13ff494128e9631a17c121e3c04caa9dcf375abe9ee1d44806774e6"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free.operator.txt",
+      "bytes": 6576,
+      "sha256": "e45c6ede3d7d7642dd44b7f2d0342f3f22601fdd2067024706700ee31a2ca26b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/command.json",
+      "bytes": 903,
+      "sha256": "aacac183b615fdcc134f4605acf61cdb3aeca60a634b8899174a27f741250f42"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/report.json",
+      "bytes": 652,
+      "sha256": "aa7fa52c7f47ad14ed001678e7e01c8482004eaf2f40a6413919d76d36874f03"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/request_capture.json",
+      "bytes": 3683,
+      "sha256": "cb808b93580b381dfdab3ec6ef52c8146afbf19041f3861336a18029056b4aa4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/runtime.json",
+      "bytes": 41,
+      "sha256": "60999ac1555340e9d369b7dead8f8182f9f11a0449cad8a79651cc756d5a3026"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/results/cellforge_c2/delivery_boundary_free_20261030/stdout.log",
+      "bytes": 448,
+      "sha256": "8e7dafd6ca8fc740cace500ceac731d43c69238a99914eb3aa12e5f4dd343b99"
+    },
+    {
+      "path": "docs/results/cellforge_c2/existing_environment_imports.command.json",
+      "bytes": 620,
+      "sha256": "a0e6da6eae0b70117e886a840cee58c0fc096ce7febe662855de9d7a24a93080"
+    },
+    {
+      "path": "docs/results/cellforge_c2/existing_environment_imports.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "docs/results/cellforge_c2/existing_environment_imports.log",
+      "bytes": 297,
+      "sha256": "6a0f836ac331e2ecba339055cca722470506bdc6cf96bb8a79431540fc4c9b8b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/existing_environment_imports.runtime.json",
+      "bytes": 153,
+      "sha256": "c18811f9da5b0a24c75af636aab66e9174b41f258c0422989c6abf3faa4ff216"
+    },
+    {
+      "path": "docs/results/cellforge_c2/free_preflight_runner.operator.txt",
+      "bytes": 2409,
+      "sha256": "ef0202acb991943ec5249bdc3d9c834d590d9783573e5476a74a342492505482"
+    },
+    {
+      "path": "docs/results/cellforge_c2/free_preflight_stop_issue51.json",
+      "bytes": 162,
+      "sha256": "1a9535516a619eb80fc380a84161368d75c7467a425ae92ace04bee7efbefc97"
+    },
+    {
+      "path": "docs/results/cellforge_c2/free_preflight_stop_issue51.md",
+      "bytes": 2346,
+      "sha256": "30f7e59e096fcd230f276913bcc72ede8035cd1e608525996948ea6f7040d126"
+    },
+    {
+      "path": "docs/results/cellforge_c2/handoff_publication_failure_metadata_20261030.json",
+      "bytes": 574,
+      "sha256": "94c56a1b11bc9dee0beca63d7e0ea8014b0b909b44a760441b75e183d4dfbe5b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/index_before_eof_fix.md.txt",
+      "bytes": 29033,
+      "sha256": "df909735071c38fef727671d67c202b4145ba8eeb4b40a9ae70fda5d475933ae"
+    },
+    {
+      "path": "docs/results/cellforge_c2/method_design.command.txt",
+      "bytes": 607,
+      "sha256": "4d450ea417bded3afcd2c6893333a97f524fe6f0e0c375928137899a3c119502"
+    },
+    {
+      "path": "docs/results/cellforge_c2/method_design.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/method_design.log",
+      "bytes": 439025,
+      "sha256": "80c15336546e544086f41b23624260737dac82512a7bc9e9979794e89144d6b7"
+    },
+    {
+      "path": "docs/results/cellforge_c2/method_design.runtime.json",
+      "bytes": 212,
+      "sha256": "cc27ce9e56db9db78e2023cf48c4e41d480f3d54fcdb9b62047d9ea46a1c8a71"
+    },
+    {
+      "path": "docs/results/cellforge_c2/network_boundary_free.command.json",
+      "bytes": 281,
+      "sha256": "5b2f0dca9c1a3ae64bf5c8afdf4bf86a47f4c7ae60176f012465900017276bc7"
+    },
+    {
+      "path": "docs/results/cellforge_c2/network_boundary_free.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/network_boundary_free.log",
+      "bytes": 119,
+      "sha256": "226d35a460c38d9db88f267bffe38575583afc80f92bfbd898d4d0e3466143d4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/network_boundary_free.runtime.json",
+      "bytes": 154,
+      "sha256": "1fc49351895031691ca5cf47d4a8ccfb95aca043396d6e4265f197059eeffd1f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/network_boundary_free_checks.py",
+      "bytes": 2052,
+      "sha256": "fc4d099842ca966bccb20e490d3ad37dd78810e3b053ea13c1e52b4fa13174f3"
+    },
+    {
+      "path": "docs/results/cellforge_c2/network_boundary_free_tests.json",
+      "bytes": 139,
+      "sha256": "f20b6df176ae322b1323d09576335b664bb2b0ecb2d873a2a8ed636b2d17797d"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_correction_20261031.diff",
+      "bytes": 169498,
+      "sha256": "5dbfce87512478dd596412a667e7a4ec3a7203188695a7543e72b49a12eee45c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_correction_20261031.json",
+      "bytes": 263,
+      "sha256": "a7b101e0a739e621a863497246ff946d65e1b0bf03af7e33e29928154be2da22"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_failure_20261030.command.txt",
+      "bytes": 336,
+      "sha256": "d51be3d8dabf886bddf41a2902e9099c7edbb6d50f1f9a42b7f8e086c8eef2fd"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_failure_20261030.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_failure_20261030.json",
+      "bytes": 1029,
+      "sha256": "605f5455a0f9ec3435860f7fd788017c5e39331514c43adc13f496e36f6b1edc"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_failure_20261030.log",
+      "bytes": 136,
+      "sha256": "efff068c1927cd9df5ad09157e7c03d4002a66cda31405ae367b6374eb262355"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_failure_20261030.md",
+      "bytes": 1550,
+      "sha256": "a4714f6ff6853bd47ad32c7ce0b5a1ca2acce50b00b9202f2611fa9939801dd2"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_approval_receipt_failure_20261030.stdin.txt",
+      "bytes": 82922,
+      "sha256": "6c2e720f22839cdc4fcb3a2dedc7e57cbdf2d05c3e85667f3d5241774ef5963a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_stop_issue51_20261030.json",
+      "bytes": 162,
+      "sha256": "674b46f138be7b8d44e4ea8fac9c99046349fff969561ffedb1e272414364e1b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/operator_stop_issue51_20261030.md",
+      "bytes": 1366,
+      "sha256": "a4fb62c46dcf4d27cb6bdcadb8bf0df647eee26d4e7b910ac0b0bc0f0ba8461c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/planning_complete.json",
+      "bytes": 2094,
+      "sha256": "d0926f1fa513a7cb534efafd86ed746422d1200ccc20ef3878e2e0294aafbc3a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/authorized_checker_fix.diff",
+      "bytes": 3028,
+      "sha256": "aabacff725a931bf15a1382683a5871248203acbd50f25e7c8d7898e784e4545"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/existing_environment_imports.command.json",
+      "bytes": 630,
+      "sha256": "14d2619e35a842be132aadcceb67ab148c70f535a208542d162ead45a7c929d3"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/existing_environment_imports.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/existing_environment_imports.log",
+      "bytes": 117,
+      "sha256": "bd82943e9ac9721324379ff44919c99b571f58e1a3e3dd19f74851c3f8b9c86c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/existing_environment_imports.runtime.json",
+      "bytes": 153,
+      "sha256": "779a9350e6ddb7f939f2576e71ae6cd21c603f63d5611e9209a1e174f2f31c71"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/free_preflight_runner.operator.txt",
+      "bytes": 2480,
+      "sha256": "2b0f7713c61b33ccf0e3872ad5696d4b311e69cf1183732c213210aace0272bb"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/network_boundary_free.command.json",
+      "bytes": 298,
+      "sha256": "57f004d86a67437887439bd1277a7aae1e0afaa4ffbcfd37aeb5645541b795ab"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/network_boundary_free.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/network_boundary_free.log",
+      "bytes": 119,
+      "sha256": "226d35a460c38d9db88f267bffe38575583afc80f92bfbd898d4d0e3466143d4"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/network_boundary_free.runtime.json",
+      "bytes": 154,
+      "sha256": "55e6d43384e48247f718ecb4ca16fd558d59b4acc9addb6b47c7156f238f19d2"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/network_boundary_free_checks_resumed_20261030.py",
+      "bytes": 2079,
+      "sha256": "2405762710c50eb1882d7193471211f4186114081010fbc116baf52eca2d47a0"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/network_boundary_free_tests.json",
+      "bytes": 139,
+      "sha256": "f20b6df176ae322b1323d09576335b664bb2b0ecb2d873a2a8ed636b2d17797d"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/resume_authority.json",
+      "bytes": 976,
+      "sha256": "7f825f1614543f4af198f610ee023772299c59855d7d888737bd2e1797e2fa5e"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/strict_meter_free.command.json",
+      "bytes": 292,
+      "sha256": "60bfe17aa614077e749dd003f11e55bc9727bff1a8a4a13bbfb84440ade0be72"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/strict_meter_free.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/strict_meter_free.log",
+      "bytes": 394,
+      "sha256": "7235ca2a61c89485d35694ffdc30c777798be8797683f574810f42bf42a3cf36"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/strict_meter_free.runtime.json",
+      "bytes": 153,
+      "sha256": "1d89b317ad0df95b6bfaac511911a35f1e0b244eaef95876274ef85dbdef516f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/strict_proxy_free_tests.json",
+      "bytes": 444,
+      "sha256": "df449522db9c2f1db5bc7a8b28ebe537005de2f0f4e81c2d55e073f5b3a6b33f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/preflight_resumed_20261030/test_strict_proxy_free_resumed_20261030.py",
+      "bytes": 4229,
+      "sha256": "ff24cfa2ca7bcb67edbb17e868e82449d9585158c2551d7dd2cb513aaba8b52b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/prepaid_gates_20261030.json",
+      "bytes": 1342,
+      "sha256": "52163f334e80faa19423b2ef587fa64bd5dac2ed5630a1601ec8060483aef681"
+    },
+    {
+      "path": "docs/results/cellforge_c2/proxy.command.txt",
+      "bytes": 802,
+      "sha256": "9f956368ebac01c61a5983acc054c30febe128e83c7f9d2dc6949324908475b6"
+    },
+    {
+      "path": "docs/results/cellforge_c2/proxy.jsonl",
+      "bytes": 45517,
+      "sha256": "a407b145cce8b14e6f28a6895ae3a650427dbb41b00099385191664e5be0f20b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/proxy.process.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/results/cellforge_c2/proxy_start_health.json",
+      "bytes": 288,
+      "sha256": "74f25dcee3b727a3591f4f55fba04e38d21280f01ab338ad7104722c4a4e7b9e"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_check_corrected_20261030.json",
+      "bytes": 404,
+      "sha256": "48588711341e6fae468648f01d7f29a3e3567759868431fbb557c6d7310a39a2"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_checks.operator.txt",
+      "bytes": 538,
+      "sha256": "a4fd3fa87bef6306f4a8692b1f71b56fea8215a2bfcba2797f2a96b069a89cb6"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_precheck_failed.operator.txt",
+      "bytes": 8561,
+      "sha256": "f951a53d5cb20e3946e92c4c588cb84033abc82d7f4a6453eed3d99f90f33b14"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_precheck_failure_20261031.json",
+      "bytes": 349,
+      "sha256": "f82e15b7de382ef6178b7c7fe8bcd9f44d44e4a9eb3d0ceb86829c870ed1b015"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_precheck_failure_20261031.log",
+      "bytes": 154,
+      "sha256": "e8a78a38d60bd90cde030e0f359aeba60ee041a2d432a80135b5b86ef43838df"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_stop_addendum_issue51_20261030.json",
+      "bytes": 162,
+      "sha256": "9516d1c89aaba4a474b0f3b564231eb3bcb3bc193bc459d5373ad05d7e6c94b3"
+    },
+    {
+      "path": "docs/results/cellforge_c2/publication_stop_addendum_issue51_20261030.md",
+      "bytes": 911,
+      "sha256": "48f68ab9c21f73d040d2c1182c937443193ecfd8ef4c5d49b727065a7c059604"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_plan_issue51.json",
+      "bytes": 162,
+      "sha256": "bfa35f342be1f2d30e193848b4611bdc0e283fe516b4407ceffd888b01f74101"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_plan_issue51.md",
+      "bytes": 47074,
+      "sha256": "13c2b423670cd2e56324f61780c66e3b25ecefbcc9327d8d8e3d794d7ef881f7"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/analyses/cellforge_input/retrieval/retrieval_trace.jsonl",
+      "bytes": 18858,
+      "sha256": "a46e9abbb3f8d6fbe4d575c853d0c555384eeca01ce8a1141c5f73b8256e8f01"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/analyses/cellforge_input/task_analysis_20261030_140934.json",
+      "bytes": 92203,
+      "sha256": "35b0b1574ddf354c2ef0c0c034fac1ea3a5cb2437cbc074964ad142a1c2bcfd0"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/discussion/cellforge_input/discussion_round_6.json",
+      "bytes": 78336,
+      "sha256": "3b1d64c468e9e3fe0d0ce7fdba3f878b10d77de813467f306991257a7f536419"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/discussion/cellforge_input/discussion_summary.json",
+      "bytes": 1329,
+      "sha256": "81cd548fc20a7abc116cbef5b5db9c13cd6c03ab20306d3967a67e072846290b"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/plans/cellforge_input/research_plan_20261030_141205.json",
+      "bytes": 35471,
+      "sha256": "8e8ea898d7304f02befa382a2ed65627e6fd6f8d571958b138828f670b362e0c"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/plans/cellforge_input/research_plan_20261030_141205.md",
+      "bytes": 11075,
+      "sha256": "4ae240570c188f187025c4472ddbaaa3f359a84f6c7939313e3beeff797a2752"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/plans/cellforge_input/research_plan_20261030_141205.mmd",
+      "bytes": 5483,
+      "sha256": "8e8dd2ba1d0a5a28b025de2c9783d0c0a7c26c0d65c9b22bed58c300fa587864"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/plans/cellforge_input/research_plan_20261030_141205_consensus.png",
+      "bytes": 137717,
+      "sha256": "a2e5eadd289c7658f8922b9ddbc29799ad7a81c1d3c419145cb3f42c4dfe201a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/raw_planning/plans/cellforge_input/retrieval/retrieval_trace.jsonl",
+      "bytes": 65420,
+      "sha256": "14e5507658a01f01f68bec5596f2a1e2f691bd034ef2a7f1941122dfa8e62066"
+    },
+    {
+      "path": "docs/results/cellforge_c2/result.raw.py",
+      "bytes": 24797,
+      "sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09"
+    },
+    {
+      "path": "docs/results/cellforge_c2/resumed_preflight_issue51_20261030.json",
+      "bytes": 162,
+      "sha256": "64c1d67b5c793994ad23a09346cbcc06b56294f3c61fdb17b4761743ddcc2d5a"
+    },
+    {
+      "path": "docs/results/cellforge_c2/resumed_preflight_issue51_20261030.md",
+      "bytes": 2010,
+      "sha256": "6d3ce6f1414908f7dc6b0a6e737637d964bd28542a9397b1ced594e6743b8a93"
+    },
+    {
+      "path": "docs/results/cellforge_c2/resumption_issue51_20261031.json",
+      "bytes": 163,
+      "sha256": "31430421bf8add8ba56af8045541492f8f0ccc0c99d088d57b233c841fc84ffe"
+    },
+    {
+      "path": "docs/results/cellforge_c2/resumption_issue51_20261031.md",
+      "bytes": 1157,
+      "sha256": "dad4af0bc4b074eceea25d8ad92d800c5fc24125ea44093a7569879bea74bfef"
+    },
+    {
+      "path": "docs/results/cellforge_c2/setup_preflight.json",
+      "bytes": 11663,
+      "sha256": "1041e5c3891cc0ffab8504641704b183b384b0233d5b1e031eacd1a41ffc1af0"
+    },
+    {
+      "path": "docs/results/cellforge_c2/stop_receipt.json",
+      "bytes": 1578,
+      "sha256": "8978a9b6e6fd8c004f53431e5afdfc5210fa21db988d317aae9a6356b0fecfff"
+    },
+    {
+      "path": "docs/results/cellforge_c2/strict_meter_free.command.json",
+      "bytes": 275,
+      "sha256": "205c263448a7f7456a53d4bbbcac6aaa9d80a38b69712398b358774555a2b3cd"
+    },
+    {
+      "path": "docs/results/cellforge_c2/strict_meter_free.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/strict_meter_free.log",
+      "bytes": 394,
+      "sha256": "7235ca2a61c89485d35694ffdc30c777798be8797683f574810f42bf42a3cf36"
+    },
+    {
+      "path": "docs/results/cellforge_c2/strict_meter_free.runtime.json",
+      "bytes": 153,
+      "sha256": "bca96086cc57e2ff3a8ba7a6a9cd467034fbc28f4bc2123159041a597303f6c5"
+    },
+    {
+      "path": "docs/results/cellforge_c2/strict_proxy.py",
+      "bytes": 8084,
+      "sha256": "84f4d02aa2d064e6ac92954fd9e9e1ed1044e8815194c95e8cecc51ff13c8cfb"
+    },
+    {
+      "path": "docs/results/cellforge_c2/strict_proxy_free_tests.json",
+      "bytes": 444,
+      "sha256": "df449522db9c2f1db5bc7a8b28ebe537005de2f0f4e81c2d55e073f5b3a6b33f"
+    },
+    {
+      "path": "docs/results/cellforge_c2/task_analysis.command.txt",
+      "bytes": 607,
+      "sha256": "779bee39e1e93a10f368993067a6cc5920cf39510e96d1a01a643735197cb1eb"
+    },
+    {
+      "path": "docs/results/cellforge_c2/task_analysis.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/results/cellforge_c2/task_analysis.log",
+      "bytes": 779095,
+      "sha256": "2f22796ed19e89fc34c7de7748ac0ea34e194376be34673047ce26c254b2f7d2"
+    },
+    {
+      "path": "docs/results/cellforge_c2/task_analysis.runtime.json",
+      "bytes": 203,
+      "sha256": "4e9b639de3545ceed80e6b5cb150b78f98fcbf498029fe9e74be48ddc3727897"
+    },
+    {
+      "path": "docs/results/cellforge_c2/test_strict_proxy_free.py",
+      "bytes": 4202,
+      "sha256": "c203be874cf2d59081974858dfab056431bb95e046cdbdbb592d219e937e51c9"
+    }
+  ]
+}

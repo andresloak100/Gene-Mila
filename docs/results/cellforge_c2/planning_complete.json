@@ -1,0 +1,57 @@
+{
+  "utc": "2026-10-30T18:17:41.380062+00:00",
+  "all_exit0": true,
+  "calls": 59,
+  "cost": 0.16098114,
+  "ledger_after": 61.562649371999996,
+  "ledger_rows_after": 23865,
+  "raw_files": [
+    {
+      "path": "raw_planning/analyses/cellforge_input/retrieval/retrieval_trace.jsonl",
+      "bytes": 18858,
+      "sha256": "a46e9abbb3f8d6fbe4d575c853d0c555384eeca01ce8a1141c5f73b8256e8f01"
+    },
+    {
+      "path": "raw_planning/analyses/cellforge_input/task_analysis_20261030_140934.json",
+      "bytes": 92203,
+      "sha256": "35b0b1574ddf354c2ef0c0c034fac1ea3a5cb2437cbc074964ad142a1c2bcfd0"
+    },
+    {
+      "path": "raw_planning/discussion/cellforge_input/discussion_round_6.json",
+      "bytes": 78336,
+      "sha256": "3b1d64c468e9e3fe0d0ce7fdba3f878b10d77de813467f306991257a7f536419"
+    },
+    {
+      "path": "raw_planning/discussion/cellforge_input/discussion_summary.json",
+      "bytes": 1329,
+      "sha256": "81cd548fc20a7abc116cbef5b5db9c13cd6c03ab20306d3967a67e072846290b"
+    },
+    {
+      "path": "raw_planning/plans/cellforge_input/research_plan_20261030_141205.json",
+      "bytes": 35471,
+      "sha256": "8e8ea898d7304f02befa382a2ed65627e6fd6f8d571958b138828f670b362e0c"
+    },
+    {
+      "path": "raw_planning/plans/cellforge_input/research_plan_20261030_141205.md",
+      "bytes": 11075,
+      "sha256": "4ae240570c188f187025c4472ddbaaa3f359a84f6c7939313e3beeff797a2752"
+    },
+    {
+      "path": "raw_planning/plans/cellforge_input/research_plan_20261030_141205.mmd",
+      "bytes": 5483,
+      "sha256": "8e8dd2ba1d0a5a28b025de2c9783d0c0a7c26c0d65c9b22bed58c300fa587864"
+    },
+    {
+      "path": "raw_planning/plans/cellforge_input/research_plan_20261030_141205_consensus.png",
+      "bytes": 137717,
+      "sha256": "a2e5eadd289c7658f8922b9ddbc29799ad7a81c1d3c419145cb3f42c4dfe201a"
+    },
+    {
+      "path": "raw_planning/plans/cellforge_input/retrieval/retrieval_trace.jsonl",
+      "bytes": 65420,
+      "sha256": "14e5507658a01f01f68bec5596f2a1e2f691bd034ef2a7f1941122dfa8e62066"
+    }
+  ],
+  "checkpoint1_approved": false,
+  "codegen_started": false
+}

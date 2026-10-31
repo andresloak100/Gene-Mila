@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "run_id": "cellforge_adamson_c2_seed0",
+  "role": "baseline:cellforge",
+  "calls": 0,
+  "session_cost_usd": 0.0,
+  "session_cap_usd": 5.0,
+  "ledger_total_usd": 61.401668,
+  "block_cap_usd": 66.240534032,
+  "halted": null,
+  "upstream": "https://api.deepseek.com:443"
+}

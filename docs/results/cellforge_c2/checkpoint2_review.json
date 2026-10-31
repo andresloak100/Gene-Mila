@@ -1,0 +1,45 @@
+{
+  "observed_utc": "2026-10-31T17:37:25Z",
+  "checkpoint": 2,
+  "decision": "reject",
+  "operator": "Astra/root",
+  "script_sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09",
+  "script_post_id": 6546820829,
+  "script_posted_before_decision": true,
+  "plan_sha256": "228e4d5130b982da561fc0eb431342dff94eb362df48d9a46b910fdc4a9d8c4e",
+  "code_generation_exit": 0,
+  "code_generation_attempts": 1,
+  "script_executions": 0,
+  "training_runs": 0,
+  "score_calls": 0,
+  "H_started": false,
+  "reason": "The generated script adds a target-gene coexpression representation and a SHA-256 character-ngram fallback before the approved perturbation MLP. These derived feature mechanisms are absent from the approved plan and exceed C2's explicit no-added-component constraint.",
+  "findings": [
+    {
+      "lines": "120-147",
+      "name": "unapproved coexpression descriptor",
+      "detail": "Computes each target gene's correlations with all 2,055 genes over training rows, then supplies that derived vector to the perturbation encoder."
+    },
+    {
+      "lines": "162-181",
+      "name": "unapproved character-ngram fallback",
+      "detail": "For a target without a measured descriptor, creates signed SHA-256 bi/trigram features and L2-normalizes the representation."
+    }
+  ],
+  "static_checks": {
+    "h5ad_is_only_expression_data_read": true,
+    "heldout_identities_embedded": true,
+    "CPU_path_declared": true,
+    "prediction_schema_declared_38x2055": true,
+    "listed_optimizer_and_training_numbers_match": true,
+    "architecture_and_component_conformance": false
+  },
+  "interpretation": "A checkpoint conformance failure. No trained-model or benchmark performance conclusion is available.",
+  "independent_source_only_review": "Architecture review recommends rejection on added descriptor/fallback; separate data/output/CPU review finds no blocker in those contracts, but does not grant scientific-plan approval.",
+  "not_decisive": "Unspecified ordinary defaults, dimension projections and BCE output head are not used as independent rejection reasons. Patch tokenization remains an additional concern, not the decisive finding.",
+  "repair_or_regeneration": false,
+  "ledger_after": 61.562649371999996,
+  "cumulative_ceiling": 66.240534032,
+  "deepseek_C2_planning_cost": 0.16098114,
+  "label": "CellForge (pinned release, checkpoint plan edited to the input as its README allows)"
+}

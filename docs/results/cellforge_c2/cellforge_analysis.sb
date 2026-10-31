@@ -1,0 +1,15 @@
+(version 1)
+(allow default)
+(deny file-read* file-write*
+ (require-all (subpath "/Users/andresarriaga")
+  (require-not (subpath "/Users/andresarriaga/CellForge-6585ff9"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_c_venv"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_c2_workspace"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028"))
+  (require-not (subpath "/Users/andresarriaga/Library"))
+  (require-not (subpath "/Users/andresarriaga/.codex"))))
+(deny file-read* file-write* (subpath "/Users/andresarriaga/.codex/.chatgpt-projects") (subpath "/Users/andresarriaga/.codex/worktrees"))
+(deny file-write* (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028"))
+(deny network*)
+(allow network-outbound (remote ip "localhost:8793"))
+

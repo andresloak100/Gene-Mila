@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-31T17:42:47.499023+00:00",
+  "all_pass": true,
+  "files_before_audit": 174,
+  "checks": {
+    "allowlisted_results_index_receipts_only": true,
+    "no_deletes_raw_private_packages_keys_or_symlinks": true,
+    "all_JSON_and_JSONL_parse": true,
+    "every_file_indexed": true,
+    "manifest_hashes": true,
+    "raw_staged_blob_bytes_match_disk": true,
+    "token_boundary_secret_scan": true,
+    "authored_whitespace": true,
+    "raw_script_and_plan_hashes_unchanged": true,
+    "six_protected_plan_subtrees_unchanged": true,
+    "prior_failures_preserved": true,
+    "checkpoint2_rejection_no_training_or_score": true
+  },
+  "manifest_exclusions": [
+    "docs/results/cellforge_c2/artifact_manifest.json",
+    "docs/results/cellforge_c2/publication_audit_20261031.json"
+  ],
+  "raw_logs_whitespace_preserved": true,
+  "generated_source_is_unexecuted_evidence": true
+}

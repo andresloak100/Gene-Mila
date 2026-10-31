@@ -1,0 +1,94 @@
+{
+  "utc": "2026-10-31T17:39:44.527572+00:00",
+  "generated_artifact_files_preserved": [
+    {
+      "path": "codegen_artifacts/AGENTS.md",
+      "bytes": 250,
+      "sha256": "1600953c4289b1ddb164f64e524f8f7b4786992c7fcb6142bd8f41d2ca18537f"
+    },
+    {
+      "path": "codegen_artifacts/acceptance_contract.json",
+      "bytes": 2490,
+      "sha256": "2de6713911c01fba4a40cca063da392bba7e473c92558f946b1c9f0aac9bcb6a"
+    },
+    {
+      "path": "codegen_artifacts/backend_result.json",
+      "bytes": 588,
+      "sha256": "e4aa476bfb8aeadb5115dea8173342710dd7ec42e34edbb5591b2159a2a96697"
+    },
+    {
+      "path": "codegen_artifacts/codegen_process_boundary.sb",
+      "bytes": 582,
+      "sha256": "87f02b25b2d9a731597cdfa75adb33839230a5fa66f58ceec8c57bd0d77f33f4"
+    },
+    {
+      "path": "codegen_artifacts/controller_cli_command.json",
+      "bytes": 1936,
+      "sha256": "0574303dd9395626460a48d521adf0f845e070f74a4f702b5865b3504f2d03e4"
+    },
+    {
+      "path": "codegen_artifacts/controller_delivery_override.txt",
+      "bytes": 3007,
+      "sha256": "694ab9c1aa7243d38a7a6ba81dbd8defca71b6dd6943067aa14ec94c46404b6b"
+    },
+    {
+      "path": "codegen_artifacts/controller_delivery_receipt.json",
+      "bytes": 978,
+      "sha256": "27fb2de82c54ef8a5bd7f4f5b3823e9f2709d154e21ee8fb3c62ea27d7f1f589"
+    },
+    {
+      "path": "codegen_artifacts/controller_effective_prompt.txt",
+      "bytes": 36007,
+      "sha256": "bcc7d5fe8b410080c483ead69c69beef240dddd210e222546ac333042e32c331"
+    },
+    {
+      "path": "codegen_artifacts/controller_input_prompt.txt",
+      "bytes": 32999,
+      "sha256": "6c3d80222525921ae490094a1819e3c34a7f021bad2dc5630acc4f00edc55578"
+    },
+    {
+      "path": "codegen_artifacts/delivery_schema.json",
+      "bytes": 158,
+      "sha256": "64885925a4a8025235c74d40b920eaac5bb2bd21d5bb1ebe5f0dd992be1e538e"
+    },
+    {
+      "path": "codegen_artifacts/logs/agent_events.jsonl",
+      "bytes": 6382,
+      "sha256": "15e22c70c2d92dbeebdeaa8a8d1009853af9e80815f251596b285bd665ab1728"
+    },
+    {
+      "path": "codegen_artifacts/logs/codex_attempt_01.txt",
+      "bytes": 25310,
+      "sha256": "48f4394d0b82ad0dd16bfda33e534eba8c558286483af99416b52c964b2d899f"
+    },
+    {
+      "path": "codegen_artifacts/logs/codex_events_raw_attempt_01.jsonl",
+      "bytes": 26428,
+      "sha256": "2ff63a86fcb4254c264333d69ce2d9fd394e89507b43610fc071fcedbf285a35"
+    },
+    {
+      "path": "codegen_artifacts/logs/codex_stderr_attempt_01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codegen_artifacts/research_plan.json",
+      "bytes": 31108,
+      "sha256": "228e4d5130b982da561fc0eb431342dff94eb362df48d9a46b910fdc4a9d8c4e"
+    },
+    {
+      "path": "codegen_artifacts/result.py",
+      "bytes": 24797,
+      "sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09"
+    }
+  ],
+  "ledger": 61.562649371999996,
+  "ledger_rows": 23865,
+  "script_executed": false,
+  "checkpoint2_approved": false,
+  "training_runs": 0,
+  "score_calls": 0,
+  "H_started": false,
+  "no_regeneration_or_hand_repair": true,
+  "copy_bytes_verified": true
+}
