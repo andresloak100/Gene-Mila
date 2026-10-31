@@ -1,0 +1,106 @@
+from pathlib import Path
+from collections import defaultdict,Counter
+import json,numpy as np,statistics,hashlib,sqlite3,re
+c=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish");m=Path("/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila")
+p=json.loads((c/'docs/results/adamson_cf_d_pooled_holm/pooled_holm.json').read_text())
+s=json.loads((c/'docs/results/adamson_cf_d_stage2/feature_compare.json').read_text())
+s1=json.loads((c/'docs/results/adamson_cf_d_stage1/feature_compare.json').read_text())
+rows=[x for x in s['rows'] if x['kind']=='add_one' and x['status']=='ok']
+base=[x for x in s1['rows'] if x['kind']=='add_one' and x['status']=='ok' and x['source'] in ('f_r0','f_r2','f_r3')]
+checks=0
+def ck(v,msg):
+ global checks
+ checks+=1
+ if not v:raise AssertionError(msg)
+def near(a,b,msg):ck(abs(a-b)<1e-11,msg)
+def step(rr,key):
+ if not rr:return {}
+ ordered=sorted(range(len(rr)),key=lambda i:-rr[i]['tiers']['oof'][key]['observed'])
+ out={};running=0.
+ for j,i in enumerate(ordered):
+  n=rr[i]['tiers']['oof'][key]
+  maxima=np.maximum.reduce([np.array(rr[k]['tiers']['oof'][key]['gains']) for k in ordered[j:]])
+  running=max(running,(1+np.count_nonzero(maxima>=n['observed']))/(len(maxima)+1))
+  out[(rr[i]['source'],rr[i]['feature'])]=running
+ return out
+def holm(rr,key):
+ order=sorted(range(len(rr)),key=lambda i:rr[i]['tiers']['oof'][key]['p'])
+ prev=0.;out={}
+ for j,i in enumerate(order):
+  prev=max(prev,min(1.,(len(rr)-j)*rr[i]['tiers']['oof'][key]['p']))
+  out[(rr[i]['source'],rr[i]['feature'])]=prev
+ return out
+ck(len(base)==len(rows)==234,'complete 234 family')
+ck({(x['source'],x['feature']) for x in rows}=={(x['source'],x['feature']) for x in base},'all stage1 eligible present')
+ck(p['partial'] is False and not p['untested'] and p['null_too_coarse_need'] is None,'complete pool')
+ck(s['settings']['fold_seeds']==[101,102,103] and s['settings']['k']==5 and s['settings']['tiers']==['oof'],'fixed folds/OOF')
+nulls=Counter()
+for row in rows:
+ ck(row['sha256']==hashlib.sha256((c/'docs/results/adamson_cf_d_plugins'/row['source'].split('_')[1]/(row['feature']+'.py')).read_bytes()).hexdigest(),'plugin hash')
+ for key in ['null','null_pert']:
+  n=row['tiers']['oof'].get(key)
+  if n is None:continue
+  g=np.asarray(n['gains']);nulls[key]+=1
+  ck(n['reps']==len(g)==999 and np.all(np.isfinite(g)),'999 finite gains')
+  near(n['p'],(1+np.count_nonzero(g>=n['observed']))/1000,'raw p')
+  near(n['mean'],float(g.mean()),'null mean')
+  near(n['sd'],float(g.std(ddof=1)),'null sample sd')
+ for key in ['null','null_pert']:
+  if row.get('proportional') and key=='null_pert' and row['tiers']['oof'].get(key) is None:
+   ck(row.get('proportional_in_folds') is False,'only full-view proportional lacks perturb null')
+ coef=row['coef_candidate_std']
+ ck(len(coef)==6,'six coefficient reports')
+ arr=np.asarray(coef);mean=arr.mean(axis=0)
+ if arr.ndim==1:
+  sign='+' if mean>0 else '-' if mean<0 else '0'
+  ck(sign==row['coef_candidate_sign'],'coefficient mean sign')
+  near(float(mean),row['coef_candidate_mean'],'coefficient mean')
+ else:
+  sign=['+' if x>0 else '-' if x<0 else '0' for x in mean]
+  ck(sign==row['coef_candidate_sign'],'coefficient mean signs')
+  ck(np.allclose(mean,row['coef_candidate_mean'],atol=1e-12,rtol=0),'coefficient means')
+for source in ['f_r0','f_r2','f_r3']:
+ rr=[x for x in rows if x['source']==source]
+ for key in ['null','null_pert']:
+  applicable=[x for x in rr if x['tiers']['oof'].get(key)]
+  fwer=step(applicable,key);hh=holm(applicable,key)
+  for x in applicable:
+   ix=(x['source'],x['feature']);n=x['tiers']['oof'][key]
+   near(n['p_fwer'],fwer[ix],'within-source FWER');near(n['p_holm'],hh[ix],'within-source Holm')
+unique=[];seen=set()
+for row in rows:
+ if row['prediction_hash'] not in seen:unique.append(row);seen.add(row['prediction_hash'])
+ck(len(unique)==p['family']==211 and p['duplicates']==23,'cross-source duplicates')
+gene=step(unique,'null');pert=step([x for x in unique if x['tiers']['oof'].get('null_pert')],'null_pert')
+lookup={(x['source'],x['feature']):x for x in rows};firstkeys={(x['source'],x['feature']) for x in unique}
+found=[]
+for pr in p['rows']:
+ ix=(pr['source'],pr['feature']);x=lookup[ix];t=x['tiers']['oof']
+ ck(pr['proportional']==x.get('proportional',False),'proportional flag')
+ if ix in firstkeys:
+  near(pr['p_fwer_pooled'],gene[ix],'pooled gene FWER')
+  ck(pr['p_fwer_pert_pooled']==pert.get(ix),'pooled perturb FWER')
+ d=t['delta']['pearson_delta'];d2=t['delta']['pearson_delta_nontarget'];d4=t['delta']['mse_top']
+ gates={'unique':ix in firstkeys,'gene':ix in gene and gene[ix]<=.05,'pert':not x.get('proportional') or (ix in pert and pert[ix]<=.05),'gain':d['mean_diff']>max(2*d['se_adj'],.002),'wins':d['wins_a']>d['n']/2,'reports':all(v>0 for v in t['report_deltas']),'m2':d2['mean_diff']>0,'m4':not(d4.get('se_adj') is not None and d4['mean_diff'] < -2*d4['se_adj']),'multi_seed':len(s['settings']['fold_seeds'])>1}
+ ck(all(gates.values())==pr['found'],'all fixed gates reconstruct found')
+ if pr['found']:found.append({'source':pr['source'],'feature':pr['feature'],'gates':gates,'gain':pr['gain'],'se_adj':pr['se_adj'],'p_fwer_pooled':pr['p_fwer_pooled'],'coef_candidate_std':pr['coef_candidate_std']})
+mechs=[]
+for f in found:
+ seed=int(f['source'][-1]);run=m/f'runs/adamson_cf_d1_ds_w4_r{seed}_discovery';eid='EXP_'+f['feature'].rsplit('_e',1)[1].zfill(4)
+ db=sqlite3.connect('file:'+str(run/'lab.db')+'?mode=ro',uri=True);db.row_factory=sqlite3.Row
+ row=dict(db.execute('select experiment_id,created_at,started_at,finished_at,proposed_feature_json from experiments where experiment_id=?',(eid,)).fetchone())
+ prop=json.loads(row.pop('proposed_feature_json'));name=re.sub(r'_e\d+$','',prop['name'])
+ matched=[]
+ for pf in (run/'planner').glob('plan_*.json'):
+  data=json.loads(pf.read_text())
+  for h in data.get('hypotheses',[]):
+   if (h.get('new_feature') or {}).get('name')==name:matched.append({'plan_file':str(pf),'plan_sha256':hashlib.sha256(pf.read_bytes()).hexdigest(),'hypothesis':h})
+ ck(len(matched)==1,'unique pre-fit planner proposal')
+ ck(row['created_at']<=row['started_at']<=row['finished_at'],'proposal persisted before fit')
+ predicted=prop.get('predicted_sign');fit='positive' if all(x>0 for x in f['coef_candidate_std']) else 'mixed'
+ mechs.append({**f,'run_dir':str(run),'experiment':row,'proposed_feature':prop,'planner':matched[0],'predicted_sign':predicted,'fitted_sign':fit,'sign_match':None if predicted=='unknown' else predicted==fit,'novel_inputs':prop.get('novel_inputs')})
+(c/'docs/results/adamson_cf_d_prefit_mechanisms.json').write_text(json.dumps(mechs,indent=2,default=lambda x:x.item())+'\n')
+out={'all_pass':True,'assertions':checks,'stage1_eligible':len(base),'tested':len(rows),'unique':len(unique),'cross_source_duplicates':23,'null_row_counts':dict(nulls),'pooled_perturbation_rows':len(pert),'found':found,'mechanism_sign_summary':[{'feature':x['feature'],'predicted_sign':x['predicted_sign'],'fitted_sign':x['fitted_sign'],'sign_match':x['sign_match'],'novel_inputs':x['novel_inputs']} for x in mechs],'audit_note':'Initial audit treated coef_candidate_sign as unanimity; source defines it as sign of mean. Corrected only audit interpretation, preserving all report coefficients; no scientific rerun.', 'warning':'No new score or fit; reconstructed from stored null gains and coefficients. Six reports are ordered seed pairs, not independent runs.'}
+(c/'docs/results/adamson_cf_d_primary_audit.json').write_text(json.dumps(out,indent=2,default=lambda x:x.item())+'\n')
+(c/'docs/results/adamson_cf_d_primary_audit.md').write_text('# Block D primary audit\n\nAll '+str(checks)+' assertions passed. All 234 original eligible rows were tested at 999 replicates; 23 cross-source prediction duplicates collapse to 211 unique rows. Raw null p, null moments, within-source Holm/FWER, both applicable pooled FWER corrections, signs and fixed gates were independently reconstructed from stored arrays.\n\n'+json.dumps(out,indent=2,default=lambda x:x.item())+'\n')
+print(json.dumps(out,default=lambda x:x.item()))

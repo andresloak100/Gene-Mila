@@ -1,0 +1,8 @@
+set -C
+cd /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings || exit 98
+{
+PYTHONPATH=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings PYTHONUNBUFFERED=1 /usr/bin/caffeinate -i nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/feature_compare.py --data /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables --out /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d1_vs_g --null-reps 0 --source-run d1_r0=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery --source-run d1_r2=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r2_discovery --source-run d1_r3=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery --source-run g1_r0=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0 --source-run g1_r2=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2 --source-run g1_r3=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3 --source-run g0_r0=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0 --source-run g0_r2=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2 --source-run g0_r3=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3
+rc=$?
+printf "%s\n" "$rc" > /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d1_vs_g.exit
+exit "$rc"
+} > /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d1_vs_g.log 2>&1

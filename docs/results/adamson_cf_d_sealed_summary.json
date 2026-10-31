@@ -1,0 +1,221 @@
+{
+  "all_pass": true,
+  "checks": 42,
+  "runs": [
+    {
+      "seed": 0,
+      "run": "adamson_cf_d1_ds_w4_r0_discovery",
+      "selected_experiment": "EXP_0974",
+      "start_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.07763491143235413,
+        "mae": 0.05111575427537925,
+        "mse": 0.00602717947310947,
+        "pearson_delta": 0.567930938475785,
+        "pearson_delta_top": 0.7439600088748741,
+        "direction_acc_top": 0.930952380952381,
+        "mse_top": 0.1306381093775519,
+        "r2_top": 0.8006587515534539,
+        "pearson_expr": 0.9865738798346183,
+        "primary": 0.567930938475785,
+        "selection_rule": "pearson_delta"
+      },
+      "start_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired": {
+        "n": 21,
+        "mean_diff": 0.04833358001034397,
+        "se": 0.016979062298091086,
+        "wins_a": 14,
+        "wins_b": 7,
+        "ties": 0,
+        "verdict": "a"
+      },
+      "run_queries": {
+        "used": 4,
+        "cap": 5
+      },
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 25,
+            "queued": 200
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "first_sealed_scorings": [],
+      "matches_stored": [
+        true,
+        true
+      ]
+    },
+    {
+      "seed": 2,
+      "run": "adamson_cf_d1_ds_w4_r2_discovery",
+      "selected_experiment": "EXP_0199",
+      "start_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.08368200684763183,
+        "mae": 0.05506003889872133,
+        "mse": 0.0070026782700471,
+        "pearson_delta": 0.5313217794408039,
+        "pearson_delta_top": 0.6990873974651609,
+        "direction_acc_top": 0.8976190476190476,
+        "mse_top": 0.16031521223129785,
+        "r2_top": 0.7447799498648815,
+        "pearson_expr": 0.9846969003644054,
+        "primary": 0.5313217794408039,
+        "selection_rule": "pearson_delta"
+      },
+      "start_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired": {
+        "n": 21,
+        "mean_diff": 0.011724420975362956,
+        "se": 0.005640928310630014,
+        "wins_a": 12,
+        "wins_b": 9,
+        "ties": 0,
+        "verdict": "a"
+      },
+      "run_queries": {
+        "used": 5,
+        "cap": 5
+      },
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 6,
+            "queued": 44
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "first_sealed_scorings": [],
+      "matches_stored": [
+        true,
+        true
+      ]
+    },
+    {
+      "seed": 3,
+      "run": "adamson_cf_d1_ds_w4_r3_discovery",
+      "selected_experiment": "EXP_0518",
+      "start_experiment": "EXP_0003",
+      "selected_metrics": {
+        "rmse": 0.08136122868062967,
+        "mae": 0.051938888711509174,
+        "mse": 0.006619649532421716,
+        "pearson_delta": 0.5793284323246863,
+        "pearson_delta_top": 0.7436029480248857,
+        "direction_acc_top": 0.9380952380952382,
+        "mse_top": 0.15733357853528415,
+        "r2_top": 0.7537296585796464,
+        "pearson_expr": 0.9855552073537547,
+        "primary": 0.5793284323246863,
+        "selection_rule": "pearson_delta"
+      },
+      "start_metrics": {
+        "rmse": 0.08389926721902762,
+        "mae": 0.05513001598721187,
+        "mse": 0.007039087039889803,
+        "pearson_delta": 0.519597358465441,
+        "pearson_delta_top": 0.6758784628996488,
+        "direction_acc_top": 0.9000000000000001,
+        "mse_top": 0.1639292731720613,
+        "r2_top": 0.7381826389079673,
+        "pearson_expr": 0.9846084168233289,
+        "primary": 0.519597358465441,
+        "selection_rule": "pearson_delta"
+      },
+      "paired": {
+        "n": 21,
+        "mean_diff": 0.05973107385924532,
+        "se": 0.01470085633643895,
+        "wins_a": 17,
+        "wins_b": 4,
+        "ties": 0,
+        "verdict": "a"
+      },
+      "run_queries": {
+        "used": 4,
+        "cap": 5
+      },
+      "planner": {
+        "configured": "deepseek:deepseek-v4-pro",
+        "fallback": [],
+        "used": [
+          "deepseek:deepseek-v4-pro"
+        ],
+        "rounds": {
+          "deepseek:deepseek-v4-pro": {
+            "rounds": 14,
+            "queued": 115
+          }
+        },
+        "switches": [],
+        "failed_rounds": 0,
+        "exhausted_at_min": null,
+        "mixed": false
+      },
+      "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+      "note": "no additive baseline in this run (a bundle without pairs records none)",
+      "first_sealed_scorings": [],
+      "matches_stored": [
+        true,
+        true
+      ]
+    }
+  ],
+  "selected_M1_mean": 0.5595270500804251,
+  "selected_M1_sample_sd": 0.025082437788214333,
+  "sealed_scorings": 6,
+  "stored_matches_true": 6,
+  "stored_matches_null": 0,
+  "stored_matches_false": 0,
+  "first_sealed_scorings": [],
+  "caveat": "Worn Adamson sealed set, indicative only; three separate own-selected versus own fresh-start comparisons. No additive baseline in this no-pairs bundle. No category rows emitted. No cross-arm pair or selection."
+}
