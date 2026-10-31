@@ -1,0 +1,53 @@
+{
+  "utc": "2026-10-31T23:46:49.091572+00:00",
+  "user_go_resumes_free_preparation": true,
+  "paid_chain_still_blocked_on_probe_gate": true,
+  "scripts_unchanged": [
+    {
+      "name": "Dockerfile",
+      "sha256": "c23dde025bd0028c99320aa3cc516501a48e87efe9d5eec505a3dc58b1e23926"
+    },
+    {
+      "name": "block_h_a2.sh",
+      "sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701"
+    },
+    {
+      "name": "block_h_a3.sh",
+      "sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64"
+    },
+    {
+      "name": "block_h_a4.sh",
+      "sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e"
+    },
+    {
+      "name": "block_h_cap.sh",
+      "sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "name": "block_h_chain.sh",
+      "sha256": "28eb46f06581ddaba94341ecd3a16829143a0defe68ce3f26ed35c2834b76094"
+    },
+    {
+      "name": "block_h_common.sh",
+      "sha256": "5522ec8e4013d89e280f3ace7e338b0676b14fa349b85dc7926afe83ee0e100b"
+    },
+    {
+      "name": "block_h_probe.sh",
+      "sha256": "f2c7529b1aa7d667de7f93a3203c3fe796c26e275b038dc991cf8f48d4ba9e4a"
+    },
+    {
+      "name": "block_h_reset_probe.sh",
+      "sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922"
+    },
+    {
+      "name": "check_tools.sh",
+      "sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74"
+    }
+  ],
+  "isolation": "docker",
+  "tier": "harness",
+  "cap_file_written": false,
+  "cumulative_ceiling": 76.562649372,
+  "existing_DeepSeek_balance_only": true,
+  "no_topup": true
+}

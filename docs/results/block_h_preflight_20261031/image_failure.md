@@ -1,0 +1,11 @@
+# H free image preflight failed before any run
+
+Read the [actual failure receipt](image_actual_failure_stop_20261031.json), [traceback](image_imports_20261031.log), [Docker build log](build_image_20261031.log) and [report on #51](image_failure_issue51_20261031.md). This supersedes the earlier preflight's no-setup state; the earlier source-level probe gate finding remains unresolved.
+
+Andres's latest “go” resumed free preparation. The authorized docker/harness choices were written once; the unchanged scripts were copied to the operational directory. The alpine/socat pull completed. The actual isolation check passed: api.deepseek.com was unreachable from the internal network, and the relay was reachable. The existing package's 27 pinned files all match their hashes (29 disk files include MANIFEST.json and features/README.md outside the hash map); the harness-17 metadata/hash and frozen baa7dfd source are unchanged. No package was re-exported.
+
+The unchanged prescribed Dockerfile built successfully, exit 0. Its first import preflight, in a container with no network, package mount or provider key, exited 1: importing biomni.agent.A1 reached biomni/agent/a1.py line 10, which imports pandas, and raised ModuleNotFoundError: No module named 'pandas'. No dependency installation, Dockerfile repair, image rebuild, import retry or alternative route followed. Remaining version/hash probes were not executed after the first failure.
+
+The preserved image ID is sha256:bad86487918f245ccd75e57e1deb3336bb6d88b70e7391ef9c6af72bc03c11ed (Linux arm64). The Dockerfile SHA-256 is c23dde025bd0028c99320aa3cc516501a48e87efe9d5eec505a3dc58b1e23926. Raw build/start/runtime and import command/output/exit are preserved unchanged. The C0 launcher was prepared and syntax-checked only; it never executed. No C0, live probe, arm, cap file or paid call exists.
+
+The cumulative ceiling remains $76.562649372; ledger $61.562649372 is unchanged. Use existing DeepSeek funds only, no top-up or additional purchase; the supplied topped-up $28.19 balance satisfies the floor. This stop is an actual image dependency failure, separate from the earlier synthetic demonstration of the probe gate mismatch. Both require lead/code-owner resolution under the standing instruction to stop on failure and avoid hand repairs or workarounds. C2 stays closed.

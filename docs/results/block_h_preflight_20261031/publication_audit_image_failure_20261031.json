@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-31T23:52:31.429028+00:00",
+  "all_pass": true,
+  "checks": {
+    "results_index_receipts_only": true,
+    "no_deletes_raw_private_keys_packages_images_or_symlinks": true,
+    "old_raw_artifacts_preserved": true,
+    "all_JSON_JSONL_parse": true,
+    "every_file_indexed": true,
+    "manifest_hashes": true,
+    "raw_staged_bytes": true,
+    "token_boundary_secret_scan": true,
+    "authored_whitespace": true,
+    "actual_build0_import1_no_retry_or_paid_call": true
+  },
+  "files_before_audit": 47
+}
