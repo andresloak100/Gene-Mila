@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-30T17:28:25.700500+00:00",
+  "head": "d8aecd0e54b89238fe6713a7e4e9096eaa5f1d88",
+  "branch": "astra/linear-ae-adamson",
+  "source_hashes": {
+    "tools/baselines_dl/run_linear_ae.py": "5551c13d356e8f1b5efbcd516c79da8d63a318c0ce190e6868a1a4e9f75fa8a1",
+    "tools/cellforge_bridge.py": "e9d9212267ad298c805cfa0aed195c00c1b0bb3bc19f7d35914f994c0140b149",
+    "tests/test_run_linear_ae.py": "3858689d96672b7c07f2c7e789d815514faa3e215f151ce2217a1ab45c5f515e",
+    "tests/test_cellforge_bridge.py": "32d89ac55719dcd8dd244b4163c2abb080e7052fe6965aac76e456c3c04e17a3"
+  },
+  "requested_export": "/Users/andresarriaga/cellforge_adamson_export",
+  "requested_export_cells": 0,
+  "corrected_candidate": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028",
+  "corrected_candidate_cells": 40890,
+  "input_status": "AWAITING_USER_CHOICE; no runner/score started",
+  "settings": {
+    "k": 10,
+    "lam": 0.1,
+    "runs": 1,
+    "device": "cpu"
+  },
+  "C2_H": "queued, no paid calls"
+}

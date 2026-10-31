@@ -1,0 +1,16 @@
+# linear_ae on Gene-Mila's split, scored once on the sealed set
+
+Bundle `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf`; predictions `/Users/andresarriaga/linear_ae_adamson/predictions.npz` (sha256 `52118b47e9455dcfde4757d8043837cb96bcc2c6901149091fdf4e93a0e9b9ee`).
+
+| metric | linear_ae |
+|---|---:|
+| pearson_delta | 0.4854 |
+| mse | 0.0071 |
+| pearson_delta_top | 0.5484 |
+| r2_top | 0.7230 |
+| cellforge_mse_de | 0.1632 |
+| cellforge_pcc_de | 0.9199 |
+| cellforge_r2_de | 0.7106 |
+
+Paired against `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0` EXP_0441 (linear_ae minus the lab's model, pearson_delta per sealed perturbation): {"n": 21, "mean_diff": -0.1132228613733192, "se": 0.0430444692533904, "wins_a": 9, "wins_b": 12, "ties": 0, "verdict": "b"}
+
