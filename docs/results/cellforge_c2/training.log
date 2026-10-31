@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/Users/andresarriaga/cellforge_c2_workspace/codegen/result.py", line 462, in <module>
+    main()
+  File "/Users/andresarriaga/cellforge_c2_workspace/codegen/result.py", line 425, in main
+    cell_values = adata.obs[cell_key].fillna('unknown').astype(str).to_numpy() if cell_key else np.repeat('K562', adata.n_obs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/generic.py", line 7372, in fillna
+    new_data = self._mgr.fillna(
+               ^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/internals/base.py", line 186, in fillna
+    return self.apply_with_block(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/internals/managers.py", line 363, in apply
+    applied = getattr(b, f)(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/internals/blocks.py", line 2407, in fillna
+    new_values = self.values.fillna(value=value, method=None, limit=limit)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/arrays/_mixins.py", line 376, in fillna
+    self._validate_setitem_value(value)
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/arrays/categorical.py", line 1590, in _validate_setitem_value
+    return self._validate_scalar(value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_c_venv/lib/python3.12/site-packages/pandas/core/arrays/categorical.py", line 1615, in _validate_scalar
+    raise TypeError(
+TypeError: Cannot setitem on a Categorical with a new category (unknown), set the categories first

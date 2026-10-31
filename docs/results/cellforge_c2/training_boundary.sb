@@ -1,0 +1,16 @@
+(version 1)
+(allow default)
+(deny file-read* file-write*
+ (require-all (subpath "/Users/andresarriaga")
+  (require-not (subpath "/Users/andresarriaga/CellForge-6585ff9"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_c_venv"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_c2_workspace"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_c2_adamson"))
+  (require-not (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028"))
+  (require-not (subpath "/Users/andresarriaga/Library"))))
+(deny file-read-data
+ (require-all (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028")
+  (require-not (literal "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/cellforge_input.h5ad"))))
+(deny file-write* (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028") (subpath "/Users/andresarriaga/CellForge-6585ff9"))
+(deny network*)
+

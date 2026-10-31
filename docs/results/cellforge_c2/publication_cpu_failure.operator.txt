@@ -1,0 +1,183 @@
+"""Preserve the sole C2 CPU failure; validate publication before any push."""
+from pathlib import Path
+import datetime, hashlib, importlib.util, json, re, subprocess
+
+P = Path('/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5')
+ROOT = P / 'gene-mila-cellforge-c2'
+R = ROOT / 'docs/results/cellforge_c2'
+PREFIX = 'docs/results/cellforge_c2/'
+BASE = '35d985398e95c2bbf7cd2212052de99e4ed30791'
+SCRIPT_SHA = 'e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09'
+MANIFEST = PREFIX + 'completion_manifest_20261031_cpu_failure.json'
+AUDIT = PREFIX + 'publication_audit_20261031_cpu_failure.json'
+spec = importlib.util.spec_from_file_location('pub', P / 'cellforge_c2_ops/publication_checks_20261030.py')
+pub = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(pub)
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=ROOT)
+
+def require(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def write_new(path, content):
+    with path.open('x') as f:
+        f.write(content)
+
+def json_new(path, obj):
+    write_new(path, json.dumps(obj, indent=2) + '\n')
+
+def allowed(rel):
+    return rel == 'docs/results/README.md' or rel.startswith(PREFIX)
+
+require(git('rev-parse', 'HEAD').decode().strip() == BASE, 'unexpected branch head')
+require(not git('diff', '--cached', '--name-only').strip(), 'unexpected staged work')
+require(not git('diff', '--name-only').strip(), 'unexpected tracked edits')
+runtime = json.loads((R / 'training.runtime.json').read_text())
+integrity = json.loads((R / 'training_post_exit_integrity.json').read_text())
+approval = json.loads((R / 'checkpoint2_approval.json').read_text())
+require(runtime['exit'] == 1 and (R / 'training_driver.exit').read_text().strip() == '1', 'not the recorded failure')
+require(integrity['output_files'] == [] and integrity['score_calls'] == 0 and not integrity['H_started'], 'unexpected output or downstream run')
+require(approval['approved'] and approval['lead_reversal_id'] == 6549819420, 'missing reversed approval')
+require(sha(R / 'result.raw.py') == SCRIPT_SHA, 'generated script changed')
+
+# Preserve the previous authored indexes byte for byte. The first manifest/audit stay unchanged.
+for original, copy in [
+    (PREFIX + 'README.md', 'checkpoint2_publication_index_20261031_pre_reversal.md'),
+    ('docs/results/README.md', 'results_index_20261031_pre_reversal.md'),
+]:
+    with (R / copy).open('xb') as f:
+        f.write(git('show', BASE + ':' + original))
+
+outcome = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'label': 'CellForge (pinned release, checkpoint plan edited to the input as its README allows)',
+    'status': 'failed before training',
+    'script_sha256': SCRIPT_SHA,
+    'script_executions': 1, 'training_function_reached': False, 'score_calls': 0,
+    'lead_reversal_id': 6549819420, 'approval_post_id': 6549876553,
+    'failure_post_id': 6549906251, 'prior_rejection_preserved': True,
+    'error_type': 'TypeError',
+    'error': 'Cannot setitem on a Categorical with a new category (unknown), set the categories first',
+    'generated_script_line': 425,
+    'runtime': runtime,
+    'integrity': integrity,
+    'fallback_runtime_count': None,
+    'fallback_note': 'Descriptor construction was not reached; no runtime fallback count exists. Metadata preflight found all 38 heldout targets in the panel.',
+    'repair': False, 'retry': False, 'regeneration': False, 'H_started': False,
+    'next_action': 'Stopped; wait for a direct human decision. No automatic continuation.',
+}
+json_new(R / 'training_failure.json', outcome)
+write_new(R / 'training_failure.md', '''# CellForge C2: sole CPU execution failed before training
+
+**CellForge (pinned release, checkpoint plan edited to the input as its README allows)** did not produce a trained model or predictions. Its first and only CPU execution exited 1 during input-label preparation, before the training function was called. No score or performance comparison exists. The original failed C1 attempt remains [separate](../cellforge_c/README.md).
+
+The lead [reversed the checkpoint-2 rejection](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6549819420), which Andres explicitly adopted. The operator's checkpoint-1 edit restrictions do not prohibit representation choices made by CellForge's code generator. The exact script, SHA-256 `e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09`, was [posted before review](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6546820829) and [approved before execution](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6549876553). The original [rejection](checkpoint2_review.md), [lead reversal](lead_checkpoint2_reversal_20261031.md), approval, generated source and failed operator checks are all retained unchanged.
+
+The generated representation uses coexpression descriptors from the supplied training cells and a character-hash fallback for target genes absent from the panel. The lead allowed both choices. The metadata preflight found all 38 heldout targets in the panel, but descriptor construction was never reached in this execution; there is no measured runtime fallback count.
+
+At line 425 the script called `adata.obs[cell_key].fillna('unknown').astype(str).to_numpy()`. Pandas raised `TypeError: Cannot setitem on a Categorical with a new category (unknown), set the categories first`. This is a runtime failure of the generated script; it does not establish that any cell-type values are missing. Read the unchanged [traceback](training.log), [exact command](training.command.txt), [runtime receipt](training.runtime.json), [post-exit integrity check](training_post_exit_integrity.json) and [full-precision outcome](training_failure.json).
+
+The sole execution ran from 2026-10-31T22:17:45.682414Z to 22:17:49.943788Z. Wall time was 4.261185540817678 seconds; aggregate CPU time was 5.031034 seconds, or 0.0013975094444444445 CPU-hours, measured by wait4 user plus system resource usage including threads. It used CPU, nice 19, generated defaults seed 0 / 100 maximum epochs / 4 threads, provider credentials unset and no training time cap. Both training and its driver exited 1. The output directory `/Users/andresarriaga/cellforge_c2_adamson` was empty after exit: no prediction, checkpoint or metrics file; prediction validation was not reached; score calls 0.
+
+Input: `/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/cellforge_input.h5ad`, SHA-256 `ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a`, the same approved bytes used for GEARS and linear AE. The export contains 40,890 cells and 2,055 genes; its cohort caveat remains 1,770 additional controls plus 10 training cells relative to the original bundle ingest. The empty original export was untouched. The script and input hashes remained unchanged; raw work and inputs stay outside Git.
+
+C2 paid planning cost $0.160981140; planning and code generation were not repeated. CPU execution made no DeepSeek calls. The shared ledger remains $61.562649372 against the unchanged absolute $66.240534032 ceiling, leaving $4.677884660. The original C1 planning cost remains charged. No repair, rerun, regeneration, score or Block H followed this failure. The heartbeat is paused pending a direct human decision. [Failure report on #51](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6549906251).
+''')
+
+index = ROOT / 'docs/results/README.md'
+text = index.read_text()
+start = text.index('## C2: CellForge checkpoint-edited matched attempt')
+end = text.index('## Plan C:', start)
+text = text[:start] + '''## C2: CellForge checkpoint-edited matched attempt (30–31 October 2026)
+
+Read [the CPU failure report](cellforge_c2/training_failure.md) ([full-precision JSON](cellforge_c2/training_failure.json)) and [every receipt](cellforge_c2/README.md). The lead reversed the earlier checkpoint-2 rejection; Andres adopted that decision, and the identical script was approved and executed once. It exited 1 before training when pandas rejected filling a categorical cell-type column with a new `unknown` category. Wall time was 4.261185541 seconds; aggregate CPU time 0.0013975094444444445 hours. No predictions or score exists. The original rejection, reversal, approval and traceback are preserved; no repair or retry followed. C2 planning cost $0.160981140 on the shared ledger. Label: “CellForge (pinned release, checkpoint plan edited to the input as its README allows)”, beside the original attempt below. Block H remains unstarted.
+
+''' + text[end:]
+index.write_text(text)
+
+names = sorted({p.relative_to(R).as_posix() for p in R.rglob('*') if p.is_file()} | {
+    'README.md', Path(MANIFEST).name, Path(AUDIT).name})
+lines = [
+    '# CellForge C2: CPU failure and complete artifact index', '',
+    'Read [the CPU failure report](training_failure.md) ([JSON](training_failure.json)) first. The lead reversed the original checkpoint-2 rejection; the unchanged approved script executed once and failed before training. No predictions or score exists; no repair, retry or Block H followed.', '',
+    'Label: **CellForge (pinned release, checkpoint plan edited to the input as its README allows)**. The original C1 attempt is [preserved separately](../cellforge_c/README.md). All old raw records, failures, the original rejection, lead reversal and approval are retained.', '',
+    'The approved input is `/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/cellforge_input.h5ad`, SHA-256 `ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a`. Its cohort caveat remains 1,770 extra controls and 10 training cells relative to the original bundle ingest. Raw input and work remain outside Git.', '',
+    'The original artifact_manifest.json and publication_audit_20261031.json are historical records of commit 35d9853. Their two authored indexes are retained byte for byte in the pre_reversal copies. The new completion_manifest_20261031_cpu_failure.json pins the current complete publication, excluding only itself and its new audit to avoid circular hashes. Raw records are unchanged.', '',
+    '| File | Record |', '|---|---|',
+]
+for name in names:
+    desc = 'Preserved command, output, provenance, runtime, check or coordination receipt'
+    if name.startswith('raw_planning/'): desc = 'Unchanged fresh C2 planning artifact'
+    elif name.startswith('codegen_artifacts/'): desc = 'Unchanged first-codegen artifact, prompt, contract, boundary or log'
+    elif name.startswith('checkpoint2_review.'): desc = 'Original static rejection; superseded by the lead reversal, retained unchanged'
+    elif name.startswith('lead_checkpoint2_reversal_'): desc = 'Lead decision approving the exact existing script'
+    elif name == 'checkpoint2_approval.json': desc = 'Approval before the sole CPU execution'
+    elif name == 'result.raw.py': desc = 'Exact generated script, executed once and unchanged'
+    elif name.startswith('training_failure'): desc = 'Actual generated-script runtime failure and STOP report'
+    elif name.startswith('training.'): desc = 'Sole CPU execution command, traceback, exit or measured runtime'
+    elif name.endswith('pre_reversal.md'): desc = 'Byte-exact historical authored index before the reversal'
+    elif name == Path(MANIFEST).name: desc = 'Current publication byte sizes and SHA-256 hashes'
+    elif name == Path(AUDIT).name: desc = 'Current publication checks passed before push'
+    lines.append(f'| [{name}]({name}) | {desc} |')
+(R / 'README.md').write_text('\n'.join(lines) + '\n')
+
+files = [ROOT / 'docs/results/README.md'] + [p for p in sorted(R.rglob('*')) if p.is_file() and p.relative_to(ROOT).as_posix() not in {MANIFEST, AUDIT}]
+manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'historical_publication_commit': BASE,
+            'excluded': [MANIFEST, AUDIT], 'files': [{'path': p.relative_to(ROOT).as_posix(), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in files]}
+json_new(ROOT / MANIFEST, manifest)
+
+# Every old record stays byte-identical; only the two current authored indexes change.
+old_files = git('ls-tree', '-r', '--name-only', BASE, '--', 'docs/results/cellforge_c2').decode().splitlines()
+for rel in old_files:
+    if rel != PREFIX + 'README.md':
+        require((ROOT / rel).read_bytes() == git('show', BASE + ':' + rel), 'old artifact altered: ' + rel)
+historical = json.loads(git('show', BASE + ':' + PREFIX + 'artifact_manifest.json'))
+for item in historical['files']:
+    data = git('show', BASE + ':' + item['path'])
+    require(len(data) == item['bytes'] and hashlib.sha256(data).hexdigest() == item['sha256'], 'historical manifest')
+require(all('](' + name + ')' in (R / 'README.md').read_text() for name in names), 'index coverage')
+for item in manifest['files']:
+    path = ROOT / item['path']
+    require(path.stat().st_size == item['bytes'] and sha(path) == item['sha256'], 'current manifest')
+for path in files + [ROOT / MANIFEST]:
+    rel = path.relative_to(ROOT).as_posix()
+    require(allowed(rel) and not path.is_symlink(), 'scope or symlink: ' + rel)
+    require(not re.search(r'(^|/)(?:data|runs|private|harness|packages)(?:/|$)|\.(?:h5ad|npz|sqlite|pt|whl)$', rel), 'raw/protected path')
+    data = path.read_bytes()
+    require(not pub.secret_hits(data), 'credential pattern: ' + rel)
+    if rel.endswith('.json'): json.loads(data)
+    if rel.endswith('.jsonl'):
+        for line in data.splitlines():
+            if line.strip(): json.loads(line)
+statuses = git('status', '--porcelain', '-uall').decode().splitlines()
+require(all(allowed(s[3:]) and 'D' not in s[:2] for s in statuses), 'changed scope or deletion')
+expected = {s[3:] for s in statuses}
+subprocess.run(['git', 'add', '--', 'docs/results/README.md', 'docs/results/cellforge_c2'], cwd=ROOT, check=True)
+require(set(git('diff', '--cached', '--name-only').decode().splitlines()) == expected, 'staged scope')
+for rel in expected:
+    require(pub.staged_matches_disk(ROOT, rel), 'raw staged bytes: ' + rel)
+    require(not pub.secret_hits(git('show', ':' + rel)), 'staged credential pattern')
+authored = ['docs/results/README.md', PREFIX + 'README.md', PREFIX + 'training_failure.md']
+subprocess.run(['git', 'diff', '--cached', '--check', '--', *authored], cwd=ROOT, check=True)
+require(sha(R / 'result.raw.py') == SCRIPT_SHA, 'script hash after publication')
+audit = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'all_pass': True,
+         'checks': {'allowlisted_results_index_receipts_only': True, 'no_deletes_raw_private_packages_keys_or_symlinks': True,
+                    'all_JSON_and_JSONL_parse': True, 'every_file_indexed': True, 'current_and_historical_manifest_hashes': True,
+                    'raw_staged_blob_bytes_match_disk': True, 'token_boundary_secret_scan': True, 'authored_whitespace': True,
+                    'all_old_artifacts_byte_identical_except_two_current_indexes_with_exact_historical_copies': True,
+                    'approved_script_unchanged_first_execution_failed_no_score_no_H': True},
+         'files_before_audit': len(files) + 1, 'changed_paths_before_audit': len(expected),
+         'manifest_exclusions': [MANIFEST, AUDIT], 'raw_logs_whitespace_preserved': True}
+json_new(ROOT / AUDIT, audit)
+require(not pub.secret_hits((ROOT / AUDIT).read_bytes()), 'audit credential scan')
+subprocess.run(['git', 'add', '--', AUDIT], cwd=ROOT, check=True)
+expected.add(AUDIT)
+require(set(git('diff', '--cached', '--name-only').decode().splitlines()) == expected, 'final scope')
+require(all(pub.staged_matches_disk(ROOT, rel) for rel in expected), 'final raw bytes')
+require(not git('ls-files', '--others', '--exclude-standard').strip(), 'unexpected untracked files')
+print(json.dumps({'all_pass': True, 'changed_files': len(expected), 'complete_publication_files': len(files) + 2, 'no_scoring_or_retry': True}))

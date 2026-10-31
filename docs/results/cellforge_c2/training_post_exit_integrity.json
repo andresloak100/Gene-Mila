@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-31T22:21:07.632868+00:00",
+  "script_sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09",
+  "preserved_script_sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09",
+  "input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "output_directory": "/Users/andresarriaga/cellforge_c2_adamson",
+  "output_files": [],
+  "training_exit": 1,
+  "driver_exit": 1,
+  "prediction_validation_exists": false,
+  "score_calls": 0,
+  "score_reports_exist": [
+    false,
+    false
+  ],
+  "ledger_after": 61.562649371999996,
+  "ledger_rows_after": 23865,
+  "cumulative_ceiling": 66.240534032,
+  "headroom": 4.677884660000004,
+  "pinned_git_status": "",
+  "driver_process_alive": false,
+  "child_process_alive": false,
+  "no_retry": true,
+  "H_started": false
+}
