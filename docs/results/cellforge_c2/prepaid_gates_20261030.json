@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-30T18:02:56.715881+00:00",
+  "checks": {
+    "resumed_preflight_all3_exit0": true,
+    "delivery_boundary_free": true,
+    "access_boundary": true,
+    "pinned_source_clean": true,
+    "absolute_ceiling": true
+  },
+  "all_pass": true,
+  "ledger_before": 61.401668232,
+  "ledger_rows": 23806,
+  "cap": {
+    "utc": "2026-10-30T18:02:56.715881+00:00",
+    "run_id": "cellforge_adamson_c2_seed0",
+    "cumulative_ceiling": "66.240534032",
+    "ledger_before": 61.401668232,
+    "ledger_rows_before": 23806,
+    "headroom": "4.838865800",
+    "authority_url": "https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6498680009",
+    "authority_exact": "Keep the existing $66.240534032 ceiling",
+    "covers": "C2 and then H under same absolute ceiling; no reset",
+    "original_C1_cost_remains_charged": "0.161134200",
+    "once_only": true
+  },
+  "strict_proxy_sha256": "84f4d02aa2d064e6ac92954fd9e9e1ed1044e8815194c95e8cecc51ff13c8cfb",
+  "controller_sha256": "0cbd50368534cd4b73ffb1c9f6c580b6696382a8375344f1544712cae1b7e7fe",
+  "codegen_delivery_sha256": "f1c590dbb13ff494128e9631a17c121e3c04caa9dcf375abe9ee1d44806774e6",
+  "input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "notes": "Fresh C2 workspace data absent; free fake delivery fixture separate. No paid call yet."
+}

@@ -1,0 +1,66 @@
+#!/Users/andresarriaga/cellforge_c_venv/bin/python
+"""Controller delivery adapter: no pinned source or scientific-plan changes."""
+from pathlib import Path
+import sys,os,subprocess,json,ast,hashlib,datetime
+CLI='/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex'
+FEATURES=["apps","browser_use","browser_use_external","browser_use_full_cdp_access","code_mode","code_mode_host","computer_use","goals","hooks","image_generation","multi_agent","plugins","shell_snapshot","shell_tool","skill_search","sleep_tool","unbounded_connection_retries","workspace_dependencies"]
+args=sys.argv[1:]
+assert args[0]=='exec' and args[-1]=='-'
+workspace=Path(args[args.index('-C')+1]).resolve()
+final=Path(args[args.index('-o')+1]).resolve()
+assert final.is_relative_to(workspace)
+assert not final.exists()
+artifact=workspace/'result.py'
+assert not artifact.exists() and not artifact.is_symlink()
+prompt=sys.stdin.read()
+contract=json.loads((workspace/'acceptance_contract.json').read_text())
+override="""CONTROLLER CHECKPOINT BOUNDARY (takes precedence only for delivery/execution):
+Do not execute, import, smoke-test or launch any code, including result.py --help. Do not use tools.
+Return only a JSON object with exactly the key source, whose value is the complete Python source for result.py.
+The trusted controller will preserve this response and write the decoded source verbatim to result.py.
+This delivery route supersedes the instructions to write the file yourself and omit code from your final response.
+Implement the approved research plan exactly; do not change its architecture, dimensions, remaining losses, optimizer, schedule or training settings.
+The acceptance contract is embedded below so no file-reading command is necessary:
+"""
+full=prompt+'\n\n'+override+json.dumps(contract,ensure_ascii=False)
+schema={'type':'object','properties':{'source':{'type':'string'}},'required':['source'],'additionalProperties':False}
+(workspace/'delivery_schema.json').open('x').write(json.dumps(schema,indent=2)+'\n')
+(workspace/'controller_input_prompt.txt').open('x').write(prompt)
+(workspace/'controller_delivery_override.txt').open('x').write(override+json.dumps(contract,ensure_ascii=False)+'\n')
+(workspace/'controller_effective_prompt.txt').open('x').write(full)
+flags=[]
+for name in FEATURES: flags+=['--disable',name]
+flags+=['-c','web_search="disabled"','--output-schema',str(workspace/'delivery_schema.json')]
+free=os.getenv('C2_CODEGEN_FREE')=='1'
+if free:
+ flags+=['-c','model_provider="c2_delivery_free"','-c','model_providers.c2_delivery_free={name="C2 delivery free",base_url="http://127.0.0.1:8805/v1",env_key="C2_FAKE_TOKEN",wire_api="responses",request_max_retries=0,stream_max_retries=0}']
+# A child executable can only be this Mach-O Codex binary; no shell or Python child.
+profile='(version 1)\n(allow default)\n(deny process-exec)\n(allow process-exec (literal "'+CLI+'"))\n'
+profile+='(deny file-read* file-write* (subpath "/Users/andresarriaga/Documents/Mila/Gene-Mila") (subpath "/Users/andresarriaga/cellforge_adamson_export") (subpath "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028") (subpath "/Users/andresarriaga/CellForge-6585ff9"))\n'
+profile+='(deny file-read* file-write* (subpath "/Users/andresarriaga/.codex/.chatgpt-projects") (subpath "/Users/andresarriaga/.codex/worktrees"))\n'
+if free: profile+='(deny network*)\n(allow network-outbound (remote ip "localhost:8805"))\n'
+(workspace/'codegen_process_boundary.sb').open('x').write(profile)
+cmd=['/usr/bin/sandbox-exec','-f',str(workspace/'codegen_process_boundary.sb'),CLI,*args[:-1],*flags,'-']
+env={k:v for k,v in os.environ.items() if k not in {'DEEPSEEK_API_KEY','API_KEY','OPENAI_API_KEY','OPENAI_BASE_URL','CODEX_API_KEY','CELLFORGE_AUTO_VERIFY','CELLFORGE_AUTORUN'}}
+env['PYTHONDONTWRITEBYTECODE']='1'
+(workspace/'controller_cli_command.json').open('x').write(json.dumps({'argv':cmd,'disabled_features':FEATURES,'free_local_fake':free,'provider_credentials':'unset in wrapper; local Codex login only in real generation'},indent=2)+'\n')
+proc=subprocess.run(cmd,input=full,text=True,env=env,cwd=workspace)
+if proc.returncode: sys.exit(proc.returncode)
+raw=final.read_bytes()
+def unique(pairs):
+ d={}
+ for k,v in pairs:
+  if k in d: raise ValueError('duplicate delivery key')
+  d[k]=v
+ return d
+doc=json.loads(raw,object_pairs_hook=unique)
+assert type(doc) is dict and set(doc)=={'source'}
+source=doc['source']
+assert type(source) is str and source.strip()
+ast.parse(source,filename='result.py')
+encoded=source.encode('utf-8')
+with artifact.open('xb') as f:f.write(encoded)
+assert artifact.read_bytes()==encoded
+receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cli_exit':proc.returncode,'final_message_sha256':hashlib.sha256(raw).hexdigest(),'artifact_sha256':hashlib.sha256(encoded).hexdigest(),'source_bytes':len(encoded),'delivery':'strict JSON source decoded verbatim and written exclusively','syntax_check':'ast.parse only; no compile/import/exec','script_executed':False,'repair_attempts':0,'disabled_features':FEATURES,'process_exec':'Codex Mach-O binary only; other child executables denied','free_local_fake':free}
+(workspace/'controller_delivery_receipt.json').open('x').write(json.dumps(receipt,indent=2)+'\n')
+

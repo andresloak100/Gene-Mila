@@ -1,0 +1,16 @@
+{
+  "root": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2",
+  "rec": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/docs/results/cellforge_c2",
+  "ops": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops",
+  "work": "/Users/andresarriaga/cellforge_c2_workspace",
+  "out": "/Users/andresarriaga/cellforge_c2_adamson",
+  "python": "/Users/andresarriaga/cellforge_c_venv/bin/python",
+  "project_python": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+  "script": "/Users/andresarriaga/cellforge_c2_workspace/codegen/result.py",
+  "script_sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09",
+  "input": "/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/cellforge_input.h5ad",
+  "input_sha256": "ab43e03dc5ea2b73e057a38eac957222ab2a0dbe31627b7808d82c4149f0163a",
+  "main": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila",
+  "lead_decision_id": 6549819420,
+  "original_script_post_id": 6546820829
+}

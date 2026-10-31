@@ -1,0 +1,2 @@
+docs/results/cellforge_c2/checkpoint2_review.md:14: new blank line at EOF.
+CalledProcessError: git diff --cached --check returned non-zero exit status 2.

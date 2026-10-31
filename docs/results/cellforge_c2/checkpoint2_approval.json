@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-31 22:17:44 UTC",
+  "approved": true,
+  "operator": "Astra/root",
+  "lead_reversal_id": 6549819420,
+  "user_authority": "Directly adopt lead decision: approve same script, CPU run once, score once, then H under same ceiling",
+  "prior_rejection_preserved": true,
+  "prior_rejection_id": 6546869028,
+  "approval_post_id": 6549876553,
+  "script_posted_before_approval": true,
+  "script_post_id": 6546820829,
+  "script_sha256": "e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09",
+  "script_edit": false,
+  "regeneration": false,
+  "planning_calls_repeated": false,
+  "CPU_executions_authorized": 1,
+  "score_calls_authorized": 1,
+  "cumulative_ceiling": 66.240534032
+}

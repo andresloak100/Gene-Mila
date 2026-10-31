@@ -1,0 +1,56 @@
+{
+  "utc": "2026-10-30T16:19:34.309905+00:00",
+  "status": "STOPPED_CODEGEN_BOUNDARY_FREE_CHECK",
+  "resume_import_preflight": "all3checksPASS exit0; corrected imports never invoked",
+  "data_access_boundary": "all6checksPASS; private files not opened",
+  "failed_check": "codegen_effective_tools_free_20261030.json all_pass false; controller assertion exit1",
+  "observed": {
+    "utc": "2026-10-30T16:18:06.255615+00:00",
+    "capture_received": true,
+    "custom_fake_model": "c2-free-probe",
+    "request_path": "/v1/responses",
+    "dummy_auth_matches": true,
+    "offered_tools": [
+      "request_user_input",
+      "view_image"
+    ],
+    "unexpected_tools": [
+      "request_user_input"
+    ],
+    "disabled_features": [
+      "apps",
+      "browser_use",
+      "browser_use_external",
+      "browser_use_full_cdp_access",
+      "code_mode",
+      "code_mode_host",
+      "computer_use",
+      "goals",
+      "hooks",
+      "image_generation",
+      "multi_agent",
+      "plugins",
+      "shell_snapshot",
+      "shell_tool",
+      "skill_search",
+      "sleep_tool",
+      "unbounded_connection_retries",
+      "workspace_dependencies"
+    ],
+    "intentional_termination_after_capture": true,
+    "probe_process_exit": -15,
+    "remote_model_calls": 0,
+    "no_deliverable_script_executed": true,
+    "all_pass": false
+  },
+  "interpretation": "The operator allowlist omitted request_user_input and therefore rejected the observed tool list. No execution tool was observed, but this fake-model probe did not establish an approved artifact-writing generation boundary. It is not a CellForge generated-plan/script/training failure.",
+  "no_retry_or_allowlist_repair": true,
+  "cap_ceiling": "66.240534032",
+  "ledger_after": 61.401668232,
+  "paid_calls": 0,
+  "codegen_model_calls": 0,
+  "training_started": false,
+  "H_started": false,
+  "cap_record_written": false,
+  "external_clean": true
+}

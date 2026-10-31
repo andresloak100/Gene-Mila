@@ -1,0 +1,45 @@
+{
+  "utc": "2026-10-29T03:44:02.273384+00:00",
+  "status": "STOPPED_FREE_PREFLIGHT_FAILURE",
+  "failed_step": "existing_environment_imports",
+  "exit": 1,
+  "actual_error": "ImportError: cannot import name 'run_task_analysis' from 'cellforge.Task_Analysis'",
+  "operator_checker_error": "Free import probe asked for an API name not exported by the unchanged pinned package. No diagnosis of dependency/install/training failure is inferred.",
+  "strict_meter_free_exit": 0,
+  "network_boundary_free_exit": 0,
+  "strict_meter_free_result": {
+    "all_pass": true,
+    "checks": [
+      "known usage settled",
+      "duplicate retry refused without billing",
+      "missing usage halts without retry",
+      "string usage halts without retry",
+      "cache usage halts without retry",
+      "bound violation accounted then halted",
+      "full-context cap refuses before upstream",
+      "external ledger writer refused",
+      "strict token types"
+    ],
+    "remote_calls": 0,
+    "real_ledger_opened": false
+  },
+  "network_boundary_free_result": {
+    "checks": {
+      "only_meter_port_reachable": true,
+      "remote_egress_denied": true
+    },
+    "all_pass": true,
+    "remote_api_calls": 0
+  },
+  "ledger_before": 61.401668232,
+  "ledger_after": 61.401668232,
+  "paid_calls": 0,
+  "codegen_calls": 0,
+  "training_started": false,
+  "cap_file_created": false,
+  "original_run_untouched": true,
+  "pinned_external_source_clean": true,
+  "no_retry_or_workaround": true,
+  "H_started": false,
+  "checkpoint": "before any paid C2 phase; no new plan or generated model exists"
+}

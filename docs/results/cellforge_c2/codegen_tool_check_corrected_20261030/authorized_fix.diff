@@ -1,0 +1,54 @@
+--- preserved_failed_operator
++++ corrected_tool_catalog_check
+@@ -1,31 +1,11 @@
+ from pathlib import Path
+ import subprocess,os,json,datetime,hashlib,threading,http.server,socket,time,shlex
+-R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/docs/results/cellforge_c2");OPS=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops");W=Path("/Users/andresarriaga/cellforge_c2_workspace")
++R=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/docs/results/cellforge_c2/codegen_tool_check_corrected_20261030");OPS=Path("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops");W=Path("/Users/andresarriaga/cellforge_c2_workspace")
+ BASE={k:v for k,v in os.environ.items() if k in ['PATH','HOME','USER','LOGNAME','LANG','LC_ALL','TMPDIR','SHELL']}
+ BASE.update(PYTHONDONTWRITEBYTECODE='1',PYTHONHASHSEED='0',CELLFORGE_WORKSPACE_DIR=str(W),XDG_CACHE_HOME=str(W/'cache'),HF_HOME=str(W/'cache/hf'),MPLCONFIGDIR=str(W/'cache/mpl'),HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
+ os.nice(19)
+-cases={
+- 'public_bundle_denied':('/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf/public.npz',False),
+- 'raw_h5ad_denied':('/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/raw/AdamsonWeissman2016_GSM2406681_10X010.h5ad',False),
+- 'original_export_denied':('/Users/andresarriaga/cellforge_adamson_export/export.json',False),
+- 'project_clone_denied':("/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-cellforge-c2/AGENTS.md",False),
+- 'corrected_export_allowed':('/Users/andresarriaga/cellforge_adamson_export_corrected_20261028/cellforge_input.h5ad',True),
+- 'runtime_source_allowed':('/Users/andresarriaga/CellForge-6585ff9/main.py',True)}
+-checks={}
+-for name,(path,allowed) in cases.items():
+- code="from pathlib import Path\np=Path("+repr(path)+")\n"
+- if allowed: code+="with p.open('rb') as f: assert len(f.read(1))==1\n"
+- else:code+="try:\n with p.open('rb') as f:f.read(1)\nexcept PermissionError:pass\nelse:raise AssertionError('unexpected access')\n"
+- cmd=['/usr/bin/sandbox-exec','-f',str(OPS/'cellforge_analysis.sb'),'/Users/andresarriaga/cellforge_c_venv/bin/python','-c',code]
+- proc=subprocess.run(cmd,cwd=W,env=BASE,capture_output=True)
+- checks[name]={'passed':proc.returncode==0,'exit':proc.returncode,'stderr':proc.stderr.decode(errors='replace')}
+-rep={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'checks':checks,'all_pass':all(v['passed'] for v in checks.values()),'private_files_opened':False,'model_calls':0}
+-(R/'access_boundary_resumed_20261030.json').open('x').write(json.dumps(rep,indent=2)+'\n')
+-assert rep['all_pass'], 'access boundary failed; STOP'
+-print(json.dumps({'data_boundary_all_pass':rep['all_pass']}),flush=True)
+-
+ PORT=8803;capture={};event=threading.Event();CLI='/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex'
+-probe=W/'free_codegen_tool_probe_20261030';probe.mkdir()
++probe=W/'free_codegen_tool_probe_corrected_20261030';probe.mkdir()
+ class Handler(http.server.BaseHTTPRequestHandler):
+  def log_message(self,*args):pass
+  def do_POST(self):
+@@ -43,7 +23,7 @@
+ for conf in configs:args+=['-c',conf]
+ args+=['-o',str(probe/'final.txt'),'-']
+ profile='(version 1)\n(allow default)\n(deny network*)\n(allow network-outbound (remote ip "localhost:8803"))\n'
+-pp=OPS/'codegen_tool_probe.sb';pp.open('x').write(profile)
++pp=OPS/'codegen_tool_probe_corrected_20261030.sb';pp.open('x').write(profile)
+ env={**BASE,'C2_FAKE_TOKEN':'c2-free-probe-token'}
+ cmd=['/usr/bin/sandbox-exec','-f',str(pp),*args]
+ (R/'codegen_tool_probe.command.json').open('x').write(json.dumps({'command':cmd,'real_credentials':'unset','intent':'capture effective tool declarations at localhost fake upstream; intentional termination after request capture; no generation/no paid call'},indent=2)+'\n')
+@@ -67,7 +47,7 @@
+    elif isinstance(t.get('function'),dict) and t['function'].get('name'):found.append(t['function']['name'])
+  return found
+ offered=names(capture.get('tools',[]))
+-allowed={'apply_patch','update_plan','view_image','read_file','list_files','write_file','edit_file'}
++allowed={'request_user_input','apply_patch','update_plan','view_image','read_file','list_files','write_file','edit_file'}
+ unexpected=[n for n in offered if n.split('.')[-1] not in allowed]
+ rep={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'capture_received':got,'custom_fake_model':capture.get('model'),'request_path':capture.get('path'),'dummy_auth_matches':capture.get('dummy_auth_matches'),'offered_tools':offered,'unexpected_tools':unexpected,'disabled_features':["apps","browser_use","browser_use_external","browser_use_full_cdp_access","code_mode","code_mode_host","computer_use","goals","hooks","image_generation","multi_agent","plugins","shell_snapshot","shell_tool","skill_search","sleep_tool","unbounded_connection_retries","workspace_dependencies"],'intentional_termination_after_capture':bool(got and intentional),'probe_process_exit':rc,'remote_model_calls':0,'no_deliverable_script_executed':True,'all_pass':bool(got and capture.get('dummy_auth_matches') and offered and not unexpected)}
+ (R/'codegen_effective_tools_free_20261030.json').open('x').write(json.dumps(rep,indent=2)+'\n')

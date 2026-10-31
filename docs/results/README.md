@@ -21,6 +21,10 @@ Read [the three-seed report](gears_adamson/aggregate.md) ([full-precision JSON](
 | [gears_adamson_s3.md](gears_adamson_s3.md), [JSON](gears_adamson_s3.json) | Unchanged score tool report for seed 3 |
 | [gears_adamson/](gears_adamson/README.md) | Every environment, training, graph, prediction validation, scoring, command, exit, runtime, issue and publication receipt, individually indexed and hashed; raw inputs/predictions/work remain outside Git |
 
+## C2: CellForge checkpoint-edited matched attempt (30–31 October 2026)
+
+Read [the CPU failure report](cellforge_c2/training_failure.md) ([full-precision JSON](cellforge_c2/training_failure.json)) and [every receipt](cellforge_c2/README.md). The lead reversed the earlier checkpoint-2 rejection; Andres adopted that decision, and the identical script was approved and executed once. It exited 1 before training when pandas rejected filling a categorical cell-type column with a new `unknown` category. Wall time was 4.261185541 seconds; aggregate CPU time 0.0013975094444444445 hours. No predictions or score exists. The original rejection, reversal, approval and traceback are preserved; no repair or retry followed. C2 planning cost $0.160981140 on the shared ledger. Label: “CellForge (pinned release, checkpoint plan edited to the input as its README allows)”, beside the original attempt below. Block H remains unstarted.
+
 ## Plan C: CellForge matched Adamson attempt (28 October 2026)
 
 Read [the checkpoint review](cellforge_c/checkpoint1_review.md) ([JSON](cellforge_c/checkpoint1_review.json)). Task analysis and method design completed; the research plan was rejected before code generation because it requires inputs and processing incompatible with the supplied export. No training or score exists; B.5 remains unmet. DeepSeek ledger cost $0.161134200.

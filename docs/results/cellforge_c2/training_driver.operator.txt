@@ -1,0 +1,65 @@
+"""One approved C2 CPU execution; no timeout, retry, script edit, or scoring."""
+from pathlib import Path
+import json,os,subprocess,datetime,time,hashlib,ast
+C=json.loads((Path(__file__).parent/'training_config_20261031.json').read_text())
+R=Path(C['rec']);OUT=Path(C['out']);SCRIPT=Path(C['script'])
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def dump(name,obj):
+ with (R/name).open('x') as f:json.dump(obj,f,indent=2);f.write('\n')
+def ledger():
+ import sqlite3
+ with sqlite3.connect('file:'+C['main']+'/runs/spend_ledger.sqlite?mode=ro',uri=True) as con:
+  return con.execute("SELECT COALESCE(SUM(cost_usd),0),COUNT(*) FROM spend WHERE provider='deepseek'").fetchone()
+approval=json.loads((R/'checkpoint2_approval.json').read_text())
+assert approval['approved'] and approval['script_sha256']==C['script_sha256'] and approval['script_posted_before_approval']
+assert sha(SCRIPT)==C['script_sha256'] and sha(C['input'])==C['input_sha256']
+assert not (R/'training.started.json').exists() and not (R/'training.exit').exists()
+assert OUT.is_dir() and not any(OUT.iterdir())
+assert (R/'training_metadata_preflight.exit').read_text().strip()=='0'
+env={k:v for k,v in os.environ.items() if k in ['PATH','HOME','USER','LOGNAME','LANG','LC_ALL','TMPDIR','SHELL']}
+env.update(PYTHONDONTWRITEBYTECODE='1',PYTHONHASHSEED='0',CUDA_VISIBLE_DEVICES='',XDG_CACHE_HOME=C['work']+'/cache',MPLCONFIGDIR=C['work']+'/cache/mpl',HF_HOME=C['work']+'/cache/hf',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
+cmd=['/usr/bin/sandbox-exec','-f',str(Path(C['ops'])/'cellforge_training_20261031.sb'),C['python'],C['script'],'--adata-path',C['input'],'--predictions-out',str(OUT/'predictions.npz'),'--output-metrics',str(OUT/'metrics.json'),'--checkpoint-out',str(OUT/'checkpoint.pt')]
+import shlex
+(R/'training.command.txt').open('x').write(shlex.join(cmd)+'\n')
+start=now();tm=time.monotonic();before=ledger()
+dump('training.started.json',{'utc':start,'driver_pid':os.getpid(),'script_sha256':sha(SCRIPT),'input_sha256':sha(C['input']),'command':cmd,'ledger_before':before[0],'ledger_rows_before':before[1],'device':'cpu','nice':os.getpriority(os.PRIO_PROCESS,0),'credentials':'unset','generated_defaults':{'epochs':100,'seed':0,'threads':4},'training_time_cap':None,'approval':approval})
+rc=1;cpu=None;pid=None;error=None
+try:
+ with (R/'training.log').open('x') as log:
+  proc=subprocess.Popen(cmd,cwd=OUT,env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
+  pid=proc.pid
+  dump('training.child.json',{'utc':now(),'child_pid':pid,'driver_pid':os.getpid()})
+  while True:
+   try:_,status,usage=os.wait4(pid,0);break
+   except InterruptedError:continue
+  rc=os.waitstatus_to_exitcode(status);proc.returncode=rc
+  cpu=usage.ru_utime+usage.ru_stime
+  cpu_user, cpu_system=usage.ru_utime,usage.ru_stime
+except BaseException as exc:
+ error=type(exc).__name__+': '+str(exc);rc=1;cpu_user=cpu_system=None
+runtime={'start_utc':start,'end_utc':now(),'wall_seconds':time.monotonic()-tm,'aggregate_cpu_seconds':cpu,'aggregate_cpu_hours':cpu/3600 if cpu is not None else None,'cpu_user_seconds':cpu_user,'cpu_system_seconds':cpu_system,'cpu_measurement':'wait4 child resource usage, user+system including threads; script has no subprocess calls','exit':rc,'child_pid':pid,'error':error,'ledger_after':ledger()[0]}
+(R/'training.exit').open('x').write(str(rc)+'\n');dump('training.runtime.json',runtime)
+if rc:
+ dump('training_driver_final.json',{'utc':now(),'exit':rc,'phase':'training','no_retry':True,'score_calls':0})
+ (R/'training_driver.exit').open('x').write(str(rc)+'\n');raise SystemExit(rc)
+checks={};validation_error=None
+try:
+ import numpy as np,anndata
+ data=anndata.read_h5ad(C['input'],backed='r');genes=np.asarray(data.var_names.astype(str));data.file.close()
+ heldout=json.loads((Path(C['input']).parent/'heldout_perturbations.json').read_text())
+ with np.load(OUT/'predictions.npz',allow_pickle=False) as f:
+  pred={k:f[k] for k in f.files}
+ metrics=json.loads((OUT/'metrics.json').read_text())
+ checks={'keys':set(pred)=={'perts','means','genes'},'shape':pred['means'].shape==(38,2055),'finite':bool(np.isfinite(pred['means']).all()),'float':pred['means'].dtype.kind=='f','exact_pert_order':pred['perts'].tolist()==heldout,'exact_gene_order':pred['genes'].tolist()==genes.tolist(),'unique_perts':len(set(pred['perts'].tolist()))==38,'unique_genes':len(set(pred['genes'].tolist()))==2055,'input_unchanged':sha(C['input'])==C['input_sha256'],'script_unchanged':sha(SCRIPT)==C['script_sha256'],'cpu':metrics['device']=='cpu','trained':metrics['epochs_completed']>=1 and metrics['n_training_cells']>0 and metrics['n_validation_cells']>0,'fallback_metadata_matches':metrics['unmeasured_heldout_targets']==[]}
+ validation={'utc':now(),'checks':checks,'all_pass':all(checks.values()),'prediction_sha256':sha(OUT/'predictions.npz'),'prediction_bytes':(OUT/'predictions.npz').stat().st_size,'epochs_completed':metrics['epochs_completed'],'actual_script_unmeasured_heldout_targets':metrics['unmeasured_heldout_targets'],'hash_fallback_count':0,'fallback_count_method':'derived from exhaustive input target coverage and source control flow; no runtime counter','runtime':runtime}
+except BaseException as exc:
+ validation_error=type(exc).__name__+': '+str(exc)
+ validation={'utc':now(),'checks':checks,'all_pass':False,'error':validation_error}
+dump('prediction_validation.json',validation)
+rc=0 if validation['all_pass'] else 1
+dump('training_driver_final.json',{'utc':now(),'exit':rc,'phase':'prediction_validation','no_retry':True,'score_calls':0,'ledger_after':ledger()[0]})
+(R/'training_driver.exit').open('x').write(str(rc)+'\n')
+print(json.dumps({'training_exit':runtime['exit'],'prediction_validation':validation['all_pass'],'score_calls':0}),flush=True)
+raise SystemExit(rc)
+

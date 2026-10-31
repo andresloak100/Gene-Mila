@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-30T16:22:11.832005+00:00",
+  "purpose": "Read-only incident metadata only; no candidate text printed/copied",
+  "old_committed_match_metadata": [
+    {
+      "line": 316,
+      "matched_length": 49,
+      "starts_within_existing_word": true
+    }
+  ],
+  "current_file_match_metadata": [
+    {
+      "line": 318,
+      "matched_length": 49,
+      "starts_within_existing_word": true
+    }
+  ],
+  "new_paragraph_contains_pattern": false,
+  "publication_check_status": "FAILED; no stage/commit/push performed",
+  "raw_candidate_values_not_recorded": true
+}

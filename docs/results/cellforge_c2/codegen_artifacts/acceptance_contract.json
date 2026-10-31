@@ -1,0 +1,62 @@
+{
+  "entrypoint": "result.py",
+  "required_artifacts": [
+    "result.py"
+  ],
+  "task": "# Task for CellForge (Gene-Mila matched comparison)\n\nPredict, for each perturbation listed in `heldout_perturbations.json`, the mean expression of every gene in\n`cellforge_input.h5ad` (same genes, same order, same normalisation: counts per 10k, log1p) in K562 cells carrying\nthat CRISPR perturbation. None of these perturbations has any cell in the training file: this is the unseen-\nperturbation setting. Train only on `cellforge_input.h5ad`; do not download or use any other copy of this screen.\n\nOutput: `predictions.npz` with `perts` (the held-out keys, as listed) and `means` (n_perts x n_genes, float).\nScored by Gene-Mila's evaluator: pearson_delta (correlation of predicted and true change from control, per\nperturbation), MSE, and MSE/PCC/R2 on the top-20 DE genes.\n",
+  "required_cli": {
+    "training_data": "--adata-path",
+    "predictions_output": "--predictions-out"
+  },
+  "allowed_training_read": "Only the supplied cellforge_input.h5ad file, via --adata-path. No other training data or file reads. The metadata below are supplied in this contract so result.py must embed the held-out keys, rather than reading a metadata file at runtime.",
+  "heldout_perturbations": [
+    "AARS",
+    "ARHGAP22",
+    "ATF4",
+    "ATP5B",
+    "CCND3",
+    "DAD1",
+    "DARS",
+    "DHDDS",
+    "DNAJC19",
+    "EIF2AK3",
+    "EIF2B3",
+    "EIF2B4",
+    "FARSB",
+    "HSPA5",
+    "HYOU1",
+    "IDH3A",
+    "MARS",
+    "MRPL39",
+    "MTHFD1",
+    "OST4",
+    "PDIA6",
+    "PSMA1",
+    "PSMD4",
+    "PTDSS1",
+    "QARS",
+    "SARS",
+    "SCYL1",
+    "SEC61B",
+    "SEC61G",
+    "SLC39A7",
+    "SOCS1",
+    "SPCS2",
+    "SPCS3",
+    "SRP72",
+    "TIMM23",
+    "UFL1",
+    "XBP1",
+    "XRN1"
+  ],
+  "output": "Write predictions.npz at --predictions-out with perts exactly the held-out keys in the supplied order, means finite float array 38 by 2055, and genes equal to AnnData var_names in input order. Do not read heldout_perturbations.json or TASK.md at runtime.",
+  "constraints": {
+    "device": "cpu",
+    "network_downloads": false,
+    "shell_or_subprocess": false,
+    "test_or_ood_data_access": false,
+    "cluster_submission": false,
+    "plan_scientific_settings": "Preserve the approved research plan exactly; no component or scientific setting added/changed.",
+    "preapproval_execution": "No execution, import, help or smoke-test of generated code. Controller AST parse only."
+  }
+}

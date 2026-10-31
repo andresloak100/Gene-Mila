@@ -1,0 +1,1 @@
+{"checks": {"only_meter_port_reachable": true, "remote_egress_denied": true}, "all_pass": true, "remote_api_calls": 0}

@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+    "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/cellforge_c2_ops/test_strict_proxy_free.py"
+  ],
+  "credentials": "unset",
+  "nice": 19
+}

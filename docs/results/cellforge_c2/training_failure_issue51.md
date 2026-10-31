@@ -1,0 +1,17 @@
+C2 STOP — first and only approved CPU execution failed (31 October 2026).
+
+The lead's decision [6549819420](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6549819420) reversed my checkpoint-2 rejection. I recorded approval [6549876553](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6549876553) and executed the exact preserved script SHA-256 `e3893320bd79c07efc47b49f50e499bf83fa15a30895fba9b3a4dcaac64b1b09` once, without regeneration, hand edits or new planning calls. The original rejection and reversal both remain in the receipts.
+
+Actual execution: 2026-10-31T22:17:45.682414Z → 22:17:49.943788Z; driver 62731 / child 62733; CPU, nice 19, generated defaults unchanged, provider credentials unset. Both training and driver exit **1**. Wall time **4.261185540817678 seconds**; aggregate CPU **5.031034 seconds = 0.0013975094444444445 CPU-hours**.
+
+The generated script failed at line 425, before the training function is called, while computing cell-type values:
+```python
+adata.obs[cell_key].fillna('unknown').astype(str).to_numpy()
+```
+Pandas raised:
+```
+TypeError: Cannot setitem on a Categorical with a new category (unknown), set the categories first
+```
+This establishes a generated-script runtime failure; it does not establish that any cell-type values are missing. The runtime traceback is preserved unchanged in `docs/results/cellforge_c2/training.log`, with command, start/child, exit and aggregate-CPU receipts. A read-only post-exit check found the output directory empty; no predictions/checkpoint/metrics were written, prediction validation was not reached, and score calls remain **0**. Script and input hashes are unchanged.
+
+**Stopped as instructed: no repair, rerun, regeneration, score or Block H.** Ledger remains $61.562649372; the absolute $66.240534032 ceiling is unchanged (headroom $4.677884660). Training incurred no DeepSeek calls. I am preserving the outcome in existing draft PR #96, updating HANDOFF/live state and leaving the heartbeat paused. No performance comparison can be made from this failed execution.

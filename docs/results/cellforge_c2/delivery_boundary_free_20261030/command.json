@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/usr/bin/nice",
+    "-n",
+    "19",
+    "/Users/andresarriaga/cellforge_c_venv/bin/python",
+    "-c",
+    "from pathlib import Path\nimport json\nfrom cellforge.Code_Generation.registry import create_backend\nfrom cellforge.Code_Generation.contracts import AgentRunRequest\nw=Path('/Users/andresarriaga/cellforge_c2_workspace/free_delivery_20261030')\nresult=create_backend('codex').run(AgentRunRequest(research_plan={'task':'FREE FAKE delivery fixture only; no scientific model'},workspace=w,model='c2-free-delivery',timeout_seconds=45))\ndoc={'status':result.status,'error':result.error,'attempt':result.attempt,'changed_files':result.changed_files,'usage':result.usage}\n(w/'backend_result.json').write_text(json.dumps(doc,indent=2)+'\\n')\nprint(json.dumps(doc))\nraise SystemExit(0 if result.status=='completed' else 1)\n"
+  ],
+  "real_credentials": "unset",
+  "paid_calls": 0
+}
