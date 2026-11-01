@@ -60,8 +60,16 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
             # on 2026-11-01 this lookup failed from the chain's login zsh while the image was listed from the operator's
             # shell (#51, PR #103): the two shells may talk to different Docker contexts, so the refusal names the context
             # and the images this shell sees, which settles the cause instead of leaving it unknown
-            docker image inspect genemila-h > /dev/null 2>&1 \
-              || no "no image genemila-h in Docker context '$(docker context show 2>&1)' (DOCKER_HOST='${DOCKER_HOST:-}', DOCKER_CONTEXT='${DOCKER_CONTEXT:-}'); images here: $(docker image ls --format '{{.Repository}}:{{.Tag}}' 2>&1 | tr '\n' ' '); build it from this shell (check_tools.sh) or run the chain from the shell that built it"
+            # The image is used by its immutable ID, never by name. Twice on 2026-11-01 Docker Desktop (context
+            # desktop-linux) listed genemila-h:latest yet refused `docker image inspect genemila-h` by name, while the
+            # ID resolved every time (#51, comments 6551896514 and 6558432512). check_tools.sh records the ID of the
+            # validated build in $H/image_id.txt; without that file the ID is read from the listing. Each session's
+            # record carries the ID, so the paper cites the exact image.
+            H_IMAGE=$(tr -d '[:space:]' < "$H/image_id.txt" 2> /dev/null)
+            [ -n "$H_IMAGE" ] || H_IMAGE=$(docker image ls --no-trunc --format '{{.ID}}' --filter reference=genemila-h:latest 2> /dev/null | head -1)
+            [ -n "$H_IMAGE" ] || no "no image genemila-h in Docker context '$(docker context show 2>&1)' (DOCKER_HOST='${DOCKER_HOST:-}', DOCKER_CONTEXT='${DOCKER_CONTEXT:-}'); images here: $(docker image ls --format '{{.Repository}}:{{.Tag}}' 2>&1 | tr '\n' ' '); build it from this shell (check_tools.sh)"
+            docker image inspect "$H_IMAGE" > /dev/null 2>&1 || no "image $H_IMAGE (from $H/image_id.txt or the genemila-h:latest listing) does not resolve by ID in context '$(docker context show 2>&1)'"
+            echo "block H image: $H_IMAGE"
             docker network inspect genemila_h > /dev/null 2>&1 || no "no network genemila_h (check_tools.sh)" ;;
     account) [ -n "$ACCOUNT" ] && id "$ACCOUNT" > /dev/null 2>&1 || no "isolation.txt names no existing account"
             # the account's own interpreter (biomni, the package's requirements) and claude; sudo asks for the
@@ -195,7 +203,7 @@ agent_run() {  # agent_run <log name> <command inside the isolation...>: the age
       -v "$W:/work/pkg" -v "$W.export.json:/work/pkg.export.json:ro" -v "$O:/work/out" \
       -v "$PROXY_LOG_FILE:/work/proxy.jsonl:ro" -e PROXY_LOG=/work/proxy.jsonl \
       -e OPENAI_API_KEY=proxy -e ANTHROPIC_AUTH_TOKEN=proxy -e HOME=/work/out \
-      genemila-h "$@" > "$H/$name.log" 2>&1 &
+      "$H_IMAGE" "$@" > "$H/$name.log" 2>&1 &
   else  # the ticket from h_checks is refreshed in the foreground (a backgrounded sudo cannot ask for the password)
     sudo -v
     sudo -u "$ACCOUNT" -H env -i PATH="$APATH" HOME="/Users/$ACCOUNT" PROXY_LOG="$PROXY_LOG_FILE" \

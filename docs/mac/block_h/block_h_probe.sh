@@ -15,7 +15,7 @@ name=h_probe
 h_checks; pkg_checks
 BIOMNI_RATE=$(miss_rate deepseek-v4-pro) || exit 1
 session_dirs "$name"
-echo "- $(utc) $name started (DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
+echo "- $(utc) $name started (DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE$([ "$MODE" = docker ] && echo ", image $H_IMAGE"))" >> "$L/progress.md"
 # 1. Biomni: one execute-to-observation round against deepseek-v4-pro (consecutive assistant messages); its run.json
 #    lands in $O, where collect_handback.py reads it
 proxy_up "$name" 0.25  # Biomni: its first call alone is about $0.05 (156,006-character system prompt; plan note of 2026-11-01)

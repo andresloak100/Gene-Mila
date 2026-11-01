@@ -25,7 +25,16 @@ echo "== Docker"
 echo "-- docker info (read-only; the daemon's state, the first 20 lines):"
 if command -v docker > /dev/null; then docker info 2>&1 | head -20 | sed 's/^/   /'; else echo "   no docker binary"; fi
 if command -v docker > /dev/null && docker info > /dev/null 2>&1; then
-  echo "daemon running; image genemila-h: $(docker image inspect genemila-h > /dev/null 2>&1 && echo present || echo "MISSING (docker build -t genemila-h -f $C/docs/mac/block_h/Dockerfile --build-arg PKG_REQS=\"\$(tr '\\n' ' ' < $PKG_SRC/requirements.txt)\" $C)")"
+  img=$(docker image ls --no-trunc --format '{{.ID}}' --filter reference=genemila-h:latest 2> /dev/null | head -1)
+  if [ -n "$img" ]; then
+    # the sessions use the image by this immutable ID (block_h_common.sh, h_checks): record it once per build
+    mkdir -p "$H"; [ -e "$H/image_id.txt" ] && [ "$(tr -d '[:space:]' < "$H/image_id.txt")" != "$img" ] \
+      && echo "WARNING: $H/image_id.txt holds $(cat "$H/image_id.txt"), the listing $img; a rebuilt image: move the old file aside before the next session"
+    [ -e "$H/image_id.txt" ] || echo "$img" > "$H/image_id.txt"
+    echo "daemon running; image genemila-h: present, ID $img (recorded in $H/image_id.txt)"
+  else
+    echo "daemon running; image genemila-h: MISSING (docker build -t genemila-h -f $C/docs/mac/block_h/Dockerfile --build-arg PKG_REQS=\"\$(tr '\\n' ' ' < $PKG_SRC/requirements.txt)\" $C)"
+  fi
   docker network inspect genemila_h > /dev/null 2>&1 || { docker network create --internal genemila_h > /dev/null && echo "network genemila_h created (internal: no route to the internet)"; }
   # the egress test: a throwaway listener on the Mac stands in for the proxy; the relay must reach it, the internet must not
   "$PY" -m http.server --bind 127.0.0.1 $PORT > /dev/null 2>&1 & LISTENER=$!

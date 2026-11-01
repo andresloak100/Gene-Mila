@@ -15,7 +15,7 @@ name=h_a3_r$S; model="${H_A3_MODEL:-deepseek-v4-pro}"
 [ -e "$H/h_probe.passed" ] || no "the probe has not passed (block_h_probe.sh)"
 h_checks; pkg_checks
 session_dirs "$name"
-echo "- $(utc) $name started (package copy $W, client $A3_CLIENT, model $model, DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
+echo "- $(utc) $name started (package copy $W, client $A3_CLIENT, model $model, DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE$([ "$MODE" = docker ] && echo ", image $H_IMAGE"))" >> "$L/progress.md"
 proxy_up "$name" 2.50
 if [ "$A3_CLIENT" = codex ]; then
   # the runner takes the model from BASELINE_CODEX_MODEL (config.toml and -m) and the binary from CODEX_BIN; in Docker
