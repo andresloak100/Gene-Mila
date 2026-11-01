@@ -58,6 +58,8 @@ not integrated merely because a document describes it.
   [mac/block_g/](mac/block_g/).
 - Block H, the comparison on Adamson: [PLAN_H_COMPARISON.md](PLAN_H_COMPARISON.md); Mac scripts in
   [mac/block_h/](mac/block_h/).
+- Plan DK, the dark genome (train on well-studied genes, test on uncharacterized ones; merged with plan R):
+  [PLAN_DK_DARK_GENOME.md](PLAN_DK_DARK_GENOME.md).
 - Plan R, the fresh test (commit, then reveal): [PLAN_R_FRESH_TEST.md](PLAN_R_FRESH_TEST.md), with
   [FROZEN_TEST_PLAN.md](FROZEN_TEST_PLAN.md), [FROZEN_EXPORT.md](FROZEN_EXPORT.md) and
   [EXTERNAL_COHORT_METADATA.md](EXTERNAL_COHORT_METADATA.md).
