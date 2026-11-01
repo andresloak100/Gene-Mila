@@ -404,3 +404,19 @@ and runner comments now tell the two 404 rows apart: the proxy's own (`"refused"
 Tests: `tests/test_block_h_scripts.py` (the reset on a fake Mac under a temporary `HOME`, its refusals, the account
 mode copies, `miss_rate` on the real rate card and on a missing one, the runner with the flag, without any source and
 beside the checkout). Nothing else in the scripts changed; the plan's commands are unchanged.
+
+## Note, 2026-10-31: the probe's acceptance rule is now enforced by the script
+
+Astra's preflight (#51, comment 6550718051; `docs/results/block_h_preflight_20261031/`) showed that
+`block_h_probe.sh` only printed note item 7's rule. The pooled session check in `block_h_common.sh` accepted one codex
+200, a 200 followed by a 400, and a Biomni 200 with no codex 200, and the chain then went on to the paid arms. The lead
+(owner of these scripts) closed the gap before any paid probe:
+- `probe_gate` in `block_h_common.sh` reads each proxy log on its own, never pooled. Biomni's `h_probe.jsonl` needs at
+  least one status-200 row. With the codex client, `h_probe_codex.jsonl` needs at least two status-200 rows and no 400.
+- `block_h_probe.sh` runs it after `session_after`. On failure it moves `h_probe.passed` aside to `h_probe.gate_failed`
+  (never deleted), writes the reasons to `h_probe.gate.txt` and `block_h_stopped.txt`, and exits 3, so the chain stops
+  and `block_h_reset_probe.sh` applies as for any failed probe.
+- Tests: `tests/test_block_h_scripts.py::test_probe_gate_enforces_the_plans_codex_rule_per_log` covers Astra's three
+  fixtures, two more failures and the passing case.
+
+The rule itself is unchanged; only its enforcement is new. Astra's preflight receipts stay as they are.
