@@ -81,7 +81,7 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
     [ -e "$C/tools/baselines/$f" ] || no "$C/tools/baselines/$f is missing (H_CLONE must be at the plan's commit or later)"
   done
   case "$A3_CLIENT" in codex|claude) ;; *) no "A3_CLIENT must be codex or claude" ;; esac
-  [ -e "$L/STOP" ] && { RC=3 no "STOP file present"; }
+  [ -e "$H/STOP" ] && { RC=3 no "STOP file present ($H/STOP; block H's own halt signal, never the driver's $L/STOP)"; }
   [ -e "$H/block_h_stopped.txt" ] && { RC=3 no "block stopped (block_h_stopped.txt); write the cause up in the plan first"; }
   pgrep -f '[r]un_research.py' > /dev/null && no "a lab run is running"
   pgrep -f '[s]cale_seq.sh' > /dev/null && no "the scaling driver is running"
