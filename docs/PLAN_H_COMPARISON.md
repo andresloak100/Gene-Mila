@@ -420,3 +420,15 @@ Astra's preflight (#51, comment 6550718051; `docs/results/block_h_preflight_2026
   fixtures, two more failures and the passing case.
 
 The rule itself is unchanged; only its enforcement is new. Astra's preflight receipts stay as they are.
+
+## Note, 2026-11-01: the image's Biomni dependencies
+
+Astra built the image, isolation passed, and Biomni then failed to load: `No module named 'pandas'`
+(`docs/results/block_h_preflight_20261031/image_imports_20261031.log`, PR #97). Biomni 0.0.8 imports pandas, tqdm and
+`langchain_openai` on load, and matplotlib for plots, but does not declare them. The lead reproduced the image's
+installs on Python 3.12, added those packages, and pinned the langchain family to 0.3: langchain 0.3.30, langchain-core
+0.3.86, langchain-openai 0.3.35, langgraph 0.3.18, biomni 0.0.8, openai 2.54.0. The latest langchain-openai pulls a
+langchain-core 1.x that langgraph 0.3.18 refuses. With these pins `pip check` is clean, and `A1(...)` builds offline
+exactly as `run_biomni.py` builds it (system prompt 156,006 characters, no model call). The Dockerfile now ends its
+install with `pip check` and that import, so a missing package fails the build, not a session. Astra rebuilds the
+image; nothing else in the plan changes.
