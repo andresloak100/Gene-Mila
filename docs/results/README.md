@@ -1,5 +1,10 @@
 # Results index
 
+## Block H: authorized probe reset, restart image refusal (1 November 2026)
+
+Read [the new pre-session refusal](block_h_probe_restart_20261101/report.md) and [all reset/restart receipts](block_h_probe_restart_20261101/README.md). Lead PR102's probe allowances were adopted and the exact dated reset passed, preserving the failed probe. The native restart then exited 3 because its Docker image-name check failed, although read-only diagnostics still list the validated image/tag. Cause unknown; no retag/rebuild or retry followed. Zero new calls; ledger unchanged. Andres's new cumulative $95 H/DK ceiling is recorded, while the existing native H cap and session limits remain unchanged. C0 and all older receipts are preserved.
+
+
 ## Block H: rebuilt image, C0 complete, probe stopped (1 November 2026)
 
 Read [the partial operational report](block_h_20261101/report.md) and [all receipts](block_h_20261101/README.md). Lead PR98/99 resolved the old image/import and probe-gate defects. The rebuilt image and free checks passed; C0seeds0/2/3 each ran once and validated. The first native probe then stopped: Biomni's estimated first call exceeded its fixed$0.05probe cap before any request; Codex's subprobe completed with two200/no400, costing about$0.01263. Chainexit3; no full H arms or readings. No retry, cap change or workaround. Existing [31 October receipts](block_h_preflight_20261031/README.md) remain as history. No completed H comparison is claimed.

@@ -1,0 +1,209 @@
+{
+  "publication_base": "a132f3ebc3ef557ca8428a81565d03ba2b6f532d",
+  "copies": [
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/budget_authority95.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/budget_authority95.json",
+      "bytes": 436,
+      "sha256": "a067dcbd5cb5d9267051924a448558af47ade897d5d9c12fa09ed4e16f6d808e"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/failed_native_chain.log",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/failed_native_chain.log",
+      "bytes": 137,
+      "sha256": "0436011ce7406cc7ba2527d21ac8bae83e30ad20145392ddc4c3d3c5fceb1bb2"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/launch_native_h.zsh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/launch_native_h.zsh.operator.txt",
+      "bytes": 1026,
+      "sha256": "010f0292730d7c6cdfa4b3fe293678c2e710fb9e2a70bb0a6beb9e61bf49bb4d"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/lead_probe_resolution.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/lead_probe_resolution.json",
+      "bytes": 4398,
+      "sha256": "6b033a50f36a7ba89712806e6dddde2cbe773069b60858be10b1cdf82d8a82a8"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.ended.utc",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/native_chain.ended.utc",
+      "bytes": 21,
+      "sha256": "23c3705455338b1d7d19753eba74aa31db7e3f4bc54a82742ef634499c2ca3c6"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.exit",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/native_chain.exit",
+      "bytes": 2,
+      "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.started.utc",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/native_chain.started.utc",
+      "bytes": 21,
+      "sha256": "28ef3f5264b17f87f83c09857640e02539bba4b0bd8f85ef77e21013dc808745"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.wrapper.pid",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/native_chain.wrapper.pid",
+      "bytes": 6,
+      "sha256": "21eba29b651a5e7e44d6d608b1be6db506cc92d9b2cb1ca0b40f94ea9d077083"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_native_chain.log",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_native_chain.log",
+      "bytes": 862,
+      "sha256": "2bb9eeddec1409bddba3c783889c11a6d473e38208f1a97a167e522ee0ce8b86"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/Dockerfile",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/Dockerfile.operator.txt",
+      "bytes": 1989,
+      "sha256": "6c66d25dfbf4363a046f8fc9acc0d339eb8fc91e5ea95be3a8a6d2ba529483e5"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_a2.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_a2.sh.operator.txt",
+      "bytes": 6517,
+      "sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_a3.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_a3.sh.operator.txt",
+      "bytes": 2323,
+      "sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_a4.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_a4.sh.operator.txt",
+      "bytes": 1152,
+      "sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_cap.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_cap.sh.operator.txt",
+      "bytes": 1315,
+      "sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_chain.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_chain.sh.operator.txt",
+      "bytes": 1918,
+      "sha256": "28eb46f06581ddaba94341ecd3a16829143a0defe68ce3f26ed35c2834b76094"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_common.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_common.sh.operator.txt",
+      "bytes": 19679,
+      "sha256": "5fb1fe2d098d5075fbfd520879fc2fec923e82e98536841cf9e17474b286299b"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_probe.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_probe.sh.operator.txt",
+      "bytes": 5519,
+      "sha256": "4862676328d0e41ed508731042b33911bd653ea7b8c197b633784c919419c14c"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/block_h_reset_probe.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/block_h_reset_probe.sh.operator.txt",
+      "bytes": 3118,
+      "sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_operational_scripts/check_tools.sh",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/previous_operational_scripts/check_tools.sh.operator.txt",
+      "bytes": 4964,
+      "sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/progress_forwarded.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/progress_forwarded.json",
+      "bytes": 282,
+      "sha256": "05759b2380001e5325de109b4ac6fcca09fa4ad5ed763e0d961347131d98cad8"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/progress_issue51.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/progress_issue51.json",
+      "bytes": 162,
+      "sha256": "9069838f700a717a5d31487b8e2048c6bb0dd1620eca62ccf588ec384ff240fb"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/refusal_issue51.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/refusal_issue51.json",
+      "bytes": 162,
+      "sha256": "11f28fe169dc51e02582de2630d0c64f77b04a1f861e5dccc1b9c94156172634"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/refusal_issue51.md",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/refusal_issue51.md",
+      "bytes": 1977,
+      "sha256": "0958238b1d89aa2c29de1a5e6e6c4c2f9af29e3a63ea0efc175e020f26893ca6"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/reset.command.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/reset.command.json",
+      "bytes": 248,
+      "sha256": "e6e915444c0286e7d6a34f564afd7dd28ae44bdc5fffbceb6c9325c020dbf5c1"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/reset.exit",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/reset.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/reset.log",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/reset.log",
+      "bytes": 231,
+      "sha256": "400beca88a08f48b788b2d844f7f3dc8b5cb6bd1c35eabe757d1f1c250cf101d"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/reset.receipt.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/reset.receipt.json",
+      "bytes": 703,
+      "sha256": "f071e5f8bdb0aec00e48c6a447e412c41e7d55ec320d87ab7c2ec5f0c74872a4"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/reset.runtime.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/reset.runtime.json",
+      "bytes": 208,
+      "sha256": "aa18e977f1a3e5383cdf4ca260ffe9d6642e2faf97accea1408931c101357bd3"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/restart_refusal.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/restart_refusal.json",
+      "bytes": 3150,
+      "sha256": "1a2dc8d4abc95057beef97b4cb59c3dfe6282f96cd2bb4278882347e64d777c0"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/resumption.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/resumption.json",
+      "bytes": 2030,
+      "sha256": "3350958f647b3e4c6975c3bc0233ccc57ce5d56244aa422552bd42fc61fde6f8"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/state_refusal_publication.json",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/state_refusal_publication.json",
+      "bytes": 198,
+      "sha256": "27048822bf27ec06f11363b7736bc63285f1375bff461a445e8d4d6a31ad5b77"
+    },
+    {
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/failed/h_probe_20261101T0207Z/moved.txt",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/reset_moved.txt",
+      "bytes": 1409,
+      "sha256": "6c71ee36d357bbc99627a0075260e789f30a7f20ac18d045a7c09895a0762683"
+    },
+    {
+      "source": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/block_h_cap.txt",
+      "published_path": "docs/results/block_h_probe_restart_20261101/receipts/unchanged_block_h_cap.txt",
+      "bytes": 34,
+      "sha256": "cccaa01133494e8ba0e12b70e347f472233aebdf97147495161bab3c226c2f7a"
+    },
+    {
+      "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/publish_restart_refusal_20261101.py",
+      "published_path": "docs/results/block_h_probe_restart_20261101/publication.operator.txt",
+      "bytes": 12780,
+      "sha256": "906c44525eff8811a16f36eef0a003f7f7d8ab3e11da4c3baa2d876d460b1363"
+    }
+  ]
+}

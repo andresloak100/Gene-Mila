@@ -1,0 +1,156 @@
+from pathlib import Path
+import datetime, hashlib, importlib.util, json, re, shutil, subprocess
+
+P = Path('/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5')
+C = P / 'gene-mila-block-h'
+O = P / 'block_h_ops/probe_restart_20261101'
+H = Path('/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h')
+PREFIX = 'docs/results/block_h_probe_restart_20261101/'
+R = C / PREFIX
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=C)
+
+def need(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+def sha(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+def fresh(p, text):
+    with p.open('x') as f:
+        f.write(text)
+
+def jnew(p, value):
+    fresh(p, json.dumps(value, indent=2) + '\n')
+
+BASE = git('rev-parse', 'HEAD').decode().strip()
+need(not git('status', '--porcelain').strip(), 'dirty clone')
+need(not R.exists(), 'publication already exists')
+spec = importlib.util.spec_from_file_location('pub', P / 'cellforge_c2_ops/publication_checks_20261030.py')
+pub = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(pub)
+r = json.loads((O / 'restart_refusal.json').read_bytes())
+need(r['reset_exit'] == 0 and r['native_chain_exit'] == 3 and not r['new_probe_started'], 'classification')
+need(r['new_paid_calls'] == 0 and r['ledger_after'] == [61.575279308, 23867], 'no new spend')
+need(r['new_cumulative_authority'] == 95 and r['no_retag_rebuild_source_patch_or_restart_retry'], 'scope')
+R.mkdir()
+copies = []
+
+def copy(source, name):
+    need(source.is_file() and not source.is_symlink(), 'invalid receipt source')
+    need(not pub.secret_hits(source.read_bytes()), 'credential pattern in ' + str(source))
+    target = R / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    need(not target.exists(), 'duplicate copy target')
+    shutil.copyfile(source, target)
+    need(source.read_bytes() == target.read_bytes(), 'raw copy mismatch')
+    copies.append({'source': str(source), 'published_path': PREFIX + name, 'bytes': target.stat().st_size, 'sha256': sha(target)})
+
+for f in sorted(O.rglob('*')):
+    if not f.is_file():
+        continue
+    rel = f.relative_to(O).as_posix()
+    if f.suffix in {'.sh', '.zsh', '.py'} or f.name == 'Dockerfile':
+        rel += '.operator.txt'
+    copy(f, 'receipts/' + rel)
+copy(Path(r['archive']) / 'moved.txt', 'receipts/reset_moved.txt')
+copy(H / 'block_h_cap.txt', 'receipts/unchanged_block_h_cap.txt')
+copy(Path(__file__), 'publication.operator.txt')
+jnew(R / 'receipt_provenance.json', {'publication_base': BASE, 'copies': copies})
+
+fresh(R / 'report.md', '''# H probe reset succeeded; restart refused before the new probe
+
+The authorized dated reset completed successfully. The restarted native chain then stopped in its Docker image-name check before a new probe, proxy or paid call. The shared ledger is unchanged. H remains stopped; the new spending authorization is recorded separately from this technical refusal.
+
+## Adopted lead decision and reset
+
+The [lead's 1 November decision](https://github.com/andresloak100/Gene-Mila/issues/51#issuecomment-6552107893) adopted merged PR102: Biomni's probe session becomes $0.25 and the combined probe ledger check $0.30. A3's probe remains $0.05, full-arm sessions $2.50, and the acceptance gate is unchanged. PR101, containing the completed C0 and first stopped probe, was also merged.
+
+Andres directly instructed the operator to pull integration, copy the scripts, run `bash block_h_reset_probe.sh '2026-11-01'`, then restart the chain. Own clone `astra/block-h-comparison` fast-forwarded to execution source `f39c60e`; all ten operational scripts/Dockerfile were copied byte-identically and shell syntax checks passed. The Dockerfile and image payload were not rebuilt or changed during this resumption.
+
+The exact native reset exited 0 at 02:07 UTC and moved 15 files/directories into `L/block_h/failed/h_probe_20261101T0207Z/`, never deleting them. The first chain's outer log was separately moved into these operator receipts because the native reset moves only probe files and the next chain uses the same log path. The completed C0 receipts remained unchanged. No C0, baseline, planning or scoring run was repeated.
+
+Read [resumption and copied-file hashes](receipts/resumption.json), [exact reset command](receipts/reset.command.json), [reset output](receipts/reset.log), [exit/runtime](receipts/reset.runtime.json), [preservation receipt](receipts/reset.receipt.json) and [moved-path list](receipts/reset_moved.txt). The first probe's complete unchanged record remains in [the merged partial publication](../block_h_20261101/README.md).
+
+## Actual native restart refusal
+
+The fresh detached wrapper 21712 started the native chain once, with explicit own H_CLONE and A3_CLIENT=codex, nice19/caffeinate and the existing Mac environment key only. It ran from 02:08:17 to 02:08:18 UTC and exited 3. Its entire native chain log is:
+
+```
+2026-11-01T02:08:17Z block H started
+NOT STARTED: no image genemila-h (check_tools.sh)
+2026-11-01T02:08:18Z block H stopped at the probe
+```
+
+No new probe log, proxy record, session or API request was created. Shared ledger before and after remains **$61.575279308, 23867 rows**. No agent container remained active. This is the native controller's pre-session refusal, not a new Biomni/provider failure and not a completed probe. [Exact outcome and read-only diagnostics](receipts/restart_refusal.json), [native log](receipts/failed_native_chain.log), [#51 report](receipts/refusal_issue51.md).
+
+Read-only Docker diagnostics after the stop still listed `genemila-h:latest` at image `sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09`. Inspecting that immutable ID succeeded and reported RepoTags `[genemila-h:latest]`. The native name lookup nevertheless failed; its cause is **not established**. The earlier prelaunch image-name lookup correction is preserved in the merged previous publication; it is not treated as a new unused correction here. No additional name-check invocation, retag, rebuild, source change, workaround or chain retry followed this native refusal.
+
+## New cumulative budget authority
+
+Andres directly authorized cumulative ledger spending up to **$95 for block H and plan DK**, with no further spending approval needed within that ceiling; [authority on #41](https://github.com/andresloak100/Gene-Mila/issues/41#issuecomment-6552139819), [receipt](receipts/budget_authority95.json). His approximately $17 real-money estimate is recorded as his estimate, not a verified conversion between ledger and provider charges. This supersedes the older absolute $76.562649372 authorization for the H/DK scope.
+
+The already-written native H block cap remains `76.56 61.562649 2026-11-01T01:43Z`. Neither it nor the block's starting ledger was reset or silently raised. The native per-session limits remain as prescribed above. Existing funds only, no top-up, no screen/UI interaction and no additional balance inquiry. This stop is unrelated to funds. One paid job at a time; no DK job began during this resumption. The separately requested DK metadata-only check is already complete on #41.
+
+## State and publication
+
+The restarted chain is stopped and its monitor remains paused. Next: explicit resolution of the Docker image-name refusal and authorized resumption, without repeating completed controls or resetting the block cap. Main and synced sources remain untouched. No full H arm, one-worker run, reading or sealed score followed the refusal.
+
+This publication contains reports, indexes and exact operator receipts only. Prior partial records, scripts and science remain unchanged. No task package, data, harness matrix, raw run, image, credential or codex_home cache is included. Every preserved file is indexed and hashed; the provenance maps each copy to its original. All publication checks must pass before push.
+''')
+
+idx = C / 'docs/results/README.md'
+with (R / 'results_index_before_restart.md').open('xb') as f:
+    f.write(idx.read_bytes())
+s = idx.read_text()
+needle = '# Results index\n'
+need(s.startswith(needle), 'results index heading')
+entry = '''
+## Block H: authorized probe reset, restart image refusal (1 November 2026)
+
+Read [the new pre-session refusal](block_h_probe_restart_20261101/report.md) and [all reset/restart receipts](block_h_probe_restart_20261101/README.md). Lead PR102's probe allowances were adopted and the exact dated reset passed, preserving the failed probe. The native restart then exited 3 because its Docker image-name check failed, although read-only diagnostics still list the validated image/tag. Cause unknown; no retag/rebuild or retry followed. Zero new calls; ledger unchanged. Andres's new cumulative $95 H/DK ceiling is recorded, while the existing native H cap and session limits remain unchanged. C0 and all older receipts are preserved.
+
+'''
+idx.write_text(s.replace(needle, needle + entry, 1))
+names = sorted({f.relative_to(R).as_posix() for f in R.rglob('*') if f.is_file()} | {'README.md', 'artifact_manifest.json', 'publication_audit.json'})
+lines = ['# H authorized reset and native restart refusal: receipts', '', 'Read [the report](report.md) first. Reset passed; restart stopped before a new probe or paid call. Raw receipt formatting stays unchanged. The manifest excludes itself and its audit for circular hashing.', '', '| File | Record |', '|---|---|']
+lines += [f'| [{name}]({name}) | Exact operational, authority, provenance or publication receipt |' for name in names]
+fresh(R / 'README.md', '\n'.join(lines) + '\n')
+MF = PREFIX + 'artifact_manifest.json'
+AUD = PREFIX + 'publication_audit.json'
+files = [idx] + [f for f in sorted(R.rglob('*')) if f.is_file()]
+mf = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'publication_base': BASE, 'execution_source': 'f39c60e', 'excluded': [MF, AUD], 'files': [{'path': f.relative_to(C).as_posix(), 'bytes': f.stat().st_size, 'sha256': sha(f)} for f in files]}
+jnew(C / MF, mf)
+
+for oldprefix in ['docs/results/block_h_preflight_20261031/', 'docs/results/block_h_20261101/']:
+    for rel in git('ls-tree', '-r', '--name-only', BASE, '--', oldprefix).decode().splitlines():
+        need((C / rel).read_bytes() == git('show', BASE + ':' + rel), 'prior artifact changed ' + rel)
+for rec in copies:
+    need(Path(rec['source']).read_bytes() == (C / rec['published_path']).read_bytes(), 'source-copy mismatch')
+for f in files + [C / MF]:
+    rel = f.relative_to(C).as_posix()
+    need(not f.is_symlink(), 'symlink')
+    need(not re.search(r'(^|/)(?:data|runs|private|harness|packages|codex_home)(?:/|$)|\.(?:h5ad|npz|sqlite|pt|whl|png)$', rel), 'raw path')
+    need(not pub.secret_hits(f.read_bytes()), 'credential pattern ' + rel)
+    if f.suffix == '.json':
+        json.loads(f.read_bytes())
+for rec in mf['files']:
+    f = C / rec['path']
+    need(f.stat().st_size == rec['bytes'] and sha(f) == rec['sha256'], 'manifest mismatch')
+need(all('](' + name + ')' in (R / 'README.md').read_text() for name in names), 'incomplete index')
+status = git('status', '--porcelain', '-uall').decode().splitlines()
+need(all((x[3:] == 'docs/results/README.md' or x[3:].startswith(PREFIX)) and 'D' not in x[:2] for x in status), 'scope')
+expected = {x[3:] for x in status}
+subprocess.run(['git', 'add', '--', 'docs/results/README.md', PREFIX], cwd=C, check=True)
+need(set(git('diff', '--cached', '--name-only').decode().splitlines()) == expected, 'staged scope')
+need(all(pub.staged_matches_disk(C, rel) for rel in expected), 'raw staged bytes')
+subprocess.run(['git', 'diff', '--cached', '--check', '--', 'docs/results/README.md', PREFIX + 'README.md', PREFIX + 'report.md'], cwd=C, check=True)
+jnew(C / AUD, {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'all_pass': True, 'files_before_audit': len(files) + 1, 'checks': {'scope_results_index_receipts_only': True, 'no_deletes_raw_data_private_packages_keys_or_symlinks': True, 'prior_artifacts_unchanged': True, 'exact_source_copies': True, 'JSON_parse': True, 'every_file_indexed': True, 'manifest_hashes': True, 'raw_staged_git_blob_bytes': True, 'token_boundary_secret_scan': True, 'authored_whitespace': True, 'reset0_native_restart3_zero_new_calls': True}})
+subprocess.run(['git', 'add', '--', AUD], cwd=C, check=True)
+expected.add(AUD)
+need(set(git('diff', '--cached', '--name-only').decode().splitlines()) == expected, 'final scope')
+need(all(pub.staged_matches_disk(C, rel) and not pub.secret_hits(git('show', ':' + rel)) for rel in expected), 'final raw bytes and secrets')
+need(not git('ls-files', '--others', '--exclude-standard').strip(), 'unexpected untracked')
+print(json.dumps({'all_pass': True, 'changed_files': len(expected), 'receipt_copies': len(copies), 'zero_new_paid_calls': True}))

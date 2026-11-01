@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-01T02:07:48.133786+00:00",
+  "exit": 0,
+  "archive": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/failed/h_probe_20261101T0207Z",
+  "native_cap_unchanged": "76.56 61.562649 2026-11-01T01:43Z",
+  "C0_receipts_unchanged": true,
+  "ledger_before": [
+    61.575279308,
+    23867
+  ],
+  "ledger_after": [
+    61.575279308,
+    23867
+  ],
+  "previous_chain_log_sha256": "2bb9eeddec1409bddba3c783889c11a6d473e38208f1a97a167e522ee0ce8b86",
+  "previous_chain_log_moved_to": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/previous_native_chain.log",
+  "no_paid_call_this_resumption": true
+}

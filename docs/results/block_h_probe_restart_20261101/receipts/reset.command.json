@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/bin/bash",
+    "block_h_reset_probe.sh",
+    "2026-11-01"
+  ],
+  "cwd": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h",
+  "environment": "provider keys unset; H_CLONE explicit; A3_CLIENT codex"
+}

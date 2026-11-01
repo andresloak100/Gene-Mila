@@ -1,0 +1,13 @@
+{
+  "direct_user_statement": "I approve lab spending up to a ledger total of $95 for block H and plan DK (about $17 real DeepSeek money), no further approval needed within that.",
+  "absolute_cumulative_ledger_ceiling": 95,
+  "scope": [
+    "block H",
+    "plan DK"
+  ],
+  "issue41": 6552139819,
+  "issue51": 6552140000,
+  "existing_H_cap_not_reset": true,
+  "no_topup": true,
+  "provider_charge_approximation_is_user_estimate": true
+}
