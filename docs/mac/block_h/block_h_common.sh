@@ -57,7 +57,11 @@ h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets 
   case "$H_CODEX_WIRE_API" in responses|chat) ;; *) no "H_CODEX_WIRE_API must be responses or chat" ;; esac
   case "$MODE" in
     docker) docker info > /dev/null 2>&1 || no "isolation.txt says docker, but the Docker daemon is not running"
-            docker image inspect genemila-h > /dev/null 2>&1 || no "no image genemila-h (check_tools.sh)"
+            # on 2026-11-01 this lookup failed from the chain's login zsh while the image was listed from the operator's
+            # shell (#51, PR #103): the two shells may talk to different Docker contexts, so the refusal names the context
+            # and the images this shell sees, which settles the cause instead of leaving it unknown
+            docker image inspect genemila-h > /dev/null 2>&1 \
+              || no "no image genemila-h in Docker context '$(docker context show 2>&1)' (DOCKER_HOST='${DOCKER_HOST:-}', DOCKER_CONTEXT='${DOCKER_CONTEXT:-}'); images here: $(docker image ls --format '{{.Repository}}:{{.Tag}}' 2>&1 | tr '\n' ' '); build it from this shell (check_tools.sh) or run the chain from the shell that built it"
             docker network inspect genemila_h > /dev/null 2>&1 || no "no network genemila_h (check_tools.sh)" ;;
     account) [ -n "$ACCOUNT" ] && id "$ACCOUNT" > /dev/null 2>&1 || no "isolation.txt names no existing account"
             # the account's own interpreter (biomni, the package's requirements) and claude; sudo asks for the

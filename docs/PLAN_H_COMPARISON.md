@@ -442,3 +442,15 @@ mostly cache hits after the first. The lead raises Biomni's probe session to $0.
 (`block_h_probe.sh`). The A3 client's probe stays at $0.05, and the arms' $2.50 sessions and the block ceiling are
 unchanged. The probe's acceptance rule (note of 2026-10-31) is unchanged. The stop's files are moved aside with
 `block_h_reset_probe.sh '2026-11-01'` before the probe runs again.
+
+## Note, 2026-11-01 (later still): the image lookup from the chain's shell
+
+After the probe reset, the restarted chain stopped at `h_checks` with "no image genemila-h" (PR #103), while
+`docker image ls` from Astra's shell listed `genemila-h:latest` (sha256 `b15af00e...`). `docker info` had passed in the
+chain, so a daemon answered; the likeliest cause is that the chain's login zsh (`screen -dmS blockh zsh -lc ...`) and
+Astra's shell use different Docker contexts (Docker Desktop's `desktop-linux` against `default`, or a `DOCKER_HOST`
+set only in one of them), so each sees a different image store. The refusal now prints the context, `DOCKER_HOST`,
+`DOCKER_CONTEXT` and the images that shell sees. The operator runs `docker context show` and `docker image ls` from a
+login zsh (`zsh -lc`) exactly as the chain is launched, compares with its own shell, and either builds the image from
+that login shell (`check_tools.sh`) or launches the chain from the shell that built it. No script other than this
+diagnostic changes.
