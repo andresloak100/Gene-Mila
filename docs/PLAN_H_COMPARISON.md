@@ -432,3 +432,13 @@ langchain-core 1.x that langgraph 0.3.18 refuses. With these pins `pip check` is
 exactly as `run_biomni.py` builds it (system prompt 156,006 characters, no model call). The Dockerfile now ends its
 install with `pip check` and that import, so a missing package fails the build, not a session. Astra rebuilds the
 image; nothing else in the plan changes.
+
+## Note, 2026-11-01 (later): Biomni's probe allowance
+
+The rebuilt chain's probe stopped before any call: `run_biomni.py` estimated Biomni's first call at its 156,006-character
+system prompt / 4 characters per token × $1.32 per million tokens = $0.0515, which reaches the probe's $0.05 session
+cap, so it refused and sent nothing (Astra, #51). One probe round (execute to observation) is two or three such calls,
+mostly cache hits after the first. The lead raises Biomni's probe session to $0.25 and the probe's ledger check to $0.30
+(`block_h_probe.sh`). The A3 client's probe stays at $0.05, and the arms' $2.50 sessions and the block ceiling are
+unchanged. The probe's acceptance rule (note of 2026-10-31) is unchanged. The stop's files are moved aside with
+`block_h_reset_probe.sh '2026-11-01'` before the probe runs again.

@@ -1,6 +1,7 @@
 #!/bin/bash
-# Block H, the probe (docs/PLAN_H_COMPARISON.md, step 6): two proxy sessions of $0.05 each (ROADMAP D6's cap per
-# round). One Biomni --probe round and one one-turn call of the A3 client (A3_CLIENT in block_h_common.sh: codex, the
+# Block H, the probe (docs/PLAN_H_COMPARISON.md, step 6): two proxy sessions, Biomni's capped at $0.25 and the A3
+# client's at $0.05 (ROADMAP D6's cap per round; Biomni's raised on 2026-11-01, plan note). One Biomni --probe round and one one-turn call of the A3
+# client (A3_CLIENT in block_h_common.sh: codex, the
 # default, through run_codex.sh --probe; or claude -p), both through the ledger proxy, to check the routes ROADMAP
 # section 8 and the plan's note of 2026-10-17 list as unverified. No key in it: DEEPSEEK_API_KEY must be in the
 # environment (the chain's). Every check comes before any spend. A probe that failed leaves its files behind
@@ -17,7 +18,7 @@ session_dirs "$name"
 echo "- $(utc) $name started (DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
 # 1. Biomni: one execute-to-observation round against deepseek-v4-pro (consecutive assistant messages); its run.json
 #    lands in $O, where collect_handback.py reads it
-proxy_up "$name" 0.05
+proxy_up "$name" 0.25  # Biomni: its first call alone is about $0.05 (156,006-character system prompt; plan note of 2026-11-01)
 agent_run "$name" "$TOOLS_PY" "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy "$PROXY_URL" --model deepseek-v4-pro \
   --minutes 2 --seed 0 --out "$OUT_IN" --probe --miss-usd-per-mtok "$BIOMNI_RATE"
 biomni_rc=$AGENT_RC
@@ -53,7 +54,7 @@ fi
 client_rc=$AGENT_RC
 proxy_down
 AGENT_RC=0; [ "$biomni_rc" = 0 ] && [ "$client_rc" = 0 ] || AGENT_RC="biomni=$biomni_rc,$A3_CLIENT=$client_rc"
-session_after "$name" probe deepseek-v4-pro 0.10 || exit 3
+session_after "$name" probe deepseek-v4-pro 0.30 || exit 3
 # the probe's own acceptance rule, per log (plan note item 7): session_after's pooled check is not enough. A probe that
 # fails it is a failed probe: its passed marker is moved aside (never deleted) so the chain stops and the reset applies.
 gate_logs=("$H/proxy/$name.jsonl"); [ "$A3_CLIENT" = codex ] && gate_logs+=("$H/proxy/${name}_codex.jsonl")
