@@ -1,0 +1,72 @@
+{
+ "format": 1,
+ "bundle": "adamson_cf_clean_tables",
+ "split_id": "split_450515be1a0d8d2e",
+ "prefix": "ar",
+ "fold_seeds": [
+  0,
+  1,
+  2
+ ],
+ "k": 5,
+ "groups": null,
+ "groups_setting": "auto",
+ "keep_rule": "noise",
+ "model": "ridge",
+ "harness_val1": {
+  "file": "harness/val1.npz",
+  "n_perts": 17,
+  "sha256": "7a9e986c44227600ef8f0bd0ee0afc5cfec46a27c75374a35357177d186d5fa4",
+  "rule": "combined: the alpha per fold seed and the keep decision use the mean pearson_delta over the visible validation and the out-of-fold training perturbations together, each perturbation weighing the same (genemila/lab.py, Lab.evaluate_artifact and Lab._combine_visible); the noise rule applies to that combined vector"
+ },
+ "alphas": [
+  0.01,
+  0.1,
+  1.0,
+  10.0,
+  100.0
+ ],
+ "parent_features": [
+  "control_mean",
+  "mean_response",
+  "is_target"
+ ],
+ "eval_timeout_s": 600,
+ "ram_mb": 4096,
+ "lab_commit": "0f18626bdb43552c01850fe7d1a4227db9202b5a",
+ "python": "3.13.7",
+ "libraries": {
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "scikit-learn": "1.9.1"
+ },
+ "sha256": {
+  "evaluate.py": "65711e73259caad18887c8c1a99d3e2c1954eb80580b09129e978e53d131a006",
+  "literal.py": "90df6183169c08b51b9554fd864146beb6aec16ebc9892a28071cc0ccded8604",
+  "program.md": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+  "requirements.txt": "b98e7dbf7e918d82a1f43364cdf72152950f94b998a94e7c7157be8b03d9cf34",
+  "data/README.md": "b13b1ebe222d4a584f3ccbab4be8d8a05fce37de19eab2d57e9614cc73e03dc2",
+  "data/knowledge/gene_annotation.json": "ac2e774960a14c9e0213c6ec1afd8eecc7836cb4682d236048b6404bd409c7bf",
+  "data/knowledge/gene_constraint.json": "1069daa45f301a62cd5da06316ce3dac8947e1df4382c78a3bd40ab1f5f8390f",
+  "data/knowledge/gene_sets.json": "2221426e64ee8323044a7a9e2a415ba907210aebf121b5deb49d60a984ec1d88",
+  "data/knowledge/ppi_network.json": "ee4e7e3d7ed051324cede42467ef20e3f3be8e2ecd969776d8c9dcbd215c8b28",
+  "data/knowledge/prior_network.json": "27c0cd0f06f778a94e4a546a8d4fbaacb98f4978b76b08ad95892791e5bba513",
+  "data/knowledge/protein_annotation.json": "b17571ef1ce61d6bf0f1397e3948159463f510686acc700a15e383b17d462acd",
+  "data/knowledge/targets.json": "e0795293a743ca84d49b8a2cb74b861c30359ed890990d366f7035655fd47f3b",
+  "data/knowledge/transcription_factors.json": "6d89a663d7dc7023b68ce13006cb5b6d93501e5b738fd4f6a05cd1927b984cf8",
+  "data/manifest.json": "a24f3c99b9943fa6277ec39155b4ca0a19e2dc2033ba5bc473b31fe09da9aea1",
+  "data/public.npz": "e8908ef34d851c1111556be7b8d97eb511bc7554513683a0cf3844248d153718",
+  "harness/genemila/__init__.py": "81ffc25eae78ef9d73dd94a7862faa9f0e3115d473f7cfc7cfd192279c0e0d4c",
+  "harness/genemila/benchmark/__init__.py": "b39b000d6993ef461532198ee506b0e0b287186ee99c048a49f6c42aa3df47b8",
+  "harness/genemila/benchmark/evaluator.py": "4cb2a6aa8ec0973b9fe431b9d58d43bbf90105077ffe736cdb64b1cb6b283a25",
+  "harness/genemila/features/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "harness/genemila/features/api.py": "6cded0b6c2105bceed8b08ad10d432cfefa496aa3824c5b31eb518df00f3b0d7",
+  "harness/genemila/features/builtin.py": "7385a22d565958ddd870297c722452072b1b2701431367dbc95290deba732725",
+  "harness/genemila/features/registry.py": "549e46a862fcb62d478798963b0863a61681d01bfb648e765b421cd187575ff4",
+  "harness/genemila/guard.py": "eda6f5720985ffb1f1bac638cde737d9cf7e32995b235dc0fb8218e8a6ea7c42",
+  "harness/genemila/pipeline.py": "afb15b56bbe778d66f051f79db6d6bb47e7e1b1e4eaad080dd08bc90817ba82f",
+  "harness/genemila/sandbox.py": "fa764b7e71f30995879d02d6a288359186747a20a81373387a85a42b50298644",
+  "harness/genemila/spec.py": "e56c774e6d3f7679cf281f6c023747a2e08b36af12457bc13dabfb2b74795b4a",
+  "harness/val1.npz": "7a9e986c44227600ef8f0bd0ee0afc5cfec46a27c75374a35357177d186d5fa4"
+ }
+}

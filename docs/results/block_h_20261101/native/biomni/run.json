@@ -1,0 +1,21 @@
+{
+ "arm": "biomni",
+ "seed": 0,
+ "model": "deepseek-v4-pro",
+ "minutes": 2.0,
+ "probe": true,
+ "package": "/work/pkg",
+ "out": "/work/out",
+ "proxy": "http://host.docker.internal:8787",
+ "python": "/usr/local/bin/python",
+ "task_sha256": "8f817c48aa4769b75f7c43e90161646fc70b00544bbac53450933e51de6dfe21",
+ "execute_timeout_s": 630,
+ "session_cap_usd": 0.05,
+ "first_call_miss_usd_per_mtok": 1.32,
+ "rate_source": "flag",
+ "started": 1793497406.2250957,
+ "ended": 1793497408.1039727,
+ "wall_s": 1.9,
+ "exit_code": 2,
+ "ended_by": "refused"
+}

@@ -1,8 +1,8 @@
 # Results index
 
-## Block H preflight (31 October 2026)
+## Block H: rebuilt image, C0 complete, probe stopped (1 November 2026)
 
-Read [the actual free image failure](block_h_preflight_20261031/image_failure.md), the [earlier source-level probe report](block_h_preflight_20261031/report.md), and [every receipt](block_h_preflight_20261031/README.md). Budget is approved and sufficient, using existing DeepSeek funds only. Isolation and all 27 pinned package hashes passed; the unchanged Dockerfile built. The first Biomni A1 import then failed because pandas is absent. No repair, rebuild or retry followed; C0 was prepared but never run. No cap file, live probe/arm or paid call exists. The separate current probe-gate mismatch is also unresolved. C2 remains closed.
+Read [the partial operational report](block_h_20261101/report.md) and [all receipts](block_h_20261101/README.md). Lead PR98/99 resolved the old image/import and probe-gate defects. The rebuilt image and free checks passed; C0seeds0/2/3 each ran once and validated. The first native probe then stopped: Biomni's estimated first call exceeded its fixed$0.05probe cap before any request; Codex's subprobe completed with two200/no400, costing about$0.01263. Chainexit3; no full H arms or readings. No retry, cap change or workaround. Existing [31 October receipts](block_h_preflight_20261031/README.md) remain as history. No completed H comparison is claimed.
 
 ## Linear AE: fixed Adamson baseline (30 October 2026)
 

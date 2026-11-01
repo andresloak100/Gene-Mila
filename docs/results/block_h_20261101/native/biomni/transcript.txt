@@ -1,0 +1,6 @@
+/usr/local/lib/python3.12/site-packages/langgraph/checkpoint/base/__init__.py:18: LangChainPendingDeprecationWarning: The default value of `allowed_objects` will change in a future version. Pass an explicit value (e.g., allowed_objects='messages' or allowed_objects='core') to suppress this warning.
+  from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
+biomni A1 ready: model deepseek-v4-pro, execute timeout 630 s, system prompt 156031 chars, config output 634 chars (not shown)
+first main call estimate: 156031 chars / 4 per token x $1.32 per million = $0.0515 (a lower bound: the retriever call is extra); session cap $0.05
+
+BIOMNI_ENDED_BY: refused (first call estimate $0.0515 reaches the session cap $0.05; nothing sent)

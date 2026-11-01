@@ -1,0 +1,1 @@
+Run the shell command `ls` and then reply with the single word ok.

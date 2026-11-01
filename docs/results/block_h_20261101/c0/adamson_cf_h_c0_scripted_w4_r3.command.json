@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+    "run_research.py",
+    "--minutes",
+    "20",
+    "--workers",
+    "4",
+    "--dataset",
+    "adamson_cf",
+    "--planner-provider",
+    "scripted",
+    "--worker-provider",
+    "mock",
+    "--no-watchdog",
+    "--run-dir",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3",
+    "--set",
+    "run.seed=3",
+    "--set",
+    "run.data_dir=/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables"
+  ],
+  "cwd": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-baa7dfd",
+  "environment_provider_keys": "unset"
+}

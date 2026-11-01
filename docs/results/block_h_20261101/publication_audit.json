@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-01T01:53:40.333426+00:00",
+  "all_pass": true,
+  "checks": {
+    "scope_results_index_receipts_only": true,
+    "no_deletes_raw_data_private_packages_keys_or_symlinks": true,
+    "prior_raw_artifacts_unchanged": true,
+    "raw_copies_match_originals": true,
+    "JSON_JSONL_parse": true,
+    "every_file_indexed": true,
+    "manifest_hashes": true,
+    "raw_staged_git_blob_bytes": true,
+    "token_boundary_secret_scan": true,
+    "authored_whitespace": true,
+    "C0_validated_once_probe_failed_no_full_arms": true
+  },
+  "files_before_audit": 110
+}

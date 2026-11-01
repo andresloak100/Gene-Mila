@@ -1,0 +1,2 @@
+calls 2, agent minutes 0.0, tokens in 17361 cache 8704 out 207, proxy cost $0.0126, served ['deepseek-v4-pro'], other statuses none
+files naming harness/val1.npz: 3 (/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/h_probe.val1scan.txt; allowed, recorded)

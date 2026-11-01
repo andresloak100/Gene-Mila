@@ -1,0 +1,1 @@
+{"block_cap_usd": 76.56, "ledger_total_usd": 61.562649, "merge_consecutive_assistant": false, "role": "baseline:h_probe", "route": "start", "run_id": "h_probe", "session_cap_usd": 0.05, "session_cost_usd": 0.0, "status": 0, "ts": 1793497404.8504472, "upstream": "https://api.deepseek.com:443"}
