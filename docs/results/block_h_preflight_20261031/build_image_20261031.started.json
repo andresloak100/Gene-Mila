@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-31T23:48:17.593509+00:00",
+  "pid": 81778,
+  "nice": 19,
+  "command": [
+    "docker",
+    "build",
+    "-t",
+    "genemila-h",
+    "-f",
+    "docs/mac/block_h/Dockerfile",
+    "--build-arg",
+    "PKG_REQS=numpy==2.5.3 scipy==1.18.1 scikit-learn==1.9.1",
+    "."
+  ],
+  "credentials": "unset",
+  "requirements_sha256": "b98e7dbf7e918d82a1f43364cdf72152950f94b998a94e7c7157be8b03d9cf34",
+  "no_retry": true
+}

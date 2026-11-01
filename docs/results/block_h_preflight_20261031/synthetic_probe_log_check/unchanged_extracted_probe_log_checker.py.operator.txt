@@ -1,0 +1,24 @@
+import collections, json, sys
+from pathlib import Path
+# the proxy's log (tools/baselines/ledger_proxy.py, one JSON object per line): a forwarded call has status 200 with
+# model_served, input_tokens, cached_tokens, output_tokens, cost_usd and ts; the proxy's own start and stop rows have
+# status 0; a refusal (402 cap, 404 no such route) or an upstream error (502) has its status and no served model
+want, paths = sys.argv[1], [Path(p) for p in sys.argv[2:]]
+rows = [json.loads(l) for p in paths if p.exists() for l in p.read_text().splitlines() if l.strip()]
+calls = [r for r in rows if r.get("status") == 200]
+def pick(r, *names, default=0):
+    for n in names:
+        if n in r: return r[n]
+    return default
+tin = sum(float(pick(r, "input_tokens") or 0) for r in calls)
+tcache = sum(float(pick(r, "cached_tokens") or 0) for r in calls)
+tout = sum(float(pick(r, "output_tokens") or 0) for r in calls)
+cost = sum(float(pick(r, "cost_usd") or 0) for r in calls)
+models = sorted({str(r.get("model_served") or "?") for r in calls})
+times = [float(r["ts"]) for r in calls if "ts" in r]
+minutes = (max(times) - min(times)) / 60 if len(times) > 1 else 0.0
+other = dict(sorted(collections.Counter(str(r.get("status")) for r in rows if r.get("status") not in (200, 0)).items()))
+print(f"calls {len(calls)}, agent minutes {minutes:.1f}, tokens in {tin:.0f} cache {tcache:.0f} out {tout:.0f}, proxy cost ${cost:.4f}, served {models}, other statuses {other or 'none'}")
+bad = [m for m, h in [("no call reached the proxy", not calls), (f"served model {models}, not {want}", bool(calls) and models != [want])] if h]
+for m in bad: print("PROBLEM:", m)
+sys.exit(1 if bad else 0)

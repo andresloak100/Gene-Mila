@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/local/lib/python3.12/site-packages/biomni/agent/__init__.py", line 1, in <module>
+    from biomni.agent.a1 import A1  # noqa: F401
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/biomni/agent/a1.py", line 10, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
