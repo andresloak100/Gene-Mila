@@ -212,10 +212,11 @@ def main_run(tmp_path_factory, dataset):
     _plugin(bad, "shape_feat", "        return np.ones((len(perts), 3))")
     _plugin(bad, "dep_feat", "        return ctx.feature('guard_feat', perts)")
     _plugin(bad, "zz_broken", NOISE, prefix="X = 1 // 0\n")  # passes the guard, raises on import
+    (tmp / "empty").mkdir()  # a session that handed back no file (PLAN_H reading 1)
     out = tmp / "out"
     r = subprocess.run([sys.executable, str(TOOL), "--data", str(bundle), "--out", str(out),
                         "--source", f"planted={tmp / 'planted'}", "--source", f"noise={tmp / 'noise'}",
-                        "--source", f"bad={bad}", "--source", f"dup={tmp / 'dup'}",
+                        "--source", f"bad={bad}", "--source", f"dup={tmp / 'dup'}", "--source", f"empty={tmp / 'empty'}",
                         "--fold-seeds", "101,102", "--null-reps", "39", "--with-val1"],
                        capture_output=True, text=True, cwd=tmp, timeout=600)
     assert r.returncode == 0, r.stderr
@@ -238,7 +239,8 @@ def test_a_planted_feature_passes_every_criterion_but_the_replicate_count(main_r
     # the correction runs within each source: planted's family is itself, whatever the other sources sent; the
     # three identical copies of dup are one member
     assert res["settings"]["families"] == {"planted": {"add_one": 1, "set": 1}, "noise": {"add_one": 1, "set": 1},
-                                           "bad": {"add_one": 0, "set": 0}, "dup": {"add_one": 1, "set": 1}}
+                                           "bad": {"add_one": 0, "set": 0}, "dup": {"add_one": 1, "set": 1},
+                                           "empty": {"add_one": 0, "set": 0}}  # empty set rows are not tested
     for t in ("oof", "val1"):
         assert row["tiers"][t]["null"]["p"] == pytest.approx(1 / 40)
         assert row["tiers"][t]["null"]["p_holm"] == pytest.approx(1 / 40)
@@ -299,7 +301,28 @@ def test_rejected_files_are_rows_and_never_run(main_run):
     assert "ZeroDivisionError" in _row(res, "zz_broken")["reason"]
     assert not any("ZeroDivisionError" in _row(res, f, "bad")["reason"] for f in ("shape_feat", "dep_feat"))
     assert not main_run["marker"].exists()  # the guard-rejected file never executed, anywhere
-    assert _row(res, "(set)", "bad")["status"] == "error"
+    bad_set = _row(res, "(set)", "bad")  # nothing usable: the parent's model, scored, never dropped
+    assert bad_set["status"] == "ok" and bad_set["empty"] and "passed the checks" in bad_set["reason"]
+    assert bad_set["model"] == res["parent"]["features"]
+
+
+def test_an_empty_source_is_the_parents_score_not_an_error(main_run):
+    """PLAN_H_COMPARISON.md reading 1: a session that handed back no kept feature is a row with the parent's score.
+    Before 2026-11-01 the set row was an error with blank metrics (#51, comment 6560683220)."""
+    res, md = main_run["json"], main_run["md"]
+    row = _row(res, "(set)", "empty")
+    assert row["status"] == "ok" and row["empty"] and row["reason"] == "no file handed back: the parent's model"
+    assert row["model"] == res["parent"]["features"] and row["n_columns"] == res["parent"]["n_columns"]
+    assert not any(r["kind"] == "add_one" and r["source"] == "empty" for r in res["rows"])
+    for t in res["settings"]["tiers"]:
+        assert row["tiers"][t]["metrics"] == res["parent"]["tiers"][t]["metrics"]
+        d = row["tiers"][t]["delta"]["pearson_delta"]
+        assert d["mean_diff"] == 0 and d["wins_a"] == 0 and d.get("verdict_adj", "none") == "none"
+        assert "null" not in row["tiers"][t]
+    line = next(l for l in md.splitlines() if l.startswith("| empty (set) | oof |"))
+    assert line.split("|")[3].strip() == str(len(res["parent"]["features"]))  # n features: the parent's
+    deciding = next(l for l in md.splitlines() if l.startswith(f"| empty (set) | {res['settings']['deciding_tier']} |"))
+    assert row["verdict"] in deciding
 
 
 def test_output_schema_and_tables(main_run):

@@ -1058,7 +1058,8 @@ def run(a) -> int:
     families = {}
     for name, _ in sources:
         for kind in ("add_one", "set"):
-            fam = [r for r in rows if r["source"] == name and r["kind"] == kind and r["status"] == "ok"]
+            fam = [r for r in rows if r["source"] == name and r["kind"] == kind and r["status"] == "ok"
+                   and not r.get("empty")]  # an empty set row has no candidate and no null: not a tested member
             families.setdefault(name, {})[kind] = len(fam)
             for t in a.tiers:
                 for key in ("null", "null_pert"):
@@ -1225,7 +1226,14 @@ def score_source(name, src_dir, from_run, data, a, work, pub, pdir, p_feats, p_p
         set_row.update(status="error", reason=f"the run's model cannot be rebuilt: {', '.join(lost)} failed a "
                                               "check, could not be computed or differs from the parent's file")
     elif not live and not from_run:
-        set_row.update(status="error", reason="no feature of this source passed the checks")
+        # a source with nothing usable is scored as the parent's model, never dropped: a session that handed back no
+        # kept feature, or whose files all failed the checks, is a row with the parent's score (PLAN_H_COMPARISON.md,
+        # reading 1; the arm's mean over its sessions needs the number). No candidate, so no null and no verdict.
+        set_row.update(empty=True, model=list(kept), n_columns=int(sum(p_res["full"][f].shape[2] for f in kept)),
+                       reason=("no file handed back: the parent's model" if not rows
+                               else "no feature of this source passed the checks: the parent's model"),
+                       verdict="no candidate: the parent's model")
+        evaluate_row(set_row, parent_tiers, parent_sc, [(p_res, kept, None)], res, [], data, a)
     else:
         own = live + retuned
         set_row["model"] = kept + own

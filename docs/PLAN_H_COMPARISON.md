@@ -479,3 +479,14 @@ or from the listing when the file is absent, requires `docker image inspect <ID>
 every container by that ID. Each session's `started` line in `progress.md` records the ID, so the paper cites the exact
 image. Operator steps: pull, copy the scripts, run `check_tools.sh` once (it writes `$H/image_id.txt`; confirm it
 holds `b15af00e...`, the validated build), then restart the chain. Nothing scientific changes.
+
+## Note, 2026-11-01 (16:29 UTC, after the chain finished): empty hand-backs in `feature_compare.py`
+
+The chain finished, exit 0, every session passed. Before the B.2 call, Astra found that `tools/feature_compare.py`
+gave a `--source` with no usable file an error set row with blank metrics (#51, comment 6560683220), while reading 1
+requires a row with the parent's score. Biomni seed 3 handed back no kept file, so the call would have dropped that
+session. The lead changes the tool: a source with no file, or whose files all failed the checks, has a set row of
+status `ok` with `empty: true`, the parent's model and columns, the parent's metrics, a zero paired gain, no null and
+the verdict "no candidate: the parent's model"; its reason names which case. Nothing changes for sources with a usable
+feature; `tests/test_feature_compare.py` covers both empty cases. The B.2 call is unchanged and runs once the merge is
+on the integration branch and the operator's clone is at it.
