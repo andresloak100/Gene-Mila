@@ -1,0 +1,14 @@
+from pathlib import Path
+import subprocess,os,json,datetime,time,hashlib
+P=Path('/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5');O=P/'block_h_ops';C=P/'gene-mila-block-h';REQ=Path('/Users/andresarriaga/gm_packages/adamson_cf_clean_tables/requirements.txt')
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def dump(n,x):
+ with (O/n).open('x') as f:json.dump(x,f,indent=2);f.write('\n')
+env={k:v for k,v in os.environ.items() if k in ['PATH','HOME','USER','LOGNAME','LANG','LC_ALL','TMPDIR','SHELL','DOCKER_HOST','DOCKER_CONTEXT']}
+cmd=['docker','build','-t','genemila-h','-f','docs/mac/block_h/Dockerfile','--build-arg','PKG_REQS='+' '.join(REQ.read_text().splitlines()),'.']
+assert not (O/'build_image_20261031.started.json').exists()
+dump('build_image_20261031.started.json',{'utc':now(),'pid':os.getpid(),'nice':os.getpriority(os.PRIO_PROCESS,0),'command':cmd,'credentials':'unset','requirements_sha256':hashlib.sha256(REQ.read_bytes()).hexdigest(),'no_retry':True})
+t=time.monotonic()
+with (O/'build_image_20261031.log').open('x') as f:r=subprocess.run(cmd,cwd=C,env=env,stdout=f,stderr=subprocess.STDOUT)
+(O/'build_image_20261031.exit').open('x').write(str(r.returncode)+'\n');dump('build_image_20261031.runtime.json',{'end_utc':now(),'wall_seconds':time.monotonic()-t,'exit':r.returncode})
+raise SystemExit(r.returncode)

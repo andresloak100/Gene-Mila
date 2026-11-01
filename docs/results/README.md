@@ -1,10 +1,8 @@
 # Results index
 
-Every file here is a record produced by a run or a tool on Andres's Mac and committed as it was on disk: never edited,
-never deleted; a new check gets a new file. Every number in the README traces to one of these files
-(`tools/readme_check.py`). A `.md` and `.json` pair is one result (the `.md` is the reading, the `.json` the numbers).
+## Block H preflight (31 October 2026)
 
-The block-directory convention applies to future readings. The G, corrected F and H8 records below retain the exact generated paths pinned in their pre-score commands and hash manifests; their already referenced files were not moved or overwritten. They are indexed one row per reading; the per-file list, with hashes, is the publication's manifest (below).
+Read [the actual free image failure](block_h_preflight_20261031/image_failure.md), the [earlier source-level probe report](block_h_preflight_20261031/report.md), and [every receipt](block_h_preflight_20261031/README.md). Budget is approved and sufficient, using existing DeepSeek funds only. Isolation and all 27 pinned package hashes passed; the unchanged Dockerfile built. The first Biomni A1 import then failed because pandas is absent. No repair, rebuild or retry followed; C0 was prepared but never run. No cap file, live probe/arm or paid call exists. The separate current probe-gate mismatch is also unresolved. C2 remains closed.
 
 ## Linear AE: fixed Adamson baseline (30 October 2026)
 

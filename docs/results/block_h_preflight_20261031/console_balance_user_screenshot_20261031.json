@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-31T23:40:50Z screenshot, provided by user",
+  "top_up_balance": 28.19,
+  "granted_balance": 7.61,
+  "total_cost": 30.86,
+  "api_requests": 23867,
+  "tokens": 80170613,
+  "source": "user screenshot of platform.deepseek.com on31Oct2026 at7:40:50pmToronto",
+  "path": "/var/folders/_5/rynzp98n41x8_zqylycjclv80000gn/T/TemporaryItems/NSIRD_screencaptureui_8Ml1nE/Screenshot 2026-10-31 at 7.40.50\u202fp.m..png",
+  "meets_8_topup_floor": true,
+  "account_balance_distinct_from_ledger_authorized_headroom": true,
+  "new_authorized_cumulative_ceiling": 76.562649372,
+  "authority41": 6550695646,
+  "authority51": 6550695786,
+  "screenshot_sha256": "11acd5a9f8b09fe9855d7c034a4617c48077db17fc8695621271c0d107041b59"
+}

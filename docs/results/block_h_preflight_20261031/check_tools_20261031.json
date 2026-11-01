@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-31T23:48:15.166589+00:00",
+  "exit": 0,
+  "network_internet_blocked": true,
+  "relay_reachable": true,
+  "Docker_image_missing_expected_build_next": true,
+  "alpine_socat_digest": "sha256:466c8a0383e16463fabdb7df01008292fb78d07da60224a46cb5d3142ce122ed",
+  "log_sha256": "48b7ff6eb9508bb62a0de97e6313ddec4ed1fee4b009aaaa04e555e85a8d0d6b",
+  "package_manifest_pinned_files": 27,
+  "package_all_pinned_hashes_match": true,
+  "disk_total_files": 29,
+  "not_in_manifest": [
+    "MANIFEST.json",
+    "features/README.md"
+  ],
+  "paid_calls": 0
+}
