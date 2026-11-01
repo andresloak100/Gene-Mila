@@ -83,3 +83,10 @@ python tools/cellforge_bridge.py score --bundle <MAIN>/data/adamson_cf --pred ~/
 Held-out perturbations whose target gene is not among the export's 2,055 genes get the mean training response
 (listed in `receipt.json`); the report says how many. Reported beside GEARS in the preprint's Table 1, once, with no
 setting tuned on the sealed set.
+
+## Note, 2026-10-31: the export folder
+
+The note of 30 October named `~/cellforge_adamson_export`, which is the first CellForge attempt's empty export (0
+cells). The linear baseline ran, on Andres's choice, on `~/cellforge_adamson_export_corrected_20261028`, the verified
+40,890-cell export GEARS used (input sha256 `ab43e03d...0163a`; `docs/results/linear_ae_adamson.md`). Every later
+baseline on this export uses that folder.

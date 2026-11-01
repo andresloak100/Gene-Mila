@@ -54,4 +54,15 @@ client_rc=$AGENT_RC
 proxy_down
 AGENT_RC=0; [ "$biomni_rc" = 0 ] && [ "$client_rc" = 0 ] || AGENT_RC="biomni=$biomni_rc,$A3_CLIENT=$client_rc"
 session_after "$name" probe deepseek-v4-pro 0.10 || exit 3
+# the probe's own acceptance rule, per log (plan note item 7): session_after's pooled check is not enough. A probe that
+# fails it is a failed probe: its passed marker is moved aside (never deleted) so the chain stops and the reset applies.
+gate_logs=("$H/proxy/$name.jsonl"); [ "$A3_CLIENT" = codex ] && gate_logs+=("$H/proxy/${name}_codex.jsonl")
+if ! probe_gate "${gate_logs[@]}" > "$H/$name.gate.txt"; then
+  cat "$H/$name.gate.txt"
+  mv "$H/$name.passed" "$H/$name.gate_failed"
+  echo "$(utc) $name: $(grep 'PROBE GATE' "$H/$name.gate.txt" | tr '\n' ';')" >> "$H/block_h_stopped.txt"
+  echo "- $(utc) $name failed its acceptance rule ($H/$name.gate.txt)" >> "$L/progress.md"
+  echo "STOPPED: the probe's acceptance rule failed"; exit 3
+fi
+cat "$H/$name.gate.txt"
 echo "probe: biomni rc $biomni_rc, $A3_CLIENT rc $client_rc; served models, tokens and the other statuses (402 is the proxy's cap, 404 a wrong route, 502 the upstream) are in $H/$name.check.txt and $H/proxy/$name*.jsonl: record them in the plan's dated note before any fallback is disclosed$([ "$A3_CLIENT" = codex ] && echo "; codex is cleared for A3 only with at least two status-200 rows in $H/proxy/${name}_codex.jsonl and no 400 (plan note item 7)")"

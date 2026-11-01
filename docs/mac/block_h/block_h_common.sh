@@ -21,6 +21,32 @@ ledger() { sqlite3 "$LEDGER" "select round(coalesce(sum(cost_usd),0),6) from spe
 utc() { date -u +%Y-%m-%dT%H:%MZ; }
 no() { echo "NOT STARTED: $*"; exit "${RC:-1}"; }
 
+probe_gate() {  # probe_gate <Biomni's proxy log> [<the A3 codex client's proxy log>]: the probe's acceptance rule
+  # (docs/PLAN_H_COMPARISON.md, note item 7, enforced since 2026-10-31 after #51 comment 6550718051 showed the pooled
+  # session check let it through): Biomni's own log holds at least one status-200 row; the codex log, when given, holds
+  # at least two status-200 rows (the shell call's tool round trip) and no 400. Each log is read on its own, never pooled.
+  "$PY" - "$@" <<'PY'
+import json, sys
+from pathlib import Path
+def statuses(path):
+    p = Path(path)
+    return [json.loads(l).get("status") for l in p.read_text().splitlines() if l.strip()] if p.exists() else None
+bad = []
+b = statuses(sys.argv[1])
+if b is None: bad.append(f"no Biomni proxy log {sys.argv[1]}")
+elif b.count(200) < 1: bad.append(f"Biomni: no status-200 row in {sys.argv[1]}")
+if len(sys.argv) > 2:
+    c = statuses(sys.argv[2])
+    if c is None: bad.append(f"no codex proxy log {sys.argv[2]}")
+    else:
+        if c.count(200) < 2: bad.append(f"codex: {c.count(200)} status-200 rows, at least 2 needed (tool round trip)")
+        if 400 in c: bad.append(f"codex: {c.count(400)} status-400 rows; the route is unfit for A3 (plan note item 7)")
+for m in bad: print("PROBE GATE:", m)
+print("probe gate", "FAILED" if bad else "passed")
+sys.exit(1 if bad else 0)
+PY
+}
+
 h_checks() {  # h_checks [lab]: the checks every paid session makes first; sets CAP START CAPDATE MODE ACCOUNT spent.
   # "lab" (A2) accepts isolation.txt reading "none": the lab needs no isolation, the foreign arms wait without it.
   [ -n "$DEEPSEEK_API_KEY" ] || no "no key in the environment"

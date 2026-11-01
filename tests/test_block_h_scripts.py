@@ -185,3 +185,36 @@ def test_run_biomni_takes_the_rate_from_the_flag_and_warns_without_any_source(pa
     assert r.returncode == 0, r.stdout + r.stderr
     run = json.loads((out3 / "run.json").read_text())
     assert run["first_call_miss_usd_per_mtok"] == 1.32 and run["rate_source"] == "config"
+
+
+def _gate(mac: dict, *logs: Path) -> subprocess.CompletedProcess:
+    script = f'. "{BLOCK_H / "block_h_common.sh"}"; probe_gate "$@"'
+    return subprocess.run(["bash", "-c", script, "gate", *map(str, logs)], env=mac["env"], capture_output=True,
+                          text=True, timeout=60)
+
+
+def _log(path: Path, *statuses: int) -> Path:
+    path.write_text("".join(json.dumps({"status": s, "model_served": "deepseek-v4-pro"} if s == 200 else {"status": s})
+                            + "\n" for s in (0, *statuses, 0)))
+    return path
+
+
+def test_probe_gate_enforces_the_plans_codex_rule_per_log(tmp_path):
+    """Astra's three counterexamples (#51 comment 6550718051) fail; two codex 200s, no 400 and a Biomni 200 pass."""
+    mac = _mac(tmp_path)
+    p = mac["h"] / "proxy"
+    biomni, biomni_none = _log(p / "b.jsonl", 200), _log(p / "b0.jsonl")
+    cases = {
+        "one_codex_200": (biomni, _log(p / "c1.jsonl", 200), 1),
+        "codex_200_then_400": (biomni, _log(p / "c2.jsonl", 200, 400), 1),
+        "codex_two_200_and_a_400": (biomni, _log(p / "c3.jsonl", 200, 200, 400), 1),
+        "biomni_200_codex_none": (biomni, _log(p / "c4.jsonl"), 1),
+        "biomni_none_codex_ok": (biomni_none, _log(p / "c5.jsonl", 200, 200), 1),
+        "codex_log_missing": (biomni, p / "absent.jsonl", 1),
+        "passes": (biomni, _log(p / "c6.jsonl", 200, 200), 0),
+    }
+    for name, (b, c, rc) in cases.items():
+        r = _gate(mac, b, c)
+        assert r.returncode == rc, (name, r.stdout, r.stderr)
+        assert ("PROBE GATE" in r.stdout) == bool(rc), name
+    assert _gate(mac, biomni).returncode == 0  # the claude client: Biomni's log alone
