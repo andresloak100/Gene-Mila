@@ -1,0 +1,63 @@
+{
+  "utc": "2026-11-01T02:07:48.014139+00:00",
+  "source_commit": "f39c60e39dd6213d682cd8bf4251231b235ecc8c",
+  "lead_comment": 6552107893,
+  "new_absolute_ceiling": 95,
+  "authority41": 6552139819,
+  "authority51": 6552140000,
+  "native_cap_unchanged": "76.56 61.562649 2026-11-01T01:43Z",
+  "ledger_before": [
+    61.575279308,
+    23867
+  ],
+  "scripts_copied_byte_identical": [
+    {
+      "name": "Dockerfile",
+      "sha256": "6c66d25dfbf4363a046f8fc9acc0d339eb8fc91e5ea95be3a8a6d2ba529483e5"
+    },
+    {
+      "name": "block_h_a2.sh",
+      "sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701"
+    },
+    {
+      "name": "block_h_a3.sh",
+      "sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64"
+    },
+    {
+      "name": "block_h_a4.sh",
+      "sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e"
+    },
+    {
+      "name": "block_h_cap.sh",
+      "sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "name": "block_h_chain.sh",
+      "sha256": "28eb46f06581ddaba94341ecd3a16829143a0defe68ce3f26ed35c2834b76094"
+    },
+    {
+      "name": "block_h_common.sh",
+      "sha256": "5fb1fe2d098d5075fbfd520879fc2fec923e82e98536841cf9e17474b286299b"
+    },
+    {
+      "name": "block_h_probe.sh",
+      "sha256": "22739216b76ce8a5a810b9111c96a44ae7c6c60c3d778073c1f0b90a68527331"
+    },
+    {
+      "name": "block_h_reset_probe.sh",
+      "sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922"
+    },
+    {
+      "name": "check_tools.sh",
+      "sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74"
+    }
+  ],
+  "C0_receipt_hashes": {
+    "0": "6f0cc48836d997de631910dc9eb72f25126352427377b8a5e11783d542494d9a",
+    "2": "525929caf22e9b5a28fd9892bb76785c7591fd5bfd3a732cd038e49bd4c9d285",
+    "3": "28f19abb53b09c9a3a9435744e719dd89a8e90b8b5e99ae39eb55109d2cc88a1"
+  },
+  "no_C0_repeat": true,
+  "progress_start_offset": 15558,
+  "direct_user_reset_restart": true
+}

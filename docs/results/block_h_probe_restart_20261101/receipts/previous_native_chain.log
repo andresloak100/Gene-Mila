@@ -1,0 +1,7 @@
+2026-11-01T01:43:23Z block H started
+ok: checks; ledger $61.562649, block cap $76.56 (ledger $61.562649 at 2026-11-01T01:43Z), isolation docker , A3 client codex (wire format responses)
+package adamson_cf_clean_tables: bundle adamson_cf_clean_tables split split_450515be1a0d8d2e; MANIFEST.json cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e; program.md 63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293; harness tier 17 perturbations (tier.txt: harness)
+calls 2, agent minutes 0.0, tokens in 17361 cache 8704 out 207, proxy cost $0.0126, served ['deepseek-v4-pro'], other statuses none
+files naming harness/val1.npz: 3 (/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/h_probe.val1scan.txt; allowed, recorded)
+STOPPED: runner exit code biomni=1,codex=0;
+2026-11-01T01:43:41Z block H stopped at the probe

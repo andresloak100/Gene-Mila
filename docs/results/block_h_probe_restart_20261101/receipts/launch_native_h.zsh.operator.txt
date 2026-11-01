@@ -1,0 +1,11 @@
+setopt NO_CLOBBER
+export H_CLONE=/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-block-h
+export A3_CLIENT=codex
+cd /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h || exit 1
+printf '%s\n' "$$" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.wrapper.pid
+date -u +%FT%TZ > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.started.utc
+DEEPSEEK_API_KEY="$API_KEY" /usr/bin/nice -n 19 /usr/bin/caffeinate -i /bin/bash block_h_chain.sh > block_h_chain.log 2>&1
+rc=$?
+printf '%s\n' "$rc" > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.exit
+date -u +%FT%TZ > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/probe_restart_20261101/native_chain.ended.utc
+exit "$rc"
