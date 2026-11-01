@@ -1,0 +1,50 @@
+{
+  "start_utc": "2026-10-28T16:42:16.582128+00:00",
+  "order": [
+    0,
+    2,
+    3
+  ],
+  "policy": "Three separate single-run sealed_reading calls last; no --versus, cross-arm comparison, model selection or retries.",
+  "calls": [
+    {
+      "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish",
+      "prefix": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r0_sealed_reading",
+      "python": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+      "args": [
+        "tools/sealed_reading.py",
+        "--runs",
+        "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery",
+        "--out",
+        "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r0_sealed_reading.md"
+      ],
+      "output": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r0_sealed_reading.md"
+    },
+    {
+      "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish",
+      "prefix": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r2_sealed_reading",
+      "python": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+      "args": [
+        "tools/sealed_reading.py",
+        "--runs",
+        "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r2_discovery",
+        "--out",
+        "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r2_sealed_reading.md"
+      ],
+      "output": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r2_sealed_reading.md"
+    },
+    {
+      "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish",
+      "prefix": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r3_sealed_reading",
+      "python": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+      "args": [
+        "tools/sealed_reading.py",
+        "--runs",
+        "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery",
+        "--out",
+        "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r3_sealed_reading.md"
+      ],
+      "output": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_r3_sealed_reading.md"
+    }
+  ]
+}

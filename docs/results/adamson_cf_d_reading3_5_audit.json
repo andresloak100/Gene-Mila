@@ -1,0 +1,113 @@
+{
+  "all_pass": true,
+  "checks": 93,
+  "all_nine_sets_ok": true,
+  "all_emitted_metrics": [
+    "delta_scale_ratio",
+    "direction_acc_top",
+    "mse",
+    "mse_top",
+    "pearson_delta",
+    "pearson_delta_nontarget",
+    "pearson_delta_top",
+    "r2_top"
+  ],
+  "arm_mean_sample_sd": {
+    "d1": {
+      "mean": 0.5231552702338725,
+      "n": 3,
+      "sd": 0.029324926897608423
+    },
+    "g0": {
+      "mean": 0.5259501385748455,
+      "n": 3,
+      "sd": 0.035263073950451675
+    },
+    "g1": {
+      "mean": 0.4909644279872097,
+      "n": 3,
+      "sd": 0.004435577781468558
+    }
+  },
+  "descriptive_runs": [
+    {
+      "all_cost_usd": 0.546547928,
+      "controller_log_discovery_dry_lines": 0,
+      "cpu_hours": 0.0973,
+      "dry_at_round": 25,
+      "dry_fired": true,
+      "duplicate_experiments": 13,
+      "duration_s": 1204.1,
+      "experiments_cancelled": 0,
+      "experiments_completed": 982,
+      "experiments_completed_planner": 179,
+      "experiments_failed": 21,
+      "experiments_killed": 0,
+      "experiments_proposed": 1016,
+      "experiments_rejected": 0,
+      "failed_calls": 0,
+      "largest_planner_state_chars": 18558,
+      "planner_calls": 25,
+      "planner_cost_usd": 0.377308976,
+      "planner_mixed": false,
+      "planner_rounds": 25,
+      "run": "adamson_cf_d1_ds_w4_r0_discovery",
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery",
+      "worker_calls": 194,
+      "worker_cost_usd": 0.169238952
+    },
+    {
+      "all_cost_usd": 0.137545632,
+      "controller_log_discovery_dry_lines": 0,
+      "cpu_hours": 0.0434,
+      "dry_at_round": 6,
+      "dry_fired": true,
+      "duplicate_experiments": 4,
+      "duration_s": 1217.7,
+      "experiments_cancelled": 1,
+      "experiments_completed": 513,
+      "experiments_completed_planner": 43,
+      "experiments_failed": 1,
+      "experiments_killed": 0,
+      "experiments_proposed": 519,
+      "experiments_rejected": 0,
+      "failed_calls": 0,
+      "largest_planner_state_chars": 15982,
+      "planner_calls": 6,
+      "planner_cost_usd": 0.091086072,
+      "planner_mixed": false,
+      "planner_rounds": 6,
+      "run": "adamson_cf_d1_ds_w4_r2_discovery",
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r2_discovery",
+      "worker_calls": 46,
+      "worker_cost_usd": 0.04645956
+    },
+    {
+      "all_cost_usd": 0.324215148,
+      "controller_log_discovery_dry_lines": 0,
+      "cpu_hours": 0.0502,
+      "dry_at_round": 14,
+      "dry_fired": true,
+      "duplicate_experiments": 6,
+      "duration_s": 1212.8,
+      "experiments_cancelled": 0,
+      "experiments_completed": 646,
+      "experiments_completed_planner": 103,
+      "experiments_failed": 10,
+      "experiments_killed": 0,
+      "experiments_proposed": 664,
+      "experiments_rejected": 2,
+      "failed_calls": 0,
+      "largest_planner_state_chars": 17728,
+      "planner_calls": 14,
+      "planner_cost_usd": 0.22367584799999998,
+      "planner_mixed": false,
+      "planner_rounds": 14,
+      "run": "adamson_cf_d1_ds_w4_r3_discovery",
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery",
+      "worker_calls": 120,
+      "worker_cost_usd": 0.1005393
+    }
+  ],
+  "note": "OOF development only; no arm test or noise/significance claim. Missing fields remain null. Unchanged scripts read only prescribed sources."
+}

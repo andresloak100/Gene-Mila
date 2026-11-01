@@ -1,0 +1,162 @@
+[
+  {
+    "source": "f_r0",
+    "feature": "train_delta_transfer_similarity_e267",
+    "gates": {
+      "unique": true,
+      "gene": true,
+      "pert": true,
+      "gain": true,
+      "wins": true,
+      "reports": true,
+      "m2": true,
+      "m4": true,
+      "multi_seed": true
+    },
+    "gain": 0.054192600205174093,
+    "se_adj": 0.012228153505472735,
+    "p_fwer_pooled": 0.001,
+    "coef_candidate_std": [
+      0.05334716976591698,
+      0.05273768678854892,
+      0.05346393303550796,
+      0.05222088687954436,
+      0.05398782613347143,
+      0.05334716976591698
+    ],
+    "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery",
+    "experiment": {
+      "experiment_id": "EXP_0267",
+      "created_at": 1792346479.2033951,
+      "started_at": 1792346485.179347,
+      "finished_at": 1792346490.983975
+    },
+    "proposed_feature": {
+      "name": "train_delta_transfer_similarity_e267",
+      "description": "For each (p,g), compute a weighted average of training deltas for gene g across training perturbations, where weights are the cosine similarity between the target gene of p and the target gene of each training perturbation in gene set space.",
+      "implementation_hint": "Build gene set membership vectors for all target genes. For each p, compute cosine similarity with each training target. Use these as weights to average train_delta[:, g]. Exclude p if in training.",
+      "params": {
+        "similarity_metric": "cosine"
+      },
+      "new_input": "train_delta",
+      "mechanism": "Perturbations with similar target gene functions produce similar downstream expression changes.",
+      "predicted_sign": "positive",
+      "novel_inputs": []
+    },
+    "planner": {
+      "plan_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery/planner/plan_023.json",
+      "plan_sha256": "0c7c500b2cedc868e9e72549cb378be9ab6d37cc6967ba975defb07d5bf4697b",
+      "hypothesis": {
+        "title": "Train delta similarity transfer",
+        "hypothesis": "Perturbations targeting genes with similar training response profiles to the target produce similar effects on gene g.",
+        "rationale": "train_delta is unread as a raw input. Current model uses mean_response (average delta) but not the full matrix. A feature that transfers response patterns from similar training perturbations could capture unseen perturbation effects. For each (p,g), compute the similarity between target p and each training perturbation based on their target gene features (e.g., gene set overlap), then weight their training deltas for gene g.",
+        "category": "explore",
+        "action": "new_feature",
+        "parent": "EXP_0242",
+        "new_feature": {
+          "name": "train_delta_transfer_similarity",
+          "description": "For each (p,g), compute a weighted average of training deltas for gene g across training perturbations, where weights are the cosine similarity between the target gene of p and the target gene of each training perturbation in gene set space.",
+          "implementation_hint": "Build gene set membership vectors for all target genes. For each p, compute cosine similarity with each training target. Use these as weights to average train_delta[:, g]. Exclude p if in training.",
+          "params": {
+            "similarity_metric": "cosine"
+          },
+          "new_input": "train_delta",
+          "mechanism": "Perturbations with similar target gene functions produce similar downstream expression changes.",
+          "predicted_sign": "positive"
+        },
+        "add_features": [],
+        "remove_features": [],
+        "model_type": "ridge",
+        "sweep": null,
+        "replicates": 1
+      }
+    },
+    "predicted_sign": "positive",
+    "fitted_sign": "positive",
+    "sign_match": true,
+    "novel_inputs": [],
+    "discovery_derived_record": {
+      "feature": "train_delta_transfer_similarity_e267",
+      "novel_inputs": [],
+      "r2": 0.87
+    }
+  },
+  {
+    "source": "f_r3",
+    "feature": "gene_set_similarity_transfer_e177",
+    "gates": {
+      "unique": true,
+      "gene": true,
+      "pert": true,
+      "gain": true,
+      "wins": true,
+      "reports": true,
+      "m2": true,
+      "m4": true,
+      "multi_seed": true
+    },
+    "gain": 0.05627735256779055,
+    "se_adj": 0.012783783179928124,
+    "p_fwer_pooled": 0.001,
+    "coef_candidate_std": [
+      0.04801275856903643,
+      0.0482953721061778,
+      0.04869706003176595,
+      0.0482953721061778,
+      0.04869706003176595,
+      0.04801275856903643
+    ],
+    "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery",
+    "experiment": {
+      "experiment_id": "EXP_0177",
+      "created_at": 1792348857.5615602,
+      "started_at": 1792348863.291553,
+      "finished_at": 1792348868.776076
+    },
+    "proposed_feature": {
+      "name": "gene_set_similarity_transfer_e177",
+      "description": "For each perturbation p, compute a weighted average of training delta responses from other perturbations, where weights are the Jaccard similarity between the gene sets of p's target and the other target's gene sets.",
+      "implementation_hint": "For each target gene, compute its gene set membership vector. Compute Jaccard similarity with all training perturbation targets. For each (p,g), compute predicted delta as sum over training perturbations q of similarity(p,q) * train_delta[q,g] / sum(similarity). Use leave-one-out to avoid using p's own response.",
+      "params": {},
+      "new_input": "gene_sets",
+      "mechanism": "Perturbations of genes with similar functions (shared gene sets) may produce similar expression changes.",
+      "predicted_sign": "unknown",
+      "novel_inputs": []
+    },
+    "planner": {
+      "plan_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery/planner/plan_014.json",
+      "plan_sha256": "a9c1c9a32fd25bc03bdeea5ade959bf20a6e2c491a1b881e97a488827f1b0c20",
+      "hypothesis": {
+        "title": "Risky: transfer from similar perturbations using gene set similarity",
+        "hypothesis": "Using a similarity-weighted average of training responses from perturbations whose target genes share many gene sets with the current perturbation target will improve predictions for unseen perturbations.",
+        "rationale": "This is a transfer learning idea that uses gene_sets in a novel way. It is risky because it may overfit or be too complex, but could capture perturbation similarity.",
+        "category": "risky",
+        "action": "new_feature",
+        "parent": "EXP_0134",
+        "new_feature": {
+          "name": "gene_set_similarity_transfer",
+          "description": "For each perturbation p, compute a weighted average of training delta responses from other perturbations, where weights are the Jaccard similarity between the gene sets of p's target and the other target's gene sets.",
+          "implementation_hint": "For each target gene, compute its gene set membership vector. Compute Jaccard similarity with all training perturbation targets. For each (p,g), compute predicted delta as sum over training perturbations q of similarity(p,q) * train_delta[q,g] / sum(similarity). Use leave-one-out to avoid using p's own response.",
+          "params": {},
+          "new_input": "gene_sets",
+          "mechanism": "Perturbations of genes with similar functions (shared gene sets) may produce similar expression changes.",
+          "predicted_sign": "unknown"
+        },
+        "add_features": [],
+        "remove_features": [],
+        "model_type": "ridge",
+        "sweep": null,
+        "replicates": 1
+      }
+    },
+    "predicted_sign": "unknown",
+    "fitted_sign": "positive",
+    "sign_match": null,
+    "novel_inputs": [],
+    "discovery_derived_record": {
+      "feature": "gene_set_similarity_transfer_e177",
+      "novel_inputs": [],
+      "r2": 0.848
+    }
+  }
+]

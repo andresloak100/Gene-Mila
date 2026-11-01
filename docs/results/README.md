@@ -106,6 +106,22 @@ The original 16 October files listed below are historical and remain byte-identi
 | knowledge input | `docs/mac/knowledge/gene_constraint_norman.json.gz` (gnomAD constraint, `tools/build_gene_constraint.py`) |
 | readings | All four readings are complete for both datasets: the consolidated publication below, one row per reading; generated paths were preserved. |
 
+## Block D: discovery-mode Adamson readings (18 October runs; completed 28 October 2026, PR #81)
+
+Read [the completed review](adamson_cf_d_completion.md) ([JSON](adamson_cf_d_completion.json)) and [reading index](adamson_cf_d1_readings.md). The full-family development fair test has two response-transfer passes; the unread-input secondary subset has none. Biological source admission, mechanism specificity and novelty remain the lead's assessment. No new paid run occurred.
+
+| Files | Reading |
+|---|---|
+| adamson_cf_d1_discovery_record twins and receipts | Existing reading1, unchanged |
+| adamson_cf_d_plugins/, adamson_cf_d_plugins.sha256, adamson_cf_d_stage1/, adamson_cf_d_top/ | Original all-plugin family and complete selection, unchanged |
+| adamson_cf_d_stage2/ and receipts; adamson_cf_d_pooled_holm/ and adamson_cf_d_pool receipts | Completed existing stage2, then full-family pool; legacy Block F/gene_annotation heading retained |
+| adamson_cf_d1_vs_g/ and receipts; adamson_cf_d1_arm_summary twins | Reading3, one nine-run OOF call, all emitted metrics and sample SD |
+| adamson_cf_d1_descriptive twins and receipts | Reading5, original summary/check/log accounting |
+| adamson_cf_d1_r{0,2,3}_sealed_reading twins and receipts; adamson_cf_d_sealed_summary twins | Reading4, three separate single-run calls last, worn and indicative |
+| adamson_cf_d_primary_audit, adamson_cf_d_candidate_source_audit, adamson_cf_d_prefit_mechanisms, adamson_cf_d_unread_input_secondary, adamson_cf_d_reading3_5_audit | Audits and qualifications (JSON/Markdown twins) |
+| adamson_cf_d_completion_manifest.json | Per-file sizes and hashes, with an exhaustive file index; original paths preserved |
+| [block_d_records](../mac/block_d_records/README.md), [reading scripts](../mac/block_d_readings/) | Original run records and unchanged operator script snapshots; exact own-clone invocations are the new command receipts |
+
 ## Block G, corrected F and the lead's H8: the consolidated publication (17 October 2026, PR #63)
 
 Read first: [G, corrected F and lead H8 readings](g_f_h8_readings.md) ([JSON twin](g_f_h8_readings.json)). Block G's complete-family result is negative on both datasets; corrected F has six development candidates, all reading the Replogle screen, and no tier-1 candidate; the lead's H8 hypothesis is unsupported on both datasets. The verdicts against the goal are in [`docs/GOAL_CRITERIA.md`](../GOAL_CRITERIA.md), Status.

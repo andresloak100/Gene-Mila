@@ -1,0 +1,19 @@
+{
+  "start_utc": "2026-10-28T16:41:49.915067+00:00",
+  "pid": 89737,
+  "command": [
+    "/usr/bin/caffeinate",
+    "-i",
+    "/usr/bin/nice",
+    "-n",
+    "19",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+    "-I",
+    "docs/mac/block_d_readings/block_d_reading3_summary.py",
+    "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_vs_g/feature_compare.json",
+    "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_arm_summary"
+  ],
+  "cwd": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish",
+  "end_utc": "2026-10-28T16:41:49.970836+00:00",
+  "exit": 0
+}

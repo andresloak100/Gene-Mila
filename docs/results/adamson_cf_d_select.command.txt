@@ -1,0 +1,5 @@
+UTC launch: 2026-10-18T19:04:41+00:00
+Tool commit: 23b3b1281f5a66eba7651d2741631e993b51ab38
+Block D reading 2, select: block G's adamson_cf_g_select command with block D's paths; credentials unset.
+cd /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings
+nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/block_f_readings.py select --stage1 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d_stage1/feature_compare.json --plugins /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d_plugins --out /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d_top

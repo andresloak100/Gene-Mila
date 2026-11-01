@@ -1,0 +1,16 @@
+run: code 23b3b1281f, 1217.7 s, seed 2, workers 4, data adamson_cf_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None, schedule.discovery True
+cost by the run: workers $0.046, planner $0.091
+selected EXP_0199 (ridge, 9 features) visible 0.505634640884619
+discovery: rounds 6 (counted 6), hypotheses 48, naming an unread input 10, dry at round 6, inputs proposed ['control_cells', 'control_std', 'gene_annotation', 'gene_constraint', 'gene_corr', 'gene_sets', 'ppi_network', 'prior_network', 'protein_annotation', 'transcription_factors']
+discovery: features scored for derivability 40, new-input features 39, derived features 1 (threshold 0.8), evidence files ['discovery_EXP_0003.json', 'discovery_EXP_0014.json', 'discovery_EXP_0024.json', 'discovery_EXP_0040.json', 'discovery_EXP_0052.json']
+features reading gene_annotation: 10 ['amino_acid_composition_e68', 'amino_acid_composition_features_e59', 'gene_annotation_random_projection_e51', 'gene_length_features_e12', 'gene_span_intron_length_e22', 'promoter_cpg_gc_e33', 'promoter_cpg_gc_features_e61', 'transcript_complexity_e45', 'transcript_utr_complexity_e58', 'transcript_utr_features_e35']
+features reading gene_constraint: 6 ['gene_constraint_random_projection_e74', 'loeuf_e13', 'lof_intolerance_e23', 'missense_constraint_e47', 'missense_constraint_features_e57', 'missense_constraint_gene_e69']
+features reading protein_annotation: 6 ['protein_compartment_flags_e14', 'protein_length_feature_e60', 'protein_length_signal_peptide_e46', 'protein_localization_e24', 'secretory_pathway_features_e36', 'target_protein_length_e71']
+features reading gene_sets: 7 ['erythroid_membership_e10', 'erythroid_program_membership_e20', 'erythroid_program_score_e67', 'erythroid_score_e39', 'erythroid_tf_target_membership_e48', 'tf_target_membership_e25', 'tf_target_membership_e34']
+features reading ppi_network: 4 ['ppi_erythroid_neighbor_transfer_e56', 'ppi_neighbor_response_e32', 'ppi_neighbor_response_e70', 'ppi_neighbor_response_transfer_e44']
+features reading prior_network: 7 ['erythroid_program_membership_e20', 'erythroid_tf_target_membership_e48', 'ppi_erythroid_neighbor_transfer_e56', 'prior_network_neighbor_response_e11', 'prior_network_transfer_e26', 'tf_target_membership_e25', 'tf_target_membership_e34']
+features reading transcription_factors: 2 ['tf_target_membership_e25', 'tf_target_membership_e34']
+features reading control_std: 3 ['control_std_e21', 'control_std_e8', 'target_control_std_interaction_e63']
+features reading gene_corr: 2 ['coexpression_transfer_e9', 'gene_corr_transfer_e27']
+features reading control_cells: 2 ['control_std_e21', 'control_std_e8']
+largest planner state 15982 characters
