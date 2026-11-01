@@ -178,7 +178,7 @@ block G's run script with one worker.
 `isolation.txt` present and its mode available (account mode: the venv imports `biomni` and `claude` is on its path);
 `H_CLONE` with the four runners; `tier.txt` present and the package source matching it (`harness_val1` in
 `MANIFEST.json` for `harness`, absent for `none`), its record beside it, `MANIFEST.json`'s sha256 equal to the record's; no work
-copy, log or hand-back for this session; no STOP file; no stopped block; no lab run, driver, `feature_compare`,
+copy, log or hand-back for this session; no `$H/STOP` file (block H's own halt signal since 2026-11-01); no stopped block; no lab run, driver, `feature_compare`,
 other proxy or `h_agent` container running; the probe passed (for the arms); the ledger readable, at or above the
 block's start, and plus $2.50 within the cap.
 
@@ -454,3 +454,15 @@ set only in one of them), so each sees a different image store. The refusal now 
 login zsh (`zsh -lc`) exactly as the chain is launched, compares with its own shell, and either builds the image from
 that login shell (`check_tools.sh`) or launches the chain from the shell that built it. No script other than this
 diagnostic changes.
+
+## Note, 2026-11-01 (03:43 UTC stop): the STOP file was the chain's own
+
+After Biomni seeds 0 and 2 passed, the chain stopped before seed 3 with "STOP file present" (`$L/STOP`, zero bytes;
+#51, comment 6553039740). Nobody created it by hand. `block_h_chain.sh` removed `$L/STOP` at its start and re-created
+it at its exit whenever the file had existed before, and `$L/STOP` has existed on the Mac since the scaling driver was
+last halted. Each short-lived chain of the day (the stopped probe, the image refusal) therefore planted the file again
+at its exit, and a wrapper exiting after the 02:5x chain had started planted it under that chain, whose per-session
+check then refused. The chain was also removing the driver's own halt signal, against AGENTS.md. The lead changes both
+scripts: block H's halt signal is now `$H/STOP`, `h_checks` reads only that, and the chain never touches `$L/STOP`.
+Nothing scientific changes; seeds 0 and 2 stand. The chain resumes the same way, skipping the sessions whose `.passed`
+markers exist (the probe, A4 r0 and r2), after `pgrep -fl block_h_chain` shows no stale chain or wrapper.

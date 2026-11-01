@@ -4,13 +4,15 @@
 # passed. No key in it; start it detached from a login zsh (block F's note of 02:05 UTC: never from a tool shell):
 #   cd ~/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h
 #   screen -dmS blockh zsh -lc 'DEEPSEEK_API_KEY="$API_KEY" caffeinate -i bash block_h_chain.sh > block_h_chain.log 2>&1'
-# A session whose .passed marker exists is skipped, so a chain stopped by a pre-session refusal (ledger, a lab run or
+# To halt the chain between sessions: touch $H/STOP (never $L/STOP). A session whose .passed marker exists is skipped, so a chain stopped by a pre-session refusal (ledger, a lab run or
 # the driver running, no key, no isolation) resumes by starting it again the same way once the cause is fixed. A
 # stopped block (block_h_stopped.txt) does not resume: the scripts refuse until the cause is written up in the plan.
 L="$HOME/Documents/Mila/Gene-Mila/genemila_scale_logs"; H="$L/block_h"
-had=0; [ -e "$L/STOP" ] && had=1
-trap '[ "$had" = 1 ] && touch "$L/STOP"; unset DEEPSEEK_API_KEY' EXIT
-rm -f "$L/STOP"
+# Block H's halt signal is $H/STOP, its own. $L/STOP belongs to the scaling driver (AGENTS.md: nobody creates or
+# removes it) and this script no longer touches it: until 2026-11-01 it removed $L/STOP at its start and re-created it
+# at its exit, so every short-lived chain (a refusal, a stopped probe) planted the file under the next chain, which
+# then stopped between sessions with "STOP file present" (#51, comment 6553039740).
+trap 'unset DEEPSEEK_API_KEY' EXIT
 echo "$(date -u +%FT%TZ) block H started"
 if [ -e "$H/h_probe.passed" ]; then echo "$(date -u +%FT%TZ) probe passed before; skipped"
 else bash "$H/block_h_probe.sh" || { echo "$(date -u +%FT%TZ) block H stopped at the probe"; exit 3; }; fi
