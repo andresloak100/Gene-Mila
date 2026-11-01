@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-01T01:27:20.689915+00:00",
+  "pid": 2005,
+  "seeds": [
+    0,
+    2,
+    3
+  ],
+  "nice": 19,
+  "ledger_before": [
+    61.562649371999996,
+    23865
+  ],
+  "provider_credentials": "unset",
+  "paid_chain_will_not_start": true,
+  "python": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+  "frozen_checkout": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-baa7dfd"
+}

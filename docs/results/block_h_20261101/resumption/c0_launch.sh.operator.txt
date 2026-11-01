@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /usr/bin/env -u API_KEY -u DEEPSEEK_API_KEY -u OPENAI_API_KEY -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN /usr/bin/nice -n 19 /usr/bin/caffeinate -i /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/c0_chain_once_20261031.py > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/resumed_20261101/c0_driver.log 2>&1

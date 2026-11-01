@@ -1,0 +1,46 @@
+"""Only the three prescribed free C0 seeds; never starts the paid H chain."""
+from pathlib import Path
+import os,json,subprocess,datetime,time,sqlite3,hashlib
+P=Path('/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5');O=P/'block_h_ops';L=Path('/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs');H=L/'block_h';M=Path('/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila');WT=M.parent/'gene-mila-baa7dfd';PY=str(M/'.venv/bin/python')
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def dump(name,x):
+ with (O/name).open('x') as f:json.dump(x,f,indent=2);f.write('\n')
+def ledger():
+ with sqlite3.connect('file:'+str(M/'runs/spend_ledger.sqlite')+'?mode=ro',uri=True) as c:return c.execute("SELECT COALESCE(SUM(cost_usd),0),COUNT(*) FROM spend WHERE provider='deepseek'").fetchone()
+def post(body,name):
+ f=O/(name+'.issue51.md');f.open('x').write(body+'\n')
+ with (O/(name+'.issue51.log')).open('x') as log:r=subprocess.run(['gh','issue','comment','51','--repo','andresloak100/Gene-Mila','--body-file',str(f)],stdout=log,stderr=subprocess.STDOUT)
+ if r.returncode:raise RuntimeError('progress publication failed; no retry')
+def main():
+ assert not (O/'c0_chain.started.json').exists()
+ assert (O/'build_image_20261031.exit').read_text().strip()=='0'
+ assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=WT).decode().startswith('baa7dfd')
+ assert not subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=WT).strip()
+ assert not any((M/f'runs/adamson_cf_h_c0_scripted_w4_r{s}').exists() for s in [0,2,3])
+ env={k:v for k,v in os.environ.items() if k in ['PATH','HOME','USER','LOGNAME','LANG','LC_ALL','TMPDIR','SHELL']};env.update(PYTHONHASHSEED='0',PYTHONDONTWRITEBYTECODE='1')
+ before=ledger();dump('c0_chain.started.json',{'utc':now(),'pid':os.getpid(),'seeds':[0,2,3],'nice':os.getpriority(os.PRIO_PROCESS,0),'ledger_before':before,'provider_credentials':'unset','paid_chain_will_not_start':True,'python':PY,'frozen_checkout':str(WT)})
+ results=[]
+ for s in [0,2,3]:
+  name=f'adamson_cf_h_c0_scripted_w4_r{s}';out=M/'runs'/name
+  assert not out.exists()
+  cmd=[PY,'run_research.py','--minutes','20','--workers','4','--dataset','adamson_cf','--planner-provider','scripted','--worker-provider','mock','--no-watchdog','--run-dir',str(out),'--set',f'run.seed={s}','--set',f'run.data_dir={M}/data/adamson_cf_clean_tables']
+  dump(name+'.command.json',{'command':cmd,'cwd':str(WT),'environment_provider_keys':'unset'})
+  start=now();t=time.monotonic()
+  with (H/(name+'.log')).open('x') as f:
+   child=subprocess.Popen(cmd,cwd=WT,env=env,stdout=f,stderr=subprocess.STDOUT,stdin=subprocess.DEVNULL);dump(name+'.started.json',{'utc':start,'pid':child.pid,'driver_pid':os.getpid()});rc=child.wait()
+  rt={'start_utc':start,'end_utc':now(),'wall_seconds':time.monotonic()-t,'exit':rc,'ledger_after':ledger()};dump(name+'.runtime.json',rt);(H/(name+'.exit')).open('x').write(str(rc)+'\n')
+  if rc:
+   post(f'H free C0 seed{s} stopped: exit{rc}; raw log preserved at {H/name}.log. No retry or paid H launch. Ledger{ledger()[0]}.',name+'_failure');raise RuntimeError(f'C0seed{s}exit{rc}')
+  cfg=json.loads((out/'config.json').read_text());summary=json.loads((out/'summary.json').read_text())
+  assert cfg['planner']['provider']=='scripted' and cfg['worker']['provider']=='mock' and cfg['run']['seed']==s and cfg['run']['workers']==4
+  assert Path(cfg['run']['data_dir'])==M/'data/adamson_cf_clean_tables' and summary['base_commit'].startswith('baa7dfd') and not summary.get('duration_note')
+  assert ledger()==before
+  result={'seed':s,'run_dir':str(out),'exit':0,'runtime':rt,'code':summary['base_commit'],'config_sha256':hashlib.sha256((out/'config.json').read_bytes()).hexdigest(),'summary_sha256':hashlib.sha256((out/'summary.json').read_bytes()).hexdigest(),'source_settings_checks_pass':True,'ledger_unchanged':True}
+  dump(name+'.receipt.json',result);results.append(result)
+  with (L/'progress.md').open('a') as f:f.write(f'- {now()} H free C0 seed{s} complete exit0, codebaa7dfd, wall{rt["wall_seconds"]:.3f}s, ledger{before[0]} unchanged; paid H chain not launched.\n')
+  post(f'H free C0 seed{s} COMPLETE exit0, prescribed20min/4workers/scripted planner/mock workers, frozenbaa7dfd, clean-tables input. Run `{out}`; wall{rt["wall_seconds"]:.3f}s; sharedledger{before[0]} unchanged. No paid H chain. Raw command/log/exit/config+summary hashes preserved; no additional scoring/readings yet.',name+'_complete')
+ dump('c0_chain.final.json',{'utc':now(),'exit':0,'results':results,'ledger_after':ledger(),'paid_chain_started':False});(O/'c0_chain.exit').open('x').write('0\n')
+try:main()
+except BaseException as e:
+ if not (O/'c0_chain.exit').exists():(O/'c0_chain.exit').open('x').write('1\n')
+ dump('c0_chain.failure.json',{'utc':now(),'error':type(e).__name__+': '+str(e),'no_retry':True,'paid_chain_started':False});raise

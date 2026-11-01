@@ -1,0 +1,3 @@
+{"A1_constructed_offline": true, "system_prompt_chars": 156018, "model_called": false, "constructor_output_chars_not_shown": 670}
+/usr/local/lib/python3.12/site-packages/langgraph/checkpoint/base/__init__.py:18: LangChainPendingDeprecationWarning: The default value of `allowed_objects` will change in a future version. Pass an explicit value (e.g., allowed_objects='messages' or allowed_objects='core') to suppress this warning.
+  from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer

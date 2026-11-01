@@ -1,0 +1,309 @@
+run directory: /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3
+[21:36:50] run adamson_cf_h_c0_scripted_w4_r3: 4 workers, 8 CPU slots, 20.0 min, dataset adamson_cf_clean_tables (split_450515be1a0d8d2e); caps: workers $0.25, planner $5.33
+[21:36:51] left  1199s | workers 0/4 active | queued 3 | done 2 | failed 0 | rejected 0 | best 0.4894 (EXP_0002) | 6332 exp/h | CPU 32% | LLM 0 calls $0.0000
+/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3/worktrees/_server/genemila/forkserver.py:95: DeprecationWarning: This process (pid=10885) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+[21:36:54] exploit: queued 1 follow-ups around the best model (no LLM)
+[21:36:54] planner round 1: queued 8 experiments
+[21:36:54] planner round 2: queued 2 experiments
+[21:36:55] planner round 3: queued 1 experiments
+[21:36:55] planner round 4: queued 0 experiments
+[21:37:01] left  1189s | workers 2/4 active | queued 0 | done 14 | failed 1 | rejected 0 | best 0.5083 (EXP_0011) | 4483 exp/h | CPU 82% | LLM 9 calls $0.0000
+[21:37:09] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:37:12] left  1179s | workers 0/4 active | queued 0 | done 20 | failed 1 | rejected 0 | best 0.5380 (EXP_0018) | 3376 exp/h | CPU 71% | LLM 9 calls $0.0000
+[21:37:22] left  1169s | workers 0/4 active | queued 0 | done 20 | failed 1 | rejected 0 | best 0.5380 (EXP_0018) | 2293 exp/h | CPU 41% | LLM 9 calls $0.0000
+[21:37:24] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:37:32] left  1159s | workers 0/4 active | queued 0 | done 24 | failed 1 | rejected 0 | best 0.5386 (EXP_0025) | 2082 exp/h | CPU 46% | LLM 9 calls $0.0000
+[21:37:39] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:37:42] left  1148s | workers 0/4 active | queued 0 | done 28 | failed 1 | rejected 0 | best 0.5386 (EXP_0026) | 1954 exp/h | CPU 40% | LLM 9 calls $0.0000
+[21:37:52] left  1138s | workers 0/4 active | queued 0 | done 28 | failed 1 | rejected 0 | best 0.5386 (EXP_0026) | 1635 exp/h | CPU 32% | LLM 9 calls $0.0000
+[21:37:54] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:37:56] planner round 5: queued 0 experiments
+[21:38:02] left  1128s | workers 0/4 active | queued 0 | done 32 | failed 1 | rejected 0 | best 0.5387 (EXP_0030) | 1605 exp/h | CPU 40% | LLM 9 calls $0.0000
+[21:38:10] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:38:12] left  1118s | workers 0/4 active | queued 0 | done 36 | failed 1 | rejected 0 | best 0.5389 (EXP_0034) | 1583 exp/h | CPU 35% | LLM 9 calls $0.0000
+[21:38:22] left  1108s | workers 0/4 active | queued 0 | done 36 | failed 1 | rejected 0 | best 0.5389 (EXP_0034) | 1410 exp/h | CPU 26% | LLM 9 calls $0.0000
+[21:38:25] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:38:32] left  1098s | workers 0/4 active | queued 0 | done 40 | failed 1 | rejected 0 | best 0.5392 (EXP_0038) | 1411 exp/h | CPU 33% | LLM 9 calls $0.0000
+[21:38:40] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:38:42] left  1088s | workers 0/4 active | queued 0 | done 44 | failed 1 | rejected 0 | best 0.5397 (EXP_0042) | 1413 exp/h | CPU 34% | LLM 9 calls $0.0000
+[21:38:52] left  1078s | workers 0/4 active | queued 0 | done 44 | failed 1 | rejected 0 | best 0.5397 (EXP_0042) | 1296 exp/h | CPU 30% | LLM 9 calls $0.0000
+[21:38:55] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:38:56] planner round 6: queued 0 experiments
+[21:38:58] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:00] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:02] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:03] left  1068s | workers 4/4 active | queued 0 | done 56 | failed 1 | rejected 0 | best 0.5398 (EXP_0046) | 1523 exp/h | CPU 57% | LLM 9 calls $0.0000
+[21:39:05] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:07] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:09] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:12] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:13] left  1057s | workers 4/4 active | queued 0 | done 72 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 1818 exp/h | CPU 68% | LLM 9 calls $0.0000
+[21:39:14] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:17] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:19] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:21] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:23] left  1047s | workers 0/4 active | queued 0 | done 92 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 2168 exp/h | CPU 66% | LLM 9 calls $0.0000
+[21:39:23] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:26] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:28] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:30] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:33] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:33] left  1037s | workers 4/4 active | queued 0 | done 108 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 2385 exp/h | CPU 63% | LLM 9 calls $0.0000
+[21:39:35] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:38] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:40] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:43] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:43] left  1027s | workers 4/4 active | queued 0 | done 124 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 2577 exp/h | CPU 68% | LLM 9 calls $0.0000
+[21:39:46] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:48] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:51] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:53] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:54] left  1017s | workers 4/4 active | queued 0 | done 140 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 2747 exp/h | CPU 63% | LLM 9 calls $0.0000
+[21:39:56] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:39:56] planner round 7: queued 0 experiments
+[21:39:58] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:01] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:04] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:04] left  1006s | workers 4/4 active | queued 0 | done 156 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 2898 exp/h | CPU 64% | LLM 9 calls $0.0000
+[21:40:06] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:09] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:11] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:14] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:14] left   996s | workers 4/4 active | queued 0 | done 172 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 3034 exp/h | CPU 70% | LLM 9 calls $0.0000
+[21:40:16] exploit: queued 4 follow-ups around the best model (no LLM)
+[21:40:19] exploit: queued 3 follow-ups around the best model (no LLM)
+[21:40:21] nothing left to do (planner exhausted and queue empty); stopping early
+[21:40:21] deadline: no new experiments; waiting up to 30s for running experiments
+[21:40:21] left   990s | workers 0/4 active | queued 0 | done 183 | failed 1 | rejected 0 | best 0.5401 (EXP_0058) | 3133 exp/h | CPU 68% | LLM 9 calls $0.0000
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):   5%|▍         | 1/22 [00:01<00:32,  1.55s/it]Running parallel differential expression (against reference):  18%|█▊        | 4/22 [00:01<00:05,  3.01it/s]Running parallel differential expression (against reference):  32%|███▏      | 7/22 [00:01<00:02,  5.65it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:01<00:01,  7.45it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:02<00:00, 10.17it/s]Running parallel differential expression (against reference):  68%|██████▊   | 15/22 [00:02<00:00, 13.21it/s]Running parallel differential expression (against reference):  82%|████████▏ | 18/22 [00:02<00:00, 15.14it/s]Running parallel differential expression (against reference):  95%|█████████▌| 21/22 [00:02<00:00, 17.36it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:02<00:00,  8.98it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):  14%|█▎        | 3/22 [00:00<00:00, 27.37it/s]Running parallel differential expression (against reference):  27%|██▋       | 6/22 [00:00<00:00, 28.14it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:00<00:00, 27.77it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:00<00:00, 27.61it/s]Running parallel differential expression (against reference):  73%|███████▎  | 16/22 [00:00<00:00, 28.67it/s]Running parallel differential expression (against reference):  86%|████████▋ | 19/22 [00:00<00:00, 28.32it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 29.86it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 6277.56it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 7997.86it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8444.10it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8666.77it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8677.87it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 125114.18it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 130296.43it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 125829.12it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 129720.74it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 124231.85it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 129720.74it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...:   5%|▍         | 1/21 [00:00<00:05,  3.68it/s]Iterating over perturbations...:  10%|▉         | 2/21 [00:00<00:05,  3.66it/s]Iterating over perturbations...:  14%|█▍        | 3/21 [00:00<00:04,  3.62it/s]Iterating over perturbations...:  19%|█▉        | 4/21 [00:01<00:04,  3.68it/s]Iterating over perturbations...:  24%|██▍       | 5/21 [00:01<00:03,  4.65it/s]Iterating over perturbations...:  29%|██▊       | 6/21 [00:01<00:03,  4.28it/s]Iterating over perturbations...:  33%|███▎      | 7/21 [00:01<00:03,  4.08it/s]Iterating over perturbations...:  38%|███▊      | 8/21 [00:02<00:03,  3.95it/s]Iterating over perturbations...:  43%|████▎     | 9/21 [00:02<00:03,  3.80it/s]Iterating over perturbations...:  48%|████▊     | 10/21 [00:02<00:02,  3.76it/s]Iterating over perturbations...:  52%|█████▏    | 11/21 [00:02<00:02,  3.71it/s]Iterating over perturbations...:  57%|█████▋    | 12/21 [00:03<00:02,  3.68it/s]Iterating over perturbations...:  67%|██████▋   | 14/21 [00:03<00:01,  4.74it/s]Iterating over perturbations...:  71%|███████▏  | 15/21 [00:03<00:01,  4.48it/s]Iterating over perturbations...:  76%|███████▌  | 16/21 [00:03<00:01,  4.22it/s]Iterating over perturbations...:  81%|████████  | 17/21 [00:04<00:00,  4.02it/s]Iterating over perturbations...:  86%|████████▌ | 18/21 [00:04<00:00,  3.89it/s]Iterating over perturbations...:  90%|█████████ | 19/21 [00:04<00:00,  3.83it/s]Iterating over perturbations...:  95%|█████████▌| 20/21 [00:05<00:00,  3.75it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:05<00:00,  4.12it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 20.36it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 20.80it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 20.58it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 20.66it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 20.62it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 22.71it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 21.59it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 27.31it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 27.50it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 27.55it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 27.58it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 27.08it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 28.91it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 6415.04it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 7779.94it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8386.63it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8516.86it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8632.34it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 130591.88it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 131798.83it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 130591.88it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 136074.75it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 132042.90it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 134534.28it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...:   6%|▌         | 1/17 [00:00<00:04,  3.78it/s]Iterating over perturbations...:  12%|█▏        | 2/17 [00:00<00:04,  3.69it/s]Iterating over perturbations...:  18%|█▊        | 3/17 [00:00<00:03,  3.61it/s]Iterating over perturbations...:  24%|██▎       | 4/17 [00:01<00:03,  3.58it/s]Iterating over perturbations...:  29%|██▉       | 5/17 [00:01<00:03,  3.56it/s]Iterating over perturbations...:  35%|███▌      | 6/17 [00:01<00:03,  3.60it/s]Iterating over perturbations...:  41%|████      | 7/17 [00:01<00:02,  3.62it/s]Iterating over perturbations...:  47%|████▋     | 8/17 [00:02<00:02,  3.59it/s]Iterating over perturbations...:  53%|█████▎    | 9/17 [00:02<00:02,  3.58it/s]Iterating over perturbations...:  59%|█████▉    | 10/17 [00:02<00:01,  3.59it/s]Iterating over perturbations...:  65%|██████▍   | 11/17 [00:03<00:01,  3.59it/s]Iterating over perturbations...:  71%|███████   | 12/17 [00:03<00:01,  3.59it/s]Iterating over perturbations...:  76%|███████▋  | 13/17 [00:03<00:01,  3.61it/s]Iterating over perturbations...:  82%|████████▏ | 14/17 [00:03<00:00,  3.60it/s]Iterating over perturbations...:  88%|████████▊ | 15/17 [00:04<00:00,  3.58it/s]Iterating over perturbations...:  94%|█████████▍| 16/17 [00:04<00:00,  3.59it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.57it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.59it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):  14%|█▎        | 3/22 [00:00<00:00, 20.95it/s]Running parallel differential expression (against reference):  27%|██▋       | 6/22 [00:00<00:00, 22.46it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:00<00:00, 21.87it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:00<00:00, 21.46it/s]Running parallel differential expression (against reference):  68%|██████▊   | 15/22 [00:00<00:00, 23.05it/s]Running parallel differential expression (against reference):  82%|████████▏ | 18/22 [00:00<00:00, 22.26it/s]Running parallel differential expression (against reference):  95%|█████████▌| 21/22 [00:00<00:00, 22.99it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 23.56it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):  14%|█▎        | 3/22 [00:00<00:00, 27.21it/s]Running parallel differential expression (against reference):  27%|██▋       | 6/22 [00:00<00:00, 28.30it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:00<00:00, 28.07it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:00<00:00, 27.96it/s]Running parallel differential expression (against reference):  73%|███████▎  | 16/22 [00:00<00:00, 28.79it/s]Running parallel differential expression (against reference):  86%|████████▋ | 19/22 [00:00<00:00, 28.46it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 30.03it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 7080.42it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 7987.70it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8471.71it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8307.12it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8677.87it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 128210.17it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 132054.55it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 125829.12it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 131267.34it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 127283.79it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 131267.34it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...:   5%|▍         | 1/21 [00:00<00:05,  3.68it/s]Iterating over perturbations...:  10%|▉         | 2/21 [00:00<00:05,  3.67it/s]Iterating over perturbations...:  14%|█▍        | 3/21 [00:00<00:05,  3.57it/s]Iterating over perturbations...:  19%|█▉        | 4/21 [00:01<00:04,  3.64it/s]Iterating over perturbations...:  24%|██▍       | 5/21 [00:01<00:03,  4.62it/s]Iterating over perturbations...:  29%|██▊       | 6/21 [00:01<00:03,  4.27it/s]Iterating over perturbations...:  33%|███▎      | 7/21 [00:01<00:03,  4.05it/s]Iterating over perturbations...:  38%|███▊      | 8/21 [00:02<00:03,  3.91it/s]Iterating over perturbations...:  43%|████▎     | 9/21 [00:02<00:03,  3.82it/s]Iterating over perturbations...:  48%|████▊     | 10/21 [00:02<00:02,  3.77it/s]Iterating over perturbations...:  52%|█████▏    | 11/21 [00:02<00:02,  3.71it/s]Iterating over perturbations...:  57%|█████▋    | 12/21 [00:03<00:02,  3.67it/s]Iterating over perturbations...:  67%|██████▋   | 14/21 [00:03<00:01,  4.75it/s]Iterating over perturbations...:  71%|███████▏  | 15/21 [00:03<00:01,  4.49it/s]Iterating over perturbations...:  76%|███████▌  | 16/21 [00:03<00:01,  4.16it/s]Iterating over perturbations...:  81%|████████  | 17/21 [00:04<00:01,  3.97it/s]Iterating over perturbations...:  86%|████████▌ | 18/21 [00:04<00:00,  3.82it/s]Iterating over perturbations...:  90%|█████████ | 19/21 [00:04<00:00,  3.78it/s]Iterating over perturbations...:  95%|█████████▌| 20/21 [00:05<00:00,  3.73it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:05<00:00,  4.10it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 21.10it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 21.23it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 21.01it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 20.97it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 20.96it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 22.17it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 27.70it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 27.77it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 27.51it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 27.52it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 26.94it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 28.79it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 4972.33it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 7029.79it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 6941.51it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8275.67it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8134.06it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 125755.15it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 129642.12it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 113902.82it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 123148.82it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 129642.12it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 134788.60it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...:   6%|▌         | 1/17 [00:00<00:04,  3.82it/s]Iterating over perturbations...:  12%|█▏        | 2/17 [00:00<00:04,  3.71it/s]Iterating over perturbations...:  18%|█▊        | 3/17 [00:00<00:03,  3.66it/s]Iterating over perturbations...:  24%|██▎       | 4/17 [00:01<00:03,  3.67it/s]Iterating over perturbations...:  29%|██▉       | 5/17 [00:01<00:03,  3.62it/s]Iterating over perturbations...:  35%|███▌      | 6/17 [00:01<00:03,  3.57it/s]Iterating over perturbations...:  41%|████      | 7/17 [00:01<00:02,  3.60it/s]Iterating over perturbations...:  47%|████▋     | 8/17 [00:02<00:02,  3.57it/s]Iterating over perturbations...:  53%|█████▎    | 9/17 [00:02<00:02,  3.56it/s]Iterating over perturbations...:  59%|█████▉    | 10/17 [00:02<00:01,  3.59it/s]Iterating over perturbations...:  65%|██████▍   | 11/17 [00:03<00:01,  3.60it/s]Iterating over perturbations...:  71%|███████   | 12/17 [00:03<00:01,  3.60it/s]Iterating over perturbations...:  76%|███████▋  | 13/17 [00:03<00:01,  3.60it/s]Iterating over perturbations...:  82%|████████▏ | 14/17 [00:03<00:00,  3.61it/s]Iterating over perturbations...:  88%|████████▊ | 15/17 [00:04<00:00,  3.60it/s]Iterating over perturbations...:  94%|█████████▍| 16/17 [00:04<00:00,  3.59it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.58it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.60it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):  14%|█▎        | 3/22 [00:00<00:00, 20.80it/s]Running parallel differential expression (against reference):  27%|██▋       | 6/22 [00:00<00:00, 22.36it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:00<00:00, 21.80it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:00<00:00, 21.46it/s]Running parallel differential expression (against reference):  68%|██████▊   | 15/22 [00:00<00:00, 23.07it/s]Running parallel differential expression (against reference):  82%|████████▏ | 18/22 [00:00<00:00, 22.27it/s]Running parallel differential expression (against reference):  95%|█████████▌| 21/22 [00:00<00:00, 22.88it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 23.49it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):  14%|█▎        | 3/22 [00:00<00:00, 27.52it/s]Running parallel differential expression (against reference):  27%|██▋       | 6/22 [00:00<00:00, 28.54it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:00<00:00, 28.20it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:00<00:00, 28.08it/s]Running parallel differential expression (against reference):  73%|███████▎  | 16/22 [00:00<00:00, 29.05it/s]Running parallel differential expression (against reference):  86%|████████▋ | 19/22 [00:00<00:00, 28.70it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 30.25it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 7155.19it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8070.40it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8451.39it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8599.08it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8702.74it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 116047.94it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 131267.34it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 128210.17it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 124936.71it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 126552.28it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 122674.63it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...:   5%|▍         | 1/21 [00:00<00:05,  3.56it/s]Iterating over perturbations...:  10%|▉         | 2/21 [00:00<00:05,  3.61it/s]Iterating over perturbations...:  14%|█▍        | 3/21 [00:00<00:04,  3.61it/s]Iterating over perturbations...:  19%|█▉        | 4/21 [00:01<00:04,  3.66it/s]Iterating over perturbations...:  24%|██▍       | 5/21 [00:01<00:03,  4.60it/s]Iterating over perturbations...:  29%|██▊       | 6/21 [00:01<00:03,  4.25it/s]Iterating over perturbations...:  33%|███▎      | 7/21 [00:01<00:03,  4.02it/s]Iterating over perturbations...:  38%|███▊      | 8/21 [00:02<00:03,  3.88it/s]Iterating over perturbations...:  43%|████▎     | 9/21 [00:02<00:03,  3.78it/s]Iterating over perturbations...:  48%|████▊     | 10/21 [00:02<00:02,  3.74it/s]Iterating over perturbations...:  52%|█████▏    | 11/21 [00:02<00:02,  3.70it/s]Iterating over perturbations...:  57%|█████▋    | 12/21 [00:03<00:02,  3.67it/s]Iterating over perturbations...:  67%|██████▋   | 14/21 [00:03<00:01,  4.73it/s]Iterating over perturbations...:  71%|███████▏  | 15/21 [00:03<00:01,  4.34it/s]Iterating over perturbations...:  76%|███████▌  | 16/21 [00:04<00:01,  3.93it/s]Iterating over perturbations...:  81%|████████  | 17/21 [00:04<00:01,  3.78it/s]Iterating over perturbations...:  86%|████████▌ | 18/21 [00:04<00:00,  3.70it/s]Iterating over perturbations...:  90%|█████████ | 19/21 [00:04<00:00,  3.68it/s]Iterating over perturbations...:  95%|█████████▌| 20/21 [00:05<00:00,  3.59it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:05<00:00,  4.02it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 20.64it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 20.98it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 20.89it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 20.87it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 20.92it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 22.07it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 27.71it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 27.81it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 27.82it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 27.75it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 27.38it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 29.20it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 6523.62it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 7755.40it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8641.76it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8538.28it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8496.56it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 118247.38it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 131555.66it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 106264.04it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 130831.50it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 128706.08it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 132780.57it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...:   6%|▌         | 1/17 [00:00<00:04,  3.81it/s]Iterating over perturbations...:  12%|█▏        | 2/17 [00:00<00:04,  3.71it/s]Iterating over perturbations...:  18%|█▊        | 3/17 [00:00<00:03,  3.62it/s]Iterating over perturbations...:  24%|██▎       | 4/17 [00:01<00:03,  3.65it/s]Iterating over perturbations...:  29%|██▉       | 5/17 [00:01<00:03,  3.66it/s]Iterating over perturbations...:  35%|███▌      | 6/17 [00:01<00:02,  3.67it/s]Iterating over perturbations...:  41%|████      | 7/17 [00:01<00:02,  3.65it/s]Iterating over perturbations...:  47%|████▋     | 8/17 [00:02<00:02,  3.63it/s]Iterating over perturbations...:  53%|█████▎    | 9/17 [00:02<00:02,  3.61it/s]Iterating over perturbations...:  59%|█████▉    | 10/17 [00:02<00:01,  3.62it/s]Iterating over perturbations...:  65%|██████▍   | 11/17 [00:03<00:01,  3.61it/s]Iterating over perturbations...:  71%|███████   | 12/17 [00:03<00:01,  3.62it/s]Iterating over perturbations...:  76%|███████▋  | 13/17 [00:03<00:01,  3.63it/s]Iterating over perturbations...:  82%|████████▏ | 14/17 [00:03<00:00,  3.63it/s]Iterating over perturbations...:  88%|████████▊ | 15/17 [00:04<00:00,  3.64it/s]Iterating over perturbations...:  94%|█████████▍| 16/17 [00:04<00:00,  3.63it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.58it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.63it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):   9%|▉         | 2/22 [00:00<00:01, 19.58it/s]Running parallel differential expression (against reference):  23%|██▎       | 5/22 [00:00<00:00, 21.67it/s]Running parallel differential expression (against reference):  36%|███▋      | 8/22 [00:00<00:00, 21.57it/s]Running parallel differential expression (against reference):  50%|█████     | 11/22 [00:00<00:00, 21.25it/s]Running parallel differential expression (against reference):  64%|██████▎   | 14/22 [00:00<00:00, 22.62it/s]Running parallel differential expression (against reference):  77%|███████▋  | 17/22 [00:00<00:00, 22.17it/s]Running parallel differential expression (against reference):  91%|█████████ | 20/22 [00:00<00:00, 21.72it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 23.19it/s]
+Running parallel differential expression (against reference):   0%|          | 0/22 [00:00<?, ?it/s]Running parallel differential expression (against reference):  14%|█▎        | 3/22 [00:00<00:00, 25.65it/s]Running parallel differential expression (against reference):  27%|██▋       | 6/22 [00:00<00:00, 27.40it/s]Running parallel differential expression (against reference):  41%|████      | 9/22 [00:00<00:00, 27.32it/s]Running parallel differential expression (against reference):  55%|█████▍    | 12/22 [00:00<00:00, 26.84it/s]Running parallel differential expression (against reference):  68%|██████▊   | 15/22 [00:00<00:00, 27.67it/s]Running parallel differential expression (against reference):  82%|████████▏ | 18/22 [00:00<00:00, 26.48it/s]Running parallel differential expression (against reference):  95%|█████████▌| 21/22 [00:00<00:00, 27.53it/s]Running parallel differential expression (against reference): 100%|██████████| 22/22 [00:00<00:00, 28.51it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 6999.95it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8036.53it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8512.65it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8546.52it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 8720.83it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 117440.51it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 131267.34it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 126552.28it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 97650.09it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 111072.36it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:00<00:00, 128023.81it/s]
+Iterating over perturbations...:   0%|          | 0/21 [00:00<?, ?it/s]Iterating over perturbations...:   5%|▍         | 1/21 [00:00<00:05,  3.67it/s]Iterating over perturbations...:  10%|▉         | 2/21 [00:00<00:05,  3.66it/s]Iterating over perturbations...:  14%|█▍        | 3/21 [00:00<00:04,  3.61it/s]Iterating over perturbations...:  19%|█▉        | 4/21 [00:01<00:04,  3.66it/s]Iterating over perturbations...:  24%|██▍       | 5/21 [00:01<00:03,  4.62it/s]Iterating over perturbations...:  29%|██▊       | 6/21 [00:01<00:03,  4.27it/s]Iterating over perturbations...:  33%|███▎      | 7/21 [00:01<00:03,  4.06it/s]Iterating over perturbations...:  38%|███▊      | 8/21 [00:02<00:03,  3.94it/s]Iterating over perturbations...:  43%|████▎     | 9/21 [00:02<00:03,  3.81it/s]Iterating over perturbations...:  48%|████▊     | 10/21 [00:02<00:02,  3.72it/s]Iterating over perturbations...:  52%|█████▏    | 11/21 [00:02<00:02,  3.69it/s]Iterating over perturbations...:  57%|█████▋    | 12/21 [00:03<00:02,  3.65it/s]Iterating over perturbations...:  67%|██████▋   | 14/21 [00:03<00:01,  4.71it/s]Iterating over perturbations...:  71%|███████▏  | 15/21 [00:03<00:01,  4.47it/s]Iterating over perturbations...:  76%|███████▌  | 16/21 [00:03<00:01,  4.22it/s]Iterating over perturbations...:  81%|████████  | 17/21 [00:04<00:00,  4.03it/s]Iterating over perturbations...:  86%|████████▌ | 18/21 [00:04<00:00,  3.89it/s]Iterating over perturbations...:  90%|█████████ | 19/21 [00:04<00:00,  3.82it/s]Iterating over perturbations...:  95%|█████████▌| 20/21 [00:05<00:00,  3.76it/s]Iterating over perturbations...: 100%|██████████| 21/21 [00:05<00:00,  4.12it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 21.22it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 21.28it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 21.06it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 15.72it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 17.13it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 19.19it/s]
+Running parallel differential expression (against reference):   0%|          | 0/18 [00:00<?, ?it/s]Running parallel differential expression (against reference):  17%|█▋        | 3/18 [00:00<00:00, 27.66it/s]Running parallel differential expression (against reference):  33%|███▎      | 6/18 [00:00<00:00, 27.72it/s]Running parallel differential expression (against reference):  50%|█████     | 9/18 [00:00<00:00, 27.77it/s]Running parallel differential expression (against reference):  67%|██████▋   | 12/18 [00:00<00:00, 27.74it/s]Running parallel differential expression (against reference):  83%|████████▎ | 15/18 [00:00<00:00, 27.73it/s]Running parallel differential expression (against reference): 100%|██████████| 18/18 [00:00<00:00, 29.36it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 6984.34it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 7812.33it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8577.31it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8505.69it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 8634.44it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 127554.86it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 136074.75it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 124874.20it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 135043.88it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 131798.83it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:00<00:00, 135043.88it/s]
+Iterating over perturbations...:   0%|          | 0/17 [00:00<?, ?it/s]Iterating over perturbations...:   6%|▌         | 1/17 [00:00<00:04,  3.77it/s]Iterating over perturbations...:  12%|█▏        | 2/17 [00:00<00:04,  3.70it/s]Iterating over perturbations...:  18%|█▊        | 3/17 [00:00<00:03,  3.64it/s]Iterating over perturbations...:  24%|██▎       | 4/17 [00:01<00:03,  3.63it/s]Iterating over perturbations...:  29%|██▉       | 5/17 [00:01<00:03,  3.64it/s]Iterating over perturbations...:  35%|███▌      | 6/17 [00:01<00:03,  3.67it/s]Iterating over perturbations...:  41%|████      | 7/17 [00:01<00:02,  3.67it/s]Iterating over perturbations...:  47%|████▋     | 8/17 [00:02<00:02,  3.62it/s]Iterating over perturbations...:  53%|█████▎    | 9/17 [00:02<00:02,  3.60it/s]Iterating over perturbations...:  59%|█████▉    | 10/17 [00:02<00:01,  3.62it/s]Iterating over perturbations...:  65%|██████▍   | 11/17 [00:03<00:01,  3.61it/s]Iterating over perturbations...:  71%|███████   | 12/17 [00:03<00:01,  3.61it/s]Iterating over perturbations...:  76%|███████▋  | 13/17 [00:03<00:01,  3.63it/s]Iterating over perturbations...:  82%|████████▏ | 14/17 [00:03<00:00,  3.61it/s]Iterating over perturbations...:  88%|████████▊ | 15/17 [00:04<00:00,  3.57it/s]Iterating over perturbations...:  94%|█████████▍| 16/17 [00:04<00:00,  3.56it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.55it/s]Iterating over perturbations...: 100%|██████████| 17/17 [00:04<00:00,  3.61it/s]
+[21:41:29] summary written to /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3/summary.md
+
+# RUN SUMMARY
+
+Run `adamson_cf_h_c0_scripted_w4_r3` on dataset `adamson_cf_clean_tables` (split `split_450515be1a0d8d2e`, code `baa7dfdbf1`)
+
+- Duration: 3.5 min
+- Workers: 4
+- Experiments proposed: 179
+- Experiments completed: 178 (plus baselines; python:exploit: 168, scripted:scripted: 8, sweep(scripted:scripted): 2)
+- Experiments failed / rejected / killed / not started: 1 / 0 / 0 / 0
+- Unique hypotheses: 179 (replicated: 0); duplicate configurations skipped: 0
+- CPU hours: 0.0173
+- LLM (worker): 9 calls, 7325 in / 2725 out / 0 cached tokens, $0.0000
+- LLM (planner): 0 calls, 0 in / 0 out / 0 cached tokens, $0.0000
+
+## BASELINE PERFORMANCE
+EXP_0003: OLS on baseline features (control mean, mean response, target indicator). pearson_delta = 0.5014
+
+## BEST PERFORMANCE
+EXP_0058: pearson_delta = 0.5401 (ridge, alpha=41310.0)
+
+## IMPROVEMENT
+0.0388 over the best baseline
+
+## BEST MODEL / FEATURES INCLUDED
+- mean_response: coefficient +0.0335
+- response_components_e14[0]: coefficient +0.0165
+- target_level_e11: coefficient -0.0056
+- response_components_e14[1]: coefficient +0.0033
+- response_components_e14[2]: coefficient +0.0030
+- is_target: coefficient -0.0018
+- response_components_e14[3]: coefficient +0.0008
+- shared_module_e9: coefficient +0.0008
+
+## DISCOVERY LINEAGE
+EXP_0003 [baseline] score 0.5014
+    ↳ EXP_0014 [response_components_e14] score 0.5305
+        ↳ EXP_0018 [config] score 0.5380
+            ↳ EXP_0025 [config] score 0.5386
+                ↳ EXP_0026 [config] score 0.5386
+                    ↳ EXP_0030 [config] score 0.5387
+                        ↳ EXP_0034 [config] score 0.5389
+                            ↳ EXP_0038 [config] score 0.5392
+                                ↳ EXP_0042 [config] score 0.5397
+                                    ↳ EXP_0046 [config] score 0.5398
+                                        ↳ EXP_0058 [config] score 0.5401
+
+## MOST USEFUL FEATURES
+- response_components_e14 (EXP_0014): +0.0292. Low-rank response components of the training perturbations (leave-one-out SVD of their centred delta profiles); p's weight on each component is predicted by kernel ridge from its target's annotations (gene-set memberships, protein interactions, TF-network partners). One column per component.
+- target_level_e11 (EXP_0011): +0.0070. Control mean expression of g if g is the perturbed target, else 0.
+- control_variance_e13 (EXP_0013): +0.0000. Control-cell standard deviation of gene g.
+
+## FEATURES THAT DID NOT HELP
+- coexpr_target_e7: -0.0061
+- shared_module_e9: -0.0001
+- similar_pert_knn_e10: -0.0181
+- pca_alignment_e12: -0.0144
+
+## FAILED FEATURES
+- EXP_0008 prior_network_edge_e8 [test]: feature failed after 2 attempts: feature is constant across all rows (no information)
+
+## SURPRISING RESULTS
+- similar_pert_knn_e10 made the model worse (-0.0181) despite a linear model being able to ignore it (overfitting or scale issue)
+- pca_alignment_e12 made the model worse (-0.0144) despite a linear model being able to ignore it (overfitting or scale issue)
+
+## ENSEMBLE FINALIST
+- none kept (the average of the finalists did not beat the best single model, or ensembles are off)
+
+## GENERALIZATION TO QUERY-ONLY VALIDATION
+| experiment | kind | visible | query-only | gap |
+|---|---|---|---|---|
+| EXP_0058 | config | 0.5401 | 0.5946 | -0.0544 |
+| EXP_0046 | config | 0.5398 | 0.5944 | -0.0545 |
+| EXP_0066 | config | 0.5396 | 0.5941 | -0.0545 |
+| EXP_0003 | baseline | 0.5014 | 0.5196 | -0.0182 |
+
+## CELLFORGE METRICS (visible / query-only)
+Mean expression per perturbation, all genes and top-20 DE genes (CellForge, Table 1).
+
+| experiment | mse | pcc | r2 | mse_de | pcc_de | r2_de |
+|---|---|---|---|---|---|---|
+| EXP_0058 | 0.005 / 0.007 | 0.988 / 0.986 | 0.976 / 0.969 | 0.102 / 0.142 | 0.957 / 0.943 | 0.852 / 0.756 |
+| EXP_0046 | 0.005 / 0.007 | 0.988 / 0.986 | 0.976 / 0.969 | 0.103 / 0.142 | 0.957 / 0.943 | 0.852 / 0.755 |
+| EXP_0066 | 0.005 / 0.006 | 0.989 / 0.986 | 0.976 / 0.970 | 0.095 / 0.133 | 0.961 / 0.947 | 0.863 / 0.771 |
+| EXP_0003 | 0.006 / 0.007 | 0.987 / 0.985 | 0.973 / 0.966 | 0.127 / 0.154 | 0.944 / 0.932 | 0.821 / 0.734 |
+
+## VCWORLD METRICS (visible / query-only)
+DE: Wilcoxon BH p<=0.05 and |log2FC|>=0.25 over (perturbation, gene) pairs; DIR: up/down on true DE genes; a prediction's log2FC decides both (VCWorld).
+
+| experiment | de_f1 | de_auroc | de_auprc | dir_accuracy | dir_f1 | dir_auroc |
+|---|---|---|---|---|---|---|
+| EXP_0058 | 0.253 / 0.199 | 0.664 / 0.722 | 0.372 / 0.428 | 0.893 / 0.934 | 0.811 / 0.848 | 0.948 / 0.957 |
+| EXP_0046 | 0.254 / 0.199 | 0.664 / 0.722 | 0.372 / 0.428 | 0.895 / 0.933 | 0.814 / 0.846 | 0.947 / 0.957 |
+| EXP_0066 | 0.294 / 0.253 | 0.666 / 0.727 | 0.377 / 0.435 | 0.897 / 0.934 | 0.822 / 0.851 | 0.949 / 0.958 |
+| EXP_0003 | 0.138 / 0.111 | 0.659 / 0.666 | 0.314 / 0.284 | 0.890 / 0.929 | 0.814 / 0.844 | 0.934 / 0.957 |
+
+## CELL-EVAL (visible / query-only)
+Predicted means repeated per cell, anchored on held-out control cells; full metrics in summary.json and runs/<run>/celleval/.
+
+| experiment | pearson_delta | mse | discrimination_score_l1 | overlap_at_N | de_direction_match |
+|---|---|---|---|---|---|
+| EXP_0058 | 0.539 / 0.527 | 0.006 / 0.008 | 0.637 / 0.567 | 0.372 / 0.321 | 0.860 / 0.912 |
+| EXP_0046 | 0.539 / 0.527 | 0.006 / 0.008 | 0.637 / 0.569 | 0.372 / 0.321 | 0.861 / 0.911 |
+| EXP_0066 | 0.539 / 0.526 | 0.006 / 0.007 | 0.633 / 0.580 | 0.379 / 0.335 | 0.866 / 0.916 |
+| EXP_0003 | 0.504 / 0.477 | 0.007 / 0.008 | 0.536 / 0.526 | 0.361 / 0.280 | 0.863 / 0.903 |
+
+## COMPUTE EFFICIENCY
+- Experiments/hour: 3044.1
+- Mean CPU s/experiment: 0.35
+- Gain per CPU-hour: 2.2380
+- Gain per USD: n/a
+- LLM cost per completed experiment: $0.00000
+
+## REPRODUCTION COMMAND
+`python reproduce.py --run /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3 --experiment EXP_0058`
+
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:324: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-10839-fd3uq_w7'}
+  warnings.warn(

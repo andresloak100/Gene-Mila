@@ -1,0 +1,3 @@
+proxy: {"ok": true, "run_id": "h_probe_codex", "role": "baseline:h_probe_codex", "calls": 0, "session_cost_usd": 0.0, "session_cap_usd": 0.05, "ledger_total_usd": 61.562649, "block_cap_usd": 76.56, "halted": null, "upstream": "https://api.deepseek.com:443"}
+served model: deepseek-v4-pro
+codex session ended_by=solution exit=0; see /work/out/codex_probe

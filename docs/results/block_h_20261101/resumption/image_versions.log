@@ -1,0 +1,1 @@
+{"biomni": "0.0.8", "numpy": "2.5.3", "scipy": "1.18.1", "scikit-learn": "1.9.1", "openai": "2.54.0", "langchain": "0.3.30", "langchain-core": "0.3.86", "langchain-openai": "0.3.35", "langgraph": "0.3.18", "pandas": "3.1.0", "tqdm": "4.70.1", "matplotlib": "3.11.2"}
