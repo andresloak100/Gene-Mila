@@ -10,7 +10,7 @@ name=h_a4_r$S
 h_checks; pkg_checks
 BIOMNI_RATE=$(miss_rate deepseek-v4-pro) || exit 1
 session_dirs "$name"
-echo "- $(utc) $name started (package copy $W, DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE)" >> "$L/progress.md"
+echo "- $(utc) $name started (package copy $W, DeepSeek ledger \$$spent, block H cap \$$CAP from a start of \$$START at $CAPDATE, isolation $MODE$([ "$MODE" = docker ] && echo ", image $H_IMAGE"))" >> "$L/progress.md"
 proxy_up "$name" 2.50
 agent_run "$name" "$TOOLS_PY" "$TOOLS/run_biomni.py" --package "$PKG_IN" --proxy "$PROXY_URL" --model deepseek-v4-pro \
   --minutes 20 --seed "$S" --out "$OUT_IN" --miss-usd-per-mtok "$BIOMNI_RATE"

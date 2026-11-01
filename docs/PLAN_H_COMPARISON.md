@@ -466,3 +466,16 @@ check then refused. The chain was also removing the driver's own halt signal, ag
 scripts: block H's halt signal is now `$H/STOP`, `h_checks` reads only that, and the chain never touches `$L/STOP`.
 Nothing scientific changes; seeds 0 and 2 stand. The chain resumes the same way, skipping the sessions whose `.passed`
 markers exist (the probe, A4 r0 and r2), after `pgrep -fl block_h_chain` shows no stale chain or wrapper.
+
+## Note, 2026-11-01 (13:12 UTC stop): the image is used by its immutable ID
+
+The resumed chain stopped again at the image check, and the diagnostic of the earlier note answered the question: same
+context (`desktop-linux`), no `DOCKER_HOST` or `DOCKER_CONTEXT`, `genemila-h:latest` in the listing, and still
+`docker image inspect genemila-h` fails by name (#51, comment 6558432512). On the first occurrence (comment
+6551896514) the ID `sha256:b15af00e...` resolved and re-tagging it restored the name for a while. Docker Desktop's
+name resolution is what fails, intermittently; the ID never did. So the scripts no longer use the name: `h_checks`
+reads the image ID from `$H/image_id.txt` (written once by `check_tools.sh` from the listing of the validated build),
+or from the listing when the file is absent, requires `docker image inspect <ID>` to succeed, and `agent_run` starts
+every container by that ID. Each session's `started` line in `progress.md` records the ID, so the paper cites the exact
+image. Operator steps: pull, copy the scripts, run `check_tools.sh` once (it writes `$H/image_id.txt`; confirm it
+holds `b15af00e...`, the validated build), then restart the chain. Nothing scientific changes.
