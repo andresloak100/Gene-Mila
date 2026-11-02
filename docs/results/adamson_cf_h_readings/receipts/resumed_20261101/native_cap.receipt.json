@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-01T01:43:01.118729+00:00",
+  "native_cap_line": "76.56 61.562649 2026-11-01T01:43Z",
+  "exit": 0,
+  "wall_seconds": 0.06897687539458275,
+  "ledger_before": [
+    61.562649371999996,
+    23865
+  ],
+  "ledger_after": [
+    61.562649371999996,
+    23865
+  ],
+  "authorized_ceiling": 76.562649372,
+  "actual_cap": "76.56",
+  "once_only": true,
+  "image_id": "sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09",
+  "all_C0_complete": true,
+  "no_paid_call_yet": true
+}

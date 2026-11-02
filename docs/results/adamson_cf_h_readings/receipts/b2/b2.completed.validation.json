@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-02T00:29:57.529371+00:00",
+  "checks": {
+    "exit0": true,
+    "manifest_pin": true,
+    "source_pins": true,
+    "candidate_pins": true,
+    "19_system_rows": true,
+    "all_systems_ok": true,
+    "exact_sources": true,
+    "oof_fixed_settings": true,
+    "empty_biomni_parent": true
+  },
+  "all_pass": true,
+  "invocation_number": 1,
+  "runtime": {
+    "ended_utc": "2026-11-02T00:24:35.768525+00:00",
+    "exit_code": 0,
+    "wall_s": 9307.638055542018,
+    "aggregate_child_cpu_s": 9428.356534
+  },
+  "files": {
+    "docs/results/adamson_cf_h_compare/feature_compare.json": "e4000cb54f3ae7f3dcb56f4c075c81a472e33599e80ad49e540103fcf793d01e",
+    "docs/results/adamson_cf_h_compare/feature_compare.md": "92e6ec79b43fb5ac32ce9e9727c4d5935239fbec609a667853048aa3707eac42"
+  },
+  "row_counts": {
+    "('add_one', 'ok')": 154,
+    "('set', 'ok')": 19,
+    "('add_one', 'smoke')": 3,
+    "('add_one', 'duplicate')": 1
+  },
+  "system_rows": 19,
+  "candidate_files": 1720,
+  "no_rerun": true
+}

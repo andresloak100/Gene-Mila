@@ -1,0 +1,64 @@
+{
+  "utc": "2026-11-01T01:24:00.560701+00:00",
+  "integration_head": "ae9c2b009e05e2a6ea7472cf6ca9d27b3b46c392",
+  "lead_comment": 6551319171,
+  "direct_user_resume": true,
+  "scripts_copied_byte_identical": [
+    {
+      "name": "Dockerfile",
+      "old_sha256": "c23dde025bd0028c99320aa3cc516501a48e87efe9d5eec505a3dc58b1e23926",
+      "new_sha256": "6c66d25dfbf4363a046f8fc9acc0d339eb8fc91e5ea95be3a8a6d2ba529483e5"
+    },
+    {
+      "name": "block_h_a2.sh",
+      "old_sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701",
+      "new_sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701"
+    },
+    {
+      "name": "block_h_a3.sh",
+      "old_sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64",
+      "new_sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64"
+    },
+    {
+      "name": "block_h_a4.sh",
+      "old_sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e",
+      "new_sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e"
+    },
+    {
+      "name": "block_h_cap.sh",
+      "old_sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae",
+      "new_sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "name": "block_h_chain.sh",
+      "old_sha256": "28eb46f06581ddaba94341ecd3a16829143a0defe68ce3f26ed35c2834b76094",
+      "new_sha256": "28eb46f06581ddaba94341ecd3a16829143a0defe68ce3f26ed35c2834b76094"
+    },
+    {
+      "name": "block_h_common.sh",
+      "old_sha256": "5522ec8e4013d89e280f3ace7e338b0676b14fa349b85dc7926afe83ee0e100b",
+      "new_sha256": "5fb1fe2d098d5075fbfd520879fc2fec923e82e98536841cf9e17474b286299b"
+    },
+    {
+      "name": "block_h_probe.sh",
+      "old_sha256": "f2c7529b1aa7d667de7f93a3203c3fe796c26e275b038dc991cf8f48d4ba9e4a",
+      "new_sha256": "4862676328d0e41ed508731042b33911bd653ea7b8c197b633784c919419c14c"
+    },
+    {
+      "name": "block_h_reset_probe.sh",
+      "old_sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922",
+      "new_sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922"
+    },
+    {
+      "name": "check_tools.sh",
+      "old_sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74",
+      "new_sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74"
+    }
+  ],
+  "old_failures_preserved": true,
+  "cumulative_ceiling": 76.562649372,
+  "existing_funds_only": true,
+  "isolation": "docker",
+  "tier": "harness",
+  "cap_absent": true
+}

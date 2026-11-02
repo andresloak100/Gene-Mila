@@ -1,0 +1,45 @@
+{
+  "utc": "2026-11-01T13:13:37.703094+00:00",
+  "lead_comment": 6558177059,
+  "execution_source": "d7c1c1fc03dac33cf3dcff58680d2d3d44c461da",
+  "restart_started_utc": "2026-11-01T13:12:19Z",
+  "restart_ended_utc": "2026-11-01T13:12:20Z",
+  "native_chain_exit": 3,
+  "skipped_passed": [
+    "h_probe",
+    "h_a4_r0",
+    "h_a4_r2"
+  ],
+  "refused_session": "h_a4_r3",
+  "new_session_created": false,
+  "driver_STOP_unchanged": true,
+  "driver_STOP_before": {
+    "size": 0,
+    "mtime_ns": 1793504580292134000,
+    "inode": 266447167
+  },
+  "driver_STOP_after": {
+    "size": 0,
+    "mtime_ns": 1793504580292134000,
+    "inode": 266447167
+  },
+  "H_STOP_absent": true,
+  "ledger_before": [
+    63.05822222,
+    24026
+  ],
+  "ledger_after": [
+    63.05822222,
+    24026
+  ],
+  "no_new_paid_calls": true,
+  "native_cap_unchanged": "76.56 61.562649 2026-11-01T01:43Z",
+  "global_authority": 95,
+  "native_log": "2026-11-01T13:12:19Z block H started\n2026-11-01T13:12:19Z probe passed before; skipped\n2026-11-01T13:12:19Z h_a4_r0 passed before; skipped\n2026-11-01T13:12:19Z h_a4_r2 passed before; skipped\nNOT STARTED: no image genemila-h in Docker context 'desktop-linux' (DOCKER_HOST='', DOCKER_CONTEXT=''); images here: genemila-h:latest alpine/socat:latest loak-research/fpocket:4.2.3-amd64 loak-research/p2rank:2.5.1-amd64 loak/fpocket:4.2.3-research-amd64 python:3.12.13-slim debian:<none> ubuntu:24.04 alpine:3.22 r8.im/cruelsummerca-max/cheese:latest busybox:1.37 python:3.12.13 ; build it from this shell (check_tools.sh) or run the chain from the shell that built it\n2026-11-01T13:12:20Z block H stopped at h_a4_r3\n",
+  "image_context_reported": "desktop-linux",
+  "DOCKER_HOST_reported": "",
+  "DOCKER_CONTEXT_reported": "",
+  "image_listing_contains": "genemila-h:latest",
+  "image_refusal_cause_not_established": true,
+  "no_retry_rebuild_retag_or_workaround": true
+}

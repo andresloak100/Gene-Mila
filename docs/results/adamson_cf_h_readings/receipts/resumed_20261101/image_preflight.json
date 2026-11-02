@@ -1,0 +1,63 @@
+{
+  "utc": "2026-11-01T01:25:21.467230+00:00",
+  "image_id": "sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09",
+  "created": "2026-11-01T01:24:33.696434666Z",
+  "architecture": "arm64",
+  "os": "linux",
+  "checks": [
+    {
+      "name": "imports",
+      "exit": 0,
+      "stdout": "imports PASS\n",
+      "stderr": "/usr/local/lib/python3.12/site-packages/langgraph/checkpoint/base/__init__.py:18: LangChainPendingDeprecationWarning: The default value of `allowed_objects` will change in a future version. Pass an explicit value (e.g., allowed_objects='messages' or allowed_objects='core') to suppress this warning.\n  from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer\n"
+    },
+    {
+      "name": "pipcheck",
+      "exit": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": ""
+    },
+    {
+      "name": "offline_A1",
+      "exit": 0,
+      "stdout": "{\"A1_constructed_offline\": true, \"system_prompt_chars\": 156018, \"model_called\": false, \"constructor_output_chars_not_shown\": 670}\n",
+      "stderr": "/usr/local/lib/python3.12/site-packages/langgraph/checkpoint/base/__init__.py:18: LangChainPendingDeprecationWarning: The default value of `allowed_objects` will change in a future version. Pass an explicit value (e.g., allowed_objects='messages' or allowed_objects='core') to suppress this warning.\n  from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer\n"
+    },
+    {
+      "name": "versions",
+      "exit": 0,
+      "stdout": "{\"biomni\": \"0.0.8\", \"numpy\": \"2.5.3\", \"scipy\": \"1.18.1\", \"scikit-learn\": \"1.9.1\", \"openai\": \"2.54.0\", \"langchain\": \"0.3.30\", \"langchain-core\": \"0.3.86\", \"langchain-openai\": \"0.3.35\", \"langgraph\": \"0.3.18\", \"pandas\": \"3.1.0\", \"tqdm\": \"4.70.1\", \"matplotlib\": \"3.11.2\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "codex_version",
+      "exit": 0,
+      "stdout": "codex-cli 0.166.0\n",
+      "stderr": ""
+    },
+    {
+      "name": "claude_version",
+      "exit": 0,
+      "stdout": "2.1.316 (Claude Code)\n",
+      "stderr": ""
+    },
+    {
+      "name": "runner_hashes",
+      "exit": 0,
+      "stdout": "124ad639d7af0bdf7b6afece493ae30ca97faf079bf487d7c3089dce3b500bf5  /lab/tools/baselines/ledger_proxy.py\na59ade89a66e723147649d3c6b1ced4f289165cce6deb75ee9e5addcc568be1d  /lab/tools/baselines/run_biomni.py\n2ae82a38be8d04bec789cce63cb31498b7a5e74a01603881ec6e167f00719812  /lab/tools/baselines/run_autoresearch.sh\n28a5c6394fc00ca6368f6607614c30400c4ff750c1ea996e11813a74e3f33870  /lab/tools/baselines/run_codex.sh\ndb249b99f8a1a1dffa1aa2cb55087a41edb02841d217e3c69ff4d069773c5505  /lab/tools/baselines/collect_handback.py\n",
+      "stderr": ""
+    }
+  ],
+  "host_baked_runner_hashes_match": true,
+  "runner_hashes": {
+    "ledger_proxy.py": "124ad639d7af0bdf7b6afece493ae30ca97faf079bf487d7c3089dce3b500bf5",
+    "run_biomni.py": "a59ade89a66e723147649d3c6b1ced4f289165cce6deb75ee9e5addcc568be1d",
+    "run_autoresearch.sh": "2ae82a38be8d04bec789cce63cb31498b7a5e74a01603881ec6e167f00719812",
+    "run_codex.sh": "28a5c6394fc00ca6368f6607614c30400c4ff750c1ea996e11813a74e3f33870",
+    "collect_handback.py": "db249b99f8a1a1dffa1aa2cb55087a41edb02841d217e3c69ff4d069773c5505"
+  },
+  "paid_calls": 0,
+  "network": "none",
+  "provider_credentials": "dummy only",
+  "all_pass": true
+}

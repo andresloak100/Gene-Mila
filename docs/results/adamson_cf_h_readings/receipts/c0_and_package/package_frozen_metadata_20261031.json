@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-31T23:47:14.559378+00:00",
+  "package": "/Users/andresarriaga/gm_packages/adamson_cf_clean_tables",
+  "manifest_sha256": "cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e",
+  "program_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+  "package_file_count": 29,
+  "harness_n": 17,
+  "manifest_matches_export": true,
+  "harness_hash_matches": true,
+  "frozen_head": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+  "frozen_status": "",
+  "C0_existing_outputs": {
+    "0": false,
+    "2": false,
+    "3": false
+  },
+  "raw_expression_or_label_values_inspected": false
+}

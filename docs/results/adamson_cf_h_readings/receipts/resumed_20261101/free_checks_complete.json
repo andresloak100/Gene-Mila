@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-01T01:27:19.379364+00:00",
+  "all_free_checks_pass": true,
+  "script_tests": 6,
+  "new_image_build_exit": 0,
+  "image_import_pipcheck_offline_A1_versions_runnerhashes_pass": true,
+  "isolation_egress_blocked_relay_reachable": true,
+  "package_27_pinned_hashes_match": true,
+  "ledger": 61.562649371999996,
+  "ledger_rows": 23865,
+  "cumulative_ceiling": 76.562649372,
+  "cap_file_absent": true,
+  "C0_started": false,
+  "no_more_screen_use": true,
+  "console_evidence": "user screenshot topped-up28.19 plus existing Usage page observed28.19; no further UI interactions after user objection",
+  "no_topups": true
+}

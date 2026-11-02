@@ -1,0 +1,30 @@
+{
+  "checks": {
+    "scope_results_index_receipts_only": true,
+    "no_deletes": true,
+    "all_regular_files": true,
+    "no_forbidden_extensions": true,
+    "all_staged_bytes_equal_disk": true,
+    "all_secret_scans_pass": true,
+    "raw_receipt_bytes_unchanged": true,
+    "artifact_manifest_complete": true,
+    "artifact_manifest_hashes": true,
+    "index_hash_and_links": true,
+    "raw_B2_unchanged": true,
+    "frozen_hash_post_matches": true,
+    "frozen_entry_hashes": true,
+    "frozen_source_hashes": true,
+    "19_fixed_systems_in_freeze": true,
+    "A5_n1": true,
+    "search_aggregation_correct": true,
+    "single_feature_limit": true,
+    "authored_markdown_whitespace": true,
+    "strict_JSON_parse": true,
+    "ledger_unchanged": true
+  },
+  "all_pass": true,
+  "staged_file_count": 127,
+  "frozen_sha256": "8d34860a4e5e0af418034e84a5b6c0716f0aa98a815442079bf33f891673f913",
+  "scope": "results/index/receipts only; no scientific source or executable code changes",
+  "no_scientific_rerun": true
+}

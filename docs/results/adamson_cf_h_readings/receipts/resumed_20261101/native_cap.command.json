@@ -1,0 +1,12 @@
+{
+  "command": [
+    "bash",
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/block_h_cap.sh"
+  ],
+  "ledger_before": [
+    61.562649371999996,
+    23865
+  ],
+  "ceiling": 76.562649372,
+  "credentials": "unset"
+}

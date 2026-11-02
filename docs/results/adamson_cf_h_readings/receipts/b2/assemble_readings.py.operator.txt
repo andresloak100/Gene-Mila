@@ -1,0 +1,133 @@
+"""Free reporting only: existing JSON/TSV/proxy metadata and static source, no fitting or scoring."""
+from pathlib import Path
+import ast, collections, csv, datetime, hashlib, importlib.util, json, shutil, statistics, sys
+sys.dont_write_bytecode = True
+P = Path('/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5')
+C = P / 'gene-mila-block-h'
+O = P / 'block_h_ops/b2_readings_20261101'
+H = Path('/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h')
+OUT = C / 'docs/results/adamson_cf_h_readings'
+OUT.mkdir(exist_ok=True)
+sys.path[:0] = [str(C), str(C/'tools')]
+import arm_reading
+import feature_compare
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p, x): Path(p).write_text(json.dumps(x, indent=2, allow_nan=False)+'\n')
+def spread(v): return {'n':len(v),'mean':statistics.mean(v),'sd':statistics.stdev(v) if len(v)>1 else None,'values':v}
+R = json.loads((C/'docs/results/adamson_cf_h_compare/feature_compare.json').read_text())
+M = json.loads((O/'candidate_manifest.json').read_text())
+sources = {s['name']:s for s in M['sources']}
+sets = {x['source']:x for x in R['rows'] if x['kind']=='set'}
+metrics = ['pearson_delta','pearson_delta_nontarget','mse','mse_top','r2_top','pearson_delta_top','direction_acc_top','delta_scale_ratio']
+ARMS = ['A1','A1abl','A2','A3','A4','A5','C0']
+all_files = {f['path']:f for s in M['sources'] for f in s['files'] if f['path'].endswith('.py')}
+static = {}
+classes = {}
+for path, f in all_files.items():
+    tree = ast.parse(Path(path).read_text())
+    knowledge = sorted({n.args[0].value for n in ast.walk(tree) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='knowledge' and n.args and isinstance(n.args[0],ast.Constant) and isinstance(n.args[0].value,str)})
+    attrs = sorted({n.attr for n in ast.walk(tree) if isinstance(n,ast.Attribute)})
+    values = {}
+    for cls in [n for n in tree.body if isinstance(n,ast.ClassDef)]:
+        vals = {}
+        for n in cls.body:
+            if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name):
+                try: vals[n.targets[0].id]=ast.literal_eval(n.value)
+                except (ValueError,TypeError): pass
+        if isinstance(vals.get('name'),str):
+            values[vals['name']] = {k:vals[k] for k in ['name','params','inputs','dim','description'] if k in vals}
+            classes[(str(Path(path).parent),vals['name'])] = path
+    static[path]={'sha256':f['sha256'],'knowledge_calls':knowledge,'context_attributes':attrs,'classes':values}
+lab_selected = {}
+sessions = {}
+for name,s in sources.items():
+    if s['kind']=='source-run':
+        d=Path(s['argument_dir']); su=json.loads((d/'summary.json').read_text())
+        selected=feature_compare.read_selected(d)  # read-only archived selection metadata, no scoring
+        assert selected['features']==sets[name]['model']
+        lab_selected[name]=selected
+        keys=['duration_s','workers','base_commit','split_id','duration_note','experiments_proposed','experiments_completed','experiments_failed','experiments_rejected','experiments_killed','experiments_cancelled','duplicate_experiments','completed_by_proposer','llm_usage','planner']
+        sessions[name]={'run':str(d),'summary_sha256':sha(d/'summary.json'),'metadata':{k:su.get(k) for k in keys},'evaluate_py_attempts':None,'attempt_definition':'lab experiment counts, not package evaluate.py invocations','selected':selected}
+    elif name.startswith(('A3_','A4_')):
+        arm, seed=name.split('_r'); n=f'h_{arm.lower()}_r{seed}'
+        manifest_path=H/'handback'/n/'manifest.json'; hb=json.loads(manifest_path.read_text()); sess=next(iter(hb['sessions'].values()))
+        records=[json.loads(t) for t in (H/'proxy'/f'{n}.jsonl').read_text().splitlines() if t]
+        calls=[x for x in records if x.get('status')==200 and 'model_served' in x]
+        tsv=H/'out'/n/'results.tsv'; results=list(csv.DictReader(tsv.open(),delimiter='\t'))
+        statuses=collections.Counter(x['status'] for x in results)
+        attempts=sum(v for k,v in statuses.items() if k!='baseline')
+        rejected=[]
+        for feature,info in sess.get('files',{}).items():
+            if not info.get('ok'): rejected.append({'feature':feature,'guard':info.get('guard'),'literal':info.get('literal'),'sha256':info.get('sha256')})
+        scan=H/f'{n}.val1scan.txt'; paths=scan.read_text().splitlines()
+        kept=[x for x in all_files if str(Path(x).parent)==s['candidate_dir']]
+        sessions[name]={'run':sess['run'],'handback_manifest':str(manifest_path),'handback_sha256':sha(manifest_path),'proxy_sha256':sha(H/'proxy'/f'{n}.jsonl'),'calls':len(calls),'tokens':{k:sum(int(x.get(k,0)) for x in calls) for k in ['input_tokens','cached_tokens','output_tokens']},'cost_usd':sum(float(x['cost_usd']) for x in calls),'served_models':sorted({x['model_served'] for x in calls}),'http_statuses_forwarded':dict(collections.Counter(str(x['status']) for x in records if x.get('status') not in [0,None])),'evaluate_py_attempts':attempts,'results_tsv_rows':len(results),'results_tsv_sha256':sha(tsv),'status_counts':dict(statuses),'accepted_kept_files':sum(bool(v.get('ok')) for v in sess.get('files',{}).values()),'handback_rejected_files':rejected,'transcript_flags':sess.get('transcript_flags',[]),'harness_names_scan_files':len(paths),'harness_names_scan_sha256':sha(scan),'knowledge_files_named_in_kept_source':sorted({k for f in kept for k in static[f]['knowledge_calls']}),'kept_source_static':[{'path':f,**static[f]} for f in kept]}
+    else:
+        sessions[name]={'deterministic_translation':True,'search_repeats':1,'evaluate_py_attempts':None,'usage_not_applicable':'pre-existing translated ideas, not the external paid CellForge C2 attempt'}
+arms={}
+for arm in ARMS:
+    names=[n for n in sets if n.split('_')[0]==arm]; names.sort()
+    xs=[sets[n] for n in names]
+    paired=[{'source':x['source'],**x['tiers']['oof']['delta']['pearson_delta']} for x in xs]
+    meaningful=[x for x in R['rows'] if x['source'] in names and x['kind']=='add_one' and x.get('meaningful')]
+    usage=[]
+    for n in names:
+        s=sessions[n]
+        if 'metadata' in s:
+            u=s['metadata']['llm_usage']['all'];usage.append({'source':n,'wall_minutes':s['metadata']['duration_s']/60,**u,'model_provenance':'configured planner from summary; served-model details not asserted from configured names'})
+        elif 'calls' in s:usage.append({'source':n,'wall_minutes':s['run']['wall_s']/60,'calls':s['calls'],**s['tokens'],'cost_usd':s['cost_usd'],'served_models':s['served_models']})
+    rule=None
+    if len(xs)==3:
+        rule=arm_reading.arm_rule([x['mean_diff'] for x in paired],[x['se_adj'] for x in paired],[(x['wins_a'],x['wins_b'],x['n']) for x in paired],50)
+        rule['interpretation']='descriptive OOF only; not evidence of a better arm on the fresh test'
+    attempts=[sessions[n]['evaluate_py_attempts'] for n in names if sessions[n]['evaluate_py_attempts'] is not None]
+    arms[arm]={'sources':names,'search_n':len(xs),'metrics':{k:spread([x['tiers']['oof']['metrics'][k] for x in xs]) for k in metrics},'paired_M1_by_search':paired,'delta_M1':spread([x['mean_diff'] for x in paired]),'features_by_search':{x['source']:len(x['features']) for x in xs},'meaningful_single_features':len(meaningful),'system_development_verdicts':{x['source']:x['verdict'] for x in xs},'descriptive_arm_rule':rule,'session_usage':usage,'median_evaluate_py_attempts':statistics.median(attempts) if attempts else None,'attempt_denominator':len(attempts)}
+write(OUT/'readings.json',{'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'b2_json_sha256':sha(C/'docs/results/adamson_cf_h_compare/feature_compare.json'),'tier':'oof','aggregation':'sample SD ddof=1 across search seeds 0,2,3; A5 n1; no independent-fold pseudo-replicates','arms':arms,'sessions':sessions,'parent':R['parent'],'settings':R['settings'],'split_id':R['split_id'],'data':R['data'],'rejected_rows':[{'source':x['source'],'feature':x['feature'],'status':x['status'],'reason':x.get('reason')} for x in R['rows'] if x['status']!='ok']})
+entries=[]
+def entry(kind,arm,name,features,params,extra):
+    files=[]
+    src=sources.get(name)
+    if src:
+        for f in features:
+            path=classes.get((src['candidate_dir'],f))
+            if path:files.append({'feature':f,'path':path,**static[path]})
+    x={'kind':kind,'arm':arm,'source':name,'features':features,'params':params,'files':files,**extra};x['entry_sha256']=hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest();entries.append(x)
+for arm in ARMS:
+    for name in arms[arm]['sources']:
+        x=sets[name]; sel=lab_selected.get(name)
+        features=x.get('model') or R['parent']['features']+x['features']
+        entry('system',arm,name,features,sel['params'] if sel else {},{'recorded_lab_selection':sel,'empty':x.get('empty',False),'development_verdict':x['verdict']})
+    candidates=[x for x in R['rows'] if x['source'] in arms[arm]['sources'] and x['kind']=='add_one' and x.get('meaningful')]
+    candidates.sort(key=lambda x:(-x['tiers']['oof']['delta']['pearson_delta']['mean_diff'],x['source'],x['feature']))
+    seen=set(); chosen=[]
+    for x in candidates:
+        identity=x.get('prediction_hash') or x['sha256']
+        if identity in seen: continue
+        seen.add(identity);chosen.append(x)
+        if len(chosen)==3:break
+    for rank,x in enumerate(chosen,1):
+        entry('single_feature',arm,x['source'],R['parent']['features']+[x['feature']],{x['feature']:x.get('params',{})},{'rank':rank,'OOF_gain':x['tiers']['oof']['delta']['pearson_delta']['mean_diff'],'development_verdict':x['verdict'],'prediction_hash':x.get('prediction_hash'),'literal':x.get('literal')})
+entry('parent','A0','builtin',R['parent']['features'],{},{'definition':'matched builtin parent; not a fresh-test result'})
+entry('additive_rule','additive','builtin',['additive_response'],{},{'applicability':'prescribed identity retained for later fresh-test protocol; Adamson single-perturbation bundle provides no pair-additive comparator row in this B2 call','not_scored_by_this_call':True})
+batch={'format':1,'kind':'immutable selection and specification batch; NOT fitted-model export','status':'selection pinned; holder-ready numeric exports and fresh-test deposit pending','code_commit':M['head'],'data':R['data'],'split_id':R['split_id'],'settings':R['settings'],'b2_json_sha256':sha(C/'docs/results/adamson_cf_h_compare/feature_compare.json'),'candidate_manifest_sha256':sha(O/'candidate_manifest.json'),'selection_rule':'all prescribed systems; at most3 meaningful add-one rows per arm ranked by OOF mean M1 gain descending, source/feature lexical tie break; identical prediction hashes collapsed before taking3','entries':entries,'limits':['A5 translated CellForge ideas n1, not external paid C2','OOF fold fits are not archived fitted deployment weights','No fresh-test prediction, holder contact, label reveal, fit, or scoring in these readings','PLAN_R fitted exports remain pending; source-run archived model weights are not asserted identical to B2 fold fits']}
+write(OUT/'frozen_selection.json',batch)
+lines=['# H: fixed readings 2–4, Adamson clean tables','', 'The single B.2 call finished with exit0. All results below are OOF development results. GOAL_CRITERIA B.3 and B.4 remain unmet: no fresh test has been scored. A1 is the lab with clean tables; A1abl omits the three new tables; A2 uses one worker; A3 is the Codex client; A4 is Biomni; A5 is our deterministic translation of CellForge ideas; C0 is scripted/mock.','', '## Reading 2: metrics','', 'Mean ± sample SD across independent search seeds0/2/3; A5 has n1 and no SD. C0 produced identical selected models across its three completed searches. M1–M7/M12 follow FEATURE_COMPARISON_PROTOCOL section5.','', '| Arm | n | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M12 |','|---|---:|---|---|---|---|---|---|---|---|']
+for arm,a in arms.items():
+    vals=[f"{a['metrics'][k]['mean']:.6f}"+(f" ± {a['metrics'][k]['sd']:.6f}" if a['metrics'][k]['sd'] is not None else ' (n1)') for k in metrics]
+    lines.append('| '+arm+' | '+str(a['search_n'])+' | '+' | '.join(vals)+' |')
+lines+=['','| Search | ΔM1 | SE_adj | wins /50 | features | system development verdict |','|---|---:|---:|---:|---:|---|']
+for name,x in sets.items():
+    d=x['tiers']['oof']['delta']['pearson_delta'];lines.append(f"| {name} | {d['mean_diff']:.8f} | {d['se_adj']:.8f} | {d['wins_a']}/50 | {len(x['features'])} | {x['verdict']} |")
+lines+=['','Per-search pairs above retain the actual comparison. `readings.json` applies the unchanged pure `arm_rule` to these values descriptively, without treating fold reports as independent searches or claiming an arm wins on a fresh test.','', '| Arm | mean ΔM1 ± search SD | meaningful add-one rows | descriptive rule G / k·SE | median evaluate.py attempts |','|---|---|---:|---|---|']
+for arm,a in arms.items():
+    d=a['delta_M1'];rr=a['descriptive_arm_rule'];rule=f"{rr['G']:.6f} / {rr['k']*rr['SE']:.6f} ({rr['verdict']}; descriptive)" if rr else 'n1; no arm rule';sd=f" ± {d['sd']:.6f}" if d['sd'] is not None else ' (n1)';lines.append(f"| {arm} | {d['mean']:.6f}{sd} | {a['meaningful_single_features']} | {rule} | {a['median_evaluate_py_attempts'] if a['attempt_denominator'] else 'N/A: lab metadata or deterministic source'} |")
+lines+=['','## Reading 2: usage and throughput','', '| Search | wall min | calls | input / cached / output tokens | ledger-price USD | served model / provenance |','|---|---:|---:|---|---:|---|']
+for arm,a in arms.items():
+    for u in a['session_usage']:
+        model=', '.join(u.get('served_models',[])) or u.get('model_provenance','');lines.append(f"| {u['source']} | {u['wall_minutes']:.3f} | {u['calls']} | {u['input_tokens']} / {u['cached_tokens']} / {u['output_tokens']} | {u['cost_usd']:.9f} | {model} |")
+lines+=['','Costs are recorded ledger prices, not a verified provider bill. Cached tokens are included within input tokens. Package attempt counts exclude baseline TSV rows and count completed evaluate.py records; interrupted or scratch evaluations may be absent. Lab arms use experiments_proposed/completed/rejected/failed/killed/cancelled in the full JSON, not an invented evaluate.py count. C0 has no LLM calls. A5 has no H session usage: it is a pre-existing deterministic translation.','', '## Reading 3: frozen selection','', '`frozen_selection.json` pins all19 prescribed system identities, eligible top single features, parent and additive-rule identity, code/data/split/source hashes and settings. A5 remains n1; empty Biomni seed3 remains the parent. Identical single-feature prediction hashes are represented once per arm.','', '**Readiness limitation:** this is an immutable selection/specification batch, not a holder-ready fitted export. The B.2 call saved metrics and fold settings, not deployment weights. `frozen_model.py export` accepts already-fitted archived lab models; those are not asserted to be the exact B.2 fold fits. PLAN_R numeric exports, public-input prediction verification, eligibility/deposit and fresh scoring remain pending. No fitting or scientific rerun was used to conceal that gap. No holder contact or fresh-test call occurred. The additive rule is listed for the prescribed future batch; this Adamson B.2 call has no separately scored pair-additive row.','', '## Reading 4: sources, attempts and audit','', '| Session | completed evaluate.py attempts | TSV statuses | accepted kept / handback rejected | knowledge names in kept source | files naming visible harness |','|---|---:|---|---|---|---:|']
+for name,s in sessions.items():
+    if 'status_counts' in s:lines.append(f"| {name} | {s['evaluate_py_attempts']} | {s['status_counts']} | {s['accepted_kept_files']} / {len(s['handback_rejected_files'])} | {', '.join(s['knowledge_files_named_in_kept_source']) or 'none'} | {s['harness_names_scan_files']} |")
+lines+=['','All seven foreign kept files were read by the operator along with their original handback guard/literal reports. They compute control-expression or leave-one-perturbation-out response-transfer features using gene sets/PPI; no pasted response arrays, file/network access or direct harness-label reads occur in those kept files. This is a source inspection, not a claim about everything the authoring agent did. Handback rejection count is distinct from evaluate.py rejection/one-change decisions. Lab selected model source identities and static knowledge calls are pinned in the frozen selection; lab experiment rejection categories remain as recorded in summary metadata.','', 'The harness scan counts **files naming** `val1.npz` or `harness/val1`, excluding the package MANIFEST/program. Copies of one event can occur in multiple files; counts are not read-event counts, evidence of actual label reads, or proof no label was read. Visible harness access by the foreign authoring agent was allowed and disclosed; all frozen selection uses OOF only. Codex seed3’s literal `requests` transcript flag arose in a printed harness spec; the flag alone proves neither network access nor a failure. Original transcript hashes and flags are retained; raw transcripts/matrices are not published.','', 'The three smoke rows and one duplicate row are left unchanged in B.2 JSON and listed in readings.json. No feature was repaired or dropped to improve this report.','', '## Reproduction and limits','', 'Use the exact one-call command and candidate manifest in receipts; the B.2 JSON is the full precision authority. Reporting only reads existing outputs, archived selection metadata and static source, and uses the pure arm_rule function. No evaluator, guard, split, source feature or dataset was changed. Main checkout, driver STOP and prior failure evidence remain untouched.','', 'B.2’s equal-scoring procedure is complete for these prescribed sources. Budget/timing/client versions and prior probe/image/STOP changes are disclosed in operational receipts. CellForge’s closed external attempt is distinct and not comparable to this translated A5 source. No claim of fresh-test superiority, biology discovery or publication-goal completion is supported by this development table.']
+(OUT/'report.md').write_text('\n'.join(lines)+'\n')
+print(json.dumps({'report':str(OUT),'arms':{a:{'M1':x['metrics']['pearson_delta'],'meaningful':x['meaningful_single_features']} for a,x in arms.items()},'frozen_entries':len(entries),'frozen_sha256':sha(OUT/'frozen_selection.json')},indent=2))

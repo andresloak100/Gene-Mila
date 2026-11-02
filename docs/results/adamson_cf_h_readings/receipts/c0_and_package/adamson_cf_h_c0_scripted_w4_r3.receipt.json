@@ -1,0 +1,20 @@
+{
+  "seed": 3,
+  "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3",
+  "exit": 0,
+  "runtime": {
+    "start_utc": "2026-11-01T01:36:50.450597+00:00",
+    "end_utc": "2026-11-01T01:41:29.472445+00:00",
+    "wall_seconds": 279.01530866743997,
+    "exit": 0,
+    "ledger_after": [
+      61.562649371999996,
+      23865
+    ]
+  },
+  "code": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+  "config_sha256": "3ee7c23b931178e0627efe8c14171e3fcfb646d98707bda7a9f25951616ff3de",
+  "summary_sha256": "1c6d033407e503fd90a9483532edd05122e67215376136ad380d0ac5e9069324",
+  "source_settings_checks_pass": true,
+  "ledger_unchanged": true
+}

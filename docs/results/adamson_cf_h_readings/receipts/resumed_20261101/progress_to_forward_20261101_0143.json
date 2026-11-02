@@ -1,0 +1,8 @@
+{
+  "end_offset": 15558,
+  "lines": [
+    "- 2026-11-01T01:43Z block H cap written: 76.56 61.562649 2026-11-01T01:43Z (cap, DeepSeek ledger at the start, UTC date); isolation docker , tier harness",
+    "- 2026-11-01T01:43Z h_probe started (DeepSeek ledger $61.562649, block H cap $76.56 from a start of $61.562649 at 2026-11-01T01:43Z, isolation docker)",
+    "- 2026-11-01T01:43Z h_probe finished rc=biomni=1,codex=0 DeepSeek ledger $61.575279 (session $.012630): calls 2, agent minutes 0.0, tokens in 17361 cache 8704 out 207, proxy cost $0.0126, served ['deepseek-v4-pro'], other statuses none; files naming harness/val1.npz: 3"
+  ]
+}

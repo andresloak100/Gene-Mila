@@ -1,0 +1,73 @@
+{
+  "utc": "2026-11-01T13:11:40.750539+00:00",
+  "execution_source": "d7c1c1fc03dac33cf3dcff58680d2d3d44c461da",
+  "direct_user_resume": true,
+  "lead_comment": 6558177059,
+  "PR105_adopted": true,
+  "stale_processes": false,
+  "driver_STOP_left_untouched": true,
+  "driver_STOP_before": {
+    "size": 0,
+    "mtime_ns": 1793504580292134000,
+    "inode": 266447167
+  },
+  "H_STOP_absent": true,
+  "scripts_copied_byte_identical": [
+    {
+      "name": "Dockerfile",
+      "sha256": "6c66d25dfbf4363a046f8fc9acc0d339eb8fc91e5ea95be3a8a6d2ba529483e5"
+    },
+    {
+      "name": "block_h_a2.sh",
+      "sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701"
+    },
+    {
+      "name": "block_h_a3.sh",
+      "sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64"
+    },
+    {
+      "name": "block_h_a4.sh",
+      "sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e"
+    },
+    {
+      "name": "block_h_cap.sh",
+      "sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "name": "block_h_chain.sh",
+      "sha256": "c896c8d02b44550563c15145cbac1e7ce9f270fe3dbc4468eeba2b3c42514e52"
+    },
+    {
+      "name": "block_h_common.sh",
+      "sha256": "a24e39a8532cf3df0becd2b3e9bb267565eae56f9911a4c228b4be724b40eb58"
+    },
+    {
+      "name": "block_h_probe.sh",
+      "sha256": "22739216b76ce8a5a810b9111c96a44ae7c6c60c3d778073c1f0b90a68527331"
+    },
+    {
+      "name": "block_h_reset_probe.sh",
+      "sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922"
+    },
+    {
+      "name": "check_tools.sh",
+      "sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74"
+    }
+  ],
+  "passed_session_hashes": {
+    "h_probe": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "h_a4_r0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "h_a4_r2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "no_probe_or_Biomni0_2_C0_repeat": true,
+  "ledger_before": [
+    63.05822222,
+    24026
+  ],
+  "global_authority": 95,
+  "native_cap_unchanged": "76.56 61.562649 2026-11-01T01:43Z",
+  "previous_chain_log_sha256": "68f682dde738066eca373b987d7e9b96a099ae3f7150c0f1f96b1adcb65042a2",
+  "progress_start_offset": 17219,
+  "launch_shell": "own non-login zsh, same as last successful chain",
+  "scientific_source_unchanged_since4e493c3": true
+}

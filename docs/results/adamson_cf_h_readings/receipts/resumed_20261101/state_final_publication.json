@@ -1,0 +1,12 @@
+{
+  "all_pass": true,
+  "scope": "HANDOFF.md section1 only",
+  "secrets": false,
+  "raw_staged_bytes": true,
+  "whitespace": true,
+  "utc": "2026-11-01 01:54 UTC",
+  "draft_pr": 101,
+  "publication_commit": "d7622f4",
+  "H_stopped_heartbeat_paused": true,
+  "DK_metadata_issue41": 6551977413
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "docker",
+    "image",
+    "inspect",
+    "sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09",
+    "--format",
+    "{{.Id}}"
+  ],
+  "start_utc": "2026-11-01T13:56:17.062234+00:00",
+  "end_utc": "2026-11-01T13:56:17.117104+00:00",
+  "wall_seconds": 0.054682624991983175,
+  "exit": 0
+}

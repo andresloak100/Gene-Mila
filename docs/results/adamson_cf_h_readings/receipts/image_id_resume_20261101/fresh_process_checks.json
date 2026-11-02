@@ -1,0 +1,32 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "64df7b",
+      "wall_time_seconds": 9.209e-06,
+      "exit_code": 1,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "0b7a2f",
+      "wall_time_seconds": 6.25e-06,
+      "exit_code": 1,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "2b8dbf",
+      "wall_time_seconds": 4.333e-06,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  }
+]

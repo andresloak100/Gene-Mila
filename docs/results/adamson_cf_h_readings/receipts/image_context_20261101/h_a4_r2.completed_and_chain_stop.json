@@ -1,0 +1,58 @@
+{
+  "utc": "2026-11-01T03:46:49.765376+00:00",
+  "name": "h_a4_r2",
+  "native_passed": true,
+  "parent_native_rc": 0,
+  "normal_deadline_ending": true,
+  "agent_run": {
+    "arm": "biomni",
+    "seed": 2,
+    "model": "deepseek-v4-pro",
+    "minutes": 20.0,
+    "probe": false,
+    "package": "/work/pkg",
+    "out": "/work/out",
+    "proxy": "http://host.docker.internal:8787",
+    "python": "/usr/local/bin/python",
+    "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+    "execute_timeout_s": 630,
+    "session_cap_usd": 2.5,
+    "first_call_miss_usd_per_mtok": 1.32,
+    "rate_source": "flag",
+    "started": 1793503378.0060074,
+    "ended": 1793504578.069258,
+    "wall_s": 1200.0,
+    "exit_code": -15,
+    "ended_by": "timeout"
+  },
+  "proxy_successful_calls": 85,
+  "proxy_cost_usd_decimal_sum": "0.78167266",
+  "check": "calls 85, agent minutes 18.1, tokens in 5395225 cache 5287808 out 102833, proxy cost $0.7817, served ['deepseek-v4-pro'], other statuses none\nfiles naming harness/val1.npz: 10 (/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/h_a4_r2.val1scan.txt; allowed, recorded)\n",
+  "handback": "biomni_r2: 2 kept files from runs/kept/features; 2 accepted -> /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r2/biomni_r2; 0 rejected -> -; manifest /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r2/manifest.json\n",
+  "handback_manifest_sha256": "8f760ca66b38bc73725b7e52a5cd58eef5c885bfc971ea6bfe0aebae80f1aed8",
+  "new_progress": [
+    "- 2026-11-01T03:42Z h_a4_r2 finished rc=0 DeepSeek ledger $63.058222 (session $.781672): calls 85, agent minutes 18.1, tokens in 5395225 cache 5287808 out 102833, proxy cost $0.7817, served ['deepseek-v4-pro'], other statuses none; files naming harness/val1.npz: 10"
+  ],
+  "progress_start_offset": 16953,
+  "progress_end_offset": 17219,
+  "chain_exit": 3,
+  "chain_ended_utc": "2026-11-01T03:43:00Z",
+  "refusal": "NOT STARTED: STOP file present",
+  "refused_session": "h_a4_r3",
+  "refused_session_created": false,
+  "STOP_metadata_only": {
+    "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/STOP",
+    "size": 0,
+    "mtime_ns": 1793504580292134000,
+    "inode": 266447167
+  },
+  "STOP_creator_and_cause_not_established": true,
+  "STOP_left_untouched": true,
+  "ledger_after": [
+    63.05822222,
+    24026
+  ],
+  "native_cap": "76.56 61.562649 2026-11-01T01:43Z",
+  "no_retry_or_workaround": true,
+  "no_full_readings": true
+}

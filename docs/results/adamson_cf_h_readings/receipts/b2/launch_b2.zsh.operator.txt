@@ -1,0 +1,4 @@
+#!/bin/zsh
+setopt NO_CLOBBER
+unset API_KEY DEEPSEEK_API_KEY OPENAI_API_KEY ANTHROPIC_API_KEY GH_TOKEN GITHUB_TOKEN
+exec /usr/bin/nice -n 19 /usr/bin/caffeinate -i /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/b2_readings_20261101/b2_once.py > /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/block_h_ops/b2_readings_20261101/controller.log 2>&1

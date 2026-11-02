@@ -1,0 +1,77 @@
+{
+  "utc": "2026-11-01T15:43:33.218951+00:00",
+  "name": "adamson_cf_h_a2_ds_w1_r0",
+  "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r0",
+  "native_passed": true,
+  "parent_native_rc": 0,
+  "native_operational_check_lines": [
+    "run: code baa7dfdbf1, 1201.5 s, seed 0, workers 1, data adamson_cf_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None",
+    "cost by the run: workers $0.159, planner $0.235"
+  ],
+  "native_check_sha256": "ad1381947a280ca3245fedb51721a5a03928658e4f352a3a34ac7ff8d2a935d8",
+  "run_metadata": {
+    "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+    "duration_s": 1201.5,
+    "duration_note": null,
+    "seed": 0,
+    "workers": 1,
+    "data_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables",
+    "external_knowledge": [],
+    "planner": {
+      "configured": "deepseek:deepseek-v4-pro",
+      "mixed": false,
+      "exhausted_at_min": null
+    },
+    "llm_usage": {
+      "all": {
+        "calls": 152,
+        "input_tokens": 316326,
+        "output_tokens": 147471,
+        "cached_tokens": 166656,
+        "cost_usd": 0.393610128,
+        "failed_calls": 0
+      },
+      "worker": {
+        "calls": 129,
+        "input_tokens": 218892,
+        "output_tokens": 111915,
+        "cached_tokens": 139392,
+        "cost_usd": 0.158984352,
+        "failed_calls": 0
+      },
+      "planner": {
+        "calls": 23,
+        "input_tokens": 97434,
+        "output_tokens": 35556,
+        "cached_tokens": 27264,
+        "cost_usd": 0.234625776,
+        "failed_calls": 0
+      }
+    }
+  },
+  "artifact_hashes": {
+    "summary.json": "974b6f8db1a711ba3535fbe40e3e3d2c7fb760788551b9eae7873b1f7c16e895",
+    "config.json": "d7c1c71e38dfe97127a0a43583dcfb6fc90a789dbf10f542df20150179a3f30f"
+  },
+  "new_progress": [
+    "- 2026-11-01T15:38Z adamson_cf_h_a2_ds_w1_r0 finished rc=0 DeepSeek ledger $66.171319 (run $.393610)",
+    "- 2026-11-01T15:38Z adamson_cf_h_a2_ds_w1_r2 started (code baa7dfd in /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-baa7dfd, data adamson_cf_clean_tables, 1 worker, DeepSeek ledger $66.171319, block H cap $76.56 from a start of $61.562649 at 2026-11-01T01:43Z)"
+  ],
+  "progress_start_offset": 19980,
+  "progress_end_offset": 20352,
+  "next_session": "adamson_cf_h_a2_ds_w1_r2",
+  "next_process": {
+    "ps": "  PID  PPID NI ELAPSED COMM\n18732 18685 19   05:02 /Library/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python\n",
+    "cwd": "p18732\nfcwd\nn/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-baa7dfd\n"
+  },
+  "ledger_observation": {
+    "provider": "deepseek",
+    "total": 66.233206908,
+    "rows": 24494
+  },
+  "chain_exit_present": false,
+  "H_STOP_present": false,
+  "native_stopped_present": false,
+  "scientific_metrics_read_for_receipt": false,
+  "no_rerun": true
+}
