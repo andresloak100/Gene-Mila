@@ -1,0 +1,85 @@
+{
+  "all_pass": true,
+  "assertions": 3269,
+  "stage1_eligible": 234,
+  "tested": 234,
+  "unique": 211,
+  "cross_source_duplicates": 23,
+  "null_row_counts": {
+    "null": 234,
+    "null_pert": 5
+  },
+  "pooled_perturbation_rows": 5,
+  "found": [
+    {
+      "source": "f_r0",
+      "feature": "train_delta_transfer_similarity_e267",
+      "gates": {
+        "unique": true,
+        "gene": true,
+        "pert": true,
+        "gain": true,
+        "wins": true,
+        "reports": true,
+        "m2": true,
+        "m4": true,
+        "multi_seed": true
+      },
+      "gain": 0.054192600205174093,
+      "se_adj": 0.012228153505472735,
+      "p_fwer_pooled": 0.001,
+      "coef_candidate_std": [
+        0.05334716976591698,
+        0.05273768678854892,
+        0.05346393303550796,
+        0.05222088687954436,
+        0.05398782613347143,
+        0.05334716976591698
+      ]
+    },
+    {
+      "source": "f_r3",
+      "feature": "gene_set_similarity_transfer_e177",
+      "gates": {
+        "unique": true,
+        "gene": true,
+        "pert": true,
+        "gain": true,
+        "wins": true,
+        "reports": true,
+        "m2": true,
+        "m4": true,
+        "multi_seed": true
+      },
+      "gain": 0.05627735256779055,
+      "se_adj": 0.012783783179928124,
+      "p_fwer_pooled": 0.001,
+      "coef_candidate_std": [
+        0.04801275856903643,
+        0.0482953721061778,
+        0.04869706003176595,
+        0.0482953721061778,
+        0.04869706003176595,
+        0.04801275856903643
+      ]
+    }
+  ],
+  "mechanism_sign_summary": [
+    {
+      "feature": "train_delta_transfer_similarity_e267",
+      "predicted_sign": "positive",
+      "fitted_sign": "positive",
+      "sign_match": true,
+      "novel_inputs": []
+    },
+    {
+      "feature": "gene_set_similarity_transfer_e177",
+      "predicted_sign": "unknown",
+      "fitted_sign": "positive",
+      "sign_match": null,
+      "novel_inputs": []
+    }
+  ],
+  "audit_note": "Initial audit treated coef_candidate_sign as unanimity; source defines it as sign of mean. Corrected only audit interpretation, preserving all report coefficients; no scientific rerun.",
+  "warning": "No new score or fit; reconstructed from stored null gains and coefficients. Six reports are ordered seed pairs, not independent runs."
+}

@@ -1,0 +1,24 @@
+{
+  "all_unchanged": true,
+  "basis": "Git tree metadata only; no summary.md or old sealed output was parsed.",
+  "before_commit": "bc0fe6a",
+  "publication_merge_commit": "ed41267",
+  "records": [
+    "100644 blob 01ac2df9ace3886d87cf3eca4cabe8da2d5fc91a\tdocs/mac/block_d_records/README.md",
+    "100644 blob dc23a1156ab1e4624b7e793c03a757e5a7930ca3\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r0_discovery.check.txt",
+    "100644 blob 5a0ef2e3ef6d250cba59cf6d70271fa2c3f47796\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r0_discovery/config.json",
+    "100644 blob ad66d435429e8b84c0da7b454160a356a69308af\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r0_discovery/summary.json",
+    "100644 blob cb4fb353d456168c31be2cb4bdb9004737b8b53d\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r0_discovery/summary.md",
+    "100644 blob d9c3a115d72ed443d2ff46cf3d8903b29d776100\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r2_discovery.check.txt",
+    "100644 blob f717eaf5ea7858fce36c9445005be6e7313d3fe7\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r2_discovery/config.json",
+    "100644 blob ba21afef9d1b05e47ce3c4e93ef7ba969b6e9a89\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r2_discovery/summary.json",
+    "100644 blob d15f222418b7587928bfbdb2602bdbfb38212269\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r2_discovery/summary.md",
+    "100644 blob f1bf5c8828bd30fd9663ba87c95b7319496c5040\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r3_discovery.check.txt",
+    "100644 blob c0c1194eb44becca5d453d86279788cfa5ec26cb\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r3_discovery/config.json",
+    "100644 blob 6023cc6134ee746a6dcf9b06ce7ba19e71e0aa2a\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r3_discovery/summary.json",
+    "100644 blob 08b1157467caabe3a4a64050b3b6410ed385a620\tdocs/mac/block_d_records/adamson_cf_d1_ds_w4_r3_discovery/summary.md",
+    "100644 blob 848580249402d96b99461e900fb0ce0fd75f8d22\tdocs/mac/block_d_records/block_d_cap.txt",
+    "100644 blob 898d65c0dc7481675caf956f8f488c1d088b7445\tdocs/mac/block_d_records/block_d_chain.log",
+    "100644 blob 49afe27d6c0b6b3e3fc77256aaf0221b988b5d75\tdocs/mac/block_d_records/progress_lines.txt"
+  ]
+}

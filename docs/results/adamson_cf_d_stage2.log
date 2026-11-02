@@ -1,0 +1,4 @@
+feature_compare: null estimate 128 members x 999 replicates x 0.049 s = 103.4 min (measured on the first replicate)
+feature_compare: null estimate 36 members x 999 replicates x 0.078 s = 46.6 min (measured on the first replicate)
+feature_compare: null estimate 78 members x 999 replicates x 0.106 s = 137.3 min (measured on the first replicate)
+feature_compare: 237 rows -> /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-d-readings/docs/results/adamson_cf_d_stage2/feature_compare.md

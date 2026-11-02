@@ -1,0 +1,691 @@
+{
+ "arms": {
+  "d1": {
+   "delta_M1": {
+    "mean": 0.038925000470682536,
+    "sd": 0.029324926897608423
+   },
+   "metrics": {
+    "delta_scale_ratio": {
+     "mean": 0.6240570175778639,
+     "n": 3,
+     "sd": 0.08948648058277674
+    },
+    "direction_acc_top": {
+     "mean": 0.8621111111111109,
+     "n": 3,
+     "sd": 0.010183501544346206
+    },
+    "mse": {
+     "mean": 0.006605228075413066,
+     "n": 3,
+     "sd": 0.00013033353817018265
+    },
+    "mse_top": {
+     "mean": 0.1316172505206541,
+     "n": 3,
+     "sd": 0.004836059895230144
+    },
+    "pearson_delta": {
+     "mean": 0.5231552702338725,
+     "n": 3,
+     "sd": 0.029324926897608423
+    },
+    "pearson_delta_nontarget": {
+     "mean": 0.5203443410693831,
+     "n": 3,
+     "sd": 0.032565168155145
+    },
+    "pearson_delta_top": {
+     "mean": 0.6793382551166851,
+     "n": 3,
+     "sd": 0.03439601942199255
+    },
+    "r2_top": {
+     "mean": 0.7762351630534381,
+     "n": 3,
+     "sd": 0.011534649393418925
+    }
+   },
+   "n_runs": 3
+  },
+  "g0": {
+   "delta_M1": {
+    "mean": 0.04171986881165556,
+    "sd": 0.03526307395045165
+   },
+   "metrics": {
+    "delta_scale_ratio": {
+     "mean": 0.6553329191257706,
+     "n": 3,
+     "sd": 0.07193849523391321
+    },
+    "direction_acc_top": {
+     "mean": 0.8610555555555554,
+     "n": 3,
+     "sd": 0.01796163607164923
+    },
+    "mse": {
+     "mean": 0.006509285881240592,
+     "n": 3,
+     "sd": 0.0004249808068684111
+    },
+    "mse_top": {
+     "mean": 0.125148913712785,
+     "n": 3,
+     "sd": 0.01595101347467722
+    },
+    "pearson_delta": {
+     "mean": 0.5259501385748455,
+     "n": 3,
+     "sd": 0.035263073950451675
+    },
+    "pearson_delta_nontarget": {
+     "mean": 0.5205904327808116,
+     "n": 3,
+     "sd": 0.037707671199494315
+    },
+    "pearson_delta_top": {
+     "mean": 0.6885531595739443,
+     "n": 3,
+     "sd": 0.049234170915186476
+    },
+    "r2_top": {
+     "mean": 0.7854943909677006,
+     "n": 3,
+     "sd": 0.02715296950503917
+    }
+   },
+   "n_runs": 3
+  },
+  "g1": {
+   "delta_M1": {
+    "mean": 0.006734158224019766,
+    "sd": 0.004435577781468567
+   },
+   "metrics": {
+    "delta_scale_ratio": {
+     "mean": 0.6171557126814763,
+     "n": 3,
+     "sd": 0.03675575561662054
+    },
+    "direction_acc_top": {
+     "mean": 0.8445555555555555,
+     "n": 3,
+     "sd": 0.00397678448181623
+    },
+    "mse": {
+     "mean": 0.00680374806459143,
+     "n": 3,
+     "sd": 7.789236237122883e-05
+    },
+    "mse_top": {
+     "mean": 0.13695056435960445,
+     "n": 3,
+     "sd": 0.002900261945796379
+    },
+    "pearson_delta": {
+     "mean": 0.4909644279872097,
+     "n": 3,
+     "sd": 0.004435577781468558
+    },
+    "pearson_delta_nontarget": {
+     "mean": 0.4827188909284315,
+     "n": 3,
+     "sd": 0.004227168766255704
+    },
+    "pearson_delta_top": {
+     "mean": 0.6371837239729928,
+     "n": 3,
+     "sd": 0.004509936292049516
+    },
+    "r2_top": {
+     "mean": 0.7681717363483934,
+     "n": 3,
+     "sd": 0.0044174231765163295
+    }
+   },
+   "n_runs": 3
+  }
+ },
+ "caveats": [
+  "OOF only: every system has selected on these labels; not held out",
+  "M4-M7 use each perturbation's top 20 genes by |true delta| (genemila.benchmark.evaluator), not CellForge's Wilcoxon DE top 20",
+  "ridge on the tool's alpha grid with an honest OOF alpha; a parent run's own model type and alpha are not reused",
+  "the literal caps make pasting labels into a file expensive, not impossible"
+ ],
+ "lab_commit": "bc0fe6a",
+ "parent": {
+  "features": [
+   "control_mean",
+   "mean_response",
+   "is_target"
+  ],
+  "oof_metrics": {
+   "delta_scale_ratio": 0.6207568291104039,
+   "direction_acc_top": 0.8503333333333332,
+   "mse": 0.0066812035665043635,
+   "mse_top": 0.13525475833368783,
+   "pearson_delta": 0.48423026976318995,
+   "pearson_delta_nontarget": 0.48120369724236334,
+   "pearson_delta_top": 0.6304818740870558,
+   "r2_top": 0.7698010545313738
+  },
+  "source": "builtin"
+ },
+ "reading": "block D reading 3: arm against arm, development tier (descriptive)",
+ "runs": [
+  {
+   "M1": 0.5377404744143707,
+   "arm": "d1",
+   "delta_M1": 0.05351020465118067,
+   "features": [
+    "target_gata1_nfe2_x_gene_globin_corr_e211",
+    "target_g_gene_set_jaccard_e239",
+    "target_globin_sets_similarity_e242",
+    "train_delta_transfer_similarity_e267",
+    "train_delta_transfer_similarity_weighted_e293",
+    "target_globin_coexpression_interaction_e255",
+    "target_pli_e67",
+    "gene_methionine_fraction_e241",
+    "protein_length_log_e31",
+    "aa_cysteine_fraction_e119",
+    "cpg_oe_promoter_globin_interaction_e275",
+    "protein_length_e42",
+    "gata1_nfe2_network_proximity_e21",
+    "target_tf_x_gene_histone_e277",
+    "has_signal_peptide_e70",
+    "gene_proline_fraction_rank_e248",
+    "gata1_nfe2_network_proximity_e113",
+    "target_aa_k_fraction_e234",
+    "target_er_flag_e11",
+    "target_gene_constraint_interaction_e54",
+    "has_signal_peptide_e59"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.7134612836473743,
+    "direction_acc_top": 0.8643333333333332,
+    "mse": 0.006695512055350257,
+    "mse_top": 0.1260373816455,
+    "pearson_delta": 0.5377404744143707,
+    "pearson_delta_nontarget": 0.5367687586962326,
+    "pearson_delta_top": 0.693814757322908,
+    "r2_top": 0.789449887096946
+   },
+   "n": 50,
+   "n_columns": 23,
+   "report_deltas": [
+    0.04956664288089607,
+    0.05350179846826403,
+    0.05746217260438169,
+    0.05350179846826403,
+    0.05746217260438169,
+    0.04956664288089607
+   ],
+   "se_adj": 0.012004389517155909,
+   "source": "d1_r0",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 36
+  },
+  {
+   "M1": 0.4893974985463969,
+   "arm": "d1",
+   "delta_M1": 0.005167228783206955,
+   "features": [
+    "protein_localization_e24",
+    "target_control_std_interaction_e63",
+    "ppi_erythroid_neighbor_transfer_e56",
+    "promoter_cpg_gc_e33",
+    "amino_acid_composition_e68",
+    "promoter_cpg_gc_features_e61",
+    "erythroid_program_score_e67"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.6242212206261993,
+    "direction_acc_top": 0.851,
+    "mse": 0.006664361841960471,
+    "mse_top": 0.13459763918453826,
+    "pearson_delta": 0.4893974985463969,
+    "pearson_delta_nontarget": 0.48283760962480765,
+    "pearson_delta_top": 0.6400701848604313,
+    "r2_top": 0.7710687861008472
+   },
+   "n": 50,
+   "n_columns": 25,
+   "report_deltas": [
+    0.005066415873332786,
+    0.005042979167286243,
+    0.005391870764249185,
+    0.005043254918787321,
+    0.005391870764249185,
+    0.005066981211336807
+   ],
+   "se_adj": 0.00197788308905203,
+   "source": "d1_r2",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 30
+  },
+  {
+   "M1": 0.5423278377408499,
+   "arm": "d1",
+   "delta_M1": 0.05809756797765999,
+   "features": [
+    "has_signal_peptide_flag_e55",
+    "gene_set_similarity_transfer_e177",
+    "protein_length_log_e35",
+    "is_transcription_factor_e13",
+    "is_tf_e25",
+    "aa_hydrophobic_fraction_gene_e99",
+    "n_transmembrane_domains_e56",
+    "atf4_atf6_pathway_membership_e112",
+    "atf4_atf6_pathway_membership_e113",
+    "prec_constraint_e173"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.5344885484600183,
+    "direction_acc_top": 0.8709999999999998,
+    "mse": 0.006455810328928471,
+    "mse_top": 0.13421673073192403,
+    "pearson_delta": 0.5423278377408499,
+    "pearson_delta_nontarget": 0.5414266548871088,
+    "pearson_delta_top": 0.7041298231667161,
+    "r2_top": 0.7681868159625211
+   },
+   "n": 50,
+   "n_columns": 11,
+   "report_deltas": [
+    0.05724777218520993,
+    0.05523049001333885,
+    0.06181444173443107,
+    0.05523049001333885,
+    0.06181444173443107,
+    0.05724777218520993
+   ],
+   "se_adj": 0.012875323133080471,
+   "source": "d1_r3",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 33
+  },
+  {
+   "M1": 0.48641095918291966,
+   "arm": "g1",
+   "delta_M1": 0.002180689419729774,
+   "features": [
+    "response_entropy_e89",
+    "tf_motif_score_e179",
+    "essentiality_selfdelta_interaction_e234_e249",
+    "ppi_neighbor_mean_delta_e286",
+    "target_expression_x_response_entropy_e315",
+    "essentiality_response_interaction_e329",
+    "target_expression_variability_e355",
+    "combined_annotation_projection_target_in_e398",
+    "target_self_delta_x_response_entropy_e416",
+    "full_annotation_projection_target_e459",
+    "nuclear_gene_x_loeuf_target_e467",
+    "combined_similarity_random_projection_e5_e527",
+    "gene_loeuf_x_target_selfdelta_e569",
+    "complex_membership_score_e603_e580",
+    "target_ppi_neighbor_mean_response_e611_e605",
+    "target_loeuf_x_ppi_neighbor_response_e62_e628",
+    "full_annotation_projection_with_protein_e645",
+    "target_ppi_neighbor_response_entropy_e679",
+    "target_expression_x_ppi_degree_e711",
+    "target_ppi_second_neighbor_mean_response_e743",
+    "target_ppi_second_neighbor_mean_response_e777"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.6335421853038286,
+    "direction_acc_top": 0.8413333333333333,
+    "mse": 0.006892279086348538,
+    "mse_top": 0.13802792006611064,
+    "pearson_delta": 0.48641095918291966,
+    "pearson_delta_nontarget": 0.47784069261027773,
+    "pearson_delta_top": 0.6346333130925201,
+    "r2_top": 0.7681689987966073
+   },
+   "n": 50,
+   "n_columns": 23,
+   "report_deltas": [
+    0.00695758569553695,
+    -0.00810947672892276,
+    0.006942998601503936,
+    -0.005085041420819503,
+    0.005595337902188302,
+    0.006782732468891606
+   ],
+   "se_adj": 0.004815695322964189,
+   "source": "g1_r0",
+   "status": "ok",
+   "verdict_adj": "none",
+   "wins": 30
+  },
+  {
+   "M1": 0.4912104502872275,
+   "arm": "g1",
+   "delta_M1": 0.006980180524037527,
+   "features": [
+    "gene_set_similarity_e12",
+    "protein_stability_proxy_e81",
+    "target_expression_specificity_x_is_targe_e166",
+    "random_projection_target_expression_e205",
+    "target_has_signal_peptide_x_is_target_e247",
+    "target_protein_length_x_gene_membrane_e2_e300",
+    "target_cpg_promoter_x_gene_tf_indicator_e321",
+    "target_compartment_x_gene_annotation_e333",
+    "target_loeuf_x_gene_loeuf_e380",
+    "target_gene_shared_tfbs_count_e408",
+    "random_projection_target_gene_coexpr_e448",
+    "target_gene_coexpr_rank_x_specificity_e474",
+    "target_effect_x_control_expression_e502_e485",
+    "target_loeuf_x_gene_control_expression_e523",
+    "target_complex_member_x_coexpression_e565",
+    "shared_tf_activity_weighted_e601_e608",
+    "target_stability_over_gene_expression_e633",
+    "gene_regulatory_indegree_e635",
+    "shared_pathway_activity_e683",
+    "shared_pathway_activity_normalized_e710"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.5750567510839063,
+    "direction_acc_top": 0.8489999999999999,
+    "mse": 0.006745737963658869,
+    "mse_top": 0.13915797424447598,
+    "pearson_delta": 0.4912104502872275,
+    "pearson_delta_nontarget": 0.4850119022544114,
+    "pearson_delta_top": 0.6423909872223058,
+    "r2_top": 0.7637556825839604
+   },
+   "n": 50,
+   "n_columns": 26,
+   "report_deltas": [
+    0.006922945028811023,
+    0.006186044155137405,
+    0.007839459638856072,
+    0.0061428462635113035,
+    0.007866843029097847,
+    0.006922945028811023
+   ],
+   "se_adj": 0.00281664752675858,
+   "source": "g1_r2",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 28
+  },
+  {
+   "M1": 0.49527187449148186,
+   "arm": "g1",
+   "delta_M1": 0.011041604728291998,
+   "features": [
+    "shared_pathway_fraction_e63",
+    "regulatory_network_distance_e77",
+    "shared_tf_binding_count_e92_e99",
+    "gene_response_kurtosis_e154",
+    "target_control_variability_e183",
+    "target_response_variance_e275",
+    "target_essentiality_score_e284",
+    "same_complex_indicator_e315",
+    "gene_response_to_control_variance_ratio_e353",
+    "target_pathway_specificity_e385",
+    "target_response_autocorrelation_e403",
+    "target_promoter_cpg_island_e444",
+    "gene_response_entropy_e484",
+    "target_response_similarity_ppi_weighted_e536",
+    "gene_response_mad_e651_e664",
+    "gene_response_autocorrelation_e688",
+    "coessentiality_correlation_e725",
+    "gene_response_bimodality_e756",
+    "conditional_variance_given_target_respon_e768",
+    "random_moment_projection_e795"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.642868201656694,
+    "direction_acc_top": 0.8433333333333334,
+    "mse": 0.006773227143766884,
+    "mse_top": 0.1336657987682267,
+    "pearson_delta": 0.49527187449148186,
+    "pearson_delta_nontarget": 0.4853040779206054,
+    "pearson_delta_top": 0.6345268716041527,
+    "r2_top": 0.7725905276646127
+   },
+   "n": 50,
+   "n_columns": 22,
+   "report_deltas": [
+    0.010089601032198747,
+    0.01247055570520389,
+    0.010564657447473202,
+    0.01247055570520389,
+    0.010564657447473202,
+    0.010089601032198747
+   ],
+   "se_adj": 0.004619171454657455,
+   "source": "g1_r3",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 31
+  },
+  {
+   "M1": 0.5405242525066865,
+   "arm": "g0",
+   "delta_M1": 0.05629398274349654,
+   "features": [
+    "pathway_similarity_e11",
+    "ppi_diffusion_pathway_prior_e54",
+    "pathway_biased_diffusion_e72",
+    "pathway_weighted_response_e83_e99",
+    "target_pathway_response_magnitude_e173",
+    "random_walk_absorption_e203_e211",
+    "target_control_random_projection_e271_e276",
+    "normalized_pathway_overlap_e289"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.7059997072066011,
+    "direction_acc_top": 0.8706666666666665,
+    "mse": 0.006484480888404337,
+    "mse_top": 0.12068849361556949,
+    "pearson_delta": 0.5405242525066865,
+    "pearson_delta_nontarget": 0.5395586215779743,
+    "pearson_delta_top": 0.7039312846125274,
+    "r2_top": 0.7911158258644159
+   },
+   "n": 50,
+   "n_columns": 19,
+   "report_deltas": [
+    0.0552448695279516,
+    0.054021931174304816,
+    0.05961514752823327,
+    0.054021931174304816,
+    0.05961514752823327,
+    0.0552448695279516
+   ],
+   "se_adj": 0.012857118880463128,
+   "source": "g0_r0",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 36
+  },
+  {
+   "M1": 0.4857361809536658,
+   "arm": "g0",
+   "delta_M1": 0.0015059111904758493,
+   "features": [
+    "pathway_similarity_e9",
+    "prior_diffusion_e11",
+    "mean_response_is_target_interaction_e60_e84",
+    "target_pathway_aggregate_is_target_inter_e139",
+    "random_projection_target_gene_similarity_e201",
+    "mean_response_pathway_similarity_interac_e260",
+    "pathway_similarity_target_control_varian_e270",
+    "target_ppi_neighbor_response_variance_e300",
+    "target_prior_neighbor_response_variance_e324",
+    "random_projection_target_ppi_neighbor_ex_e368",
+    "target_gene_partial_correlation_e380",
+    "target_essentiality_composite_e463",
+    "random_projection_target_expression_high_e510",
+    "target_self_response_pathway_weighted_e514",
+    "target_ppi_neighbor_expression_entropy_e566",
+    "random_projection_weighted_loo_delta_pat_e585",
+    "target_gene_mutual_information_e691",
+    "random_projection_target_loo_delta_pathw_e745",
+    "random_projection_target_loo_delta_coexp_e770",
+    "target_loo_delta_autocorr_lag1_e789",
+    "target_ppi_neighbor_loo_delta_entropy_e8_e812"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.5729924681915031,
+    "direction_acc_top": 0.8403333333333332,
+    "mse": 0.006946125911878209,
+    "mse_top": 0.14285534165487698,
+    "pearson_delta": 0.4857361809536658,
+    "pearson_delta_nontarget": 0.47716485450769164,
+    "pearson_delta_top": 0.633465378312169,
+    "r2_top": 0.7559706924947909
+   },
+   "n": 50,
+   "n_columns": 23,
+   "report_deltas": [
+    -0.00936449295351166,
+    0.009459318245985282,
+    0.003845906405301358,
+    0.008583171341076445,
+    0.00587605705751526,
+    -0.00936449295351166
+   ],
+   "se_adj": 0.007592511102913863,
+   "source": "g0_r2",
+   "status": "ok",
+   "verdict_adj": "none",
+   "wins": 30
+  },
+  {
+   "M1": 0.5515899822641843,
+   "arm": "g0",
+   "delta_M1": 0.0673597125009943,
+   "features": [
+    "shared_gene_sets_count_e11",
+    "target_dropout_rate_e36",
+    "dropout_ratio_squared_e115_e127",
+    "dropout_ratio_times_ppi_degree_e164",
+    "ppi_degree_times_mean_response_e183",
+    "target_variance_times_dropout_e218",
+    "shared_tf_count_e248",
+    "ppr_score_target_to_gene_e310",
+    "ppi_neighbor_weighted_mean_response_e315",
+    "shared_tf_specificity_weighted_e337",
+    "target_variance_times_ppr_e376",
+    "shared_tf_count_times_ppr_e403",
+    "network_weighted_mean_response_e460",
+    "gene_set_weighted_mean_response_e483",
+    "network_weighted_mean_response_squared_e_e504",
+    "ppr_times_gene_set_weighted_response_e534",
+    "ppr_rank_normalized_by_target_degree_e575"
+   ],
+   "metrics": {
+    "delta_scale_ratio": 0.6870065819792077,
+    "direction_acc_top": 0.8721666666666665,
+    "mse": 0.006097250843439229,
+    "mse_top": 0.11190290586790853,
+    "pearson_delta": 0.5515899822641843,
+    "pearson_delta_nontarget": 0.545047822256769,
+    "pearson_delta_top": 0.7282628157971363,
+    "r2_top": 0.8093966545438951
+   },
+   "n": 50,
+   "n_columns": 19,
+   "report_deltas": [
+    0.07080795545791008,
+    0.060188057279272955,
+    0.07337755535168256,
+    0.060188057279272955,
+    0.07103711638583021,
+    0.06855953325199693
+   ],
+   "se_adj": 0.013528519035888876,
+   "source": "g0_r3",
+   "status": "ok",
+   "verdict_adj": "a",
+   "wins": 38
+  }
+ ],
+ "settings": {
+  "alpha_rule": "honest_oof",
+  "alphas": [
+   0.01,
+   0.1,
+   1.0,
+   10.0,
+   100.0,
+   1000.0,
+   10000.0,
+   30000.0,
+   100000.0
+  ],
+  "correction": "max-gain step-down permutation (p_fwer) within each source's add-one rows, duplicates by prediction hash collapsed first; Holm on the raw p kept as p_holm",
+  "deciding_tier": "oof",
+  "families": {
+   "d1_r0": {
+    "add_one": 20,
+    "set": 1
+   },
+   "d1_r2": {
+    "add_one": 6,
+    "set": 1
+   },
+   "d1_r3": {
+    "add_one": 8,
+    "set": 1
+   },
+   "g0_r0": {
+    "add_one": 8,
+    "set": 1
+   },
+   "g0_r2": {
+    "add_one": 21,
+    "set": 1
+   },
+   "g0_r3": {
+    "add_one": 17,
+    "set": 1
+   },
+   "g1_r0": {
+    "add_one": 20,
+    "set": 1
+   },
+   "g1_r2": {
+    "add_one": 20,
+    "set": 1
+   },
+   "g1_r3": {
+    "add_one": 20,
+    "set": 1
+   }
+  },
+  "fold_seeds": [
+   101,
+   102,
+   103
+  ],
+  "groups": null,
+  "k": 5,
+  "labels_read": [
+   "training labels (public.npz)"
+  ],
+  "min_gain": 0.002,
+  "model": "ridge",
+  "null": "gene permutation within control-mean bins",
+  "null_bins": 10,
+  "null_pert": "per-perturbation scalar of a candidate proportional to a parent column permuted within bins of the targets' mean control expression, parent columns in place",
+  "null_reps": 0,
+  "null_seed": 0,
+  "p_floor": 1.0,
+  "ram_mb": 8192,
+  "tiers": [
+   "oof"
+  ],
+  "timeout_s": 1800
+ },
+ "source": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-d-finish/docs/results/adamson_cf_d1_vs_g/feature_compare.json",
+ "split_id": "split_450515be1a0d8d2e"
+}

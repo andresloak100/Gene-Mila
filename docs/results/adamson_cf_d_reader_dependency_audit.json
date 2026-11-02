@@ -1,0 +1,95 @@
+{
+  "all_pass": true,
+  "scientific_reader_commit": "bc0fe6aba8997ceb94cbaee7ca57db18ef407097",
+  "original_run_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+  "modules": [
+    {
+      "path": "genemila/pipeline.py",
+      "reader_sha256": "afb15b56bbe778d66f051f79db6d6bb47e7e1b1e4eaad080dd08bc90817ba82f",
+      "original_run_checkout_sha256": "7d8daee6963b308fddff4f640dd746f5877b948392e79833137c6651e53b1ad7",
+      "changed_top_level_functions_or_classes": [
+        "run"
+      ]
+    },
+    {
+      "path": "genemila/lab.py",
+      "reader_sha256": "15fe736eca237898323137c2587bbc40d5faa7e6a95e24cbe3676239e3c7d8bf",
+      "original_run_checkout_sha256": "15fe736eca237898323137c2587bbc40d5faa7e6a95e24cbe3676239e3c7d8bf",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/db.py",
+      "reader_sha256": "4642a4e6a08e2510a4ebe2474bf0243db1196e6e8b8711591f060d36b98aef45",
+      "original_run_checkout_sha256": "4642a4e6a08e2510a4ebe2474bf0243db1196e6e8b8711591f060d36b98aef45",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/spec.py",
+      "reader_sha256": "e56c774e6d3f7679cf281f6c023747a2e08b36af12457bc13dabfb2b74795b4a",
+      "original_run_checkout_sha256": "e56c774e6d3f7679cf281f6c023747a2e08b36af12457bc13dabfb2b74795b4a",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/sandbox.py",
+      "reader_sha256": "fa764b7e71f30995879d02d6a288359186747a20a81373387a85a42b50298644",
+      "original_run_checkout_sha256": "fa764b7e71f30995879d02d6a288359186747a20a81373387a85a42b50298644",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/guard.py",
+      "reader_sha256": "eda6f5720985ffb1f1bac638cde737d9cf7e32995b235dc0fb8218e8a6ea7c42",
+      "original_run_checkout_sha256": "eda6f5720985ffb1f1bac638cde737d9cf7e32995b235dc0fb8218e8a6ea7c42",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/features/api.py",
+      "reader_sha256": "6cded0b6c2105bceed8b08ad10d432cfefa496aa3824c5b31eb518df00f3b0d7",
+      "original_run_checkout_sha256": "6cded0b6c2105bceed8b08ad10d432cfefa496aa3824c5b31eb518df00f3b0d7",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/features/registry.py",
+      "reader_sha256": "549e46a862fcb62d478798963b0863a61681d01bfb648e765b421cd187575ff4",
+      "original_run_checkout_sha256": "549e46a862fcb62d478798963b0863a61681d01bfb648e765b421cd187575ff4",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/data/bundle.py",
+      "reader_sha256": "7e355a112c384a93f03089e1147def102516b90cfba4e95aee472f95c67e4b61",
+      "original_run_checkout_sha256": "7e355a112c384a93f03089e1147def102516b90cfba4e95aee472f95c67e4b61",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/data/knowledge.py",
+      "reader_sha256": "01662910630fe08bb45ae2fa7cf85632415bbd576efa65a23a13afe67b0883a9",
+      "original_run_checkout_sha256": "01662910630fe08bb45ae2fa7cf85632415bbd576efa65a23a13afe67b0883a9",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/benchmark/evaluator.py",
+      "reader_sha256": "4cb2a6aa8ec0973b9fe431b9d58d43bbf90105077ffe736cdb64b1cb6b283a25",
+      "original_run_checkout_sha256": "4cb2a6aa8ec0973b9fe431b9d58d43bbf90105077ffe736cdb64b1cb6b283a25",
+      "changed_top_level_functions_or_classes": []
+    },
+    {
+      "path": "genemila/benchmark/oracle.py",
+      "reader_sha256": "4a6436a597182d37b837cd0ace55db1812f6f8329865e7d81e4f255c110e479a",
+      "original_run_checkout_sha256": "4a6436a597182d37b837cd0ace55db1812f6f8329865e7d81e4f255c110e479a",
+      "changed_top_level_functions_or_classes": []
+    }
+  ],
+  "pipeline_attribute_calls": [
+    {
+      "file": "tools/feature_compare.py",
+      "function": "smoke",
+      "line": 238
+    }
+  ],
+  "pipeline_except_worker_run_ast_identical": true,
+  "explanation": "PR81 head predates discovery integration. The scientific tool files are byte-identical to the original reading checkout. Among audited fitting/data/oracle modules only pipeline.run differs, adding optional derivability diagnostics after worker model persistence; the readers do not call pipeline.run. They use unchanged smoke/feature_blocks/CV helpers and fit in feature_audit. Lab stored-artifact prediction, feature context, registry, sandbox, guard, bundle, oracle and evaluator are byte-identical. Integration was merged only after all scientific calls; no score was repeated.",
+  "test_tree": "05e279b687ecfc26ed8a286034f2576c6c7e21f7",
+  "test_source_commit": "ed41267",
+  "test_note": "The full suite started on the resolved staged merge tree before the merge commit was recorded. write-tree and committed tree are identical; no executable file changed during tests.",
+  "independent_remote_source_audit": "Independent source-only audit confirms byte-identical six tools and supporting feature/built-in/sandbox/guard/spec/database/config/gateway/isolation/bundle/oracle modules, identical 11 pipeline helpers, discovery-only config differences, and no pipeline.run reachability on these reader paths.",
+  "limits": "Static source reachability/identity audit, not runtime tracing or proof of identical historical third-party libraries. Captured reader uses the same project Python path as original D commands."
+}

@@ -1,0 +1,193 @@
+{
+ "generated_by": "tools/sealed_reading.py",
+ "code_commit": "bc0fe6aba8997ceb94cbaee7ca57db18ef407097",
+ "protocol": {
+  "metric": "pearson_delta",
+  "rule": "a gain counts when it exceeds twice its paired standard error and the better side wins on more than half the perturbations",
+  "min_read": 10,
+  "expected": null,
+  "sealed_scorings": 2,
+  "first_sealed_scorings": []
+ },
+ "runs": [
+  {
+   "run": "adamson_cf_d1_ds_w4_r0_discovery",
+   "run_id": "adamson_cf_d1_ds_w4_r0_discovery",
+   "dataset": "adamson_cf_clean_tables",
+   "split_id": "split_450515be1a0d8d2e",
+   "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables",
+   "has_summary": true,
+   "selection": "pearson_delta",
+   "external_knowledge": [],
+   "hash_seed": 0,
+   "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+   "run_queries": {
+    "used": 4,
+    "cap": 5
+   },
+   "planner": {
+    "configured": "deepseek:deepseek-v4-pro",
+    "fallback": [],
+    "used": [
+     "deepseek:deepseek-v4-pro"
+    ],
+    "rounds": {
+     "deepseek:deepseek-v4-pro": {
+      "rounds": 25,
+      "queued": 200
+     }
+    },
+    "switches": [],
+    "failed_rounds": 0,
+    "exhausted_at_min": null,
+    "mixed": false
+   },
+   "selected": {
+    "experiment_id": "EXP_0974",
+    "kind": "config",
+    "model_type": "ridge",
+    "hypothesis_group": "exploit_alpha_EXP_0971",
+    "alpha": 3.3e-05,
+    "features": [
+     "mean_response",
+     "is_target",
+     "target_gata1_nfe2_x_gene_globin_corr_e211",
+     "target_g_gene_set_jaccard_e239",
+     "target_globin_sets_similarity_e242",
+     "train_delta_transfer_similarity_e267",
+     "train_delta_transfer_similarity_weighted_e293",
+     "target_globin_coexpression_interaction_e255",
+     "target_pli_e67",
+     "gene_methionine_fraction_e241",
+     "protein_length_log_e31",
+     "aa_cysteine_fraction_e119",
+     "cpg_oe_promoter_globin_interaction_e275",
+     "protein_length_e42",
+     "gata1_nfe2_network_proximity_e21",
+     "target_tf_x_gene_histone_e277",
+     "has_signal_peptide_e70",
+     "gene_proline_fraction_rank_e248",
+     "gata1_nfe2_network_proximity_e113",
+     "target_aa_k_fraction_e234",
+     "target_er_flag_e11",
+     "target_gene_constraint_interaction_e54",
+     "has_signal_peptide_e59"
+    ],
+    "visible_score": 0.5523563555308683,
+    "stored_sealed_pearson_delta": 0.567930938475785,
+    "sealed_before": true,
+    "stored_sealed": {
+     "pearson_delta": 0.567930938475785,
+     "cellforge_mse_de": 0.12153864840295474,
+     "cellforge_pcc_de": 0.9436476007835491,
+     "cellforge_r2_de": 0.7863593721477811
+    }
+   },
+   "additive": null,
+   "visible": null,
+   "sealed": null,
+   "cluster_ratio": null,
+   "note": "no additive baseline in this run (a bundle without pairs records none)",
+   "continuation": {
+    "kind": "fresh",
+    "from": null,
+    "source": null,
+    "start": {
+     "experiment_id": "EXP_0003",
+     "kind": "baseline",
+     "model_type": "ols",
+     "hypothesis_group": "baseline_ols",
+     "alpha": 0.0,
+     "features": [
+      "control_mean",
+      "mean_response",
+      "is_target"
+     ],
+     "visible_score": 0.5010002317798699,
+     "stored_sealed_pearson_delta": 0.519597358465441,
+     "sealed_before": true,
+     "stored_sealed": {
+      "pearson_delta": 0.519597358465441,
+      "cellforge_mse_de": 0.15355345347474497,
+      "cellforge_pcc_de": 0.9318245289901906,
+      "cellforge_r2_de": 0.73408650246828
+     }
+    },
+    "visible": {
+     "experiments": [
+      "EXP_0974",
+      "EXP_0003"
+     ],
+     "metric": "pearson_delta",
+     "n": 67,
+     "mean_diff": 0.05135612375099844,
+     "se": 0.010664613339299574,
+     "wins_a": 46,
+     "wins_b": 21,
+     "ties": 0,
+     "verdict": "a"
+    },
+    "sealed": {
+     "experiments": [
+      "EXP_0974",
+      "EXP_0003"
+     ],
+     "metric": "pearson_delta",
+     "a": {
+      "experiment_id": "EXP_0974",
+      "metrics": {
+       "rmse": 0.07763491143235413,
+       "mae": 0.05111575427537925,
+       "mse": 0.00602717947310947,
+       "pearson_delta": 0.567930938475785,
+       "pearson_delta_top": 0.7439600088748741,
+       "direction_acc_top": 0.930952380952381,
+       "mse_top": 0.1306381093775519,
+       "r2_top": 0.8006587515534539,
+       "pearson_expr": 0.9865738798346183,
+       "primary": 0.567930938475785,
+       "selection_rule": "pearson_delta"
+      },
+      "matches_stored": true
+     },
+     "b": {
+      "experiment_id": "EXP_0003",
+      "metrics": {
+       "rmse": 0.08389926721902762,
+       "mae": 0.05513001598721187,
+       "mse": 0.007039087039889803,
+       "pearson_delta": 0.519597358465441,
+       "pearson_delta_top": 0.6758784628996488,
+       "direction_acc_top": 0.9000000000000001,
+       "mse_top": 0.1639292731720613,
+       "r2_top": 0.7381826389079673,
+       "pearson_expr": 0.9846084168233289,
+       "primary": 0.519597358465441,
+       "selection_rule": "pearson_delta"
+      },
+      "matches_stored": true
+     },
+     "paired": {
+      "n": 21,
+      "mean_diff": 0.04833358001034397,
+      "se": 0.016979062298091086,
+      "wins_a": 14,
+      "wins_b": 7,
+      "ties": 0,
+      "verdict": "a"
+     }
+    },
+    "cluster_ratio": {
+     "ratio": 1.0,
+     "estimator": "overlap-robust",
+     "jackknife_ratio": 1.0,
+     "n_perts": 17,
+     "n_genes": 17,
+     "n_overlapping_pairs": 0
+    },
+    "note": null
+   }
+  }
+ ],
+ "pair": null
+}

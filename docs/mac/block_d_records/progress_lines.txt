@@ -1,0 +1,10 @@
+- 2026-10-18T17:53Z block D cap written: 70.23 60.232225 2026-10-18T17:53Z (cap, DeepSeek ledger at the start, UTC date; Andres's amount $10)
+- 2026-10-18T17:53Z adamson_cf_d1_ds_w4_r0_discovery started (code 23b3b12 in /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-23b3b12, data adamson_cf_clean_tables, discovery mode, DeepSeek ledger $60.232225, block D cap $70.23 from a start of $60.232225 at 2026-10-18T17:53Z)
+- 2026-10-18T18:14Z adamson_cf_d1_ds_w4_r0_discovery finished rc=0 DeepSeek ledger $60.778773 (run $.546548)
+- 2026-10-18T18:14Z adamson_cf_d1_ds_w4_r0_discovery passed
+- 2026-10-18T18:14Z adamson_cf_d1_ds_w4_r2_discovery started (code 23b3b12 in /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-23b3b12, data adamson_cf_clean_tables, discovery mode, DeepSeek ledger $60.778773, block D cap $70.23 from a start of $60.232225 at 2026-10-18T17:53Z)
+- 2026-10-18T18:36Z adamson_cf_d1_ds_w4_r2_discovery finished rc=0 DeepSeek ledger $60.916319 (run $.137546)
+- 2026-10-18T18:36Z adamson_cf_d1_ds_w4_r2_discovery passed
+- 2026-10-18T18:36Z adamson_cf_d1_ds_w4_r3_discovery started (code 23b3b12 in /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-23b3b12, data adamson_cf_clean_tables, discovery mode, DeepSeek ledger $60.916319, block D cap $70.23 from a start of $60.232225 at 2026-10-18T17:53Z)
+- 2026-10-18T18:57Z adamson_cf_d1_ds_w4_r3_discovery finished rc=0 DeepSeek ledger $61.240534 (run $.324215)
+- 2026-10-18T18:57Z adamson_cf_d1_ds_w4_r3_discovery passed
