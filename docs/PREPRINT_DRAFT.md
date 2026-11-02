@@ -19,7 +19,11 @@ gnomAD constraint, UniProt), agents wrote 395 table-reading features, none of wh
 matched permutation nulls; a pre-registered human hypothesis failed too. We show that a standard gene-permutation
 null cannot reject a feature that rescales an existing prediction, and give the corrected test. Under matched
 conditions, CellForge's public release produced a templated plan unfit for the task, and GEARS scored
-0.407 ± 0.012, losing to the agent arm on 19 or 20 of 21 held-out perturbations in every seed. On a clean bundle the corrected test passes the agents' response-transfer features at about 27 times the minimum
+0.407 ± 0.012, losing to the agent arm on 19 or 20 of 21 held-out perturbations in every seed. Given the same task
+package, budget and 20 minutes, a general coding agent (Codex) scored 0.547 ± 0.012 out of fold on the clean bundle,
+a biology agent (Biomni) 0.524 ± 0.034 and our lab's arms 0.491 to 0.526, all against a no-LLM control of 0.524; every
+winning feature was the same response-transfer idea, and the lab's contribution is the controlled comparison, not a
+better search. On a clean bundle the corrected test passes the agents' response-transfer features at about 27 times the minimum
 effect, and nothing new. Twenty minutes of agent search costs about $0.50 to $1 and most of the gain arrives in the
 first ten minutes. The bottleneck is information about which perturbations behave alike, not search.
 
@@ -127,7 +131,19 @@ comparator run), which beat it on 20, 19 and 20 of the 21 sealed perturbations (
 scores below the starting linear model (0.520), as Ahlmann-Eltze, Huber and Anders (2025) report for deep models in
 general. On CellForge's DE-gene metrics GEARS reached PCC_DE 0.93 and R²_DE 0.75. (Table 1.)
 
-**3.7 Cost and time.** A 20-minute run costs $0.45 to $1.65 on the lab's ledger, about half that billed; all 43 paid
+**3.7 Agent against agent.** Block H gave three systems the same task package (the clean Adamson bundle with its three
+tables, a read-only feature API, `program.md` as the whole prompt), the same 20 minutes and the same $2.50 cap, three
+searches each, in a container with one route out (a pricing proxy), and scored every hand-back with the same tool,
+parent, fold seeds and null, once (`docs/results/adamson_cf_h_readings/`, `docs/results/adamson_cf_h_compare/`). Out
+of fold, parent 0.484: a Codex coding agent 0.547 ± 0.012; our lab with four workers and no tables 0.526 ± 0.035;
+Biomni 0.524 ± 0.034; the no-LLM control 0.524; our lab with one worker 0.512 ± 0.040; CellForge's ideas translated by
+hand 0.512; our lab with four workers and the tables 0.491 ± 0.004 (Table 2). Codex was the only agent arm whose three
+searches agreed and the only one above the arm rule's threshold; no lab arm established a gain over the control. All
+seven features the foreign agents kept compute leave-one-out response transfer over gene sets or protein interactions,
+the idea the lab's agents have produced since the first runs; none read a label. Each foreign search cost $0.59 to
+$0.78 on the ledger, a lab search $0.24 to $1.28. These are development numbers on a worn bundle, not held-out ones.
+
+**3.8 Cost and time.** A 20-minute run costs $0.45 to $1.65 on the lab's ledger, about half that billed; all 43 paid
 runs cost about $31 billed. A median 86% of a run's final gain arrives by minute 10; two 2-hour continuations added
 0.003 sealed (`tools/time_to_best.py` report).
 
@@ -138,7 +154,8 @@ and they did it for under a dollar per run. They did not find biology a careful 
 afternoon, and when given richer tables they produced products and transforms of what the model already had. The
 binding limit on these screens is information about which perturbations behave alike, not search, model or time.
 Two lessons generalise. First, autonomous research systems need controls that are the same system without the LLM,
-and baselines that receive exactly the same inputs; without them the Adamson gain would read as agent insight.
+and baselines that receive exactly the same inputs; without them the Adamson gain would read as agent insight, and
+without block H the lab's search would read as better than a plain coding agent's, which it is not.
 Second, permutation tests for engineered features must match the feature's structure, or they pass what they cannot
 fail.
 
@@ -185,6 +202,21 @@ GEARS ranks last on pearson_delta but level with or slightly ahead of the no-LLM
 0.133 against 0.145): it predicts the size of the strongest changes about as well as the linear lab, and the pattern
 across all genes worse. The agent arms lead every column. Other agent arms (1, 8
 and 16 workers) are in §3.1.
+
+## Table 2. Agent against agent on the clean Adamson bundle (block H; out of fold, parent 0.484)
+
+Three searches per arm (seeds 0, 2, 3), same package, 20 minutes and $2.50 cap; mean ± sd. Source:
+`docs/results/adamson_cf_h_readings/report.md`. Development numbers, not held out.
+
+| Arm | pearson_delta | Δ over parent | kept features per search | ledger cost per search |
+|---|---:|---:|---:|---:|
+| Codex coding agent | 0.547 ± 0.012 | +0.062 | 1, 1, 2 | $0.63 to $0.77 |
+| Lab, 4 workers, no tables | 0.526 ± 0.035 | +0.042 | 8, 21, 17 | $0.45 to $1.27 |
+| Biomni | 0.524 ± 0.034 | +0.039 | 1, 2, 0 | $0.59 to $0.78 |
+| No-LLM control | 0.524 | +0.039 | 3 | $0 |
+| Lab, 1 worker | 0.512 ± 0.040 | +0.028 | 8, 9, 14 | $0.24 to $0.39 |
+| CellForge's ideas, translated by hand (n = 1) | 0.512 | +0.028 | 1 | $0 |
+| Lab, 4 workers, with tables | 0.491 ± 0.004 | +0.007 | 21, 20, 20 | $1.22 to $1.28 |
 
 ## Figures (to build from the deck and `docs/results/`)
 
