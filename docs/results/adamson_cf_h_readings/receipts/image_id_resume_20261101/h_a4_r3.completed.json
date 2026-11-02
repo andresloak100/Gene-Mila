@@ -1,0 +1,93 @@
+{
+  "utc": "2026-11-01T14:18:42.304841+00:00",
+  "name": "h_a4_r3",
+  "native_passed": true,
+  "parent_native_rc": 0,
+  "runner_source_timeout_is_success": "tools/baselines/run_biomni.py:219 returns0 for solution or timeout",
+  "agent_run": {
+    "arm": "biomni",
+    "seed": 3,
+    "model": "deepseek-v4-pro",
+    "minutes": 20.0,
+    "probe": false,
+    "package": "/work/pkg",
+    "out": "/work/out",
+    "proxy": "http://host.docker.internal:8787",
+    "python": "/usr/local/bin/python",
+    "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+    "execute_timeout_s": 630,
+    "session_cap_usd": 2.5,
+    "first_call_miss_usd_per_mtok": 1.32,
+    "rate_source": "flag",
+    "started": 1793541418.7577705,
+    "ended": 1793542618.823911,
+    "wall_s": 1200.1,
+    "exit_code": -15,
+    "ended_by": "timeout"
+  },
+  "agent_started_utc": "2026-11-01T13:56:58.757771+00:00",
+  "agent_ended_utc": "2026-11-01T14:16:58.823911+00:00",
+  "proxy_successful_calls": 63,
+  "proxy_statuses": {
+    "0": 1,
+    "200": 63
+  },
+  "proxy_cost_usd_decimal_sum": "0.58778410",
+  "proxy_tokens": {
+    "input_tokens": 3556260,
+    "cached_tokens": 3469440,
+    "output_tokens": 80941
+  },
+  "proxy_models": [
+    "deepseek-v4-pro"
+  ],
+  "check": "calls 63, agent minutes 16.9, tokens in 3556260 cache 3469440 out 80941, proxy cost $0.5878, served ['deepseek-v4-pro'], other statuses none\nfiles naming harness/val1.npz: 4 (/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/h_a4_r3.val1scan.txt; allowed, recorded)\n",
+  "credential_scan_bytes": 0,
+  "handback": "biomni_r3: 0 kept files from runs/kept/features; 0 accepted -> /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r3/biomni_r3; 0 rejected -> -; manifest /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r3/manifest.json\n",
+  "handback_manifest_sha256": "011ee97f7e314ea9ef0f753234a22dba62abb1d8688a30d58bb6a71ce9b380e2",
+  "handback_manifest": {
+    "sessions": {
+      "biomni_r3": {
+        "files": {},
+        "manifest_sha256": "cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e",
+        "origin": "runs/kept/features",
+        "out": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/out/h_a4_r3",
+        "package": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/work/h_a4_r3",
+        "results_tsv_sha256": "5636919e9eb7a1124a307eed0a05d13f8a34dc3b11b3136c9e5a92f8ce0c1d01",
+        "run": {
+          "arm": "biomni",
+          "ended_by": "timeout",
+          "exit_code": -15,
+          "minutes": 20.0,
+          "model": "deepseek-v4-pro",
+          "model_served": null,
+          "seed": 3,
+          "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+          "wall_s": 1200.1
+        },
+        "transcript_flags": [],
+        "transcript_sha256": "b3bda4dbdbda1712a613b4037a8de0b05691584b6ba10580a537af5fad072822"
+      }
+    }
+  },
+  "new_progress": [
+    "- 2026-11-01T14:17Z h_a4_r3 finished rc=0 DeepSeek ledger $63.646006 (session $.587784): calls 63, agent minutes 16.9, tokens in 3556260 cache 3469440 out 80941, proxy cost $0.5878, served ['deepseek-v4-pro'], other statuses none; files naming harness/val1.npz: 4",
+    "- 2026-11-01T14:17Z h_a3_r0 started (package copy /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/work/h_a3_r0, client codex, model deepseek-v4-pro, DeepSeek ledger $63.646006, block H cap $76.56 from a start of $61.562649 at 2026-11-01T01:43Z, isolation docker, image sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09)"
+  ],
+  "progress_start_offset": 17550,
+  "progress_end_offset": 18182,
+  "next_session": "h_a3_r0",
+  "next_proxy_statuses": {
+    "0": 1,
+    "200": 14
+  },
+  "ledger_observation": {
+    "provider": "deepseek",
+    "total": 63.757377204,
+    "rows": 24103
+  },
+  "chain_exit_present": false,
+  "H_STOP_present": false,
+  "native_stopped_present": false,
+  "no_rerun": true
+}

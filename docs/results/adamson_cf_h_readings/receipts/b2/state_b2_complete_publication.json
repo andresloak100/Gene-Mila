@@ -1,0 +1,8 @@
+{
+  "only_HANDOFF": true,
+  "outside_section1_unchanged": true,
+  "staged_equals_disk": true,
+  "secret_scan": true,
+  "whitespace": true,
+  "b2_validation": true
+}

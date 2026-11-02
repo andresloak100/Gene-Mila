@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-01T03:26:41.780951+00:00",
+  "name": "h_a4_r0",
+  "native_passed": true,
+  "parent_native_rc": 0,
+  "runner_source_timeout_is_success": "tools/baselines/run_biomni.py:219 returns0 for solution or timeout",
+  "agent_run": {
+    "arm": "biomni",
+    "seed": 0,
+    "model": "deepseek-v4-pro",
+    "minutes": 20.0,
+    "probe": false,
+    "package": "/work/pkg",
+    "out": "/work/out",
+    "proxy": "http://host.docker.internal:8787",
+    "python": "/usr/local/bin/python",
+    "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+    "execute_timeout_s": 630,
+    "session_cap_usd": 2.5,
+    "first_call_miss_usd_per_mtok": 1.32,
+    "rate_source": "flag",
+    "started": 1793502174.0662725,
+    "ended": 1793503374.1430461,
+    "wall_s": 1200.1,
+    "exit_code": -15,
+    "ended_by": "timeout"
+  },
+  "proxy_successful_calls": 69,
+  "proxy_cost_usd_decimal_sum": "0.68242081",
+  "check": "calls 69, agent minutes 18.3, tokens in 4043237 cache 3918464 out 87199, proxy cost $0.6824, served ['deepseek-v4-pro'], other statuses none\nfiles naming harness/val1.npz: 12 (/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/h_a4_r0.val1scan.txt; allowed, recorded)\n",
+  "handback": "biomni_r0: 1 kept files from runs/kept/features; 1 accepted -> /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r0/biomni_r0; 0 rejected -> -; manifest /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r0/manifest.json\n",
+  "handback_manifest_sha256": "922c50bc955e2c88add2697607e7f2f4424c6fe8fc072db2541c84e6da8f4e08",
+  "new_progress": [
+    "- 2026-11-01T03:22Z h_a4_r0 finished rc=0 DeepSeek ledger $62.27655 (session $.682421): calls 69, agent minutes 18.3, tokens in 4043237 cache 3918464 out 87199, proxy cost $0.6824, served ['deepseek-v4-pro'], other statuses none; files naming harness/val1.npz: 12",
+    "- 2026-11-01T03:22Z h_a4_r2 started (package copy /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/work/h_a4_r2, DeepSeek ledger $62.27655, block H cap $76.56 from a start of $61.562649 at 2026-11-01T01:43Z, isolation docker)"
+  ],
+  "progress_start_offset": 16438,
+  "progress_end_offset": 16953,
+  "next_session": "h_a4_r2",
+  "no_rerun": true
+}

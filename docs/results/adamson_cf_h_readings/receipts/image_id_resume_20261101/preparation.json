@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-01T13:37:17.941330+00:00",
+  "integration_while_waiting": "5e0d451",
+  "lead_comment": 6558667051,
+  "check_tools_executions": 0,
+  "driver_STOP_metadata": {
+    "size": 0,
+    "mtime_ns": 1793504580292134000,
+    "inode": 266447167
+  },
+  "passed_marker_hashes": {
+    "h_probe": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "h_a4_r0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "h_a4_r2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "native_cap": "76.56 61.562649 2026-11-01T01:43Z",
+  "expected_validated_image": "sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09",
+  "image_id_file_absent": true,
+  "global_ledger_authority": 95
+}

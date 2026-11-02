@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-01T14:20:40.396262+00:00",
+  "checks": {
+    "scope_HANDOFF_only": true,
+    "section1_only": true,
+    "no_deletes": true,
+    "no_raw_private_packages_keys": true,
+    "raw_staged_blob_matches_disk": true,
+    "secret_scan_no_hits": true,
+    "authored_whitespace": true,
+    "receipt_JSON_valid": true,
+    "manifest_hash_matches": true,
+    "cursor_matches_receipt": true,
+    "index_JSON_manifest_scope": "not applicable: only HANDOFF section1 is staged"
+  },
+  "all_pass": true
+}
