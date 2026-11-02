@@ -1,0 +1,3863 @@
+{
+  "created_utc": "2026-11-02T00:34:02.463128+00:00",
+  "b2_json_sha256": "e4000cb54f3ae7f3dcb56f4c075c81a472e33599e80ad49e540103fcf793d01e",
+  "tier": "oof",
+  "aggregation": "sample SD ddof=1 across search seeds 0,2,3; A5 n1; no independent-fold pseudo-replicates",
+  "arms": {
+    "A1": {
+      "sources": [
+        "A1_r0",
+        "A1_r2",
+        "A1_r3"
+      ],
+      "search_n": 3,
+      "metrics": {
+        "pearson_delta": {
+          "n": 3,
+          "mean": 0.4909644279872097,
+          "sd": 0.004435577781468558,
+          "values": [
+            0.48641095918291966,
+            0.4912104502872275,
+            0.49527187449148186
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 3,
+          "mean": 0.4827188909284315,
+          "sd": 0.004227168766255704,
+          "values": [
+            0.47784069261027773,
+            0.4850119022544114,
+            0.4853040779206054
+          ]
+        },
+        "mse": {
+          "n": 3,
+          "mean": 0.00680374806459143,
+          "sd": 7.789236237122883e-05,
+          "values": [
+            0.006892279086348538,
+            0.006745737963658869,
+            0.006773227143766884
+          ]
+        },
+        "mse_top": {
+          "n": 3,
+          "mean": 0.13695056435960445,
+          "sd": 0.002900261945796379,
+          "values": [
+            0.13802792006611064,
+            0.13915797424447598,
+            0.1336657987682267
+          ]
+        },
+        "r2_top": {
+          "n": 3,
+          "mean": 0.7681717363483934,
+          "sd": 0.0044174231765163295,
+          "values": [
+            0.7681689987966073,
+            0.7637556825839604,
+            0.7725905276646127
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 3,
+          "mean": 0.6371837239729928,
+          "sd": 0.004509936292049516,
+          "values": [
+            0.6346333130925201,
+            0.6423909872223058,
+            0.6345268716041527
+          ]
+        },
+        "direction_acc_top": {
+          "n": 3,
+          "mean": 0.8445555555555555,
+          "sd": 0.00397678448181623,
+          "values": [
+            0.8413333333333333,
+            0.8489999999999999,
+            0.8433333333333334
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 3,
+          "mean": 0.6171557126814763,
+          "sd": 0.03675575561662054,
+          "values": [
+            0.6335421853038286,
+            0.5750567510839063,
+            0.642868201656694
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "A1_r0",
+          "n": 50,
+          "mean_diff": 0.002180689419729774,
+          "se": 0.004815695322964189,
+          "wins_a": 30,
+          "wins_b": 20,
+          "ties": 0,
+          "verdict": "none",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.004815695322964189,
+          "verdict_adj": "none"
+        },
+        {
+          "source": "A1_r2",
+          "n": 50,
+          "mean_diff": 0.006980180524037527,
+          "se": 0.00281664752675858,
+          "wins_a": 28,
+          "wins_b": 22,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.00281664752675858,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A1_r3",
+          "n": 50,
+          "mean_diff": 0.011041604728291998,
+          "se": 0.004619171454657455,
+          "wins_a": 31,
+          "wins_b": 19,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.004619171454657455,
+          "verdict_adj": "a"
+        }
+      ],
+      "delta_M1": {
+        "n": 3,
+        "mean": 0.006734158224019766,
+        "sd": 0.004435577781468567,
+        "values": [
+          0.002180689419729774,
+          0.006980180524037527,
+          0.011041604728291998
+        ]
+      },
+      "features_by_search": {
+        "A1_r0": 21,
+        "A1_r2": 20,
+        "A1_r3": 20
+      },
+      "meaningful_single_features": 0,
+      "system_development_verdicts": {
+        "A1_r0": "not: M1 gain not above 2 SE_adj with wins > n/2; an OOF report does not gain; no M2 gain",
+        "A1_r2": "not: mse_top significantly worse",
+        "A1_r3": "meaningful (development, OOF only, not held out)"
+      },
+      "descriptive_arm_rule": {
+        "R": 3,
+        "G": 0.006734158224019766,
+        "S": 0.004083838101460075,
+        "sd_g": 0.004435577781468567,
+        "SE": 0.00482035791106389,
+        "nu": 19.863377813003936,
+        "k": 2.0868836056798084,
+        "g": [
+          0.002180689419729774,
+          0.006980180524037527,
+          0.011041604728291998
+        ],
+        "s": [
+          0.004815695322964189,
+          0.00281664752675858,
+          0.004619171454657455
+        ],
+        "wins_selected": 89,
+        "wins_reference": 61,
+        "pairs": 150,
+        "verdict": "none",
+        "interpretation": "descriptive OOF only; not evidence of a better arm on the fresh test"
+      },
+      "session_usage": [
+        {
+          "source": "A1_r0",
+          "wall_minutes": 20.09,
+          "calls": 496,
+          "input_tokens": 1084789,
+          "output_tokens": 492341,
+          "cached_tokens": 526336,
+          "cost_usd": 1.28267564,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 56
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 440
+            }
+          ]
+        },
+        {
+          "source": "A1_r2",
+          "wall_minutes": 20.075,
+          "calls": 486,
+          "input_tokens": 1063157,
+          "output_tokens": 467606,
+          "cached_tokens": 522880,
+          "cost_usd": 1.22211662,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 54
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 432
+            }
+          ]
+        },
+        {
+          "source": "A1_r3",
+          "wall_minutes": 20.511666666666667,
+          "calls": 502,
+          "input_tokens": 1081075,
+          "output_tokens": 442273,
+          "cached_tokens": 548736,
+          "cost_usd": 1.231253372,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 61
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 441
+            }
+          ]
+        }
+      ],
+      "median_evaluate_py_attempts": null,
+      "attempt_denominator": 0,
+      "usage_totals": {
+        "wall_minutes": 60.67666666666666,
+        "calls": 1484,
+        "input_tokens": 3229021,
+        "cached_tokens": 1597952,
+        "output_tokens": 1402220,
+        "cost_usd": 3.7360456319999997
+      }
+    },
+    "A1abl": {
+      "sources": [
+        "A1abl_r0",
+        "A1abl_r2",
+        "A1abl_r3"
+      ],
+      "search_n": 3,
+      "metrics": {
+        "pearson_delta": {
+          "n": 3,
+          "mean": 0.5259501385748455,
+          "sd": 0.035263073950451675,
+          "values": [
+            0.5405242525066865,
+            0.4857361809536658,
+            0.5515899822641843
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 3,
+          "mean": 0.5205904327808116,
+          "sd": 0.037707671199494315,
+          "values": [
+            0.5395586215779743,
+            0.47716485450769164,
+            0.545047822256769
+          ]
+        },
+        "mse": {
+          "n": 3,
+          "mean": 0.006509285881240592,
+          "sd": 0.0004249808068684111,
+          "values": [
+            0.006484480888404337,
+            0.006946125911878209,
+            0.006097250843439229
+          ]
+        },
+        "mse_top": {
+          "n": 3,
+          "mean": 0.125148913712785,
+          "sd": 0.01595101347467722,
+          "values": [
+            0.12068849361556949,
+            0.14285534165487698,
+            0.11190290586790853
+          ]
+        },
+        "r2_top": {
+          "n": 3,
+          "mean": 0.7854943909677006,
+          "sd": 0.02715296950503917,
+          "values": [
+            0.7911158258644159,
+            0.7559706924947909,
+            0.8093966545438951
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 3,
+          "mean": 0.6885531595739443,
+          "sd": 0.049234170915186476,
+          "values": [
+            0.7039312846125274,
+            0.633465378312169,
+            0.7282628157971363
+          ]
+        },
+        "direction_acc_top": {
+          "n": 3,
+          "mean": 0.8610555555555554,
+          "sd": 0.01796163607164923,
+          "values": [
+            0.8706666666666665,
+            0.8403333333333332,
+            0.8721666666666665
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 3,
+          "mean": 0.6553329191257706,
+          "sd": 0.07193849523391321,
+          "values": [
+            0.7059997072066011,
+            0.5729924681915031,
+            0.6870065819792077
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "A1abl_r0",
+          "n": 50,
+          "mean_diff": 0.05629398274349654,
+          "se": 0.012857118880463128,
+          "wins_a": 36,
+          "wins_b": 14,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.012857118880463128,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A1abl_r2",
+          "n": 50,
+          "mean_diff": 0.0015059111904758493,
+          "se": 0.007592511102913863,
+          "wins_a": 30,
+          "wins_b": 20,
+          "ties": 0,
+          "verdict": "none",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.007592511102913863,
+          "verdict_adj": "none"
+        },
+        {
+          "source": "A1abl_r3",
+          "n": 50,
+          "mean_diff": 0.0673597125009943,
+          "se": 0.013528519035888876,
+          "wins_a": 38,
+          "wins_b": 12,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.013528519035888876,
+          "verdict_adj": "a"
+        }
+      ],
+      "delta_M1": {
+        "n": 3,
+        "mean": 0.04171986881165556,
+        "sd": 0.03526307395045165,
+        "values": [
+          0.05629398274349654,
+          0.0015059111904758493,
+          0.0673597125009943
+        ]
+      },
+      "features_by_search": {
+        "A1abl_r0": 8,
+        "A1abl_r2": 21,
+        "A1abl_r3": 17
+      },
+      "meaningful_single_features": 4,
+      "system_development_verdicts": {
+        "A1abl_r0": "meaningful (development, OOF only, not held out)",
+        "A1abl_r2": "not: M1 gain not above 2 SE_adj with wins > n/2; M1 gain not above the minimum effect 0.002; an OOF report does not gain; no M2 gain; mse_top significantly worse",
+        "A1abl_r3": "meaningful (development, OOF only, not held out)"
+      },
+      "descriptive_arm_rule": {
+        "R": 3,
+        "G": 0.04171986881165557,
+        "S": 0.011326049673088623,
+        "sd_g": 0.03526307395045165,
+        "SE": 0.023297514803277724,
+        "nu": 3.4161403111765907,
+        "k": 2.973986160432505,
+        "g": [
+          0.05629398274349654,
+          0.0015059111904758493,
+          0.0673597125009943
+        ],
+        "s": [
+          0.012857118880463128,
+          0.007592511102913863,
+          0.013528519035888876
+        ],
+        "wins_selected": 104,
+        "wins_reference": 46,
+        "pairs": 150,
+        "verdict": "none",
+        "interpretation": "descriptive OOF only; not evidence of a better arm on the fresh test"
+      },
+      "session_usage": [
+        {
+          "source": "A1abl_r0",
+          "wall_minutes": 20.516666666666666,
+          "calls": 164,
+          "input_tokens": 260871,
+          "output_tokens": 167422,
+          "cached_tokens": 92160,
+          "cost_usd": 0.447471784,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 23
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 141
+            }
+          ]
+        },
+        {
+          "source": "A1abl_r2",
+          "wall_minutes": 20.511666666666667,
+          "calls": 516,
+          "input_tokens": 865172,
+          "output_tokens": 462766,
+          "cached_tokens": 284160,
+          "cost_usd": 1.266211636,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 59
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 457
+            }
+          ]
+        },
+        {
+          "source": "A1abl_r3",
+          "wall_minutes": 20.521666666666665,
+          "calls": 388,
+          "input_tokens": 626687,
+          "output_tokens": 313664,
+          "cached_tokens": 222848,
+          "cost_usd": 0.8976263959999999,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 46
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 342
+            }
+          ]
+        }
+      ],
+      "median_evaluate_py_attempts": null,
+      "attempt_denominator": 0,
+      "usage_totals": {
+        "wall_minutes": 61.55,
+        "calls": 1068,
+        "input_tokens": 1752730,
+        "cached_tokens": 599168,
+        "output_tokens": 943852,
+        "cost_usd": 2.611309816
+      }
+    },
+    "A2": {
+      "sources": [
+        "A2_r0",
+        "A2_r2",
+        "A2_r3"
+      ],
+      "search_n": 3,
+      "metrics": {
+        "pearson_delta": {
+          "n": 3,
+          "mean": 0.5118013585497928,
+          "sd": 0.039550390479643795,
+          "values": [
+            0.4868414040116575,
+            0.5574020829297419,
+            0.491160588707979
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 3,
+          "mean": 0.506658864075393,
+          "sd": 0.04330397430814361,
+          "values": [
+            0.4813148752057373,
+            0.5566604159950268,
+            0.48200130102541466
+          ]
+        },
+        "mse": {
+          "n": 3,
+          "mean": 0.00635441010363932,
+          "sd": 0.0006012687880347187,
+          "values": [
+            0.006696178054170773,
+            0.005660152307422557,
+            0.006706899949324629
+          ]
+        },
+        "mse_top": {
+          "n": 3,
+          "mean": 0.12456728348569826,
+          "sd": 0.01699284419824395,
+          "values": [
+            0.13508529881650622,
+            0.10496305818264724,
+            0.1336534934579413
+          ]
+        },
+        "r2_top": {
+          "n": 3,
+          "mean": 0.7879493898654872,
+          "sd": 0.02588998833571056,
+          "values": [
+            0.7705624470576499,
+            0.8177037767497685,
+            0.7755819457890435
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 3,
+          "mean": 0.6607874481573637,
+          "sd": 0.043064352122797585,
+          "values": [
+            0.6390011100602245,
+            0.7103917916649206,
+            0.6329694427469458
+          ]
+        },
+        "direction_acc_top": {
+          "n": 3,
+          "mean": 0.8573333333333332,
+          "sd": 0.014433756729740658,
+          "values": [
+            0.8489999999999999,
+            0.8739999999999999,
+            0.8489999999999999
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 3,
+          "mean": 0.6512583251523866,
+          "sd": 0.0483186311388249,
+          "values": [
+            0.6227397627637384,
+            0.7070472200529975,
+            0.6239879926404238
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "A2_r0",
+          "n": 50,
+          "mean_diff": 0.002611134248467642,
+          "se": 0.0011653198393775902,
+          "wins_a": 27,
+          "wins_b": 23,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.0011653198393775902,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A2_r2",
+          "n": 50,
+          "mean_diff": 0.07317181316655204,
+          "se": 0.011279026227563419,
+          "wins_a": 40,
+          "wins_b": 10,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.011279026227563419,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A2_r3",
+          "n": 50,
+          "mean_diff": 0.006930318944789015,
+          "se": 0.0034893290276415087,
+          "wins_a": 30,
+          "wins_b": 20,
+          "ties": 0,
+          "verdict": "none",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.0034893290276415087,
+          "verdict_adj": "none"
+        }
+      ],
+      "delta_M1": {
+        "n": 3,
+        "mean": 0.027571088786602898,
+        "sd": 0.039550390479643815,
+        "values": [
+          0.002611134248467642,
+          0.07317181316655204,
+          0.006930318944789015
+        ]
+      },
+      "features_by_search": {
+        "A2_r0": 8,
+        "A2_r2": 9,
+        "A2_r3": 14
+      },
+      "meaningful_single_features": 6,
+      "system_development_verdicts": {
+        "A2_r0": "meaningful (development, OOF only, not held out)",
+        "A2_r2": "meaningful (development, OOF only, not held out)",
+        "A2_r3": "not: M1 gain not above 2 SE_adj with wins > n/2"
+      },
+      "descriptive_arm_rule": {
+        "R": 3,
+        "G": 0.027571088786602898,
+        "S": 0.005311225031527506,
+        "sd_g": 0.03955039047964381,
+        "SE": 0.023443980898437255,
+        "nu": 2.221994383043264,
+        "k": 3.9158644736822077,
+        "g": [
+          0.002611134248467642,
+          0.07317181316655204,
+          0.006930318944789015
+        ],
+        "s": [
+          0.0011653198393775902,
+          0.011279026227563419,
+          0.0034893290276415087
+        ],
+        "wins_selected": 97,
+        "wins_reference": 53,
+        "pairs": 150,
+        "verdict": "none",
+        "interpretation": "descriptive OOF only; not evidence of a better arm on the fresh test"
+      },
+      "session_usage": [
+        {
+          "source": "A2_r0",
+          "wall_minutes": 20.025,
+          "calls": 152,
+          "input_tokens": 316326,
+          "output_tokens": 147471,
+          "cached_tokens": 166656,
+          "cost_usd": 0.393610128,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 23
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 129
+            }
+          ]
+        },
+        {
+          "source": "A2_r2",
+          "wall_minutes": 20.509999999999998,
+          "calls": 78,
+          "input_tokens": 178430,
+          "output_tokens": 97635,
+          "cached_tokens": 84352,
+          "cost_usd": 0.240953308,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 12
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 66
+            }
+          ]
+        },
+        {
+          "source": "A2_r3",
+          "wall_minutes": 20.008333333333333,
+          "calls": 134,
+          "input_tokens": 289853,
+          "output_tokens": 104462,
+          "cached_tokens": 147840,
+          "cost_usd": 0.319063752,
+          "failed_calls": 0,
+          "model_provenance": "deepseek:deepseek-v4-pro (planner); deepseek:deepseek-flash (worker); recorded request model, actual served identity not persisted here",
+          "recorded_models": [
+            {
+              "role": "planner",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-v4-pro",
+              "calls": 20
+            },
+            {
+              "role": "worker",
+              "provider": "deepseek",
+              "recorded_model": "deepseek-flash",
+              "calls": 114
+            }
+          ]
+        }
+      ],
+      "median_evaluate_py_attempts": null,
+      "attempt_denominator": 0,
+      "usage_totals": {
+        "wall_minutes": 60.54333333333333,
+        "calls": 364,
+        "input_tokens": 784609,
+        "cached_tokens": 398848,
+        "output_tokens": 349568,
+        "cost_usd": 0.953627188
+      }
+    },
+    "A3": {
+      "sources": [
+        "A3_r0",
+        "A3_r2",
+        "A3_r3"
+      ],
+      "search_n": 3,
+      "metrics": {
+        "pearson_delta": {
+          "n": 3,
+          "mean": 0.546526105178326,
+          "sd": 0.012169881961927911,
+          "values": [
+            0.5324953640851878,
+            0.5542195282672921,
+            0.552863423182498
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 3,
+          "mean": 0.5406604831939785,
+          "sd": 0.008680929562558606,
+          "values": [
+            0.5306412781924763,
+            0.545405158490562,
+            0.5459350128988973
+          ]
+        },
+        "mse": {
+          "n": 3,
+          "mean": 0.006072197241121007,
+          "sd": 0.00031788400609928356,
+          "values": [
+            0.00643462940399626,
+            0.005840657836870752,
+            0.005941304482496009
+          ]
+        },
+        "mse_top": {
+          "n": 3,
+          "mean": 0.11233347696532187,
+          "sd": 0.00779162239714236,
+          "values": [
+            0.12099249979922673,
+            0.10588845798490244,
+            0.11011947311183641
+          ]
+        },
+        "r2_top": {
+          "n": 3,
+          "mean": 0.8073775629819556,
+          "sd": 0.015031552345028738,
+          "values": [
+            0.7902967974726363,
+            0.8185887420809803,
+            0.8132471493922503
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 3,
+          "mean": 0.7097355093625483,
+          "sd": 0.01763509044256395,
+          "values": [
+            0.6895383476879079,
+            0.7175863335106919,
+            0.7220818468890451
+          ]
+        },
+        "direction_acc_top": {
+          "n": 3,
+          "mean": 0.8692777777777777,
+          "sd": 0.007192460043787727,
+          "values": [
+            0.8609999999999998,
+            0.8739999999999999,
+            0.8728333333333333
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 3,
+          "mean": 0.6643556743796999,
+          "sd": 0.022168975634013925,
+          "values": [
+            0.6630240991367297,
+            0.6871604245150594,
+            0.6428824994873107
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "A3_r0",
+          "n": 50,
+          "mean_diff": 0.0482650943219979,
+          "se": 0.01046298957962714,
+          "wins_a": 34,
+          "wins_b": 16,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.01046298957962714,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A3_r2",
+          "n": 50,
+          "mean_diff": 0.06998925850410216,
+          "se": 0.01386193388573815,
+          "wins_a": 39,
+          "wins_b": 11,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.01386193388573815,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A3_r3",
+          "n": 50,
+          "mean_diff": 0.06863315341930809,
+          "se": 0.014617968292396753,
+          "wins_a": 40,
+          "wins_b": 10,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.014617968292396753,
+          "verdict_adj": "a"
+        }
+      ],
+      "delta_M1": {
+        "n": 3,
+        "mean": 0.06229583541513605,
+        "sd": 0.012169881961927885,
+        "values": [
+          0.0482650943219979,
+          0.06998925850410216,
+          0.06863315341930809
+        ]
+      },
+      "features_by_search": {
+        "A3_r0": 1,
+        "A3_r2": 1,
+        "A3_r3": 2
+      },
+      "meaningful_single_features": 3,
+      "system_development_verdicts": {
+        "A3_r0": "meaningful (development, OOF only, not held out)",
+        "A3_r2": "meaningful (development, OOF only, not held out)",
+        "A3_r3": "meaningful (development, OOF only, not held out)"
+      },
+      "descriptive_arm_rule": {
+        "R": 3,
+        "G": 0.06229583541513605,
+        "S": 0.012980963919254013,
+        "sd_g": 0.012169881961927885,
+        "SE": 0.014760558930092283,
+        "nu": 26.39954204998123,
+        "k": 2.054016416393615,
+        "g": [
+          0.0482650943219979,
+          0.06998925850410216,
+          0.06863315341930809
+        ],
+        "s": [
+          0.01046298957962714,
+          0.01386193388573815,
+          0.014617968292396753
+        ],
+        "wins_selected": 113,
+        "wins_reference": 37,
+        "pairs": 150,
+        "verdict": "a",
+        "interpretation": "descriptive OOF only; not evidence of a better arm on the fresh test"
+      },
+      "session_usage": [
+        {
+          "source": "A3_r0",
+          "wall_minutes": 20.011666666666667,
+          "calls": 93,
+          "input_tokens": 8556420,
+          "cached_tokens": 8461824,
+          "output_tokens": 68626,
+          "cost_usd": 0.76894587,
+          "served_models": [
+            "deepseek-v4-pro"
+          ]
+        },
+        {
+          "source": "A3_r2",
+          "wall_minutes": 20.01833333333333,
+          "calls": 58,
+          "input_tokens": 4927782,
+          "cached_tokens": 4856192,
+          "output_tokens": 80277,
+          "cost_usd": 0.62606814,
+          "served_models": [
+            "deepseek-v4-pro"
+          ]
+        },
+        {
+          "source": "A3_r3",
+          "wall_minutes": 20.015,
+          "calls": 77,
+          "input_tokens": 7856999,
+          "cached_tokens": 7773440,
+          "output_tokens": 71808,
+          "cost_usd": 0.7366889,
+          "served_models": [
+            "deepseek-v4-pro"
+          ]
+        }
+      ],
+      "median_evaluate_py_attempts": 2,
+      "attempt_denominator": 3,
+      "usage_totals": {
+        "wall_minutes": 60.045,
+        "calls": 228,
+        "input_tokens": 21341201,
+        "cached_tokens": 21091456,
+        "output_tokens": 220711,
+        "cost_usd": 2.13170291
+      }
+    },
+    "A4": {
+      "sources": [
+        "A4_r0",
+        "A4_r2",
+        "A4_r3"
+      ],
+      "search_n": 3,
+      "metrics": {
+        "pearson_delta": {
+          "n": 3,
+          "mean": 0.5235317203043494,
+          "sd": 0.03414099720813332,
+          "values": [
+            0.5405076223309805,
+            0.5458572688188776,
+            0.48423026976318995
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 3,
+          "mean": 0.5199054179865662,
+          "sd": 0.03351671257155372,
+          "values": [
+            0.5392049930542356,
+            0.5393075636630996,
+            0.48120369724236334
+          ]
+        },
+        "mse": {
+          "n": 3,
+          "mean": 0.0064111406195707715,
+          "sd": 0.00023488380389498584,
+          "values": [
+            0.0062977864349643455,
+            0.006254431857243605,
+            0.0066812035665043635
+          ]
+        },
+        "mse_top": {
+          "n": 3,
+          "mean": 0.12381344490028243,
+          "sd": 0.010056462709540926,
+          "values": [
+            0.11981171296882198,
+            0.11637386339833748,
+            0.13525475833368783
+          ]
+        },
+        "r2_top": {
+          "n": 3,
+          "mean": 0.7874803013868585,
+          "sd": 0.01575429911310721,
+          "values": [
+            0.7926076325965267,
+            0.8000322170326752,
+            0.7698010545313738
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 3,
+          "mean": 0.6800975382363399,
+          "sd": 0.042991790092861054,
+          "values": [
+            0.7034881834292662,
+            0.7063225571926978,
+            0.6304818740870558
+          ]
+        },
+        "direction_acc_top": {
+          "n": 3,
+          "mean": 0.864111111111111,
+          "sd": 0.011931905563252361,
+          "values": [
+            0.871,
+            0.871,
+            0.8503333333333332
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 3,
+          "mean": 0.6514023331849085,
+          "sd": 0.02653999768798817,
+          "values": [
+            0.666618843549264,
+            0.6668313268950574,
+            0.6207568291104039
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "A4_r0",
+          "n": 50,
+          "mean_diff": 0.056277352567790546,
+          "se": 0.012783783179928121,
+          "wins_a": 38,
+          "wins_b": 12,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.012783783179928121,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A4_r2",
+          "n": 50,
+          "mean_diff": 0.06162699905568778,
+          "se": 0.01289557446059998,
+          "wins_a": 39,
+          "wins_b": 11,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.01289557446059998,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "A4_r3",
+          "n": 50,
+          "mean_diff": 0.0,
+          "se": 0.0,
+          "wins_a": 0,
+          "wins_b": 0,
+          "ties": 50,
+          "verdict": "none",
+          "overlap_ratio": null,
+          "se_adj": 0.0,
+          "verdict_adj": "none"
+        }
+      ],
+      "delta_M1": {
+        "n": 3,
+        "mean": 0.039301450541159445,
+        "sd": 0.03414099720813335,
+        "values": [
+          0.056277352567790546,
+          0.06162699905568778,
+          0.0
+        ]
+      },
+      "features_by_search": {
+        "A4_r0": 1,
+        "A4_r2": 2,
+        "A4_r3": 0
+      },
+      "meaningful_single_features": 2,
+      "system_development_verdicts": {
+        "A4_r0": "meaningful (development, OOF only, not held out)",
+        "A4_r2": "meaningful (development, OOF only, not held out)",
+        "A4_r3": "no candidate: the parent's model"
+      },
+      "descriptive_arm_rule": {
+        "R": 3,
+        "G": 0.039301450541159445,
+        "S": 0.008559785880176035,
+        "sd_g": 0.03414099720813335,
+        "SE": 0.021489668008209218,
+        "nu": 2.821347568250358,
+        "k": 3.299542983604716,
+        "g": [
+          0.056277352567790546,
+          0.06162699905568778,
+          0.0
+        ],
+        "s": [
+          0.012783783179928121,
+          0.01289557446059998,
+          0.0
+        ],
+        "wins_selected": 77,
+        "wins_reference": 23,
+        "pairs": 150,
+        "verdict": "none",
+        "interpretation": "descriptive OOF only; not evidence of a better arm on the fresh test"
+      },
+      "session_usage": [
+        {
+          "source": "A4_r0",
+          "wall_minutes": 20.001666666666665,
+          "calls": 69,
+          "input_tokens": 4043237,
+          "cached_tokens": 3918464,
+          "output_tokens": 87199,
+          "cost_usd": 0.68242081,
+          "served_models": [
+            "deepseek-v4-pro"
+          ]
+        },
+        {
+          "source": "A4_r2",
+          "wall_minutes": 20.0,
+          "calls": 85,
+          "input_tokens": 5395225,
+          "cached_tokens": 5287808,
+          "output_tokens": 102833,
+          "cost_usd": 0.78167266,
+          "served_models": [
+            "deepseek-v4-pro"
+          ]
+        },
+        {
+          "source": "A4_r3",
+          "wall_minutes": 20.001666666666665,
+          "calls": 63,
+          "input_tokens": 3556260,
+          "cached_tokens": 3469440,
+          "output_tokens": 80941,
+          "cost_usd": 0.5877841,
+          "served_models": [
+            "deepseek-v4-pro"
+          ]
+        }
+      ],
+      "median_evaluate_py_attempts": 1,
+      "attempt_denominator": 3,
+      "usage_totals": {
+        "wall_minutes": 60.00333333333333,
+        "calls": 217,
+        "input_tokens": 12994722,
+        "cached_tokens": 12675712,
+        "output_tokens": 270973,
+        "cost_usd": 2.0518775700000003
+      }
+    },
+    "A5": {
+      "sources": [
+        "A5_C2"
+      ],
+      "search_n": 1,
+      "metrics": {
+        "pearson_delta": {
+          "n": 1,
+          "mean": 0.5121536031582946,
+          "sd": null,
+          "values": [
+            0.5121536031582946
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 1,
+          "mean": 0.5120745219804601,
+          "sd": null,
+          "values": [
+            0.5120745219804601
+          ]
+        },
+        "mse": {
+          "n": 1,
+          "mean": 0.006909274715092259,
+          "sd": null,
+          "values": [
+            0.006909274715092259
+          ]
+        },
+        "mse_top": {
+          "n": 1,
+          "mean": 0.1473218299727096,
+          "sd": null,
+          "values": [
+            0.1473218299727096
+          ]
+        },
+        "r2_top": {
+          "n": 1,
+          "mean": 0.7483584369152418,
+          "sd": null,
+          "values": [
+            0.7483584369152418
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 1,
+          "mean": 0.6613824842522336,
+          "sd": null,
+          "values": [
+            0.6613824842522336
+          ]
+        },
+        "direction_acc_top": {
+          "n": 1,
+          "mean": 0.8563333333333333,
+          "sd": null,
+          "values": [
+            0.8563333333333333
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 1,
+          "mean": 0.4713959316695869,
+          "sd": null,
+          "values": [
+            0.4713959316695869
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "A5_C2",
+          "n": 50,
+          "mean_diff": 0.027923333395104617,
+          "se": 0.007543579606632478,
+          "wins_a": 36,
+          "wins_b": 14,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.007543579606632478,
+          "verdict_adj": "a"
+        }
+      ],
+      "delta_M1": {
+        "n": 1,
+        "mean": 0.027923333395104617,
+        "sd": null,
+        "values": [
+          0.027923333395104617
+        ]
+      },
+      "features_by_search": {
+        "A5_C2": 1
+      },
+      "meaningful_single_features": 0,
+      "system_development_verdicts": {
+        "A5_C2": "not: mse_top significantly worse"
+      },
+      "descriptive_arm_rule": null,
+      "session_usage": [],
+      "median_evaluate_py_attempts": null,
+      "attempt_denominator": 0,
+      "usage_totals": {
+        "wall_minutes": 0,
+        "calls": 0,
+        "input_tokens": 0,
+        "cached_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0
+      }
+    },
+    "C0": {
+      "sources": [
+        "C0_r0",
+        "C0_r2",
+        "C0_r3"
+      ],
+      "search_n": 3,
+      "metrics": {
+        "pearson_delta": {
+          "n": 3,
+          "mean": 0.5236812303881491,
+          "sd": 0.0,
+          "values": [
+            0.5236812303881491,
+            0.5236812303881491,
+            0.5236812303881491
+          ]
+        },
+        "pearson_delta_nontarget": {
+          "n": 3,
+          "mean": 0.5158718674024374,
+          "sd": 0.0,
+          "values": [
+            0.5158718674024374,
+            0.5158718674024374,
+            0.5158718674024374
+          ]
+        },
+        "mse": {
+          "n": 3,
+          "mean": 0.00622614504562244,
+          "sd": 0.0,
+          "values": [
+            0.00622614504562244,
+            0.00622614504562244,
+            0.00622614504562244
+          ]
+        },
+        "mse_top": {
+          "n": 3,
+          "mean": 0.12446408296600829,
+          "sd": 0.0,
+          "values": [
+            0.12446408296600829,
+            0.12446408296600829,
+            0.12446408296600829
+          ]
+        },
+        "r2_top": {
+          "n": 3,
+          "mean": 0.7877623483712535,
+          "sd": 0.0,
+          "values": [
+            0.7877623483712535,
+            0.7877623483712535,
+            0.7877623483712535
+          ]
+        },
+        "pearson_delta_top": {
+          "n": 3,
+          "mean": 0.678488224794558,
+          "sd": 0.0,
+          "values": [
+            0.678488224794558,
+            0.678488224794558,
+            0.678488224794558
+          ]
+        },
+        "direction_acc_top": {
+          "n": 3,
+          "mean": 0.8454999999999999,
+          "sd": 0.0,
+          "values": [
+            0.8454999999999999,
+            0.8454999999999999,
+            0.8454999999999999
+          ]
+        },
+        "delta_scale_ratio": {
+          "n": 3,
+          "mean": 0.5698786259563071,
+          "sd": 0.0,
+          "values": [
+            0.5698786259563071,
+            0.5698786259563071,
+            0.5698786259563071
+          ]
+        }
+      },
+      "paired_M1_by_search": [
+        {
+          "source": "C0_r0",
+          "n": 50,
+          "mean_diff": 0.03945096062495917,
+          "se": 0.008088932651255484,
+          "wins_a": 39,
+          "wins_b": 11,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.008088932651255484,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "C0_r2",
+          "n": 50,
+          "mean_diff": 0.03945096062495917,
+          "se": 0.008088932651255484,
+          "wins_a": 39,
+          "wins_b": 11,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.008088932651255484,
+          "verdict_adj": "a"
+        },
+        {
+          "source": "C0_r3",
+          "n": 50,
+          "mean_diff": 0.03945096062495917,
+          "se": 0.008088932651255484,
+          "wins_a": 39,
+          "wins_b": 11,
+          "ties": 0,
+          "verdict": "a",
+          "overlap_ratio": 1.0,
+          "se_adj": 0.008088932651255484,
+          "verdict_adj": "a"
+        }
+      ],
+      "delta_M1": {
+        "n": 3,
+        "mean": 0.03945096062495917,
+        "sd": 0.0,
+        "values": [
+          0.03945096062495917,
+          0.03945096062495917,
+          0.03945096062495917
+        ]
+      },
+      "features_by_search": {
+        "C0_r0": 3,
+        "C0_r2": 3,
+        "C0_r3": 3
+      },
+      "meaningful_single_features": 3,
+      "system_development_verdicts": {
+        "C0_r0": "meaningful (development, OOF only, not held out)",
+        "C0_r2": "meaningful (development, OOF only, not held out)",
+        "C0_r3": "meaningful (development, OOF only, not held out)"
+      },
+      "descriptive_arm_rule": {
+        "R": 3,
+        "G": 0.03945096062495917,
+        "S": 0.008088932651255484,
+        "sd_g": 0.0,
+        "SE": 0.008088932651255484,
+        "nu": 49.0,
+        "k": 2.0095752371292392,
+        "g": [
+          0.03945096062495917,
+          0.03945096062495917,
+          0.03945096062495917
+        ],
+        "s": [
+          0.008088932651255484,
+          0.008088932651255484,
+          0.008088932651255484
+        ],
+        "wins_selected": 117,
+        "wins_reference": 33,
+        "pairs": 150,
+        "verdict": "a",
+        "interpretation": "descriptive OOF only; not evidence of a better arm on the fresh test"
+      },
+      "session_usage": [
+        {
+          "source": "C0_r0",
+          "wall_minutes": 3.518333333333333,
+          "calls": 9,
+          "input_tokens": 7325,
+          "output_tokens": 2725,
+          "cached_tokens": 0,
+          "cost_usd": 0.0,
+          "failed_calls": 0,
+          "model_provenance": "scripted planner / mock worker; 9 mock call records, zero paid API calls",
+          "recorded_models": [
+            {
+              "role": "worker",
+              "provider": "mock",
+              "recorded_model": "mock",
+              "calls": 9
+            }
+          ]
+        },
+        {
+          "source": "C0_r2",
+          "wall_minutes": 3.6133333333333337,
+          "calls": 9,
+          "input_tokens": 7325,
+          "output_tokens": 2725,
+          "cached_tokens": 0,
+          "cost_usd": 0.0,
+          "failed_calls": 0,
+          "model_provenance": "scripted planner / mock worker; 9 mock call records, zero paid API calls",
+          "recorded_models": [
+            {
+              "role": "worker",
+              "provider": "mock",
+              "recorded_model": "mock",
+              "calls": 9
+            }
+          ]
+        },
+        {
+          "source": "C0_r3",
+          "wall_minutes": 3.5083333333333333,
+          "calls": 9,
+          "input_tokens": 7325,
+          "output_tokens": 2725,
+          "cached_tokens": 0,
+          "cost_usd": 0.0,
+          "failed_calls": 0,
+          "model_provenance": "scripted planner / mock worker; 9 mock call records, zero paid API calls",
+          "recorded_models": [
+            {
+              "role": "worker",
+              "provider": "mock",
+              "recorded_model": "mock",
+              "calls": 9
+            }
+          ]
+        }
+      ],
+      "median_evaluate_py_attempts": null,
+      "attempt_denominator": 0,
+      "usage_totals": {
+        "wall_minutes": 10.64,
+        "calls": 27,
+        "input_tokens": 21975,
+        "cached_tokens": 0,
+        "output_tokens": 8175,
+        "cost_usd": 0.0
+      }
+    }
+  },
+  "sessions": {
+    "A1_r0": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+      "summary_sha256": "5eae98c192bf4f92c22b9b2a53d7c7c3fbfda5fc88d4d69845018da244f4559f",
+      "metadata": {
+        "duration_s": 1205.4,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 790,
+        "experiments_completed": 665,
+        "experiments_failed": 52,
+        "experiments_rejected": 8,
+        "experiments_killed": 2,
+        "experiments_cancelled": 9,
+        "duplicate_experiments": 54,
+        "completed_by_proposer": {
+          "python:exploit": 216,
+          "deepseek:deepseek-v4-pro": 328,
+          "sweep(deepseek:deepseek-v4-pro)": 121
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 496,
+            "input_tokens": 1084789,
+            "output_tokens": 492341,
+            "cached_tokens": 526336,
+            "cost_usd": 1.28267564,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 440,
+            "input_tokens": 813716,
+            "output_tokens": 379279,
+            "cached_tokens": 457728,
+            "cost_usd": 0.564677568,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 56,
+            "input_tokens": 271073,
+            "output_tokens": 113062,
+            "cached_tokens": 68608,
+            "cost_usd": 0.717998072,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 56,
+              "queued": 517
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r0",
+        "run_id": "adamson_cf_g1_ds_w4_r0",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0777",
+        "features": [
+          "mean_response",
+          "is_target",
+          "response_entropy_e89",
+          "tf_motif_score_e179",
+          "essentiality_selfdelta_interaction_e234_e249",
+          "ppi_neighbor_mean_delta_e286",
+          "target_expression_x_response_entropy_e315",
+          "essentiality_response_interaction_e329",
+          "target_expression_variability_e355",
+          "combined_annotation_projection_target_in_e398",
+          "target_self_delta_x_response_entropy_e416",
+          "full_annotation_projection_target_e459",
+          "nuclear_gene_x_loeuf_target_e467",
+          "combined_similarity_random_projection_e5_e527",
+          "gene_loeuf_x_target_selfdelta_e569",
+          "complex_membership_score_e603_e580",
+          "target_ppi_neighbor_mean_response_e611_e605",
+          "target_loeuf_x_ppi_neighbor_response_e62_e628",
+          "full_annotation_projection_with_protein_e645",
+          "target_ppi_neighbor_response_entropy_e679",
+          "target_expression_x_ppi_degree_e711",
+          "target_ppi_second_neighbor_mean_response_e743",
+          "target_ppi_second_neighbor_mean_response_e777"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 56
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 440
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_annotation",
+        "gene_constraint",
+        "gene_sets",
+        "ppi_network",
+        "protein_annotation",
+        "transcription_factors"
+      ]
+    },
+    "A1_r2": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+      "summary_sha256": "8f2bb85640e6ffa0c4b73a17993f4bd89c756878c81a836348176cc74414d0db",
+      "metadata": {
+        "duration_s": 1204.5,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 755,
+        "experiments_completed": 652,
+        "experiments_failed": 46,
+        "experiments_rejected": 9,
+        "experiments_killed": 0,
+        "experiments_cancelled": 2,
+        "duplicate_experiments": 39,
+        "completed_by_proposer": {
+          "python:exploit": 200,
+          "deepseek:deepseek-v4-pro": 328,
+          "sweep(deepseek:deepseek-v4-pro)": 124
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 486,
+            "input_tokens": 1063157,
+            "output_tokens": 467606,
+            "cached_tokens": 522880,
+            "cost_usd": 1.22211662,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 432,
+            "input_tokens": 800035,
+            "output_tokens": 361083,
+            "cached_tokens": 455040,
+            "cost_usd": 0.5395283399999999,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 54,
+            "input_tokens": 263122,
+            "output_tokens": 106523,
+            "cached_tokens": 67840,
+            "cost_usd": 0.68258828,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 54,
+              "queued": 512
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r2",
+        "run_id": "adamson_cf_g1_ds_w4_r2",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0730",
+        "features": [
+          "mean_response",
+          "is_target",
+          "gene_set_similarity_e12",
+          "protein_stability_proxy_e81",
+          "target_expression_specificity_x_is_targe_e166",
+          "random_projection_target_expression_e205",
+          "target_has_signal_peptide_x_is_target_e247",
+          "target_protein_length_x_gene_membrane_e2_e300",
+          "target_cpg_promoter_x_gene_tf_indicator_e321",
+          "target_compartment_x_gene_annotation_e333",
+          "target_loeuf_x_gene_loeuf_e380",
+          "target_gene_shared_tfbs_count_e408",
+          "random_projection_target_gene_coexpr_e448",
+          "target_gene_coexpr_rank_x_specificity_e474",
+          "target_effect_x_control_expression_e502_e485",
+          "target_loeuf_x_gene_control_expression_e523",
+          "target_complex_member_x_coexpression_e565",
+          "shared_tf_activity_weighted_e601_e608",
+          "target_stability_over_gene_expression_e633",
+          "gene_regulatory_indegree_e635",
+          "shared_pathway_activity_e683",
+          "shared_pathway_activity_normalized_e710"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 54
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 432
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_annotation",
+        "gene_constraint",
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "protein_annotation",
+        "transcription_factors"
+      ]
+    },
+    "A1_r3": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+      "summary_sha256": "3b53e2547b3f6fe460007145683e7984c07a9ede1b4140663a77a025ff286cf0",
+      "metadata": {
+        "duration_s": 1230.7,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 822,
+        "experiments_completed": 686,
+        "experiments_failed": 43,
+        "experiments_rejected": 7,
+        "experiments_killed": 1,
+        "experiments_cancelled": 14,
+        "duplicate_experiments": 71,
+        "completed_by_proposer": {
+          "python:exploit": 215,
+          "deepseek:deepseek-v4-pro": 348,
+          "sweep(deepseek:deepseek-v4-pro)": 123
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 502,
+            "input_tokens": 1081075,
+            "output_tokens": 442273,
+            "cached_tokens": 548736,
+            "cost_usd": 1.231253372,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 441,
+            "input_tokens": 789395,
+            "output_tokens": 326664,
+            "cached_tokens": 468224,
+            "cost_usd": 0.491157444,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 61,
+            "input_tokens": 291680,
+            "output_tokens": 115609,
+            "cached_tokens": 80512,
+            "cost_usd": 0.740095928,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 61,
+              "queued": 535
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g1_ds_w4_r3",
+        "run_id": "adamson_cf_g1_ds_w4_r3",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0796",
+        "features": [
+          "mean_response",
+          "is_target",
+          "shared_pathway_fraction_e63",
+          "regulatory_network_distance_e77",
+          "shared_tf_binding_count_e92_e99",
+          "gene_response_kurtosis_e154",
+          "target_control_variability_e183",
+          "target_response_variance_e275",
+          "target_essentiality_score_e284",
+          "same_complex_indicator_e315",
+          "gene_response_to_control_variance_ratio_e353",
+          "target_pathway_specificity_e385",
+          "target_response_autocorrelation_e403",
+          "target_promoter_cpg_island_e444",
+          "gene_response_entropy_e484",
+          "target_response_similarity_ppi_weighted_e536",
+          "gene_response_mad_e651_e664",
+          "gene_response_autocorrelation_e688",
+          "coessentiality_correlation_e725",
+          "gene_response_bimodality_e756",
+          "conditional_variance_given_target_respon_e768",
+          "random_moment_projection_e795"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 61
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 441
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_annotation",
+        "gene_constraint",
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "targets",
+        "transcription_factors"
+      ]
+    },
+    "A1abl_r0": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+      "summary_sha256": "b1614e06f5a096c465c2b21636faab217c90ffe4ae9328e44365b22519f4b549",
+      "metadata": {
+        "duration_s": 1231.0,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 301,
+        "experiments_completed": 238,
+        "experiments_failed": 11,
+        "experiments_rejected": 3,
+        "experiments_killed": 3,
+        "experiments_cancelled": 13,
+        "duplicate_experiments": 33,
+        "completed_by_proposer": {
+          "python:exploit": 57,
+          "deepseek:deepseek-v4-pro": 117,
+          "sweep(deepseek:deepseek-v4-pro)": 64
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 164,
+            "input_tokens": 260871,
+            "output_tokens": 167422,
+            "cached_tokens": 92160,
+            "cost_usd": 0.447471784,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 141,
+            "input_tokens": 173400,
+            "output_tokens": 124124,
+            "cached_tokens": 78592,
+            "cost_usd": 0.17786275199999999,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 23,
+            "input_tokens": 87471,
+            "output_tokens": 43298,
+            "cached_tokens": 13568,
+            "cost_usd": 0.26960903199999997,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 23,
+              "queued": 211
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r0",
+        "run_id": "adamson_cf_g0_ds_w4_r0",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0289",
+        "features": [
+          "mean_response",
+          "is_target",
+          "pathway_similarity_e11",
+          "ppi_diffusion_pathway_prior_e54",
+          "pathway_biased_diffusion_e72",
+          "pathway_weighted_response_e83_e99",
+          "target_pathway_response_magnitude_e173",
+          "random_walk_absorption_e203_e211",
+          "target_control_random_projection_e271_e276",
+          "normalized_pathway_overlap_e289"
+        ],
+        "params": {
+          "random_walk_absorption_e203_e211": {
+            "restart_prob": 0.7
+          }
+        },
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 23
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 141
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_sets",
+        "ppi_network"
+      ]
+    },
+    "A1abl_r2": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+      "summary_sha256": "f4b473911b526dab2b63dc0a152e42dbf678df6002682838104f13ff371aaf6b",
+      "metadata": {
+        "duration_s": 1230.7,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 826,
+        "experiments_completed": 641,
+        "experiments_failed": 52,
+        "experiments_rejected": 11,
+        "experiments_killed": 1,
+        "experiments_cancelled": 18,
+        "duplicate_experiments": 103,
+        "completed_by_proposer": {
+          "python:exploit": 207,
+          "deepseek:deepseek-v4-pro": 312,
+          "sweep(deepseek:deepseek-v4-pro)": 122
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 516,
+            "input_tokens": 865172,
+            "output_tokens": 462766,
+            "cached_tokens": 284160,
+            "cost_usd": 1.266211636,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 457,
+            "input_tokens": 615743,
+            "output_tokens": 347303,
+            "cached_tokens": 245248,
+            "cost_usd": 0.529383588,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 59,
+            "input_tokens": 249429,
+            "output_tokens": 115463,
+            "cached_tokens": 38912,
+            "cost_usd": 0.736828048,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 59,
+              "queued": 515
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r2",
+        "run_id": "adamson_cf_g0_ds_w4_r2",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0812",
+        "features": [
+          "mean_response",
+          "is_target",
+          "pathway_similarity_e9",
+          "prior_diffusion_e11",
+          "mean_response_is_target_interaction_e60_e84",
+          "target_pathway_aggregate_is_target_inter_e139",
+          "random_projection_target_gene_similarity_e201",
+          "mean_response_pathway_similarity_interac_e260",
+          "pathway_similarity_target_control_varian_e270",
+          "target_ppi_neighbor_response_variance_e300",
+          "target_prior_neighbor_response_variance_e324",
+          "random_projection_target_ppi_neighbor_ex_e368",
+          "target_gene_partial_correlation_e380",
+          "target_essentiality_composite_e463",
+          "random_projection_target_expression_high_e510",
+          "target_self_response_pathway_weighted_e514",
+          "target_ppi_neighbor_expression_entropy_e566",
+          "random_projection_weighted_loo_delta_pat_e585",
+          "target_gene_mutual_information_e691",
+          "random_projection_target_loo_delta_pathw_e745",
+          "random_projection_target_loo_delta_coexp_e770",
+          "target_loo_delta_autocorr_lag1_e789",
+          "target_ppi_neighbor_loo_delta_entropy_e8_e812"
+        ],
+        "params": {
+          "prior_diffusion_e11": {
+            "alpha": 0.9
+          }
+        },
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 59
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 457
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "targets"
+      ]
+    },
+    "A1abl_r3": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+      "summary_sha256": "6ea9b47dbfc7bb06a30749da8b225b5ab22dff6e109b060f04602d7baa738f43",
+      "metadata": {
+        "duration_s": 1231.3,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 631,
+        "experiments_completed": 570,
+        "experiments_failed": 22,
+        "experiments_rejected": 1,
+        "experiments_killed": 3,
+        "experiments_cancelled": 8,
+        "duplicate_experiments": 27,
+        "completed_by_proposer": {
+          "python:exploit": 134,
+          "deepseek:deepseek-v4-pro": 295,
+          "sweep(deepseek:deepseek-v4-pro)": 141
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 388,
+            "input_tokens": 626687,
+            "output_tokens": 313664,
+            "cached_tokens": 222848,
+            "cost_usd": 0.8976263959999999,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 342,
+            "input_tokens": 435115,
+            "output_tokens": 229653,
+            "cached_tokens": 193792,
+            "cost_usd": 0.349143252,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 46,
+            "input_tokens": 191572,
+            "output_tokens": 84011,
+            "cached_tokens": 29056,
+            "cost_usd": 0.548483144,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 46,
+              "queued": 469
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3",
+        "run_id": "adamson_cf_g0_ds_w4_r3",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0613",
+        "features": [
+          "mean_response",
+          "is_target",
+          "shared_gene_sets_count_e11",
+          "target_dropout_rate_e36",
+          "dropout_ratio_squared_e115_e127",
+          "dropout_ratio_times_ppi_degree_e164",
+          "ppi_degree_times_mean_response_e183",
+          "target_variance_times_dropout_e218",
+          "shared_tf_count_e248",
+          "ppr_score_target_to_gene_e310",
+          "ppi_neighbor_weighted_mean_response_e315",
+          "shared_tf_specificity_weighted_e337",
+          "target_variance_times_ppr_e376",
+          "shared_tf_count_times_ppr_e403",
+          "network_weighted_mean_response_e460",
+          "gene_set_weighted_mean_response_e483",
+          "network_weighted_mean_response_squared_e_e504",
+          "ppr_times_gene_set_weighted_response_e534",
+          "ppr_rank_normalized_by_target_degree_e575"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 46
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 342
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "targets",
+        "transcription_factors"
+      ]
+    },
+    "A2_r0": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r0",
+      "summary_sha256": "974b6f8db1a711ba3535fbe40e3e3d2c7fb760788551b9eae7873b1f7c16e895",
+      "metadata": {
+        "duration_s": 1201.5,
+        "workers": 1,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 177,
+        "experiments_completed": 145,
+        "experiments_failed": 11,
+        "experiments_rejected": 1,
+        "experiments_killed": 1,
+        "experiments_cancelled": 3,
+        "duplicate_experiments": 16,
+        "completed_by_proposer": {
+          "python:exploit": 20,
+          "deepseek:deepseek-v4-pro": 106,
+          "sweep(deepseek:deepseek-v4-pro)": 19
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 152,
+            "input_tokens": 316326,
+            "output_tokens": 147471,
+            "cached_tokens": 166656,
+            "cost_usd": 0.393610128,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 129,
+            "input_tokens": 218892,
+            "output_tokens": 111915,
+            "cached_tokens": 139392,
+            "cost_usd": 0.158984352,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 23,
+            "input_tokens": 97434,
+            "output_tokens": 35556,
+            "cached_tokens": 27264,
+            "cost_usd": 0.234625776,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 23,
+              "queued": 141
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r0",
+        "run_id": "adamson_cf_h_a2_ds_w1_r0",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0178",
+        "features": [
+          "mean_response",
+          "is_target",
+          "target_partial_correlation_e28",
+          "go_similarity_e42",
+          "target_dependency_score_e50",
+          "target_gene_annotation_similarity_e56",
+          "target_regulator_specificity_e157",
+          "target_protein_domain_similarity_e166",
+          "target_coessentiality_correlation_e172",
+          "target_coessentiality_residual_e178"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 23
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 129
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_annotation",
+        "gene_constraint",
+        "gene_sets",
+        "protein_annotation"
+      ]
+    },
+    "A2_r2": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r2",
+      "summary_sha256": "3157a67a39965ab779b8008297fb40788a761a660b57c0fd8ef532adcf301adf",
+      "metadata": {
+        "duration_s": 1230.6,
+        "workers": 1,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 123,
+        "experiments_completed": 101,
+        "experiments_failed": 5,
+        "experiments_rejected": 1,
+        "experiments_killed": 1,
+        "experiments_cancelled": 9,
+        "duplicate_experiments": 6,
+        "completed_by_proposer": {
+          "python:exploit": 15,
+          "deepseek:deepseek-v4-pro": 54,
+          "sweep(deepseek:deepseek-v4-pro)": 32
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 78,
+            "input_tokens": 178430,
+            "output_tokens": 97635,
+            "cached_tokens": 84352,
+            "cost_usd": 0.240953308,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 66,
+            "input_tokens": 126797,
+            "output_tokens": 77310,
+            "cached_tokens": 70400,
+            "cost_usd": 0.1101135,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 12,
+            "input_tokens": 51633,
+            "output_tokens": 20325,
+            "cached_tokens": 13952,
+            "cost_usd": 0.130839808,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 12,
+              "queued": 102
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r2",
+        "run_id": "adamson_cf_h_a2_ds_w1_r2",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0115",
+        "features": [
+          "control_mean",
+          "mean_response",
+          "is_target",
+          "knn_response_transfer_e9",
+          "pca_target_similarity_response_e20",
+          "random_gene_set_projection_similarity_e27",
+          "lof_constraint_weighted_response_transfe_e30",
+          "rank_similarity_response_transfer_e38",
+          "pathway_membership_response_transfer_e63",
+          "rwr_network_response_transfer_e93",
+          "protein_domain_similarity_response_trans_e96",
+          "protein_localization_similarity_response_e102"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 12
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 66
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_constraint",
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "protein_annotation"
+      ]
+    },
+    "A2_r3": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r3",
+      "summary_sha256": "7623c758d3d1bba45da9b511f74208bf61d72a673d3bb427915af9293ed1b635",
+      "metadata": {
+        "duration_s": 1200.5,
+        "workers": 1,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 169,
+        "experiments_completed": 147,
+        "experiments_failed": 10,
+        "experiments_rejected": 3,
+        "experiments_killed": 0,
+        "experiments_cancelled": 0,
+        "duplicate_experiments": 3,
+        "completed_by_proposer": {
+          "python:exploit": 27,
+          "deepseek:deepseek-v4-pro": 98,
+          "sweep(deepseek:deepseek-v4-pro)": 22
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 134,
+            "input_tokens": 289853,
+            "output_tokens": 104462,
+            "cached_tokens": 147840,
+            "cost_usd": 0.319063752,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 114,
+            "input_tokens": 200504,
+            "output_tokens": 74038,
+            "cached_tokens": 122496,
+            "cost_usd": 0.112982976,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 20,
+            "input_tokens": 89349,
+            "output_tokens": 30424,
+            "cached_tokens": 25344,
+            "cost_usd": 0.206080776,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 20,
+              "queued": 137
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r3",
+        "run_id": "adamson_cf_h_a2_ds_w1_r3",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0166",
+        "features": [
+          "mean_response",
+          "is_target",
+          "ppi_diffusion_score_e18",
+          "dropout_rate_e24",
+          "target_loeuf_e29",
+          "loeuf_interaction_target_g_e38",
+          "nearby_tss_same_strand_e44_e48",
+          "ppi_diffusion_x_target_control_mean_e64",
+          "ppi_diffusion_x_gene_loeuf_e70_e72",
+          "ppi_diffusion_squared_x_gene_dropout_e91",
+          "ppi_diffusion_squared_x_log_control_mean_e102",
+          "target_loeuf_x_mean_response_e120",
+          "random_nonlinear_combo_e145",
+          "neighbor_mean_response_e151",
+          "gene_set_random_projection_nonlinear_e161",
+          "neighbor_mean_response_x_target_loeuf_e166"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "planner",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-v4-pro",
+          "calls": 20
+        },
+        {
+          "role": "worker",
+          "provider": "deepseek",
+          "recorded_model": "deepseek-flash",
+          "calls": 114
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_annotation",
+        "gene_constraint",
+        "gene_sets",
+        "ppi_network"
+      ]
+    },
+    "C0_r0": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r0",
+      "summary_sha256": "ba7584401f6fdbf8e8217f093bb1bff38929e33e169a95a997266678dd668943",
+      "metadata": {
+        "duration_s": 211.1,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 177,
+        "experiments_completed": 175,
+        "experiments_failed": 1,
+        "experiments_rejected": 0,
+        "experiments_killed": 0,
+        "experiments_cancelled": 0,
+        "duplicate_experiments": 1,
+        "completed_by_proposer": {
+          "python:exploit": 166,
+          "scripted:scripted": 7,
+          "sweep(scripted:scripted)": 2
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 9,
+            "input_tokens": 7325,
+            "output_tokens": 2725,
+            "cached_tokens": 0,
+            "cost_usd": 0.0,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 9,
+            "input_tokens": 7325,
+            "output_tokens": 2725,
+            "cached_tokens": 0,
+            "cost_usd": 0.0,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cached_tokens": 0,
+            "cost_usd": 0,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "scripted:opus",
+          "fallback": [],
+          "used": [
+            "scripted:scripted"
+          ],
+          "rounds": {
+            "scripted:scripted": {
+              "rounds": 6,
+              "queued": 10
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r0",
+        "run_id": "adamson_cf_h_c0_scripted_w4_r0",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0057",
+        "features": [
+          "mean_response",
+          "is_target",
+          "response_components_e14",
+          "target_level_e11",
+          "shared_module_e9"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "worker",
+          "provider": "mock",
+          "recorded_model": "mock",
+          "calls": 9
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "targets"
+      ]
+    },
+    "C0_r2": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r2",
+      "summary_sha256": "5e066305e4efe7a926b606845b4861b6a04b394912e289b14d2974e9eb3d661c",
+      "metadata": {
+        "duration_s": 216.8,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 181,
+        "experiments_completed": 180,
+        "experiments_failed": 1,
+        "experiments_rejected": 0,
+        "experiments_killed": 0,
+        "experiments_cancelled": 0,
+        "duplicate_experiments": 0,
+        "completed_by_proposer": {
+          "python:exploit": 170,
+          "scripted:scripted": 8,
+          "sweep(scripted:scripted)": 2
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 9,
+            "input_tokens": 7325,
+            "output_tokens": 2725,
+            "cached_tokens": 0,
+            "cost_usd": 0.0,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 9,
+            "input_tokens": 7325,
+            "output_tokens": 2725,
+            "cached_tokens": 0,
+            "cost_usd": 0.0,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cached_tokens": 0,
+            "cost_usd": 0,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "scripted:opus",
+          "fallback": [],
+          "used": [
+            "scripted:scripted"
+          ],
+          "rounds": {
+            "scripted:scripted": {
+              "rounds": 7,
+              "queued": 11
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r2",
+        "run_id": "adamson_cf_h_c0_scripted_w4_r2",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0053",
+        "features": [
+          "mean_response",
+          "is_target",
+          "response_components_e14",
+          "target_level_e11",
+          "shared_module_e9"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "worker",
+          "provider": "mock",
+          "recorded_model": "mock",
+          "calls": 9
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "targets"
+      ]
+    },
+    "C0_r3": {
+      "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3",
+      "summary_sha256": "1c6d033407e503fd90a9483532edd05122e67215376136ad380d0ac5e9069324",
+      "metadata": {
+        "duration_s": 210.5,
+        "workers": 4,
+        "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+        "split_id": "split_450515be1a0d8d2e",
+        "duration_note": null,
+        "experiments_proposed": 179,
+        "experiments_completed": 178,
+        "experiments_failed": 1,
+        "experiments_rejected": 0,
+        "experiments_killed": 0,
+        "experiments_cancelled": 0,
+        "duplicate_experiments": 0,
+        "completed_by_proposer": {
+          "python:exploit": 168,
+          "scripted:scripted": 8,
+          "sweep(scripted:scripted)": 2
+        },
+        "llm_usage": {
+          "all": {
+            "calls": 9,
+            "input_tokens": 7325,
+            "output_tokens": 2725,
+            "cached_tokens": 0,
+            "cost_usd": 0.0,
+            "failed_calls": 0
+          },
+          "worker": {
+            "calls": 9,
+            "input_tokens": 7325,
+            "output_tokens": 2725,
+            "cached_tokens": 0,
+            "cost_usd": 0.0,
+            "failed_calls": 0
+          },
+          "planner": {
+            "calls": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cached_tokens": 0,
+            "cost_usd": 0,
+            "failed_calls": 0
+          }
+        },
+        "planner": {
+          "configured": "scripted:opus",
+          "fallback": [],
+          "used": [
+            "scripted:scripted"
+          ],
+          "rounds": {
+            "scripted:scripted": {
+              "rounds": 7,
+              "queued": 11
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        }
+      },
+      "evaluate_py_attempts": null,
+      "attempt_definition": "lab experiment counts, not package evaluate.py invocations",
+      "selected": {
+        "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3",
+        "run_id": "adamson_cf_h_c0_scripted_w4_r3",
+        "split_id": "split_450515be1a0d8d2e",
+        "experiment_id": "EXP_0058",
+        "features": [
+          "mean_response",
+          "is_target",
+          "response_components_e14",
+          "target_level_e11",
+          "shared_module_e9"
+        ],
+        "params": {},
+        "cv_groups": [
+          true,
+          null
+        ]
+      },
+      "recorded_models": [
+        {
+          "role": "worker",
+          "provider": "mock",
+          "recorded_model": "mock",
+          "calls": 9
+        }
+      ],
+      "knowledge_names_from_selected_calls_or_declared_inputs": [
+        "gene_sets",
+        "ppi_network",
+        "prior_network",
+        "targets"
+      ]
+    },
+    "A3_r0": {
+      "run": {
+        "arm": "autoresearch",
+        "ended_by": "timeout",
+        "exit_code": 124,
+        "minutes": 20.0,
+        "model": "deepseek-v4-pro",
+        "model_served": "deepseek-v4-pro",
+        "seed": 0,
+        "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+        "wall_s": 1200.7
+      },
+      "handback_manifest": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r0/manifest.json",
+      "handback_sha256": "c0814b61a13378c9e10f1461fe15cb45071c6e3a0ef93053abad4be0bd2d614c",
+      "proxy_sha256": "61b8ad276c0326ae1aaa26586273a99b6a5eba16470ecaf7429ad4d64dac8ff1",
+      "calls": 93,
+      "tokens": {
+        "input_tokens": 8556420,
+        "cached_tokens": 8461824,
+        "output_tokens": 68626
+      },
+      "cost_usd": 0.76894587,
+      "served_models": [
+        "deepseek-v4-pro"
+      ],
+      "http_statuses_forwarded": {
+        "200": 93
+      },
+      "evaluate_py_attempts": 2,
+      "results_tsv_rows": 3,
+      "results_tsv_sha256": "069d70986cf49b4eb976500e1a6f6d85d61af79539d9e9ed15b02dd7a5d15387",
+      "status_counts": {
+        "baseline": 1,
+        "keep": 2
+      },
+      "accepted_kept_files": 1,
+      "handback_rejected_files": [],
+      "transcript_flags": [],
+      "harness_names_scan_files": 6,
+      "harness_names_scan_sha256": "a6ed2c557aece90272d0dca6f9536a8c6e18d812640059176be5668fb6264086",
+      "knowledge_files_named_in_kept_source": [
+        "gene_sets"
+      ],
+      "kept_source_static": [
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r0/autoresearch_r0/ar_functional_knn.py",
+          "sha256": "02dc1528c8a31ef73154021b8584724f693d6a580f4d61771f59e2a390a47a4f",
+          "knowledge_calls": [
+            "gene_sets"
+          ],
+          "context_attributes": [
+            "T",
+            "add",
+            "array",
+            "cache",
+            "float64",
+            "get",
+            "index",
+            "items",
+            "knowledge",
+            "mean",
+            "n_genes",
+            "ndarray",
+            "setdefault",
+            "shape",
+            "sort",
+            "sum",
+            "target_genes",
+            "train_delta",
+            "zeros"
+          ],
+          "classes": {
+            "ar_functional_knn": {
+              "name": "ar_functional_knn",
+              "params": {
+                "k": 3
+              },
+              "inputs": [
+                "train_delta",
+                "gene_sets",
+                "targets"
+              ],
+              "dim": 1,
+              "description": "Similarity-weighted mean residual response of the k training perturbations whose target genes share the most gene sets with p's target, zero when no set is shared."
+            }
+          }
+        }
+      ],
+      "evaluation_decision_metadata": [
+        {
+          "n": 1,
+          "feature": "-",
+          "status": "baseline",
+          "problems": []
+        },
+        {
+          "n": 2,
+          "feature": "ar_functional_knn",
+          "status": "keep",
+          "problems": []
+        },
+        {
+          "n": 3,
+          "feature": "ar_functional_knn",
+          "status": "keep",
+          "problems": []
+        }
+      ],
+      "recorded_rejection_categories": {
+        "guard": 0,
+        "literal": 0,
+        "one-change": 0,
+        "smoke": 0
+      }
+    },
+    "A3_r2": {
+      "run": {
+        "arm": "autoresearch",
+        "ended_by": "timeout",
+        "exit_code": 124,
+        "minutes": 20.0,
+        "model": "deepseek-v4-pro",
+        "model_served": "deepseek-v4-pro",
+        "seed": 2,
+        "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+        "wall_s": 1201.1
+      },
+      "handback_manifest": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r2/manifest.json",
+      "handback_sha256": "8b0954a0b86b67e008250d067a097aa9c470754af3063674964a7a1263f36392",
+      "proxy_sha256": "c553f119dda279f087b28591c18a157ba4bdfa8fcc411b203cca6fcccd6ea678",
+      "calls": 58,
+      "tokens": {
+        "input_tokens": 4927782,
+        "cached_tokens": 4856192,
+        "output_tokens": 80277
+      },
+      "cost_usd": 0.62606814,
+      "served_models": [
+        "deepseek-v4-pro"
+      ],
+      "http_statuses_forwarded": {
+        "200": 58
+      },
+      "evaluate_py_attempts": 1,
+      "results_tsv_rows": 2,
+      "results_tsv_sha256": "58f40a245da2659526257b8c3bc46d7ac7044645e77433b99c36b4362bf6f4fe",
+      "status_counts": {
+        "baseline": 1,
+        "keep": 1
+      },
+      "accepted_kept_files": 1,
+      "handback_rejected_files": [],
+      "transcript_flags": [],
+      "harness_names_scan_files": 20,
+      "harness_names_scan_sha256": "e0dc188be88f196bbc59c8bd5fafde242e04407d77f9f53011f677f722b262a2",
+      "knowledge_files_named_in_kept_source": [
+        "gene_sets",
+        "ppi_network"
+      ],
+      "kept_source_static": [
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r2/autoresearch_r2/ar_target_knn.py",
+          "sha256": "15824042569738b0e68ab0408f3f3d8ea2451c5df3990be1ed46e60649fe5f30",
+          "knowledge_calls": [
+            "gene_sets",
+            "ppi_network"
+          ],
+          "context_attributes": [
+            "add",
+            "append",
+            "asarray",
+            "control_mean",
+            "exp",
+            "float64",
+            "gene_corr",
+            "get",
+            "items",
+            "knowledge",
+            "mean",
+            "n_genes",
+            "perts",
+            "setdefault",
+            "sum",
+            "target_genes",
+            "target_indices",
+            "train_delta",
+            "zeros"
+          ],
+          "classes": {
+            "ar_target_knn": {
+              "name": "ar_target_knn",
+              "inputs": [
+                "control_cells",
+                "train_delta",
+                "targets",
+                "gene_sets",
+                "ppi_network"
+              ],
+              "dim": 3,
+              "description": "Similarity-weighted mean of training responses: weights training perturbations by coexpression, shared gene sets and PPI between their target genes and p's target, plus the target gene's control expression and mean response."
+            }
+          }
+        }
+      ],
+      "evaluation_decision_metadata": [
+        {
+          "n": 1,
+          "feature": "-",
+          "status": "baseline",
+          "problems": []
+        },
+        {
+          "n": 2,
+          "feature": "ar_target_knn",
+          "status": "keep",
+          "problems": []
+        }
+      ],
+      "recorded_rejection_categories": {
+        "guard": 0,
+        "literal": 0,
+        "one-change": 0,
+        "smoke": 0
+      }
+    },
+    "A3_r3": {
+      "run": {
+        "arm": "autoresearch",
+        "ended_by": "timeout",
+        "exit_code": 124,
+        "minutes": 20.0,
+        "model": "deepseek-v4-pro",
+        "model_served": "deepseek-v4-pro",
+        "seed": 3,
+        "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+        "wall_s": 1200.9
+      },
+      "handback_manifest": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r3/manifest.json",
+      "handback_sha256": "b643937e80bd4e203b5c4be0d0dcb305c6b863bc508f9fc8be5043d91647b112",
+      "proxy_sha256": "904e8e3e13b634d50ca58fb58e34c654a21a34df5557e7f9576247c6c5848485",
+      "calls": 77,
+      "tokens": {
+        "input_tokens": 7856999,
+        "cached_tokens": 7773440,
+        "output_tokens": 71808
+      },
+      "cost_usd": 0.7366889,
+      "served_models": [
+        "deepseek-v4-pro"
+      ],
+      "http_statuses_forwarded": {
+        "200": 77
+      },
+      "evaluate_py_attempts": 4,
+      "results_tsv_rows": 5,
+      "results_tsv_sha256": "635945dcb40a47f8cd6154e0b3f2cd0fd24a806015b4b3227dfdf6c9c3e98509",
+      "status_counts": {
+        "baseline": 1,
+        "rejected": 1,
+        "keep": 3
+      },
+      "accepted_kept_files": 2,
+      "handback_rejected_files": [],
+      "transcript_flags": [
+        {
+          "line": 42,
+          "match": "requests",
+          "text": "{\"type\":\"item.completed\",\"item\":{\"id\":\"item_21\",\"type\":\"command_execution\",\"command\":\"/bin/bash -lc 'cd /work/pkg && cat harness/genemila/spec.py'\",\"aggregated_output\":\"\\\"\\\"\\\"Experiment specifications"
+        }
+      ],
+      "harness_names_scan_files": 7,
+      "harness_names_scan_sha256": "a3be4f27019332c69192799bbe85aa1fc92719bb8ca493c714983586f6dd5310",
+      "knowledge_files_named_in_kept_source": [
+        "gene_sets",
+        "ppi_network"
+      ],
+      "kept_source_static": [
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r3/autoresearch_r3/ar_ppi_jac3d.py",
+          "sha256": "7456f16ccbc50c3d2e06c59413396248b2acaec31726e3d22ee5241f5e2ad070",
+          "knowledge_calls": [
+            "gene_sets",
+            "ppi_network"
+          ],
+          "context_attributes": [
+            "add",
+            "cache",
+            "gene_index",
+            "get",
+            "items",
+            "knowledge",
+            "mean",
+            "n_genes",
+            "setdefault",
+            "sum",
+            "target_genes",
+            "train_delta",
+            "zeros"
+          ],
+          "classes": {
+            "ar_ppi_jac3d": {
+              "name": "ar_ppi_jac3d",
+              "inputs": [
+                "train_delta",
+                "ppi_network",
+                "gene_sets"
+              ],
+              "dim": 3,
+              "description": "Direct PPI, second-hop PPI and PPI-neighbourhood Jaccard weighted mean responses, each leaving p out, with the gene-set-Jaccard weighted mean as fallback, as three columns."
+            }
+          }
+        },
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r3/autoresearch_r3/ar_tgt_ctl_x.py",
+          "sha256": "9ea1df24f4f9eb0162b6b4cd289b6a44f6d5862dc2597988f8c4713f1b6e568e",
+          "knowledge_calls": [],
+          "context_attributes": [
+            "control_mean",
+            "gene_index",
+            "n_genes",
+            "target_genes",
+            "zeros"
+          ],
+          "classes": {
+            "ar_tgt_ctl_x": {
+              "name": "ar_tgt_ctl_x",
+              "inputs": [
+                "control_cells"
+              ],
+              "dim": 1,
+              "description": "Target gene mean control expression on the target's own row, zero elsewhere (is_target times control mean)."
+            }
+          }
+        }
+      ],
+      "evaluation_decision_metadata": [
+        {
+          "n": 1,
+          "feature": "-",
+          "status": "baseline",
+          "problems": []
+        },
+        {
+          "n": 2,
+          "feature": "ar_ppi_jac3d",
+          "status": "rejected",
+          "problems": [
+            "ar_ppi_jac3d.py: smoke: feature is constant across all rows (no information)"
+          ]
+        },
+        {
+          "n": 3,
+          "feature": "ar_ppi_jac3d",
+          "status": "keep",
+          "problems": []
+        },
+        {
+          "n": 4,
+          "feature": "ar_ppi_jac3d",
+          "status": "keep",
+          "problems": []
+        },
+        {
+          "n": 5,
+          "feature": "ar_tgt_ctl_x",
+          "status": "keep",
+          "problems": []
+        }
+      ],
+      "recorded_rejection_categories": {
+        "guard": 0,
+        "literal": 0,
+        "one-change": 0,
+        "smoke": 1
+      }
+    },
+    "A4_r0": {
+      "run": {
+        "arm": "biomni",
+        "ended_by": "timeout",
+        "exit_code": -15,
+        "minutes": 20.0,
+        "model": "deepseek-v4-pro",
+        "model_served": null,
+        "seed": 0,
+        "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+        "wall_s": 1200.1
+      },
+      "handback_manifest": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r0/manifest.json",
+      "handback_sha256": "922c50bc955e2c88add2697607e7f2f4424c6fe8fc072db2541c84e6da8f4e08",
+      "proxy_sha256": "2ff64052d098d2bb1f94b889a37d4bd4b4233a4c57c14b554d38c7551e8f71f3",
+      "calls": 69,
+      "tokens": {
+        "input_tokens": 4043237,
+        "cached_tokens": 3918464,
+        "output_tokens": 87199
+      },
+      "cost_usd": 0.68242081,
+      "served_models": [
+        "deepseek-v4-pro"
+      ],
+      "http_statuses_forwarded": {
+        "200": 69
+      },
+      "evaluate_py_attempts": 1,
+      "results_tsv_rows": 2,
+      "results_tsv_sha256": "513a47e85a3fa7f6d86d652877cff9821e51709799ce75349f98af9ce67de3b4",
+      "status_counts": {
+        "baseline": 1,
+        "keep": 1
+      },
+      "accepted_kept_files": 1,
+      "handback_rejected_files": [],
+      "transcript_flags": [],
+      "harness_names_scan_files": 12,
+      "harness_names_scan_sha256": "c67f0e36165d5da002120e06658c6cc4915e98d42fda8a142434b297bbd16908",
+      "knowledge_files_named_in_kept_source": [
+        "gene_sets"
+      ],
+      "kept_source_static": [
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r0/biomni_r0/ar_target_sim_response.py",
+          "sha256": "627cd6272a40b39d413571bc525c7901c0efedd1430341dfefebe1d703cceae7",
+          "knowledge_calls": [
+            "gene_sets"
+          ],
+          "context_attributes": [
+            "T",
+            "cache",
+            "errstate",
+            "fill_diagonal",
+            "gene_index",
+            "get",
+            "items",
+            "keys",
+            "knowledge",
+            "mean",
+            "n_genes",
+            "nan_to_num",
+            "sum",
+            "target_genes",
+            "train_delta",
+            "zeros"
+          ],
+          "classes": {
+            "ar_target_sim_response": {
+              "name": "ar_target_sim_response",
+              "params": {
+                "min_sim": 0.0
+              },
+              "inputs": [
+                "train_delta",
+                "targets",
+                "gene_sets"
+              ],
+              "dim": 1,
+              "description": "Weighted mean training response by gene-set Jaccard similarity between perturbation targets."
+            }
+          }
+        }
+      ],
+      "evaluation_decision_metadata": [
+        {
+          "n": 1,
+          "feature": "-",
+          "status": "baseline",
+          "problems": []
+        },
+        {
+          "n": 2,
+          "feature": "ar_target_sim_response",
+          "status": "keep",
+          "problems": []
+        }
+      ],
+      "recorded_rejection_categories": {
+        "guard": 0,
+        "literal": 0,
+        "one-change": 0,
+        "smoke": 0
+      }
+    },
+    "A4_r2": {
+      "run": {
+        "arm": "biomni",
+        "ended_by": "timeout",
+        "exit_code": -15,
+        "minutes": 20.0,
+        "model": "deepseek-v4-pro",
+        "model_served": null,
+        "seed": 2,
+        "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+        "wall_s": 1200.0
+      },
+      "handback_manifest": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r2/manifest.json",
+      "handback_sha256": "8f760ca66b38bc73725b7e52a5cd58eef5c885bfc971ea6bfe0aebae80f1aed8",
+      "proxy_sha256": "61a8550043aaada5481e6601eff677c8304edf2ee6781a7f5ca522a2be3f900d",
+      "calls": 85,
+      "tokens": {
+        "input_tokens": 5395225,
+        "cached_tokens": 5287808,
+        "output_tokens": 102833
+      },
+      "cost_usd": 0.78167266,
+      "served_models": [
+        "deepseek-v4-pro"
+      ],
+      "http_statuses_forwarded": {
+        "200": 85
+      },
+      "evaluate_py_attempts": 2,
+      "results_tsv_rows": 3,
+      "results_tsv_sha256": "626f8446202790e2f38b00bf0e6510611e0e5381e25ff6a76324111fb2c0ea39",
+      "status_counts": {
+        "baseline": 1,
+        "keep": 2
+      },
+      "accepted_kept_files": 2,
+      "handback_rejected_files": [],
+      "transcript_flags": [],
+      "harness_names_scan_files": 10,
+      "harness_names_scan_sha256": "3b34e59f39891cae879c599501bb20f3304b40cd6968fd8cdd7d926c2b275f3e",
+      "knowledge_files_named_in_kept_source": [
+        "gene_sets"
+      ],
+      "kept_source_static": [
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r2/biomni_r2/ar_target_expr.py",
+          "sha256": "ceda6cd1d74bbb8b14ba3ae113e77c4e471b425bdf6f90bea14c7f96aa2f912c",
+          "knowledge_calls": [],
+          "context_attributes": [
+            "control_mean",
+            "gene_index",
+            "get",
+            "n_genes",
+            "target_genes",
+            "zeros"
+          ],
+          "classes": {
+            "ar_target_expr": {
+              "name": "ar_target_expr",
+              "inputs": [
+                "control_cells",
+                "targets"
+              ],
+              "dim": 1,
+              "description": "is_target * control_mean: target gene basal expression, 0 elsewhere."
+            }
+          }
+        },
+        {
+          "path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r2/biomni_r2/ar_wmean_path.py",
+          "sha256": "083f70854a7f67617bd6ad10e7051079bddb0f8449f5d888a58039cf55844823",
+          "knowledge_calls": [
+            "gene_sets"
+          ],
+          "context_attributes": [
+            "add",
+            "array",
+            "cache",
+            "get",
+            "items",
+            "knowledge",
+            "mean",
+            "n_genes",
+            "setdefault",
+            "sum",
+            "target_genes",
+            "train_delta",
+            "zeros"
+          ],
+          "classes": {
+            "ar_wmean_path": {
+              "name": "ar_wmean_path",
+              "inputs": [
+                "train_delta",
+                "targets",
+                "knowledge"
+              ],
+              "dim": 1,
+              "description": "Pathway-Jaccard-weighted mean training response, leaving p out."
+            }
+          }
+        }
+      ],
+      "evaluation_decision_metadata": [
+        {
+          "n": 1,
+          "feature": "-",
+          "status": "baseline",
+          "problems": []
+        },
+        {
+          "n": 2,
+          "feature": "ar_wmean_path",
+          "status": "keep",
+          "problems": []
+        },
+        {
+          "n": 3,
+          "feature": "ar_target_expr",
+          "status": "keep",
+          "problems": []
+        }
+      ],
+      "recorded_rejection_categories": {
+        "guard": 0,
+        "literal": 0,
+        "one-change": 0,
+        "smoke": 0
+      }
+    },
+    "A4_r3": {
+      "run": {
+        "arm": "biomni",
+        "ended_by": "timeout",
+        "exit_code": -15,
+        "minutes": 20.0,
+        "model": "deepseek-v4-pro",
+        "model_served": null,
+        "seed": 3,
+        "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+        "wall_s": 1200.1
+      },
+      "handback_manifest": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a4_r3/manifest.json",
+      "handback_sha256": "011ee97f7e314ea9ef0f753234a22dba62abb1d8688a30d58bb6a71ce9b380e2",
+      "proxy_sha256": "75af708564aca4a0a176f4112f3c95c29f6bec82745cccc8c19fa77a374ef574",
+      "calls": 63,
+      "tokens": {
+        "input_tokens": 3556260,
+        "cached_tokens": 3469440,
+        "output_tokens": 80941
+      },
+      "cost_usd": 0.5877841,
+      "served_models": [
+        "deepseek-v4-pro"
+      ],
+      "http_statuses_forwarded": {
+        "200": 63
+      },
+      "evaluate_py_attempts": 1,
+      "results_tsv_rows": 2,
+      "results_tsv_sha256": "5636919e9eb7a1124a307eed0a05d13f8a34dc3b11b3136c9e5a92f8ce0c1d01",
+      "status_counts": {
+        "baseline": 1,
+        "discard": 1
+      },
+      "accepted_kept_files": 0,
+      "handback_rejected_files": [],
+      "transcript_flags": [],
+      "harness_names_scan_files": 4,
+      "harness_names_scan_sha256": "0b7e35dc5695cf1e021e6daae5508cd0503a206cd495384a8f00f4217a76d093",
+      "knowledge_files_named_in_kept_source": [],
+      "kept_source_static": [],
+      "evaluation_decision_metadata": [
+        {
+          "n": 1,
+          "feature": "-",
+          "status": "baseline",
+          "problems": []
+        },
+        {
+          "n": 2,
+          "feature": "ar_target_coexpression",
+          "status": "discard",
+          "problems": []
+        }
+      ],
+      "recorded_rejection_categories": {
+        "guard": 0,
+        "literal": 0,
+        "one-change": 0,
+        "smoke": 0
+      }
+    },
+    "A5_C2": {
+      "deterministic_translation": true,
+      "search_repeats": 1,
+      "evaluate_py_attempts": null,
+      "usage_not_applicable": "pre-existing translated ideas, not the external paid CellForge C2 attempt"
+    }
+  },
+  "parent": {
+    "source": "builtin",
+    "exposure": "none",
+    "features": [
+      "control_mean",
+      "mean_response",
+      "is_target"
+    ],
+    "params": {},
+    "n_columns": 3,
+    "files": {},
+    "tiers": {
+      "oof": {
+        "n": 50,
+        "metrics": {
+          "pearson_delta": 0.48423026976318995,
+          "pearson_delta_nontarget": 0.48120369724236334,
+          "mse_top": 0.13525475833368783,
+          "r2_top": 0.7698010545313738,
+          "pearson_delta_top": 0.6304818740870558,
+          "direction_acc_top": 0.8503333333333332,
+          "mse": 0.0066812035665043635,
+          "delta_scale_ratio": 0.6207568291104039
+        },
+        "alphas": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ]
+      }
+    }
+  },
+  "settings": {
+    "model": "ridge",
+    "alphas": [
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0,
+      1000.0,
+      10000.0,
+      30000.0,
+      100000.0
+    ],
+    "alpha_rule": "honest_oof",
+    "fold_seeds": [
+      101,
+      102,
+      103
+    ],
+    "k": 5,
+    "groups": null,
+    "null": "gene permutation within control-mean bins",
+    "null_pert": "per-perturbation scalar of a candidate proportional to a parent column permuted within bins of the targets' mean control expression, parent columns in place",
+    "correction": "max-gain step-down permutation (p_fwer) within each source's add-one rows, duplicates by prediction hash collapsed first; Holm on the raw p kept as p_holm",
+    "p_floor": 0.001,
+    "min_gain": 0.002,
+    "null_reps": 999,
+    "null_seed": 0,
+    "null_bins": 10,
+    "tiers": [
+      "oof"
+    ],
+    "deciding_tier": "oof",
+    "families": {
+      "A3_r0": {
+        "add_one": 1,
+        "set": 1
+      },
+      "A3_r2": {
+        "add_one": 1,
+        "set": 1
+      },
+      "A3_r3": {
+        "add_one": 2,
+        "set": 1
+      },
+      "A4_r0": {
+        "add_one": 1,
+        "set": 1
+      },
+      "A4_r2": {
+        "add_one": 2,
+        "set": 1
+      },
+      "A4_r3": {
+        "add_one": 0,
+        "set": 0
+      },
+      "A5_C2": {
+        "add_one": 1,
+        "set": 1
+      },
+      "A1_r0": {
+        "add_one": 20,
+        "set": 1
+      },
+      "A1_r2": {
+        "add_one": 20,
+        "set": 1
+      },
+      "A1_r3": {
+        "add_one": 20,
+        "set": 1
+      },
+      "A1abl_r0": {
+        "add_one": 8,
+        "set": 1
+      },
+      "A1abl_r2": {
+        "add_one": 21,
+        "set": 1
+      },
+      "A1abl_r3": {
+        "add_one": 17,
+        "set": 1
+      },
+      "A2_r0": {
+        "add_one": 8,
+        "set": 1
+      },
+      "A2_r2": {
+        "add_one": 9,
+        "set": 1
+      },
+      "A2_r3": {
+        "add_one": 14,
+        "set": 1
+      },
+      "C0_r0": {
+        "add_one": 3,
+        "set": 1
+      },
+      "C0_r2": {
+        "add_one": 3,
+        "set": 1
+      },
+      "C0_r3": {
+        "add_one": 3,
+        "set": 1
+      }
+    },
+    "labels_read": [
+      "training labels (public.npz)"
+    ],
+    "timeout_s": 1800,
+    "ram_mb": 8192
+  },
+  "split_id": "split_450515be1a0d8d2e",
+  "data": {
+    "name": "adamson_cf_clean_tables",
+    "added_knowledge": [],
+    "sha256": {
+      "public.npz": "e8908ef34d851c1111556be7b8d97eb511bc7554513683a0cf3844248d153718",
+      "knowledge/gene_annotation.json": "ac2e774960a14c9e0213c6ec1afd8eecc7836cb4682d236048b6404bd409c7bf",
+      "knowledge/gene_constraint.json": "1069daa45f301a62cd5da06316ce3dac8947e1df4382c78a3bd40ab1f5f8390f",
+      "knowledge/gene_sets.json": "2221426e64ee8323044a7a9e2a415ba907210aebf121b5deb49d60a984ec1d88",
+      "knowledge/ppi_network.json": "ee4e7e3d7ed051324cede42467ef20e3f3be8e2ecd969776d8c9dcbd215c8b28",
+      "knowledge/prior_network.json": "27c0cd0f06f778a94e4a546a8d4fbaacb98f4978b76b08ad95892791e5bba513",
+      "knowledge/protein_annotation.json": "b17571ef1ce61d6bf0f1397e3948159463f510686acc700a15e383b17d462acd",
+      "knowledge/targets.json": "e0795293a743ca84d49b8a2cb74b861c30359ed890990d366f7035655fd47f3b",
+      "knowledge/transcription_factors.json": "6d89a663d7dc7023b68ce13006cb5b6d93501e5b738fd4f6a05cd1927b984cf8"
+    }
+  },
+  "rejected_rows": [
+    {
+      "source": "A5_C2",
+      "feature": "cf_grn_propagation",
+      "status": "smoke",
+      "reason": "feature is constant across all rows (no information)"
+    },
+    {
+      "source": "A5_C2",
+      "feature": "cf_latent_offset",
+      "status": "smoke",
+      "reason": "feature is constant across all rows (no information)"
+    },
+    {
+      "source": "A5_C2",
+      "feature": "cf_pair_interaction",
+      "status": "smoke",
+      "reason": "feature is constant across all rows (no information)"
+    },
+    {
+      "source": "A1_r0",
+      "feature": "gene_loeuf_x_target_selfdelta_e569",
+      "status": "duplicate",
+      "reason": "duplicate of essentiality_selfdelta_interaction_e234_e249: identical OOF predictions"
+    }
+  ]
+}

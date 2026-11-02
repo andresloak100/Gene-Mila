@@ -1,0 +1,66 @@
+{
+  "utc": "2026-11-01T03:02:23.586996+00:00",
+  "execution_source": "4e493c3",
+  "lead_comment": 6552399727,
+  "direct_user_restart_after_diagnostics": true,
+  "same_context_both_shells": "desktop-linux",
+  "same_image_listed": "b15af00eb763",
+  "context_mismatch_established": false,
+  "no_context_fix_or_rebuild": true,
+  "launch_shell": "non-login zsh, same as own tool-shell diagnostics",
+  "ledger_before": [
+    61.575279308,
+    23867
+  ],
+  "cumulative_authority": 95,
+  "native_cap_unchanged": "76.56 61.562649 2026-11-01T01:43Z",
+  "scripts_copied_byte_identical": [
+    {
+      "name": "Dockerfile",
+      "sha256": "6c66d25dfbf4363a046f8fc9acc0d339eb8fc91e5ea95be3a8a6d2ba529483e5"
+    },
+    {
+      "name": "block_h_a2.sh",
+      "sha256": "9a922447d3cac80ef07d86bff806074ded64c00ab9aa392ed10b40b4a72dd701"
+    },
+    {
+      "name": "block_h_a3.sh",
+      "sha256": "08f5c2df240abad56197bd16b296d8534f0ac79ecba067b8d27f2aabcca12a64"
+    },
+    {
+      "name": "block_h_a4.sh",
+      "sha256": "8ad59bdd05ce6f8813f531fc5c53ad91d49f8aad545323ae45869b6b3860899e"
+    },
+    {
+      "name": "block_h_cap.sh",
+      "sha256": "14ab42501f6abbee9d773b934a3f30c22b631830f286c5ecbd664bd39ba461ae"
+    },
+    {
+      "name": "block_h_chain.sh",
+      "sha256": "28eb46f06581ddaba94341ecd3a16829143a0defe68ce3f26ed35c2834b76094"
+    },
+    {
+      "name": "block_h_common.sh",
+      "sha256": "e73b92b9959aefd3206ee7d15a51ad32a984379456828de55021b164a3ac93ee"
+    },
+    {
+      "name": "block_h_probe.sh",
+      "sha256": "22739216b76ce8a5a810b9111c96a44ae7c6c60c3d778073c1f0b90a68527331"
+    },
+    {
+      "name": "block_h_reset_probe.sh",
+      "sha256": "2b30f31be850f391378a0cf3b1490b1ab6d78793b37e321651c1c8fc47887922"
+    },
+    {
+      "name": "check_tools.sh",
+      "sha256": "f35cd455309977fc08d2e33aa2d0b012be76cffba3dd0a31aefdd968d46e0c74"
+    }
+  ],
+  "C0_receipt_hashes": {
+    "0": "6f0cc48836d997de631910dc9eb72f25126352427377b8a5e11783d542494d9a",
+    "2": "525929caf22e9b5a28fd9892bb76785c7591fd5bfd3a732cd038e49bd4c9d285",
+    "3": "28f19abb53b09c9a3a9435744e719dd89a8e90b8b5e99ae39eb55109d2cc88a1"
+  },
+  "previous_chain_log_sha256": "0436011ce7406cc7ba2527d21ac8bae83e30ad20145392ddc4c3d3c5fceb1bb2",
+  "progress_start_offset": 15779
+}

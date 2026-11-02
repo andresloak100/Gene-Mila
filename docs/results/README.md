@@ -1,5 +1,15 @@
 # Results index
 
+## Block H fixed comparison (1 November 2026)
+
+| Artifact | Contents |
+|---|---|
+| [adamson_cf_h_compare/feature_compare.md](adamson_cf_h_compare/feature_compare.md), [JSON](adamson_cf_h_compare/feature_compare.json) | One fixed B.2 call, OOF only, all19 system rows including empty Biomni3; raw output unchanged |
+| [adamson_cf_h_readings/report.md](adamson_cf_h_readings/report.md), [JSON](adamson_cf_h_readings/readings.json) | Readings2–4: arm metrics/sample SD, actual paired stats, usage, attempts, source/guard/literal/harness audit |
+| [Frozen selection](adamson_cf_h_readings/frozen_selection.json) | Source/model identities and specifications, hashes posted #41; fitted exports and fresh test pending |
+| [Receipt manifest](adamson_cf_h_readings/artifact_manifest.json) | Exact output/receipt bytes, original-source mapping and publication audit |
+
+
 ## Block H: authorized probe reset, restart image refusal (1 November 2026)
 
 Read [the new pre-session refusal](block_h_probe_restart_20261101/report.md) and [all reset/restart receipts](block_h_probe_restart_20261101/README.md). Lead PR102's probe allowances were adopted and the exact dated reset passed, preserving the failed probe. The native restart then exited 3 because its Docker image-name check failed, although read-only diagnostics still list the validated image/tag. Cause unknown; no retag/rebuild or retry followed. Zero new calls; ledger unchanged. Andres's new cumulative $95 H/DK ceiling is recorded, while the existing native H cap and session limits remain unchanged. C0 and all older receipts are preserved.

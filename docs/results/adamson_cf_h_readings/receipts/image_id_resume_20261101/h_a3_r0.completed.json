@@ -1,0 +1,115 @@
+{
+  "utc": "2026-11-01T14:38:05.187457+00:00",
+  "name": "h_a3_r0",
+  "native_passed": true,
+  "parent_native_rc": 0,
+  "runner_source_timeout_is_success": "tools/baselines/run_codex.sh:255 succeeds for timeout or solution",
+  "agent_run": {
+    "arm": "autoresearch",
+    "client": "codex",
+    "seed": 0,
+    "model": "deepseek-v4-pro",
+    "model_served": "deepseek-v4-pro",
+    "minutes": 20.0,
+    "probe": false,
+    "package": "/work/pkg",
+    "out": "/work/out",
+    "proxy": "http://host.docker.internal:8787",
+    "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+    "codex_bin": "codex",
+    "wire_api": "responses",
+    "sandbox": "none",
+    "codex_home": "/work/out/codex_home",
+    "shell_timeout": "codex default 10 s per command unless the model passes timeout_ms (no config key); the Claude Code arm gets eval_timeout_s + 30 s",
+    "started": 1793542623.0,
+    "ended": 1793543823.7170875,
+    "wall_s": 1200.7,
+    "exit_code": 124,
+    "ended_by": "timeout",
+    "error": null
+  },
+  "agent_started_utc": "2026-11-01T14:17:03+00:00",
+  "agent_ended_utc": "2026-11-01T14:37:03.717088+00:00",
+  "proxy_successful_calls": 93,
+  "proxy_statuses": {
+    "0": 1,
+    "200": 93
+  },
+  "proxy_cost_usd_decimal_sum": "0.76894587",
+  "proxy_tokens": {
+    "input_tokens": 8556420,
+    "cached_tokens": 8461824,
+    "output_tokens": 68626
+  },
+  "proxy_models": [
+    "deepseek-v4-pro"
+  ],
+  "check": "calls 93, agent minutes 19.8, tokens in 8556420 cache 8461824 out 68626, proxy cost $0.7689, served ['deepseek-v4-pro'], other statuses none\nfiles naming harness/val1.npz: 6 (/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/h_a3_r0.val1scan.txt; allowed, recorded)\n",
+  "credential_scan_bytes": 0,
+  "handback": "autoresearch_r0: 1 kept files from runs/kept/features; 1 accepted -> /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r0/autoresearch_r0; 0 rejected -> -; manifest /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/handback/h_a3_r0/manifest.json\n",
+  "handback_manifest_sha256": "c0814b61a13378c9e10f1461fe15cb45071c6e3a0ef93053abad4be0bd2d614c",
+  "handback_manifest": {
+    "sessions": {
+      "autoresearch_r0": {
+        "files": {
+          "ar_functional_knn": {
+            "copied_to": "autoresearch_r0/ar_functional_knn.py",
+            "guard": {
+              "ok": true,
+              "problems": []
+            },
+            "literal": {
+              "bytes": 2601,
+              "name_literals": 0,
+              "numeric_constants": 16,
+              "ok": true,
+              "problems": [],
+              "string_bytes": 432
+            },
+            "ok": true,
+            "sha256": "02dc1528c8a31ef73154021b8584724f693d6a580f4d61771f59e2a390a47a4f",
+            "size": 2601
+          }
+        },
+        "manifest_sha256": "cc382dd766d2ddc6a943e4aa415cab9081b3c3c5708da6449c3b559a34baae2e",
+        "origin": "runs/kept/features",
+        "out": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/out/h_a3_r0",
+        "package": "/Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/work/h_a3_r0",
+        "results_tsv_sha256": "069d70986cf49b4eb976500e1a6f6d85d61af79539d9e9ed15b02dd7a5d15387",
+        "run": {
+          "arm": "autoresearch",
+          "ended_by": "timeout",
+          "exit_code": 124,
+          "minutes": 20.0,
+          "model": "deepseek-v4-pro",
+          "model_served": "deepseek-v4-pro",
+          "seed": 0,
+          "task_sha256": "63a389ec3b26ab56b030b0ef9a4a17382da00c9c2e3b9c6f1b2e7a89e0164293",
+          "wall_s": 1200.7
+        },
+        "transcript_flags": [],
+        "transcript_sha256": "fc169a193e3ac050eab342d03e9435997aff081044c28f7fa13f99bbaa0766d3"
+      }
+    }
+  },
+  "new_progress": [
+    "- 2026-11-01T14:37Z h_a3_r0 finished rc=0 DeepSeek ledger $64.414952 (session $.768946): calls 93, agent minutes 19.8, tokens in 8556420 cache 8461824 out 68626, proxy cost $0.7689, served ['deepseek-v4-pro'], other statuses none; files naming harness/val1.npz: 6",
+    "- 2026-11-01T14:37Z h_a3_r2 started (package copy /Users/andresarriaga/Documents/Mila/Gene-Mila/genemila_scale_logs/block_h/work/h_a3_r2, client codex, model deepseek-v4-pro, DeepSeek ledger $64.414952, block H cap $76.56 from a start of $61.562649 at 2026-11-01T01:43Z, isolation docker, image sha256:b15af00eb763c5fb0fa8cb8001c3cd2d8b649492b11910ac0b90d5b799466a09)"
+  ],
+  "progress_start_offset": 18182,
+  "progress_end_offset": 18814,
+  "next_session": "h_a3_r2",
+  "next_proxy_statuses": {
+    "0": 1,
+    "200": 14
+  },
+  "ledger_observation": {
+    "provider": "deepseek",
+    "total": 64.485591196,
+    "rows": 24196
+  },
+  "chain_exit_present": false,
+  "H_STOP_present": false,
+  "native_stopped_present": false,
+  "no_rerun": true
+}

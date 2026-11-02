@@ -1,0 +1,86 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "mode": "login_zsh",
+      "command": "docker context show",
+      "result": {
+        "chunk_id": "32a0d7",
+        "wall_time_seconds": 4.0167e-05,
+        "exit_code": 0,
+        "original_token_count": 4,
+        "output": "desktop-linux\n"
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "mode": "login_zsh",
+      "command": "docker context ls",
+      "result": {
+        "chunk_id": "576d95",
+        "wall_time_seconds": 8.834e-06,
+        "exit_code": 0,
+        "original_token_count": 88,
+        "output": "NAME              DESCRIPTION                               DOCKER ENDPOINT                                       ERROR\ndefault           Current DOCKER_HOST based configuration   unix:///var/run/docker.sock                           \ndesktop-linux *   Docker Desktop                            unix:///Users/andresarriaga/.docker/run/docker.sock   \n"
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "mode": "login_zsh",
+      "command": "docker image ls genemila-h",
+      "result": {
+        "chunk_id": "6494e2",
+        "wall_time_seconds": 1.894588625,
+        "exit_code": 0,
+        "original_token_count": 61,
+        "output": "WARNING: This output is designed for human readability. For machine-readable output, please use --format.\nIMAGE               ID             DISK USAGE   CONTENT SIZE   EXTRA\ngenemila-h:latest   b15af00eb763       4.02GB         1.25GB        \n"
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "mode": "own_shell",
+      "command": "docker context show",
+      "result": {
+        "chunk_id": "55aeb5",
+        "wall_time_seconds": 2.0291e-05,
+        "exit_code": 0,
+        "original_token_count": 4,
+        "output": "desktop-linux\n"
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "mode": "own_shell",
+      "command": "docker context ls",
+      "result": {
+        "chunk_id": "89fb24",
+        "wall_time_seconds": 8.958e-06,
+        "exit_code": 0,
+        "original_token_count": 88,
+        "output": "NAME              DESCRIPTION                               DOCKER ENDPOINT                                       ERROR\ndefault           Current DOCKER_HOST based configuration   unix:///var/run/docker.sock                           \ndesktop-linux *   Docker Desktop                            unix:///Users/andresarriaga/.docker/run/docker.sock   \n"
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "mode": "own_shell",
+      "command": "docker image ls genemila-h",
+      "result": {
+        "chunk_id": "436574",
+        "wall_time_seconds": 1.895832959,
+        "exit_code": 0,
+        "original_token_count": 61,
+        "output": "WARNING: This output is designed for human readability. For machine-readable output, please use --format.\nIMAGE               ID             DISK USAGE   CONTENT SIZE   EXTRA\ngenemila-h:latest   b15af00eb763       4.02GB         1.25GB        \n"
+      }
+    }
+  }
+]

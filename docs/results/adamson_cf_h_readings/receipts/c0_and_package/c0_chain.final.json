@@ -1,0 +1,71 @@
+{
+  "utc": "2026-11-01T01:41:30.589326+00:00",
+  "exit": 0,
+  "results": [
+    {
+      "seed": 0,
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r0",
+      "exit": 0,
+      "runtime": {
+        "start_utc": "2026-11-01T01:27:20.690751+00:00",
+        "end_utc": "2026-11-01T01:32:00.005222+00:00",
+        "wall_seconds": 279.3147355830297,
+        "exit": 0,
+        "ledger_after": [
+          61.562649371999996,
+          23865
+        ]
+      },
+      "code": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+      "config_sha256": "c4e80ab71acded33eebd4e99ec370b44df2ad90517c4b096da6f5c5c92c19705",
+      "summary_sha256": "ba7584401f6fdbf8e8217f093bb1bff38929e33e169a95a997266678dd668943",
+      "source_settings_checks_pass": true,
+      "ledger_unchanged": true
+    },
+    {
+      "seed": 2,
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r2",
+      "exit": 0,
+      "runtime": {
+        "start_utc": "2026-11-01T01:32:00.931044+00:00",
+        "end_utc": "2026-11-01T01:36:49.024678+00:00",
+        "wall_seconds": 288.09387920890003,
+        "exit": 0,
+        "ledger_after": [
+          61.562649371999996,
+          23865
+        ]
+      },
+      "code": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+      "config_sha256": "4a2a8c1ba6666648b5f8f3af8417b91076c0c95b263ca080a9d0969ca25f892d",
+      "summary_sha256": "5e066305e4efe7a926b606845b4861b6a04b394912e289b14d2974e9eb3d661c",
+      "source_settings_checks_pass": true,
+      "ledger_unchanged": true
+    },
+    {
+      "seed": 3,
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_c0_scripted_w4_r3",
+      "exit": 0,
+      "runtime": {
+        "start_utc": "2026-11-01T01:36:50.450597+00:00",
+        "end_utc": "2026-11-01T01:41:29.472445+00:00",
+        "wall_seconds": 279.01530866743997,
+        "exit": 0,
+        "ledger_after": [
+          61.562649371999996,
+          23865
+        ]
+      },
+      "code": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+      "config_sha256": "3ee7c23b931178e0627efe8c14171e3fcfb646d98707bda7a9f25951616ff3de",
+      "summary_sha256": "1c6d033407e503fd90a9483532edd05122e67215376136ad380d0ac5e9069324",
+      "source_settings_checks_pass": true,
+      "ledger_unchanged": true
+    }
+  ],
+  "ledger_after": [
+    61.562649371999996,
+    23865
+  ],
+  "paid_chain_started": false
+}

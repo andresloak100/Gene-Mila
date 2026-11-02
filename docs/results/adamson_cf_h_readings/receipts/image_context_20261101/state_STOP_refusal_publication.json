@@ -1,0 +1,8 @@
+{
+  "all_pass": true,
+  "scope": "HANDOFF section1 only",
+  "raw_staged_bytes": true,
+  "secrets": false,
+  "authored_whitespace": true,
+  "utc": "2026-11-01 03:48 UTC"
+}

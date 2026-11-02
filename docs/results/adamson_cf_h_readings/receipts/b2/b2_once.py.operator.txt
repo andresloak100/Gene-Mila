@@ -1,0 +1,69 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+import resource
+import subprocess
+import sys
+import time
+
+OPS = Path(__file__).resolve().parent
+
+
+def utc():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def write_new(name, data):
+    with (OPS / name).open('x') as f:
+        json.dump(data, f, indent=2)
+        f.write('\n')
+
+
+with (OPS / 'b2.once.lock').open('x') as f:
+    f.write(str(os.getpid()) + '\n')
+
+started = time.monotonic()
+code = 1
+try:
+    spec = json.loads((OPS / 'candidate_manifest.json').read_text())
+    posts = sorted(OPS.glob('candidate_hashes.part*.issue41.json'))
+    assert len(posts) == 6, 'all six hash posts required before the one call'
+    assert all(json.loads(p.read_text())['posted']['structuredContent']['id'] for p in posts)
+    root = Path(spec['cwd'])
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().strip() == spec['head']
+    for rel, expected in spec['source_sha256'].items():
+        assert hashlib.sha256((root / rel).read_bytes()).hexdigest() == expected, rel
+    for source in spec['sources']:
+        current = sorted(str(p) for p in Path(source['candidate_dir']).rglob('*') if p.is_file())
+        assert current == sorted(f['path'] for f in source['files']), source['name']
+        for f in source['files']:
+            assert hashlib.sha256(Path(f['path']).read_bytes()).hexdigest() == f['sha256'], f['path']
+    out = Path(spec['output'])
+    assert not out.exists() and not out.is_symlink(), 'comparison output must be fresh'
+    active = subprocess.run(['pgrep', '-f', '[r]un_research.py|[s]cale_seq.sh|[f]eature_compare.py|[l]edger_proxy.py'], capture_output=True)
+    assert not active.stdout.strip(), 'another run or reading is active'
+    env = os.environ.copy()
+    for key in list(env):
+        if key == 'API_KEY' or key.endswith('_API_KEY') or key.endswith('_TOKEN'):
+            env.pop(key)
+    env['PYTHONHASHSEED'] = '0'
+    write_new('b2.command.json', {'argv': spec['argv'], 'cwd': spec['cwd'], 'head': spec['head'],
+                                'provider_credentials_unset': True, 'nice': os.nice(0),
+                                'hash_post_receipts': [p.name for p in posts]})
+    with (OPS / 'b2.log').open('xb') as log:
+        proc = subprocess.Popen(spec['argv'], cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT)
+        write_new('b2.started.json', {'utc': utc(), 'driver_pid': os.getpid(), 'child_pid': proc.pid,
+                                    'head': spec['head'], 'invocation_number': 1})
+        code = proc.wait()
+except BaseException as exc:
+    write_new('b2.operator_error.json', {'utc': utc(), 'type': type(exc).__name__, 'error': str(exc)})
+finally:
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    write_new('b2.runtime.json', {'ended_utc': utc(), 'exit_code': code,
+                                'wall_s': time.monotonic() - started,
+                                'aggregate_child_cpu_s': usage.ru_utime + usage.ru_stime})
+    with (OPS / 'b2.exit').open('x') as f:
+        f.write(str(code) + '\n')
+sys.exit(code)

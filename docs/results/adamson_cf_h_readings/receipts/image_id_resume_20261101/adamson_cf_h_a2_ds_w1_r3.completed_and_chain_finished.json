@@ -1,0 +1,85 @@
+{
+  "utc": "2026-11-01T16:23:55.489271+00:00",
+  "name": "adamson_cf_h_a2_ds_w1_r3",
+  "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_h_a2_ds_w1_r3",
+  "native_passed": true,
+  "parent_native_rc": 0,
+  "native_operational_check_lines": [
+    "run: code baa7dfdbf1, 1200.5 s, seed 3, workers 1, data adamson_cf_clean_tables, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None",
+    "cost by the run: workers $0.113, planner $0.206"
+  ],
+  "native_check_sha256": "e81b00e3641ff2a0f33bb458ce2705d09466b271516faeb223e58ff636bf31d7",
+  "run_metadata": {
+    "base_commit": "baa7dfdbf17abd17a306d4dcfccb297baaf63b52",
+    "duration_s": 1200.5,
+    "duration_note": null,
+    "seed": 3,
+    "workers": 1,
+    "data_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf_clean_tables",
+    "external_knowledge": [],
+    "planner": {
+      "configured": "deepseek:deepseek-v4-pro",
+      "mixed": false,
+      "exhausted_at_min": null
+    },
+    "llm_usage": {
+      "all": {
+        "calls": 134,
+        "input_tokens": 289853,
+        "output_tokens": 104462,
+        "cached_tokens": 147840,
+        "cost_usd": 0.319063752,
+        "failed_calls": 0
+      },
+      "worker": {
+        "calls": 114,
+        "input_tokens": 200504,
+        "output_tokens": 74038,
+        "cached_tokens": 122496,
+        "cost_usd": 0.112982976,
+        "failed_calls": 0
+      },
+      "planner": {
+        "calls": 20,
+        "input_tokens": 89349,
+        "output_tokens": 30424,
+        "cached_tokens": 25344,
+        "cost_usd": 0.206080776,
+        "failed_calls": 0
+      }
+    }
+  },
+  "artifact_hashes": {
+    "summary.json": "7623c758d3d1bba45da9b511f74208bf61d72a673d3bb427915af9293ed1b635",
+    "config.json": "eafcb29658de7f1c761aebab041c3d0bafb2495f2bd07031fbdb47a2f1b079bf"
+  },
+  "new_progress": [
+    "- 2026-11-01T16:21Z adamson_cf_h_a2_ds_w1_r3 finished rc=0 DeepSeek ledger $66.731337 (run $.319064)"
+  ],
+  "progress_start_offset": 20724,
+  "progress_end_offset": 20825,
+  "chain_exit": "0",
+  "chain_ended_utc": "2026-11-01T16:21:58Z",
+  "all_native_passed": true,
+  "native_passed_sessions": [
+    "h_probe",
+    "h_a4_r0",
+    "h_a4_r2",
+    "h_a4_r3",
+    "h_a3_r0",
+    "h_a3_r2",
+    "h_a3_r3",
+    "adamson_cf_h_a2_ds_w1_r0",
+    "adamson_cf_h_a2_ds_w1_r2",
+    "adamson_cf_h_a2_ds_w1_r3"
+  ],
+  "ledger_observation": {
+    "provider": "deepseek",
+    "total": 66.731336552,
+    "rows": 24681
+  },
+  "H_STOP_present": false,
+  "native_stopped_present": false,
+  "scientific_metrics_read_for_receipt": false,
+  "no_rerun": true
+}

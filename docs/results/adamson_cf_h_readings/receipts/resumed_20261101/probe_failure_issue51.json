@@ -1,0 +1,15 @@
+{
+  "body": "H STOP at the first probe \u2014 actual Biomni budget refusal, no retry.\n\nAll three prescribed free C0 runs completed once with exit0 and validated code/settings/hash receipts; finaldriver0 at2026-11-01T01:41:30.589326Z. Ledger unchanged through C0. The native cap was written ONCE: `76.56 61.562649 2026-11-01T01:43Z`, under approved ceiling76.562649372.\n\nThe unchanged native paid H chain started ONCE at01:43:23UTC (31Oct21:43Toronto), detached blockh, wrapper15585, Docker/harness/A3_CLIENT=codex, validated image b15af00e\u2026 . It stopped naturally at01:43:41UTC, **chain exit3**, before any full arm.\n\n**Biomni A1 constructed successfully.** Its actual transcript says:\n```\nsystem prompt 156031 chars\nfirst main call estimate: 156031 chars / 4 per token x $1.32 per million = $0.0515\nsession cap $0.05\nBIOMNI_ENDED_BY: refused (first call estimate $0.0515 reaches the session cap $0.05; nothing sent)\n```\nThe lower bound excludes the retriever call. Biomni's run.json records ended_by=refused, childexit2, wall1.9s; the parent native runner returned1. Its proxy log contains only a start row: **zero Biomni API calls**. This is the prescribed per-probe cap refusal, not insufficient account balance, missing dependencies, or evidence that DeepSeek's Biomni message route fails.\n\nThe native probe script then performed its Codex subprobe before evaluating combined runner exits. Codex completed0 with **two status200 responses** from deepseek-v4-pro on /v1/responses, zero400, token totals17361input/8704cached/207output. Proxy logs report $0.012629940 total. Actual shared ledger after is **$61.575279308** (23867rows), versus61.562649371999996 before (delta approximately$0.012629936); raw log prices and ledger readings are preserved separately. Cost is about **$0.01263**.\n\nThe native script recorded `h_probe: runner exit code biomni=1,codex=0` in block_h_stopped.txt and exited3. No overall probe passed marker/gate result, no Biomni/Codex full seeds, no one-worker arms or H readings. **No cap change, retry, reset, fallback, hand repair or workaround.** The original once-only cap and all partials stay. Existing-funds-only/no top-up and no further screen/balance checks remain.\n\nI am preserving full probe/C0/preflight receipts, updating HANDOFF/liveSTATE and pausing the heartbeat. This stop needs a lead decision about the fixed probe allowance before any resumption; no additional money or new ceiling is inferred.",
+  "posted": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "id": 6551932766
+    },
+    "isError": false
+  }
+}

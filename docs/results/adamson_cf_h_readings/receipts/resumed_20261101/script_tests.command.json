@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_block_h_scripts.py"
+  ],
+  "nice": 19,
+  "provider_credentials": "unset",
+  "exit": 0,
+  "passed": 6
+}
