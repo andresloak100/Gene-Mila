@@ -1,0 +1,1 @@
+nice -n 19 /Users/andresarriaga/gm_dlenv/bin/python tools/baselines_dl/run_linear_ae.py --export /Users/andresarriaga/cellforge_norman_export --out /Users/andresarriaga/linear_ae_norman

@@ -1,0 +1,1 @@
+nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/cellforge_bridge.py score --bundle /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf --pred /Users/andresarriaga/unperturbed_adamson/predictions.npz --name unperturbed_adamson --out docs/results/cellforge_table1_ours/unperturbed_adamson.md
