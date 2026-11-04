@@ -23,6 +23,8 @@ def bridge(path):
 
 
 def run_sel(runs, name, baseline=False):
+    if name.startswith("T:"):  # block T runs live in this clone's runs/ (docs/PLAN_T_TABLE_AGENTS.md)
+        runs, name = RUNS_T, name[2:]
     s = json.loads((runs / name / "summary.json").read_text())
     want = "EXP_0003" if baseline else s["best"]["experiment_id"]
     g = next((e for e in s["generalization_query_only"] if e["experiment_id"] == want), None)
@@ -55,7 +57,10 @@ def fmt(v):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", required=True)
-    runs = Path(ap.parse_args().runs).expanduser()
+    ap.add_argument("--runs-t", default=str(ROOT / "runs"), help="where block T's runs are (default: this clone's runs/)")
+    a_ = ap.parse_args()
+    global RUNS_T
+    runs, RUNS_T = Path(a_.runs).expanduser(), Path(a_.runs_t).expanduser()
     cf = json.loads((RES / "cellforge_table1.json").read_text())
     out = {"datasets": {}, "sources": {}}
     md = ["# CellForge's Table 1, our rows on our split", "",
@@ -77,6 +82,8 @@ def main():
              [f"adamson_cf_g0_ds_w4_r{r}" for r in (0, 2, 3)]),
             ("Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1)", None,
              [f"adamson_cf_g1_ds_w4_r{r}" for r in (0, 2, 3)]),
+            ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", None,
+             [f"T:adamson_cf_t0_ds_w4_r{r}" for r in (0, 2, 3)]),
         ]},
         "norman": {"bundle": "norman", "rows": [
             ("Unperturbed (control mean)", [bridge("cellforge_table1_ours/unperturbed_norman.json")], "bridge"),
@@ -87,10 +94,12 @@ def main():
              [f"norman_g0_ds_w4_r{r}" for r in (0, 2, 3)]),
             ("Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1)", None,
              [f"norman_g1_ds_w4_r{r}" for r in (0, 2, 3)]),
+            ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", None,
+             [f"T:norman_t0_ds_w4_r{r}" for r in (0, 2, 3)]),
         ]},
     }
     for ds, sp in spec.items():
-        rows_out = {}
+        rows_out, splits = {}, set()
         md += [f"## {cf['datasets'][ds]['title']}", "", "| Model | n | " + " | ".join(HEAD) + " |",
                "|---|---:|" + "---:|" * len(HEAD)]
         for label, vals, src in sp["rows"]:
@@ -101,10 +110,12 @@ def main():
                 vals = [g[0] for g in got]
                 srcs = [g[1] for g in got]
                 assert len({g[2] for g in got}) == 1
+                splits.add(got[0][2])
             a, n = agg(vals)
             rows_out[label] = {"n": n, "metrics": a and {k: {"mean": m, "sd": sd} for k, (m, sd) in a.items()},
                                "sources": srcs}
             md.append(f"| {label} | {n or '–'} | " + " | ".join(fmt(a and a[k]) for k in COLS) + " |")
+        assert len(splits) == 1, f"{ds}: agent rows on different splits {splits}"
         md += ["", "CellForge's own rows (its paper, not comparable):", "", "| Model | " + " | ".join(HEAD[:6]) + " |",
                "|---|" + "---:|" * 6]
         for label, v in cf["datasets"][ds]["rows"].items():
@@ -124,6 +135,9 @@ def main():
            "- Three agent runs (adamson_cf_g0 r3, adamson_cf_g1 r2, norman_g1 r2) had not stored CellForge's metrics "
            "for their selected model; `score_selected.py` scored that fixed model once, and its pearson_delta matches "
            "the published block G sealed reading.",
+           "- Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek "
+           "runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed "
+           "DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
            "each seed's receipt.", ""]
     (Path(__file__).parent / "table.md").write_text("\n".join(md))

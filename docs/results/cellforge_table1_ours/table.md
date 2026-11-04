@@ -12,6 +12,7 @@ Built by `build.py` beside this file from committed reports and the run summarie
 | GEARS, Roohani 2023 | 3 | 0.0087 ± 0.0006 | 0.9807 ± 0.0012 | 0.9584 ± 0.0027 | 0.1330 ± 0.0037 | 0.9277 ± 0.0011 | 0.7515 ± 0.0069 | 0.4073 ± 0.0116 |
 | Gene-Mila agents, DeepSeek, clean tier 1 (block G0) | 3 | 0.0065 ± 0.0006 | 0.9860 ± 0.0013 | 0.9690 ± 0.0028 | 0.1299 ± 0.0148 | 0.9456 ± 0.0089 | 0.7792 ± 0.0274 | 0.5663 ± 0.0362 |
 | Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1) | 3 | 0.0221 ± 0.0260 | 0.9841 ± 0.0010 | 0.8944 ± 0.1240 | 0.1586 ± 0.0171 | 0.9374 ± 0.0045 | 0.7132 ± 0.0515 | 0.4906 ± 0.0687 |
+| Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff) | 3 | 0.0067 ± 0.0006 | 0.9854 ± 0.0012 | 0.9677 ± 0.0027 | 0.1368 ± 0.0137 | 0.9432 ± 0.0032 | 0.7670 ± 0.0203 | 0.5553 ± 0.0203 |
 
 CellForge's own rows (its paper, not comparable):
 
@@ -37,6 +38,7 @@ CellForge's own rows (its paper, not comparable):
 | GEARS, Roohani 2023 | – | pending | pending | pending | pending | pending | pending | pending |
 | Gene-Mila agents, DeepSeek, clean tier 1 (block G0) | 3 | 0.0054 ± 0.0002 | 0.9888 ± 0.0003 | 0.9747 ± 0.0008 | 0.1045 ± 0.0040 | 0.9393 ± 0.0021 | 0.8479 ± 0.0041 | 0.7193 ± 0.0012 |
 | Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1) | 3 | 0.0056 ± 0.0005 | 0.9885 ± 0.0007 | 0.9735 ± 0.0024 | 0.1065 ± 0.0027 | 0.9380 ± 0.0015 | 0.8442 ± 0.0035 | 0.7201 ± 0.0065 |
+| Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff) | 3 | 0.0054 ± 0.0001 | 0.9887 ± 0.0004 | 0.9747 ± 0.0007 | 0.1060 ± 0.0056 | 0.9380 ± 0.0026 | 0.8444 ± 0.0057 | 0.7209 ± 0.0026 |
 
 CellForge's own rows (its paper, not comparable):
 
@@ -61,4 +63,5 @@ No row of ours. The lab models genetic perturbations only, and no Srivatsan bund
 - Adamson GEARS, linear and Unperturbed rows use the corrected three-source export (`~/cellforge_adamson_export_corrected_20261028`), which has 1,770 more controls and 10 more training cells than the bundle the agents saw. Norman's export follows the bundle's single source exactly.
 - The agent rows are each run's selected model; the block G0 and G1 bundles (`adamson_cf_clean`, `norman_clean`, with or without three tables) share the split of `adamson_cf` and `norman`.
 - Three agent runs (adamson_cf_g0 r3, adamson_cf_g1 r2, norman_g1 r2) had not stored CellForge's metrics for their selected model; `score_selected.py` scored that fixed model once, and its pearson_delta matches the published block G sealed reading.
+- Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).
 - GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see each seed's receipt.

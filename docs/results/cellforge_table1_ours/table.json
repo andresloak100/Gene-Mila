@@ -214,6 +214,44 @@
      "adamson_cf_g1_ds_w4_r2:EXP_0730 (score_selected.py)",
      "adamson_cf_g1_ds_w4_r3:EXP_0796"
     ]
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.006749685046682635,
+      "sd": 0.000557463971820658
+     },
+     "cellforge_pcc": {
+      "mean": 0.9853517658405576,
+      "sd": 0.0011807120769524832
+     },
+     "cellforge_r2": {
+      "mean": 0.9677188739455199,
+      "sd": 0.0026912477289888267
+     },
+     "cellforge_mse_de": {
+      "mean": 0.13682887731505777,
+      "sd": 0.01374128816061974
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9432135390396927,
+      "sd": 0.0032362660147937103
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7669929009165513,
+      "sd": 0.020311699550468732
+     },
+     "pearson_delta": {
+      "mean": 0.5553200589867936,
+      "sd": 0.020267860805136467
+     }
+    },
+    "sources": [
+     "adamson_cf_t0_ds_w4_r0:EXP_0547",
+     "adamson_cf_t0_ds_w4_r2:EXP_0530",
+     "adamson_cf_t0_ds_w4_r3:EXP_0339"
+    ]
    }
   },
   "norman": {
@@ -400,6 +438,44 @@
      "norman_g1_ds_w4_r0:EXP_0745",
      "norman_g1_ds_w4_r2:EXP_0671 (score_selected.py)",
      "norman_g1_ds_w4_r3:EXP_0652"
+    ]
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.005355092203759706,
+      "sd": 0.00014305688099186352
+     },
+     "cellforge_pcc": {
+      "mean": 0.9887271419433942,
+      "sd": 0.00039942890829737716
+     },
+     "cellforge_r2": {
+      "mean": 0.9746865344751764,
+      "sd": 0.0007235532443758149
+     },
+     "cellforge_mse_de": {
+      "mean": 0.10596242539992415,
+      "sd": 0.005551256870024955
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9379842035179302,
+      "sd": 0.0025916709408821998
+     },
+     "cellforge_r2_de": {
+      "mean": 0.8444259251662597,
+      "sd": 0.005652071264440478
+     },
+     "pearson_delta": {
+      "mean": 0.7208621595625238,
+      "sd": 0.0025739565153469006
+     }
+    },
+    "sources": [
+     "norman_t0_ds_w4_r0:EXP_0198",
+     "norman_t0_ds_w4_r2:EXP_0417",
+     "norman_t0_ds_w4_r3:EXP_0357"
     ]
    }
   }
