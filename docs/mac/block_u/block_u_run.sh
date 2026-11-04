@@ -14,7 +14,7 @@ case "$DS" in
   norman)     EXPORT="$HOME/cellforge_norman_export";                   BUNDLE="$MAIN/data/norman";     VERSUS="$MAIN/runs/norman_ds_from_n2_w4_r1";;
   *) echo "unknown dataset $DS"; exit 2;;
 esac
-mkdir -p "$R" "$PROXYDIR" "$WS/data/datasets"
+mkdir -p "$R" "$PROXYDIR" "$WS/data/datasets"; rm -f "$R/run.failed"
 P="$RUNS/progress.md"; touch "$P"
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
 say() { echo "- $(now) $NAME: $*" >> "$P"; echo "$*"; }
@@ -46,8 +46,9 @@ unset OPENAI_API_KEY ANTHROPIC_API_KEY OPENAI_BASE_URL
 H5="$WS/data/datasets/$DS.h5ad"; ln -sfn "$EXPORT/cellforge_input.h5ad" "$H5"; cp "$EXPORT/TASK.md" "$WS/task.md"
 
 # ---- receipts: NAME.command.txt / .log / .exit / .runtime.json, a wall-clock limit, key-like strings redacted ---
-step() {  # step NAME LIMIT_SECONDS WORKDIR -- COMMAND...
+step() {  # step NAME LIMIT_SECONDS WORKDIR -- COMMAND...   (a step whose .exit is already 0 is skipped: resume)
   local name="$1" limit="$2" wd="$3"; shift 3; [ "${1:-}" = "--" ] && shift
+  if [ -f "$R/$name.exit" ] && [ "$(cat "$R/$name.exit")" = "0" ]; then say "$name skipped: already done (exit 0 on record)"; return 0; fi
   printf '%s\n' "$*" > "$R/$name.command.txt"
   local s0 start end rc pid; s0=$(date +%s); start=$(now)
   ( cd "$wd" && nice -n 19 "$@" ) > "$R/$name.log" 2>&1 & pid=$!
@@ -71,7 +72,8 @@ grep -q "PROBE_OK" "$R/probe.last.md" || fail "probe did not answer PROBE_OK"
 step task_analysis   3600  "$WS" -- cellforge "${CFARGS[@]}" --phase task_analysis   || fail "task_analysis"
 step method_design   3600  "$WS" -- cellforge "${CFARGS[@]}" --phase method_design   || fail "method_design"
 step code_generation 10800 "$WS" -- cellforge "${CFARGS[@]}" --phase code_generation --codegen-backend codex || fail "code_generation"
-step autorun         21600 "$WS" -- cellforge "${CFARGS[@]}" --phase autorun --executor local --workers 1 --split-seed "$SEED" || fail "autorun"
+# CellForge resolves its --codex-prompt-file default against the workspace, not its package, so the package path is passed
+step autorun         21600 "$WS" -- cellforge "${CFARGS[@]}" --phase autorun --executor local --workers 1 --split-seed "$SEED" --codex-prompt-file "$CF/cellforge/autorun/autoresearch_prompt.md" || fail "autorun"
 # 5. held-out predictions by the same coding agent, then the full run of its script
 CODEDIR="$(ls -d "$WS"/data/codes/*/ 2>/dev/null | head -1)"; [ -n "$CODEDIR" ] || fail "no generated code dir"
 cp "$EXPORT/heldout_perturbations.json" "$EXPORT/TASK.md" "$CODEDIR"; ln -sfn "$EXPORT/cellforge_input.h5ad" "$CODEDIR/training.h5ad"
