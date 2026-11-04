@@ -43,7 +43,11 @@ export CELLFORGE_WORKSPACE_DIR="$WS" DEEPSEEK_API_KEY="$API_KEY" DEEPSEEK_BASE_U
 export CODEGEN_BACKEND="codex" CODEX_AUTH_MODE="api" CODEX_API_KEY="$API_KEY" CODEX_CLI_BIN="$B/codex_deepseek.sh" CODEX_MODEL="deepseek-v4-pro"
 export BLOCK_U_PROXY="$PROXY" PATH="$CFENV/bin:$PATH" PYTHONUNBUFFERED=1
 unset OPENAI_API_KEY ANTHROPIC_API_KEY OPENAI_BASE_URL
-H5="$WS/data/datasets/$DS.h5ad"; ln -sfn "$EXPORT/cellforge_input.h5ad" "$H5"; cp "$EXPORT/TASK.md" "$WS/task.md"
+# CellForge names its plan, code and split folders after the dataset file's parent directory (after resolving links),
+# so the training file gets its own folder in the workspace, named like the dataset, as a real copy (103 MB for Adamson)
+H5="$WS/data/datasets/$DS/$DS.h5ad"; mkdir -p "$WS/data/datasets/$DS"
+[ -f "$H5" ] && [ "$(stat -f %z "$H5")" = "$(stat -f %z "$EXPORT/cellforge_input.h5ad")" ] || cp "$EXPORT/cellforge_input.h5ad" "$H5"
+cp "$EXPORT/TASK.md" "$WS/task.md"
 
 # ---- receipts: NAME.command.txt / .log / .exit / .runtime.json, a wall-clock limit, key-like strings redacted ---
 step() {  # step NAME LIMIT_SECONDS WORKDIR -- COMMAND...   (a step whose .exit is already 0 is skipped: resume)
@@ -73,7 +77,7 @@ step task_analysis   3600  "$WS" -- cellforge "${CFARGS[@]}" --phase task_analys
 step method_design   3600  "$WS" -- cellforge "${CFARGS[@]}" --phase method_design   || fail "method_design"
 step code_generation 10800 "$WS" -- cellforge "${CFARGS[@]}" --phase code_generation --codegen-backend codex || fail "code_generation"
 # CellForge resolves its --codex-prompt-file default against the workspace, not its package, so the package path is passed
-step autorun         21600 "$WS" -- cellforge "${CFARGS[@]}" --phase autorun --executor local --workers 1 --split-seed "$SEED" --codex-prompt-file "$CF/cellforge/autorun/autoresearch_prompt.md" || fail "autorun"
+step autorun         21600 "$WS" -- cellforge "${CFARGS[@]}" --phase autorun --executor local --workers 1 --split-seed "$SEED" --codex-prompt-file "$CF/cellforge/autorun/autoresearch_prompt.md" --autorun-plan-dir "$WS/data/plans/$DS" || fail "autorun"
 # 5. held-out predictions by the same coding agent, then the full run of its script
 CODEDIR="$(ls -d "$WS"/data/codes/*/ 2>/dev/null | head -1)"; [ -n "$CODEDIR" ] || fail "no generated code dir"
 cp "$EXPORT/heldout_perturbations.json" "$EXPORT/TASK.md" "$CODEDIR"; ln -sfn "$EXPORT/cellforge_input.h5ad" "$CODEDIR/training.h5ad"
