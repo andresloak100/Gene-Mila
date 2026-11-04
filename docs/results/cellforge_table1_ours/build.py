@@ -139,7 +139,7 @@ def main():
            "runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed "
            "DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
-           "each seed's receipt.", ""]
+           "each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).", ""]
     (Path(__file__).parent / "table.md").write_text("\n".join(md))
     (Path(__file__).parent / "table.json").write_text(json.dumps(out, indent=1))
     print("\n".join(md))

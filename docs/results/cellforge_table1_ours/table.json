@@ -360,8 +360,37 @@
     "sources": []
    },
    "GEARS, Roohani 2023": {
-    "n": 0,
-    "metrics": null,
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.007620039148386523,
+      "sd": 0.0004022305511872033
+     },
+     "cellforge_pcc": {
+      "mean": 0.9844938898032534,
+      "sd": 0.0008289359202025712
+     },
+     "cellforge_r2": {
+      "mean": 0.9641600039402242,
+      "sd": 0.001880347513339189
+     },
+     "cellforge_mse_de": {
+      "mean": 0.12421939697746247,
+      "sd": 0.0068575118061023595
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9300790277380377,
+      "sd": 0.0030671255264919832
+     },
+     "cellforge_r2_de": {
+      "mean": 0.822320525126106,
+      "sd": 0.007012211338339211
+     },
+     "pearson_delta": {
+      "mean": 0.6070584132813223,
+      "sd": 0.011090027436837215
+     }
+    },
     "sources": []
    },
    "Gene-Mila agents, DeepSeek, clean tier 1 (block G0)": {

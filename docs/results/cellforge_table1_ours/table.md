@@ -35,7 +35,7 @@ CellForge's own rows (its paper, not comparable):
 | Unperturbed (control mean) | 1 | 0.0140 | 0.9729 | 0.9331 | 0.3153 | 0.8386 | 0.5881 | 0.0343 |
 | Additive singles (lab's start) | 1 | 0.0059 | 0.9879 | 0.9722 | 0.1016 | 0.9412 | 0.8463 | 0.7126 |
 | Linear, Ahlmann-Eltze 2025 | 1 | 0.0074 | 0.9841 | 0.9650 | 0.1802 | 0.8996 | 0.7511 | 0.6526 |
-| GEARS, Roohani 2023 | – | pending | pending | pending | pending | pending | pending | pending |
+| GEARS, Roohani 2023 | 3 | 0.0076 ± 0.0004 | 0.9845 ± 0.0008 | 0.9642 ± 0.0019 | 0.1242 ± 0.0069 | 0.9301 ± 0.0031 | 0.8223 ± 0.0070 | 0.6071 ± 0.0111 |
 | Gene-Mila agents, DeepSeek, clean tier 1 (block G0) | 3 | 0.0054 ± 0.0002 | 0.9888 ± 0.0003 | 0.9747 ± 0.0008 | 0.1045 ± 0.0040 | 0.9393 ± 0.0021 | 0.8479 ± 0.0041 | 0.7193 ± 0.0012 |
 | Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1) | 3 | 0.0056 ± 0.0005 | 0.9885 ± 0.0007 | 0.9735 ± 0.0024 | 0.1065 ± 0.0027 | 0.9380 ± 0.0015 | 0.8442 ± 0.0035 | 0.7201 ± 0.0065 |
 | Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff) | 3 | 0.0054 ± 0.0001 | 0.9887 ± 0.0004 | 0.9747 ± 0.0007 | 0.1060 ± 0.0056 | 0.9380 ± 0.0026 | 0.8444 ± 0.0057 | 0.7209 ± 0.0026 |
@@ -64,4 +64,4 @@ No row of ours. The lab models genetic perturbations only, and no Srivatsan bund
 - The agent rows are each run's selected model; the block G0 and G1 bundles (`adamson_cf_clean`, `norman_clean`, with or without three tables) share the split of `adamson_cf` and `norman`.
 - Three agent runs (adamson_cf_g0 r3, adamson_cf_g1 r2, norman_g1 r2) had not stored CellForge's metrics for their selected model; `score_selected.py` scored that fixed model once, and its pearson_delta matches the published block G sealed reading.
 - Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).
-- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see each seed's receipt.
+- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).

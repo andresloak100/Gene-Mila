@@ -1,0 +1,2 @@
+2026-11-03T23:42:54Z GEARS seed0 pid 78608 paused (SIGSTOP) for block T
+2026-11-04T02:08:45Z GEARS seed0 pid 78608 resumed (SIGCONT) after block T
