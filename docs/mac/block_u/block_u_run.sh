@@ -42,6 +42,7 @@ START="$(now)"; say "started (dataset $DS, seed $SEED, cap \$$CAP from $CAPSTART
 export CELLFORGE_WORKSPACE_DIR="$WS" DEEPSEEK_API_KEY="$API_KEY" DEEPSEEK_BASE_URL="$PROXY" MODEL_NAME="deepseek-v4-pro"
 export CODEGEN_BACKEND="codex" CODEX_AUTH_MODE="api" CODEX_API_KEY="$API_KEY" CODEX_CLI_BIN="$B/codex_deepseek.sh" CODEX_MODEL="deepseek-v4-pro"
 export BLOCK_U_PROXY="$PROXY" PATH="$CFENV/bin:$PATH" PYTHONUNBUFFERED=1
+export ANNDATA_ALLOW_WRITE_NULLABLE_STRINGS=1   # anndata 0.12 refuses to write our export's string-dtype obs index without it
 unset OPENAI_API_KEY ANTHROPIC_API_KEY OPENAI_BASE_URL
 # CellForge names its plan, code and split folders after the dataset file's parent directory (after resolving links),
 # so the training file gets its own folder in the workspace, named like the dataset, as a real copy (103 MB for Adamson)
