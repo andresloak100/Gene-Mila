@@ -142,8 +142,8 @@ def main():
            "- The CellForge row is CellForge's own pipeline (gersteinlab/CellForge 6585ff9, unchanged) run by us on the same "
            "Adamson export, every agent DeepSeek v4-pro, its model's predictions scored once by the bridge like GEARS "
            "(`docs/PLAN_U_CELLFORGE.md`, receipts `cellforge_ours/cf_adamson_s42/`). Its model gave the identical "
-           "prediction for every held-out perturbation (a hashed perturbation token carries nothing for an unseen gene), "
-           "so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.",
+           "prediction for every held-out perturbation: its output did not vary with its hashed perturbation token "
+           "(own validation correlation 0.10 per cell), so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
            "each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).", ""]
     (Path(__file__).parent / "table.md").write_text("\n".join(md))
