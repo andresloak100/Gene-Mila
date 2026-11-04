@@ -1,0 +1,210 @@
+{
+  "timestamp": "20261104_143607",
+  "task_description": "# Task for CellForge (Gene-Mila matched comparison)\n\nPredict, for each perturbation listed in `heldout_perturbations.json`, the mean expression of every gene in\n`cellforge_input.h5ad` (same genes, same order, same normalisation: counts per 10k, log1p) in K562 cells carrying\nthat CRISPR perturbation. None of these perturbations has any cell in the training file: this is the unseen-\nperturbation setting. Train only on `cellforge_input.h5ad`; do not download or use any other copy of this screen.\n\nOutput: `predictions.npz` with `perts` (the held-out keys, as listed) and `means` (n_perts x n_genes, float).\nScored by Gene-Mila's evaluator: pearson_delta (correlation of predicted and true change from control, per\nperturbation), MSE, and MSE/PCC/R2 on the top-20 DE genes.",
+  "dataset_info": {
+    "dataset_path": "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/datasets/adamson_cf.h5ad",
+    "dataset_name": "adamson_cf",
+    "data_type": "scRNA-seq",
+    "cell_line": "K562",
+    "perturbation_type": "CRISPRi"
+  },
+  "task_type": "gene_knockout",
+  "analysis_results": {
+    "dataset_analysis": {
+      "content": {
+        "dataset": {
+          "biological": {
+            "relevance": {
+              "assessment": "The provided dataset analysis content is empty and originally returned a JSON parse error. As a result, no biological relevance can be determined. There is no information about the biological system, species, tissue, condition, feature semantics, or decision context.",
+              "issues": [
+                "Dataset analysis content is empty.",
+                "JSON parsing failed, preventing extraction of structured information.",
+                "No biological system, species, tissue, condition, feature semantics, or decision context is available."
+              ],
+              "assumptions": [
+                "The task is expected to involve biological or biomedical data, but this cannot be confirmed from the empty content.",
+                "The missing biological context must be provided before any meaningful relevance assessment can be performed.",
+                "The parse error is assumed to be due to empty or malformed input, not an issue in the current refined JSON structure."
+              ],
+              "recommendations": [
+                "Provide the original dataset analysis content or biological metadata (e.g., species, tissue, experimental condition, features, and decision context).",
+                "Re-run the JSON generation after supplying the missing information to enable a valid biological relevance assessment.",
+                "Use a JSON validator to ensure the output is well-formed."
+              ]
+            }
+          }
+        }
+      },
+      "confidence_score": 1.0,
+      "timestamp": "2026-11-04T14:34:25.400924",
+      "metadata": {
+        "agent": "Dataset Analyst"
+      }
+    },
+    "problem_investigation": {
+      "content": {
+        "problem_statement": "The submitted dataset analysis content is empty and the JSON payload could not be parsed. Therefore, no biological system, condition, feature semantics, technical quality, interpretability, or decision-support relevance can be assessed from the initial input. This investigation is defined as a corrective framework to reconstruct, validate, and complete a biological dataset analysis before any implementation or decision-support use. All biological relevance assessments are blocked until valid structured input is recovered.",
+        "objectives": [
+          "Recover or request the original scientific task and a valid, complete structured dataset analysis; re-parse and validate the JSON before any downstream use.",
+          "Define the biological question, system, species, tissue, condition or perturbation, experimental design, and decision context.",
+          "Specify data preparation steps, feature definitions and units, quality metrics, technical covariates, batch evaluation, and data provenance.",
+          "Establish interpretability and biological validation requirements, including domain expert review and expected effect directions.",
+          "Define technical quality thresholds, reproducibility requirements, and decision-support alignment before modeling.",
+          "Explicitly document any remaining missing information as blocking gaps rather than inferring it."
+        ],
+        "assumptions": [
+          "The empty content and JSON parse error are due to missing or malformed input, not to the absence of an intended scientific task.",
+          "The intended analysis is likely biological and may involve high-dimensional assay data such as single-cell, bulk, spatial, or other sequencing modalities; this assumption must be confirmed by valid input.",
+          "No biological or technical conclusions can be drawn until valid dataset metadata and parsed analysis content are available.",
+          "Data, metadata, software, provenance records, and domain expertise can be obtained or are available once the task is clarified.",
+          "Decision support is a likely downstream goal, so interpretability and technical quality are mandatory rather than optional.",
+          "Missing information will be recorded as a blocking gap and will not be replaced by unsupported assumptions.",
+          "If the required data cannot be recovered or validation fails, the analysis should be halted rather than proceeding with imputed or assumed values."
+        ],
+        "unknowns_and_gaps": [
+          "Original task description, dataset analysis content, and valid parsed JSON are absent.",
+          "Biological system, species, tissue, condition, disease or perturbation, and experimental design are unknown.",
+          "Feature definitions, measurement units, biological entity or pathway mappings, and expected effect directions are unknown.",
+          "Data quality metrics, technical covariates, batch effects, data provenance, accession, and version are unknown.",
+          "Interpretability-oriented summaries and decision-support readouts have not been defined.",
+          "Acceptance criteria, quality thresholds, biological validation benchmarks, and reproducibility parameters have not been specified.",
+          "The intended assay modality, sample/replicate structure, and positive/negative controls are unconfirmed."
+        ],
+        "implementation_requirements": [
+          "Require a valid, parsed dataset analysis and fix the parsing pipeline before any downstream assessment.",
+          "Provide a structured dataset summary including biological system, species, tissue, condition, experimental design, sample/replicate structure, data accession, version, and provenance.",
+          "Describe the biological question, known confounders, and expected effect directions or prior evidence.",
+          "Define data preparation steps and quality control metrics with explicit thresholds, such as total counts, detected genes, and mitochondrial fraction for single-cell data, or library size, alignment rate, and expressed genes for bulk data; evaluate batch effects and technical covariates.",
+          "Document feature semantics and units, and map features to biological entities or pathways where applicable.",
+          "Add interpretability-oriented quality control, including marker gene expression, cell-type composition summaries, PCA or UMAP, and pathway enrichment, and predefine biologically meaningful readouts for decision support.",
+          "Run technical validation including read/UMI distributions, replicate concordance, and positive/negative controls; report pass/fail results with explicit thresholds.",
+          "If validation fails or required data remain unavailable, do not proceed to modeling; record blocking gaps and require corrected input or reanalysis.",
+          "Document limitations, reproducibility parameters, software versions, and seed settings before reporting results."
+        ]
+      },
+      "confidence_score": 1.0,
+      "timestamp": "2026-11-04T14:34:46.736052",
+      "metadata": {
+        "agent": "Problem Investigator"
+      }
+    },
+    "baseline_assessment": {
+      "content": {
+        "content": "",
+        "error": "Failed to parse JSON response"
+      },
+      "confidence_score": 1.0,
+      "timestamp": "2026-11-04T14:35:21.790878",
+      "metadata": {
+        "agent": "Baseline Assessor"
+      }
+    },
+    "refinement_comments": [],
+    "final_recommendations": {
+      "content": "{\n  \"model_selection\": {\n    \"recommended_models\": {\n      \"primary\": [\n        \"No primary model can be recommended until the dataset analysis content is recovered, parsed, validated, and assessed for biological context and data characteristics.\"\n      ],\n      \"secondary\": [\n        \"After valid input is available, consider biologically interpretable models appropriate to the assay and outcome, such as regularized regression or linear mixed models for bulk transcriptomics and generalized linear models or interpretable classifiers for low-dimensional structured data.\",\n        \"For high-dimensional data, conditional options include elastic net, random forest, or gradient boosting with feature importance, only after QC and interpretability requirements are confirmed.\",\n        \"For single-cell or spatial data, consider appropriate count-based models, but defer selection until the modality and experimental design are explicitly specified.\"\n      ],\n      \"rationale\": \"Model selection is blocked by an empty dataset analysis and failed JSON parsing. No biological system, feature semantics, data quality, or decision context are available. Proceeding with a specific model would be unsupported and scientifically invalid.\",\n      \"biological_justification\": \"A biologically justified model must reflect species, tissue, condition, assay modality, measurement units, batch effects, and expected effect directions. None of these are currently available, so biological justification cannot be established.\",\n      \"decision_support_alignment\": \"Decision support model recommendations cannot be incorporated because the Model Selection decision support section is empty. Model choice must be aligned with decision context, interpretability needs, and risk tolerance only after valid input and stakeholder requirements are provided.\"\n    },\n    \"implementation_priority\": {\n      \"high_priority\": [\n        \"Recover and validate the original dataset analysis content and parse the JSON successfully.\",\n        \"Document biological metadata, feature definitions, experimental design, and decision context.\",\n        \"Define explicit QC thresholds and data acceptance criteria before any modeling.\"\n      ],\n      \"medium_priority\": [\n        \"Evaluate batch effects, technical covariates, and replicate structure.\",\n        \"Generate interpretability-oriented quality control summaries such as marker expression, PCA/UMAP, composition summaries, or pathway enrichment.\",\n        \"Run technical validation with positive and negative controls where available.\"\n      ],\n      \"low_priority\": [\n        \"Compare advanced or black-box models only after transparent, interpretable baselines are established.\",\n        \"Optimize model hyperparameters once data quality and validation gates are passed.\"\n      ],\n      \"rationale\": \"Priorities reflect that no valid modeling can occur until the input data and metadata problem is corrected. Data recovery, validation, and interpretability are prerequisites for any model.\",\n      \"decision_support_priority\": \"No decision support priority can be determined because the decision support implementation plan is empty. Decision-support modeling must be postponed until the decision problem, acceptable error rates, and interpretability requirements are defined.\"\n    },\n    \"biological_interpretability\": {\n      \"requirements\": [\n        \"Feature definitions, units, and mapping to biological entities or pathways must be documented.\",\n        \"Expected effect directions or prior biological evidence must be specified.\",\n        \"Domain expert review must be available to evaluate biological plausibility.\",\n        \"Decision-support readouts must be predefined in biological terms where possible.\"\n      ],\n      \"approaches\": [\n        \"Use interpretable models as baselines before any black-box model.\",\n        \"Apply interpretability-oriented quality control such as marker gene expression, cell-type composition summaries, PCA/UMAP, and pathway enrichment.\",\n        \"Report feature importance, effect sizes, confidence intervals, or other human-readable outputs after valid data are available.\",\n        \"Perform post-hoc interpretability only after feature semantics and biological context are confirmed.\"\n      ],\n      \"validation\": \"Biological interpretability cannot be validated until valid parsed data, biological metadata, feature semantics, and expected direction of effects are supplied. Validation must include domain expert review and biologically meaningful controls or markers.\",\n      \"decision_support_interpretability\": \"Decision support interpretability cannot be assessed because the decision support information is empty. Interpretability requirements must be explicitly defined by decision stakeholders before final model approval.\"\n    }\n  },\n  \"evaluation_strategy\": {\n    \"framework\": {\n      \"design\": \"Corrective evaluation framework with sequential gates: recover and validate input data, then assess data quality, technical validity, biological relevance, and finally predictive/decision-support performance. No modeling evaluation should proceed until early gates are passed.\",\n      \"components\": [\n        \"Input recovery and JSON schema validation\",\n        \"Biological metadata completeness assessment\",\n        \"Feature semantics and provenance review\",\n        \"Quality control and normalization evaluation\",\n        \"Technical validation and batch/replicate assessment\",\n        \"Interpretability review\",\n        \"Model performance benchmarking only after upstream gates\",\n        \"Decision-support utility and risk evaluation\"\n      ],\n      \"metrics\": [\n        \"JSON validity and schema compliance\",\n        \"Percentage of required metadata fields completed\",\n        \"QC pass rates against predefined thresholds\",\n        \"Replicate concordance and batch correction diagnostics\",\n        \"Biological plausibility and domain expert agreement\",\n        \"Model performance metrics appropriate to the task, selected only after data are available\",\n        \"Decision-support metrics such as calibration, net benefit, or predefined accuracy requirements\"\n      ],\n      \"decision_support_framework\": \"No decision support evaluation framework can be adopted because the Evaluation Strategy decision support section is empty. A framework must be co-designed with decision stakeholders after valid data are available.\"\n    },\n    \"validation\": {\n      \"biological\": [\n        \"Positive and negative control evaluation where available\",\n        \"Marker gene or feature validation appropriate to the biological system\",\n        \"Expected effect direction consistency\",\n        \"Domain expert review of biological relevance\",\n        \"Pathway or functional annotation validation if applicable\"\n      ],\n      \"technical\": [\n        \"Replicate concordance assessment\",\n        \"Batch effect detection and correction diagnostics\",\n        \"Read/UMI or library size distribution checks\",\n        \"PCA/UMAP visual inspection for expected technical structure\",\n        \"Reproducibility checks with fixed seeds and software versions\"\n      ],\n      \"cross_validation\": \"Cross-validation should be designed only after the outcome, sample size, replicate structure, and data leakage risks are known. Currently, cross-validation planning is blocked by missing dataset information.\",\n      \"decision_support_validation\": \"Decision support validation cannot be specified because the decision support Evaluation Strategy is empty. It should include decision-curve analysis or equivalent only after the clinical or operational decision context is defined.\"\n    },\n    \"benchmarks\": {\n      \"baselines\": [\n        \"Simple interpretable baselines appropriate for the eventual data type, such as feature-wise tests or linear models, to be defined after data recovery\",\n        \"Null or dummy predictors for calibration and performance comparison\"\n      ],\n      \"state_of_the_art\": [\n        \"State-of-the-art methods cannot be selected until assay type, biological question, and outcome are known\",\n        \"After data recovery, compare against established methods for the specific modality and task\"\n      ],\n      \"performance_targets\": [\n        \"Explicit performance targets cannot be set without data, sample size, class balance, and decision context\",\n        \"Before modeling, define minimum acceptable biological relevance, technical validity, and decision-support performance with stakeholders\"\n      ],\n      \"decision_support_benchmarks\": \"Decision support benchmarks are unavailable because the corresponding decision support section is empty. Benchmarks should be tied to operational or clinical decision thresholds and acceptable error rates.\"\n    }\n  },\n  \"data_preparation\": {\n    \"preprocessing\": {\n      \"strategies\": [\n        \"First recover and parse the valid structured dataset analysis JSON.\",\n        \"Record data provenance, accession, version, species, tissue, condition, and experimental design.\",\n        \"Define assay-specific preprocessing only after modality is confirmed.\",\n        \"Apply quality control before normalization and remove or flag low-quality samples or features using explicit thresholds.\",\n        \"Assess and document technical covariates and batch effects before modeling.\"\n      ],\n      \"quality_control\": [\n        \"For single-cell data, assess total counts, detected genes, and mitochondrial fraction using explicit thresholds if applicable.\",\n        \"For bulk data, assess library size, alignment rate, and number of expressed genes using explicit thresholds if applicable.\",\n        \"Evaluate sample-level and feature-level missingness, outliers, and contamination risk.\",\n        \"Evaluate batch effects, replicate concordance, and positive/negative controls where available.\",\n        \"Require pass/fail QC results before any downstream analysis.\"\n      ],\n      \"normalization\": \"Normalization cannot be selected without knowing the assay and data distribution. After valid data and QC are available, choose an appropriate method such as library size normalization, variance-stabilizing transformation, or count-based normalization, and document all choices.\",\n      \"decision_support_preprocessing\": \"No decision support preprocessing recommendations are available because the Data Preparation decision support section is empty. Decision-support preprocessing must preserve interpretability and avoid leakage across decision-relevant groups.\"\n    },\n    \"requirements\": {\n      \"data_types\": [\n        \"Valid parsed dataset analysis JSON or equivalent structured content\",\n        \"Biological metadata including species, tissue, condition, perturbation or disease, and experimental design\",\n        \"Feature definitions, units, and measurement semantics\",\n        \"Data provenance, accession, and version\",\n        \"Technical covariates, batch identifiers, and replicate information\"\n      ],\n      \"quality_standards\": [\n        \"Predefined QC thresholds for data acceptance\",\n        \"Documented pass/fail rates and rationale for sample or feature exclusion\",\n        \"Batch and covariate documentation\",\n        \"Reproducibility parameters including software versions and seed settings\"\n      ],\n      \"validation_requirements\": [\n        \"Successful JSON parse and schema validation before any analysis\",\n        \"Confirmation of biological metadata completeness\",\n        \"QC pass/fail results meeting pre-specified thresholds\",\n        \"Technical validation with replicates and controls where available\",\n        \"Domain expert review of preprocessing and feature definitions\"\n      ],\n      \"decision_support_requirements\": \"Decision support data requirements cannot be specified from the empty decision support section. They must be defined by stakeholders and should include outcome labels, decision thresholds, and any protected or sensitive variables.\"\n    },\n    \"limitations\": {\n      \"identified\": [\n        \"Dataset analysis content is empty and the original JSON parsing failed.\",\n        \"No biological system, tissue, condition, feature semantics, or decision context is available.\",\n        \"No quality metrics, technical covariates, batch information, or provenance are available.\",\n        \"No interpretability-oriented features or decision-support readouts are defined.\",\n        \"The absence of valid input blocks all data preparation decisions.\"\n      ],\n      \"mitigation\": \"Stop downstream analysis until the original valid dataset analysis is recovered and parsed correctly. Request missing metadata and feature descriptions, and record all missing information as blocking gaps rather than imputing unsupported assumptions.\",\n      \"validation\": \"After recovery, validate data preparation by rerunning JSON schema checks, confirming completeness of required metadata, applying QC thresholds, and obtaining domain expert sign-off before modeling.\",\n      \"decision_support_limitations\": \"Decision support limitations are unknown because the decision support Data Preparation section is empty. Any decision-support task must explicitly address missing outcomes, label reliability, and leakage risks before data preparation is finalized.\"\n    }\n  },\n  \"implementation_plan\": {\n    \"roadmap\": {\n      \"phases\": [\n        \"Phase 0: Recover the original task description and valid dataset analysis; parse and validate JSON.\",\n        \"Phase 1: Define biological question, system, species, tissue, condition, experimental design, and decision context.\",\n        \"Phase 2: Complete data preparation, feature documentation, quality control, normalization, and batch evaluation.\",\n        \"Phase 3: Run technical validation and interpretability-oriented quality control.\",\n        \"Phase 4: Perform model selection, benchmarking, and evaluation only if prior gates pass.\",\n        \"Phase 5: Generate decision-support readouts, document limitations, and report reproducible results.\"\n      ],\n      \"timeline\": \"A concrete timeline cannot be committed until valid input is recovered and the analysis scope is known. The first milestone should be the successful recovery and validation of the original structured dataset analysis.\",\n      \"milestones\": [\n        \"Valid parsed dataset analysis JSON obtained\",\n        \"Biological metadata and feature semantics documented\",\n        \"QC thresholds and pass/fail results completed\",\n        \"Technical validation passed or blocking gaps recorded\",\n        \"Interpretability review completed\",\n        \"Model evaluation benchmark established\",\n        \"Decision-support report and reproducibility documentation delivered\"\n      ],\n      \"decision_support_roadmap\": \"No decision support roadmap can be incorporated because the Implementation Plan decision support section is empty. A decision-support roadmap must be added after stakeholders define objectives, decisions, and required evidence.\"\n    },\n    \"resources\": {\n      \"computational\": [\n        \"High-performance computing resources may be needed depending on the assay and data scale, but cannot be specified until modality and data size are known.\",\n        \"Data storage and version control for raw and processed data.\",\n        \"Reproducible pipeline environment with documented software versions and seeds.\"\n      ],\n      \"biological\": [\n        \"Domain expert with knowledge of the relevant biological system\",\n        \"Biological metadata and prior evidence about expected effect directions\",\n        \"Positive and negative controls or benchmark datasets where available\",\n        \"Feature annotations, pathway databases, and reference resources\"\n      ],\n      \"personnel\": [\n        \"Bioinformatician or computational biologist to manage parsing, QC, and pipeline execution\",\n        \"Biostatistician or machine learning specialist to design evaluation and modeling\",\n        \"Domain expert to review biological relevance and interpretability\",\n        \"Data engineer or data steward to ensure provenance and reproducibility\"\n      ],\n      \"decision_support_resources\": \"No decision support resources can be identified because the decision support Implementation Plan section is empty. Decision stakeholders, decision analysts, and operational or clinical leads should be engaged before final modeling.\"\n    },\n    \"risk_mitigation\": {\n      \"risks\": [\n        \"Original data cannot be recovered or remains malformed.\",\n        \"Required biological metadata or feature definitions are incomplete.\",\n        \"Technical QC fails or batch effects cannot be adequately addressed.\",\n        \"Assay type and study design",
+      "error": "Failed to parse JSON response"
+    },
+    "timestamp": "2026-11-04T14:36:07.216120"
+  },
+  "metadata": {
+    "generated_at": "2026-11-04T14:36:07.217701",
+    "version": "1.1",
+    "retrieval": {
+      "query": "single cell perturbation prediction",
+      "requested_limit": 10,
+      "providers": {
+        "semantic_scholar": {
+          "status": "disabled",
+          "count": 0,
+          "error": "HTTPError: 429 Client Error:  for url: https://api.semanticscholar.org/graph/v1/paper/search?query=%23+Task+for+CellForge+%28Gene+Mila+matched+comparison%29+Predict%2C+for+each+perturbation+listed+in+%60heldout_perturbations.json%60%2C+the+mean+expression+of+every+gene+in+%60cellforge_input.h5ad%60+%28same+genes%2C+same+order%2C+same+normalisation%3A+counts+per+10k%2C+log1p%29+in+K562+cells+carrying+that+CRISPR+perturbation.++scrna+seq&limit=20&fields=title%2Cabstract%2Cauthors%2Cyear%2Cvenue%2Curl%2CexternalIds%2CcitationCount%2CopenAccessPdf"
+        },
+        "local_corpus": {
+          "status": "ok",
+          "count": 0
+        },
+        "crossref": {
+          "status": "ok",
+          "count": 10
+        },
+        "pubmed": {
+          "status": "ok",
+          "count": 10
+        }
+      },
+      "results": [
+        {
+          "paper_id": "doi:10.21203/rs.3.rs-9955756/v1",
+          "evidence_id": "cf:doi:10.21203/rs.3.rs-9955756/v1",
+          "title": "A Metric-Calibrated Replay Framework for Single-Cell Genetic Perturbation Prediction",
+          "score": 1.0,
+          "source": "crossref"
+        },
+        {
+          "paper_id": "doi:10.1038/s41592-019-0494-8",
+          "evidence_id": "cf:doi:10.1038/s41592-019-0494-8",
+          "title": "scGen predicts single-cell perturbation responses.",
+          "score": 1.0,
+          "source": "pubmed"
+        },
+        {
+          "paper_id": "doi:10.64898/2026.05.07.723486",
+          "evidence_id": "cf:doi:10.64898/2026.05.07.723486",
+          "title": "Spurious correlation inflates performance in single-cell perturbation prediction",
+          "score": 0.9838709677419354,
+          "source": "crossref"
+        },
+        {
+          "paper_id": "doi:10.1111/cpr.70203",
+          "evidence_id": "cf:doi:10.1111/cpr.70203",
+          "title": "Single-Cell Virtual Perturbation Screening Identifies STAT3 as a Key Regulator of Dentinogenesis.",
+          "score": 0.9838709677419354,
+          "source": "pubmed"
+        },
+        {
+          "paper_id": "doi:10.64898/2026.09.24.754259",
+          "evidence_id": "cf:doi:10.64898/2026.09.24.754259",
+          "title": "PerturbBridge: Conditional Latent Schrödinger Bridge for Single-Cell Perturbation Response Prediction",
+          "score": 0.9682539682539681,
+          "source": "crossref"
+        },
+        {
+          "paper_id": "doi:10.1016/j.cell.2022.11.026",
+          "evidence_id": "cf:doi:10.1016/j.cell.2022.11.026",
+          "title": "A transcription factor atlas of directed differentiation.",
+          "score": 0.9682539682539681,
+          "source": "pubmed"
+        },
+        {
+          "paper_id": "doi:10.64898/2026.06.15.732063",
+          "evidence_id": "cf:doi:10.64898/2026.06.15.732063",
+          "title": "Elucidating the Design Space of Generative Models for Single-Cell Perturbation Prediction",
+          "score": 0.953125,
+          "source": "crossref"
+        },
+        {
+          "paper_id": "doi:10.1038/s41592-023-01938-4",
+          "evidence_id": "cf:doi:10.1038/s41592-023-01938-4",
+          "title": "SCENIC+: single-cell multiomic inference of enhancers and gene regulatory networks.",
+          "score": 0.953125,
+          "source": "pubmed"
+        },
+        {
+          "paper_id": "doi:10.64898/2026.07.20.739620",
+          "evidence_id": "cf:doi:10.64898/2026.07.20.739620",
+          "title": "Beyond Expression Prediction: Benchmarking Differential Expression Classification in Single-Cell Perturbation Models",
+          "score": 0.9384615384615385,
+          "source": "crossref"
+        },
+        {
+          "paper_id": "doi:10.1038/s41592-023-01969-x",
+          "evidence_id": "cf:doi:10.1038/s41592-023-01969-x",
+          "title": "Learning single-cell perturbation responses using neural optimal transport.",
+          "score": 0.9384615384615385,
+          "source": "pubmed"
+        }
+      ],
+      "timestamp": "2026-11-04T19:27:58.291873+00:00"
+    },
+    "retrieval_trace_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/analyses/adamson_cf/retrieval"
+  }
+}

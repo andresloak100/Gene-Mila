@@ -1,0 +1,9 @@
+{
+ "calls": 107,
+ "usd_peak_rates": 1.1246,
+ "prompt_tokens": 7199021,
+ "cache_hit_tokens": 7120000,
+ "completion_tokens": 178539,
+ "calls_without_usage": 0,
+ "block_total_usd": 1.855623
+}

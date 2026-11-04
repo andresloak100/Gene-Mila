@@ -1,0 +1,97 @@
+{
+ "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf",
+ "predictions": "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/codes/adamson_cf/predictions.npz",
+ "predictions_sha256": "03380c07b18497080107630ca5e3d33f5486b61120dd1a15c290f3286d9e10fb",
+ "model": "cf_adamson_s42",
+ "cellforge": {
+  "experiment_id": "cf_adamson_s42",
+  "metrics": {
+   "rmse": 0.10747299292571479,
+   "mae": 0.06728550622650029,
+   "mse": 0.01155044420841074,
+   "pearson_delta": 0.032860376973877836,
+   "pearson_delta_top": -0.01344172388083909,
+   "direction_acc_top": 0.5190476190476189,
+   "mse_top": 0.2453867774705603,
+   "r2_top": 0.6057253012762954,
+   "pearson_expr": 0.973834230986035,
+   "primary": 0.032860376973877836,
+   "selection_rule": "pearson_delta",
+   "cellforge_mse": 0.01155044420841074,
+   "cellforge_pcc": 0.973834230986035,
+   "cellforge_r2": 0.9446962788706029,
+   "cellforge_mse_de": 0.23097646801136062,
+   "cellforge_pcc_de": 0.8935340638091377,
+   "cellforge_r2_de": 0.600212539019753,
+   "cellforge_mse_deset": 0.15254581875612536,
+   "cellforge_pcc_deset": 0.7385438534033941,
+   "cellforge_r2_deset": 0.5656669994971909,
+   "cellforge_n_perts_deset": 19,
+   "vcworld_de_accuracy": 0.8083651952265091,
+   "vcworld_de_precision": 0.20408163265306123,
+   "vcworld_de_recall": 0.01914486279514997,
+   "vcworld_de_f1": 0.035005834305717624,
+   "vcworld_de_auroc": 0.5141262129958133,
+   "vcworld_de_auprc": 0.18877953914455853,
+   "vcworld_dir_accuracy": 0.62680280791321,
+   "vcworld_dir_precision": 0.23322683706070288,
+   "vcworld_dir_recall": 0.29116809116809117,
+   "vcworld_dir_f1": 0.25899645210339584,
+   "vcworld_dir_auroc": 0.4989832621082621,
+   "vcworld_dir_auprc": 0.24180045862272725,
+   "vcworld_n_de_pairs": 7835
+  }
+ },
+ "versus": {
+  "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/newcode_opus_w4_r0",
+  "experiment_id": "EXP_0441",
+  "paired": {
+   "experiments": [
+    "cf_adamson_s42",
+    "EXP_0441"
+   ],
+   "metric": "pearson_delta",
+   "a": {
+    "experiment_id": "cf_adamson_s42",
+    "metrics": {
+     "rmse": 0.10747299292571479,
+     "mae": 0.06728550622650029,
+     "mse": 0.01155044420841074,
+     "pearson_delta": 0.032860376973877836,
+     "pearson_delta_top": -0.01344172388083909,
+     "direction_acc_top": 0.5190476190476189,
+     "mse_top": 0.2453867774705603,
+     "r2_top": 0.6057253012762954,
+     "pearson_expr": 0.973834230986035,
+     "primary": 0.032860376973877836,
+     "selection_rule": "pearson_delta"
+    }
+   },
+   "b": {
+    "experiment_id": "EXP_0441",
+    "metrics": {
+     "rmse": 0.07941805961997553,
+     "mae": 0.05133823741220218,
+     "mse": 0.006307228193801987,
+     "pearson_delta": 0.598665038410173,
+     "pearson_delta_top": 0.7447539694476231,
+     "direction_acc_top": 0.9190476190476189,
+     "mse_top": 0.1251129661213442,
+     "r2_top": 0.817816421004432,
+     "pearson_expr": 0.9863005621191437,
+     "primary": 0.598665038410173,
+     "selection_rule": "pearson_delta"
+    }
+   },
+   "paired": {
+    "n": 21,
+    "mean_diff": -0.5658046614362954,
+    "se": 0.051448550027411714,
+    "wins_a": 0,
+    "wins_b": 21,
+    "ties": 0,
+    "verdict": "b"
+   }
+  }
+ }
+}

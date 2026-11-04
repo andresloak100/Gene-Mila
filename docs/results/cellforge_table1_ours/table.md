@@ -13,6 +13,7 @@ Built by `build.py` beside this file from committed reports and the run summarie
 | Gene-Mila agents, DeepSeek, clean tier 1 (block G0) | 3 | 0.0065 ± 0.0006 | 0.9860 ± 0.0013 | 0.9690 ± 0.0028 | 0.1299 ± 0.0148 | 0.9456 ± 0.0089 | 0.7792 ± 0.0274 | 0.5663 ± 0.0362 |
 | Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1) | 3 | 0.0221 ± 0.0260 | 0.9841 ± 0.0010 | 0.8944 ± 0.1240 | 0.1586 ± 0.0171 | 0.9374 ± 0.0045 | 0.7132 ± 0.0515 | 0.4906 ± 0.0687 |
 | Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff) | 3 | 0.0067 ± 0.0006 | 0.9854 ± 0.0012 | 0.9677 ± 0.0027 | 0.1368 ± 0.0137 | 0.9432 ± 0.0032 | 0.7670 ± 0.0203 | 0.5553 ± 0.0203 |
+| CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run) | 1 | 0.0116 | 0.9738 | 0.9447 | 0.2310 | 0.8935 | 0.6002 | 0.0329 |
 
 CellForge's own rows (its paper, not comparable):
 
@@ -64,4 +65,5 @@ No row of ours. The lab models genetic perturbations only, and no Srivatsan bund
 - The agent rows are each run's selected model; the block G0 and G1 bundles (`adamson_cf_clean`, `norman_clean`, with or without three tables) share the split of `adamson_cf` and `norman`.
 - Three agent runs (adamson_cf_g0 r3, adamson_cf_g1 r2, norman_g1 r2) had not stored CellForge's metrics for their selected model; `score_selected.py` scored that fixed model once, and its pearson_delta matches the published block G sealed reading.
 - Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).
+- The CellForge row is CellForge's own pipeline (gersteinlab/CellForge 6585ff9, unchanged) run by us on the same Adamson export, every agent DeepSeek v4-pro, its model's predictions scored once by the bridge like GEARS (`docs/PLAN_U_CELLFORGE.md`, receipts `cellforge_ours/cf_adamson_s42/`). Its model gave the identical prediction for every held-out perturbation (a hashed perturbation token carries nothing for an unseen gene), so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.
 - GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).

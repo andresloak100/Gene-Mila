@@ -1,0 +1,17 @@
+🧪 Dataset path: /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/datasets/adamson_cf.h5ad
+📝 Task chars: 774
+
+============================================================
+PHASE 4: AUTORUN
+============================================================
+❌ Error in autorun: [Errno 2] No such file or directory: '/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/cellforge/autorun/autoresearch_prompt.md'
+Traceback (most recent call last):
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/main.py", line 405, in run_autorun_phase
+    resolve_workspace_path(args.codex_prompt_file).read_text(encoding="utf-8")
+  File "/opt/anaconda3/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/cellforge/autorun/autoresearch_prompt.md'

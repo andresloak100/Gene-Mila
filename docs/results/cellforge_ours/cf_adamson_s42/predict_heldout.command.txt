@@ -1,0 +1,1 @@
+python predict_heldout.py --data training.h5ad --heldout heldout_perturbations.json --out predictions.npz

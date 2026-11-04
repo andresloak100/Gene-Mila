@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "workspace": "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/codes/adamson_cf/.cellforge_workspaces/codex/full_plan_68f71e88f8",
+  "entrypoint": "result.py",
+  "checks": [
+    {
+      "name": "file_exists:result.py",
+      "passed": true,
+      "message": "Required file exists: result.py",
+      "command": null,
+      "exit_code": null,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "details": {}
+    },
+    {
+      "name": "python_compile",
+      "passed": true,
+      "message": "Command completed successfully",
+      "command": [
+        "/Users/andresarriaga/cellforge_env/bin/python3.12",
+        "-m",
+        "py_compile",
+        "result.py"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "details": {}
+    },
+    {
+      "name": "cli_help",
+      "passed": true,
+      "message": "Command completed successfully",
+      "command": [
+        "/Users/andresarriaga/cellforge_env/bin/python3.12",
+        "result.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "usage: result.py [-h] [--adata-path ADATA_PATH_DASH]\n                 [--adata_path ADATA_PATH_UNDER] [--data_path DATA_PATH_FLAG]\n                 [--data DATA_FLAG] [--val-adata-path VAL_ADATA_PATH_DASH]\n                 [--val_data VAL_DATA] [--val-path VAL_PATH]\n                 [--val_path VAL_PATH_UNDER]\n                 [--val_adata_path VAL_ADATA_PATH_UNDER]\n                 [--output-metrics OUTPUT_METRICS_DASH]\n                 [--metrics-path METRICS_PATH]\n                 [--metrics_path METRICS_PATH_UNDER] [--output OUTPUT]\n                 [--seed SEED] [--epochs EPOCHS] [--max-genes MAX_GENES]\n                 [data_path]\n\nTrain a perturbation-response model on single-cell data and write validation\nmetrics as JSON.\n\npositional arguments:\n  data_path             Path to training AnnData (.h5ad).\n\noptions:\n  -h, --help            show this help message and exit\n  --adata-path ADATA_PATH_DASH\n  --adata_path ADATA_PATH_UNDER\n  --data_path DATA_PATH_FLAG\n  --data DATA_FLAG\n  --val-adata-path VAL_ADATA_PATH_DASH\n  --val_data VAL_DATA\n  --val-path VAL_PATH\n  --val_path VAL_PATH_UNDER\n  --val_adata_path VAL_ADATA_PATH_UNDER\n  --output-metrics OUTPUT_METRICS_DASH\n  --metrics-path METRICS_PATH\n  --metrics_path METRICS_PATH_UNDER\n  --output OUTPUT\n  --seed SEED\n  --epochs EPOCHS\n  --max-genes MAX_GENES\n",
+      "stderr_tail": "",
+      "details": {}
+    }
+  ]
+}

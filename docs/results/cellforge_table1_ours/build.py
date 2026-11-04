@@ -84,6 +84,7 @@ def main():
              [f"adamson_cf_g1_ds_w4_r{r}" for r in (0, 2, 3)]),
             ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", None,
              [f"T:adamson_cf_t0_ds_w4_r{r}" for r in (0, 2, 3)]),
+            ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run)", [bridge("cellforge_ours/cf_adamson_s42.json")], "bridge"),
         ]},
         "norman": {"bundle": "norman", "rows": [
             ("Unperturbed (control mean)", [bridge("cellforge_table1_ours/unperturbed_norman.json")], "bridge"),
@@ -138,6 +139,11 @@ def main():
            "- Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek "
            "runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed "
            "DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).",
+           "- The CellForge row is CellForge's own pipeline (gersteinlab/CellForge 6585ff9, unchanged) run by us on the same "
+           "Adamson export, every agent DeepSeek v4-pro, its model's predictions scored once by the bridge like GEARS "
+           "(`docs/PLAN_U_CELLFORGE.md`, receipts `cellforge_ours/cf_adamson_s42/`). Its model gave the identical "
+           "prediction for every held-out perturbation (a hashed perturbation token carries nothing for an unseen gene), "
+           "so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
            "each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).", ""]
     (Path(__file__).parent / "table.md").write_text("\n".join(md))

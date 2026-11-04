@@ -252,6 +252,40 @@
      "adamson_cf_t0_ds_w4_r2:EXP_0530",
      "adamson_cf_t0_ds_w4_r3:EXP_0339"
     ]
+   },
+   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run)": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.01155044420841074,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.973834230986035,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.9446962788706029,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.23097646801136062,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.8935340638091377,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.600212539019753,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.032860376973877836,
+      "sd": null
+     }
+    },
+    "sources": []
    }
   },
   "norman": {
