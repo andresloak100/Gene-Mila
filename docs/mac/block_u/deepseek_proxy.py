@@ -121,6 +121,10 @@ class H(BaseHTTPRequestHandler):
                 self.wfile.write(b"0\r\n\r\n"); self.wfile.flush()
             except (BrokenPipeError, ConnectionResetError):
                 pass
+            except Exception as e:  # upstream stalled or broke mid-stream: end the response so the client sees it
+                self.close_connection = True
+                status = 599
+                sys.stderr.write(f"stream error after {time.time() - t0:.0f}s: {e}\n")
         else:
             data = resp.read()
             self.send_header("Content-Length", str(len(data))); self.end_headers()

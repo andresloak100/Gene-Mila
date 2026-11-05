@@ -9,5 +9,5 @@ PROXY="${BLOCK_U_PROXY:-http://127.0.0.1:8787}"
 REAL="${BLOCK_U_CODEX:-$HOME/.npm-global/bin/codex}"
 exec "$REAL" "$1" \
   -c model_provider=deepseek \
-  -c "model_providers.deepseek={name=\"DeepSeek via block U proxy\",base_url=\"$PROXY\",env_key=\"OPENAI_API_KEY\",wire_api=\"responses\"}" \
+  -c "model_providers.deepseek={name=\"DeepSeek via block U proxy\",base_url=\"$PROXY\",env_key=\"OPENAI_API_KEY\",wire_api=\"responses\",stream_idle_timeout_ms=300000}" \
   "${@:2}"
