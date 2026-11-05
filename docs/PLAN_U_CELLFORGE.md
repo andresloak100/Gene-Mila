@@ -81,3 +81,17 @@ generated code and plans copied from the workspace.
   their table.
 - If CellForge's agent cannot produce `predictions.npz` within the repair rounds and the limits, the run is reported
   as failed with its receipts, not patched by hand into a result.
+
+## Notes after the start
+
+- 2026-11-05: the first Norman run (`cf_norman_s42`) finished analysis, design and code generation ($0.78 by the
+  proxy), then CellForge's autorun trained the agent's script on the CPU (a 4-layer transformer over 512 gene
+  tokens; the script looks only for CUDA) and the process reached 46.9 GB of memory on the 24 GB Mac (macOS
+  JetsamEvent reports of 03:10:57 and 03:13:15 UTC name pid 21314, `python3.12`, as the largest process). At
+  03:13:27 UTC the session that had launched the chain ended and every block U process received SIGTERM with it;
+  the proxy ledger stood at $2.91. Andres (05 Nov, "Restart, 12 GB cap"): the chain restarts with a resource cap
+  beside the wall-clock one: a step whose process tree exceeds 12 GB resident is killed, the run is marked
+  failed with the snapshot in `<step>.memkill.txt`, and the chain goes on. A run that needs more memory than the
+  machine has is an outcome of the comparison and is reported as such, never patched. The chain is relaunched in
+  its own process session so a session ending cannot kill it again. The first attempt's autorun receipts are
+  kept as `autorun_attempt1_killed.*` in `docs/results/cellforge_ours/cf_norman_s42/`.

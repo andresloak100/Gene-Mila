@@ -97,6 +97,8 @@ def main():
              [f"norman_g1_ds_w4_r{r}" for r in (0, 2, 3)]),
             ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", None,
              [f"T:norman_t0_ds_w4_r{r}" for r in (0, 2, 3)]),
+            ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending)",
+             [bridge(f"cellforge_ours/cf_norman_s{s}.json") for s in (42, 0, 2)], "bridge"),
         ]},
     }
     for ds, sp in spec.items():
@@ -144,6 +146,11 @@ def main():
            "(`docs/PLAN_U_CELLFORGE.md`, receipts `cellforge_ours/cf_adamson_s42/`). Its model gave the same "
            "prediction, to five decimals, for every held-out perturbation: its output did not vary with its hashed perturbation token "
            "(own validation correlation 0.10 per cell), so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.",
+           "- The Norman CellForge row is pending. The block's first Norman run (`cellforge_ours/cf_norman_s42/`) finished its "
+           "analysis, design and code generation ($0.78 by the proxy ledger); the agent's training script, a 4-layer transformer "
+           "over 512 gene tokens trained on the CPU, then reached 47 GB of memory on the 24 GB Mac (macOS memory reports of "
+           "5 Nov 2026, 03:10 and 03:13 UTC) and every block U process was killed with the session at 03:13 UTC before it "
+           "finished. The row fills when the block is rerun under a memory cap.",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
            "each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).", ""]
     (Path(__file__).parent / "table.md").write_text("\n".join(md))

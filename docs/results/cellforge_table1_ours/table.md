@@ -40,6 +40,7 @@ CellForge's own rows (its paper, not comparable):
 | Gene-Mila agents, DeepSeek, clean tier 1 (block G0) | 3 | 0.0054 ± 0.0002 | 0.9888 ± 0.0003 | 0.9747 ± 0.0008 | 0.1045 ± 0.0040 | 0.9393 ± 0.0021 | 0.8479 ± 0.0041 | 0.7193 ± 0.0012 |
 | Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1) | 3 | 0.0056 ± 0.0005 | 0.9885 ± 0.0007 | 0.9735 ± 0.0024 | 0.1065 ± 0.0027 | 0.9380 ± 0.0015 | 0.8442 ± 0.0035 | 0.7201 ± 0.0065 |
 | Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff) | 3 | 0.0054 ± 0.0001 | 0.9887 ± 0.0004 | 0.9747 ± 0.0007 | 0.1060 ± 0.0056 | 0.9380 ± 0.0026 | 0.8444 ± 0.0057 | 0.7209 ± 0.0026 |
+| CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending) | – | pending | pending | pending | pending | pending | pending | pending |
 
 CellForge's own rows (its paper, not comparable):
 
@@ -66,4 +67,5 @@ No row of ours. The lab models genetic perturbations only, and no Srivatsan bund
 - Three agent runs (adamson_cf_g0 r3, adamson_cf_g1 r2, norman_g1 r2) had not stored CellForge's metrics for their selected model; `score_selected.py` scored that fixed model once, and its pearson_delta matches the published block G sealed reading.
 - Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).
 - The CellForge row is CellForge's own pipeline (gersteinlab/CellForge 6585ff9, unchanged) run by us on the same Adamson export, every agent DeepSeek v4-pro, its model's predictions scored once by the bridge like GEARS (`docs/PLAN_U_CELLFORGE.md`, receipts `cellforge_ours/cf_adamson_s42/`). Its model gave the same prediction, to five decimals, for every held-out perturbation: its output did not vary with its hashed perturbation token (own validation correlation 0.10 per cell), so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.
+- The Norman CellForge row is pending. The block's first Norman run (`cellforge_ours/cf_norman_s42/`) finished its analysis, design and code generation ($0.78 by the proxy ledger); the agent's training script, a 4-layer transformer over 512 gene tokens trained on the CPU, then reached 47 GB of memory on the 24 GB Mac (macOS memory reports of 5 Nov 2026, 03:10 and 03:13 UTC) and every block U process was killed with the session at 03:13 UTC before it finished. The row fills when the block is rerun under a memory cap.
 - GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).

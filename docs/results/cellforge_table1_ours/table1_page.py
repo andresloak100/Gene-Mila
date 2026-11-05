@@ -17,6 +17,7 @@ OURS_ROWS = [
  ("Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1)", "Gene-Mila agents + gene tables, run G1", True),
  ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", "Gene-Mila agents, run T0", True),
  ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run)", "CellForge pipeline, run by us (1 run)", False),
+ ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending)", "CellForge pipeline, run by us (pending)", False),
 ]
 def ranks(vals, j):
     xs = sorted({v for v in vals if v is not None}, reverse=(j not in LOWER))

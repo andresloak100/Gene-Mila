@@ -540,6 +540,11 @@
      "norman_t0_ds_w4_r2:EXP_0417",
      "norman_t0_ds_w4_r3:EXP_0357"
     ]
+   },
+   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending)": {
+    "n": 0,
+    "metrics": null,
+    "sources": []
    }
   }
  },

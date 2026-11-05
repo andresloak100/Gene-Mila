@@ -9,6 +9,8 @@ CLONE="$HOME/Documents/Mila/Gene-Mila/gene-mila-norman"; MAIN="$HOME/Documents/M
 CF="$HOME/Documents/Mila/Gene-Mila/cellforge-6585ff9"; CFENV="$HOME/cellforge_env"
 RUNS="$HOME/Documents/Mila/Gene-Mila/cellforge_runs"; WS="$RUNS/$NAME"; PROXYDIR="$RUNS/proxy"
 B="$CLONE/docs/mac/block_u"; R="$CLONE/docs/results/cellforge_ours/$NAME"; PORT=8787; PROXY="http://127.0.0.1:$PORT"
+MEM_CAP_MB=12288   # 12 GB resident for a step's whole process tree, Andres 2026-11-05 ("Restart, 12 GB cap"), after
+                   # cf_norman_s42's training script reached 47 GB on the 24 GB Mac (macOS JetsamEvent reports, 03:10 and 03:13 UTC)
 case "$DS" in
   adamson_cf) EXPORT="$HOME/cellforge_adamson_export_corrected_20261028"; BUNDLE="$MAIN/data/adamson_cf"; VERSUS="$MAIN/runs/newcode_opus_w4_r0";;
   norman)     EXPORT="$HOME/cellforge_norman_export";                   BUNDLE="$MAIN/data/norman";     VERSUS="$MAIN/runs/norman_ds_from_n2_w4_r1";;
@@ -51,20 +53,41 @@ H5="$WS/data/datasets/$DS/$DS.h5ad"; mkdir -p "$WS/data/datasets/$DS"
 cp "$EXPORT/TASK.md" "$WS/task.md"
 
 # ---- receipts: NAME.command.txt / .log / .exit / .runtime.json, a wall-clock limit, key-like strings redacted ---
+tree_pids() {  # every descendant of $1, depth first (ps once; macOS has no --ppid tree)
+  ps -axo pid=,ppid= | awk -v root="$1" '{kid[$2]=kid[$2] " " $1} END{n=split(kid[root],q," "); for(i=1;i<=n;i++){print q[i]; m=split(kid[q[i]],r," "); for(j=1;j<=m;j++) q[++n]=r[j]}}'
+}
+tree_rss_mb() {  # physical footprint of $1 and its whole tree, in MB: top's MEM column, which counts compressed and
+                 # swapped private pages too (ps's rss drops to a few MB once macOS compresses an idle process)
+  local pids; pids="$1 $(tree_pids "$1" | tr '\n' ' ')"
+  top -l 1 -stats pid,mem 2>/dev/null | awk -v ps="$pids" 'BEGIN{n=split(ps,a," "); for(i=1;i<=n;i++) want[a[i]]=1}
+    ($1 in want){v=$2; sub(/[+-]$/,"",v); u=substr(v,length(v)); x=substr(v,1,length(v)-1)+0;
+      if(u=="K") x/=1024; else if(u=="G") x*=1024; else if(u=="B") x/=1048576; else if(u!="M") x=v+0; s+=x} END{printf "%d", s}'
+}
+kill_tree() {  # kill_tree PID SIGNAL: the children first, then the root
+  local pids; pids="$(tree_pids "$1")"
+  [ -n "$pids" ] && kill -"$2" $pids 2>/dev/null; kill -"$2" "$1" 2>/dev/null
+}
 step() {  # step NAME LIMIT_SECONDS WORKDIR -- COMMAND...   (a step whose .exit is already 0 is skipped: resume)
   local name="$1" limit="$2" wd="$3"; shift 3; [ "${1:-}" = "--" ] && shift
   if [ -f "$R/$name.exit" ] && [ "$(cat "$R/$name.exit")" = "0" ]; then say "$name skipped: already done (exit 0 on record)"; return 0; fi
   printf '%s\n' "$*" > "$R/$name.command.txt"
-  local s0 start end rc pid; s0=$(date +%s); start=$(now)
+  local s0 start end rc pid mb peak=0 killed=""; s0=$(date +%s); start=$(now)
   ( cd "$wd" && nice -n 19 "$@" ) > "$R/$name.log" 2>&1 & pid=$!
   while kill -0 $pid 2>/dev/null; do
-    sleep 20
-    if [ $(( $(date +%s) - s0 )) -gt "$limit" ]; then pkill -TERM -P $pid; sleep 5; pkill -KILL -P $pid; kill -KILL $pid 2>/dev/null; echo "KILLED: wall-clock limit ${limit}s" >> "$R/$name.log"; fi
+    sleep 10
+    mb=$(tree_rss_mb $pid); [ "${mb:-0}" -gt "$peak" ] && peak=$mb
+    if [ -z "$killed" ] && [ "${mb:-0}" -gt "$MEM_CAP_MB" ]; then
+      killed="memory"; ps -axo pid,ppid,rss,etime,command | awk -v ps="$pid $(tree_pids $pid | tr '\n' ' ')" 'BEGIN{n=split(ps,a," "); for(i in a) want[a[i]]=1} NR==1||($1 in want)' | cut -c1-200 > "$R/$name.memkill.txt"
+      echo "KILLED: memory limit ${MEM_CAP_MB} MB resident for the step's process tree (${mb} MB at $(now); snapshot in $name.memkill.txt)" >> "$R/$name.log"
+      kill_tree $pid TERM; sleep 5; kill_tree $pid KILL
+    elif [ -z "$killed" ] && [ $(( $(date +%s) - s0 )) -gt "$limit" ]; then
+      killed="time"; echo "KILLED: wall-clock limit ${limit}s" >> "$R/$name.log"; kill_tree $pid TERM; sleep 5; kill_tree $pid KILL
+    fi
   done
   wait $pid; rc=$?; end=$(now)
   LC_ALL=C sed -i '' -E 's/sk-[A-Za-z0-9]{16,}/[REDACTED]/g' "$R/$name.log"
   echo "$rc" > "$R/$name.exit"
-  python3 -c "import json,sys,platform; json.dump({'start_utc':sys.argv[2],'end_utc':sys.argv[3],'wall_seconds':int(sys.argv[4]),'exit':int(sys.argv[5]),'cwd':sys.argv[6],'machine':platform.platform()},open(sys.argv[1],'w'),indent=1)" "$R/$name.runtime.json" "$start" "$end" $(( $(date +%s) - s0 )) "$rc" "$wd"
+  python3 -c "import json,sys,platform; json.dump({'start_utc':sys.argv[2],'end_utc':sys.argv[3],'wall_seconds':int(sys.argv[4]),'exit':int(sys.argv[5]),'cwd':sys.argv[6],'machine':platform.platform(),'peak_tree_rss_mb':int(sys.argv[7]),'mem_cap_mb':int(sys.argv[8]),'killed':sys.argv[9] or None},open(sys.argv[1],'w'),indent=1)" "$R/$name.runtime.json" "$start" "$end" $(( $(date +%s) - s0 )) "$rc" "$wd" "$peak" "$MEM_CAP_MB" "$killed"
   say "$name exit $rc after $(( $(date +%s) - s0 ))s, proxy $(curl -s -m 2 "$PROXY/__status")"
   return $rc
 }
