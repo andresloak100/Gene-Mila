@@ -1,0 +1,552 @@
+{
+ "datasets": {
+  "adamson": {
+   "Unperturbed (control mean)": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.011567502060469846,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.9737641534895071,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.944615749736645,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.23115451392291422,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.8936578927831293,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.6002677708468249,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.026187046657859092,
+      "sd": null
+     }
+    },
+    "sources": []
+   },
+   "Mean response (lab's start, OLS)": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.007039087039889803,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.9846084168233286,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.966319990734692,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.15355345347474497,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9318245289901906,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.73408650246828,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.519597358465441,
+      "sd": null
+     }
+    },
+    "sources": [
+     "adamson_cf_g0_ds_w4_r0:EXP_0003"
+    ]
+   },
+   "Linear, Ahlmann-Eltze 2025": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.007101099020938263,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.984361282374852,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.9660807084468617,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.163185712636234,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9198648450405051,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7106430445746919,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.4854421770368539,
+      "sd": null
+     }
+    },
+    "sources": []
+   },
+   "GEARS, Roohani 2023": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.008729871582442842,
+      "sd": 0.0005663085928567056
+     },
+     "cellforge_pcc": {
+      "mean": 0.98074091682441,
+      "sd": 0.0012358808353560885
+     },
+     "cellforge_r2": {
+      "mean": 0.958359027194233,
+      "sd": 0.002723267312677051
+     },
+     "cellforge_mse_de": {
+      "mean": 0.13299860628035193,
+      "sd": 0.0037427603388903545
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9276875961740838,
+      "sd": 0.0011026660183264616
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7514998974584298,
+      "sd": 0.006896768001885135
+     },
+     "pearson_delta": {
+      "mean": 0.40728287355962023,
+      "sd": 0.011648347073700759
+     }
+    },
+    "sources": []
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 (block G0)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.006484807815431165,
+      "sd": 0.0005726175621519017
+     },
+     "cellforge_pcc": {
+      "mean": 0.9859750497838503,
+      "sd": 0.0013241892413649798
+     },
+     "cellforge_r2": {
+      "mean": 0.9690060666799623,
+      "sd": 0.002773952861112637
+     },
+     "cellforge_mse_de": {
+      "mean": 0.12985398373980436,
+      "sd": 0.014802500469436276
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9456089113010251,
+      "sd": 0.008871495985692807
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7792371904307794,
+      "sd": 0.02743037274695766
+     },
+     "pearson_delta": {
+      "mean": 0.5663340380138583,
+      "sd": 0.036221487604842256
+     }
+    },
+    "sources": [
+     "adamson_cf_g0_ds_w4_r0:EXP_0289",
+     "adamson_cf_g0_ds_w4_r2:EXP_0812",
+     "adamson_cf_g0_ds_w4_r3:EXP_0613 (score_selected.py)"
+    ]
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.022107287828042575,
+      "sd": 0.025977302895047315
+     },
+     "cellforge_pcc": {
+      "mean": 0.9840932212894947,
+      "sd": 0.0009506910375134956
+     },
+     "cellforge_r2": {
+      "mean": 0.8943553682300203,
+      "sd": 0.12402696620674081
+     },
+     "cellforge_mse_de": {
+      "mean": 0.1586273990656313,
+      "sd": 0.01705643668946397
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9374462217932454,
+      "sd": 0.004481686331690811
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7131658547307186,
+      "sd": 0.0515254254676819
+     },
+     "pearson_delta": {
+      "mean": 0.49062646480473965,
+      "sd": 0.06866611957210465
+     }
+    },
+    "sources": [
+     "adamson_cf_g1_ds_w4_r0:EXP_0777",
+     "adamson_cf_g1_ds_w4_r2:EXP_0730 (score_selected.py)",
+     "adamson_cf_g1_ds_w4_r3:EXP_0796"
+    ]
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.006749685046682635,
+      "sd": 0.000557463971820658
+     },
+     "cellforge_pcc": {
+      "mean": 0.9853517658405576,
+      "sd": 0.0011807120769524832
+     },
+     "cellforge_r2": {
+      "mean": 0.9677188739455199,
+      "sd": 0.0026912477289888267
+     },
+     "cellforge_mse_de": {
+      "mean": 0.13682887731505777,
+      "sd": 0.01374128816061974
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9432135390396927,
+      "sd": 0.0032362660147937103
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7669929009165513,
+      "sd": 0.020311699550468732
+     },
+     "pearson_delta": {
+      "mean": 0.5553200589867936,
+      "sd": 0.020267860805136467
+     }
+    },
+    "sources": [
+     "adamson_cf_t0_ds_w4_r0:EXP_0547",
+     "adamson_cf_t0_ds_w4_r2:EXP_0530",
+     "adamson_cf_t0_ds_w4_r3:EXP_0339"
+    ]
+   },
+   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 of 3 runs finished)": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.01155044420841074,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.973834230986035,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.9446962788706029,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.23097646801136062,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.8935340638091377,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.600212539019753,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.032860376973877836,
+      "sd": null
+     }
+    },
+    "sources": []
+   }
+  },
+  "norman": {
+   "Unperturbed (control mean)": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.01399002234506724,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.972862889203327,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.9331359746393273,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.3152773003425117,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.8386261194868754,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.5881315920832814,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.03425605600012415,
+      "sd": null
+     }
+    },
+    "sources": []
+   },
+   "Additive singles (lab's start)": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.005897568631886841,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.9879164775328905,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.9722114708545961,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.10157863005339843,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9411594512618892,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.846266496815894,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.7125920757739331,
+      "sd": null
+     }
+    },
+    "sources": [
+     "norman_g0_ds_w4_r0:EXP_0003"
+    ]
+   },
+   "Linear, Ahlmann-Eltze 2025": {
+    "n": 1,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.007401047671095228,
+      "sd": null
+     },
+     "cellforge_pcc": {
+      "mean": 0.9840895805115233,
+      "sd": null
+     },
+     "cellforge_r2": {
+      "mean": 0.9650258839328344,
+      "sd": null
+     },
+     "cellforge_mse_de": {
+      "mean": 0.18020392677575434,
+      "sd": null
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.8996270448488854,
+      "sd": null
+     },
+     "cellforge_r2_de": {
+      "mean": 0.7510837083802916,
+      "sd": null
+     },
+     "pearson_delta": {
+      "mean": 0.6525712104486933,
+      "sd": null
+     }
+    },
+    "sources": []
+   },
+   "GEARS, Roohani 2023": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.007620039148386523,
+      "sd": 0.0004022305511872033
+     },
+     "cellforge_pcc": {
+      "mean": 0.9844938898032534,
+      "sd": 0.0008289359202025712
+     },
+     "cellforge_r2": {
+      "mean": 0.9641600039402242,
+      "sd": 0.001880347513339189
+     },
+     "cellforge_mse_de": {
+      "mean": 0.12421939697746247,
+      "sd": 0.0068575118061023595
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9300790277380377,
+      "sd": 0.0030671255264919832
+     },
+     "cellforge_r2_de": {
+      "mean": 0.822320525126106,
+      "sd": 0.007012211338339211
+     },
+     "pearson_delta": {
+      "mean": 0.6070584132813223,
+      "sd": 0.011090027436837215
+     }
+    },
+    "sources": []
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 (block G0)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.005364875987080076,
+      "sd": 0.00015985401321096947
+     },
+     "cellforge_pcc": {
+      "mean": 0.988833812039172,
+      "sd": 0.00030486601023044094
+     },
+     "cellforge_r2": {
+      "mean": 0.9746866688931143,
+      "sd": 0.0007829280328266265
+     },
+     "cellforge_mse_de": {
+      "mean": 0.10447827143849608,
+      "sd": 0.0039778695815383975
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9393475232130009,
+      "sd": 0.0020544733123699314
+     },
+     "cellforge_r2_de": {
+      "mean": 0.847905484275068,
+      "sd": 0.004078980913767118
+     },
+     "pearson_delta": {
+      "mean": 0.7193206193399568,
+      "sd": 0.0012115327474301874
+     }
+    },
+    "sources": [
+     "norman_g0_ds_w4_r0:EXP_0697",
+     "norman_g0_ds_w4_r2:EXP_0787",
+     "norman_g0_ds_w4_r3:EXP_0737"
+    ]
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.005620094636859471,
+      "sd": 0.0005186929162347874
+     },
+     "cellforge_pcc": {
+      "mean": 0.9885047863739048,
+      "sd": 0.0006910568436753113
+     },
+     "cellforge_r2": {
+      "mean": 0.9734514380576346,
+      "sd": 0.0023708773521349995
+     },
+     "cellforge_mse_de": {
+      "mean": 0.10648084409966885,
+      "sd": 0.0026667644322806204
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9379776674775332,
+      "sd": 0.0014524173373660194
+     },
+     "cellforge_r2_de": {
+      "mean": 0.8442098944063642,
+      "sd": 0.0034914871050091335
+     },
+     "pearson_delta": {
+      "mean": 0.7201164841520549,
+      "sd": 0.006542751516057226
+     }
+    },
+    "sources": [
+     "norman_g1_ds_w4_r0:EXP_0745",
+     "norman_g1_ds_w4_r2:EXP_0671 (score_selected.py)",
+     "norman_g1_ds_w4_r3:EXP_0652"
+    ]
+   },
+   "Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)": {
+    "n": 3,
+    "metrics": {
+     "cellforge_mse": {
+      "mean": 0.005355092203759706,
+      "sd": 0.00014305688099186352
+     },
+     "cellforge_pcc": {
+      "mean": 0.9887271419433942,
+      "sd": 0.00039942890829737716
+     },
+     "cellforge_r2": {
+      "mean": 0.9746865344751764,
+      "sd": 0.0007235532443758149
+     },
+     "cellforge_mse_de": {
+      "mean": 0.10596242539992415,
+      "sd": 0.005551256870024955
+     },
+     "cellforge_pcc_de": {
+      "mean": 0.9379842035179302,
+      "sd": 0.0025916709408821998
+     },
+     "cellforge_r2_de": {
+      "mean": 0.8444259251662597,
+      "sd": 0.005652071264440478
+     },
+     "pearson_delta": {
+      "mean": 0.7208621595625238,
+      "sd": 0.0025739565153469006
+     }
+    },
+    "sources": [
+     "norman_t0_ds_w4_r0:EXP_0198",
+     "norman_t0_ds_w4_r2:EXP_0417",
+     "norman_t0_ds_w4_r3:EXP_0357"
+    ]
+   },
+   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, 0 of 3 runs finished)": {
+    "n": 0,
+    "metrics": null,
+    "sources": []
+   }
+  }
+ },
+ "sources": {}
+}

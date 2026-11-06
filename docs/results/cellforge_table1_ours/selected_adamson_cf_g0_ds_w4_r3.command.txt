@@ -1,0 +1,1 @@
+nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/cellforge_table1_ours/score_selected.py /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_g0_ds_w4_r3 docs/results/cellforge_table1_ours/selected_adamson_cf_g0_ds_w4_r3.json

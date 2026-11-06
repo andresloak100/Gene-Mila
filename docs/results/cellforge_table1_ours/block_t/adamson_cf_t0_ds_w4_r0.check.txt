@@ -1,0 +1,7 @@
+run: code d53edff93c, 1231.6 s, seed 0, workers 4, data adamson_cf_clean, external knowledge [], planner deepseek:deepseek-v4-pro mixed False exhausted_at_min None
+cost by the run: workers $0.461, planner $0.609
+selected EXP_0547 (ridge, 12 features) visible 0.5651745122277474
+features reading gene_annotation: 0 []
+features reading gene_constraint: 0 []
+features reading protein_annotation: 0 []
+largest planner state 16650 characters (TOTAL_CHARS cut 20000 not reached)

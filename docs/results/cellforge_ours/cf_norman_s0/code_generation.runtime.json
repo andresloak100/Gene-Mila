@@ -1,0 +1,11 @@
+{
+ "start_utc": "2026-11-06T04:25:00Z",
+ "end_utc": "2026-11-06T04:38:15Z",
+ "wall_seconds": 795,
+ "exit": 0,
+ "cwd": "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s0",
+ "machine": "macOS-26.5.1-arm64-arm-64bit",
+ "peak_tree_rss_mb": 590,
+ "mem_cap_mb": 12288,
+ "killed": null
+}

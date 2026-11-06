@@ -1,0 +1,1 @@
+cellforge --workspace /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s0 --dataset-path /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s0/data/datasets/adamson_cf/adamson_cf.h5ad --task-file /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s0/task.md --phase task_analysis

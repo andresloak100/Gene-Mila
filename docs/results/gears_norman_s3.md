@@ -1,0 +1,15 @@
+# gears_norman_s3 on Gene-Mila's split, scored once on the sealed set
+
+Bundle `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman`; predictions `/Users/andresarriaga/gears_norman_s3/predictions.npz` (sha256 `e9c2f67d641512907cd2fa7ad23fa8ead8061fb7ba12690709879e2e5883a339`).
+
+| metric | gears_norman_s3 |
+|---|---:|
+| pearson_delta | 0.5943 |
+| mse | 0.0081 |
+| pearson_delta_top | 0.7230 |
+| r2_top | 0.8271 |
+| cellforge_mse_de | 0.1318 |
+| cellforge_pcc_de | 0.9273 |
+| cellforge_r2_de | 0.8149 |
+
+Paired against `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_ds_from_n2_w4_r1` EXP_0681 (gears_norman_s3 minus the lab's model, pearson_delta per sealed perturbation): {"n": 56, "mean_diff": -0.12491565610497754, "se": 0.014700382184629263, "wins_a": 5, "wins_b": 51, "ties": 0, "verdict": "b", "by_category": {"pair_seen0": {"n": 8, "mean_diff": -0.07581907779238654, "se": 0.02290755083120792, "wins_a": 1, "wins_b": 7, "ties": 0, "verdict": "b"}, "pair_seen1": {"n": 27, "mean_diff": -0.15437948961131637, "se": 0.02019633101142919, "wins_a": 1, "wins_b": 26, "ties": 0, "verdict": "b"}, "pair_seen2": {"n": 5, "mean_diff": -0.18127571558601893, "se": 0.08187581640056414, "wins_a": 0, "wins_b": 5, "ties": 0, "verdict": "b"}, "single": {"n": 16, "mean_diff": -0.08

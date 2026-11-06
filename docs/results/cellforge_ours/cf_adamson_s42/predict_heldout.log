@@ -1,0 +1,9 @@
+[INFO] MPS detected; result.py's reference loop will run on CPU.
+[INFO] Raw matrix: 40890 cells x 2055 genes (counts=False)
+[INFO] Matrix looks pre-normalised; skipping count-based cell QC.
+[INFO] Gene QC keeps 2053/2055 genes
+[INFO] Selected 512 highly variable genes
+[INFO] Baseline computed from 9065 control cells
+[INFO] Training on 51 groups (50 perturbed) for 30 epochs
+[INFO] Training finished after 30 epochs
+[INFO] Wrote 38 x 2055 predictions to predictions.npz

@@ -1,0 +1,31 @@
+{
+  "entrypoint": "result.py",
+  "required_cli": {
+    "training_data": [
+      "--adata-path",
+      "--adata_path",
+      "--data_path",
+      "--data",
+      "positional"
+    ],
+    "validation_data": [
+      "--val-adata-path",
+      "--val_data",
+      "--val-path"
+    ],
+    "metrics_output": [
+      "--output-metrics",
+      "--metrics-path",
+      "--output"
+    ]
+  },
+  "constraints": {
+    "paths_must_not_be_hardcoded": true,
+    "network_downloads": false,
+    "cluster_submission": false,
+    "test_or_ood_data_access": false
+  },
+  "required_artifacts": [
+    "result.py"
+  ]
+}

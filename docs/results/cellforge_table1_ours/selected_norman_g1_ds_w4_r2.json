@@ -1,0 +1,171 @@
+{
+ "run": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/norman_g1_ds_w4_r2",
+ "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman_clean_tables",
+ "experiment_id": "EXP_0671",
+ "cellforge": {
+  "experiment_id": "norman_g1_ds_w4_r2:EXP_0671",
+  "metrics": {
+   "rmse": 0.07580410666905384,
+   "mae": 0.051557613688712055,
+   "mse": 0.005746262587893292,
+   "pearson_delta": 0.7182274509766211,
+   "pearson_delta_top": 0.7901915372273834,
+   "direction_acc_top": 0.9107142857142857,
+   "mse_top": 0.11238319724031512,
+   "r2_top": 0.8522908167055311,
+   "pearson_expr": 0.9881586470947993,
+   "pearson_delta_nontarget": 0.7117146766700007,
+   "primary": 0.7182274509766211,
+   "selection_rule": "pearson_delta",
+   "by_category": {
+    "pair_seen0": {
+     "n": 8,
+     "pearson_delta": {
+      "mean": 0.6200246120916391,
+      "sd": 0.22914631221126286
+     },
+     "pearson_delta_top": {
+      "mean": 0.6321854901773183,
+      "sd": 0.36943816209408675
+     },
+     "direction_acc_top": {
+      "mean": 0.89375,
+      "sd": 0.15683817866104632
+     },
+     "mse_top": {
+      "mean": 0.2819709316542016,
+      "sd": 0.18300791139343697
+     },
+     "r2_top": {
+      "mean": 0.6923001821922079,
+      "sd": 0.16713786553160495
+     },
+     "pearson_expr": {
+      "mean": 0.980127784369762,
+      "sd": 0.0059535094787141985
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.6161335664007537,
+      "sd": 0.235060649725055
+     }
+    },
+    "pair_seen1": {
+     "n": 27,
+     "pearson_delta": {
+      "mean": 0.8375000769354373,
+      "sd": 0.12362592891360395
+     },
+     "pearson_delta_top": {
+      "mean": 0.9216175522845702,
+      "sd": 0.09355486304544457
+     },
+     "direction_acc_top": {
+      "mean": 0.9685185185185184,
+      "sd": 0.04417654300154044
+     },
+     "mse_top": {
+      "mean": 0.08201846832083444,
+      "sd": 0.06141190202684641
+     },
+     "r2_top": {
+      "mean": 0.8668374537680937,
+      "sd": 0.13603811401014648
+     },
+     "pearson_expr": {
+      "mean": 0.988556560175784,
+      "sd": 0.004803664816012901
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.8347149423965633,
+      "sd": 0.13138005173475825
+     }
+    },
+    "pair_seen2": {
+     "n": 5,
+     "pearson_delta": {
+      "mean": 0.8833594860230509,
+      "sd": 0.02142806456846277
+     },
+     "pearson_delta_top": {
+      "mean": 0.9594120282926841,
+      "sd": 0.01923019830565937
+     },
+     "direction_acc_top": {
+      "mean": 1.0,
+      "sd": 0.0
+     },
+     "mse_top": {
+      "mean": 0.041044673869871026,
+      "sd": 0.028875567352975653
+     },
+     "r2_top": {
+      "mean": 0.9655631568576997,
+      "sd": 0.025253280187351304
+     },
+     "pearson_expr": {
+      "mean": 0.9900574396224237,
+      "sd": 0.007502360551466212
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.8507833068387104,
+      "sd": 0.09520255667610956
+     }
+    },
+    "single": {
+     "n": 16,
+     "pearson_delta": {
+      "mean": 0.5144525531616003,
+      "sd": 0.3258841179279505
+     },
+     "pearson_delta_top": {
+      "mean": 0.5945317568855067,
+      "sd": 0.4300359110637777
+     },
+     "direction_acc_top": {
+      "mean": 0.79375,
+      "sd": 0.20320351046836435
+     },
+     "mse_top": {
+      "mean": 0.10112309863825933,
+      "sd": 0.09306970539409982
+     },
+     "r2_top": {
+      "mean": 0.8723410776215659,
+      "sd": 0.12284896314329527
+     },
+     "pearson_expr": {
+      "mean": 0.9909092274682731,
+      "sd": 0.007700368472234917
+     },
+     "pearson_delta_nontarget": {
+      "mean": 0.5084833364633277,
+      "sd": 0.33337789122877376
+     }
+    }
+   },
+   "cellforge_mse": 0.00574626258789329,
+   "cellforge_pcc": 0.9881586470947991,
+   "cellforge_r2": 0.9729032149291449,
+   "cellforge_mse_de": 0.10360587218558458,
+   "cellforge_pcc_de": 0.939334516073977,
+   "cellforge_r2_de": 0.8480215750317542,
+   "cellforge_mse_deset": 0.028216276944332076,
+   "cellforge_pcc_deset": 0.926843293064349,
+   "cellforge_r2_deset": 0.8337578578518908,
+   "cellforge_n_perts_deset": 56,
+   "vcworld_de_accuracy": 0.7268791578081064,
+   "vcworld_de_precision": 0.4949577056925852,
+   "vcworld_de_recall": 0.6193185430042591,
+   "vcworld_de_f1": 0.5501983650764518,
+   "vcworld_de_auroc": 0.7496000875978055,
+   "vcworld_de_auprc": 0.5040324692418853,
+   "vcworld_dir_accuracy": 0.9471108003305575,
+   "vcworld_dir_precision": 0.8770035982989859,
+   "vcworld_dir_recall": 0.8546381893528849,
+   "vcworld_dir_f1": 0.8656764610913786,
+   "vcworld_dir_auroc": 0.9712159966677618,
+   "vcworld_dir_auprc": 0.9161935449112992,
+   "vcworld_n_de_pairs": 31462
+  }
+ }
+}

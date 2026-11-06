@@ -1,0 +1,7 @@
+🧪 Dataset path: /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s0/data/datasets/norman/norman.h5ad
+📝 Task chars: 774
+
+============================================================
+PHASE 4: AUTORUN
+============================================================
+KILLED: memory limit 12288 MB resident for the step's process tree (12403 MB at 2026-11-06T04:56:13Z; snapshot in autorun.memkill.txt)

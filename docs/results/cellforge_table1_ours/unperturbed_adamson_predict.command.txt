@@ -1,0 +1,1 @@
+nice -n 19 /Users/andresarriaga/gm_dlenv/bin/python docs/results/cellforge_table1_ours/unperturbed.py --export /Users/andresarriaga/cellforge_adamson_export_corrected_20261028 --out /Users/andresarriaga/unperturbed_adamson

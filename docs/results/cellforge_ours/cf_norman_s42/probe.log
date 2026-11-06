@@ -1,0 +1,20 @@
+Reading additional input from stdin...
+OpenAI Codex v0.166.0
+--------
+workdir: /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s42
+model: deepseek-v4-pro
+provider: deepseek
+approval: never
+sandbox: read-only
+reasoning effort: none
+reasoning summaries: none
+session id: 01a1a893-8876-7da3-8085-99d1eabe0235
+--------
+user
+Reply with exactly the text PROBE_OK and nothing else.
+warning: Model metadata for `deepseek-v4-pro` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.
+codex
+PROBE_OK
+tokens used
+1,344
+PROBE_OK
