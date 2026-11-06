@@ -95,3 +95,13 @@ generated code and plans copied from the workspace.
   machine has is an outcome of the comparison and is reported as such, never patched. The chain is relaunched in
   its own process session so a session ending cannot kill it again. The first attempt's autorun receipts are
   kept as `autorun_attempt1_killed.*` in `docs/results/cellforge_ours/cf_norman_s42/`.
+- 2026-11-06: the restarted chain ran all five runs and finished at 13:44:54 UTC; none produced a model.
+  `cf_norman_s42` (second attempt, repaired script on the Apple GPU, 1,024 gene tokens) and `cf_adamson_s0`
+  (2,048 tokens, CPU) were killed at the 6-hour wall clock still training (peak 4.7 and 8.7 GB); `cf_norman_s0`,
+  `cf_norman_s2` and `cf_adamson_s2` passed the 12 GB cap 27, 85 and 24 s into their scripts while densifying the
+  count matrix for preprocessing (12.4, 12.4 and 21.6 GB). Block total $9.20 of the $15 cap (1,005 calls, none
+  refused); the proxy was stopped at 13:47 UTC. Per-run table, costs and receipts:
+  `docs/results/cellforge_ours/block_u_outcome.md`. The block's result for the comparison: CellForge's flow
+  produced a scored model in 1 of 6 attempts on this machine (the Adamson run of 4 Nov), the lab's flow in 6 of 6
+  (blocks G0 and T0). Open, Andres's decision: spend the remaining $5.80 on a rerun whose task text states the
+  machine's limits (24 GB, no CUDA, Apple GPU, a training budget), or close block U as it stands.

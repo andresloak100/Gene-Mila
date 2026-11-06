@@ -16,15 +16,15 @@ OURS_ROWS = [
  ("Gene-Mila agents, DeepSeek, clean tier 1 (block G0)", "Gene-Mila agents, run G0", True),
  ("Gene-Mila agents, DeepSeek, clean tier 1 + tables (G1)", "Gene-Mila agents + gene tables, run G1", True),
  ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", "Gene-Mila agents, run T0", True),
- ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run)", "CellForge pipeline, run by us (1 run)", False),
- ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending)", "CellForge pipeline, run by us (pending)", False),
+ ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 of 3 runs finished)", "CellForge pipeline, run by us (1 of 3 runs finished)", False),
+ ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 0 of 3 runs finished)", "CellForge pipeline, run by us (0 of 3 runs finished)", False),
 ]
 def ranks(vals, j):
     xs = sorted({v for v in vals if v is not None}, reverse=(j not in LOWER))
     return (xs[0] if xs else None, xs[1] if len(xs) > 1 else None)
 def cell(m, sd, best, second, n_dec=4):
     if m is None:
-        return '<td class="pend">pending</td>'
+        return '<td class="pend">–</td>'
     cls = "best" if m == best else ("second" if m == second else "")
     s = f'<span class="v">{m:.{n_dec}f}</span>'
     if sd is not None:

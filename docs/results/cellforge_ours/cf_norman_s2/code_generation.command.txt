@@ -1,0 +1,1 @@
+cellforge --workspace /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s2 --dataset-path /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s2/data/datasets/norman/norman.h5ad --task-file /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s2/task.md --phase code_generation --codegen-backend codex

@@ -253,7 +253,7 @@
      "adamson_cf_t0_ds_w4_r3:EXP_0339"
     ]
    },
-   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run)": {
+   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 of 3 runs finished)": {
     "n": 1,
     "metrics": {
      "cellforge_mse": {
@@ -541,7 +541,7 @@
      "norman_t0_ds_w4_r3:EXP_0357"
     ]
    },
-   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending)": {
+   "CellForge pipeline, run by us, DeepSeek v4-pro (block U, 0 of 3 runs finished)": {
     "n": 0,
     "metrics": null,
     "sources": []

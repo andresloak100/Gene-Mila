@@ -1,0 +1,7 @@
+🧪 Dataset path: /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s2/data/datasets/adamson_cf/adamson_cf.h5ad
+📝 Task chars: 774
+
+============================================================
+PHASE 4: AUTORUN
+============================================================
+KILLED: memory limit 12288 MB resident for the step's process tree (21639 MB at 2026-11-06T13:44:46Z; snapshot in autorun.memkill.txt)

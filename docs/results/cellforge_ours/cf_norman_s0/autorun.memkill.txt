@@ -1,0 +1,4 @@
+  PID  PPID    RSS     ELAPSED COMMAND
+16321 13733    624       17:58 bash /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila-norman/docs/mac/block_u/block_u_run.sh norman cf_norman_s0 0
+16323 16321  29408       17:58 /Users/andresarriaga/cellforge_env/bin/python3.12 /Users/andresarriaga/cellforge_env/bin/cellforge --workspace /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_ru
+17591 16323 4177280       00:27 python /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_norman_s0/data/runs/norman/20261105_233816/w0/T01/code/result_T01.py --adata-path /Users/andresar

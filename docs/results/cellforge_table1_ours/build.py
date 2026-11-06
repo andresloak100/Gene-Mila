@@ -49,7 +49,7 @@ def agg(rows):
 
 def fmt(v):
     if v is None:
-        return "pending"
+        return "–"
     m, sd = v
     return f"{m:.4f}" if sd is None else f"{m:.4f} ± {sd:.4f}"
 
@@ -84,7 +84,8 @@ def main():
              [f"adamson_cf_g1_ds_w4_r{r}" for r in (0, 2, 3)]),
             ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", None,
              [f"T:adamson_cf_t0_ds_w4_r{r}" for r in (0, 2, 3)]),
-            ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 run)", [bridge("cellforge_ours/cf_adamson_s42.json")], "bridge"),
+            ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 1 of 3 runs finished)",
+             [bridge(f"cellforge_ours/cf_adamson_s{s}.json") for s in (42, 0, 2)], "bridge"),
         ]},
         "norman": {"bundle": "norman", "rows": [
             ("Unperturbed (control mean)", [bridge("cellforge_table1_ours/unperturbed_norman.json")], "bridge"),
@@ -97,7 +98,7 @@ def main():
              [f"norman_g1_ds_w4_r{r}" for r in (0, 2, 3)]),
             ("Gene-Mila agents, DeepSeek, clean tier 1 (block T0, code d53edff)", None,
              [f"T:norman_t0_ds_w4_r{r}" for r in (0, 2, 3)]),
-            ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, pending)",
+            ("CellForge pipeline, run by us, DeepSeek v4-pro (block U, 0 of 3 runs finished)",
              [bridge(f"cellforge_ours/cf_norman_s{s}.json") for s in (42, 0, 2)], "bridge"),
         ]},
     }
@@ -141,16 +142,21 @@ def main():
            "- Block T0 (`docs/PLAN_T_TABLE_AGENTS.md`) repeats block G0's design on code d53edff: six fresh DeepSeek "
            "runs, 20 minutes each, run on 3-4 Nov 2026 for this table; $4.34 by the shared ledger. Every planner stayed "
            "DeepSeek and no feature read a table (`genemila_t_logs/*.check.txt`).",
-           "- The CellForge row is CellForge's own pipeline (gersteinlab/CellForge 6585ff9, unchanged) run by us on the same "
-           "Adamson export, every agent DeepSeek v4-pro, its model's predictions scored once by the bridge like GEARS "
-           "(`docs/PLAN_U_CELLFORGE.md`, receipts `cellforge_ours/cf_adamson_s42/`). Its model gave the same "
-           "prediction, to five decimals, for every held-out perturbation: its output did not vary with its hashed perturbation token "
-           "(own validation correlation 0.10 per cell), so the row equals the Unperturbed row to three decimals. One run; $1.86 by the block's proxy ledger.",
-           "- The Norman CellForge row is pending. The block's first Norman run (`cellforge_ours/cf_norman_s42/`) finished its "
-           "analysis, design and code generation ($0.78 by the proxy ledger); the agent's training script, a 4-layer transformer "
-           "over 512 gene tokens trained on the CPU, then reached 47 GB of memory on the 24 GB Mac (macOS memory reports of "
-           "5 Nov 2026, 03:10 and 03:13 UTC) and every block U process was killed with the session at 03:13 UTC before it "
-           "finished. The row fills when the block is rerun under a memory cap.",
+           "- The CellForge rows are CellForge's own pipeline (gersteinlab/CellForge 6585ff9, unchanged) run by us on the same "
+           "exports, every agent DeepSeek v4-pro, each model's predictions scored once by the bridge like GEARS "
+           "(`docs/PLAN_U_CELLFORGE.md`; receipts `cellforge_ours/cf_*/`, outcome `cellforge_ours/block_u_outcome.md`). Block U "
+           "attempted three Adamson and three Norman runs on the 24 GB Mac under a 6-hour limit per training step and, after "
+           "the first Norman script reached 47 GB, a 12 GB memory cap; one Adamson run finished and no Norman run did. "
+           "$9.20 for the block by its proxy ledger (1,005 calls, cap $15).",
+           "- The one finished CellForge model (`cf_adamson_s42`) gave the same prediction, to five decimals, for every held-out "
+           "perturbation: its output did not vary with its hashed perturbation token (own validation correlation 0.10 per cell), "
+           "so the row equals the Unperturbed row to three decimals. n = 1, no ranking claim.",
+           "- The five failed CellForge runs each reached their training script (analysis, design and code generation cost "
+           "$1.3 to $1.9 per run); every script trains the plan's 4-layer, 8-head, 512-wide transformer over gene tokens. "
+           "Adamson s0 (2,048 gene tokens, CPU) and Norman s42 (1,024 tokens, Apple GPU) ran out the 6-hour limit still "
+           "training (peak 8.7 and 4.7 GB); Norman s0, Norman s2 and Adamson s2 passed 12 GB within 27, 85 and 24 s of "
+           "their script starting, while densifying the count matrix for preprocessing (12.4, 12.4 and 21.6 GB). No "
+           "metric exists for them; the Norman row is empty.",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
            "each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).", ""]
     (Path(__file__).parent / "table.md").write_text("\n".join(md))
