@@ -1,0 +1,28 @@
+{
+ "bundle": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman",
+ "split_id": "split_a391fa9e7b4eccb7",
+ "n_genes": 2083,
+ "n_cells": 64869,
+ "n_control_cells": 11855,
+ "train_perturbations_found": 112,
+ "train_perturbations_in_bundle": 112,
+ "train_missing_in_file": [],
+ "n_heldout": 119,
+ "label_mapping": {
+  "condition_key": "perturbation",
+  "gene_name_key": null,
+  "control_value": [
+   "control"
+  ],
+  "strict_labels": true,
+  "collapse_by_target": true
+ },
+ "bundle_source": [
+  "/Users/andresarriaga/Documents/Loak-documents/data_downloads/NormanWeissman2019_filtered.h5ad"
+ ],
+ "source_names_match_bundle": true,
+ "source_files": {
+  "NormanWeissman2019_filtered.h5ad": "efde6f5301fe256725dce1d980f37bd96a13481a9a16135515897368e631affc"
+ },
+ "cellforge_input_sha256": "fb787474ce968810149a12ee77150e1d82695190ddbf384ddc1c65c168edd181"
+}

@@ -1,0 +1,1 @@
+nice -n 19 /Users/andresarriaga/gm_dlenv/bin/python tools/baselines_dl/run_gears.py --export /Users/andresarriaga/cellforge_norman_export --work /Users/andresarriaga/gears_norman_work_s0 --out /Users/andresarriaga/gears_norman_s0 --seed 0 --epochs 20 --device cpu
