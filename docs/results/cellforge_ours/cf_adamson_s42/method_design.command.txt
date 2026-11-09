@@ -1,0 +1,1 @@
+cellforge --workspace /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42 --dataset-path /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/datasets/adamson_cf.h5ad --task-file /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/task.md --phase method_design

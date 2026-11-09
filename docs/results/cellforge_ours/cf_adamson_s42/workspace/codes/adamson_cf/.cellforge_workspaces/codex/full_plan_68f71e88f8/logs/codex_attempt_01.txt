@@ -1,0 +1,16 @@
+Implemented `result.py` in the task workspace as the single deliverable.
+
+**What it does**
+- Reads training/validation `.h5ad` via `anndata` (no `scanpy`, since its numba import is broken in this env).
+- Preprocessing per plan: cell/gene QC, `normalize_total(10000)` + `log1p`, regress-out of `total_counts`/`pct_counts_mt`, Harmony-style batch centring, HVG selection.
+- Model per plan: Transformer encoder (4×8×512, GELU) + MLP perturbation encoder (`[256,128,64]`, Swish) + cross-attention (8 heads, dropout 0.1) + shared per-gene MLP decoder (`[256,512,1024]`, Swish).
+- Training per plan: AdamW `lr=3e-4, wd=0.01`, cosine annealing (`T_0=10, eta_min=1e-6`), grad clip `1.0`, early stopping (`patience=15, min_delta=1e-4`), batch size 64.
+- Evaluates MSE / PCC / R² at group and per-cell level and writes JSON metrics.
+- CLI accepts all required flags (`--adata-path`, `--adata_path`, `--data_path`, `--data`, positional; `--val-adata-path`, `--val_data`, `--val-path`; `--output-metrics`, `--metrics-path`, `--output`) plus a few aliases.
+
+**Checks run**
+- `python -m py_compile result.py` passes.
+- Smoke-tested end-to-end with synthetic data for: raw-count input, pre-normalized input, held-out split (no val file), separate val file, missing validation genes, and no-perturbation fallback.
+- Verified all generated metrics files are valid JSON with `status: ok`.
+
+The metrics from synthetic runs are smoke-test only (random noise), not biological evidence. The main tunables are `--epochs` (default 30) and `--max-genes` (default 512) for CPU tractability.

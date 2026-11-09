@@ -1,0 +1,17 @@
+🧪 Dataset path: /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/datasets/adamson_cf.h5ad
+📝 Task chars: 774
+
+============================================================
+PHASE 4: AUTORUN
+============================================================
+❌ Error in autorun: No plan file found in /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/plans/cellforge_adamson_export_corrected_20261028
+Traceback (most recent call last):
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/main.py", line 387, in run_autorun_phase
+    summary = run_autorun(
+              ^^^^^^^^^^^^
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/cellforge/autorun/runner.py", line 471, in run_autorun
+    plan_file = _latest_plan_file(plan_root)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/cellforge/autorun/runner.py", line 37, in _latest_plan_file
+    raise FileNotFoundError(f"No plan file found in {plans_dir}")
+FileNotFoundError: No plan file found in /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/plans/cellforge_adamson_export_corrected_20261028

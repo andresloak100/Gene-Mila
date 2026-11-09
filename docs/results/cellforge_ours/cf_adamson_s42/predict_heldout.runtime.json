@@ -1,0 +1,8 @@
+{
+ "start_utc": "2026-11-04T21:21:16Z",
+ "end_utc": "2026-11-04T21:27:16Z",
+ "wall_seconds": 360,
+ "exit": 0,
+ "cwd": "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/codes/adamson_cf/",
+ "machine": "macOS-26.5.1-arm64-arm-64bit"
+}

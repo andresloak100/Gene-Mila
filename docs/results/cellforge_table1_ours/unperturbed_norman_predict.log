@@ -1,0 +1,7 @@
+{
+ "model": "Unperturbed (mean of the export's control cells)",
+ "control_cells": 11855,
+ "heldout": 119,
+ "export_input_sha256": "fb787474ce968810149a12ee77150e1d82695190ddbf384ddc1c65c168edd181",
+ "predictions_sha256": "4bedbae9a8aedb03647df957adfc5f2e729772209950ec12d6bbce62cbf242df"
+}

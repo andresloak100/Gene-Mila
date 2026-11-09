@@ -1,0 +1,1 @@
+nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python tools/cellforge_bridge.py export --bundle /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman --h5ad /Users/andresarriaga/Documents/Mila/Gene-Mila/data_downloads/NormanWeissman2019_filtered.h5ad --out /Users/andresarriaga/cellforge_norman_export

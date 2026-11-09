@@ -1,0 +1,55 @@
+🧪 Dataset path: /Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge_runs/cf_adamson_s42/data/datasets/adamson_cf/adamson_cf.h5ad
+📝 Task chars: 774
+
+============================================================
+PHASE 4: AUTORUN
+============================================================
+❌ Error in autorun: `anndata.settings.allow_write_nullable_strings` is False, because writing of `pd.arrays.{StringArray,ArrowStringArray}` is new and not supported in anndata < 0.11, still use by many people. Opt-in to writing these arrays by toggling the setting to True.
+Traceback (most recent call last):
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/main.py", line 387, in run_autorun_phase
+    summary = run_autorun(
+              ^^^^^^^^^^^^
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/cellforge/autorun/runner.py", line 480, in run_autorun
+    split_meta = _prepare_perturbation_split(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/Documents/Mila/Gene-Mila/cellforge-6585ff9/cellforge/autorun/runner.py", line 126, in _prepare_perturbation_split
+    train_adata.write_h5ad(train_path)
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/legacy_api_wrap/__init__.py", line 88, in fn_compatible
+    return fn(*args_all, **kw)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_core/anndata.py", line 1993, in write_h5ad
+    write_h5ad(
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/utils.py", line 349, in raise_error_if_dataset_2d_present
+    return write(store, adata, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/h5ad.py", line 98, in write_h5ad
+    write_elem(f, "obs", adata.obs, dataset_kwargs=dataset_kwargs)
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/registry.py", line 519, in write_elem
+    Writer(_REGISTRY).write_elem(store, k, elem, dataset_kwargs=dataset_kwargs)
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/utils.py", line 272, in func_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/registry.py", line 390, in write_elem
+    return write_func(store, k, elem, dataset_kwargs=dataset_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/registry.py", line 78, in wrapper
+    result = func(g, k, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/methods.py", line 199, in wrapper
+    return func(f, k, val, _writer=_writer, dataset_kwargs=dataset_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/methods.py", line 1097, in write_dataframe
+    _writer.write_elem(
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/utils.py", line 272, in func_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/registry.py", line 390, in write_elem
+    return write_func(store, k, elem, dataset_kwargs=dataset_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/registry.py", line 78, in wrapper
+    result = func(g, k, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andresarriaga/cellforge_env/lib/python3.12/site-packages/anndata/_io/specs/methods.py", line 1278, in write_nullable
+    raise RuntimeError(msg)
+RuntimeError: `anndata.settings.allow_write_nullable_strings` is False, because writing of `pd.arrays.{StringArray,ArrowStringArray}` is new and not supported in anndata < 0.11, still use by many people. Opt-in to writing these arrays by toggling the setting to True.
+Error raised while writing key '_index' of <class 'h5py._hl.group.Group'> to /obs
