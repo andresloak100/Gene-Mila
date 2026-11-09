@@ -19,7 +19,7 @@ its run and the chain goes on; nothing is patched or retried by hand.
 | `cf_adamson_s42` (4 Nov) | 25 min | $1.86 | transformer over 512 HVG tokens, 20.8M parameters | **finished** in 80 min (after three 20-second failures fixed by configuration, see `autorun_attempt*`); scored, `cf_adamson_s42.md` |
 | `cf_norman_s42` attempt 1 (4-5 Nov) | 2 h 32 min (code generation 2 h 18 min) | $0.78 + $0.27 autorun | transformer over gene tokens, CPU | reached 46.9 GB on the 24 GB Mac, killed with the session at 03:13 UTC (`autorun_attempt1_killed.note.md`) |
 | `cf_norman_s42` attempt 2 (5-6 Nov) | reused | $0.84 autorun | repaired script (T02): 1,024 gene tokens, Apple GPU (MPS), 50 epochs max, patience 15 | **killed at the 6-hour wall clock**, still training; peak footprint 4.7 GB |
-| `cf_norman_s0` | 36 min | $1.34 | transformer over gene tokens, CPU, 30 epochs max | **killed for memory** 27 s into the script, 12.4 GB while densifying the matrix for preprocessing |
+| `cf_norman_s0` | 36 min | $1.34 | transformer over gene tokens, CPU, 30 epochs max | **killed for memory** 27 s into the script (12.4 GB) |
 | `cf_norman_s2` | 39 min | $1.32 | transformer over 512 HVG tokens, CPU | **killed for memory** 85 s into the script, 12.4 GB |
 | `cf_adamson_s0` | 56 min | $1.51 | transformer over 2,048 HVG tokens, CPU | **killed at the 6-hour wall clock**, still training; peak footprint 8.7 GB |
 | `cf_adamson_s2` | 42 min | $1.28 | transformer over 2,000 HVG tokens, CPU | **killed for memory** 24 s into the script, 21.6 GB |
@@ -36,8 +36,13 @@ $9.20 of the $15 cap, 1,005 calls, none refused; the proxy was stopped at 13:47 
   design is the same each time: the plan's 4-layer, 8-head, 512-wide transformer encoder over gene tokens, an MLP
   perturbation encoder, cross-attention, an MLP decoder; batch 64, early stopping with patience 15.
 - The scripts look for CUDA and otherwise train on the CPU; one (`cf_norman_s42` T02) also accepts Apple's MPS
-  backend. None of them sizes the model or the preprocessing to the machine: three densified the full count
-  matrix in float32 or float64 copies during preprocessing and passed 12 GB within 90 s.
+  backend. None of them sizes the model to the machine: three passed 12 GB within 90 s of starting, before any
+  epoch could have finished. The training files are small (Norman 64,869 cells x 2,083 genes, Adamson 40,890 x
+  2,055, sparse; 0.5 and 0.3 GB dense in float32), so the data is not what filled memory. The cause was not
+  measured; the likely one is the first forward pass of a transformer over about 2,000 gene tokens at batch 64,
+  whose attention scores alone take about 9 GB per layer in float32 (`cf_adamson_s2` used 2,000 tokens and
+  `cf_norman_s0` its gene count; `cf_norman_s2` used 512 tokens and its cause is unknown). An earlier version of
+  this note blamed densifying the count matrix; that was an inference from timing alone and is withdrawn.
 - CellForge's repair loop never saw the memory or time kills: the harness kills the whole process tree, CellForge
   included, so a killed run has no second script. That is the cap's intended behaviour (plan, notes of 5 Nov); a
   variant that kills only the training script and lets the loop repair it was not tried.

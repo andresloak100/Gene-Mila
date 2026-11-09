@@ -155,7 +155,8 @@ def main():
            "$1.3 to $1.9 per run); every script trains the plan's 4-layer, 8-head, 512-wide transformer over gene tokens. "
            "Adamson s0 (2,048 gene tokens, CPU) and Norman s42 (1,024 tokens, Apple GPU) ran out the 6-hour limit still "
            "training (peak 8.7 and 4.7 GB); Norman s0, Norman s2 and Adamson s2 passed 12 GB within 27, 85 and 24 s of "
-           "their script starting, while densifying the count matrix for preprocessing (12.4, 12.4 and 21.6 GB). No "
+           "their script starting (12.4, 12.4 and 21.6 GB), before any epoch could have finished; the training files are "
+           "under 1 GB dense, so the model's activations, not the data, are the likely cause (not measured). No "
            "metric exists for them; the Norman row is empty.",
            "- GEARS falls back to the mean training change for held-out perturbations outside its gene graph; see "
            "each seed's receipt. On Norman no held-out perturbation needed the fallback (`../gears_norman/aggregate.md`).", ""]

@@ -1,10 +1,12 @@
 #!/bin/bash
-# block_u_run.sh DATASET NAME [SEED]      DATASET: adamson_cf | norman      (docs/PLAN_U_CELLFORGE.md)
+# block_u_run.sh DATASET NAME [SEED] [VARIANT]   DATASET: adamson_cf | norman   VARIANT: limits   (docs/PLAN_U_CELLFORGE.md)
+# VARIANT=limits appends docs/mac/block_u/machine_limits.md (the Mac's memory, devices and the watchdog's limits) to the
+# task text every CellForge phase and the held-out agent read (Andres, 2026-11-09: "Rerun, state limits").
 # One CellForge run on our exported training data, DeepSeek v4-pro for every agent, every call through the spend
 # proxy, every step with receipts under docs/results/cellforge_ours/NAME/. Start it detached:
 #   nohup caffeinate -i bash docs/mac/block_u/block_u_run.sh adamson_cf cf_adamson_s42 42 > /dev/null 2>&1 &
 set -u
-DS="${1:?dataset}"; NAME="${2:?run name}"; SEED="${3:-42}"
+DS="${1:?dataset}"; NAME="${2:?run name}"; SEED="${3:-42}"; VARIANT="${4:-}"
 CLONE="$HOME/Documents/Mila/Gene-Mila/gene-mila-norman"; MAIN="$HOME/Documents/Mila/Gene-Mila/gene-mila"
 CF="$HOME/Documents/Mila/Gene-Mila/cellforge-6585ff9"; CFENV="$HOME/cellforge_env"
 RUNS="$HOME/Documents/Mila/Gene-Mila/cellforge_runs"; WS="$RUNS/$NAME"; PROXYDIR="$RUNS/proxy"
@@ -38,7 +40,7 @@ if ! curl -s -m 2 "$PROXY/__status" > /dev/null; then
   for i in $(seq 1 20); do sleep 0.5; curl -s -m 2 "$PROXY/__status" > /dev/null && break; done
 fi
 curl -s -m 2 "$PROXY/__status" > "$R/proxy_status_start.json" || fail "proxy did not start"
-START="$(now)"; say "started (dataset $DS, seed $SEED, cap \$$CAP from $CAPSTART, proxy $(cat "$R/proxy_status_start.json"))"
+START="$(now)"; say "started (dataset $DS, seed $SEED${VARIANT:+, variant $VARIANT}, cap \$$CAP from $CAPSTART, proxy $(cat "$R/proxy_status_start.json"))"
 
 # ---- environment for CellForge and Codex: the key lives only here ------------------------------------------
 export CELLFORGE_WORKSPACE_DIR="$WS" DEEPSEEK_API_KEY="$API_KEY" DEEPSEEK_BASE_URL="$PROXY" MODEL_NAME="deepseek-v4-pro"
@@ -50,7 +52,10 @@ unset OPENAI_API_KEY ANTHROPIC_API_KEY OPENAI_BASE_URL
 # so the training file gets its own folder in the workspace, named like the dataset, as a real copy (103 MB for Adamson)
 H5="$WS/data/datasets/$DS/$DS.h5ad"; mkdir -p "$WS/data/datasets/$DS"
 [ -f "$H5" ] && [ "$(stat -f %z "$H5")" = "$(stat -f %z "$EXPORT/cellforge_input.h5ad")" ] || cp "$EXPORT/cellforge_input.h5ad" "$H5"
-cp "$EXPORT/TASK.md" "$WS/task.md"
+if [ "$VARIANT" = "limits" ]; then { cat "$EXPORT/TASK.md"; echo; cat "$B/machine_limits.md"; } > "$WS/task.md"
+elif [ -n "$VARIANT" ]; then fail "unknown variant $VARIANT"
+else cp "$EXPORT/TASK.md" "$WS/task.md"; fi
+cp "$WS/task.md" "$R/task.md"   # the task text this run's agents read, for the record
 
 # ---- receipts: NAME.command.txt / .log / .exit / .runtime.json, a wall-clock limit, key-like strings redacted ---
 tree_pids() {  # every descendant of $1, depth first (ps once; macOS has no --ppid tree)
@@ -104,7 +109,7 @@ step code_generation 10800 "$WS" -- cellforge "${CFARGS[@]}" --phase code_genera
 step autorun         21600 "$WS" -- cellforge "${CFARGS[@]}" --phase autorun --executor local --workers 1 --split-seed "$SEED" --codex-prompt-file "$CF/cellforge/autorun/autoresearch_prompt.md" --autorun-plan-dir "$WS/data/plans/$DS" || fail "autorun"
 # 5. held-out predictions by the same coding agent, then the full run of its script
 CODEDIR="$(ls -d "$WS"/data/codes/*/ 2>/dev/null | head -1)"; [ -n "$CODEDIR" ] || fail "no generated code dir"
-cp "$EXPORT/heldout_perturbations.json" "$EXPORT/TASK.md" "$CODEDIR"; ln -sfn "$EXPORT/cellforge_input.h5ad" "$CODEDIR/training.h5ad"
+cp "$EXPORT/heldout_perturbations.json" "$CODEDIR"; cp "$WS/task.md" "$CODEDIR/TASK.md"; ln -sfn "$EXPORT/cellforge_input.h5ad" "$CODEDIR/training.h5ad"
 OPENAI_API_KEY="$API_KEY" step predict_heldout_agent 10800 "$CODEDIR" -- "$B/codex_deepseek.sh" exec --ignore-user-config --ignore-rules --ephemeral --skip-git-repo-check -s workspace-write -C "$CODEDIR" -m deepseek-v4-pro -o "$R/predict_heldout_agent.last.md" "$(cat "$B/heldout_prompt.md")" || fail "predict_heldout agent"
 [ -f "$CODEDIR/predict_heldout.py" ] || fail "agent wrote no predict_heldout.py"
 step predict_heldout 21600 "$CODEDIR" -- python predict_heldout.py --data training.h5ad --heldout heldout_perturbations.json --out predictions.npz || fail "predict_heldout"

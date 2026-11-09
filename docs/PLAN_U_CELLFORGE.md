@@ -98,10 +98,21 @@ generated code and plans copied from the workspace.
 - 2026-11-06: the restarted chain ran all five runs and finished at 13:44:54 UTC; none produced a model.
   `cf_norman_s42` (second attempt, repaired script on the Apple GPU, 1,024 gene tokens) and `cf_adamson_s0`
   (2,048 tokens, CPU) were killed at the 6-hour wall clock still training (peak 4.7 and 8.7 GB); `cf_norman_s0`,
-  `cf_norman_s2` and `cf_adamson_s2` passed the 12 GB cap 27, 85 and 24 s into their scripts while densifying the
-  count matrix for preprocessing (12.4, 12.4 and 21.6 GB). Block total $9.20 of the $15 cap (1,005 calls, none
+  `cf_norman_s2` and `cf_adamson_s2` passed the 12 GB cap 27, 85 and 24 s into their scripts (12.4, 12.4 and
+  21.6 GB; the cause was not measured, the training files are under 1 GB dense, see the outcome note). Block total $9.20 of the $15 cap (1,005 calls, none
   refused); the proxy was stopped at 13:47 UTC. Per-run table, costs and receipts:
   `docs/results/cellforge_ours/block_u_outcome.md`. The block's result for the comparison: CellForge's flow
   produced a scored model in 1 of 6 attempts on this machine (the Adamson run of 4 Nov), the lab's flow in 6 of 6
   (blocks G0 and T0). Open, Andres's decision: spend the remaining $5.80 on a rerun whose task text states the
   machine's limits (24 GB, no CUDA, Apple GPU, a training budget), or close block U as it stands.
+- 2026-11-09: Andres, "Rerun, state limits" (in answer to the question above). The rerun changes one thing, the task
+  text: every CellForge phase and the held-out agent now read the export's `TASK.md` followed by
+  `docs/mac/block_u/machine_limits.md` (24 GB shared memory, no CUDA, `mps` available, the watchdog's 12 GB and
+  6-hour kills, a 10 GB and 3-hour design budget, the data's size, that torch cannot run in the coding sandbox).
+  CellForge's code, the harness's caps and the $15 block cap are unchanged ($9.20 spent; a run starts only if the
+  ledger plus a $2.40 per-run estimate stays at or below $15). Chain `docs/mac/block_u/block_u_chain_limits.sh`:
+  `cf_norman_lim_s42`, `cf_norman_lim_s0`, then `cf_adamson_lim_s0`, variant `limits` of `block_u_run.sh`, which
+  keeps the task text each run's agents read as `task.md` in its receipts. These runs are their own arm in every
+  table ("task text with the machine's limits"), never pooled with the first six. Correction to the note of 6 Nov:
+  the three memory kills were attributed to densifying the count matrix; the files are under 1 GB dense, the cause
+  was not measured, and the likely one is the first forward pass of a transformer over about 2,000 gene tokens.
