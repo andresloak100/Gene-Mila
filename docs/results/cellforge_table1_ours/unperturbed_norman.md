@@ -1,0 +1,13 @@
+# unperturbed_norman on Gene-Mila's split, scored once on the sealed set
+
+Bundle `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/norman`; predictions `/Users/andresarriaga/unperturbed_norman/predictions.npz` (sha256 `4bedbae9a8aedb03647df957adfc5f2e729772209950ec12d6bbce62cbf242df`).
+
+| metric | unperturbed_norman |
+|---|---:|
+| pearson_delta | 0.0343 |
+| mse | 0.0140 |
+| pearson_delta_top | -0.1352 |
+| r2_top | 0.5790 |
+| cellforge_mse_de | 0.3153 |
+| cellforge_pcc_de | 0.8386 |
+| cellforge_r2_de | 0.5881 |

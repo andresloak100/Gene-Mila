@@ -1,0 +1,13 @@
+# unperturbed_adamson on Gene-Mila's split, scored once on the sealed set
+
+Bundle `/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/data/adamson_cf`; predictions `/Users/andresarriaga/unperturbed_adamson/predictions.npz` (sha256 `cf1bb974b2d1e26a318b7acec49cb9fd69909931e7bc274dbd2cf292e9f81f10`).
+
+| metric | unperturbed_adamson |
+|---|---:|
+| pearson_delta | 0.0262 |
+| mse | 0.0116 |
+| pearson_delta_top | -0.0155 |
+| r2_top | 0.6055 |
+| cellforge_mse_de | 0.2312 |
+| cellforge_pcc_de | 0.8937 |
+| cellforge_r2_de | 0.6003 |
