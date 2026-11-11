@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-28T16:43:25.774020+00:00",
+  "all_pass": true,
+  "original_artifacts_both_clones": 524,
+  "source_plugins": 270,
+  "ledger_before": 61.401668232,
+  "ledger_after": 61.401668232,
+  "main_head_unchanged": true,
+  "reading_order": "pool \u2192 3 \u2192 5 \u2192 three separate4 calls last",
+  "scientific_reader_commit": "bc0fe6aba8997ceb94cbaee7ca57db18ef407097",
+  "no_scientific_source_change": true,
+  "all_scientific_exits_zero": true,
+  "publication_suite_summary": "681 passed, 1 skipped, 8 warnings in 774.56s (0:12:54)",
+  "test_tree": "05e279b687ecfc26ed8a286034f2576c6c7e21f7",
+  "test_commit": "ed41267",
+  "test_tree_note": "Tests started on resolved staged merge tree; merge commit recorded without worktree code change. Tree hashes match.",
+  "ledger_after_publication_suite": 61.401668232,
+  "publication_verified_utc": "2026-10-28T18:15:09.794245+00:00"
+}

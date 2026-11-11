@@ -1,0 +1,869 @@
+{
+  "verdict": "Positive pre-registered full-family development fair test: two response-transfer rows pass. Not a new biological discovery or successful unread-input result. Broader A.1 biology/source admission and later criteria remain the lead's assessment.",
+  "primary": {
+    "family": 211,
+    "stage1_rows": 234,
+    "tested": 234,
+    "duplicates": 23,
+    "null_reps": 999,
+    "null_too_coarse_need": null,
+    "partial": false,
+    "untested": []
+  },
+  "found": [
+    {
+      "source": "f_r0",
+      "feature": "train_delta_transfer_similarity_e267",
+      "tested": true,
+      "duplicate_of": null,
+      "p": 0.001,
+      "p_fwer_pooled": 0.001,
+      "proportional": false,
+      "parent_column": null,
+      "p_pert": null,
+      "p_fwer_pert_pooled": null,
+      "gain": 0.054192600205174093,
+      "se_adj": 0.012228153505472735,
+      "min_effect": 0.02445630701094547,
+      "coef_sign": "+",
+      "coef_candidate_std": [
+        0.05334716976591698,
+        0.05273768678854892,
+        0.05346393303550796,
+        0.05222088687954436,
+        0.05398782613347143,
+        0.05334716976591698
+      ],
+      "z_stage1": 4.431789327875225,
+      "other_failed": [],
+      "reads_replogle": false,
+      "found": true,
+      "found_tier1": true
+    },
+    {
+      "source": "f_r3",
+      "feature": "gene_set_similarity_transfer_e177",
+      "tested": true,
+      "duplicate_of": null,
+      "p": 0.001,
+      "p_fwer_pooled": 0.001,
+      "proportional": false,
+      "parent_column": null,
+      "p_pert": null,
+      "p_fwer_pert_pooled": null,
+      "gain": 0.05627735256779055,
+      "se_adj": 0.012783783179928124,
+      "min_effect": 0.02556756635985625,
+      "coef_sign": "+",
+      "coef_candidate_std": [
+        0.04801275856903643,
+        0.0482953721061778,
+        0.04869706003176595,
+        0.0482953721061778,
+        0.04869706003176595,
+        0.04801275856903643
+      ],
+      "z_stage1": 4.40224554622859,
+      "other_failed": [],
+      "reads_replogle": false,
+      "found": true,
+      "found_tier1": true
+    }
+  ],
+  "source_and_prefit_signs": [
+    {
+      "source": "f_r0",
+      "feature": "train_delta_transfer_similarity_e267",
+      "gates": {
+        "unique": true,
+        "gene": true,
+        "pert": true,
+        "gain": true,
+        "wins": true,
+        "reports": true,
+        "m2": true,
+        "m4": true,
+        "multi_seed": true
+      },
+      "gain": 0.054192600205174093,
+      "se_adj": 0.012228153505472735,
+      "p_fwer_pooled": 0.001,
+      "coef_candidate_std": [
+        0.05334716976591698,
+        0.05273768678854892,
+        0.05346393303550796,
+        0.05222088687954436,
+        0.05398782613347143,
+        0.05334716976591698
+      ],
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery",
+      "experiment": {
+        "experiment_id": "EXP_0267",
+        "created_at": 1792346479.2033951,
+        "started_at": 1792346485.179347,
+        "finished_at": 1792346490.983975
+      },
+      "proposed_feature": {
+        "name": "train_delta_transfer_similarity_e267",
+        "description": "For each (p,g), compute a weighted average of training deltas for gene g across training perturbations, where weights are the cosine similarity between the target gene of p and the target gene of each training perturbation in gene set space.",
+        "implementation_hint": "Build gene set membership vectors for all target genes. For each p, compute cosine similarity with each training target. Use these as weights to average train_delta[:, g]. Exclude p if in training.",
+        "params": {
+          "similarity_metric": "cosine"
+        },
+        "new_input": "train_delta",
+        "mechanism": "Perturbations with similar target gene functions produce similar downstream expression changes.",
+        "predicted_sign": "positive",
+        "novel_inputs": []
+      },
+      "planner": {
+        "plan_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery/planner/plan_023.json",
+        "plan_sha256": "0c7c500b2cedc868e9e72549cb378be9ab6d37cc6967ba975defb07d5bf4697b",
+        "hypothesis": {
+          "title": "Train delta similarity transfer",
+          "hypothesis": "Perturbations targeting genes with similar training response profiles to the target produce similar effects on gene g.",
+          "rationale": "train_delta is unread as a raw input. Current model uses mean_response (average delta) but not the full matrix. A feature that transfers response patterns from similar training perturbations could capture unseen perturbation effects. For each (p,g), compute the similarity between target p and each training perturbation based on their target gene features (e.g., gene set overlap), then weight their training deltas for gene g.",
+          "category": "explore",
+          "action": "new_feature",
+          "parent": "EXP_0242",
+          "new_feature": {
+            "name": "train_delta_transfer_similarity",
+            "description": "For each (p,g), compute a weighted average of training deltas for gene g across training perturbations, where weights are the cosine similarity between the target gene of p and the target gene of each training perturbation in gene set space.",
+            "implementation_hint": "Build gene set membership vectors for all target genes. For each p, compute cosine similarity with each training target. Use these as weights to average train_delta[:, g]. Exclude p if in training.",
+            "params": {
+              "similarity_metric": "cosine"
+            },
+            "new_input": "train_delta",
+            "mechanism": "Perturbations with similar target gene functions produce similar downstream expression changes.",
+            "predicted_sign": "positive"
+          },
+          "add_features": [],
+          "remove_features": [],
+          "model_type": "ridge",
+          "sweep": null,
+          "replicates": 1
+        }
+      },
+      "predicted_sign": "positive",
+      "fitted_sign": "positive",
+      "sign_match": true,
+      "novel_inputs": [],
+      "discovery_derived_record": {
+        "feature": "train_delta_transfer_similarity_e267",
+        "novel_inputs": [],
+        "r2": 0.87
+      }
+    },
+    {
+      "source": "f_r3",
+      "feature": "gene_set_similarity_transfer_e177",
+      "gates": {
+        "unique": true,
+        "gene": true,
+        "pert": true,
+        "gain": true,
+        "wins": true,
+        "reports": true,
+        "m2": true,
+        "m4": true,
+        "multi_seed": true
+      },
+      "gain": 0.05627735256779055,
+      "se_adj": 0.012783783179928124,
+      "p_fwer_pooled": 0.001,
+      "coef_candidate_std": [
+        0.04801275856903643,
+        0.0482953721061778,
+        0.04869706003176595,
+        0.0482953721061778,
+        0.04869706003176595,
+        0.04801275856903643
+      ],
+      "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery",
+      "experiment": {
+        "experiment_id": "EXP_0177",
+        "created_at": 1792348857.5615602,
+        "started_at": 1792348863.291553,
+        "finished_at": 1792348868.776076
+      },
+      "proposed_feature": {
+        "name": "gene_set_similarity_transfer_e177",
+        "description": "For each perturbation p, compute a weighted average of training delta responses from other perturbations, where weights are the Jaccard similarity between the gene sets of p's target and the other target's gene sets.",
+        "implementation_hint": "For each target gene, compute its gene set membership vector. Compute Jaccard similarity with all training perturbation targets. For each (p,g), compute predicted delta as sum over training perturbations q of similarity(p,q) * train_delta[q,g] / sum(similarity). Use leave-one-out to avoid using p's own response.",
+        "params": {},
+        "new_input": "gene_sets",
+        "mechanism": "Perturbations of genes with similar functions (shared gene sets) may produce similar expression changes.",
+        "predicted_sign": "unknown",
+        "novel_inputs": []
+      },
+      "planner": {
+        "plan_file": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery/planner/plan_014.json",
+        "plan_sha256": "a9c1c9a32fd25bc03bdeea5ade959bf20a6e2c491a1b881e97a488827f1b0c20",
+        "hypothesis": {
+          "title": "Risky: transfer from similar perturbations using gene set similarity",
+          "hypothesis": "Using a similarity-weighted average of training responses from perturbations whose target genes share many gene sets with the current perturbation target will improve predictions for unseen perturbations.",
+          "rationale": "This is a transfer learning idea that uses gene_sets in a novel way. It is risky because it may overfit or be too complex, but could capture perturbation similarity.",
+          "category": "risky",
+          "action": "new_feature",
+          "parent": "EXP_0134",
+          "new_feature": {
+            "name": "gene_set_similarity_transfer",
+            "description": "For each perturbation p, compute a weighted average of training delta responses from other perturbations, where weights are the Jaccard similarity between the gene sets of p's target and the other target's gene sets.",
+            "implementation_hint": "For each target gene, compute its gene set membership vector. Compute Jaccard similarity with all training perturbation targets. For each (p,g), compute predicted delta as sum over training perturbations q of similarity(p,q) * train_delta[q,g] / sum(similarity). Use leave-one-out to avoid using p's own response.",
+            "params": {},
+            "new_input": "gene_sets",
+            "mechanism": "Perturbations of genes with similar functions (shared gene sets) may produce similar expression changes.",
+            "predicted_sign": "unknown"
+          },
+          "add_features": [],
+          "remove_features": [],
+          "model_type": "ridge",
+          "sweep": null,
+          "replicates": 1
+        }
+      },
+      "predicted_sign": "unknown",
+      "fitted_sign": "positive",
+      "sign_match": null,
+      "novel_inputs": [],
+      "discovery_derived_record": {
+        "feature": "gene_set_similarity_transfer_e177",
+        "novel_inputs": [],
+        "r2": 0.848
+      }
+    }
+  ],
+  "oof_arms": {
+    "d1": {
+      "delta_M1": {
+        "mean": 0.038925000470682536,
+        "sd": 0.029324926897608423
+      },
+      "metrics": {
+        "delta_scale_ratio": {
+          "mean": 0.6240570175778639,
+          "n": 3,
+          "sd": 0.08948648058277674
+        },
+        "direction_acc_top": {
+          "mean": 0.8621111111111109,
+          "n": 3,
+          "sd": 0.010183501544346206
+        },
+        "mse": {
+          "mean": 0.006605228075413066,
+          "n": 3,
+          "sd": 0.00013033353817018265
+        },
+        "mse_top": {
+          "mean": 0.1316172505206541,
+          "n": 3,
+          "sd": 0.004836059895230144
+        },
+        "pearson_delta": {
+          "mean": 0.5231552702338725,
+          "n": 3,
+          "sd": 0.029324926897608423
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.5203443410693831,
+          "n": 3,
+          "sd": 0.032565168155145
+        },
+        "pearson_delta_top": {
+          "mean": 0.6793382551166851,
+          "n": 3,
+          "sd": 0.03439601942199255
+        },
+        "r2_top": {
+          "mean": 0.7762351630534381,
+          "n": 3,
+          "sd": 0.011534649393418925
+        }
+      },
+      "n_runs": 3
+    },
+    "g0": {
+      "delta_M1": {
+        "mean": 0.04171986881165556,
+        "sd": 0.03526307395045165
+      },
+      "metrics": {
+        "delta_scale_ratio": {
+          "mean": 0.6553329191257706,
+          "n": 3,
+          "sd": 0.07193849523391321
+        },
+        "direction_acc_top": {
+          "mean": 0.8610555555555554,
+          "n": 3,
+          "sd": 0.01796163607164923
+        },
+        "mse": {
+          "mean": 0.006509285881240592,
+          "n": 3,
+          "sd": 0.0004249808068684111
+        },
+        "mse_top": {
+          "mean": 0.125148913712785,
+          "n": 3,
+          "sd": 0.01595101347467722
+        },
+        "pearson_delta": {
+          "mean": 0.5259501385748455,
+          "n": 3,
+          "sd": 0.035263073950451675
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.5205904327808116,
+          "n": 3,
+          "sd": 0.037707671199494315
+        },
+        "pearson_delta_top": {
+          "mean": 0.6885531595739443,
+          "n": 3,
+          "sd": 0.049234170915186476
+        },
+        "r2_top": {
+          "mean": 0.7854943909677006,
+          "n": 3,
+          "sd": 0.02715296950503917
+        }
+      },
+      "n_runs": 3
+    },
+    "g1": {
+      "delta_M1": {
+        "mean": 0.006734158224019766,
+        "sd": 0.004435577781468567
+      },
+      "metrics": {
+        "delta_scale_ratio": {
+          "mean": 0.6171557126814763,
+          "n": 3,
+          "sd": 0.03675575561662054
+        },
+        "direction_acc_top": {
+          "mean": 0.8445555555555555,
+          "n": 3,
+          "sd": 0.00397678448181623
+        },
+        "mse": {
+          "mean": 0.00680374806459143,
+          "n": 3,
+          "sd": 7.789236237122883e-05
+        },
+        "mse_top": {
+          "mean": 0.13695056435960445,
+          "n": 3,
+          "sd": 0.002900261945796379
+        },
+        "pearson_delta": {
+          "mean": 0.4909644279872097,
+          "n": 3,
+          "sd": 0.004435577781468558
+        },
+        "pearson_delta_nontarget": {
+          "mean": 0.4827188909284315,
+          "n": 3,
+          "sd": 0.004227168766255704
+        },
+        "pearson_delta_top": {
+          "mean": 0.6371837239729928,
+          "n": 3,
+          "sd": 0.004509936292049516
+        },
+        "r2_top": {
+          "mean": 0.7681717363483934,
+          "n": 3,
+          "sd": 0.0044174231765163295
+        }
+      },
+      "n_runs": 3
+    }
+  },
+  "descriptive": {
+    "aggregate_mean_sd_ddof1": {
+      "all_cost_usd": {
+        "mean": 0.33610290266666665,
+        "sd": 0.2047601244543943,
+        "values": [
+          0.546547928,
+          0.137545632,
+          0.324215148
+        ]
+      },
+      "cpu_hours": {
+        "mean": 0.06363333333333333,
+        "sd": 0.029353761825928432,
+        "values": [
+          0.0973,
+          0.0434,
+          0.0502
+        ]
+      },
+      "duplicate_experiments": {
+        "mean": 7.666666666666667,
+        "sd": 4.725815626252609,
+        "values": [
+          13,
+          4,
+          6
+        ]
+      },
+      "duration_s": {
+        "mean": 1211.5333333333333,
+        "sd": 6.887912117132029,
+        "values": [
+          1204.1,
+          1217.7,
+          1212.8
+        ]
+      },
+      "experiments_cancelled": {
+        "mean": 0.3333333333333333,
+        "sd": 0.5773502691896257,
+        "values": [
+          0,
+          1,
+          0
+        ]
+      },
+      "experiments_completed": {
+        "mean": 713.6666666666666,
+        "sd": 241.7112602534961,
+        "values": [
+          982,
+          513,
+          646
+        ]
+      },
+      "experiments_completed_planner": {
+        "mean": 108.33333333333333,
+        "sd": 68.15668223537098,
+        "values": [
+          179,
+          43,
+          103
+        ]
+      },
+      "experiments_failed": {
+        "mean": 10.666666666666666,
+        "sd": 10.016652800877813,
+        "values": [
+          21,
+          1,
+          10
+        ]
+      },
+      "experiments_killed": {
+        "mean": 0,
+        "sd": 0.0,
+        "values": [
+          0,
+          0,
+          0
+        ]
+      },
+      "experiments_proposed": {
+        "mean": 733,
+        "sd": 255.58364579917864,
+        "values": [
+          1016,
+          519,
+          664
+        ]
+      },
+      "experiments_rejected": {
+        "mean": 0.6666666666666666,
+        "sd": 1.1547005383792515,
+        "values": [
+          0,
+          0,
+          2
+        ]
+      },
+      "failed_calls": {
+        "mean": 0,
+        "sd": 0.0,
+        "values": [
+          0,
+          0,
+          0
+        ]
+      },
+      "largest_planner_state_chars": {
+        "mean": 17422.666666666668,
+        "sd": 1314.8632375016548,
+        "values": [
+          18558,
+          15982,
+          17728
+        ]
+      },
+      "planner_calls": {
+        "mean": 15,
+        "sd": 9.539392014169456,
+        "values": [
+          25,
+          6,
+          14
+        ]
+      },
+      "planner_cost_usd": {
+        "mean": 0.23069029866666668,
+        "sd": 0.14324032107672977,
+        "values": [
+          0.377308976,
+          0.091086072,
+          0.22367584799999998
+        ]
+      },
+      "planner_rounds": {
+        "mean": 15,
+        "sd": 9.539392014169456,
+        "values": [
+          25,
+          6,
+          14
+        ]
+      },
+      "worker_calls": {
+        "mean": 120,
+        "sd": 74.0,
+        "values": [
+          194,
+          46,
+          120
+        ]
+      },
+      "worker_cost_usd": {
+        "mean": 0.105412604,
+        "sd": 0.06153459672314208,
+        "values": [
+          0.169238952,
+          0.04645956,
+          0.1005393
+        ]
+      }
+    },
+    "reading": "block D reading 5 (descriptive)",
+    "runs": [
+      {
+        "all_cost_usd": 0.546547928,
+        "controller_log_discovery_dry_lines": 0,
+        "cpu_hours": 0.0973,
+        "dry_at_round": 25,
+        "dry_fired": true,
+        "duplicate_experiments": 13,
+        "duration_s": 1204.1,
+        "experiments_cancelled": 0,
+        "experiments_completed": 982,
+        "experiments_completed_planner": 179,
+        "experiments_failed": 21,
+        "experiments_killed": 0,
+        "experiments_proposed": 1016,
+        "experiments_rejected": 0,
+        "failed_calls": 0,
+        "largest_planner_state_chars": 18558,
+        "planner_calls": 25,
+        "planner_cost_usd": 0.377308976,
+        "planner_mixed": false,
+        "planner_rounds": 25,
+        "run": "adamson_cf_d1_ds_w4_r0_discovery",
+        "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r0_discovery",
+        "worker_calls": 194,
+        "worker_cost_usd": 0.169238952
+      },
+      {
+        "all_cost_usd": 0.137545632,
+        "controller_log_discovery_dry_lines": 0,
+        "cpu_hours": 0.0434,
+        "dry_at_round": 6,
+        "dry_fired": true,
+        "duplicate_experiments": 4,
+        "duration_s": 1217.7,
+        "experiments_cancelled": 1,
+        "experiments_completed": 513,
+        "experiments_completed_planner": 43,
+        "experiments_failed": 1,
+        "experiments_killed": 0,
+        "experiments_proposed": 519,
+        "experiments_rejected": 0,
+        "failed_calls": 0,
+        "largest_planner_state_chars": 15982,
+        "planner_calls": 6,
+        "planner_cost_usd": 0.091086072,
+        "planner_mixed": false,
+        "planner_rounds": 6,
+        "run": "adamson_cf_d1_ds_w4_r2_discovery",
+        "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r2_discovery",
+        "worker_calls": 46,
+        "worker_cost_usd": 0.04645956
+      },
+      {
+        "all_cost_usd": 0.324215148,
+        "controller_log_discovery_dry_lines": 0,
+        "cpu_hours": 0.0502,
+        "dry_at_round": 14,
+        "dry_fired": true,
+        "duplicate_experiments": 6,
+        "duration_s": 1212.8,
+        "experiments_cancelled": 0,
+        "experiments_completed": 646,
+        "experiments_completed_planner": 103,
+        "experiments_failed": 10,
+        "experiments_killed": 0,
+        "experiments_proposed": 664,
+        "experiments_rejected": 2,
+        "failed_calls": 0,
+        "largest_planner_state_chars": 17728,
+        "planner_calls": 14,
+        "planner_cost_usd": 0.22367584799999998,
+        "planner_mixed": false,
+        "planner_rounds": 14,
+        "run": "adamson_cf_d1_ds_w4_r3_discovery",
+        "run_dir": "/Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/runs/adamson_cf_d1_ds_w4_r3_discovery",
+        "worker_calls": 120,
+        "worker_cost_usd": 0.1005393
+      }
+    ]
+  },
+  "sealed": {
+    "all_pass": true,
+    "checks": 42,
+    "runs": [
+      {
+        "seed": 0,
+        "run": "adamson_cf_d1_ds_w4_r0_discovery",
+        "selected_experiment": "EXP_0974",
+        "start_experiment": "EXP_0003",
+        "selected_metrics": {
+          "rmse": 0.07763491143235413,
+          "mae": 0.05111575427537925,
+          "mse": 0.00602717947310947,
+          "pearson_delta": 0.567930938475785,
+          "pearson_delta_top": 0.7439600088748741,
+          "direction_acc_top": 0.930952380952381,
+          "mse_top": 0.1306381093775519,
+          "r2_top": 0.8006587515534539,
+          "pearson_expr": 0.9865738798346183,
+          "primary": 0.567930938475785,
+          "selection_rule": "pearson_delta"
+        },
+        "start_metrics": {
+          "rmse": 0.08389926721902762,
+          "mae": 0.05513001598721187,
+          "mse": 0.007039087039889803,
+          "pearson_delta": 0.519597358465441,
+          "pearson_delta_top": 0.6758784628996488,
+          "direction_acc_top": 0.9000000000000001,
+          "mse_top": 0.1639292731720613,
+          "r2_top": 0.7381826389079673,
+          "pearson_expr": 0.9846084168233289,
+          "primary": 0.519597358465441,
+          "selection_rule": "pearson_delta"
+        },
+        "paired": {
+          "n": 21,
+          "mean_diff": 0.04833358001034397,
+          "se": 0.016979062298091086,
+          "wins_a": 14,
+          "wins_b": 7,
+          "ties": 0,
+          "verdict": "a"
+        },
+        "run_queries": {
+          "used": 4,
+          "cap": 5
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 25,
+              "queued": 200
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        },
+        "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+        "note": "no additive baseline in this run (a bundle without pairs records none)",
+        "first_sealed_scorings": [],
+        "matches_stored": [
+          true,
+          true
+        ]
+      },
+      {
+        "seed": 2,
+        "run": "adamson_cf_d1_ds_w4_r2_discovery",
+        "selected_experiment": "EXP_0199",
+        "start_experiment": "EXP_0003",
+        "selected_metrics": {
+          "rmse": 0.08368200684763183,
+          "mae": 0.05506003889872133,
+          "mse": 0.0070026782700471,
+          "pearson_delta": 0.5313217794408039,
+          "pearson_delta_top": 0.6990873974651609,
+          "direction_acc_top": 0.8976190476190476,
+          "mse_top": 0.16031521223129785,
+          "r2_top": 0.7447799498648815,
+          "pearson_expr": 0.9846969003644054,
+          "primary": 0.5313217794408039,
+          "selection_rule": "pearson_delta"
+        },
+        "start_metrics": {
+          "rmse": 0.08389926721902762,
+          "mae": 0.05513001598721187,
+          "mse": 0.007039087039889803,
+          "pearson_delta": 0.519597358465441,
+          "pearson_delta_top": 0.6758784628996488,
+          "direction_acc_top": 0.9000000000000001,
+          "mse_top": 0.1639292731720613,
+          "r2_top": 0.7381826389079673,
+          "pearson_expr": 0.9846084168233289,
+          "primary": 0.519597358465441,
+          "selection_rule": "pearson_delta"
+        },
+        "paired": {
+          "n": 21,
+          "mean_diff": 0.011724420975362956,
+          "se": 0.005640928310630014,
+          "wins_a": 12,
+          "wins_b": 9,
+          "ties": 0,
+          "verdict": "a"
+        },
+        "run_queries": {
+          "used": 5,
+          "cap": 5
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 6,
+              "queued": 44
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        },
+        "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+        "note": "no additive baseline in this run (a bundle without pairs records none)",
+        "first_sealed_scorings": [],
+        "matches_stored": [
+          true,
+          true
+        ]
+      },
+      {
+        "seed": 3,
+        "run": "adamson_cf_d1_ds_w4_r3_discovery",
+        "selected_experiment": "EXP_0518",
+        "start_experiment": "EXP_0003",
+        "selected_metrics": {
+          "rmse": 0.08136122868062967,
+          "mae": 0.051938888711509174,
+          "mse": 0.006619649532421716,
+          "pearson_delta": 0.5793284323246863,
+          "pearson_delta_top": 0.7436029480248857,
+          "direction_acc_top": 0.9380952380952382,
+          "mse_top": 0.15733357853528415,
+          "r2_top": 0.7537296585796464,
+          "pearson_expr": 0.9855552073537547,
+          "primary": 0.5793284323246863,
+          "selection_rule": "pearson_delta"
+        },
+        "start_metrics": {
+          "rmse": 0.08389926721902762,
+          "mae": 0.05513001598721187,
+          "mse": 0.007039087039889803,
+          "pearson_delta": 0.519597358465441,
+          "pearson_delta_top": 0.6758784628996488,
+          "direction_acc_top": 0.9000000000000001,
+          "mse_top": 0.1639292731720613,
+          "r2_top": 0.7381826389079673,
+          "pearson_expr": 0.9846084168233289,
+          "primary": 0.519597358465441,
+          "selection_rule": "pearson_delta"
+        },
+        "paired": {
+          "n": 21,
+          "mean_diff": 0.05973107385924532,
+          "se": 0.01470085633643895,
+          "wins_a": 17,
+          "wins_b": 4,
+          "ties": 0,
+          "verdict": "a"
+        },
+        "run_queries": {
+          "used": 4,
+          "cap": 5
+        },
+        "planner": {
+          "configured": "deepseek:deepseek-v4-pro",
+          "fallback": [],
+          "used": [
+            "deepseek:deepseek-v4-pro"
+          ],
+          "rounds": {
+            "deepseek:deepseek-v4-pro": {
+              "rounds": 14,
+              "queued": 115
+            }
+          },
+          "switches": [],
+          "failed_rounds": 0,
+          "exhausted_at_min": null,
+          "mixed": false
+        },
+        "base_commit": "23b3b1281f5a66eba7651d2741631e993b51ab38",
+        "note": "no additive baseline in this run (a bundle without pairs records none)",
+        "first_sealed_scorings": [],
+        "matches_stored": [
+          true,
+          true
+        ]
+      }
+    ],
+    "selected_M1_mean": 0.5595270500804251,
+    "selected_M1_sample_sd": 0.025082437788214333,
+    "sealed_scorings": 6,
+    "stored_matches_true": 6,
+    "stored_matches_null": 0,
+    "stored_matches_false": 0,
+    "first_sealed_scorings": [],
+    "caveat": "Worn Adamson sealed set, indicative only; three separate own-selected versus own fresh-start comparisons. No additive baseline in this no-pairs bundle. No category rows emitted. No cross-arm pair or selection."
+  },
+  "preservation": {
+    "utc": "2026-10-28T16:43:25.774020+00:00",
+    "all_pass": true,
+    "original_artifacts_both_clones": 524,
+    "source_plugins": 270,
+    "ledger_before": 61.401668232,
+    "ledger_after": 61.401668232,
+    "main_head_unchanged": true,
+    "reading_order": "pool \u2192 3 \u2192 5 \u2192 three separate4 calls last",
+    "scientific_reader_commit": "bc0fe6aba8997ceb94cbaee7ca57db18ef407097",
+    "no_scientific_source_change": true,
+    "all_scientific_exits_zero": true
+  },
+  "primary_audit": "adamson_cf_d_primary_audit.json",
+  "reading3_5_audit": "adamson_cf_d_reading3_5_audit.json",
+  "protocol": "Integration PLAN_D; pool \u2192 reading3 \u2192 reading5 \u2192 three separate per-run sealed4 calls last. No stage1/stage2 rerun, no paid run.",
+  "reader_commit": "bc0fe6aba8997ceb94cbaee7ca57db18ef407097"
+}

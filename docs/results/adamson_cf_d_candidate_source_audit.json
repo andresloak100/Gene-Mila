@@ -1,0 +1,322 @@
+{
+  "note": "Metadata-only coverage of full training set; no feature execution or score. Both plugins have mean-response fallback; r0 constructs vectors only for measured genes and uses first target, r3 unions all target gene memberships. These structural limits are retained, not repaired. Fold-specific fallback counts are not inferred from full-view counts.",
+  "training_perturbations": 50,
+  "gene_sets": 5578,
+  "targets_measured": 50,
+  "targets_with_membership": 43,
+  "targets_with_any_shared_set": 43,
+  "rows": [
+    {
+      "perturbation": "AMIGO3",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "ASCC3",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 60,
+      "other_training_targets_with_shared_set": 36
+    },
+    {
+      "perturbation": "CAD",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 64,
+      "other_training_targets_with_shared_set": 28
+    },
+    {
+      "perturbation": "CARS",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "CHERP",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 72,
+      "other_training_targets_with_shared_set": 37
+    },
+    {
+      "perturbation": "COPB1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 56,
+      "other_training_targets_with_shared_set": 36
+    },
+    {
+      "perturbation": "COPZ1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 44,
+      "other_training_targets_with_shared_set": 36
+    },
+    {
+      "perturbation": "DDOST",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 90,
+      "other_training_targets_with_shared_set": 42
+    },
+    {
+      "perturbation": "DDRGK1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 160,
+      "other_training_targets_with_shared_set": 41
+    },
+    {
+      "perturbation": "DERL2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 88,
+      "other_training_targets_with_shared_set": 37
+    },
+    {
+      "perturbation": "EIF2B2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 111,
+      "other_training_targets_with_shared_set": 36
+    },
+    {
+      "perturbation": "EIF2S1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 79,
+      "other_training_targets_with_shared_set": 37
+    },
+    {
+      "perturbation": "ERN1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 167,
+      "other_training_targets_with_shared_set": 42
+    },
+    {
+      "perturbation": "FECH",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 43,
+      "other_training_targets_with_shared_set": 31
+    },
+    {
+      "perturbation": "GBF1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 132,
+      "other_training_targets_with_shared_set": 41
+    },
+    {
+      "perturbation": "GMPPB",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 28,
+      "other_training_targets_with_shared_set": 29
+    },
+    {
+      "perturbation": "GNPNAT1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 11,
+      "other_training_targets_with_shared_set": 25
+    },
+    {
+      "perturbation": "HARS",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "HSD17B12",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 53,
+      "other_training_targets_with_shared_set": 34
+    },
+    {
+      "perturbation": "HSPA9",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 122,
+      "other_training_targets_with_shared_set": 39
+    },
+    {
+      "perturbation": "IARS2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 24,
+      "other_training_targets_with_shared_set": 32
+    },
+    {
+      "perturbation": "IER3IP1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 52,
+      "other_training_targets_with_shared_set": 34
+    },
+    {
+      "perturbation": "KCTD16",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "MANF",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 39,
+      "other_training_targets_with_shared_set": 36
+    },
+    {
+      "perturbation": "MRGBP",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 51,
+      "other_training_targets_with_shared_set": 24
+    },
+    {
+      "perturbation": "NEDD8",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 42,
+      "other_training_targets_with_shared_set": 34
+    },
+    {
+      "perturbation": "P4HB",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 163,
+      "other_training_targets_with_shared_set": 41
+    },
+    {
+      "perturbation": "PPWD1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 33,
+      "other_training_targets_with_shared_set": 21
+    },
+    {
+      "perturbation": "PSMD12",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 244,
+      "other_training_targets_with_shared_set": 39
+    },
+    {
+      "perturbation": "SAMM50",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 71,
+      "other_training_targets_with_shared_set": 32
+    },
+    {
+      "perturbation": "SEC61A1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 69,
+      "other_training_targets_with_shared_set": 36
+    },
+    {
+      "perturbation": "SEC63",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 30,
+      "other_training_targets_with_shared_set": 29
+    },
+    {
+      "perturbation": "SEL1L",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 75,
+      "other_training_targets_with_shared_set": 41
+    },
+    {
+      "perturbation": "SLC35B1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 22,
+      "other_training_targets_with_shared_set": 28
+    },
+    {
+      "perturbation": "SLMO2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "SRP68",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 37,
+      "other_training_targets_with_shared_set": 37
+    },
+    {
+      "perturbation": "SRPR",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "SRPRB",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 46,
+      "other_training_targets_with_shared_set": 35
+    },
+    {
+      "perturbation": "STT3A",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 55,
+      "other_training_targets_with_shared_set": 39
+    },
+    {
+      "perturbation": "SYVN1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 115,
+      "other_training_targets_with_shared_set": 42
+    },
+    {
+      "perturbation": "TARS",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 0,
+      "other_training_targets_with_shared_set": 0
+    },
+    {
+      "perturbation": "TELO2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 32,
+      "other_training_targets_with_shared_set": 24
+    },
+    {
+      "perturbation": "TIMM44",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 41,
+      "other_training_targets_with_shared_set": 26
+    },
+    {
+      "perturbation": "TMED10",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 112,
+      "other_training_targets_with_shared_set": 39
+    },
+    {
+      "perturbation": "TMED2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 87,
+      "other_training_targets_with_shared_set": 37
+    },
+    {
+      "perturbation": "TMEM167A",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 10,
+      "other_training_targets_with_shared_set": 27
+    },
+    {
+      "perturbation": "TTI1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 32,
+      "other_training_targets_with_shared_set": 19
+    },
+    {
+      "perturbation": "TTI2",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 24,
+      "other_training_targets_with_shared_set": 15
+    },
+    {
+      "perturbation": "UFM1",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 58,
+      "other_training_targets_with_shared_set": 26
+    },
+    {
+      "perturbation": "YIPF5",
+      "first_target_in_measured_genes": true,
+      "first_target_sets": 21,
+      "other_training_targets_with_shared_set": 34
+    }
+  ],
+  "public_input_hashes": {
+    "manifest.json": "dceab43e7e54b48d466ec0c32b8eedb662e80b14d42570dcfbeae6dbc47ec411",
+    "public.npz": "e8908ef34d851c1111556be7b8d97eb511bc7554513683a0cf3844248d153718",
+    "knowledge/gene_annotation.json": "ac2e774960a14c9e0213c6ec1afd8eecc7836cb4682d236048b6404bd409c7bf",
+    "knowledge/gene_constraint.json": "1069daa45f301a62cd5da06316ce3dac8947e1df4382c78a3bd40ab1f5f8390f",
+    "knowledge/gene_sets.json": "2221426e64ee8323044a7a9e2a415ba907210aebf121b5deb49d60a984ec1d88",
+    "knowledge/ppi_network.json": "ee4e7e3d7ed051324cede42467ef20e3f3be8e2ecd969776d8c9dcbd215c8b28",
+    "knowledge/prior_network.json": "27c0cd0f06f778a94e4a546a8d4fbaacb98f4978b76b08ad95892791e5bba513",
+    "knowledge/protein_annotation.json": "b17571ef1ce61d6bf0f1397e3948159463f510686acc700a15e383b17d462acd",
+    "knowledge/targets.json": "e0795293a743ca84d49b8a2cb74b861c30359ed890990d366f7035655fd47f3b",
+    "knowledge/transcription_factors.json": "6d89a663d7dc7023b68ce13006cb5b6d93501e5b738fd4f6a05cd1927b984cf8"
+  }
+}

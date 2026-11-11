@@ -1,0 +1,22 @@
+import json,os,shlex,subprocess,sys
+from pathlib import Path
+from datetime import datetime,timezone
+c=json.loads(Path(sys.argv[1]).read_text());cwd=Path(c['cwd']);prefix=Path(c['prefix'])
+for suf in ('.command.txt','.log','.exit','.runtime.json'):
+ if Path(str(prefix)+suf).exists():raise SystemExit('phase receipt exists: '+suf)
+if c.get('output') and Path(c['output']).exists():raise SystemExit('output already exists')
+env=os.environ.copy()
+for k in list(env):
+ if k in ('API_KEY','DEEPSEEK_API_KEY','OPENAI_API_KEY','ANTHROPIC_API_KEY'):env.pop(k,None)
+env.update(PYTHONHASHSEED='0',PYTHONUNBUFFERED='1',PYTHONPATH=str(cwd))
+cmd=['/usr/bin/caffeinate','-i','/usr/bin/nice','-n','19',c['python'],*c['args']]
+Path(str(prefix)+'.command.txt').write_text('Credentials unset; PYTHONHASHSEED=0 PYTHONUNBUFFERED=1 PYTHONPATH='+str(cwd)+'\n'+shlex.join(cmd)+'\n')
+start=datetime.now(timezone.utc).isoformat()
+with Path(str(prefix)+'.log').open('x') as f:
+ child=subprocess.Popen(cmd,cwd=cwd,env=env,stdout=f,stderr=subprocess.STDOUT)
+ Path(str(prefix)+'.runtime.json').write_text(json.dumps({'start_utc':start,'pid':child.pid,'command':cmd,'cwd':str(cwd)},indent=2)+'\n')
+ rc=child.wait()
+Path(str(prefix)+'.exit').write_text(str(rc)+'\n')
+runtime=json.loads(Path(str(prefix)+'.runtime.json').read_text());runtime.update(end_utc=datetime.now(timezone.utc).isoformat(),exit=rc)
+Path(str(prefix)+'.runtime.json').write_text(json.dumps(runtime,indent=2)+'\n')
+raise SystemExit(rc)

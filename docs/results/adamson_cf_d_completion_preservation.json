@@ -1,0 +1,13 @@
+{
+  "utc": "2026-10-28T16:43:25.774020+00:00",
+  "all_pass": true,
+  "original_artifacts_both_clones": 524,
+  "source_plugins": 270,
+  "ledger_before": 61.401668232,
+  "ledger_after": 61.401668232,
+  "main_head_unchanged": true,
+  "reading_order": "pool \u2192 3 \u2192 5 \u2192 three separate4 calls last",
+  "scientific_reader_commit": "bc0fe6aba8997ceb94cbaee7ca57db18ef407097",
+  "no_scientific_source_change": true,
+  "all_scientific_exits_zero": true
+}
