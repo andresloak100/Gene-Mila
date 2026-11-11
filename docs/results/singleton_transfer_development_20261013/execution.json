@@ -1,0 +1,39 @@
+{
+  "status": "complete_negative",
+  "plan_commit": "c8c1358",
+  "implementation_commit": "7606c04",
+  "run_directory": "/Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-singleton-transfer/runs/singleton_transfer_development_20261013",
+  "command": "PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 nice -n 19 /Users/andresarriaga/Documents/Mila/Gene-Mila/gene-mila/.venv/bin/python docs/results/singleton_transfer_development_20261013/run_with_deadline.py --package /Users/andresarriaga/.codex/.chatgpt-projects/g-p-6abd4598969c8191806ed119a5e711b5/gene-mila-export/runs/norman_frozen_export_20261013/package --out runs/singleton_transfer_development_20261013",
+  "api_cost_usd": 0,
+  "ledger_unchanged": 43.599822392,
+  "fit_counts": {
+    "A": 480,
+    "B": 0
+  },
+  "run_files": {
+    "config.json": {
+      "sha256": "54480be139d3ad63dc7b3e183e7e2fef0f1dc0b61286a30ebeb1c4649ad682de",
+      "md5": "891da8353daa086b4a78ba60c93085bc"
+    },
+    "predictions.npz": {
+      "sha256": "f3f22886a8116b2d131818d409f9002eaeef3e055b88f8d8a439033ec0f6bbd9",
+      "md5": "c1d95b74c96819ec2792c4866556c123"
+    },
+    "progress.jsonl": {
+      "sha256": "e22e82869d24e50e4d6b4b759f10b3091e72864a11a886384d176fd00c285430",
+      "md5": "9d9baeb5c4e8239bab3b6fa3d470aa9d"
+    },
+    "summary.json": {
+      "sha256": "31fd52b973859b690dd940e65ad8276050e20386ce94df9baa47db3b7e2a02fe",
+      "md5": "0bf4057ec78e0f979dcceb4730f7c242"
+    }
+  },
+  "tests": {
+    "full_passed": 529,
+    "full_skipped": 0,
+    "full_warnings": 8,
+    "full_seconds": 653.5,
+    "focused_passed": 62,
+    "focused_seconds": 2.19
+  }
+}
